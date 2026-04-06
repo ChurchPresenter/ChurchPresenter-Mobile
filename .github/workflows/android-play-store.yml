@@ -35,9 +35,43 @@ jobs:
   build-and-upload:
     name: Build AAB & Upload to Play Store
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Full history needed so we can push the version-bump commit back
+          fetch-depth: 0
+
+      - name: Bump Android build and version numbers
+        id: bump_version
+        run: |
+          GRADLE="composeApp/build.gradle.kts"
+
+          VERSION_CODE=$(grep 'versionCode = ' "$GRADLE" | sed 's/.*versionCode = \([0-9]*\).*/\1/')
+          VERSION_NAME=$(grep 'versionName = ' "$GRADLE" | sed 's/.*versionName = "\(.*\)".*/\1/')
+
+          NEW_CODE=$((VERSION_CODE + 1))
+          MAJOR=$(echo "$VERSION_NAME" | cut -d. -f1)
+          MINOR=$(echo "$VERSION_NAME" | cut -d. -f2)
+          PATCH=$(echo "$VERSION_NAME" | cut -d. -f3)
+          NEW_NAME="${MAJOR}.${MINOR}.$((PATCH + 1))"
+
+          sed -i "s/versionCode = ${VERSION_CODE}/versionCode = ${NEW_CODE}/" "$GRADLE"
+          sed -i "s/versionName = \"${VERSION_NAME}\"/versionName = \"${NEW_NAME}\"/" "$GRADLE"
+
+          echo "new_code=${NEW_CODE}"   >> "$GITHUB_OUTPUT"
+          echo "new_name=${NEW_NAME}"   >> "$GITHUB_OUTPUT"
+          echo "✅ Android versionCode: $VERSION_CODE → $NEW_CODE | versionName: $VERSION_NAME → $NEW_NAME"
+
+      - name: Commit and push version bump
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add composeApp/build.gradle.kts
+          git commit -m "chore(android): bump to ${{ steps.bump_version.outputs.new_name }} (build ${{ steps.bump_version.outputs.new_code }}) [skip ci]"
+          git push
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4

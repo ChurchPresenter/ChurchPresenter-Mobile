@@ -27,10 +27,44 @@ jobs:
   build-and-upload:
     name: Build IPA & Upload to TestFlight
     runs-on: macos-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Full history needed so we can push the version-bump commit back
+          fetch-depth: 0
+
+      - name: Bump iOS build and version numbers
+        id: bump_version
+        run: |
+          CONFIG="iosApp/Configuration/Config.xcconfig"
+
+          BUILD=$(grep '^CURRENT_PROJECT_VERSION=' "$CONFIG" | sed 's/CURRENT_PROJECT_VERSION=//')
+          VERSION=$(grep '^MARKETING_VERSION=' "$CONFIG" | sed 's/MARKETING_VERSION=//')
+
+          NEW_BUILD=$((BUILD + 1))
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+
+          sed -i '' "s/^CURRENT_PROJECT_VERSION=.*/CURRENT_PROJECT_VERSION=${NEW_BUILD}/" "$CONFIG"
+          sed -i '' "s/^MARKETING_VERSION=.*/MARKETING_VERSION=${NEW_VERSION}/" "$CONFIG"
+
+          echo "new_build=${NEW_BUILD}"   >> "$GITHUB_OUTPUT"
+          echo "new_version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "✅ iOS build: $BUILD → $NEW_BUILD | version: $VERSION → $NEW_VERSION"
+
+      - name: Commit and push version bump
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add iosApp/Configuration/Config.xcconfig
+          git commit -m "chore(ios): bump to ${{ steps.bump_version.outputs.new_version }} (build ${{ steps.bump_version.outputs.new_build }}) [skip ci]"
+          git push
 
       # iOS 26 SDK (Xcode 26) required for App Store Connect uploads from April 28 2026.
       - name: Select Xcode 26
