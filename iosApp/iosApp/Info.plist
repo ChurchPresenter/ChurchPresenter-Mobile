@@ -5,6 +5,19 @@
         <key>CADisableMinimumFrameDurationOnPhone</key>
         <true/>
 
+        <!--
+            Allow connections to local Church Presenter servers that use self-signed
+            HTTPS certificates (e.g. 192.168.x.x:8765).  ATS would otherwise block
+            the TCP handshake before Ktor's handleChallenge ever fires.
+        -->
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+            <key>NSAllowsLocalNetworking</key>
+            <true/>
+        </dict>
+
         <!-- Required for receiving remote (push) notifications in the background -->
         <key>UIBackgroundModes</key>
         <array>
