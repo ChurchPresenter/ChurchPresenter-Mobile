@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!--
+        Exact scale-down of ic_launcher_foreground.xml (× 24/108 ≈ 0.2222).
+          Vertical bar  : x 10.67–13.11,  y  5.33–20.44
+          Horizontal arm: x  6.67–17.11,  y  9.33–11.78
+          Top=Left=Right arm = 18 u scaled → 4.0 u each ✓  |  Bottom arm = 39 u scaled → 8.67 u
+    -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10.67,5.33 L13.11,5.33 L13.11,9.33 L17.11,9.33 L17.11,11.78 L13.11,11.78 L13.11,20.44 L10.67,20.44 L10.67,11.78 L6.67,11.78 L6.67,9.33 L10.67,9.33 Z"/>
+</vector>

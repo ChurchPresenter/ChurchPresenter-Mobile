@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Simple launch theme: no native splash layer at all.
+        Sets the window background to the same primary colour used by the
+        Compose SplashScreen so there is zero white flash during startup.
+        postSplashScreenTheme / core-splashscreen is NOT used here.
+    -->
+    <style name="Theme.App.Starting" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#3D5A80</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>

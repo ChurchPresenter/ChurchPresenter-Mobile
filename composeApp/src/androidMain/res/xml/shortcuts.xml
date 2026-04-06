@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Jump directly to the Songs tab -->
+    <shortcut
+        android:shortcutId="open_songs"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_songs"
+        android:shortcutShortLabel="@string/shortcut_songs_short"
+        android:shortcutLongLabel="@string/shortcut_songs_long">
+        <intent
+            android:action="com.church.presenter.churchpresentermobile.OPEN_SONGS"
+            android:targetPackage="com.church.presenter.churchpresentermobile"
+            android:targetClass="com.church.presenter.churchpresentermobile.MainActivity"/>
+    </shortcut>
+
+    <!-- Jump directly to the Bible tab -->
+    <shortcut
+        android:shortcutId="open_bible"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_bible"
+        android:shortcutShortLabel="@string/shortcut_bible_short"
+        android:shortcutLongLabel="@string/shortcut_bible_long">
+        <intent
+            android:action="com.church.presenter.churchpresentermobile.OPEN_BIBLE"
+            android:targetPackage="com.church.presenter.churchpresentermobile"
+            android:targetClass="com.church.presenter.churchpresentermobile.MainActivity"/>
+    </shortcut>
+
+</shortcuts>
+

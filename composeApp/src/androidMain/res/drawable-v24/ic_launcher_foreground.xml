@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!--
+        Traditional Christian cross — white, inside the 66 dp safe zone (x/y: 21–87).
+        Bar thickness: 11 units on BOTH bars.
+
+          Vertical bar  : x 48–59,  y 24–85
+          Horizontal arm: x 30–77,  y 42–53
+
+          Top arm   = 42-24 = 18 u  ─┐
+          Left arm  = 48-30 = 18 u   ├─ all THREE equal ✓
+          Right arm = 77-59 = 18 u  ─┘
+          Bottom arm= 92-53 = 39 u    (longer lower leg)
+    -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,24 L59,24 L59,42 L77,42 L77,53 L59,53 L59,92 L48,92 L48,53 L30,53 L30,42 L48,42 Z"/>
+</vector>

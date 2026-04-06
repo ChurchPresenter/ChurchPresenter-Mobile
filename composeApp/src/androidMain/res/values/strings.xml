@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Church Presenter</string>
+    <string name="notification_channel_name">Church Presenter</string>
+    <string name="notification_channel_description">Notifications from your Church Presenter server</string>
+    <string name="notification_default_title">Church Presenter</string>
+    <string name="update_available_title">Update Available</string>
+    <string name="update_available_message">A new version is available. Update now for the latest features and fixes.</string>
+    <string name="update_button_update">Update</string>
+    <string name="update_button_later">Later</string>
+
+    <!-- App shortcuts (home-screen long-press) -->
+    <string name="shortcut_songs_short">Songs</string>
+    <string name="shortcut_songs_long">Open Songs</string>
+    <string name="shortcut_bible_short">Bible</string>
+    <string name="shortcut_bible_long">Open Bible</string>
+</resources>

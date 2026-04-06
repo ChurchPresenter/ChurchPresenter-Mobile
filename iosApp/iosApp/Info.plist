@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CADisableMinimumFrameDurationOnPhone</key>
+        <true/>
+
+        <!-- Required for receiving remote (push) notifications in the background -->
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>remote-notification</string>
+        </array>
+
+        <!--
+            Disable Firebase method swizzling so that our AppDelegate
+            (wired in via @UIApplicationDelegateAdaptor) can manually
+            forward APNs tokens and handle notifications itself.
+        -->
+        <key>FirebaseAppDelegateProxyEnabled</key>
+        <false/>
+
+        <!-- Camera permission — required for the in-app QR code scanner -->
+        <key>NSCameraUsageDescription</key>
+        <string>Scan a QR code to connect to your Church Presenter server instantly.</string>
+
+        <!-- Static home-screen quick actions (long-press app icon) -->
+        <key>UIApplicationShortcutItems</key>
+        <array>
+            <dict>
+                <key>UIApplicationShortcutItemType</key>
+                <string>com.church.presenter.churchpresentermobile.songs</string>
+                <key>UIApplicationShortcutItemTitle</key>
+                <string>Songs</string>
+                <key>UIApplicationShortcutItemSubtitle</key>
+                <string>Browse and select songs</string>
+                <key>UIApplicationShortcutItemIconSymbolName</key>
+                <string>music.note</string>
+            </dict>
+            <dict>
+                <key>UIApplicationShortcutItemType</key>
+                <string>com.church.presenter.churchpresentermobile.bible</string>
+                <key>UIApplicationShortcutItemTitle</key>
+                <string>Bible</string>
+                <key>UIApplicationShortcutItemSubtitle</key>
+                <string>Browse Bible passages</string>
+                <key>UIApplicationShortcutItemIconSymbolName</key>
+                <string>book</string>
+            </dict>
+        </array>
+
+        <!-- Register the churchpresenter:// custom URL scheme for QR / deep-link connect -->
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLName</key>
+                <string>com.church.presenter.churchpresentermobile</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>churchpresenter</string>
+                </array>
+            </dict>
+        </array>
+    </dict>
+</plist>

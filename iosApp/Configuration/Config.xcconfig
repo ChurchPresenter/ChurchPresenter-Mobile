@@ -1,0 +1,29 @@
+// Signing.xcconfig is gitignored — it is a symlink created by scripts/setup_signing.sh
+// pointing to the signing repo's ios/signing.xcconfig.
+// The '?' makes this include optional so simulator/debug builds work without it.
+#include? "Signing.xcconfig"
+
+TEAM_ID=
+
+PRODUCT_NAME=churchpresentermobile
+PRODUCT_BUNDLE_IDENTIFIER=com.church.presenter.churchpresentermobile
+
+// Push Notifications APS environment.
+// Override to "production" in Signing.xcconfig for distribution/CI builds.
+APS_ENVIRONMENT = development
+
+CURRENT_PROJECT_VERSION=2
+MARKETING_VERSION=1.0.1
+
+// ── KMP framework search path ─────────────────────────────────────────────────
+// The ComposeApp.framework is produced by:
+//   ./gradlew :composeApp:embedAndSignAppleFrameworkForXcode
+// and placed here by the "Compile Kotlin Framework" Xcode build phase.
+// Listing the source output directory lets the Swift compiler (and JetBrains)
+// resolve `import ComposeApp` during the planning phase, before the build
+// phase script has run.
+//
+// The Pods-iosApp.*.xcconfig files use $(inherited) for FRAMEWORK_SEARCH_PATHS,
+// so the Firebase / CocoaPods framework paths are automatically appended on top
+// of this entry — no change to the Pods xcconfig is required.
+FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"

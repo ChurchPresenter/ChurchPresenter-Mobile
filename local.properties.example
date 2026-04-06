@@ -1,0 +1,21 @@
+## Copy this file to local.properties and fill in the values for your machine,
+## OR just run:  bash scripts/setup_signing.sh
+## local.properties is gitignored — never commit it.
+
+# Android SDK location (required)
+sdk.dir=/path/to/your/Android/sdk
+
+# --- Release Signing & Firebase (Android + iOS) ---
+# The following sensitive files are stored in the private signing repo:
+#   • mobile/google-services.json         (Android Firebase config)
+#   • mobile/ios/GoogleService-Info.plist (iOS Firebase config)
+#   • mobile/signing.properties           (Android keystore credentials)
+#   • mobile/ios/signing.xcconfig         (iOS Team ID + code sign settings)
+#
+# Clone the signing repo (ask a team member for access), then run the
+# one-time setup script — it symlinks everything automatically:
+#   bash scripts/setup_signing.sh /path/to/signing-repo
+#
+# Android signing path (set automatically by setup_signing.sh):
+signing.repo.path=/path/to/signing-repo/mobile
+

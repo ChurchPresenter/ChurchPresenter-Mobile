@@ -1,0 +1,201 @@
+name: iOS Release Build
+
+# Manually triggered from the GitHub Actions tab.
+# Produces a signed .ipa and uploads it as a workflow artifact.
+# Required secrets: IOS_CERTIFICATE_BASE64, IOS_CERTIFICATE_PASSWORD,
+#   IOS_PROVISIONING_PROFILE_BASE64, IOS_TEAM_ID, IOS_CODE_SIGN_IDENTITY,
+#   IOS_PROVISIONING_PROFILE_NAME, IOS_KEYCHAIN_PASSWORD,
+#   GOOGLE_SERVICE_INFO_PLIST_BASE64
+# See GITHUB_SECRETS_SETUP.md for encoding instructions (always use -b 0).
+
+on:
+  workflow_dispatch:
+    inputs:
+      export_method:
+        description: IPA export method
+        required: true
+        default: ad-hoc
+        type: choice
+        options:
+          - ad-hoc
+          - app-store
+          - development
+
+# Opt into Node.js 24 now — Node.js 20 actions are deprecated (forced June 2026).
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build:
+    name: Build Signed iOS Release
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # iOS 26 SDK (Xcode 26) required for App Store Connect uploads from April 28 2026.
+      - name: Select Xcode 26
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26'
+
+      - name: Set up JDK 24
+        uses: actions/setup-java@v4
+        with:
+          java-version: 24
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install xcpretty
+        run: gem install xcpretty --no-document 2>/dev/null || true
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd iosApp
+          pod install --repo-update
+
+      # Fail fast with an actionable message if any required secret is missing.
+      - name: Validate required secrets
+        env:
+          IOS_CERTIFICATE_BASE64:              ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD:            ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64:     ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_TEAM_ID:                         ${{ secrets.IOS_TEAM_ID }}
+          IOS_CODE_SIGN_IDENTITY:              ${{ secrets.IOS_CODE_SIGN_IDENTITY }}
+          IOS_PROVISIONING_PROFILE_NAME:       ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+          IOS_KEYCHAIN_PASSWORD:               ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+          GOOGLE_SERVICE_INFO_PLIST_BASE64:    ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+        run: |
+          missing=()
+          [ -z "$IOS_CERTIFICATE_BASE64"           ] && missing+=("IOS_CERTIFICATE_BASE64")
+          [ -z "$IOS_CERTIFICATE_PASSWORD"         ] && missing+=("IOS_CERTIFICATE_PASSWORD")
+          [ -z "$IOS_PROVISIONING_PROFILE_BASE64"  ] && missing+=("IOS_PROVISIONING_PROFILE_BASE64")
+          [ -z "$IOS_TEAM_ID"                      ] && missing+=("IOS_TEAM_ID")
+          [ -z "$IOS_CODE_SIGN_IDENTITY"           ] && missing+=("IOS_CODE_SIGN_IDENTITY")
+          [ -z "$IOS_PROVISIONING_PROFILE_NAME"    ] && missing+=("IOS_PROVISIONING_PROFILE_NAME")
+          [ -z "$IOS_KEYCHAIN_PASSWORD"            ] && missing+=("IOS_KEYCHAIN_PASSWORD")
+          [ -z "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ] && missing+=("GOOGLE_SERVICE_INFO_PLIST_BASE64")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "❌ The following required GitHub secrets are not set:"
+            for s in "${missing[@]}"; do echo "   • $s"; done
+            echo ""
+            echo "👉 See GITHUB_SECRETS_SETUP.md for encoding instructions."
+            echo "   Add secrets at: https://github.com/${{ github.repository }}/settings/secrets/actions"
+            exit 1
+          fi
+          echo "✅ All required secrets are present."
+
+      # Pass secrets through env: so the shell never expands them inline.
+      # tr -d removes CR+LF that macOS base64 (without -b 0) may embed.
+      # test -s fails loudly if a decoded file is empty, before any build runs.
+      - name: Import Apple Distribution certificate
+        env:
+          CERT_B64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+        run: |
+          CERT_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo "$CERT_B64" | tr -d '\r\n' | base64 -d > "$CERT_PATH"
+          test -s "$CERT_PATH" || {
+            echo "❌ $CERT_PATH is empty after decode."
+            echo "   Re-encode with:  base64 -b 0 -i distribution.p12 | pbcopy"
+            exit 1
+          }
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" \
+            -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list \
+            -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Install provisioning profile
+        env:
+          PP_B64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/build.mobileprovision
+          echo "$PP_B64" | tr -d '\r\n' | base64 -d > "$PP_PATH"
+          test -s "$PP_PATH" || { echo "ERROR: "$PP_PATH" is empty after decode" >&2; exit 1; }
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          UUID=$(/usr/libexec/PlistBuddy \
+            -c "Print :UUID" /dev/stdin \
+            <<< "$(security cms -D -i "$PP_PATH")")
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
+          echo "Installed provisioning profile: $UUID"
+
+      - name: Write Signing.xcconfig
+        env:
+          IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_CODE_SIGN_IDENTITY: ${{ secrets.IOS_CODE_SIGN_IDENTITY }}
+          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+        run: |
+          cat > iosApp/Configuration/Signing.xcconfig << XCEOF
+          TEAM_ID = ${IOS_TEAM_ID}
+          CODE_SIGN_IDENTITY = ${IOS_CODE_SIGN_IDENTITY}
+          CODE_SIGN_STYLE = Manual
+          PROVISIONING_PROFILE_SPECIFIER = ${IOS_PROVISIONING_PROFILE_NAME}
+          PRODUCT_BUNDLE_IDENTIFIER = com.church.presenter.churchpresentermobile
+          APS_ENVIRONMENT = production
+          XCEOF
+
+      - name: Decode GoogleService-Info.plist
+        env:
+          GSINFO_B64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+        run: |
+          echo "$GSINFO_B64" | tr -d '\r\n' | base64 -d > iosApp/iosApp/GoogleService-Info.plist
+          test -s iosApp/iosApp/GoogleService-Info.plist || { echo "ERROR: iosApp/iosApp/GoogleService-Info.plist is empty after decode" >&2; exit 1; }
+
+      - name: Archive iOS app
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -workspace iosApp/iosApp.xcworkspace \
+            -scheme iosApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$RUNNER_TEMP/iosApp.xcarchive" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="${{ secrets.IOS_TEAM_ID }}" \
+            CODE_SIGN_IDENTITY="${{ secrets.IOS_CODE_SIGN_IDENTITY }}" \
+            2>&1 | tee /tmp/xcodebuild.log | xcpretty || {
+              echo "══════════════════════════════════════════"
+              echo "xcpretty failed — full raw xcodebuild log:"
+              echo "══════════════════════════════════════════"
+              cat /tmp/xcodebuild.log
+              exit 1
+            }
+
+      - name: Write ExportOptions.plist
+        run: |
+          /usr/libexec/PlistBuddy \
+            -c "Add :method string ${{ inputs.export_method }}" \
+            -c "Add :teamID string ${{ secrets.IOS_TEAM_ID }}" \
+            -c "Add :signingStyle string manual" \
+            -c "Add :signingCertificate string ${{ secrets.IOS_CODE_SIGN_IDENTITY }}" \
+            -c "Add :provisioningProfiles dict" \
+            -c "Add :provisioningProfiles:com.church.presenter.churchpresentermobile string ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
+            "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Export IPA
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/iosApp.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/output" \
+            | xcpretty
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-ipa-${{ github.run_number }}
+          path: ${{ runner.temp }}/output/*.ipa
+          retention-days: 30
+
+      - name: Remove temporary keychain
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" || true

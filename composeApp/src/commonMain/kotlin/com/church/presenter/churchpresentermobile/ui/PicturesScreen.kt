@@ -1,0 +1,355 @@
+package com.church.presenter.churchpresentermobile.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cast
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.pictures_add_to_schedule
+import churchpresentermobile.composeapp.generated.resources.pictures_loading_error
+import churchpresentermobile.composeapp.generated.resources.pictures_no_items
+import churchpresentermobile.composeapp.generated.resources.pictures_photos
+import churchpresentermobile.composeapp.generated.resources.pictures_project_to_screen
+import churchpresentermobile.composeapp.generated.resources.pictures_retry
+import churchpresentermobile.composeapp.generated.resources.pictures_stop_projecting
+import coil3.ImageLoader
+import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
+import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.SubcomposeAsyncImageContent
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.size.Scale
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.PictureImage
+import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
+import org.jetbrains.compose.resources.stringResource
+
+private const val GRID_COLUMNS = 3
+
+/**
+ * Pictures tab screen. Loads images from GET /api/pictures and displays them in a scrollable
+ * 3-column grid. Tapping an image sends it to the display via POST /api/pictures/select.
+ *
+ * @param appSettings          Shared [AppSettings] used to create and configure [PicturesViewModel].
+ * @param settingsSaveToken    Incremented by the parent each time settings are saved; triggers
+ *   [PicturesViewModel.onSettingsSaved] so images reload against the new server.
+ * @param imageLoader          Coil [ImageLoader] configured with the app's SSL-bypass HTTP client.
+ * @param pendingNavFolderId   When non-null, the screen will load this specific folder on arrival.
+ * @param pendingNavImageIndex When non-null, the screen will scroll to and highlight this image index.
+ * @param onPendingNavHandled  Called once the pending navigation has been applied so the parent
+ *   can clear the values and avoid re-triggering.
+ * @param modifier             The modifier to apply to this composable.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PicturesScreen(
+    appSettings: AppSettings,
+    isDemoMode: Boolean = false,
+    settingsSaveToken: Int,
+    imageLoader: ImageLoader,
+    pendingNavFolderId: String? = null,
+    pendingNavImageIndex: Int? = null,
+    onPendingNavHandled: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val viewModel: PicturesViewModel = viewModel(key = isDemoMode.toString()) { PicturesViewModel(appSettings, isDemoMode) }
+
+    // React to settings changes – rebuild the service and reload
+    LaunchedEffect(settingsSaveToken) {
+        if (settingsSaveToken > 0) viewModel.onSettingsSaved()
+    }
+
+    // React to schedule navigation – load the specific folder and scroll to the image
+    LaunchedEffect(pendingNavFolderId, pendingNavImageIndex) {
+        if (pendingNavFolderId != null || pendingNavImageIndex != null) {
+            viewModel.navigateTo(pendingNavFolderId, pendingNavImageIndex)
+            onPendingNavHandled()
+        }
+    }
+
+    val folder by viewModel.folder.collectAsState()
+    val selectedIndex by viewModel.selectedIndex.collectAsState()
+    val pendingScrollIndex by viewModel.pendingScrollIndex.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val isProjecting by viewModel.isProjecting.collectAsState()
+    val scheduleAdded by viewModel.scheduleAdded.collectAsState()
+
+    // Grid state for programmatic scrolling when navigating from schedule
+    val gridState = rememberLazyGridState()
+
+    // Scroll to + auto-select the pending image once the folder data arrives
+    LaunchedEffect(pendingScrollIndex, folder) {
+        val idx = pendingScrollIndex ?: return@LaunchedEffect
+        if (folder != null) {
+            // +1 because the first grid item is the folder-header span row
+            gridState.animateScrollToItem(idx + 1)
+            viewModel.selectPicture(idx)
+            viewModel.onPendingScrollHandled()
+        }
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+
+        Column(modifier = Modifier.fillMaxSize()) {
+
+        // ── Error banner ──────────────────────────────────────────────
+        if (error != null) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.errorContainer
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = error ?: stringResource(Res.string.pictures_loading_error),
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    TextButton(onClick = { viewModel.loadPictures() }) {
+                        Text(
+                            text = stringResource(Res.string.pictures_retry),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+        }
+
+        // ── Content ───────────────────────────────────────────────────
+        PullToRefreshBox(
+            isRefreshing = isLoading,
+            onRefresh = { viewModel.loadPictures() },
+            modifier = Modifier.weight(1f).fillMaxWidth()
+        ) {
+            when {
+                folder != null && folder!!.allImages.isNotEmpty() -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(GRID_COLUMNS),
+                        state = gridState,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        // ── Folder header ─────────────────────────────────
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = folder!!.displayName,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = "${folder!!.totalImages} ${stringResource(Res.string.pictures_photos)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+
+                        // ── Image grid ────────────────────────────────────
+                        items(
+                            items = folder!!.allImages,
+                            key = { it.index }
+                        ) { image ->
+                            PictureCell(
+                                image = image,
+                                imageLoader = imageLoader,
+                                isSelected = image.index == selectedIndex,
+                                onTap = { viewModel.selectPicture(image.index) }
+                            )
+                        }
+                    }
+                }
+                !isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(Res.string.pictures_no_items),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                // else: isLoading with no data — PTR indicator handles visual feedback
+            }
+        }
+    }   // end Column
+
+        // ── Action buttons (bottom-right, above snackbar) ─────────────────
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 72.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { if (!scheduleAdded) viewModel.addToSchedule() },
+                containerColor = if (scheduleAdded)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = if (scheduleAdded)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSecondaryContainer
+            ) {
+                Icon(
+                    imageVector        = Icons.AutoMirrored.Filled.PlaylistAdd,
+                    contentDescription = stringResource(Res.string.pictures_add_to_schedule)
+                )
+            }
+
+            FloatingActionButton(
+                onClick = {
+                    if (isProjecting) viewModel.clearDisplay()
+                    else selectedIndex?.let { viewModel.selectPicture(it) }
+                },
+                containerColor = if (isProjecting)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.primaryContainer,
+                contentColor = if (isProjecting)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Icon(
+                    imageVector        = Icons.Filled.Cast,
+                    contentDescription = if (isProjecting)
+                        stringResource(Res.string.pictures_stop_projecting)
+                    else
+                        stringResource(Res.string.pictures_project_to_screen)
+                )
+            }
+        }
+    }   // end Box
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun PictureCell(
+    image: PictureImage,
+    imageLoader: ImageLoader,
+    isSelected: Boolean,
+    onTap: () -> Unit
+) {
+    val selectedBorderColor = MaterialTheme.colorScheme.secondary
+    val context = LocalPlatformContext.current
+
+    // Epoch day (increments every 24 h) used as a cache-buster: images cached
+    // under key "<url>_d<day>" are automatically stale the next day.
+    val epochDay = Clock.System.now().toEpochMilliseconds() / 86_400_000L
+
+    // Build an explicit ImageRequest capping the decode size at 500×500 px.
+    // For a 4000×2252 source this sets inSampleSize ≈ 8, reducing the decoded
+    // bitmap from ~36 MB to ~600 KB and cutting decode time proportionally.
+    // The full JPEG bytes are still downloaded (API has no resize endpoint),
+    // but they are cached to disk so subsequent loads are instant.
+    val request = ImageRequest.Builder(context)
+        .data(image.thumbnailUrl)
+        .diskCacheKey("${image.thumbnailUrl}_d$epochDay")
+        .size(500, 500)
+        .scale(Scale.FILL)
+        .crossfade(true)
+        .build()
+
+    SubcomposeAsyncImage(
+        model = request,
+        contentDescription = image.fileName,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp)
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(4.dp))
+            .clickable { onTap() }
+            .then(
+                if (isSelected) Modifier.border(2.dp, selectedBorderColor, RoundedCornerShape(4.dp))
+                else Modifier
+            )
+    ) {
+        val state by painter.state.collectAsState()
+        when (state) {
+            is AsyncImagePainter.State.Loading,
+            AsyncImagePainter.State.Empty -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            is AsyncImagePainter.State.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.errorContainer)
+                )
+            }
+            else -> SubcomposeAsyncImageContent()
+        }
+    }
+}

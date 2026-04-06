@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church Presenter</title>
+    <link type="text/css" rel="stylesheet" href="styles.css">
+    <style>
+        #loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #1c1b1f;
+        }
+    </style>
+</head>
+<body>
+<!-- Spinner shown while the WASM/JS bundle loads; Compose replaces it once mounted -->
+<div id="loading">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 50 50" role="presentation">
+        <circle cx="25" cy="25" r="20" stroke="#444" stroke-width="4" fill="none"/>
+        <circle cx="25" cy="25" r="20" stroke="#9c7ef0" stroke-width="4" fill="none"
+                stroke-linecap="round" stroke-dasharray="90 125">
+            <animateTransform attributeName="transform" type="rotate"
+                              from="0 25 25" to="360 25 25" dur="0.9s" repeatCount="indefinite"/>
+        </circle>
+    </svg>
+</div>
+<!-- Compose mounts here -->
+<div id="ComposeTarget"></div>
+<!-- type="module" is required for wasmJs output -->
+<script src="composeApp.js" type="module"></script>
+</body>
+</html>

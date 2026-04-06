@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Required on Android 13+ (API 33+) to show push notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <application
+            android:name=".ChurchPresenterApp"
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar"
+            android:networkSecurityConfig="@xml/network_security_config">
+
+        <!--
+            Tells the Firebase SDK which channel to use when it auto-displays
+            a notification message while the app is in the background or killed.
+            Without this the notification is silently dropped on Android 8+.
+        -->
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="church_presenter_channel"/>
+
+        <activity
+                android:exported="true"
+                android:name=".MainActivity"
+                android:launchMode="singleTask"
+                android:theme="@style/Theme.App.Starting">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- churchpresenter://connect?host=…&port=…&apikey=… deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="churchpresenter"/>
+            </intent-filter>
+            <!-- Static app shortcuts (Songs + Bible) shown on home-screen long-press -->
+            <meta-data
+                    android:name="android.app.shortcuts"
+                    android:resource="@xml/shortcuts"/>
+        </activity>
+
+        <!-- Firebase Cloud Messaging receiver -->
+        <service
+                android:name=".service.FirebasePushService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

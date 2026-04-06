@@ -1,0 +1,138 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Title</string>
+    <string name="songs_table_header_book">Book</string>
+    <string name="songs_table_header_tune">Tune</string>
+    <string name="songs_table_search_placeholder">Search by # or title…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">No songs available</string>
+    <string name="songs_table_no_match">No songs match your filter</string>
+    <string name="songs_table_loading_error">Failed to load songs</string>
+    <string name="songs_table_retry">Retry</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">All Books</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Open settings</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Host / IP Address</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API Key (optional)</string>
+    <string name="settings_api_key_placeholder">Leave blank if not required</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_invalid_port">Port must be a number between 1 and 65535</string>
+    <string name="settings_host_empty">Host cannot be empty</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Appearance</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Songs</string>
+    <string name="tab_bible">Bible</string>
+    <string name="tab_pictures">Pictures</string>
+    <string name="tab_presentation">Presentation</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bible — coming soon</string>
+    <string name="pictures_coming_soon">🖼  Pictures — coming soon</string>
+    <string name="presentation_coming_soon">📽  Presentation — coming soon</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">No presentations available</string>
+    <string name="presentation_loading_error">Failed to load presentations</string>
+    <string name="presentation_retry">Retry</string>
+    <string name="presentation_slides">slides</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">No pictures available</string>
+    <string name="pictures_loading_error">Failed to load pictures</string>
+    <string name="pictures_retry">Retry</string>
+    <string name="pictures_photos">photos</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Search books…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">No Bible books available</string>
+    <string name="bible_no_match">No books match your search</string>
+    <string name="bible_chapter_label">Chapter</string>
+    <string name="bible_chapters_title">Chapters</string>
+    <string name="bible_no_verses">No verses available</string>
+    <string name="bible_back">← Back</string>
+    <string name="bible_loading_error">Failed to load</string>
+    <string name="bible_retry">Retry</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Schedule</string>
+    <string name="schedule_drawer_refresh">Refresh schedule</string>
+    <string name="schedule_drawer_empty">No schedule items</string>
+    <string name="schedule_drawer_error">Error: %1$s</string>
+    <string name="schedule_drawer_open">Open schedule</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Add to Schedule</string>
+    <string name="song_detail_schedule_request_sent">Request Sent ✓</string>
+    <string name="song_detail_project_to_screen">Project to Screen</string>
+    <string name="song_detail_stop_projecting">Stop Projecting</string>
+    <string name="song_detail_fab_actions">Actions</string>
+    <string name="song_detail_fab_close_actions">Close actions</string>
+    <string name="song_detail_projecting_badge">▶  Projecting</string>
+    <string name="song_detail_no_lyrics">No lyrics available</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Add to Schedule</string>
+    <string name="bible_detail_schedule_request_sent">Request Sent ✓</string>
+    <string name="bible_detail_project_to_screen">Project to Screen</string>
+    <string name="bible_detail_stop_projecting">Stop Projecting</string>
+    <string name="bible_detail_fab_actions">Actions</string>
+    <string name="bible_detail_fab_close_actions">Close actions</string>
+    <string name="bible_detail_projecting_badge">▶  Projecting</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Add to Schedule</string>
+    <string name="pictures_schedule_request_sent">Request Sent ✓</string>
+    <string name="pictures_project_to_screen">Project to Screen</string>
+    <string name="pictures_stop_projecting">Stop Projecting</string>
+    <string name="toast_pictures_added_to_schedule">Picture added to schedule</string>
+    <string name="toast_pictures_failed_to_add_schedule">Failed to add picture to schedule: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Add to Schedule</string>
+    <string name="presentation_schedule_request_sent">Request Sent ✓</string>
+    <string name="presentation_project_to_screen">Project to Screen</string>
+    <string name="presentation_stop_projecting">Stop Projecting</string>
+    <string name="toast_presentation_added_to_schedule">Presentation added to schedule</string>
+    <string name="toast_presentation_failed_to_add_schedule">Failed to add presentation to schedule: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Song is now live on screen</string>
+    <string name="toast_request_failed">Request failed</string>
+    <string name="toast_no_song_selected">No song selected</string>
+    <string name="toast_song_added_to_schedule">"%1$s" added to schedule</string>
+    <string name="toast_failed_to_project">Failed to project song: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Failed to add to schedule: %1$s</string>
+    <string name="toast_request_denied">Request was denied</string>
+    <string name="toast_session_blocked">Session is blocked — no further requests will be accepted</string>
+    <string name="toast_request_rejected">Request rejected by server (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Request rejected: %1$s</string>
+    <string name="toast_bible_live">Bible passage is now live on screen</string>
+    <string name="toast_bible_added_to_schedule">"%1$s" added to schedule</string>
+    <string name="toast_failed_to_project_bible">Failed to project: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Failed to add to schedule: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server set to %1$s:%2$s</string>
+    <string name="qr_scan_button">Scan QR Code</string>
+</resources>
