@@ -90,6 +90,23 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             } else {
                 print("RemoteConfig activated: \(status != .error)")
             }
+            // Push all fetched values to the Kotlin RemoteConfig bridge regardless
+            // of whether the fetch succeeded — Firebase returns the last cached
+            // (or default) values even on error, so Kotlin always gets something.
+            // Dispatch to main thread so Kotlin Compose state updates safely.
+            let keys = [
+                "maintenance_mode", "min_app_version", "announcement_banner",
+                "feature_bible_enabled", "feature_songs_enabled",
+                "feature_pictures_enabled", "feature_presentation_enabled",
+                "is_demo_mode"
+            ]
+            var values: [String: String] = [:]
+            for key in keys {
+                values[key] = rc[key].stringValue ?? ""
+            }
+            DispatchQueue.main.async {
+                KotlinRemoteConfig.shared.applyValues(values: values)
+            }
         }
 
         // 5. FCM delegate
