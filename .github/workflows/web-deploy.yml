@@ -1,26 +1,18 @@
-name: Web Deploy (GitHub Pages)
+name: Web Build
 
-# Deploy the WasmJS Compose-for-Web build to GitHub Pages.
-# Triggered manually or on every push to main.
-# The app is served from:  https://<org>.github.io/<repo>/
+# Builds the WasmJS Compose-for-Web bundle and uploads it as a zip artifact.
+# Download the artifact from the Actions tab, unzip it, then run:
+#   python3 -m http.server 8080   (or: npx serve .)
+# and open http://localhost:8080 in your browser.
+#
+# NOTE: Opening index.html directly (file://) will NOT work — browsers block
+#       .wasm loading over the file:// protocol.
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-
-# Grant the GITHUB_TOKEN permission to deploy to Pages.
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Only one concurrent deployment; cancel in-progress ones so the latest
-# commit always wins.
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -55,20 +47,9 @@ jobs:
       - name: Build WasmJS production distribution
         run: ./gradlew :composeApp:wasmJsBrowserDistribution
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload web distribution artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: web-dist-${{ github.run_number }}
           path: composeApp/build/dist/wasmJs/productionExecutable
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
+          retention-days: 30
