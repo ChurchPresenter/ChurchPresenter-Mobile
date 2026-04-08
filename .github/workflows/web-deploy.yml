@@ -1,0 +1,74 @@
+name: Web Deploy (GitHub Pages)
+
+# Deploy the WasmJS Compose-for-Web build to GitHub Pages.
+# Triggered manually or on every push to main.
+# The app is served from:  https://<org>.github.io/<repo>/
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+# Grant the GITHUB_TOKEN permission to deploy to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one concurrent deployment; cancel in-progress ones so the latest
+# commit always wins.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build:
+    name: Build WasmJS Distribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode google-services.json
+        env:
+          GS_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          echo "$GS_B64" | tr -d '\r\n' | base64 -d > composeApp/google-services.json
+          test -s composeApp/google-services.json || {
+            echo "ERROR: composeApp/google-services.json is empty after decode" >&2
+            exit 1
+          }
+
+      - name: Build WasmJS production distribution
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: composeApp/build/dist/wasmJs/productionExecutable
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
