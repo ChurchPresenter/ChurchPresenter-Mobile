@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.network.PresentationService
+import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -72,7 +73,10 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
             try {
                 presentationService.getPresentations()
                     .onSuccess { _presentations.value = it }
-                    .onFailure { _error.value = "Failed to load presentations: ${it.message}" }
+                    .onFailure { e ->
+                        Logger.e(TAG, "loadPresentations — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load presentations: ${e.recordNetworkError(TAG, "loadPresentations")}"
+                    }
             } finally {
                 _isLoading.value = false
             }
@@ -106,7 +110,10 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                         _selectedPresentation.value = fetched
                         _pendingScrollToId.value = fetched.id
                     }
-                    .onFailure { _error.value = "Failed to load presentation: ${it.message}" }
+                    .onFailure { e ->
+                        Logger.e(TAG, "navigateTo — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load presentation: ${e.recordNetworkError(TAG, "navigateTo")}"
+                    }
             } finally {
                 _isLoading.value = false
             }
@@ -145,7 +152,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                 .onSuccess { Logger.d(TAG, "selectPresentation — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectPresentation — FAILED: ${e.message}", e)
-                    _error.value = "Failed to select presentation: ${e.message}"
+                    _error.value = "Failed to select presentation: ${e.recordNetworkError(TAG, "selectPresentation")}"
                 }
         }
     }
@@ -201,7 +208,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)
-                    _error.value = "Failed to add to schedule: ${e.message}"
+                    _error.value = "Failed to add to schedule: ${e.recordNetworkError(TAG, "addToSchedule")}"
                 }
         }
     }

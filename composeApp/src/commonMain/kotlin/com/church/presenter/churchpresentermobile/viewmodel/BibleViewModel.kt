@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.BibleService
+import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -142,7 +143,10 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                         _allBooks.value = it
                         tryProcessPendingNav()
                     }
-                    .onFailure { _error.value = "Failed to load Bible books: ${it.message}" }
+                    .onFailure { e ->
+                        Logger.e(TAG, "loadBooks — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load Bible books: ${e.recordNetworkError(TAG, "loadBooks")}"
+                    }
             } finally {
                 _isLoading.value = false
             }
@@ -262,7 +266,10 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                             if (indices.isNotEmpty()) _selectedVerseIndices.value = indices
                         }
                     }
-                    .onFailure { _error.value = "Failed to load chapter: ${it.message}" }
+                    .onFailure { e ->
+                        Logger.e(TAG, "selectChapter — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load chapter: ${e.recordNetworkError(TAG, "selectChapter")}"
+                    }
             } finally {
                 _isLoading.value = false
             }

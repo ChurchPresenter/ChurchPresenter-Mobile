@@ -19,11 +19,14 @@ actual fun createHttpClient(): HttpClient {
             handleChallenge { _, _, challenge, completionHandler ->
                 val space = challenge.protectionSpace
                 if (space.authenticationMethod == NSURLAuthenticationMethodServerTrust) {
-                    val credential = space.serverTrust?.let {
-                        NSURLCredential.credentialForTrust(it)
+                    val serverTrust = space.serverTrust
+                    if (serverTrust != null) {
+                        // 0 = NSURLSessionAuthChallengeUseCredential
+                        completionHandler(0, NSURLCredential.credentialForTrust(serverTrust))
+                    } else {
+                        // No trust object — let the OS decide (will likely reject self-signed)
+                        completionHandler(1, null)
                     }
-                    // 0 = NSURLSessionAuthChallengeUseCredential
-                    completionHandler(0, credential)
                 } else {
                     // 1 = NSURLSessionAuthChallengePerformDefaultHandling
                     completionHandler(1, null)
@@ -57,10 +60,12 @@ actual fun createActionHttpClient(): HttpClient {
             handleChallenge { _, _, challenge, completionHandler ->
                 val space = challenge.protectionSpace
                 if (space.authenticationMethod == NSURLAuthenticationMethodServerTrust) {
-                    val credential = space.serverTrust?.let {
-                        NSURLCredential.credentialForTrust(it)
+                    val serverTrust = space.serverTrust
+                    if (serverTrust != null) {
+                        completionHandler(0, NSURLCredential.credentialForTrust(serverTrust))
+                    } else {
+                        completionHandler(1, null)
                     }
-                    completionHandler(0, credential)
                 } else {
                     completionHandler(1, null)
                 }
@@ -84,10 +89,12 @@ actual fun createImageHttpClient(): HttpClient {
             handleChallenge { _, _, challenge, completionHandler ->
                 val space = challenge.protectionSpace
                 if (space.authenticationMethod == NSURLAuthenticationMethodServerTrust) {
-                    val credential = space.serverTrust?.let {
-                        NSURLCredential.credentialForTrust(it)
+                    val serverTrust = space.serverTrust
+                    if (serverTrust != null) {
+                        completionHandler(0, NSURLCredential.credentialForTrust(serverTrust))
+                    } else {
+                        completionHandler(1, null)
                     }
-                    completionHandler(0, credential)
                 } else {
                     completionHandler(1, null)
                 }

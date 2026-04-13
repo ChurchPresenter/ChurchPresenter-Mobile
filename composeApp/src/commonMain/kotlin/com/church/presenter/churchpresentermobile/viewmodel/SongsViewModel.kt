@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.SongService
+import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -127,7 +128,10 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
                         _allSongs.value = it
                         tryOpenPendingSong()
                     }
-                    .onFailure { _error.value = "Failed to load songs: ${it.message}" }
+                    .onFailure { e ->
+                        Logger.e(TAG, "loadSongs — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load songs: ${e.recordNetworkError(TAG, "loadSongs")}"
+                    }
             } finally {
                 _isLoading.value = false
             }
@@ -198,7 +202,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
                     Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${detail.allVerses.size}")
                 }
                 .onFailure { e ->
-                    _detailError.value = "Failed to load song details: ${e.message}"
+                    _detailError.value = "Failed to load song details: ${e.recordNetworkError(TAG, "openSongDetail")}"
                     Logger.e(TAG, "openSongDetail — FAILED: ${e.message}", e)
                 }
             _isLoadingDetail.value = false
@@ -209,7 +213,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
                 .onSuccess { Logger.d(TAG, "selectSong — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectSong — FAILED: ${e.message}", e)
-                    _error.value = "Failed to select song: ${e.message}"
+                    _error.value = "Failed to select song: ${e.recordNetworkError(TAG, "selectSong")}"
                 }
         }
     }
@@ -350,7 +354,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
                 .onSuccess { Logger.d(TAG, "selectVerse — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectVerse — FAILED: ${e.message}", e)
-                    _error.value = "Failed to select verse: ${e.message}"
+                    _error.value = "Failed to select verse: ${e.recordNetworkError(TAG, "selectVerse")}"
                 }
         }
     }

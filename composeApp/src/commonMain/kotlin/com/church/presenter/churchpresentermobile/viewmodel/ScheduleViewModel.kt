@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.network.ScheduleService
+import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,7 +52,7 @@ class ScheduleViewModel(private val appSettings: AppSettings, private val isDemo
                     Logger.d(TAG, "loadSchedule — loaded ${items.size} items")
                 }
                 .onFailure { e ->
-                    _error.value = e.message ?: "Failed to load schedule"
+                    _error.value = e.recordNetworkError(TAG, "loadSchedule")
                     Logger.e(TAG, "loadSchedule — error: ${e.message}", e)
                 }
             _isLoading.value = false

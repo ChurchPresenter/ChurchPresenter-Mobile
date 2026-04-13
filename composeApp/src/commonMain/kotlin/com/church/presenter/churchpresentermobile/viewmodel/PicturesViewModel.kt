@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.PicturesFolder
 import com.church.presenter.churchpresentermobile.network.PicturesService
+import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,7 +67,10 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
             try {
                 picturesService.getPictures(folderId)
                     .onSuccess { _folder.value = it }
-                    .onFailure { _error.value = "Failed to load pictures: ${it.message}" }
+                    .onFailure { e ->
+                        Logger.e(TAG, "loadPictures — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load pictures: ${e.recordNetworkError(TAG, "loadPictures")}"
+                    }
             } finally {
                 _isLoading.value = false
             }
@@ -115,7 +119,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                 .onSuccess { Logger.d(TAG, "selectPicture — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectPicture — FAILED: ${e.message}", e)
-                    _error.value = "Failed to select picture: ${e.message}"
+                    _error.value = "Failed to select picture: ${e.recordNetworkError(TAG, "selectPicture")}"
                 }
         }
     }
@@ -158,7 +162,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)
-                    _error.value = "Failed to add to schedule: ${e.message}"
+                    _error.value = "Failed to add to schedule: ${e.recordNetworkError(TAG, "addToSchedule")}"
                 }
         }
     }
