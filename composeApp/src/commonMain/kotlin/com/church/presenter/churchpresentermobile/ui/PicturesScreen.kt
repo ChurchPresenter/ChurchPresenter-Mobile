@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -42,14 +40,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.pictures_add_to_schedule
 import churchpresentermobile.composeapp.generated.resources.pictures_loading_error
 import churchpresentermobile.composeapp.generated.resources.pictures_no_items
 import churchpresentermobile.composeapp.generated.resources.pictures_photos
 import churchpresentermobile.composeapp.generated.resources.pictures_pick_from_device
-import churchpresentermobile.composeapp.generated.resources.pictures_project_to_screen
 import churchpresentermobile.composeapp.generated.resources.pictures_retry
-import churchpresentermobile.composeapp.generated.resources.pictures_stop_projecting
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -247,73 +242,37 @@ fun PicturesScreen(
                 if (photos.isNotEmpty()) viewModel.uploadDevicePhotos(photos)
             }
         ) { launchPicker ->
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 72.dp),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // From Device FAB — opens the native photo picker
-                FloatingActionButton(
-                    onClick = { if (!isUploading) launchPicker() },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                ) {
-                    if (isUploading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            strokeWidth = 2.5.dp
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.AddPhotoAlternate,
-                            contentDescription = stringResource(Res.string.pictures_pick_from_device)
-                        )
+            ContentActionButtons(
+                isProjecting       = isProjecting,
+                scheduleAdded      = scheduleAdded,
+                onToggleProjecting = {
+                    if (isProjecting) viewModel.clearDisplay()
+                    else selectedIndex?.let { viewModel.selectPicture(it) }
+                },
+                onAddToSchedule    = { viewModel.addToSchedule() },
+                modifier           = Modifier.align(Alignment.BottomEnd),
+                extraLeadingContent = {
+                    // From Device FAB — opens the native photo picker
+                    FloatingActionButton(
+                        onClick        = { if (!isUploading) launchPicker() },
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ) {
+                        if (isUploading) {
+                            CircularProgressIndicator(
+                                modifier    = Modifier.size(24.dp),
+                                color       = MaterialTheme.colorScheme.onTertiaryContainer,
+                                strokeWidth = 2.5.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector        = Icons.Filled.AddPhotoAlternate,
+                                contentDescription = stringResource(Res.string.pictures_pick_from_device)
+                            )
+                        }
                     }
                 }
-
-                FloatingActionButton(
-                    onClick = { if (!scheduleAdded) viewModel.addToSchedule() },
-                    containerColor = if (scheduleAdded)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = if (scheduleAdded)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                ) {
-                    Icon(
-                        imageVector        = Icons.AutoMirrored.Filled.PlaylistAdd,
-                        contentDescription = stringResource(Res.string.pictures_add_to_schedule)
-                    )
-                }
-
-                FloatingActionButton(
-                    onClick = {
-                        if (isProjecting) viewModel.clearDisplay()
-                        else selectedIndex?.let { viewModel.selectPicture(it) }
-                    },
-                    containerColor = if (isProjecting)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = if (isProjecting)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                ) {
-                    Icon(
-                        imageVector        = Icons.Filled.Cast,
-                        contentDescription = if (isProjecting)
-                            stringResource(Res.string.pictures_stop_projecting)
-                        else
-                            stringResource(Res.string.pictures_project_to_screen)
-                    )
-                }
-            }
+            )
         }
     }   // end Box
 }

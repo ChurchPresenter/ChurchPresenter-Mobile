@@ -18,12 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,11 +31,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.song_detail_add_to_schedule
 import churchpresentermobile.composeapp.generated.resources.song_detail_no_lyrics
-import churchpresentermobile.composeapp.generated.resources.song_detail_project_to_screen
 import churchpresentermobile.composeapp.generated.resources.song_detail_projecting_badge
-import churchpresentermobile.composeapp.generated.resources.song_detail_stop_projecting
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongVerse
 import org.jetbrains.compose.resources.stringResource
@@ -155,52 +147,13 @@ fun SongDetailScreen(
         }
 
         // ── Action buttons (bottom-right, above snackbar) ─────────────────
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 72.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Add to Schedule button
-            FloatingActionButton(
-                onClick = { if (!scheduleAdded) onAddToSchedule() },
-                containerColor = if (scheduleAdded)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = if (scheduleAdded)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onSecondaryContainer
-            ) {
-                Icon(
-                    imageVector        = Icons.AutoMirrored.Filled.PlaylistAdd,
-                    contentDescription = stringResource(Res.string.song_detail_add_to_schedule)
-                )
-            }
-
-            // Project to Screen / Stop Projecting button
-            FloatingActionButton(
-                onClick = { onToggleProjecting() },
-                containerColor = if (isProjecting)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.primaryContainer,
-                contentColor = if (isProjecting)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(
-                    imageVector        = Icons.Filled.Cast,
-                    contentDescription = if (isProjecting)
-                        stringResource(Res.string.song_detail_stop_projecting)
-                    else
-                        stringResource(Res.string.song_detail_project_to_screen)
-                )
-            }
-        }
+        ContentActionButtons(
+            isProjecting       = isProjecting,
+            scheduleAdded      = scheduleAdded,
+            onToggleProjecting = onToggleProjecting,
+            onAddToSchedule    = onAddToSchedule,
+            modifier           = Modifier.align(Alignment.BottomEnd),
+        )
     }
 }
 

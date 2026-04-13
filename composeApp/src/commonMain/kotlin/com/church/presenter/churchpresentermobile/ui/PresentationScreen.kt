@@ -18,14 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,13 +36,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.presentation_add_to_schedule
 import churchpresentermobile.composeapp.generated.resources.presentation_loading_error
 import churchpresentermobile.composeapp.generated.resources.presentation_no_items
-import churchpresentermobile.composeapp.generated.resources.presentation_project_to_screen
 import churchpresentermobile.composeapp.generated.resources.presentation_retry
 import churchpresentermobile.composeapp.generated.resources.presentation_slides
-import churchpresentermobile.composeapp.generated.resources.presentation_stop_projecting
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -232,59 +224,20 @@ fun PresentationScreen(
     }   // end Column
 
         // ── Action buttons (bottom-right, above snackbar) ─────────────────
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 72.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Add to Schedule button
-            FloatingActionButton(
-                onClick = { if (!scheduleAdded) viewModel.addToSchedule() },
-                containerColor = if (scheduleAdded)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = if (scheduleAdded)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onSecondaryContainer
-            ) {
-                Icon(
-                    imageVector        = Icons.AutoMirrored.Filled.PlaylistAdd,
-                    contentDescription = stringResource(Res.string.presentation_add_to_schedule)
-                )
-            }
-
-            // Stop Projecting / Project to Screen button
-            FloatingActionButton(
-                onClick = {
-                    if (isProjecting) viewModel.clearDisplay()
-                    else {
-                        val pres = selectedPresentation
-                        val idx = selectedSlideIndex
-                        if (pres != null && idx != null) viewModel.selectPresentation(pres, idx)
-                    }
-                },
-                containerColor = if (isProjecting)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.primaryContainer,
-                contentColor = if (isProjecting)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(
-                    imageVector        = Icons.Filled.Cast,
-                    contentDescription = if (isProjecting)
-                        stringResource(Res.string.presentation_stop_projecting)
-                    else
-                        stringResource(Res.string.presentation_project_to_screen)
-                )
-            }
-        }
+        ContentActionButtons(
+            isProjecting       = isProjecting,
+            scheduleAdded      = scheduleAdded,
+            onToggleProjecting = {
+                if (isProjecting) viewModel.clearDisplay()
+                else {
+                    val pres = selectedPresentation
+                    val idx  = selectedSlideIndex
+                    if (pres != null && idx != null) viewModel.selectPresentation(pres, idx)
+                }
+            },
+            onAddToSchedule = { viewModel.addToSchedule() },
+            modifier        = Modifier.align(Alignment.BottomEnd),
+        )
     }   // end Box
 }
 

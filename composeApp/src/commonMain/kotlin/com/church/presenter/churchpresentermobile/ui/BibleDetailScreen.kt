@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,15 +19,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,10 +36,7 @@ import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_title
 import churchpresentermobile.composeapp.generated.resources.bible_no_verses
-import churchpresentermobile.composeapp.generated.resources.bible_detail_add_to_schedule
-import churchpresentermobile.composeapp.generated.resources.bible_detail_project_to_screen
 import churchpresentermobile.composeapp.generated.resources.bible_detail_projecting_badge
-import churchpresentermobile.composeapp.generated.resources.bible_detail_stop_projecting
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import org.jetbrains.compose.resources.stringResource
@@ -131,74 +121,14 @@ fun BibleDetailScreen(
             }
 
             // ── Action buttons (bottom-right, overlaid on the pager) ──────
-            val selectionCount = selectedVerseIndices.size
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 72.dp),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Add to Schedule button
-                FloatingActionButton(
-                    onClick = { if (!scheduleAdded) onAddToSchedule() },
-                    containerColor = if (scheduleAdded)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = if (scheduleAdded)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                ) {
-                    Icon(
-                        imageVector        = Icons.AutoMirrored.Filled.PlaylistAdd,
-                        contentDescription = stringResource(Res.string.bible_detail_add_to_schedule)
-                    )
-                }
-
-                // Project to Screen / Stop Projecting button (with selection badge)
-                Box {
-                    FloatingActionButton(
-                        onClick = { onToggleProjecting() },
-                        containerColor = if (isProjecting)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = if (isProjecting)
-                            MaterialTheme.colorScheme.onPrimary
-                        else
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Filled.Cast,
-                            contentDescription = if (isProjecting)
-                                stringResource(Res.string.bible_detail_stop_projecting)
-                            else
-                                stringResource(Res.string.bible_detail_project_to_screen)
-                        )
-                    }
-                    // Selection count badge
-                    if (selectionCount > 0) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .align(Alignment.TopEnd)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text  = "$selectionCount",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onError
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            ContentActionButtons(
+                isProjecting       = isProjecting,
+                scheduleAdded      = scheduleAdded,
+                onToggleProjecting = onToggleProjecting,
+                onAddToSchedule    = onAddToSchedule,
+                modifier           = Modifier.align(Alignment.BottomEnd),
+                castBadgeCount     = selectedVerseIndices.size,
+            )
         }
     } else {
         ChaptersGrid(
