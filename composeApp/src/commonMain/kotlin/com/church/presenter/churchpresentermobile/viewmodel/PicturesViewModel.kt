@@ -174,12 +174,13 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     }
 
     /**
-     * Uploads one or more device photos to the server sequentially.
+     * Uploads one or more device photos to the server sequentially and projects
+     * the last successful upload immediately on the desktop.
      *
-     * All photos land in the server's persistent "Device Photos" folder (`device_uploads`),
-     * so every uploaded photo is visible in the Pictures tab grid.
-     * After all uploads, the last successfully uploaded image is projected automatically
-     * and the grid is reloaded to show the full Device Photos folder.
+     * Photos land in the server's session-only "Device Photos" folder (`device_uploads`)
+     * and are projected instantly via POST /api/pictures/select.
+     * The Pictures tab grid is **not** reloaded — it continues to show the desktop's
+     * currently active folder so the view stays in sync with what the desktop is presenting.
      *
      * @param photos List of [PickedPhoto] returned by the platform photo picker.
      */
@@ -209,8 +210,8 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                         Logger.e(TAG, "uploadDevicePhotos — selectPicture FAILED: ${e.message}", e)
                         _error.value = "Uploaded but failed to project: ${e.toFriendlyNetworkMessage()}"
                     }
-                // Reload the Device Photos folder so all uploaded images appear in the grid
-                loadPictures(folderId = uploaded.folderId)
+                // The server no longer changes its active folder on upload, so there is
+                // nothing to reload — the grid already shows the correct desktop folder.
             }
             _isUploading.value = false
         }

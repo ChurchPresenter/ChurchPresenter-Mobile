@@ -73,6 +73,7 @@ import com.church.presenter.churchpresentermobile.util.RemoteConfigDefaults
 import com.church.presenter.churchpresentermobile.util.RemoteConfigKeys
 import com.church.presenter.churchpresentermobile.util.Logger
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -125,6 +126,9 @@ fun App() {
     }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
         SongsViewModel(appSettings, isDemoMode)
+    }
+    val picturesViewModel: PicturesViewModel = viewModel(key = "pictures_$isDemoMode") {
+        PicturesViewModel(appSettings, isDemoMode)
     }
 
     // Theme mode – updated whenever the user saves settings
@@ -498,6 +502,7 @@ fun App() {
                                 pendingPictureFolderId   = null
                                 pendingPictureImageIndex = null
                             },
+                            providedViewModel = picturesViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.PRESENTATION -> PresentationScreen(

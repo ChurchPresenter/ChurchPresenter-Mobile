@@ -81,6 +81,8 @@ private const val GRID_COLUMNS = 3
  * @param pendingNavImageIndex When non-null, the screen will scroll to and highlight this image index.
  * @param onPendingNavHandled  Called once the pending navigation has been applied so the parent
  *   can clear the values and avoid re-triggering.
+ * @param providedViewModel    Session-scoped [PicturesViewModel] passed from the root App composable
+ *   so the state survives tab switches. Falls back to a locally-scoped instance for previews/tests.
  * @param modifier             The modifier to apply to this composable.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,9 +95,14 @@ fun PicturesScreen(
     pendingNavFolderId: String? = null,
     pendingNavImageIndex: Int? = null,
     onPendingNavHandled: () -> Unit = {},
+    providedViewModel: PicturesViewModel? = null,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: PicturesViewModel = viewModel(key = isDemoMode.toString()) { PicturesViewModel(appSettings, isDemoMode) }
+    // Use the session-scoped ViewModel passed from App.kt when available.
+    // The internal fallback is only here so the composable still works in
+    // isolation (e.g. Compose Previews or tests).
+    val viewModel: PicturesViewModel = providedViewModel
+        ?: viewModel(key = isDemoMode.toString()) { PicturesViewModel(appSettings, isDemoMode) }
 
     // React to settings changes – rebuild the service and reload
     LaunchedEffect(settingsSaveToken) {
