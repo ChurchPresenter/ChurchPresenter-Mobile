@@ -36,6 +36,10 @@
         <key>NSCameraUsageDescription</key>
         <string>Scan a QR code to connect to your Church Presenter server instantly.</string>
 
+        <!-- Photo library permission — required to pick device photos for projection -->
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>Choose a photo from your library to project on the Church Presenter display.</string>
+
         <!-- Static home-screen quick actions (long-press app icon) -->
         <key>UIApplicationShortcutItems</key>
         <array>

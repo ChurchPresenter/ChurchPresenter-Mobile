@@ -19,6 +19,7 @@ object ApiConstants {
     const val PRESENTATION_SELECT_ENDPOINT = "select"
     const val PICTURES_ENDPOINT = "pictures"
     const val PICTURES_SELECT_ENDPOINT = "pictures/select"
+    const val PICTURES_UPLOAD_ENDPOINT = "pictures/upload"
     const val SCHEDULE_ENDPOINT = "schedule"
     const val CLEAR_ENDPOINT = "clear"
     const val API_KEY_HEADER = "X-Api-Key"

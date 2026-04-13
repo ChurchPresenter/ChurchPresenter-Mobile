@@ -105,6 +105,8 @@
     <string name="pictures_schedule_request_sent">Request Sent ✓</string>
     <string name="pictures_project_to_screen">Project to Screen</string>
     <string name="pictures_stop_projecting">Stop Projecting</string>
+    <string name="pictures_pick_from_device">Pick from Device</string>
+    <string name="pictures_uploading">Uploading…</string>
     <string name="toast_pictures_added_to_schedule">Picture added to schedule</string>
     <string name="toast_pictures_failed_to_add_schedule">Failed to add picture to schedule: %1$s</string>
 

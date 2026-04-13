@@ -5,6 +5,7 @@ import com.church.presenter.churchpresentermobile.model.PictureScheduleAddReques
 import com.church.presenter.churchpresentermobile.model.PictureSchedulePayload
 import com.church.presenter.churchpresentermobile.model.PictureSelectRequest
 import com.church.presenter.churchpresentermobile.model.PicturesFolder
+import com.church.presenter.churchpresentermobile.model.UploadPhotoResponse
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -15,6 +16,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -132,6 +135,38 @@ class PicturesService(private val settings: AppSettings) {
         }.onFailure { e -> Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e) }
     }
 
+    /**
+     * Uploads a device photo to the server.
+     *
+     * Encodes [imageBytes] as a base64 data-URI with the correct MIME type derived from
+     * [fileName]'s extension (jpg/jpeg/png/gif/bmp/webp/heic/heif are all recognised) and
+     * POSTs `{ "name": "<fileName>", "data": "data:<mime>;base64,…" }` to
+     * `POST /api/pictures/upload`.
+     *
+     * The server saves the file, accumulates it in the shared "Device Photos" folder, and
+     * returns `{ "ok": true, "folder-id": "device_uploads", "image-index": <N> }`.
+     */
+    @OptIn(ExperimentalEncodingApi::class)
+    suspend fun uploadPhoto(imageBytes: ByteArray, fileName: String): Result<UploadPhotoResponse> {
+        val url = "${settings.apiBaseUrl}/${ApiConstants.PICTURES_UPLOAD_ENDPOINT}"
+        val encoded = Base64.encode(imageBytes)
+        val mimeType = mimeTypeForExtension(fileName.substringAfterLast('.', "jpg").lowercase())
+        val dataUri = "data:$mimeType;base64,$encoded"
+        val body = """{"name":${json.encodeToString(fileName)},"data":${json.encodeToString(dataUri)}}"""
+        Logger.d(TAG, "uploadPhoto ▶ POST $url  name=$fileName  mime=$mimeType  bytes=${imageBytes.size}")
+        return apiRunCatching {
+            val response = client.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+                applyApiKey()
+            }
+            val raw = response.bodyAsText()
+            Logger.d(TAG, "uploadPhoto ◀ status=${response.status}  body=${raw.take(200)}")
+            if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value} — ${raw.take(200)}")
+            json.decodeFromString<UploadPhotoResponse>(raw)
+        }.onFailure { e -> Logger.e(TAG, "uploadPhoto — FAILED: ${e.message}", e) }
+    }
+
     private fun io.ktor.client.request.HttpRequestBuilder.applyApiKey() {
         val key = settings.apiKey
         if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
@@ -144,3 +179,15 @@ class PicturesService(private val settings: AppSettings) {
         actionClient.close()
     }
 }
+
+/** Maps a lowercase file extension to the appropriate image MIME type. */
+private fun mimeTypeForExtension(ext: String): String = when (ext) {
+    "png"        -> "image/png"
+    "gif"        -> "image/gif"
+    "bmp"        -> "image/bmp"
+    "webp"       -> "image/webp"
+    "heic"       -> "image/heic"
+    "heif"       -> "image/heif"
+    else         -> "image/jpeg"   // jpg, jpeg, unknown → treat as JPEG
+}
+

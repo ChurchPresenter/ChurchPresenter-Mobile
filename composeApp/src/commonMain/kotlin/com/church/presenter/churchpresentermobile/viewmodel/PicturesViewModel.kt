@@ -7,6 +7,8 @@ import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.PicturesFolder
 import com.church.presenter.churchpresentermobile.network.PicturesService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
+import com.church.presenter.churchpresentermobile.network.toFriendlyNetworkMessage
+import com.church.presenter.churchpresentermobile.ui.PickedPhoto
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +48,10 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     /** True after the current picture has been added to the schedule. */
     private val _scheduleAdded = MutableStateFlow(false)
     val scheduleAdded = _scheduleAdded.asStateFlow()
+
+    /** True while a device photo is being uploaded to the server. */
+    private val _isUploading = MutableStateFlow(false)
+    val isUploading = _isUploading.asStateFlow()
 
     init {
         loadPictures()
@@ -167,6 +173,49 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
         }
     }
 
+    /**
+     * Uploads one or more device photos to the server sequentially.
+     *
+     * All photos land in the server's persistent "Device Photos" folder (`device_uploads`),
+     * so every uploaded photo is visible in the Pictures tab grid.
+     * After all uploads, the last successfully uploaded image is projected automatically
+     * and the grid is reloaded to show the full Device Photos folder.
+     *
+     * @param photos List of [PickedPhoto] returned by the platform photo picker.
+     */
+    fun uploadDevicePhotos(photos: List<PickedPhoto>) {
+        if (isDemoMode || photos.isEmpty()) return
+        viewModelScope.launch {
+            _isUploading.value = true
+            _error.value = null
+            var lastUploaded: com.church.presenter.churchpresentermobile.model.UploadPhotoResponse? = null
+            for (photo in photos) {
+                picturesService.uploadPhoto(photo.bytes, photo.fileName)
+                    .onSuccess { uploaded ->
+                        Logger.d(TAG, "uploadDevicePhotos — uploaded ${photo.fileName} folderId=${uploaded.folderId} index=${uploaded.imageIndex}")
+                        lastUploaded = uploaded
+                    }
+                    .onFailure { e ->
+                        Logger.e(TAG, "uploadDevicePhotos — FAILED for ${photo.fileName}: ${e.message}", e)
+                        _error.value = "Failed to upload ${photo.fileName}: ${e.recordNetworkError(TAG, "uploadDevicePhotos")}"
+                    }
+            }
+            lastUploaded?.let { uploaded ->
+                Logger.d(TAG, "uploadDevicePhotos — projecting folderId=${uploaded.folderId} index=${uploaded.imageIndex}")
+                _isProjecting.value = true
+                picturesService.selectPicture(uploaded.folderId, uploaded.imageIndex)
+                    .onSuccess { Logger.d(TAG, "uploadDevicePhotos — selectPicture success") }
+                    .onFailure { e ->
+                        Logger.e(TAG, "uploadDevicePhotos — selectPicture FAILED: ${e.message}", e)
+                        _error.value = "Uploaded but failed to project: ${e.toFriendlyNetworkMessage()}"
+                    }
+                // Reload the Device Photos folder so all uploaded images appear in the grid
+                loadPictures(folderId = uploaded.folderId)
+            }
+            _isUploading.value = false
+        }
+    }
+
     /** Rebuilds the service with updated settings and reloads. */
     fun onSettingsSaved() {
         Logger.d(TAG, "onSettingsSaved — new url=${appSettings.apiBaseUrl}")
@@ -177,6 +226,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
         _pendingScrollIndex.value = null
         _isProjecting.value = false
         _scheduleAdded.value = false
+        _isUploading.value = false
         loadPictures()
     }
 

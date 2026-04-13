@@ -44,3 +44,11 @@ data class PictureSchedulePayload(
     @SerialName("displayText") val displayText: String,
 )
 
+/** Response from POST /api/pictures/upload. */
+@Serializable
+data class UploadPhotoResponse(
+    val ok: Boolean = true,
+    @SerialName("folder-id") val folderId: String,
+    @SerialName("image-index") val imageIndex: Int,
+)
+
