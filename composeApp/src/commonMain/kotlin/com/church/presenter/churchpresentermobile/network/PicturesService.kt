@@ -78,14 +78,25 @@ class PicturesService(private val settings: AppSettings) {
     }
 
     /**
-     * Sends POST /api/pictures/select to display the given image index on screen.
+     * Sends POST /api/pictures/select to display the given image on screen.
      *
-     * @param folderId The folder ID from the current [PicturesFolder].
-     * @param index    The zero-based image index to display.
+     * [fileName] is the primary identifier — the desktop server resolves the file by name,
+     * making selection immune to any index-ordering difference between clients.
+     * [indexFallback] is included in the request body **only** when [fileName] is null, as a
+     * last-resort for servers that do not yet support name-based resolution.
+     *
+     * @param folderId      The folder ID from the current [PicturesFolder].
+     * @param fileName      The exact filename; used as the primary identifier when non-null.
+     * @param indexFallback Server image index; sent only when [fileName] is null.
      */
-    suspend fun selectPicture(folderId: String, index: Int): Result<Unit> {
+    suspend fun selectPicture(folderId: String, fileName: String?, indexFallback: Int? = null): Result<Unit> {
         val url = "${settings.apiBaseUrl}/${ApiConstants.PICTURES_SELECT_ENDPOINT}"
-        val body = json.encodeToString(PictureSelectRequest(folderId = folderId, index = index))
+        // Only include index when there is no filename — the server resolves by name when present
+        val body = json.encodeToString(PictureSelectRequest(
+            folderId = folderId,
+            fileName = fileName,
+            index    = if (fileName == null) indexFallback else null
+        ))
         Logger.d(TAG, "selectPicture ▶ POST $url  payload=$body")
         return apiRunCatching {
             val response = client.post(url) {
@@ -190,4 +201,3 @@ private fun mimeTypeForExtension(ext: String): String = when (ext) {
     "heif"       -> "image/heif"
     else         -> "image/jpeg"   // jpg, jpeg, unknown → treat as JPEG
 }
-

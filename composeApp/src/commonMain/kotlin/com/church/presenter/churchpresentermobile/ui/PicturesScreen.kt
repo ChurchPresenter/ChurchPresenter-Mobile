@@ -113,7 +113,7 @@ fun PicturesScreen(
     }
 
     val folder by viewModel.folder.collectAsState()
-    val selectedIndex by viewModel.selectedIndex.collectAsState()
+    val selectedImage by viewModel.selectedImage.collectAsState()
     val pendingScrollIndex by viewModel.pendingScrollIndex.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -124,15 +124,18 @@ fun PicturesScreen(
     // Grid state for programmatic scrolling when navigating from schedule
     val gridState = rememberLazyGridState()
 
-    // Scroll to + auto-select the pending image once the folder data arrives
+    // Scroll to + auto-select the pending image once the folder data arrives.
     LaunchedEffect(pendingScrollIndex, folder) {
         val idx = pendingScrollIndex ?: return@LaunchedEffect
-        if (folder != null) {
+        val currentFolder = folder ?: return@LaunchedEffect
+        val image = currentFolder.allImages.find { it.index == idx }
+        val listPos = if (image != null) currentFolder.allImages.indexOf(image) else -1
+        if (listPos >= 0) {
             // +1 because the first grid item is the folder-header span row
-            gridState.animateScrollToItem(idx + 1)
-            viewModel.selectPicture(idx)
-            viewModel.onPendingScrollHandled()
+            gridState.animateScrollToItem(listPos + 1)
         }
+        if (image != null) viewModel.selectPicture(image)
+        viewModel.onPendingScrollHandled()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -172,7 +175,7 @@ fun PicturesScreen(
         // ── Content ───────────────────────────────────────────────────
         PullToRefreshBox(
             isRefreshing = isLoading,
-            onRefresh = { viewModel.loadPictures() },
+            onRefresh = { viewModel.loadPictures(folder?.folderId) },
             modifier = Modifier.weight(1f).fillMaxWidth()
         ) {
             when {
@@ -216,8 +219,11 @@ fun PicturesScreen(
                             PictureCell(
                                 image = image,
                                 imageLoader = imageLoader,
-                                isSelected = image.index == selectedIndex,
-                                onTap = { viewModel.selectPicture(image.index) }
+                                isSelected = selectedImage?.let { sel ->
+                                    if (sel.fileName != null && image.fileName != null) sel.fileName == image.fileName
+                                    else sel.index == image.index
+                                } ?: false,
+                                onTap = { viewModel.selectPicture(image) }
                             )
                         }
                     }
@@ -247,7 +253,7 @@ fun PicturesScreen(
                 scheduleAdded      = scheduleAdded,
                 onToggleProjecting = {
                     if (isProjecting) viewModel.clearDisplay()
-                    else selectedIndex?.let { viewModel.selectPicture(it) }
+                    else selectedImage?.let { viewModel.selectPicture(it) }
                 },
                 onAddToSchedule    = { viewModel.addToSchedule() },
                 modifier           = Modifier.align(Alignment.BottomEnd),

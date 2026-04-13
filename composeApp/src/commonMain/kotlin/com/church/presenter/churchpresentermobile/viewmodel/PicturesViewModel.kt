@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
+import com.church.presenter.churchpresentermobile.model.PictureImage
 import com.church.presenter.churchpresentermobile.model.PicturesFolder
 import com.church.presenter.churchpresentermobile.network.PicturesService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
@@ -28,8 +29,9 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     private val _folder = MutableStateFlow<PicturesFolder?>(null)
     val folder = _folder.asStateFlow()
 
-    private val _selectedIndex = MutableStateFlow<Int?>(null)
-    val selectedIndex = _selectedIndex.asStateFlow()
+    /** The currently-selected [PictureImage]; used for highlight, Cast, and Add-to-Schedule. */
+    private val _selectedImage = MutableStateFlow<PictureImage?>(null)
+    val selectedImage = _selectedImage.asStateFlow()
 
     /** Non-null when the screen should scroll to (and highlight) a particular image. */
     private val _pendingScrollIndex = MutableStateFlow<Int?>(null)
@@ -85,13 +87,43 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
 
     /**
      * Called from the schedule drawer to navigate to a specific image inside
-     * a folder. Reloads the folder (optionally filtering by [folderId]) then
-     * pre-selects [imageIndex] so the screen can highlight and scroll to it.
+     * a folder. Loads the folder first, then sets [_pendingScrollIndex] — ensuring
+     * the `PicturesScreen` LaunchedEffect only fires once the correct folder is
+     * already in [_folder], so [selectPicture] sends the right folderId + fileName
+     * to the desktop.
+     *
+     * Previously [_pendingScrollIndex] was set before the network call, causing the
+     * LaunchedEffect to fire immediately with the old folder (wrong image projected)
+     * and then never fire again once the correct folder arrived (pendingScrollIndex
+     * had already been cleared by [onPendingScrollHandled]).
      */
     fun navigateTo(folderId: String?, imageIndex: Int?) {
         Logger.d(TAG, "navigateTo — folderId=$folderId imageIndex=$imageIndex")
-        _pendingScrollIndex.value = imageIndex
-        loadPictures(folderId = folderId)
+        if (isDemoMode) {
+            _folder.value = DemoData.picturesFolder
+            _pendingScrollIndex.value = imageIndex
+            return
+        }
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                picturesService.getPictures(folderId)
+                    .onSuccess { newFolder ->
+                        // Set folder first, THEN pendingScrollIndex — the LaunchedEffect
+                        // in PicturesScreen keys on both, so it will see the correct folder
+                        // when it fires.
+                        _folder.value = newFolder
+                        _pendingScrollIndex.value = imageIndex
+                    }
+                    .onFailure { e ->
+                        Logger.e(TAG, "navigateTo — FAILED: ${e.message}", e)
+                        _error.value = "Failed to load pictures: ${e.recordNetworkError(TAG, "navigateTo")}"
+                    }
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     /** Clears the pending scroll so it fires only once. */
@@ -100,28 +132,27 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     }
 
     /**
-     * Selects a picture by index and sends it to the display.
-     * In demo mode, updates [_selectedIndex] locally without any API call.
+     * Selects a picture and sends it to the display.
+     * Uses [PictureImage.fileName] as the primary identifier; [PictureImage.index] is only
+     * forwarded to the server as a fallback when the filename is unavailable.
      *
-     * @param index Zero-based image index within the current folder.
+     * @param image The image object from the current folder response.
      */
-    fun selectPicture(index: Int) {
-        // Always update the selection for visual highlight and Add-to-Schedule support,
-        // even if the folderId is missing and we can't call the API.
-        _selectedIndex.value = index
+    fun selectPicture(image: PictureImage) {
+        _selectedImage.value = image
         _scheduleAdded.value = false
         val folderId = _folder.value?.folderId ?: run {
-            Logger.d(TAG, "selectPicture — no folderId, cannot project (index=$index)")
+            Logger.d(TAG, "selectPicture — no folderId, cannot project (fileName=${image.fileName})")
             return
         }
         _isProjecting.value = true
         if (isDemoMode) {
-            Logger.d(TAG, "selectPicture — DEMO MODE folderId=$folderId index=$index")
+            Logger.d(TAG, "selectPicture — DEMO MODE folderId=$folderId fileName=${image.fileName}")
             return
         }
-        Logger.d(TAG, "selectPicture — folderId=$folderId index=$index")
+        Logger.d(TAG, "selectPicture — folderId=$folderId fileName=${image.fileName} index=${image.index}")
         viewModelScope.launch {
-            picturesService.selectPicture(folderId, index)
+            picturesService.selectPicture(folderId, image.fileName, image.index)
                 .onSuccess { Logger.d(TAG, "selectPicture — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectPicture — FAILED: ${e.message}", e)
@@ -133,7 +164,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     /** POSTs /api/clear and resets projection state. */
     fun clearDisplay() {
         _isProjecting.value = false
-        // _selectedIndex is intentionally kept so the Cast button can re-project
+        // _selectedImage is intentionally kept so the Cast button can re-project
         // the same image and Add-to-Schedule still has a target.
         _scheduleAdded.value = false
         if (isDemoMode) {
@@ -149,19 +180,18 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
 
     /** Adds the currently selected picture to the schedule via POST /api/schedule/add. */
     fun addToSchedule() {
-        val folder = _folder.value ?: return
-        val index  = _selectedIndex.value ?: return
+        val folder   = _folder.value ?: return
+        val image    = _selectedImage.value ?: return
         val folderId = folder.folderId ?: return
-        val image  = folder.allImages.getOrNull(index)
-        val label  = image?.fileName ?: "Image $index"
+        val label    = image.fileName ?: "Image ${image.index}"
         if (isDemoMode) {
-            Logger.d(TAG, "addToSchedule — DEMO MODE folderId=$folderId index=$index")
+            Logger.d(TAG, "addToSchedule — DEMO MODE folderId=$folderId fileName=${image.fileName}")
             _scheduleAdded.value = true
             return
         }
-        Logger.d(TAG, "addToSchedule — folderId=$folderId index=$index label=$label")
+        Logger.d(TAG, "addToSchedule — folderId=$folderId index=${image.index} label=$label")
         viewModelScope.launch {
-            picturesService.addToSchedule(folderId, index, label)
+            picturesService.addToSchedule(folderId, image.index, label)
                 .onSuccess {
                     Logger.d(TAG, "addToSchedule — success")
                     _scheduleAdded.value = true
@@ -177,10 +207,11 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
      * Uploads one or more device photos to the server sequentially and projects
      * the last successful upload immediately on the desktop.
      *
-     * Photos land in the server's session-only "Device Photos" folder (`device_uploads`)
-     * and are projected instantly via POST /api/pictures/select.
-     * The Pictures tab grid is **not** reloaded — it continues to show the desktop's
-     * currently active folder so the view stays in sync with what the desktop is presenting.
+     * Photos land in the server's session-only dated "Device Photos" folder
+     * (`device_uploads/yyyy-MM-dd`) and are projected instantly via POST /api/pictures/select.
+     * After all uploads complete the folder catalog is fetched inline (awaited), then
+     * [_pendingScrollIndex] is set — ensuring the grid switches to the new photos immediately
+     * without briefly flashing the old projector folder.
      *
      * @param photos List of [PickedPhoto] returned by the platform photo picker.
      */
@@ -202,16 +233,28 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                     }
             }
             lastUploaded?.let { uploaded ->
-                Logger.d(TAG, "uploadDevicePhotos — projecting folderId=${uploaded.folderId} index=${uploaded.imageIndex}")
+                Logger.d(TAG, "uploadDevicePhotos — projecting folderId=${uploaded.folderId} fileName=${uploaded.fileName} index=${uploaded.imageIndex}")
                 _isProjecting.value = true
-                picturesService.selectPicture(uploaded.folderId, uploaded.imageIndex)
+                // Track the selected image so Cast button can re-project it
+                _selectedImage.value = PictureImage(index = uploaded.imageIndex, fileName = uploaded.fileName)
+                picturesService.selectPicture(uploaded.folderId, uploaded.fileName, uploaded.imageIndex)
                     .onSuccess { Logger.d(TAG, "uploadDevicePhotos — selectPicture success") }
                     .onFailure { e ->
                         Logger.e(TAG, "uploadDevicePhotos — selectPicture FAILED: ${e.message}", e)
                         _error.value = "Uploaded but failed to project: ${e.toFriendlyNetworkMessage()}"
                     }
-                // The server no longer changes its active folder on upload, so there is
-                // nothing to reload — the grid already shows the correct desktop folder.
+                // Fetch the device_uploads folder synchronously within this coroutine so that
+                // _folder.value is already the new catalog before _pendingScrollIndex is set.
+                _selectedImage.value = null
+                picturesService.getPictures(uploaded.folderId)
+                    .onSuccess { newFolder ->
+                        _folder.value = newFolder
+                        _pendingScrollIndex.value = uploaded.imageIndex
+                    }
+                    .onFailure { e ->
+                        Logger.e(TAG, "uploadDevicePhotos — reload FAILED: ${e.message}", e)
+                        _error.value = "Uploaded but failed to load folder: ${e.recordNetworkError(TAG, "uploadDevicePhotos/reload")}"
+                    }
             }
             _isUploading.value = false
         }
@@ -223,7 +266,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
         picturesService.closeClient()
         picturesService = PicturesService(appSettings)
         _folder.value = null
-        _selectedIndex.value = null
+        _selectedImage.value = null
         _pendingScrollIndex.value = null
         _isProjecting.value = false
         _scheduleAdded.value = false

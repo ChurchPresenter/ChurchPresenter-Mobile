@@ -29,7 +29,11 @@ data class PicturesFolder(
 @Serializable
 data class PictureSelectRequest(
     @SerialName("folder-id") val folderId: String,
-    val index: Int,
+    /** Primary identifier — server resolves the image by name when present. */
+    @SerialName("file-name") val fileName: String? = null,
+    /** Fallback index — sent only when [fileName] is null, for servers that do not yet
+     *  support name-based resolution. */
+    val index: Int? = null,
 )
 
 /** Request body for POST /api/schedule/add when adding a picture. */
@@ -50,5 +54,6 @@ data class UploadPhotoResponse(
     val ok: Boolean = true,
     @SerialName("folder-id") val folderId: String,
     @SerialName("image-index") val imageIndex: Int,
+    @SerialName("file-name") val fileName: String? = null,
 )
 
