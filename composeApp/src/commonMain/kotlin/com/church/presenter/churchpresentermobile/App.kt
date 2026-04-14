@@ -489,6 +489,7 @@ fun App() {
                                 pendingBibleChapter  = null
                                 pendingBibleVerses   = emptySet()
                             },
+                            onScheduleRefresh = { scheduleRefreshToken++ },
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.PICTURES -> PicturesScreen(
@@ -502,6 +503,7 @@ fun App() {
                                 pendingPictureFolderId   = null
                                 pendingPictureImageIndex = null
                             },
+                            onScheduleRefresh = { scheduleRefreshToken++ },
                             providedViewModel = picturesViewModel,
                             modifier = Modifier.fillMaxSize()
                         )

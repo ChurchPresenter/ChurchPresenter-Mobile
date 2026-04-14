@@ -51,6 +51,11 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     private val _scheduleAdded = MutableStateFlow(false)
     val scheduleAdded = _scheduleAdded.asStateFlow()
 
+    /** Incremented each time a picture is successfully added to the schedule;
+     *  triggers a schedule drawer reload in the UI layer. */
+    private val _scheduleRefreshTrigger = MutableStateFlow(0)
+    val scheduleRefreshTrigger = _scheduleRefreshTrigger.asStateFlow()
+
     /** True while a device photo is being uploaded to the server. */
     private val _isUploading = MutableStateFlow(false)
     val isUploading = _isUploading.asStateFlow()
@@ -187,6 +192,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
         if (isDemoMode) {
             Logger.d(TAG, "addToSchedule — DEMO MODE folderId=$folderId fileName=${image.fileName}")
             _scheduleAdded.value = true
+            _scheduleRefreshTrigger.value++
             return
         }
         Logger.d(TAG, "addToSchedule — folderId=$folderId index=${image.index} label=$label")
@@ -195,6 +201,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                 .onSuccess {
                     Logger.d(TAG, "addToSchedule — success")
                     _scheduleAdded.value = true
+                    _scheduleRefreshTrigger.value++
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)

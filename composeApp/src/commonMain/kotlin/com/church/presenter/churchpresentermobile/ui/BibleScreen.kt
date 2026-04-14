@@ -82,6 +82,7 @@ fun BibleScreen(
     pendingNavChapter: Int? = null,
     pendingNavVerses: Set<Int> = emptySet(),
     onPendingNavHandled: () -> Unit = {},
+    onScheduleRefresh: () -> Unit = {},
     providedViewModel: BibleViewModel? = null,
     modifier: Modifier = Modifier
 ) {
@@ -108,9 +109,14 @@ fun BibleScreen(
     val selectedVerseIndices by vm.selectedVerseIndices.collectAsState()
     val projectedVerseIndex  by vm.projectedVerseIndex.collectAsState()
     val scheduleAdded       by vm.scheduleAdded.collectAsState()
+    val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val toastEvent          by vm.toastEvent.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(scheduleRefreshTrigger) {
+        if (scheduleRefreshTrigger > 0) onScheduleRefresh()
+    }
 
     // Resolve toast events to localised strings in composable scope
     val toastMessage = toastEvent?.toDisplayString()

@@ -76,6 +76,11 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
     private val _scheduleAdded = MutableStateFlow(false)
     val scheduleAdded = _scheduleAdded.asStateFlow()
 
+    /** Incremented each time a Bible passage is successfully added to the schedule;
+     *  triggers a schedule drawer reload in the UI layer. */
+    private val _scheduleRefreshTrigger = MutableStateFlow(0)
+    val scheduleRefreshTrigger = _scheduleRefreshTrigger.asStateFlow()
+
     private val _toastEvent = MutableStateFlow<ToastEvent?>(null)
     val toastEvent = _toastEvent.asStateFlow()
 
@@ -424,6 +429,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         if (isDemoMode) {
             Logger.d(TAG, "addToSchedule — DEMO MODE, simulating success")
             _scheduleAdded.value = true
+            _scheduleRefreshTrigger.value++
             _toastEvent.value = ToastEvent.BibleAddedToSchedule(ref)
             return
         }
@@ -436,6 +442,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
             ).onSuccess {
                 Logger.d(TAG, "addBibleToSchedule — success")
                 _scheduleAdded.value = true
+                _scheduleRefreshTrigger.value++
                 _toastEvent.value = ToastEvent.BibleAddedToSchedule(ref)
             }.onFailure { e ->
                 Logger.e(TAG, "addBibleToSchedule — FAILED: ${e.message}", e)

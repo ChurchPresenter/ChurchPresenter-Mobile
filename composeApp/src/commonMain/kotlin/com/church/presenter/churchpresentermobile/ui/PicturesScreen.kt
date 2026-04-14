@@ -90,6 +90,7 @@ fun PicturesScreen(
     pendingNavFolderId: String? = null,
     pendingNavImageIndex: Int? = null,
     onPendingNavHandled: () -> Unit = {},
+    onScheduleRefresh: () -> Unit = {},
     providedViewModel: PicturesViewModel? = null,
     modifier: Modifier = Modifier
 ) {
@@ -120,6 +121,11 @@ fun PicturesScreen(
     val isProjecting by viewModel.isProjecting.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
     val isUploading by viewModel.isUploading.collectAsState()
+    val scheduleRefreshTrigger by viewModel.scheduleRefreshTrigger.collectAsState()
+
+    LaunchedEffect(scheduleRefreshTrigger) {
+        if (scheduleRefreshTrigger > 0) onScheduleRefresh()
+    }
 
     // Grid state for programmatic scrolling when navigating from schedule
     val gridState = rememberLazyGridState()
