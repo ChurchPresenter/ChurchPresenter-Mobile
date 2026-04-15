@@ -146,7 +146,8 @@ fun App() {
 
     // Incremented each time the user saves settings; screens react via LaunchedEffect
     var settingsSaveToken by remember { mutableStateOf(0) }
-    var showSettings by remember { mutableStateOf(false) }
+    // Auto-open settings on first launch so users configure their server IP and port.
+    var showSettings by remember { mutableStateOf(!appSettings.isSetupComplete) }
 
     // Apply deep-linked settings and notify screens to reload.
     // deepLinkConnectedMsg is evaluated in composable scope so it picks up the
@@ -523,7 +524,10 @@ fun App() {
             if (showSettings) {
                 SettingsScreen(
                     appSettings = appSettings,
-                    onDismiss = { showSettings = false },
+                    onDismiss = {
+                        appSettings.isSetupComplete = true  // don't auto-open again
+                        showSettings = false
+                    },
                     onSaved = {
                         // Pick up the new theme immediately
                         themeMode = appSettings.themeMode

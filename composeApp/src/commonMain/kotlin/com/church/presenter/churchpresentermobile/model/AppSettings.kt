@@ -12,8 +12,9 @@ private const val KEY_API_KEY = "api_key"
 private const val KEY_THEME_MODE = "theme_mode"
 private const val KEY_SETTINGS_VERSION = "settings_version"
 private const val KEY_DEVICE_ID = "device_id"
-private const val KEY_FCM_TOKEN      = "fcm_token"
-private const val KEY_APP_OPEN_COUNT = "app_open_count"
+private const val KEY_FCM_TOKEN        = "fcm_token"
+private const val KEY_APP_OPEN_COUNT   = "app_open_count"
+private const val KEY_SETUP_COMPLETE   = "setup_complete"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -118,6 +119,15 @@ class AppSettings {
     var appOpenCount: Int
         get() = storage.getInt(KEY_APP_OPEN_COUNT, 0)
         set(value) { storage.putInt(KEY_APP_OPEN_COUNT, value) }
+
+    /**
+     * True once the user has dismissed the first-launch settings screen at least once
+     * (either by saving or cancelling). Used so that [App] automatically opens the
+     * settings screen on the very first launch to prompt for the server IP and port.
+     */
+    var isSetupComplete: Boolean
+        get() = storage.getInt(KEY_SETUP_COMPLETE, 0) == 1
+        set(value) { storage.putInt(KEY_SETUP_COMPLETE, if (value) 1 else 0) }
 
     /** Builds the full HTTPS API base URL from the current host and port. */
     val apiBaseUrl: String
