@@ -11,12 +11,19 @@ import com.church.presenter.churchpresentermobile.network.PresentationService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.ui.PickedFile
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 private const val TAG = "PresentationsViewModel"
+
+/** How many times to retry GET /api/presentations after an upload before giving up. */
+private const val UPLOAD_POLL_MAX_RETRIES = 30
+
+/** Milliseconds between each poll attempt after upload. */
+private const val UPLOAD_POLL_INTERVAL_MS = 1_000L
 
 /**
  * Manages presentations list state and selection.
@@ -241,6 +248,11 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
      * Uploads a presentation file (.pptx / .ppt / .pdf / .key) to the server and reloads
      * the presentations list once the upload completes successfully.
      *
+     * The server processes the file asynchronously (slide rendering takes time), so after
+     * a successful upload response this method polls [PresentationService.getPresentations]
+     * once per second for up to [UPLOAD_POLL_MAX_RETRIES] seconds until the new presentation
+     * ID appears in the list, then auto-scrolls to it.
+     *
      * @param file The [PickedFile] selected by the user via the native document picker.
      */
     fun uploadPresentationFile(file: PickedFile) {
@@ -251,29 +263,49 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
             presentationService.uploadPresentation(file.bytes, file.fileName)
                 .onSuccess { uploaded ->
                     Logger.d(TAG, "uploadPresentationFile — success id=${uploaded.id} name=${uploaded.name}")
-                    // Reload the presentations list so the newly uploaded file appears
-                    presentationService.getPresentations()
-                        .onSuccess { list ->
-                            _presentations.value = list
-                            // Auto-scroll to the uploaded presentation when the server returns its id
-                            if (uploaded.id != null) {
-                                _pendingScrollToId.value = uploaded.id
-                                val found = list.firstOrNull { it.id == uploaded.id }
-                                if (found != null) _selectedPresentation.value = found
+                    // Clear the previous list immediately so the UI doesn't show stale entries
+                    // while we wait for the server to finish rendering slides.
+                    _presentations.value = emptyList()
+                    // Poll until the server has finished rendering slides for the new presentation.
+                    val uploadedId = uploaded.id
+                    var found = false
+                    repeat(UPLOAD_POLL_MAX_RETRIES) { attempt ->
+                        if (found) return@repeat
+                        if (attempt > 0) delay(UPLOAD_POLL_INTERVAL_MS)
+                        presentationService.getPresentations()
+                            .onSuccess { list ->
+                                Logger.d(TAG, "uploadPresentationFile — poll attempt=${attempt + 1} list.size=${list.size} ids=${list.map { it.id }}")
+                                if (uploadedId == null || list.any { it.id == uploadedId }) {
+                                    _presentations.value = list
+                                    if (uploadedId != null) {
+                                        _pendingScrollToId.value = uploadedId
+                                        val target = list.firstOrNull { it.id == uploadedId }
+                                        if (target != null) _selectedPresentation.value = target
+                                    }
+                                    found = true
+                                }
                             }
-                        }
-                        .onFailure { e ->
-                            Logger.e(TAG, "uploadPresentationFile — reload FAILED: ${e.message}", e)
-                            _toastEvent.value = ToastEvent.UploadReloadFailed(e.recordNetworkError(TAG, "uploadPresentationFile/reload"))
-                        }
+                            .onFailure { e ->
+                                Logger.e(TAG, "uploadPresentationFile — poll FAILED: ${e.message}", e)
+                            }
+                    }
+                    if (!found) {
+                        // Timed out — show whatever the server has now and let the user pull-to-refresh
+                        Logger.e(TAG, "uploadPresentationFile — timed out waiting for id=$uploadedId")
+                        presentationService.getPresentations()
+                            .onSuccess { _presentations.value = it }
+                            .onFailure { e ->
+                                _toastEvent.value = ToastEvent.UploadReloadFailed(e.recordNetworkError(TAG, "uploadPresentationFile/reload"))
+                            }
+                    }
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "uploadPresentationFile — FAILED: ${e.message}", e)
                     _toastEvent.value = when ((e as? ApiException)?.httpStatus) {
-                        404  -> ToastEvent.UploadUnsupported
-                        413  -> ToastEvent.UploadFileTooLarge
-                        in 400..599 -> ToastEvent.UploadServerError(e.message ?: "")
-                        else -> ToastEvent.UploadFailed(e.recordNetworkError(TAG, "uploadPresentationFile"))
+                        404          -> ToastEvent.UploadUnsupported
+                        413          -> ToastEvent.UploadFileTooLarge
+                        in 400..599  -> ToastEvent.UploadServerError(e.message ?: "")
+                        else         -> ToastEvent.UploadFailed(e.recordNetworkError(TAG, "uploadPresentationFile"))
                     }
                 }
             _isUploading.value = false

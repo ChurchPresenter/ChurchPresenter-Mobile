@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.PresentationScheduleAddRequest
@@ -218,7 +219,10 @@ class PresentationService(private val settings: AppSettings) {
             val raw = response.bodyAsText()
             Logger.d(TAG, "uploadPresentation ◀ status=${response.status}  body=${raw.take(300)}")
             if (!response.status.isSuccess()) {
-                throw Exception("HTTP ${response.status.value} — ${raw.take(200)}")
+                throw ApiException(
+                    httpStatus = response.status.value,
+                    reason     = raw.take(200),
+                )
             }
             // Parse leniently: accept {"ok":true} with no id/name (both are nullable)
             runCatching { json.decodeFromString<UploadPresentationResponse>(raw) }
