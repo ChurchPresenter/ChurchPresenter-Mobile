@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.PresentationScheduleAddR
 import com.church.presenter.churchpresentermobile.model.PresentationSchedulePayload
 import com.church.presenter.churchpresentermobile.model.PresentationsResponse
 import com.church.presenter.churchpresentermobile.model.SelectSlideRequest
+import com.church.presenter.churchpresentermobile.model.UploadPresentationResponse
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -16,6 +17,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -179,6 +182,50 @@ class PresentationService(private val settings: AppSettings) {
         }.onFailure { e -> Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e) }
     }
 
+    /**
+     * Uploads a presentation file to the server.
+     *
+     * Encodes [fileBytes] as a base64 data-URI with the MIME type derived from
+     * [fileName]'s extension (.pdf, .pptx, .ppt, .key) and POSTs
+     * `{ "name": "<fileName>", "data": "data:<mime>;base64,…" }` to
+     * `POST /api/presentations/upload`.
+     *
+     * Uses [actionClient] (no request/socket timeout) because presentation files are
+     * typically much larger than photos — a PDF can be 5–20 MB which, after base64
+     * encoding (~33 % overhead), easily exceeds the 15 s timeout on [client].
+     *
+     * Response parsing is lenient: a minimal `{"ok":true}` is accepted, and
+     * missing `id`/`name` fields fall back to null.
+     *
+     * @param fileBytes Raw bytes of the presentation file.
+     * @param fileName  Original file name (used for MIME detection and display).
+     */
+    @OptIn(ExperimentalEncodingApi::class)
+    suspend fun uploadPresentation(fileBytes: ByteArray, fileName: String): Result<UploadPresentationResponse> {
+        val url = "${settings.apiBaseUrl}/${ApiConstants.PRESENTATIONS_UPLOAD_ENDPOINT}"
+        val encoded = Base64.encode(fileBytes)
+        val mimeType = mimeTypeForExtension(fileName.substringAfterLast('.', "pptx").lowercase())
+        val dataUri = "data:$mimeType;base64,$encoded"
+        val body = """{"name":${json.encodeToString(fileName)},"data":${json.encodeToString(dataUri)}}"""
+        Logger.d(TAG, "uploadPresentation ▶ POST $url  name=$fileName  mime=$mimeType  bytes=${fileBytes.size}  encodedBytes=${encoded.length}")
+        return apiRunCatching {
+            // actionClient has no request/socket timeout — required for large files
+            val response = actionClient.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+                applyApiKey()
+            }
+            val raw = response.bodyAsText()
+            Logger.d(TAG, "uploadPresentation ◀ status=${response.status}  body=${raw.take(300)}")
+            if (!response.status.isSuccess()) {
+                throw Exception("HTTP ${response.status.value} — ${raw.take(200)}")
+            }
+            // Parse leniently: accept {"ok":true} with no id/name (both are nullable)
+            runCatching { json.decodeFromString<UploadPresentationResponse>(raw) }
+                .getOrDefault(UploadPresentationResponse(ok = true))
+        }.onFailure { e -> Logger.e(TAG, "uploadPresentation — FAILED: ${e.message}", e) }
+    }
+
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
         Logger.d(TAG, "closeClient — closing HTTP clients")
@@ -186,3 +233,12 @@ class PresentationService(private val settings: AppSettings) {
         actionClient.close()
     }
 }
+
+/** Maps a lowercase file extension to the appropriate presentation MIME type. */
+private fun mimeTypeForExtension(ext: String): String = when (ext) {
+    "pdf"  -> "application/pdf"
+    "ppt"  -> "application/vnd.ms-powerpoint"
+    "key"  -> "application/x-iwork-keynote-sffkey"
+    else   -> "application/vnd.openxmlformats-officedocument.presentationml.presentation" // pptx default
+}
+

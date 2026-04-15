@@ -2,13 +2,17 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.Presentation
+import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.PresentationService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
+import com.church.presenter.churchpresentermobile.ui.PickedFile
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -24,32 +28,45 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
     private var presentationService = PresentationService(appSettings)
 
     private val _presentations = MutableStateFlow<List<Presentation>>(emptyList())
-    val presentations = _presentations.asStateFlow()
+    val presentations: StateFlow<List<Presentation>> = _presentations.asStateFlow()
 
     private val _selectedPresentation = MutableStateFlow<Presentation?>(null)
-    val selectedPresentation = _selectedPresentation.asStateFlow()
+    val selectedPresentation: StateFlow<Presentation?> = _selectedPresentation.asStateFlow()
 
     /** Index of the individual slide the user last tapped. */
     private val _selectedSlideIndex = MutableStateFlow<Int?>(null)
-    val selectedSlideIndex = _selectedSlideIndex.asStateFlow()
+    val selectedSlideIndex: StateFlow<Int?> = _selectedSlideIndex.asStateFlow()
 
     /** Non-null when the screen should scroll to a presentation with this ID. */
     private val _pendingScrollToId = MutableStateFlow<String?>(null)
-    val pendingScrollToId = _pendingScrollToId.asStateFlow()
+    val pendingScrollToId: StateFlow<String?> = _pendingScrollToId.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
-    val error = _error.asStateFlow()
+    val error: StateFlow<String?> = _error.asStateFlow()
 
     /** True once a slide has been sent to the display via [selectPresentation]. */
     private val _isProjecting = MutableStateFlow(false)
-    val isProjecting = _isProjecting.asStateFlow()
+    val isProjecting: StateFlow<Boolean> = _isProjecting.asStateFlow()
 
     /** True after the current presentation has been added to the schedule. */
     private val _scheduleAdded = MutableStateFlow(false)
-    val scheduleAdded = _scheduleAdded.asStateFlow()
+    val scheduleAdded: StateFlow<Boolean> = _scheduleAdded.asStateFlow()
+
+    /** True while a presentation file is being uploaded to the server. */
+    private val _isUploading = MutableStateFlow(false)
+    val isUploading: StateFlow<Boolean> = _isUploading.asStateFlow()
+
+    /** Incremented each time a presentation is successfully added to the schedule;
+     *  triggers a schedule drawer reload in the UI layer. */
+    private val _scheduleRefreshTrigger = MutableStateFlow(0)
+    val scheduleRefreshTrigger: StateFlow<Int> = _scheduleRefreshTrigger.asStateFlow()
+
+    /** Transient toast/snackbar event; consumed once by the UI then cleared via [toastShown]. */
+    private val _toastEvent = MutableStateFlow<ToastEvent?>(null)
+    val toastEvent: StateFlow<ToastEvent?> = _toastEvent.asStateFlow()
 
     init {
         loadPresentations()
@@ -152,7 +169,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                 .onSuccess { Logger.d(TAG, "selectPresentation — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectPresentation — FAILED: ${e.message}", e)
-                    _error.value = "Failed to select presentation: ${e.recordNetworkError(TAG, "selectPresentation")}"
+                    _toastEvent.value = ToastEvent.FailedToSelectPresentation(e.recordNetworkError(TAG, "selectPresentation"))
                 }
         }
     }
@@ -171,8 +188,13 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
         _pendingScrollToId.value = null
         _isProjecting.value = false
         _scheduleAdded.value = false
+        _isUploading.value = false
+        _toastEvent.value = null
         loadPresentations()
     }
+
+    /** Called after the UI has consumed a toast event. */
+    fun toastShown() { _toastEvent.value = null }
 
     /** POSTs /api/clear and resets projection state. */
     fun clearDisplay() {
@@ -197,6 +219,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
         if (isDemoMode) {
             Logger.d(TAG, "addToSchedule — DEMO MODE id=${presentation.displayId}")
             _scheduleAdded.value = true
+            _scheduleRefreshTrigger.value++
             return
         }
         Logger.d(TAG, "addToSchedule — id=${presentation.displayId}")
@@ -205,11 +228,55 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                 .onSuccess {
                     Logger.d(TAG, "addToSchedule — success")
                     _scheduleAdded.value = true
+                    _scheduleRefreshTrigger.value++
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)
-                    _error.value = "Failed to add to schedule: ${e.recordNetworkError(TAG, "addToSchedule")}"
+                    _toastEvent.value = ToastEvent.FailedToAddPresentationSchedule(e.recordNetworkError(TAG, "addToSchedule"))
                 }
+        }
+    }
+
+    /**
+     * Uploads a presentation file (.pptx / .ppt / .pdf / .key) to the server and reloads
+     * the presentations list once the upload completes successfully.
+     *
+     * @param file The [PickedFile] selected by the user via the native document picker.
+     */
+    fun uploadPresentationFile(file: PickedFile) {
+        if (isDemoMode) return
+        viewModelScope.launch {
+            _isUploading.value = true
+            _error.value = null
+            presentationService.uploadPresentation(file.bytes, file.fileName)
+                .onSuccess { uploaded ->
+                    Logger.d(TAG, "uploadPresentationFile — success id=${uploaded.id} name=${uploaded.name}")
+                    // Reload the presentations list so the newly uploaded file appears
+                    presentationService.getPresentations()
+                        .onSuccess { list ->
+                            _presentations.value = list
+                            // Auto-scroll to the uploaded presentation when the server returns its id
+                            if (uploaded.id != null) {
+                                _pendingScrollToId.value = uploaded.id
+                                val found = list.firstOrNull { it.id == uploaded.id }
+                                if (found != null) _selectedPresentation.value = found
+                            }
+                        }
+                        .onFailure { e ->
+                            Logger.e(TAG, "uploadPresentationFile — reload FAILED: ${e.message}", e)
+                            _toastEvent.value = ToastEvent.UploadReloadFailed(e.recordNetworkError(TAG, "uploadPresentationFile/reload"))
+                        }
+                }
+                .onFailure { e ->
+                    Logger.e(TAG, "uploadPresentationFile — FAILED: ${e.message}", e)
+                    _toastEvent.value = when ((e as? ApiException)?.httpStatus) {
+                        404  -> ToastEvent.UploadUnsupported
+                        413  -> ToastEvent.UploadFileTooLarge
+                        in 400..599 -> ToastEvent.UploadServerError(e.message ?: "")
+                        else -> ToastEvent.UploadFailed(e.recordNetworkError(TAG, "uploadPresentationFile"))
+                    }
+                }
+            _isUploading.value = false
         }
     }
 

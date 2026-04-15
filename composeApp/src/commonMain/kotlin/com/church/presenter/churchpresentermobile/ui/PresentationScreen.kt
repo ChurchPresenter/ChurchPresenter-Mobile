@@ -18,28 +18,46 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.presentation_loading_error
 import churchpresentermobile.composeapp.generated.resources.presentation_no_items
 import churchpresentermobile.composeapp.generated.resources.presentation_retry
 import churchpresentermobile.composeapp.generated.resources.presentation_slides
+import churchpresentermobile.composeapp.generated.resources.presentation_upload_file
+import churchpresentermobile.composeapp.generated.resources.toast_failed_to_select_presentation
+import churchpresentermobile.composeapp.generated.resources.toast_presentation_failed_to_add_schedule
+import churchpresentermobile.composeapp.generated.resources.toast_upload_failed
+import churchpresentermobile.composeapp.generated.resources.toast_upload_file_too_large
+import churchpresentermobile.composeapp.generated.resources.toast_upload_reload_failed
+import churchpresentermobile.composeapp.generated.resources.toast_upload_server_error
+import churchpresentermobile.composeapp.generated.resources.toast_upload_unsupported
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -48,14 +66,13 @@ import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.PresentationSlide
+import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.viewmodel.PresentationsViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import org.jetbrains.compose.resources.stringResource
 
 private const val SLIDE_COLUMNS = 2
@@ -80,6 +97,7 @@ fun PresentationScreen(
     imageLoader: ImageLoader,
     pendingNavPresentationId: String? = null,
     onPendingNavHandled: () -> Unit = {},
+    onScheduleRefresh: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val viewModel: PresentationsViewModel = viewModel(key = isDemoMode.toString()) { PresentationsViewModel(appSettings, isDemoMode) }
@@ -105,6 +123,23 @@ fun PresentationScreen(
     val error by viewModel.error.collectAsState()
     val isProjecting by viewModel.isProjecting.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
+    val isUploading by viewModel.isUploading.collectAsState()
+    val scheduleRefreshTrigger by viewModel.scheduleRefreshTrigger.collectAsState()
+    val toastEvent by viewModel.toastEvent.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val toastMessage = toastEvent?.toDisplayString()
+    LaunchedEffect(toastEvent) {
+        if (toastMessage != null) {
+            snackbarHostState.showSnackbar(message = toastMessage, duration = SnackbarDuration.Short)
+            viewModel.toastShown()
+        }
+    }
+
+    LaunchedEffect(scheduleRefreshTrigger) {
+        if (scheduleRefreshTrigger > 0) onScheduleRefresh()
+    }
 
     val listState = rememberLazyListState()
 
@@ -224,21 +259,66 @@ fun PresentationScreen(
     }   // end Column
 
         // ── Action buttons (bottom-right, above snackbar) ─────────────────
-        ContentActionButtons(
-            isProjecting       = isProjecting,
-            scheduleAdded      = scheduleAdded,
-            onToggleProjecting = {
-                if (isProjecting) viewModel.clearDisplay()
-                else {
-                    val pres = selectedPresentation
-                    val idx  = selectedSlideIndex
-                    if (pres != null && idx != null) viewModel.selectPresentation(pres, idx)
+        PresentationFilePicker(
+            onFilePicked = { file ->
+                if (file != null) viewModel.uploadPresentationFile(file)
+            }
+        ) { launchPicker ->
+            ContentActionButtons(
+                isProjecting       = isProjecting,
+                scheduleAdded      = scheduleAdded,
+                onToggleProjecting = {
+                    if (isProjecting) viewModel.clearDisplay()
+                    else {
+                        val pres = selectedPresentation
+                        val idx  = selectedSlideIndex
+                        if (pres != null && idx != null) viewModel.selectPresentation(pres, idx)
+                    }
+                },
+                onAddToSchedule = { viewModel.addToSchedule() },
+                modifier        = Modifier.align(Alignment.BottomEnd),
+                extraLeadingContent = {
+                    // Upload Presentation FAB — opens the native document picker
+                    FloatingActionButton(
+                        onClick        = { if (!isUploading) launchPicker() },
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ) {
+                        if (isUploading) {
+                            CircularProgressIndicator(
+                                modifier    = Modifier.size(24.dp),
+                                color       = MaterialTheme.colorScheme.onTertiaryContainer,
+                                strokeWidth = 2.5.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector        = Icons.Filled.UploadFile,
+                                contentDescription = stringResource(Res.string.presentation_upload_file)
+                            )
+                        }
+                    }
                 }
-            },
-            onAddToSchedule = { viewModel.addToSchedule() },
-            modifier        = Modifier.align(Alignment.BottomEnd),
+            )
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }   // end Box
+}
+
+/** Resolves a [ToastEvent] to a localised display string using Compose string resources. */
+@Composable
+private fun ToastEvent.toDisplayString(): String = when (this) {
+    is ToastEvent.FailedToSelectPresentation     -> stringResource(Res.string.toast_failed_to_select_presentation, reason)
+    is ToastEvent.FailedToAddPresentationSchedule -> stringResource(Res.string.toast_presentation_failed_to_add_schedule, reason)
+    is ToastEvent.UploadUnsupported               -> stringResource(Res.string.toast_upload_unsupported)
+    is ToastEvent.UploadFileTooLarge              -> stringResource(Res.string.toast_upload_file_too_large)
+    is ToastEvent.UploadServerError               -> stringResource(Res.string.toast_upload_server_error, msg)
+    is ToastEvent.UploadFailed                    -> stringResource(Res.string.toast_upload_failed, reason)
+    is ToastEvent.UploadReloadFailed              -> stringResource(Res.string.toast_upload_reload_failed, reason)
+    else                                          -> ""
 }
 
 // ── Sub-composables ────────────────────────────────────────────────────────────

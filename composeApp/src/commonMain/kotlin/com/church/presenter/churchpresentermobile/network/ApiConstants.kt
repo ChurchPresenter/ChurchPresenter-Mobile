@@ -17,6 +17,7 @@ object ApiConstants {
     const val BIBLE_SELECT_ENDPOINT = "bible/select"
     const val PRESENTATIONS_ENDPOINT = "presentations"
     const val PRESENTATION_SELECT_ENDPOINT = "select"
+    const val PRESENTATIONS_UPLOAD_ENDPOINT = "presentations/upload"
     const val PICTURES_ENDPOINT = "pictures"
     const val PICTURES_SELECT_ENDPOINT = "pictures/select"
     const val PICTURES_UPLOAD_ENDPOINT = "pictures/upload"

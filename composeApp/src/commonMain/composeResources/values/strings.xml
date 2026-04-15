@@ -120,8 +120,16 @@
     <string name="presentation_schedule_request_sent">Request Sent ✓</string>
     <string name="presentation_project_to_screen">Project to Screen</string>
     <string name="presentation_stop_projecting">Stop Projecting</string>
+    <string name="presentation_upload_file">Upload Presentation</string>
+    <string name="presentation_uploading">Uploading…</string>
     <string name="toast_presentation_added_to_schedule">Presentation added to schedule</string>
     <string name="toast_presentation_failed_to_add_schedule">Failed to add presentation to schedule: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Failed to select presentation: %1$s</string>
+    <string name="toast_upload_unsupported">Upload not supported by this server. Update ChurchPresenter on your desktop to the latest version.</string>
+    <string name="toast_upload_file_too_large">File is too large for the server to accept. Try a smaller file.</string>
+    <string name="toast_upload_server_error">Server rejected the upload: %1$s</string>
+    <string name="toast_upload_failed">Upload failed: %1$s</string>
+    <string name="toast_upload_reload_failed">Uploaded but failed to reload list: %1$s</string>
 
     <!-- Toast / Snackbar Messages -->
     <string name="toast_song_live">Song is now live on screen</string>

@@ -64,3 +64,11 @@ data class PresentationSchedulePayload(
 @Serializable
 data class SelectSlideRequest(val index: Int)
 
+/** Response from POST /api/presentations/upload. */
+@Serializable
+data class UploadPresentationResponse(
+    val ok: Boolean = true,
+    val id: String? = null,
+    val name: String? = null,
+)
+
