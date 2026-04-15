@@ -158,7 +158,10 @@ class PicturesService(private val settings: AppSettings) {
      * returns `{ "ok": true, "folder-id": "device_uploads", "image-index": <N> }`.
      */
     @OptIn(ExperimentalEncodingApi::class)
-    suspend fun uploadPhoto(imageBytes: ByteArray, fileName: String): Result<UploadPhotoResponse> {
+    suspend fun uploadPhoto(
+        imageBytes: ByteArray,
+        fileName: String,
+    ): Result<UploadPhotoResponse> {
         val url = "${settings.apiBaseUrl}/${ApiConstants.PICTURES_UPLOAD_ENDPOINT}"
         val encoded = Base64.encode(imageBytes)
         val mimeType = mimeTypeForExtension(fileName.substringAfterLast('.', "jpg").lowercase())

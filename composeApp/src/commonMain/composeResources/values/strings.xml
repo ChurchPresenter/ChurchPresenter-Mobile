@@ -112,6 +112,8 @@
     <string name="action_project_to_screen">Project to Screen</string>
     <string name="action_stop_projecting">Stop Projecting</string>
     <string name="pictures_uploading">Uploading…</string>
+    <string name="upload_overlay_subtitle">Please wait, do not close the app</string>
+    <string name="upload_overlay_photo_counter">Photo %1$d of %2$d</string>
     <string name="toast_pictures_added_to_schedule">Picture added to schedule</string>
     <string name="toast_pictures_failed_to_add_schedule">Failed to add picture to schedule: %1$s</string>
 

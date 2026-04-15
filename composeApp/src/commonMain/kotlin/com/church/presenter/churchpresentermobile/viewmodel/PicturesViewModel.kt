@@ -60,6 +60,21 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     private val _isUploading = MutableStateFlow(false)
     val isUploading = _isUploading.asStateFlow()
 
+    /**
+     * Upload progress in the range 0.0..1.0, or null when no upload is in progress.
+     * For multi-photo uploads the value reflects combined progress across all photos.
+     */
+    private val _uploadProgress = MutableStateFlow<Float?>(null)
+    val uploadProgress = _uploadProgress.asStateFlow()
+
+    /** Number of photos in the current upload batch; 0 when not uploading. */
+    private val _uploadPhotoTotal = MutableStateFlow(0)
+    val uploadPhotoTotal = _uploadPhotoTotal.asStateFlow()
+
+    /** 1-based index of the photo currently being uploaded. */
+    private val _uploadPhotoIndex = MutableStateFlow(0)
+    val uploadPhotoIndex = _uploadPhotoIndex.asStateFlow()
+
     init {
         loadPictures()
     }
@@ -226,9 +241,14 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
         if (isDemoMode || photos.isEmpty()) return
         viewModelScope.launch {
             _isUploading.value = true
+            _uploadProgress.value = 0f
+            _uploadPhotoTotal.value = photos.size
             _error.value = null
             var lastUploaded: com.church.presenter.churchpresentermobile.model.UploadPhotoResponse? = null
-            for (photo in photos) {
+            for ((photoIndex, photo) in photos.withIndex()) {
+                _uploadPhotoIndex.value = photoIndex + 1
+                // Progress at the start of this photo (discrete steps)
+                _uploadProgress.value = photoIndex.toFloat() / photos.size.toFloat()
                 picturesService.uploadPhoto(photo.bytes, photo.fileName)
                     .onSuccess { uploaded ->
                         Logger.d(TAG, "uploadDevicePhotos — uploaded ${photo.fileName} folderId=${uploaded.folderId} index=${uploaded.imageIndex}")
@@ -238,6 +258,8 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                         Logger.e(TAG, "uploadDevicePhotos — FAILED for ${photo.fileName}: ${e.message}", e)
                         _error.value = "Failed to upload ${photo.fileName}: ${e.recordNetworkError(TAG, "uploadDevicePhotos")}"
                     }
+                // Step progress up after this photo completes (success or failure)
+                _uploadProgress.value = (photoIndex + 1).toFloat() / photos.size.toFloat()
             }
             lastUploaded?.let { uploaded ->
                 Logger.d(TAG, "uploadDevicePhotos — projecting folderId=${uploaded.folderId} fileName=${uploaded.fileName} index=${uploaded.imageIndex}")
@@ -263,6 +285,9 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                         _error.value = "Uploaded but failed to load folder: ${e.recordNetworkError(TAG, "uploadDevicePhotos/reload")}"
                     }
             }
+            _uploadProgress.value = null
+            _uploadPhotoTotal.value = 0
+            _uploadPhotoIndex.value = 0
             _isUploading.value = false
         }
     }

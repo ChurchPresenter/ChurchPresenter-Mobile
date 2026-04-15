@@ -66,6 +66,13 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
     private val _isUploading = MutableStateFlow(false)
     val isUploading: StateFlow<Boolean> = _isUploading.asStateFlow()
 
+    /**
+     * Upload progress in the range 0.0..1.0, or null when no upload is in progress.
+     * Reflects byte-level progress reported by the HTTP layer via Ktor's onUpload callback.
+     */
+    private val _uploadProgress = MutableStateFlow<Float?>(null)
+    val uploadProgress: StateFlow<Float?> = _uploadProgress.asStateFlow()
+
     /** Incremented each time a presentation is successfully added to the schedule;
      *  triggers a schedule drawer reload in the UI layer. */
     private val _scheduleRefreshTrigger = MutableStateFlow(0)
@@ -259,6 +266,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
         if (isDemoMode) return
         viewModelScope.launch {
             _isUploading.value = true
+            _uploadProgress.value = null   // indeterminate — byte-level tracking not available cross-platform
             _error.value = null
             presentationService.uploadPresentation(file.bytes, file.fileName)
                 .onSuccess { uploaded ->
@@ -308,6 +316,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                         else         -> ToastEvent.UploadFailed(e.recordNetworkError(TAG, "uploadPresentationFile"))
                     }
                 }
+            _uploadProgress.value = null
             _isUploading.value = false
         }
     }

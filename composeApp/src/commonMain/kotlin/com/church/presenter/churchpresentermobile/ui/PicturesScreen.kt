@@ -45,6 +45,8 @@ import churchpresentermobile.composeapp.generated.resources.pictures_no_items
 import churchpresentermobile.composeapp.generated.resources.pictures_photos
 import churchpresentermobile.composeapp.generated.resources.pictures_pick_from_device
 import churchpresentermobile.composeapp.generated.resources.pictures_retry
+import churchpresentermobile.composeapp.generated.resources.pictures_uploading
+import churchpresentermobile.composeapp.generated.resources.upload_overlay_photo_counter
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -121,6 +123,9 @@ fun PicturesScreen(
     val isProjecting by viewModel.isProjecting.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
     val isUploading by viewModel.isUploading.collectAsState()
+    val uploadProgress by viewModel.uploadProgress.collectAsState()
+    val uploadPhotoIndex by viewModel.uploadPhotoIndex.collectAsState()
+    val uploadPhotoTotal by viewModel.uploadPhotoTotal.collectAsState()
     val scheduleRefreshTrigger by viewModel.scheduleRefreshTrigger.collectAsState()
 
     LaunchedEffect(scheduleRefreshTrigger) {
@@ -284,6 +289,18 @@ fun PicturesScreen(
                         }
                     }
                 }
+            )
+        }
+
+        // Non-dismissible upload overlay — shown until the upload completes
+        if (isUploading) {
+            val detail = if (uploadPhotoTotal > 1) {
+                stringResource(Res.string.upload_overlay_photo_counter, uploadPhotoIndex, uploadPhotoTotal)
+            } else null
+            UploadProgressOverlay(
+                title    = stringResource(Res.string.pictures_uploading),
+                progress = uploadProgress,
+                detail   = detail,
             )
         }
     }   // end Box

@@ -51,6 +51,7 @@ import churchpresentermobile.composeapp.generated.resources.presentation_no_item
 import churchpresentermobile.composeapp.generated.resources.presentation_retry
 import churchpresentermobile.composeapp.generated.resources.presentation_slides
 import churchpresentermobile.composeapp.generated.resources.presentation_upload_file
+import churchpresentermobile.composeapp.generated.resources.presentation_uploading
 import churchpresentermobile.composeapp.generated.resources.toast_failed_to_select_presentation
 import churchpresentermobile.composeapp.generated.resources.toast_presentation_failed_to_add_schedule
 import churchpresentermobile.composeapp.generated.resources.toast_upload_failed
@@ -124,6 +125,7 @@ fun PresentationScreen(
     val isProjecting by viewModel.isProjecting.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
     val isUploading by viewModel.isUploading.collectAsState()
+    val uploadProgress by viewModel.uploadProgress.collectAsState()
     val scheduleRefreshTrigger by viewModel.scheduleRefreshTrigger.collectAsState()
     val toastEvent by viewModel.toastEvent.collectAsState()
 
@@ -305,6 +307,14 @@ fun PresentationScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+
+        // Non-dismissible upload overlay — shown until the upload completes
+        if (isUploading) {
+            UploadProgressOverlay(
+                title    = stringResource(Res.string.presentation_uploading),
+                progress = uploadProgress,
+            )
+        }
     }   // end Box
 }
 

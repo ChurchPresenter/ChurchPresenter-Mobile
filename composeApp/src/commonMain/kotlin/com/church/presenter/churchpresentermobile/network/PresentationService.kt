@@ -202,7 +202,10 @@ class PresentationService(private val settings: AppSettings) {
      * @param fileName  Original file name (used for MIME detection and display).
      */
     @OptIn(ExperimentalEncodingApi::class)
-    suspend fun uploadPresentation(fileBytes: ByteArray, fileName: String): Result<UploadPresentationResponse> {
+    suspend fun uploadPresentation(
+        fileBytes: ByteArray,
+        fileName: String,
+    ): Result<UploadPresentationResponse> {
         val url = "${settings.apiBaseUrl}/${ApiConstants.PRESENTATIONS_UPLOAD_ENDPOINT}"
         val encoded = Base64.encode(fileBytes)
         val mimeType = mimeTypeForExtension(fileName.substringAfterLast('.', "pptx").lowercase())
