@@ -191,6 +191,9 @@ fun PicturesScreen(
         ) {
             when {
                 folder != null && folder!!.allImages.isNotEmpty() -> {
+                    // Capture in a local val so the non-null smart cast holds inside
+                    // all item/items lambdas, even if the StateFlow emits null mid-frame.
+                    val currentFolder = folder!!
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(GRID_COLUMNS),
                         state = gridState,
@@ -209,13 +212,13 @@ fun PicturesScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = folder!!.displayName,
+                                    text = currentFolder.displayName,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = "${folder!!.totalImages} ${stringResource(Res.string.pictures_photos)}",
+                                    text = "${currentFolder.totalImages} ${stringResource(Res.string.pictures_photos)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                 )
@@ -224,7 +227,7 @@ fun PicturesScreen(
 
                         // ── Image grid ────────────────────────────────────
                         items(
-                            items = folder!!.allImages,
+                            items = currentFolder.allImages,
                             key = { it.index }
                         ) { image ->
                             PictureCell(
