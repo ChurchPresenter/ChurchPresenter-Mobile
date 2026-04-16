@@ -1,0 +1,198 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Назва</string>
+    <string name="songs_table_header_book">Зборнік</string>
+    <string name="songs_table_header_tune">Мелодыя</string>
+    <string name="songs_table_search_placeholder">Пошук па # або назве…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Няма даступных песень</string>
+    <string name="songs_table_no_match">Ніводная песня не адпавядае фільтру</string>
+    <string name="songs_table_loading_error">Не ўдалося загрузіць песні</string>
+    <string name="songs_table_retry">Паўтарыць</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Усе зборнікі</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Адкрыць налады</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Налады</string>
+    <string name="settings_server_section">Сервер</string>
+    <string name="settings_host_label">Хост / IP-адрас</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Порт</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API-ключ (неабавязкова)</string>
+    <string name="settings_api_key_placeholder">Пакіньце пустым, калі не патрабуецца</string>
+    <string name="settings_save">Захаваць</string>
+    <string name="settings_cancel">Скасаваць</string>
+    <string name="settings_invalid_port">Порт павінен быць лікам ад 1 да 65535</string>
+    <string name="settings_host_empty">Хост не можа быць пустым</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Знешні выгляд</string>
+    <string name="settings_theme_system">Сістэмная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Цёмная</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Песні</string>
+    <string name="tab_bible">Біблія</string>
+    <string name="tab_pictures">Выявы</string>
+    <string name="tab_presentation">Прэзентацыя</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Біблія — хутка</string>
+    <string name="pictures_coming_soon">🖼  Выявы — хутка</string>
+    <string name="presentation_coming_soon">📽  Прэзентацыя — хутка</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Няма даступных прэзентацый</string>
+    <string name="presentation_loading_error">Не ўдалося загрузіць прэзентацыі</string>
+    <string name="presentation_retry">Паўтарыць</string>
+    <string name="presentation_slides">слайдаў</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Няма даступных выяў</string>
+    <string name="pictures_loading_error">Не ўдалося загрузіць выявы</string>
+    <string name="pictures_retry">Паўтарыць</string>
+    <string name="pictures_photos">фота</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Пошук кніг…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Няма даступных кніг Бібліі</string>
+    <string name="bible_no_match">Ніводная кніга не адпавядае пошуку</string>
+    <string name="bible_chapter_label">Раздзел</string>
+    <string name="bible_chapters_title">Раздзелы</string>
+    <string name="bible_no_verses">Няма даступных вершаў</string>
+    <string name="bible_back">← Назад</string>
+    <string name="bible_loading_error">Не ўдалося загрузіць</string>
+    <string name="bible_retry">Паўтарыць</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Праграма</string>
+    <string name="schedule_drawer_refresh">Абнавіць праграму</string>
+    <string name="schedule_drawer_empty">Няма элементаў праграмы</string>
+    <string name="schedule_drawer_error">Памылка: %1$s</string>
+    <string name="schedule_drawer_open">Адкрыць праграму</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Дадаць у праграму</string>
+    <string name="song_detail_schedule_request_sent">Запыт адпраўлены ✓</string>
+    <string name="song_detail_project_to_screen">Паказаць на экране</string>
+    <string name="song_detail_stop_projecting">Спыніць паказ</string>
+    <string name="song_detail_fab_actions">Дзеянні</string>
+    <string name="song_detail_fab_close_actions">Закрыць дзеянні</string>
+    <string name="song_detail_projecting_badge">▶  Паказваецца</string>
+    <string name="song_detail_no_lyrics">Тэкст песні адсутнічае</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Дадаць у праграму</string>
+    <string name="bible_detail_schedule_request_sent">Запыт адпраўлены ✓</string>
+    <string name="bible_detail_project_to_screen">Паказаць на экране</string>
+    <string name="bible_detail_stop_projecting">Спыніць паказ</string>
+    <string name="bible_detail_fab_actions">Дзеянні</string>
+    <string name="bible_detail_fab_close_actions">Закрыць дзеянні</string>
+    <string name="bible_detail_projecting_badge">▶  Паказваецца</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Дадаць у праграму</string>
+    <string name="pictures_schedule_request_sent">Запыт адпраўлены ✓</string>
+    <string name="pictures_project_to_screen">Паказаць на экране</string>
+    <string name="pictures_stop_projecting">Спыніць паказ</string>
+    <string name="pictures_pick_from_device">Выбраць з прылады</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Дадаць у праграму</string>
+    <string name="action_project_to_screen">Паказаць на экране</string>
+    <string name="action_stop_projecting">Спыніць паказ</string>
+    <string name="pictures_uploading">Загрузка…</string>
+    <string name="upload_overlay_subtitle">Калі ласка, пачакайце, не зачыняйце праграму</string>
+    <string name="upload_overlay_photo_counter">Фота %1$d з %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Выява дададзена ў праграму</string>
+    <string name="toast_pictures_failed_to_add_schedule">Не ўдалося дадаць выяву ў праграму: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Дадаць у праграму</string>
+    <string name="presentation_schedule_request_sent">Запыт адпраўлены ✓</string>
+    <string name="presentation_project_to_screen">Паказаць на экране</string>
+    <string name="presentation_stop_projecting">Спыніць паказ</string>
+    <string name="presentation_upload_file">Загрузіць прэзентацыю</string>
+    <string name="presentation_uploading">Загрузка…</string>
+    <string name="toast_presentation_added_to_schedule">Прэзентацыя дададзена ў праграму</string>
+    <string name="toast_presentation_failed_to_add_schedule">Не ўдалося дадаць прэзентацыю ў праграму: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Не ўдалося выбраць прэзентацыю: %1$s</string>
+    <string name="toast_upload_unsupported">Загрузка не падтрымліваецца гэтым серверам. Абнавіце ChurchPresenter на камп\'ютары.</string>
+    <string name="toast_upload_file_too_large">Файл занадта вялікі. Паспрабуйце файл меншага памеру.</string>
+    <string name="toast_upload_server_error">Сервер адхіліў загрузку: %1$s</string>
+    <string name="toast_upload_failed">Загрузка не ўдалася: %1$s</string>
+    <string name="toast_upload_reload_failed">Загружана, але не ўдалося абнавіць спіс: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Песня цяпер паказваецца на экране</string>
+    <string name="toast_request_failed">Запыт не ўдаўся</string>
+    <string name="toast_no_song_selected">Песня не выбрана</string>
+    <string name="toast_song_added_to_schedule">"%1$s" дадана ў праграму</string>
+    <string name="toast_failed_to_project">Не ўдалося паказаць песню: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Не ўдалося дадаць у праграму: %1$s</string>
+    <string name="toast_request_denied">Запыт адхілены</string>
+    <string name="toast_session_blocked">Сесія заблакіравана — далейшыя запыты не прымаюцца</string>
+    <string name="toast_request_rejected">Запыт адхілены серверам (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Запыт адхілены: %1$s</string>
+    <string name="toast_bible_live">Біблейскі ўрывак цяпер паказваецца на экране</string>
+    <string name="toast_bible_added_to_schedule">"%1$s" дадана ў праграму</string>
+    <string name="toast_failed_to_project_bible">Не ўдалося паказаць: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Не ўдалося дадаць у праграму: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Сервер усталяваны на %1$s:%2$s</string>
+    <string name="qr_scan_button">Сканаваць QR-код</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Давяраць сертыфікату сервера</string>
+    <string name="cert_setup_subtitle">Аднаразовая наладка</string>
+    <string name="cert_setup_intro">ChurchPresenter выкарыстоўвае прыватны HTTPS-сертыфікат для бяспечнай сувязі. Трэба ўсталяваць яго адзін раз, каб ваша прылада давярала злучэнню.</string>
+    <string name="cert_setup_scan_title">Адскануйце QR-код сертыфіката</string>
+    <string name="cert_setup_scan_desktop_hint">У ChurchPresenter на камп\'ютары: Налады → Сервер → націсніце "Спампаваць серт." для адлюстравання QR-кода.</string>
+    <string name="cert_setup_scan_button">Сканаваць QR-код</string>
+    <string name="cert_setup_scan_or_divider">або выкарыстаць захаваны адрас</string>
+    <string name="cert_setup_url_scanned">✓ URL адсканаваны</string>
+    <string name="cert_setup_url_label">URL сертыфіката</string>
+    <string name="cert_setup_open_button">Адкрыць URL сертыфіката</string>
+    <string name="cert_setup_step2_ios_title">iOS — Усталяваць профіль</string>
+    <string name="cert_setup_step2_ios_body">Safari прапануе спампаваць профіль канфігурацыі. Націсніце Дазволіць, затым перайдзіце ў Налады → Асноўныя → VPN і кіраванне прыладай, націсніце ChurchPresenter і ўсталюйце.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Давяраць сертыфікату</string>
+    <string name="cert_setup_step3_ios_body">Налады → Асноўныя → Аб прыладзе → Налады даверу сертыфікатаў → уключыць поўны давер для ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Усталяваць сертыфікат</string>
+    <string name="cert_setup_step2_android_body">Chrome спампуе файл .crt. Націсніце на яго ў апавяшчэнні Спампоўкі, выберыце "Сертыфікат ЦС" і дайце назву "ChurchPresenter".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ "Немагчыма ўсталяваць з невядомых крыніц"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android можа заблакіраваць усталяванне, калі ваш браўзер не мае дазволу. Перайдзіце ў Налады → Праграмы → [ваш браўзер] → Усталяванне невядомых праграм і ўключыце "Дазволіць з гэтай крыніцы". Вярніцеся сюды і зноў націсніце на файл.</string>
+    <string name="cert_setup_fingerprint_title">Праверыць адбітак (рэкамендуецца)</string>
+    <string name="cert_setup_fingerprint_body">Параўнайце гэты адбітак з тым, што паказвае ChurchPresenter на камп\'ютары ў Налады → Сервер → SHA-256 сертыфіката. Яны павінны супадаць.</string>
+    <string name="cert_setup_fingerprint_unavailable">Спачатку падключыцеся да сервера, каб убачыць адбітак</string>
+    <string name="cert_setup_done_button">Гатова — Сертыфікат усталяваны</string>
+    <string name="cert_setup_skip_button">Прапусціць зараз</string>
+    <string name="cert_setup_skip_note">Вы можаце вярнуцца да гэтага кіраўніцтва ў любы час з Налад.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Падключыцца да камп\'ютара</string>
+    <string name="connect_setup_subtitle">Аднаразовая наладка</string>
+    <string name="connect_setup_intro">Адскануйце QR-код з ChurchPresenter на камп\'ютары, каб аўтаматычна наладзіць IP-адрас сервера, порт і неабавязковы API-ключ.</string>
+    <string name="connect_setup_step1_title">Адкрыйце Налады ў ChurchPresenter на камп\'ютары</string>
+    <string name="connect_setup_step1_body">На вашым камп\'ютары адкрыйце праграму ChurchPresenter і націсніце значок Налады.</string>
+    <string name="connect_setup_step2_title">Перайдзіце на ўкладку Сервер</string>
+    <string name="connect_setup_step2_body">У Наладах выберыце ўкладку Сервер, каб знайсці дадзеныя падключэння і QR-код.</string>
+    <string name="connect_setup_step3_title">Націсніце кнопку QR і адскануйце</string>
+    <string name="connect_setup_step3_body">Націсніце кнопку QR для адлюстравання QR-кода падключэння, затым націсніце Сканаваць ніжэй, каб адкрыць камеру і адсканаваць яго.</string>
+    <string name="connect_setup_scan_button">Сканаваць QR-код</string>
+    <string name="connect_setup_connected">✓ Падключана да %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Гатова</string>
+    <string name="connect_setup_skip_button">Прапусціць зараз</string>
+    <string name="connect_setup_skip_note">Вы можаце адсканаваць QR-код у любы час з Налад.</string>
+</resources>
+

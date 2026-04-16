@@ -1,0 +1,198 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Titre</string>
+    <string name="songs_table_header_book">Livre</string>
+    <string name="songs_table_header_tune">Mélodie</string>
+    <string name="songs_table_search_placeholder">Rechercher par # ou titre…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Aucun cantique disponible</string>
+    <string name="songs_table_no_match">Aucun cantique ne correspond au filtre</string>
+    <string name="songs_table_loading_error">Échec du chargement des cantiques</string>
+    <string name="songs_table_retry">Réessayer</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Tous les livres</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Ouvrir les paramètres</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_server_section">Serveur</string>
+    <string name="settings_host_label">Hôte / Adresse IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">Clé API (facultatif)</string>
+    <string name="settings_api_key_placeholder">Laisser vide si non requis</string>
+    <string name="settings_save">Enregistrer</string>
+    <string name="settings_cancel">Annuler</string>
+    <string name="settings_invalid_port">Le port doit être un nombre entre 1 et 65535</string>
+    <string name="settings_host_empty">L\'hôte ne peut pas être vide</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Apparence</string>
+    <string name="settings_theme_system">Système</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Cantiques</string>
+    <string name="tab_bible">Bible</string>
+    <string name="tab_pictures">Images</string>
+    <string name="tab_presentation">Présentation</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bible — bientôt disponible</string>
+    <string name="pictures_coming_soon">🖼  Images — bientôt disponible</string>
+    <string name="presentation_coming_soon">📽  Présentation — bientôt disponible</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Aucune présentation disponible</string>
+    <string name="presentation_loading_error">Échec du chargement des présentations</string>
+    <string name="presentation_retry">Réessayer</string>
+    <string name="presentation_slides">diapositives</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Aucune image disponible</string>
+    <string name="pictures_loading_error">Échec du chargement des images</string>
+    <string name="pictures_retry">Réessayer</string>
+    <string name="pictures_photos">photos</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Rechercher des livres…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Aucun livre biblique disponible</string>
+    <string name="bible_no_match">Aucun livre ne correspond à la recherche</string>
+    <string name="bible_chapter_label">Chapitre</string>
+    <string name="bible_chapters_title">Chapitres</string>
+    <string name="bible_no_verses">Aucun verset disponible</string>
+    <string name="bible_back">← Retour</string>
+    <string name="bible_loading_error">Échec du chargement</string>
+    <string name="bible_retry">Réessayer</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Programme</string>
+    <string name="schedule_drawer_refresh">Actualiser le programme</string>
+    <string name="schedule_drawer_empty">Aucun élément dans le programme</string>
+    <string name="schedule_drawer_error">Erreur : %1$s</string>
+    <string name="schedule_drawer_open">Ouvrir le programme</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Ajouter au programme</string>
+    <string name="song_detail_schedule_request_sent">Demande envoyée ✓</string>
+    <string name="song_detail_project_to_screen">Projeter à l\'écran</string>
+    <string name="song_detail_stop_projecting">Arrêter la projection</string>
+    <string name="song_detail_fab_actions">Actions</string>
+    <string name="song_detail_fab_close_actions">Fermer les actions</string>
+    <string name="song_detail_projecting_badge">▶  Projection en cours</string>
+    <string name="song_detail_no_lyrics">Aucune parole disponible</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Ajouter au programme</string>
+    <string name="bible_detail_schedule_request_sent">Demande envoyée ✓</string>
+    <string name="bible_detail_project_to_screen">Projeter à l\'écran</string>
+    <string name="bible_detail_stop_projecting">Arrêter la projection</string>
+    <string name="bible_detail_fab_actions">Actions</string>
+    <string name="bible_detail_fab_close_actions">Fermer les actions</string>
+    <string name="bible_detail_projecting_badge">▶  Projection en cours</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Ajouter au programme</string>
+    <string name="pictures_schedule_request_sent">Demande envoyée ✓</string>
+    <string name="pictures_project_to_screen">Projeter à l\'écran</string>
+    <string name="pictures_stop_projecting">Arrêter la projection</string>
+    <string name="pictures_pick_from_device">Choisir depuis l\'appareil</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Ajouter au programme</string>
+    <string name="action_project_to_screen">Projeter à l\'écran</string>
+    <string name="action_stop_projecting">Arrêter la projection</string>
+    <string name="pictures_uploading">Envoi en cours…</string>
+    <string name="upload_overlay_subtitle">Veuillez patienter, ne fermez pas l\'application</string>
+    <string name="upload_overlay_photo_counter">Photo %1$d sur %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Image ajoutée au programme</string>
+    <string name="toast_pictures_failed_to_add_schedule">Échec de l\'ajout de l\'image au programme : %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Ajouter au programme</string>
+    <string name="presentation_schedule_request_sent">Demande envoyée ✓</string>
+    <string name="presentation_project_to_screen">Projeter à l\'écran</string>
+    <string name="presentation_stop_projecting">Arrêter la projection</string>
+    <string name="presentation_upload_file">Envoyer la présentation</string>
+    <string name="presentation_uploading">Envoi en cours…</string>
+    <string name="toast_presentation_added_to_schedule">Présentation ajoutée au programme</string>
+    <string name="toast_presentation_failed_to_add_schedule">Échec de l\'ajout de la présentation au programme : %1$s</string>
+    <string name="toast_failed_to_select_presentation">Échec de la sélection de la présentation : %1$s</string>
+    <string name="toast_upload_unsupported">Envoi non pris en charge par ce serveur. Mettez à jour ChurchPresenter sur votre bureau.</string>
+    <string name="toast_upload_file_too_large">Le fichier est trop volumineux. Essayez un fichier plus petit.</string>
+    <string name="toast_upload_server_error">Le serveur a rejeté l\'envoi : %1$s</string>
+    <string name="toast_upload_failed">Échec de l\'envoi : %1$s</string>
+    <string name="toast_upload_reload_failed">Envoyé mais échec du rechargement de la liste : %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Le cantique est maintenant à l\'écran</string>
+    <string name="toast_request_failed">Échec de la demande</string>
+    <string name="toast_no_song_selected">Aucun cantique sélectionné</string>
+    <string name="toast_song_added_to_schedule">"%1$s" ajouté au programme</string>
+    <string name="toast_failed_to_project">Échec de la projection du cantique : %1$s</string>
+    <string name="toast_failed_to_add_schedule">Échec de l\'ajout au programme : %1$s</string>
+    <string name="toast_request_denied">Demande refusée</string>
+    <string name="toast_session_blocked">Session bloquée — aucune autre demande ne sera acceptée</string>
+    <string name="toast_request_rejected">Demande rejetée par le serveur (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Demande rejetée : %1$s</string>
+    <string name="toast_bible_live">Le passage biblique est maintenant à l\'écran</string>
+    <string name="toast_bible_added_to_schedule">"%1$s" ajouté au programme</string>
+    <string name="toast_failed_to_project_bible">Échec de la projection : %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Échec de l\'ajout au programme : %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Serveur défini sur %1$s:%2$s</string>
+    <string name="qr_scan_button">Scanner le QR Code</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Approuver le certificat du serveur</string>
+    <string name="cert_setup_subtitle">Configuration unique requise</string>
+    <string name="cert_setup_intro">ChurchPresenter utilise un certificat HTTPS privé pour une communication sécurisée. Vous devez l\'installer une fois pour que votre appareil approuve la connexion.</string>
+    <string name="cert_setup_scan_title">Scanner le QR code du certificat</string>
+    <string name="cert_setup_scan_desktop_hint">Sur ChurchPresenter bureau : Paramètres → Serveur → appuyer sur "Télécharger Cert" pour afficher le QR code.</string>
+    <string name="cert_setup_scan_button">Scanner le QR Code</string>
+    <string name="cert_setup_scan_or_divider">ou utiliser l\'adresse enregistrée</string>
+    <string name="cert_setup_url_scanned">✓ URL scannée</string>
+    <string name="cert_setup_url_label">URL du certificat</string>
+    <string name="cert_setup_open_button">Ouvrir l\'URL du certificat</string>
+    <string name="cert_setup_step2_ios_title">iOS — Installer le profil</string>
+    <string name="cert_setup_step2_ios_body">Safari demandera de télécharger un profil de configuration. Appuyez sur Autoriser, puis allez dans Réglages → Général → VPN et gestion des appareils, appuyez sur ChurchPresenter et installez.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Approuver le certificat</string>
+    <string name="cert_setup_step3_ios_body">Réglages → Général → Informations → Réglages de confiance des certificats → activer la confiance totale pour ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Installer le certificat</string>
+    <string name="cert_setup_step2_android_body">Chrome télécharge le fichier .crt. Appuyez dessus depuis la notification Téléchargements, choisissez "Certificat CA" et donnez-lui un nom comme "ChurchPresenter".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ "Impossible d\'installer depuis des sources inconnues" ?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android peut bloquer l\'installation si votre navigateur n\'est pas autorisé. Allez dans Paramètres → Applications → [votre navigateur] → Installer des applications inconnues et activez "Autoriser depuis cette source". Revenez ici et appuyez à nouveau sur le fichier.</string>
+    <string name="cert_setup_fingerprint_title">Vérifier l\'empreinte digitale (recommandé)</string>
+    <string name="cert_setup_fingerprint_body">Comparez cette empreinte avec ce que ChurchPresenter bureau affiche dans Paramètres → Serveur → SHA-256 du certificat. Elles doivent correspondre.</string>
+    <string name="cert_setup_fingerprint_unavailable">Connectez-vous d\'abord au serveur pour voir l\'empreinte</string>
+    <string name="cert_setup_done_button">Terminé — Certificat installé</string>
+    <string name="cert_setup_skip_button">Ignorer pour l\'instant</string>
+    <string name="cert_setup_skip_note">Vous pouvez revenir à ce guide à tout moment depuis Paramètres.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Connecter au bureau</string>
+    <string name="connect_setup_subtitle">Configuration unique</string>
+    <string name="connect_setup_intro">Scannez le QR code de ChurchPresenter bureau pour configurer automatiquement l\'adresse IP du serveur, le port et la clé API facultative.</string>
+    <string name="connect_setup_step1_title">Ouvrir les paramètres dans ChurchPresenter bureau</string>
+    <string name="connect_setup_step1_body">Sur votre ordinateur de bureau ou portable, ouvrez l\'application ChurchPresenter et cliquez sur l\'icône Paramètres.</string>
+    <string name="connect_setup_step2_title">Aller à l\'onglet Serveur</string>
+    <string name="connect_setup_step2_body">Dans Paramètres, sélectionnez l\'onglet Serveur pour trouver vos détails de connexion et le QR code.</string>
+    <string name="connect_setup_step3_title">Cliquer sur le bouton QR et scanner</string>
+    <string name="connect_setup_step3_body">Cliquez sur le bouton QR pour afficher le QR code de connexion, puis appuyez sur Scanner ci-dessous pour ouvrir la caméra et le scanner.</string>
+    <string name="connect_setup_scan_button">Scanner le QR Code</string>
+    <string name="connect_setup_connected">✓ Connecté à %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Terminé</string>
+    <string name="connect_setup_skip_button">Ignorer pour l\'instant</string>
+    <string name="connect_setup_skip_note">Vous pouvez scanner le QR code à tout moment depuis Paramètres.</string>
+</resources>
+

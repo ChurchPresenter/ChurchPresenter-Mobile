@@ -1,0 +1,198 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Název</string>
+    <string name="songs_table_header_book">Zpěvník</string>
+    <string name="songs_table_header_tune">Melodie</string>
+    <string name="songs_table_search_placeholder">Hledat podle # nebo názvu…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Žádné písně nejsou dostupné</string>
+    <string name="songs_table_no_match">Žádná píseň neodpovídá filtru</string>
+    <string name="songs_table_loading_error">Nepodařilo se načíst písně</string>
+    <string name="songs_table_retry">Zkusit znovu</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Všechny zpěvníky</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Otevřít nastavení</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Nastavení</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Host / IP adresa</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API klíč (volitelný)</string>
+    <string name="settings_api_key_placeholder">Ponechte prázdné, pokud není vyžadováno</string>
+    <string name="settings_save">Uložit</string>
+    <string name="settings_cancel">Zrušit</string>
+    <string name="settings_invalid_port">Port musí být číslo mezi 1 a 65535</string>
+    <string name="settings_host_empty">Host nemůže být prázdný</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Vzhled</string>
+    <string name="settings_theme_system">Systémový</string>
+    <string name="settings_theme_light">Světlý</string>
+    <string name="settings_theme_dark">Tmavý</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Písně</string>
+    <string name="tab_bible">Bible</string>
+    <string name="tab_pictures">Obrázky</string>
+    <string name="tab_presentation">Prezentace</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bible — brzy</string>
+    <string name="pictures_coming_soon">🖼  Obrázky — brzy</string>
+    <string name="presentation_coming_soon">📽  Prezentace — brzy</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Žádné prezentace nejsou dostupné</string>
+    <string name="presentation_loading_error">Nepodařilo se načíst prezentace</string>
+    <string name="presentation_retry">Zkusit znovu</string>
+    <string name="presentation_slides">snímků</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Žádné obrázky nejsou dostupné</string>
+    <string name="pictures_loading_error">Nepodařilo se načíst obrázky</string>
+    <string name="pictures_retry">Zkusit znovu</string>
+    <string name="pictures_photos">fotek</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Hledat knihy…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Žádné biblické knihy nejsou dostupné</string>
+    <string name="bible_no_match">Žádná kniha neodpovídá vyhledávání</string>
+    <string name="bible_chapter_label">Kapitola</string>
+    <string name="bible_chapters_title">Kapitoly</string>
+    <string name="bible_no_verses">Žádné verše nejsou dostupné</string>
+    <string name="bible_back">← Zpět</string>
+    <string name="bible_loading_error">Nepodařilo se načíst</string>
+    <string name="bible_retry">Zkusit znovu</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Program</string>
+    <string name="schedule_drawer_refresh">Obnovit program</string>
+    <string name="schedule_drawer_empty">Program je prázdný</string>
+    <string name="schedule_drawer_error">Chyba: %1$s</string>
+    <string name="schedule_drawer_open">Otevřít program</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Přidat do programu</string>
+    <string name="song_detail_schedule_request_sent">Požadavek odeslán ✓</string>
+    <string name="song_detail_project_to_screen">Promítnout na obrazovku</string>
+    <string name="song_detail_stop_projecting">Zastavit promítání</string>
+    <string name="song_detail_fab_actions">Akce</string>
+    <string name="song_detail_fab_close_actions">Zavřít akce</string>
+    <string name="song_detail_projecting_badge">▶  Promítá se</string>
+    <string name="song_detail_no_lyrics">Text písně není dostupný</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Přidat do programu</string>
+    <string name="bible_detail_schedule_request_sent">Požadavek odeslán ✓</string>
+    <string name="bible_detail_project_to_screen">Promítnout na obrazovku</string>
+    <string name="bible_detail_stop_projecting">Zastavit promítání</string>
+    <string name="bible_detail_fab_actions">Akce</string>
+    <string name="bible_detail_fab_close_actions">Zavřít akce</string>
+    <string name="bible_detail_projecting_badge">▶  Promítá se</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Přidat do programu</string>
+    <string name="pictures_schedule_request_sent">Požadavek odeslán ✓</string>
+    <string name="pictures_project_to_screen">Promítnout na obrazovku</string>
+    <string name="pictures_stop_projecting">Zastavit promítání</string>
+    <string name="pictures_pick_from_device">Vybrat ze zařízení</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Přidat do programu</string>
+    <string name="action_project_to_screen">Promítnout na obrazovku</string>
+    <string name="action_stop_projecting">Zastavit promítání</string>
+    <string name="pictures_uploading">Nahrávání…</string>
+    <string name="upload_overlay_subtitle">Čekejte prosím, nezavírejte aplikaci</string>
+    <string name="upload_overlay_photo_counter">Fotka %1$d z %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Obrázek přidán do programu</string>
+    <string name="toast_pictures_failed_to_add_schedule">Nepodařilo se přidat obrázek do programu: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Přidat do programu</string>
+    <string name="presentation_schedule_request_sent">Požadavek odeslán ✓</string>
+    <string name="presentation_project_to_screen">Promítnout na obrazovku</string>
+    <string name="presentation_stop_projecting">Zastavit promítání</string>
+    <string name="presentation_upload_file">Nahrát prezentaci</string>
+    <string name="presentation_uploading">Nahrávání…</string>
+    <string name="toast_presentation_added_to_schedule">Prezentace přidána do programu</string>
+    <string name="toast_presentation_failed_to_add_schedule">Nepodařilo se přidat prezentaci do programu: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Nepodařilo se vybrat prezentaci: %1$s</string>
+    <string name="toast_upload_unsupported">Nahrávání není tímto serverem podporováno. Aktualizujte ChurchPresenter na počítači.</string>
+    <string name="toast_upload_file_too_large">Soubor je příliš velký. Zkuste menší soubor.</string>
+    <string name="toast_upload_server_error">Server odmítl nahrání: %1$s</string>
+    <string name="toast_upload_failed">Nahrávání selhalo: %1$s</string>
+    <string name="toast_upload_reload_failed">Nahráno, ale nepodařilo se obnovit seznam: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Píseň se nyní zobrazuje na obrazovce</string>
+    <string name="toast_request_failed">Požadavek selhal</string>
+    <string name="toast_no_song_selected">Žádná píseň není vybrána</string>
+    <string name="toast_song_added_to_schedule">"%1$s" přidáno do programu</string>
+    <string name="toast_failed_to_project">Nepodařilo se promítnout píseň: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Nepodařilo se přidat do programu: %1$s</string>
+    <string name="toast_request_denied">Požadavek zamítnut</string>
+    <string name="toast_session_blocked">Relace zablokována — další požadavky nebudou přijaty</string>
+    <string name="toast_request_rejected">Požadavek odmítnut serverem (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Požadavek odmítnut: %1$s</string>
+    <string name="toast_bible_live">Biblický úryvek se nyní zobrazuje na obrazovce</string>
+    <string name="toast_bible_added_to_schedule">"%1$s" přidáno do programu</string>
+    <string name="toast_failed_to_project_bible">Nepodařilo se promítnout: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Nepodařilo se přidat do programu: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server nastaven na %1$s:%2$s</string>
+    <string name="qr_scan_button">Skenovat QR kód</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Důvěřovat certifikátu serveru</string>
+    <string name="cert_setup_subtitle">Jednorázové nastavení</string>
+    <string name="cert_setup_intro">ChurchPresenter používá soukromý HTTPS certifikát pro bezpečnou komunikaci. Musíte ho jednou nainstalovat, aby vaše zařízení důvěřovalo připojení.</string>
+    <string name="cert_setup_scan_title">Naskenujte QR kód certifikátu</string>
+    <string name="cert_setup_scan_desktop_hint">V ChurchPresenter na počítači: Nastavení → Server → stiskněte "Stáhnout cert." pro zobrazení QR kódu.</string>
+    <string name="cert_setup_scan_button">Skenovat QR kód</string>
+    <string name="cert_setup_scan_or_divider">nebo použít uloženou adresu</string>
+    <string name="cert_setup_url_scanned">✓ URL naskenováno</string>
+    <string name="cert_setup_url_label">URL certifikátu</string>
+    <string name="cert_setup_open_button">Otevřít URL certifikátu</string>
+    <string name="cert_setup_step2_ios_title">iOS — Nainstalovat profil</string>
+    <string name="cert_setup_step2_ios_body">Safari nabídne stažení konfiguračního profilu. Klepněte na Povolit, poté přejděte do Nastavení → Obecné → VPN a správa zařízení, klepněte na ChurchPresenter a nainstalujte.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Důvěřovat certifikátu</string>
+    <string name="cert_setup_step3_ios_body">Nastavení → Obecné → O zařízení → Nastavení důvěryhodnosti certifikátů → povolit plnou důvěru pro ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Nainstalovat certifikát</string>
+    <string name="cert_setup_step2_android_body">Chrome stáhne soubor .crt. Klepněte na něj v oznámení Stahování, zvolte "Certifikát CA" a pojmenujte ho "ChurchPresenter".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ "Nelze nainstalovat z neznámých zdrojů"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android může blokovat instalaci, pokud váš prohlížeč nemá oprávnění. Přejděte do Nastavení → Aplikace → [váš prohlížeč] → Instalace neznámých aplikací a povolte "Povolit z tohoto zdroje". Vraťte se sem a znovu klepněte na soubor.</string>
+    <string name="cert_setup_fingerprint_title">Ověřit otisk (doporučeno)</string>
+    <string name="cert_setup_fingerprint_body">Porovnejte tento otisk s tím, co zobrazuje ChurchPresenter na počítači v Nastavení → Server → SHA-256 certifikátu. Musí se shodovat.</string>
+    <string name="cert_setup_fingerprint_unavailable">Nejprve se připojte k serveru, abyste viděli otisk</string>
+    <string name="cert_setup_done_button">Hotovo — Certifikát nainstalován</string>
+    <string name="cert_setup_skip_button">Přeskočit</string>
+    <string name="cert_setup_skip_note">K tomuto průvodci se můžete kdykoli vrátit z Nastavení.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Připojit k počítači</string>
+    <string name="connect_setup_subtitle">Jednorázové nastavení</string>
+    <string name="connect_setup_intro">Naskenujte QR kód z ChurchPresenter na počítači a automaticky nastavte IP adresu serveru, port a volitelný API klíč.</string>
+    <string name="connect_setup_step1_title">Otevřete Nastavení v ChurchPresenter na počítači</string>
+    <string name="connect_setup_step1_body">Na počítači otevřete aplikaci ChurchPresenter a klikněte na ikonu Nastavení.</string>
+    <string name="connect_setup_step2_title">Přejděte na záložku Server</string>
+    <string name="connect_setup_step2_body">V Nastavení vyberte záložku Server, kde najdete údaje o připojení a QR kód.</string>
+    <string name="connect_setup_step3_title">Klikněte na tlačítko QR a naskenujte</string>
+    <string name="connect_setup_step3_body">Klikněte na tlačítko QR pro zobrazení QR kódu připojení, poté klepněte na Skenovat níže pro otevření kamery a naskenování.</string>
+    <string name="connect_setup_scan_button">Skenovat QR kód</string>
+    <string name="connect_setup_connected">✓ Připojeno k %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Hotovo</string>
+    <string name="connect_setup_skip_button">Přeskočit</string>
+    <string name="connect_setup_skip_note">QR kód můžete kdykoli naskenovat z Nastavení.</string>
+</resources>
+

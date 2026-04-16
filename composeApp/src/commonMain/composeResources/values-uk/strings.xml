@@ -1,0 +1,198 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Назва</string>
+    <string name="songs_table_header_book">Збірник</string>
+    <string name="songs_table_header_tune">Мелодія</string>
+    <string name="songs_table_search_placeholder">Пошук за # або назвою…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Немає доступних пісень</string>
+    <string name="songs_table_no_match">Жодна пісня не відповідає фільтру</string>
+    <string name="songs_table_loading_error">Не вдалося завантажити пісні</string>
+    <string name="songs_table_retry">Повторити</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Всі збірники</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Відкрити налаштування</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_server_section">Сервер</string>
+    <string name="settings_host_label">Хост / IP-адреса</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Порт</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API-ключ (необов\'язково)</string>
+    <string name="settings_api_key_placeholder">Залиште порожнім, якщо не потрібно</string>
+    <string name="settings_save">Зберегти</string>
+    <string name="settings_cancel">Скасувати</string>
+    <string name="settings_invalid_port">Порт має бути числом від 1 до 65535</string>
+    <string name="settings_host_empty">Хост не може бути порожнім</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Зовнішній вигляд</string>
+    <string name="settings_theme_system">Системна</string>
+    <string name="settings_theme_light">Світла</string>
+    <string name="settings_theme_dark">Темна</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Пісні</string>
+    <string name="tab_bible">Біблія</string>
+    <string name="tab_pictures">Зображення</string>
+    <string name="tab_presentation">Презентація</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Біблія — незабаром</string>
+    <string name="pictures_coming_soon">🖼  Зображення — незабаром</string>
+    <string name="presentation_coming_soon">📽  Презентація — незабаром</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Немає доступних презентацій</string>
+    <string name="presentation_loading_error">Не вдалося завантажити презентації</string>
+    <string name="presentation_retry">Повторити</string>
+    <string name="presentation_slides">слайдів</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Немає доступних зображень</string>
+    <string name="pictures_loading_error">Не вдалося завантажити зображення</string>
+    <string name="pictures_retry">Повторити</string>
+    <string name="pictures_photos">фото</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Пошук книг…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Немає доступних книг Біблії</string>
+    <string name="bible_no_match">Жодна книга не відповідає пошуку</string>
+    <string name="bible_chapter_label">Розділ</string>
+    <string name="bible_chapters_title">Розділи</string>
+    <string name="bible_no_verses">Немає доступних віршів</string>
+    <string name="bible_back">← Назад</string>
+    <string name="bible_loading_error">Не вдалося завантажити</string>
+    <string name="bible_retry">Повторити</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Програма</string>
+    <string name="schedule_drawer_refresh">Оновити програму</string>
+    <string name="schedule_drawer_empty">Немає елементів програми</string>
+    <string name="schedule_drawer_error">Помилка: %1$s</string>
+    <string name="schedule_drawer_open">Відкрити програму</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Додати до програми</string>
+    <string name="song_detail_schedule_request_sent">Запит надіслано ✓</string>
+    <string name="song_detail_project_to_screen">Показати на екрані</string>
+    <string name="song_detail_stop_projecting">Зупинити показ</string>
+    <string name="song_detail_fab_actions">Дії</string>
+    <string name="song_detail_fab_close_actions">Закрити дії</string>
+    <string name="song_detail_projecting_badge">▶  Показується</string>
+    <string name="song_detail_no_lyrics">Текст пісні відсутній</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Додати до програми</string>
+    <string name="bible_detail_schedule_request_sent">Запит надіслано ✓</string>
+    <string name="bible_detail_project_to_screen">Показати на екрані</string>
+    <string name="bible_detail_stop_projecting">Зупинити показ</string>
+    <string name="bible_detail_fab_actions">Дії</string>
+    <string name="bible_detail_fab_close_actions">Закрити дії</string>
+    <string name="bible_detail_projecting_badge">▶  Показується</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Додати до програми</string>
+    <string name="pictures_schedule_request_sent">Запит надіслано ✓</string>
+    <string name="pictures_project_to_screen">Показати на екрані</string>
+    <string name="pictures_stop_projecting">Зупинити показ</string>
+    <string name="pictures_pick_from_device">Вибрати з пристрою</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Додати до програми</string>
+    <string name="action_project_to_screen">Показати на екрані</string>
+    <string name="action_stop_projecting">Зупинити показ</string>
+    <string name="pictures_uploading">Завантаження…</string>
+    <string name="upload_overlay_subtitle">Будь ласка, зачекайте, не закривайте додаток</string>
+    <string name="upload_overlay_photo_counter">Фото %1$d з %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Зображення додано до програми</string>
+    <string name="toast_pictures_failed_to_add_schedule">Не вдалося додати зображення до програми: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Додати до програми</string>
+    <string name="presentation_schedule_request_sent">Запит надіслано ✓</string>
+    <string name="presentation_project_to_screen">Показати на екрані</string>
+    <string name="presentation_stop_projecting">Зупинити показ</string>
+    <string name="presentation_upload_file">Завантажити презентацію</string>
+    <string name="presentation_uploading">Завантаження…</string>
+    <string name="toast_presentation_added_to_schedule">Презентацію додано до програми</string>
+    <string name="toast_presentation_failed_to_add_schedule">Не вдалося додати презентацію до програми: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Не вдалося вибрати презентацію: %1$s</string>
+    <string name="toast_upload_unsupported">Завантаження не підтримується цим сервером. Оновіть ChurchPresenter на комп\'ютері.</string>
+    <string name="toast_upload_file_too_large">Файл занадто великий. Спробуйте менший файл.</string>
+    <string name="toast_upload_server_error">Сервер відхилив завантаження: %1$s</string>
+    <string name="toast_upload_failed">Завантаження не вдалося: %1$s</string>
+    <string name="toast_upload_reload_failed">Завантажено, але не вдалося оновити список: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Пісня зараз показується на екрані</string>
+    <string name="toast_request_failed">Запит не вдався</string>
+    <string name="toast_no_song_selected">Пісню не вибрано</string>
+    <string name="toast_song_added_to_schedule">"%1$s" додано до програми</string>
+    <string name="toast_failed_to_project">Не вдалося показати пісню: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Не вдалося додати до програми: %1$s</string>
+    <string name="toast_request_denied">Запит відхилено</string>
+    <string name="toast_session_blocked">Сесію заблоковано — подальші запити не прийматимуться</string>
+    <string name="toast_request_rejected">Запит відхилено сервером (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Запит відхилено: %1$s</string>
+    <string name="toast_bible_live">Біблійний уривок зараз показується на екрані</string>
+    <string name="toast_bible_added_to_schedule">"%1$s" додано до програми</string>
+    <string name="toast_failed_to_project_bible">Не вдалося показати: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Не вдалося додати до програми: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Сервер встановлено на %1$s:%2$s</string>
+    <string name="qr_scan_button">Сканувати QR-код</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Довіряти сертифікату сервера</string>
+    <string name="cert_setup_subtitle">Одноразове налаштування</string>
+    <string name="cert_setup_intro">ChurchPresenter використовує приватний HTTPS-сертифікат для безпечного зв\'язку. Потрібно встановити його один раз, щоб ваш пристрій довіряв з\'єднанню.</string>
+    <string name="cert_setup_scan_title">Відскануйте QR-код сертифіката</string>
+    <string name="cert_setup_scan_desktop_hint">У ChurchPresenter на комп\'ютері: Налаштування → Сервер → натисніть "Завантажити серт." для відображення QR-коду.</string>
+    <string name="cert_setup_scan_button">Сканувати QR-код</string>
+    <string name="cert_setup_scan_or_divider">або використати збережену адресу</string>
+    <string name="cert_setup_url_scanned">✓ URL відскановано</string>
+    <string name="cert_setup_url_label">URL сертифіката</string>
+    <string name="cert_setup_open_button">Відкрити URL сертифіката</string>
+    <string name="cert_setup_step2_ios_title">iOS — Встановити профіль</string>
+    <string name="cert_setup_step2_ios_body">Safari запропонує завантажити профіль конфігурації. Натисніть Дозволити, потім перейдіть до Налаштування → Основні → VPN та керування пристроєм, натисніть ChurchPresenter і встановіть.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Довіряти сертифікату</string>
+    <string name="cert_setup_step3_ios_body">Налаштування → Основні → Про пристрій → Налаштування довіри сертифікатів → увімкніть повну довіру для ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Встановити сертифікат</string>
+    <string name="cert_setup_step2_android_body">Chrome завантажить файл .crt. Натисніть на нього в сповіщенні Завантаження, виберіть "Сертифікат ЦС" і дайте назву "ChurchPresenter".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ "Неможливо встановити з невідомих джерел"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android може заблокувати встановлення, якщо ваш браузер не має дозволу. Перейдіть до Налаштування → Програми → [ваш браузер] → Встановлення невідомих програм і увімкніть "Дозволити з цього джерела". Поверніться сюди і натисніть файл знову.</string>
+    <string name="cert_setup_fingerprint_title">Перевірити відбиток (рекомендовано)</string>
+    <string name="cert_setup_fingerprint_body">Порівняйте цей відбиток із тим, що показує ChurchPresenter на комп\'ютері в Налаштування → Сервер → SHA-256 сертифіката. Вони мають збігатися.</string>
+    <string name="cert_setup_fingerprint_unavailable">Спочатку підключіться до сервера, щоб побачити відбиток</string>
+    <string name="cert_setup_done_button">Готово — Сертифікат встановлено</string>
+    <string name="cert_setup_skip_button">Пропустити зараз</string>
+    <string name="cert_setup_skip_note">Ви можете повернутися до цього посібника будь-коли з Налаштувань.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Підключитися до комп\'ютера</string>
+    <string name="connect_setup_subtitle">Одноразове налаштування</string>
+    <string name="connect_setup_intro">Відскануйте QR-код з ChurchPresenter на комп\'ютері, щоб автоматично налаштувати IP-адресу сервера, порт та необов\'язковий API-ключ.</string>
+    <string name="connect_setup_step1_title">Відкрийте Налаштування в ChurchPresenter на комп\'ютері</string>
+    <string name="connect_setup_step1_body">На вашому комп\'ютері відкрийте програму ChurchPresenter і натисніть значок Налаштування.</string>
+    <string name="connect_setup_step2_title">Перейдіть на вкладку Сервер</string>
+    <string name="connect_setup_step2_body">У Налаштуваннях виберіть вкладку Сервер, щоб знайти деталі підключення та QR-код.</string>
+    <string name="connect_setup_step3_title">Натисніть кнопку QR і відскануйте</string>
+    <string name="connect_setup_step3_body">Натисніть кнопку QR для відображення QR-коду підключення, потім натисніть Сканувати нижче, щоб відкрити камеру і відсканувати його.</string>
+    <string name="connect_setup_scan_button">Сканувати QR-код</string>
+    <string name="connect_setup_connected">✓ Підключено до %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Готово</string>
+    <string name="connect_setup_skip_button">Пропустити зараз</string>
+    <string name="connect_setup_skip_note">Ви можете відсканувати QR-код будь-коли з Налаштувань.</string>
+</resources>
+
