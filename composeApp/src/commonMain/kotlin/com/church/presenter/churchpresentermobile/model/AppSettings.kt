@@ -15,6 +15,7 @@ private const val KEY_DEVICE_ID = "device_id"
 private const val KEY_FCM_TOKEN        = "fcm_token"
 private const val KEY_APP_OPEN_COUNT   = "app_open_count"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
+private const val KEY_CERT_TRUSTED     = "cert_trusted"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -128,6 +129,15 @@ class AppSettings {
     var isSetupComplete: Boolean
         get() = storage.getInt(KEY_SETUP_COMPLETE, 0) == 1
         set(value) { storage.putInt(KEY_SETUP_COMPLETE, if (value) 1 else 0) }
+
+    /**
+     * True once the user has completed (or explicitly skipped) the first-launch
+     * certificate trust setup flow. When false, [App] will show [CertSetupScreen]
+     * after the initial settings save so the user can install the CA certificate.
+     */
+    var isCertTrusted: Boolean
+        get() = storage.getInt(KEY_CERT_TRUSTED, 0) == 1
+        set(value) { storage.putInt(KEY_CERT_TRUSTED, if (value) 1 else 0) }
 
     /** Builds the full HTTPS API base URL from the current host and port. */
     val apiBaseUrl: String

@@ -18,6 +18,9 @@ fun initSettingsContext(context: Context) {
     appContext = context.applicationContext
 }
 
+/** Returns the stored application [Context], or null if [initSettingsContext] hasn't been called yet. */
+fun getAppContext(): Context? = appContext
+
 /**
  * Returns true when the app is running inside an Android emulator.
  * The emulator cannot reach the host machine via the LAN IP — it must use 10.0.2.2.

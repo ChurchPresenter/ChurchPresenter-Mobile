@@ -152,4 +152,30 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server set to %1$s:%2$s</string>
     <string name="qr_scan_button">Scan QR Code</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Trust Server Certificate</string>
+    <string name="cert_setup_subtitle">One-time setup required</string>
+    <string name="cert_setup_intro">ChurchPresenter uses a private HTTPS certificate for secure communication. You need to install it once so your device trusts the connection.</string>
+    <string name="cert_setup_scan_title">Scan the certificate QR code</string>
+    <string name="cert_setup_scan_desktop_hint">On ChurchPresenter desktop: Settings → Server → press "Download Cert" to show the QR code.</string>
+    <string name="cert_setup_scan_button">Scan QR Code</string>
+    <string name="cert_setup_scan_or_divider">or use saved address</string>
+    <string name="cert_setup_url_scanned">✓ URL scanned</string>
+    <string name="cert_setup_url_label">Certificate URL</string>
+    <string name="cert_setup_open_button">Open Certificate URL</string>
+    <string name="cert_setup_step2_ios_title">iOS — Install the profile</string>
+    <string name="cert_setup_step2_ios_body">Safari will ask to download a configuration profile. Tap Allow, then go to Settings → General → VPN &amp; Device Management, tap ChurchPresenter and install.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Trust the certificate</string>
+    <string name="cert_setup_step3_ios_body">Settings → General → About → Certificate Trust Settings → enable full trust for ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Install the certificate</string>
+    <string name="cert_setup_step2_android_body">Chrome downloads the .crt file. Tap it from the Downloads notification, choose "CA Certificate" and give it a name like "ChurchPresenter".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ "Can't install from unknown sources"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android may block the install if your browser isn't allowed to install files. Go to Settings → Apps → [your browser] → Install unknown apps, then enable "Allow from this source". Return here and tap the file again.</string>
+    <string name="cert_setup_fingerprint_title">Verify fingerprint (recommended)</string>
+    <string name="cert_setup_fingerprint_body">Compare this fingerprint with what ChurchPresenter desktop shows in Settings → Server → Certificate SHA-256. They must match.</string>
+    <string name="cert_setup_fingerprint_unavailable">Connect to the server first to see the fingerprint</string>
+    <string name="cert_setup_done_button">Done — Certificate Installed</string>
+    <string name="cert_setup_skip_button">Skip for now</string>
+    <string name="cert_setup_skip_note">You can return to this guide anytime from Settings.</string>
 </resources>

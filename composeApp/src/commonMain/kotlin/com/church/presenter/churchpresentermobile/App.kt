@@ -60,6 +60,7 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
+import com.church.presenter.churchpresentermobile.ui.CertSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
 import com.church.presenter.churchpresentermobile.ui.PresentationScreen
 import com.church.presenter.churchpresentermobile.ui.ScheduleDrawerContent
@@ -146,8 +147,13 @@ fun App() {
 
     // Incremented each time the user saves settings; screens react via LaunchedEffect
     var settingsSaveToken by remember { mutableStateOf(0) }
-    // Auto-open settings on first launch so users configure their server IP and port.
-    var showSettings by remember { mutableStateOf(!appSettings.isSetupComplete) }
+    // Auto-open settings on first launch — only when cert setup has already been seen
+    // (or cert is already trusted), so cert setup has priority on a fresh install.
+    var showSettings by remember {
+        mutableStateOf(!appSettings.isSetupComplete && appSettings.isCertTrusted)
+    }
+    // Show cert setup right after splash whenever the cert hasn't been trusted yet.
+    var showCertSetup by remember { mutableStateOf(!appSettings.isCertTrusted) }
 
     // Apply deep-linked settings and notify screens to reload.
     // deepLinkConnectedMsg is evaluated in composable scope so it picks up the
@@ -533,6 +539,31 @@ fun App() {
                         themeMode = appSettings.themeMode
                         // Signal every screen to rebuild its service and reload data
                         settingsSaveToken++
+                        // After the first-ever settings save, guide the user through
+                        // certificate trust if they haven't done it yet.
+                        if (!appSettings.isCertTrusted) {
+                            showSettings = false
+                            showCertSetup = true
+                        }
+                    },
+                    onCertSetup = {
+                        showSettings = false
+                        showCertSetup = true
+                    }
+                )
+            }
+
+            if (showCertSetup) {
+                CertSetupScreen(
+                    onDone = {
+                        appSettings.isCertTrusted = true
+                        showCertSetup = false
+                        // If server address hasn't been configured yet, open settings next
+                        if (!appSettings.isSetupComplete) showSettings = true
+                    },
+                    onSkip = {
+                        showCertSetup = false
+                        if (!appSettings.isSetupComplete) showSettings = true
                     }
                 )
             }

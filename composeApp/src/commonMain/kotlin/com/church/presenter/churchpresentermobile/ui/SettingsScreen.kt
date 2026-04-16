@@ -83,7 +83,8 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsScreen(
     appSettings: AppSettings,
     onDismiss: () -> Unit,
-    onSaved: () -> Unit
+    onSaved: () -> Unit,
+    onCertSetup: (() -> Unit)? = null,
 ) {
     val viewModel: SettingsViewModel = viewModel { SettingsViewModel(appSettings) }
     val host by viewModel.host.collectAsState()
@@ -292,6 +293,46 @@ fun SettingsScreen(
                         selected = themeMode,
                         onSelect = { viewModel.setThemeMode(it) }
                     )
+
+                    // ── Certificate Setup ─────────────────────────────────
+                    HorizontalDivider()
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Certificate Trust",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = if (appSettings.isCertTrusted) "✓ Certificate installed" else "Not yet installed",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (appSettings.isCertTrusted)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (onCertSetup != null) {
+                            OutlinedButton(
+                                onClick = {
+                                    viewModel.cancel()
+                                    onDismiss()
+                                    onCertSetup()
+                                },
+                                modifier = Modifier.padding(start = 8.dp)
+                            ) {
+                                Text(
+                                    text = if (appSettings.isCertTrusted) "Re-run setup" else "Setup",
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+                    }
 
                     // ── Draft URL preview ─────────────────────────────────
                     if (urlChanged) {

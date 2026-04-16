@@ -11,3 +11,7 @@ private external fun jsRandomUUID(): String
 
 actual fun generateUUID(): String = jsRandomUUID()
 
+@JsFun("(url) => { window.open(url, '_blank'); }")
+private external fun jsOpenUrl(url: String)
+
+actual fun openUrl(url: String) = jsOpenUrl(url)
