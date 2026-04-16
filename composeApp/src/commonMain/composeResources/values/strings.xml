@@ -178,4 +178,20 @@
     <string name="cert_setup_done_button">Done — Certificate Installed</string>
     <string name="cert_setup_skip_button">Skip for now</string>
     <string name="cert_setup_skip_note">You can return to this guide anytime from Settings.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Connect to Desktop</string>
+    <string name="connect_setup_subtitle">One-time setup</string>
+    <string name="connect_setup_intro">Scan the QR code from ChurchPresenter desktop to set your server IP address, port, and optional API key automatically.</string>
+    <string name="connect_setup_step1_title">Open Settings in ChurchPresenter desktop</string>
+    <string name="connect_setup_step1_body">On your desktop or laptop, open the ChurchPresenter app and click the Settings icon.</string>
+    <string name="connect_setup_step2_title">Go to the Server tab</string>
+    <string name="connect_setup_step2_body">Inside Settings, select the Server tab to find your connection details and QR code.</string>
+    <string name="connect_setup_step3_title">Click the QR Code button and scan</string>
+    <string name="connect_setup_step3_body">Click the QR button to display the connection QR code, then tap Scan below to open your camera and scan it.</string>
+    <string name="connect_setup_scan_button">Scan QR Code</string>
+    <string name="connect_setup_connected">✓ Connected to %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Done</string>
+    <string name="connect_setup_skip_button">Skip for now</string>
+    <string name="connect_setup_skip_note">You can scan the QR code anytime from Settings.</string>
 </resources>

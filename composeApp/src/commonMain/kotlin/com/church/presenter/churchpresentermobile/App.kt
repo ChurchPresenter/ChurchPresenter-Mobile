@@ -61,6 +61,7 @@ import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.CertSetupScreen
+import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
 import com.church.presenter.churchpresentermobile.ui.PresentationScreen
 import com.church.presenter.churchpresentermobile.ui.ScheduleDrawerContent
@@ -154,6 +155,10 @@ fun App() {
     }
     // Show cert setup right after splash whenever the cert hasn't been trusted yet.
     var showCertSetup by remember { mutableStateOf(!appSettings.isCertTrusted) }
+    // Show connect setup after cert setup (or on launch if cert done but connect not done).
+    var showConnectSetup by remember {
+        mutableStateOf(appSettings.isCertTrusted && !appSettings.isConnectSetupDone)
+    }
 
     // Apply deep-linked settings and notify screens to reload.
     // deepLinkConnectedMsg is evaluated in composable scope so it picks up the
@@ -163,7 +168,10 @@ fun App() {
     LaunchedEffect(deepLinkCount) {
         if (deepLinkCount > 0) {
             settingsSaveToken++
-            showSettings = true   // open settings so the user sees the applied values
+            // Don't open settings if the connect-setup screen handled the scan
+            if (!showConnectSetup) {
+                showSettings = true
+            }
             snackbarHostState.showSnackbar(
                 message  = deepLinkConnectedMsg,
                 duration = SnackbarDuration.Short
@@ -558,12 +566,36 @@ fun App() {
                     onDone = {
                         appSettings.isCertTrusted = true
                         showCertSetup = false
-                        // If server address hasn't been configured yet, open settings next
-                        if (!appSettings.isSetupComplete) showSettings = true
+                        if (!appSettings.isConnectSetupDone) {
+                            showConnectSetup = true
+                        } else if (!appSettings.isSetupComplete) {
+                            showSettings = true
+                        }
                     },
                     onSkip = {
                         showCertSetup = false
-                        if (!appSettings.isSetupComplete) showSettings = true
+                        if (!appSettings.isConnectSetupDone) {
+                            showConnectSetup = true
+                        } else if (!appSettings.isSetupComplete) {
+                            showSettings = true
+                        }
+                    }
+                )
+            }
+
+            if (showConnectSetup) {
+                ConnectSetupScreen(
+                    appSettings = appSettings,
+                    onDone = {
+                        appSettings.isConnectSetupDone = true
+                        appSettings.isSetupComplete = true
+                        settingsSaveToken++
+                        showConnectSetup = false
+                    },
+                    onSkip = {
+                        appSettings.isConnectSetupDone = true
+                        appSettings.isSetupComplete = true
+                        showConnectSetup = false
                     }
                 )
             }
