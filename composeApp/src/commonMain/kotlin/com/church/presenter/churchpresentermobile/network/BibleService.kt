@@ -159,7 +159,7 @@ class BibleService(private val settings: AppSettings) {
                 verseRange  = verseRange
             ))
             Logger.d(TAG, "selectBibleVerse ▶ WS select_bible_verse  payload=$payload")
-            wsService.sendAction(WsMessageType.SELECT_BIBLE_VERSE, payload).getOrThrow()
+            wsService.sendAction(WsMessageType.SELECT_BIBLE_VERSE, payload, fireAndForget = true).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e) }
     }
 
@@ -169,7 +169,7 @@ class BibleService(private val settings: AppSettings) {
     suspend fun clearDisplay(): Result<Unit> {
         Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
+            wsService.sendAction(WsMessageType.CLEAR, "", fireAndForget = true).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

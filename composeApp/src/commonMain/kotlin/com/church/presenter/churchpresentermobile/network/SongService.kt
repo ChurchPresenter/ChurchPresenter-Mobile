@@ -177,7 +177,7 @@ class SongService(private val settings: AppSettings) {
                 )
             )
             Logger.d(TAG, "selectSong ▶ WS select_song  payload=$payload")
-            wsService.sendAction(WsMessageType.SELECT_SONG, payload).getOrThrow()
+            wsService.sendAction(WsMessageType.SELECT_SONG, payload, fireAndForget = true).getOrThrow()
         }.onFailure { e ->
             Logger.e(TAG, "selectSong — FAILED: ${e.message}", e)
         }
@@ -194,7 +194,7 @@ class SongService(private val settings: AppSettings) {
         return apiRunCatching {
             val payload = json.encodeToString(SelectSectionRequest(number = songNumber, section = verseIndex))
             Logger.d(TAG, "selectVerse ▶ WS select_song_section  section=$verseIndex  payload=$payload")
-            wsService.sendAction(WsMessageType.SELECT_SONG_SECTION, payload).getOrThrow()
+            wsService.sendAction(WsMessageType.SELECT_SONG_SECTION, payload, fireAndForget = true).getOrThrow()
         }.onFailure { e ->
             Logger.e(TAG, "selectVerse — FAILED: ${e.message}", e)
         }
@@ -206,7 +206,7 @@ class SongService(private val settings: AppSettings) {
     suspend fun clearDisplay(): Result<Unit> {
         Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
+            wsService.sendAction(WsMessageType.CLEAR, "", fireAndForget = true).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

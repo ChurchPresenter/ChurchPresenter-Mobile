@@ -126,7 +126,7 @@ class PresentationService(private val settings: AppSettings) {
         return apiRunCatching {
             val payload = json.encodeToString(SelectSlideWsPayload(id = id, index = slideIndex))
             Logger.d(TAG, "selectPresentation ▶ WS select_slide  id=$id  slideIndex=$slideIndex  payload=$payload")
-            wsService.sendAction(WsMessageType.SELECT_SLIDE, payload).getOrThrow()
+            wsService.sendAction(WsMessageType.SELECT_SLIDE, payload, fireAndForget = true).getOrThrow()
             "ok"
         }.onFailure { e ->
             Logger.e(TAG, "selectPresentation — FAILED: ${e.message}", e)
@@ -145,7 +145,7 @@ class PresentationService(private val settings: AppSettings) {
     suspend fun clearDisplay(): Result<Unit> {
         Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
+            wsService.sendAction(WsMessageType.CLEAR, "", fireAndForget = true).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

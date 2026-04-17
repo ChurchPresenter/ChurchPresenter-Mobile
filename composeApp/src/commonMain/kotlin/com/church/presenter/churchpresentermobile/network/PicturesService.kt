@@ -91,13 +91,9 @@ class PicturesService(private val settings: AppSettings) {
      */
     suspend fun selectPicture(folderId: String, fileName: String?, indexFallback: Int? = null): Result<Unit> {
         return apiRunCatching {
-            // WS select_picture only supports folder-id + index; use indexFallback (always provided by callers)
-            val payload = json.encodeToString(PictureSelectRequest(
-                folderId = folderId,
-                index    = indexFallback
-            ))
+            val payload = json.encodeToString(PictureSelectRequest(folderId = folderId, index = indexFallback))
             Logger.d(TAG, "selectPicture ▶ WS select_picture  folderId=$folderId  index=$indexFallback  payload=$payload")
-            wsService.sendAction(WsMessageType.SELECT_PICTURE, payload).getOrThrow()
+            wsService.sendAction(WsMessageType.SELECT_PICTURE, payload, fireAndForget = true).getOrThrow()
         }.onFailure { e ->
             Logger.e(TAG, "selectPicture — FAILED: ${e.message}", e)
         }
@@ -107,7 +103,7 @@ class PicturesService(private val settings: AppSettings) {
     suspend fun clearDisplay(): Result<Unit> {
         Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
+            wsService.sendAction(WsMessageType.CLEAR, "", fireAndForget = true).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

@@ -11,6 +11,7 @@ import io.ktor.websocket.readText
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 
 private const val TAG = "WebSocketService"
 
@@ -71,13 +72,18 @@ class WebSocketService(private val settings: AppSettings) {
     }
 
     /**
-     * Sends an action message over a WebSocket connection and waits for the server's
-     * acknowledgment frame.
+     * Sends an action message over a WebSocket connection.
      *
-     * @param type        Message type (e.g. [WsMessageType.PROJECT]).
-     * @param payloadJson The JSON-serialised payload body (will be double-encoded as a string).
+     * @param type           Message type (e.g. [WsMessageType.PROJECT]).
+     * @param payloadJson    The JSON-serialised payload body (will be double-encoded as a string).
+     * @param fireAndForget  When `true`, sends the frame and closes immediately without waiting
+     *                       for a server response. Use for instant commands that need no approval
+     *                       ([WsMessageType.SELECT_SONG], [WsMessageType.CLEAR], etc.).
+     *                       When `false` (default), waits for an `{"ok":…}` response frame —
+     *                       required for approval-gated commands ([WsMessageType.PROJECT],
+     *                       [WsMessageType.ADD_TO_SCHEDULE], etc.).
      */
-    suspend fun sendAction(type: String, payloadJson: String): Result<Unit> {
+    suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit> {
         val url = settings.wsBaseUrl
         Logger.d(TAG, "sendAction ▶ type=$type  url=$url")
         return apiRunCatching {
@@ -97,11 +103,26 @@ class WebSocketService(private val settings: AppSettings) {
                 Logger.d(TAG, "sendAction ▶ sending frame: ${envelope.take(300)}")
                 send(Frame.Text(envelope))
 
-                // Wait for server acknowledgment
-                for (frame in incoming) {
-                    if (frame is Frame.Text) {
+                if (fireAndForget) {
+                    // Instant command — no response expected, close immediately.
+                    close()
+                } else {
+                    // Approval-gated command — wait for {"ok": true/false} response,
+                    // skipping any server-push event frames sent on connect.
+                    for (frame in incoming) {
+                        if (frame !is Frame.Text) continue
                         val responseText = frame.readText()
-                        Logger.d(TAG, "sendAction ◀ received: $responseText")
+                        Logger.d(TAG, "sendAction ◀ received: ${responseText.take(200)}")
+                        val jsonObj = runCatching {
+                            json.parseToJsonElement(responseText).jsonObject
+                        }.getOrNull() ?: continue
+
+                        // Skip server-push events (have "type" but no "ok")
+                        if (jsonObj.containsKey("type") && !jsonObj.containsKey("ok")) {
+                            Logger.d(TAG, "sendAction — skipping server-push event: ${responseText.take(80)}")
+                            continue
+                        }
+
                         val response = runCatching {
                             json.decodeFromString<WsResponse>(responseText)
                         }.getOrNull()
@@ -114,8 +135,8 @@ class WebSocketService(private val settings: AppSettings) {
                         }
                         break
                     }
+                    close()
                 }
-                close()
             }
             Logger.d(TAG, "sendAction ◀ completed  type=$type")
         }.onFailure { e ->
