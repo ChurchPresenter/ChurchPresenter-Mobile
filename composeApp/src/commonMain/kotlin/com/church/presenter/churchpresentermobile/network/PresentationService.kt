@@ -39,8 +39,10 @@ private val json = Json {
  */
 class PresentationService(private val settings: AppSettings) {
     private val client: HttpClient = createHttpClient()
-    /** Separate client with no request/socket timeout for approval-required POSTs. */
-    private val actionClient: HttpClient = createActionHttpClient()
+    /** WebSocket service for approval-required actions (add-to-schedule). */
+    private val wsService: WebSocketService = WebSocketService(settings)
+    /** Separate client with no timeout — needed only for large file uploads. */
+    private val uploadClient: HttpClient = createActionHttpClient()
 
     init {
         Logger.d(TAG, "PresentationService created — baseUrl=${settings.apiBaseUrl}")
@@ -64,7 +66,7 @@ class PresentationService(private val settings: AppSettings) {
             if (!httpResponse.status.isSuccess()) {
                 throw Exception("HTTP $statusCode — ${raw.take(200)}")
             }
-            val imageBase = "https://${settings.host}:${settings.port}"
+            val imageBase = "http://${settings.host}:${settings.port}"
             val presentation = json.decodeFromString<Presentation>(raw)
             presentation.copy(
                 slides = presentation.slides?.map { slide ->
@@ -96,7 +98,7 @@ class PresentationService(private val settings: AppSettings) {
             }
             // Thumbnail URLs are root-relative (e.g. /api/presentations/…/slides/0),
             // so prefix with scheme+host+port only — NOT apiBaseUrl which already appends /api.
-            val imageBase = "https://${settings.host}:${settings.port}"
+            val imageBase = "http://${settings.host}:${settings.port}"
             val presentations = json.decodeFromString<PresentationsResponse>(raw)
                 .allPresentations
                 .map { presentation ->
@@ -158,12 +160,11 @@ class PresentationService(private val settings: AppSettings) {
     }
 
     /**
-     * Adds a presentation to the schedule via POST /api/schedule/add.
+     * Adds a presentation to the schedule via WebSocket add_to_schedule message.
      */
     suspend fun addToSchedule(presentation: Presentation): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SCHEDULE_ADD_ENDPOINT}"
         return apiRunCatching {
-            val body = json.encodeToString(
+            val payload = json.encodeToString(
                 PresentationScheduleAddRequest(
                     PresentationSchedulePayload(
                         id          = presentation.displayId,
@@ -172,14 +173,8 @@ class PresentationService(private val settings: AppSettings) {
                     )
                 )
             )
-            Logger.d(TAG, "addToSchedule ▶ POST $url  id=${presentation.displayId}  payload=$body")
-            val response = actionClient.post(url) {
-                contentType(ContentType.Application.Json)
-                setBody(body)
-                applyApiKey()
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "addToSchedule ◀ status=${response.status}  body=$responseBody")
+            Logger.d(TAG, "addToSchedule ▶ WS add_to_schedule  id=${presentation.displayId}  payload=$payload")
+            wsService.sendAction(WsMessageType.ADD_TO_SCHEDULE, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e) }
     }
 
@@ -213,8 +208,8 @@ class PresentationService(private val settings: AppSettings) {
         val body = """{"name":${json.encodeToString(fileName)},"data":${json.encodeToString(dataUri)}}"""
         Logger.d(TAG, "uploadPresentation ▶ POST $url  name=$fileName  mime=$mimeType  bytes=${fileBytes.size}  encodedBytes=${encoded.length}")
         return apiRunCatching {
-            // actionClient has no request/socket timeout — required for large files
-            val response = actionClient.post(url) {
+            // uploadClient has no request/socket timeout — required for large files
+            val response = uploadClient.post(url) {
                 contentType(ContentType.Application.Json)
                 setBody(body)
                 applyApiKey()
@@ -235,9 +230,10 @@ class PresentationService(private val settings: AppSettings) {
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
-        Logger.d(TAG, "closeClient — closing HTTP clients")
+        Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
         client.close()
-        actionClient.close()
+        uploadClient.close()
+        wsService.closeClient()
     }
 }
 

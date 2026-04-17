@@ -1,27 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Allows connections to any local/private network address using self-signed HTTPS
-    certificates.  OkHttp uses its own trust-all SSLContext so this config is
-    primarily a defence-in-depth measure and covers the Android HTTP stack as well.
+    Allows plain HTTP/WS (cleartext) to any host.
+    This app connects to a user-configured local network IP address, so the
+    server address is not known at build time and cannot be whitelisted by domain.
+    Cleartext is acceptable here because all traffic stays on the private LAN.
 -->
 <network-security-config>
-    <!--
-        Trust system + user CAs for all private-network ranges so self-signed
-        server certificates on any LAN subnet are accepted.
-    -->
-    <domain-config cleartextTrafficPermitted="false">
-        <!-- 192.168.x.x -->
-        <domain includeSubdomains="true">192.168.0.0</domain>
-        <!-- 10.x.x.x -->
-        <domain includeSubdomains="true">10.0.0.0</domain>
-        <!-- 172.16–31.x.x -->
-        <domain includeSubdomains="true">172.16.0.0</domain>
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system"/>
-            <certificates src="user"/>
         </trust-anchors>
-    </domain-config>
-    <!-- Extra trust for debug builds -->
+    </base-config>
     <debug-overrides>
         <trust-anchors>
             <certificates src="system"/>

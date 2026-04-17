@@ -6,9 +6,9 @@
         <true/>
 
         <!--
-            Allow connections to local Church Presenter servers that use self-signed
-            HTTPS certificates (e.g. 192.168.x.x:8765).  ATS would otherwise block
-            the TCP handshake before Ktor's handleChallenge ever fires.
+            Allow plain HTTP (http://) connections to local Church Presenter servers
+            on the LAN (e.g. 192.168.x.x:8765). The server no longer uses HTTPS —
+            no SSL certificates required.
         -->
         <key>NSAppTransportSecurity</key>
         <dict>

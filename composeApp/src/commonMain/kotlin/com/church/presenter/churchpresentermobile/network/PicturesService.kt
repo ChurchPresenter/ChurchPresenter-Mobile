@@ -32,8 +32,8 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  */
 class PicturesService(private val settings: AppSettings) {
     private val client: HttpClient = createHttpClient()
-    /** Separate client with no request/socket timeout for approval-required POSTs. */
-    private val actionClient: HttpClient = createActionHttpClient()
+    /** WebSocket service for approval-required actions (add-to-schedule). */
+    private val wsService: WebSocketService = WebSocketService(settings)
 
     init {
         Logger.d(TAG, "PicturesService created — baseUrl=${settings.apiBaseUrl}")
@@ -64,7 +64,7 @@ class PicturesService(private val settings: AppSettings) {
             }
             val folder = json.decodeFromString<PicturesFolder>(raw)
             // Thumbnail URLs are root-relative — prefix with scheme+host+port only (not /api)
-            val imageBase = "https://${settings.host}:${settings.port}"
+            val imageBase = "http://${settings.host}:${settings.port}"
             val resolved = folder.copy(
                 images = folder.images?.map { image ->
                     image.copy(thumbnailUrl = image.thumbnailUrl?.let { "$imageBase$it" })
@@ -130,19 +130,12 @@ class PicturesService(private val settings: AppSettings) {
      * @param displayText Human-readable label shown in the schedule.
      */
     suspend fun addToSchedule(folderId: String, imageIndex: Int, displayText: String): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SCHEDULE_ADD_ENDPOINT}"
         return apiRunCatching {
-            val body = json.encodeToString(
+            val payload = json.encodeToString(
                 PictureScheduleAddRequest(PictureSchedulePayload(folderId = folderId, imageIndex = imageIndex, displayText = displayText))
             )
-            Logger.d(TAG, "addToSchedule ▶ POST $url  payload=$body")
-            val response = actionClient.post(url) {
-                contentType(ContentType.Application.Json)
-                setBody(body)
-                applyApiKey()
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "addToSchedule ◀ status=${response.status}  body=$responseBody")
+            Logger.d(TAG, "addToSchedule ▶ WS add_to_schedule  payload=$payload")
+            wsService.sendAction(WsMessageType.ADD_TO_SCHEDULE, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e) }
     }
 
@@ -190,7 +183,7 @@ class PicturesService(private val settings: AppSettings) {
     fun closeClient() {
         Logger.d(TAG, "closeClient")
         client.close()
-        actionClient.close()
+        wsService.closeClient()
     }
 }
 

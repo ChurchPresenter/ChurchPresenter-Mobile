@@ -18,6 +18,12 @@ expect fun createImageHttpClient(): HttpClient
 expect fun createActionHttpClient(): HttpClient
 
 /**
+ * HTTP client configured with the WebSockets plugin for sending action messages
+ * over a WebSocket connection (ws://<host>:<port>/ws).
+ */
+expect fun createWebSocketClient(): HttpClient
+
+/**
  * Like [runCatching] but re-throws [CancellationException] so coroutine
  * cancellation propagates correctly instead of being silently swallowed as
  * a Result.failure and logged as an error.

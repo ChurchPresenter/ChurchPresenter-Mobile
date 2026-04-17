@@ -43,11 +43,11 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
      * Mirrors the formula in [AppSettings.apiBaseUrl] but uses the unsaved draft values.
      */
     val draftBaseUrl: StateFlow<String> = combine(_host, _port) { h, p ->
-        "https://${h.trim()}:${p.trim()}/api"
+        "http://${h.trim()}:${p.trim()}/api"
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = "https://${appSettings.host}:${appSettings.port}/api"
+        initialValue = "http://${appSettings.host}:${appSettings.port}/api"
     )
 
     /**

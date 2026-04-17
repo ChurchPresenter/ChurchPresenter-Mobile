@@ -62,8 +62,8 @@ private fun checkApiResponse(statusCode: Int, rawBody: String) {
  */
 class BibleService(private val settings: AppSettings) {
     private val client: HttpClient = createHttpClient()
-    /** Separate client with no request/socket timeout for approval-required POSTs. */
-    private val actionClient: HttpClient = createActionHttpClient()
+    /** WebSocket service for approval-required actions (project / add-to-schedule). */
+    private val wsService: WebSocketService = WebSocketService(settings)
 
     init {
         Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
@@ -208,27 +208,19 @@ class BibleService(private val settings: AppSettings) {
         verseNumber: Int,
         verseText: String
     ): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.PROJECT_ENDPOINT}"
         return apiRunCatching {
-            val payload = ProjectBibleRequest(
-                item = BibleItemPayload(
-                    bookName    = bookName,
-                    chapter     = chapter,
-                    verseNumber = verseNumber,
-                    verseText   = verseText
+            val payload = json.encodeToString(
+                ProjectBibleRequest(
+                    item = BibleItemPayload(
+                        bookName    = bookName,
+                        chapter     = chapter,
+                        verseNumber = verseNumber,
+                        verseText   = verseText
+                    )
                 )
             )
-            val body = json.encodeToString(payload)
-            Logger.d(TAG, "projectBibleVerse ▶ POST $url  payload=$body")
-            val response = actionClient.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "projectBibleVerse ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            Logger.d(TAG, "projectBibleVerse ▶ WS project  payload=$payload")
+            wsService.sendAction(WsMessageType.PROJECT, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "projectBibleVerse — FAILED: ${e.message}", e) }
     }
 
@@ -254,7 +246,6 @@ class BibleService(private val settings: AppSettings) {
         val sorted = verses.sortedBy { it.number }
         val numbers = sorted.map { it.number }
 
-        // Build verseRange string for multi-verse selections
         val verseRange: String? = if (sorted.size == 1) {
             null
         } else {
@@ -263,38 +254,29 @@ class BibleService(private val settings: AppSettings) {
             else numbers.joinToString(",")
         }
 
-        // Combine all verse texts with a newline separator
         val combinedText = sorted.joinToString("\n") { it.displayText }
 
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SCHEDULE_ADD_ENDPOINT}"
         return apiRunCatching {
-            val payload = ProjectBibleRequest(
-                item = BibleItemPayload(
-                    bookName    = bookName,
-                    chapter     = chapter,
-                    verseNumber = numbers.first(),
-                    verseText   = combinedText,
-                    verseRange  = verseRange
+            val payload = json.encodeToString(
+                ProjectBibleRequest(
+                    item = BibleItemPayload(
+                        bookName    = bookName,
+                        chapter     = chapter,
+                        verseNumber = numbers.first(),
+                        verseText   = combinedText,
+                        verseRange  = verseRange
+                    )
                 )
             )
-            val body = json.encodeToString(payload)
-            Logger.d(TAG, "addBibleToSchedule ▶ POST $url  verseRange=$verseRange  payload=$body")
-            val response = actionClient.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "addBibleToSchedule ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            Logger.d(TAG, "addBibleToSchedule ▶ WS add_to_schedule  verseRange=$verseRange  payload=$payload")
+            wsService.sendAction(WsMessageType.ADD_TO_SCHEDULE, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "addBibleToSchedule — FAILED: ${e.message}", e) }
     }
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
-        Logger.d(TAG, "closeClient — closing HTTP clients")
+        Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
         client.close()
-        actionClient.close()
+        wsService.closeClient()
     }
 }

@@ -106,6 +106,7 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.json)
+            implementation(libs.ktor.client.websockets)
             implementation(libs.kotlinx.serialization)
         }
         commonTest.dependencies {

@@ -63,8 +63,8 @@ private fun checkApiResponse(statusCode: Int, rawBody: String) {
  */
 class SongService(private val settings: AppSettings) {
     private val client: HttpClient = createHttpClient()
-    /** Separate client with no request/socket timeout for approval-required POSTs. */
-    private val actionClient: HttpClient = createActionHttpClient()
+    /** WebSocket service for approval-required actions (project / add-to-schedule). */
+    private val wsService: WebSocketService = WebSocketService(settings)
 
     init {
         Logger.d(TAG, "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
@@ -226,44 +226,24 @@ class SongService(private val settings: AppSettings) {
     }
 
     /**
-     * Sends the song to the presenter window immediately via POST /api/project.
+     * Sends the song to the presenter window immediately via WebSocket project message.
      */
     suspend fun projectSong(song: Song): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.PROJECT_ENDPOINT}"
         return apiRunCatching {
-            val body = json.encodeToString(song.toProjectRequest())
-            Logger.d(TAG, "projectSong ▶ POST $url")
-            Logger.d(TAG, "projectSong ▶ payload: $body")
-            val response = actionClient.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "projectSong ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            val payload = json.encodeToString(song.toProjectRequest())
+            Logger.d(TAG, "projectSong ▶ WS project  payload: $payload")
+            wsService.sendAction(WsMessageType.PROJECT, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "projectSong — FAILED: ${e.message}", e) }
     }
 
     /**
-     * Adds the song to the schedule list via POST /api/schedule/add (does not go live).
+     * Adds the song to the schedule list via WebSocket add_to_schedule message.
      */
     suspend fun addSongToSchedule(song: Song): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SCHEDULE_ADD_ENDPOINT}"
         return apiRunCatching {
-            val body = json.encodeToString(song.toProjectRequest())
-            Logger.d(TAG, "addSongToSchedule ▶ POST $url")
-            Logger.d(TAG, "addSongToSchedule ▶ payload: $body")
-            val response = actionClient.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "addSongToSchedule ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            val payload = json.encodeToString(song.toProjectRequest())
+            Logger.d(TAG, "addSongToSchedule ▶ WS add_to_schedule  payload: $payload")
+            wsService.sendAction(WsMessageType.ADD_TO_SCHEDULE, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "addSongToSchedule — FAILED: ${e.message}", e) }
     }
 
@@ -288,9 +268,9 @@ class SongService(private val settings: AppSettings) {
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
-        Logger.d(TAG, "closeClient — closing HTTP clients")
+        Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
         client.close()
-        actionClient.close()
+        wsService.closeClient()
     }
 }
 

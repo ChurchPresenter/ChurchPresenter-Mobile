@@ -60,7 +60,6 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
-import com.church.presenter.churchpresentermobile.ui.CertSetupScreen
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
 import com.church.presenter.churchpresentermobile.ui.PresentationScreen
@@ -148,16 +147,11 @@ fun App() {
 
     // Incremented each time the user saves settings; screens react via LaunchedEffect
     var settingsSaveToken by remember { mutableStateOf(0) }
-    // Auto-open settings on first launch — only when cert setup has already been seen
-    // (or cert is already trusted), so cert setup has priority on a fresh install.
-    var showSettings by remember {
-        mutableStateOf(!appSettings.isSetupComplete && appSettings.isCertTrusted)
-    }
-    // Show cert setup right after splash whenever the cert hasn't been trusted yet.
-    var showCertSetup by remember { mutableStateOf(!appSettings.isCertTrusted) }
-    // Show connect setup after cert setup (or on launch if cert done but connect not done).
+    // Settings are only opened manually by the user — not on first launch
+    var showSettings by remember { mutableStateOf(false) }
+    // Show connect QR-scan setup screen if the user hasn't completed it yet
     var showConnectSetup by remember {
-        mutableStateOf(appSettings.isCertTrusted && !appSettings.isConnectSetupDone)
+        mutableStateOf(!appSettings.isConnectSetupDone)
     }
 
     // Apply deep-linked settings and notify screens to reload.
@@ -539,45 +533,17 @@ fun App() {
                 SettingsScreen(
                     appSettings = appSettings,
                     onDismiss = {
-                        appSettings.isSetupComplete = true  // don't auto-open again
+                        appSettings.isSetupComplete = true
                         showSettings = false
                     },
                     onSaved = {
-                        // Pick up the new theme immediately
                         themeMode = appSettings.themeMode
-                        // Signal every screen to rebuild its service and reload data
                         settingsSaveToken++
                         // After the first-ever settings save, guide the user through
-                        // certificate trust if they haven't done it yet.
-                        if (!appSettings.isCertTrusted) {
+                        // QR-scan connect setup if they haven't done it yet.
+                        if (!appSettings.isConnectSetupDone) {
                             showSettings = false
-                            showCertSetup = true
-                        }
-                    },
-                    onCertSetup = {
-                        showSettings = false
-                        showCertSetup = true
-                    }
-                )
-            }
-
-            if (showCertSetup) {
-                CertSetupScreen(
-                    onDone = {
-                        appSettings.isCertTrusted = true
-                        showCertSetup = false
-                        if (!appSettings.isConnectSetupDone) {
                             showConnectSetup = true
-                        } else if (!appSettings.isSetupComplete) {
-                            showSettings = true
-                        }
-                    },
-                    onSkip = {
-                        showCertSetup = false
-                        if (!appSettings.isConnectSetupDone) {
-                            showConnectSetup = true
-                        } else if (!appSettings.isSetupComplete) {
-                            showSettings = true
                         }
                     }
                 )
