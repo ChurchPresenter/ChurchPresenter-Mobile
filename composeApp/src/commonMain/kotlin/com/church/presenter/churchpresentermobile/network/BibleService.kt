@@ -14,11 +14,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -154,42 +150,26 @@ class BibleService(private val settings: AppSettings) {
         verseText: String,
         verseRange: String? = null
     ): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.BIBLE_SELECT_ENDPOINT}"
         return apiRunCatching {
-            val payload = BibleSelectRequest(
+            val payload = json.encodeToString(BibleSelectRequest(
                 bookName    = bookName,
                 chapter     = chapter,
                 verseNumber = verseNumber,
                 verseText   = verseText,
                 verseRange  = verseRange
-            )
-            val body = json.encodeToString(payload)
-            Logger.d(TAG, "selectBibleVerse ▶ POST $url  payload=$body")
-            val response = client.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "selectBibleVerse ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            ))
+            Logger.d(TAG, "selectBibleVerse ▶ WS select_bible_verse  payload=$payload")
+            wsService.sendAction(WsMessageType.SELECT_BIBLE_VERSE, payload).getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e) }
     }
 
     /**
-     * Tells the presenter to clear the display (show nothing).
-     * Called when the user taps "Stop Projecting".
+     * Tells the presenter to clear the display (show nothing) via WebSocket clear.
      */
     suspend fun clearDisplay(): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.CLEAR_ENDPOINT}"
-        Logger.d(TAG, "clearDisplay ▶ POST $url")
+        Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            val response = client.post(url) { applyApiKey() }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "clearDisplay ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

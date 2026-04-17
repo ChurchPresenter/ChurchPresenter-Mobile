@@ -90,35 +90,24 @@ class PicturesService(private val settings: AppSettings) {
      * @param indexFallback Server image index; sent only when [fileName] is null.
      */
     suspend fun selectPicture(folderId: String, fileName: String?, indexFallback: Int? = null): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.PICTURES_SELECT_ENDPOINT}"
-        // Only include index when there is no filename — the server resolves by name when present
-        val body = json.encodeToString(PictureSelectRequest(
-            folderId = folderId,
-            fileName = fileName,
-            index    = if (fileName == null) indexFallback else null
-        ))
-        Logger.d(TAG, "selectPicture ▶ POST $url  payload=$body")
         return apiRunCatching {
-            val response = client.post(url) {
-                contentType(ContentType.Application.Json)
-                setBody(body)
-                applyApiKey()
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "selectPicture ◀ status=${response.status}  body=$responseBody")
+            // WS select_picture only supports folder-id + index; use indexFallback (always provided by callers)
+            val payload = json.encodeToString(PictureSelectRequest(
+                folderId = folderId,
+                index    = indexFallback
+            ))
+            Logger.d(TAG, "selectPicture ▶ WS select_picture  folderId=$folderId  index=$indexFallback  payload=$payload")
+            wsService.sendAction(WsMessageType.SELECT_PICTURE, payload).getOrThrow()
         }.onFailure { e ->
             Logger.e(TAG, "selectPicture — FAILED: ${e.message}", e)
         }
     }
 
-    /** Tells the presenter to clear the display (show nothing). POST /api/clear. */
+    /** Tells the presenter to clear the display (show nothing) via WebSocket clear. */
     suspend fun clearDisplay(): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.CLEAR_ENDPOINT}"
-        Logger.d(TAG, "clearDisplay ▶ POST $url")
+        Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            val response = client.post(url) { applyApiKey() }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "clearDisplay ◀ status=${response.status}  body=$responseBody")
+            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

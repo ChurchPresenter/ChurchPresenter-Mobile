@@ -209,7 +209,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
 
             // Also send the select notification
             Logger.d(TAG, "openSongDetail — firing selectSong for ${song.number}")
-            songService.selectSong(song.number)
+            songService.selectSong(song)
                 .onSuccess { Logger.d(TAG, "selectSong — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectSong — FAILED: ${e.message}", e)

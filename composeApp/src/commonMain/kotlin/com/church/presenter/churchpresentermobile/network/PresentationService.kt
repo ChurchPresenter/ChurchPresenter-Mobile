@@ -6,7 +6,7 @@ import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.PresentationScheduleAddRequest
 import com.church.presenter.churchpresentermobile.model.PresentationSchedulePayload
 import com.church.presenter.churchpresentermobile.model.PresentationsResponse
-import com.church.presenter.churchpresentermobile.model.SelectSlideRequest
+import com.church.presenter.churchpresentermobile.model.SelectSlideWsPayload
 import com.church.presenter.churchpresentermobile.model.UploadPresentationResponse
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.client.HttpClient
@@ -116,27 +116,20 @@ class PresentationService(private val settings: AppSettings) {
     }
 
     /**
-     * Sends a select request for the given presentation, navigating to a specific slide.
-     * Calls POST /api/presentations/{id}/select with {"index": slideIndex} body.
+     * Navigates the live presentation to a specific slide via WebSocket select_slide.
+     * Payload: { id, index }
      *
-     * @param id         The presentation ID to select.
+     * @param id         The presentation ID.
      * @param slideIndex The zero-based slide index to navigate to.
      */
     suspend fun selectPresentation(id: String, slideIndex: Int): Result<String> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.PRESENTATIONS_ENDPOINT}/$id/${ApiConstants.PRESENTATION_SELECT_ENDPOINT}"
         return apiRunCatching {
-            val body = json.encodeToString(SelectSlideRequest(index = slideIndex))
-            Logger.d(TAG, "selectPresentation ▶ POST $url  slideIndex=$slideIndex  payload=$body")
-            val response = client.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val result = response.bodyAsText()
-            Logger.d(TAG, "selectPresentation ◀ status=${response.status}  body=$result")
-            result
+            val payload = json.encodeToString(SelectSlideWsPayload(id = id, index = slideIndex))
+            Logger.d(TAG, "selectPresentation ▶ WS select_slide  id=$id  slideIndex=$slideIndex  payload=$payload")
+            wsService.sendAction(WsMessageType.SELECT_SLIDE, payload).getOrThrow()
+            "ok"
         }.onFailure { e ->
-            Logger.e(TAG, "selectPresentation — FAILED for URL $url: ${e.message}", e)
+            Logger.e(TAG, "selectPresentation — FAILED: ${e.message}", e)
         }
     }
 
@@ -148,14 +141,11 @@ class PresentationService(private val settings: AppSettings) {
         header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
     }
 
-    /** Tells the presenter to clear the display (show nothing). POST /api/clear. */
+    /** Tells the presenter to clear the display (show nothing) via WebSocket clear. */
     suspend fun clearDisplay(): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.CLEAR_ENDPOINT}"
-        Logger.d(TAG, "clearDisplay ▶ POST $url")
+        Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            val response = client.post(url) { applyApiKey() }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "clearDisplay ◀ status=${response.status}  body=$responseBody")
+            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 

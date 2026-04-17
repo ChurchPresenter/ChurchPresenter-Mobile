@@ -64,6 +64,10 @@ data class PresentationSchedulePayload(
 @Serializable
 data class SelectSlideRequest(val index: Int)
 
+/** Payload for the WebSocket `select_slide` command — { id, index }. */
+@Serializable
+data class SelectSlideWsPayload(val id: String, val index: Int)
+
 /** Response from POST /api/presentations/upload. */
 @Serializable
 data class UploadPresentationResponse(

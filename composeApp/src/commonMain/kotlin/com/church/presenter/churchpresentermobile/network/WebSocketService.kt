@@ -16,8 +16,17 @@ private const val TAG = "WebSocketService"
 
 /** Message type constants matching the server's WebSocket protocol. */
 object WsMessageType {
-    const val PROJECT          = "project"
-    const val ADD_TO_SCHEDULE  = "add_to_schedule"
+    // Approval-required actions
+    const val PROJECT             = "project"
+    const val ADD_TO_SCHEDULE     = "add_to_schedule"
+    const val ADD_BATCH_TO_SCHEDULE = "add_batch_to_schedule"
+    // Instant actions (no approval dialog)
+    const val SELECT_SONG         = "select_song"
+    const val SELECT_SONG_SECTION = "select_song_section"
+    const val SELECT_BIBLE_VERSE  = "select_bible_verse"
+    const val SELECT_PICTURE      = "select_picture"
+    const val SELECT_SLIDE        = "select_slide"
+    const val CLEAR               = "clear"
 }
 
 /** Outbound WebSocket message envelope. */

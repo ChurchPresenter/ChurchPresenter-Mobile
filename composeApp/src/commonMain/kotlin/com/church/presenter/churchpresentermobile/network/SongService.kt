@@ -4,6 +4,7 @@ import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ProjectSongRequest
 import com.church.presenter.churchpresentermobile.model.SelectSectionRequest
+import com.church.presenter.churchpresentermobile.model.SelectSongPayload
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongItemPayload
@@ -11,14 +12,11 @@ import com.church.presenter.churchpresentermobile.model.SongVerse
 import com.church.presenter.churchpresentermobile.model.SongsResponse
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -164,64 +162,51 @@ class SongService(private val settings: AppSettings) {
         }
     }
 
-    /** Notifies the server that the given song number has been selected. */
-    suspend fun selectSong(songNumber: String): Result<String> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}/$songNumber/${ApiConstants.SONG_SELECT_ENDPOINT}"
-        Logger.d(TAG, "selectSong — requesting URL: $url")
+    /**
+     * Notifies the server to navigate to the given song via WebSocket select_song.
+     * Payload: { id, songNumber, title, songbook }
+     */
+    suspend fun selectSong(song: Song): Result<Unit> {
         return apiRunCatching {
-            val result = client.post(url) { applyApiKey() }.bodyAsText()
-            Logger.d(TAG, "selectSong — success: $result")
-            result
+            val payload = json.encodeToString(
+                SelectSongPayload(
+                    id         = song.number,
+                    songNumber = song.number.toIntOrNull() ?: 0,
+                    title      = song.title,
+                    songbook   = song.bookName
+                )
+            )
+            Logger.d(TAG, "selectSong ▶ WS select_song  payload=$payload")
+            wsService.sendAction(WsMessageType.SELECT_SONG, payload).getOrThrow()
         }.onFailure { e ->
-            Logger.e(TAG, "selectSong — FAILED for URL $url: ${e.message}", e)
+            Logger.e(TAG, "selectSong — FAILED: ${e.message}", e)
         }
     }
 
     /**
      * Navigates the live presenter to a specific section (verse) of the currently projected song.
-     * Sends POST /api/songs/{number}/select with {"number":"<n>","section":<i>} body.
+     * Sends WS select_song_section with { number, section } payload.
      *
-     * The server's SelectSongSectionRequest model requires BOTH fields:
-     *   - `number` — must match the song number in the URL path
-     *   - `section` — 0-based section index
-     *
-     * @param songNumber  The song number (used in both URL and body).
-     * @param bookName    Optional songbook name (unused in body — kept for future use).
+     * @param songNumber  The song number string.
      * @param verseIndex  0-based section index.
      */
-    suspend fun selectVerse(songNumber: String, bookName: String?, verseIndex: Int): Result<String> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}/$songNumber/${ApiConstants.SONG_SELECT_ENDPOINT}"
-        Logger.d(TAG, "selectVerse — URL: $url  section=$verseIndex  bookName=$bookName")
+    suspend fun selectVerse(songNumber: String, bookName: String?, verseIndex: Int): Result<Unit> {
         return apiRunCatching {
-            val body = json.encodeToString(SelectSectionRequest(number = songNumber, section = verseIndex))
-            Logger.d(TAG, "selectVerse — body: $body")
-            val response = client.post(url) {
-                applyApiKey()
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "selectVerse — status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            responseBody
+            val payload = json.encodeToString(SelectSectionRequest(number = songNumber, section = verseIndex))
+            Logger.d(TAG, "selectVerse ▶ WS select_song_section  section=$verseIndex  payload=$payload")
+            wsService.sendAction(WsMessageType.SELECT_SONG_SECTION, payload).getOrThrow()
         }.onFailure { e ->
             Logger.e(TAG, "selectVerse — FAILED: ${e.message}", e)
         }
     }
 
     /**
-     * Tells the presenter to clear the display (show nothing).
-     * Called when the user taps "Stop Projecting".
+     * Tells the presenter to clear the display (show nothing) via WebSocket clear.
      */
     suspend fun clearDisplay(): Result<Unit> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.CLEAR_ENDPOINT}"
-        Logger.d(TAG, "clearDisplay ▶ POST $url")
+        Logger.d(TAG, "clearDisplay ▶ WS clear")
         return apiRunCatching {
-            val response = client.post(url) { applyApiKey() }
-            val responseBody = response.bodyAsText()
-            Logger.d(TAG, "clearDisplay ◀ status=${response.status}  body=$responseBody")
-            checkApiResponse(response.status.value, responseBody)
-            Unit
+            wsService.sendAction(WsMessageType.CLEAR, "").getOrThrow()
         }.onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
     }
 
@@ -257,16 +242,13 @@ class SongService(private val settings: AppSettings) {
         )
     )
 
-    private fun io.ktor.client.request.HttpRequestBuilder.applyApiKey() {
+    private fun HttpRequestBuilder.applyApiKey() {
         val key = settings.apiKey
-        if (key.isNotBlank()) {
-            Logger.d(TAG, "applyApiKey — adding ${ApiConstants.API_KEY_HEADER} header")
-            header(ApiConstants.API_KEY_HEADER, key)
-        }
+        if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
         header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
     }
 
-    /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
+    /** Releases the underlying HTTP and WebSocket clients. Call when the owning ViewModel is cleared. */
     fun closeClient() {
         Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
         client.close()

@@ -41,6 +41,15 @@ data class ProjectSongRequest(val item: SongItemPayload)
 @Serializable
 data class SelectSectionRequest(val number: String, val section: Int)
 
+/** Payload for the WebSocket `select_song` command — navigates the schedule to a song. */
+@Serializable
+data class SelectSongPayload(
+    val id: String,
+    val songNumber: Int,
+    val title: String,
+    val songbook: String? = null,
+)
+
 @Serializable
 data class SongBook(
     @SerialName("book-name") val bookName: String,
