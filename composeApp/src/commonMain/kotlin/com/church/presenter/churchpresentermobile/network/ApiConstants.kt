@@ -23,6 +23,7 @@ object ApiConstants {
     const val PICTURES_UPLOAD_ENDPOINT = "pictures/upload"
     const val SCHEDULE_ENDPOINT = "schedule"
     const val CLEAR_ENDPOINT = "clear"
+    const val STATUS_ENDPOINT = "status"
     const val API_KEY_HEADER = "X-Api-Key"
     const val DEVICE_ID_HEADER = "X-Device-Id"
 }

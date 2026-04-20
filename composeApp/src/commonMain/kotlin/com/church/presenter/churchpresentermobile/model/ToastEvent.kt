@@ -29,6 +29,7 @@ sealed class ToastEvent {
     data class FailedToSelectPresentation(val reason: String)      : ToastEvent()
     data class FailedToAddPresentationSchedule(val reason: String)  : ToastEvent()
     data object UploadUnsupported                                    : ToastEvent()
+    data object UploadDisabled                                       : ToastEvent()
     data object UploadFileTooLarge                                   : ToastEvent()
     data class UploadServerError(val msg: String)                    : ToastEvent()
     data class UploadFailed(val reason: String)                      : ToastEvent()

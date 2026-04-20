@@ -21,11 +21,15 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +37,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +52,7 @@ import churchpresentermobile.composeapp.generated.resources.pictures_photos
 import churchpresentermobile.composeapp.generated.resources.pictures_pick_from_device
 import churchpresentermobile.composeapp.generated.resources.pictures_retry
 import churchpresentermobile.composeapp.generated.resources.pictures_uploading
+import churchpresentermobile.composeapp.generated.resources.upload_blocked_toast
 import churchpresentermobile.composeapp.generated.resources.upload_overlay_photo_counter
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
@@ -55,6 +62,7 @@ import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
+import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import androidx.compose.runtime.LaunchedEffect
@@ -93,6 +101,7 @@ fun PicturesScreen(
     pendingNavImageIndex: Int? = null,
     onPendingNavHandled: () -> Unit = {},
     onScheduleRefresh: () -> Unit = {},
+    canUploadFiles: Boolean = false,
     providedViewModel: PicturesViewModel? = null,
     modifier: Modifier = Modifier
 ) {
@@ -131,6 +140,10 @@ fun PicturesScreen(
     LaunchedEffect(scheduleRefreshTrigger) {
         if (scheduleRefreshTrigger > 0) onScheduleRefresh()
     }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val uploadBlockedMsg = stringResource(Res.string.upload_blocked_toast)
 
     // Grid state for programmatic scrolling when navigating from schedule
     val gridState = rememberLazyGridState()
@@ -257,11 +270,50 @@ fun PicturesScreen(
     }   // end Column
 
         // ── Action buttons (bottom-right, above snackbar) ─────────────────
-        PhotoPickerLauncher(
-            onPhotoPicked = { photos ->
-                if (photos.isNotEmpty()) viewModel.uploadDevicePhotos(photos)
+        // When uploads are blocked the real PhotoPickerLauncher is never composed,
+        // so the OS photo picker cannot be presented under any timing condition.
+        if (canUploadFiles) {
+            PhotoPickerLauncher(
+                onPhotoPicked = { photos ->
+                    if (photos.isNotEmpty()) viewModel.uploadDevicePhotos(photos)
+                }
+            ) { launchPicker ->
+                ContentActionButtons(
+                    isProjecting       = isProjecting,
+                    scheduleAdded      = scheduleAdded,
+                    onToggleProjecting = {
+                        if (isProjecting) viewModel.clearDisplay()
+                        else selectedImage?.let { viewModel.selectPicture(it) }
+                    },
+                    onAddToSchedule    = { viewModel.addToSchedule() },
+                    modifier           = Modifier.align(Alignment.BottomEnd),
+                    extraLeadingContent = {
+                        // From Device FAB — picker is live
+                        FloatingActionButton(
+                            onClick = { if (!isUploading) launchPicker() },
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
+                        ) {
+                            if (isUploading) {
+                                CircularProgressIndicator(
+                                    modifier    = Modifier.size(24.dp),
+                                    color       = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    strokeWidth = 2.5.dp,
+                                )
+                            } else {
+                                Icon(
+                                    imageVector        = Icons.Filled.AddPhotoAlternate,
+                                    contentDescription = stringResource(Res.string.pictures_pick_from_device),
+                                )
+                            }
+                        }
+                    }
+                )
             }
-        ) { launchPicker ->
+        } else {
+            // Upload blocked — render a standalone FAB with NO picker wired up.
+            // Tapping it shows the "upload disabled" snackbar; the OS picker is
+            // never registered and therefore can never be presented.
             ContentActionButtons(
                 isProjecting       = isProjecting,
                 scheduleAdded      = scheduleAdded,
@@ -272,30 +324,33 @@ fun PicturesScreen(
                 onAddToSchedule    = { viewModel.addToSchedule() },
                 modifier           = Modifier.align(Alignment.BottomEnd),
                 extraLeadingContent = {
-                    // From Device FAB — opens the native photo picker
                     FloatingActionButton(
-                        onClick        = { if (!isUploading) launchPicker() },
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
+                        onClick = {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message  = uploadBlockedMsg,
+                                    duration = SnackbarDuration.Long,
+                                )
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor   = MaterialTheme.colorScheme.onSurfaceVariant,
                     ) {
-                        if (isUploading) {
-                            CircularProgressIndicator(
-                                modifier    = Modifier.size(24.dp),
-                                color       = MaterialTheme.colorScheme.onTertiaryContainer,
-                                strokeWidth = 2.5.dp
-                            )
-                        } else {
-                            Icon(
-                                imageVector        = Icons.Filled.AddPhotoAlternate,
-                                contentDescription = stringResource(Res.string.pictures_pick_from_device)
-                            )
-                        }
+                        Icon(
+                            imageVector        = Icons.Filled.Block,
+                            contentDescription = stringResource(Res.string.pictures_pick_from_device),
+                        )
                     }
                 }
             )
         }
 
         // Non-dismissible upload overlay — shown until the upload completes
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier  = Modifier.align(Alignment.BottomCenter),
+        )
+
         if (isUploading) {
             val detail = if (uploadPhotoTotal > 1) {
                 stringResource(Res.string.upload_overlay_photo_counter, uploadPhotoIndex, uploadPhotoTotal)

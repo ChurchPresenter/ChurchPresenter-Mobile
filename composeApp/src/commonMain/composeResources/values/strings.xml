@@ -181,17 +181,52 @@
 
     <!-- Connect Setup Screen -->
     <string name="connect_setup_title">Connect to Desktop</string>
-    <string name="connect_setup_subtitle">One-time setup</string>
-    <string name="connect_setup_intro">Scan the QR code from ChurchPresenter desktop to set your server IP address, port, and optional API key automatically.</string>
-    <string name="connect_setup_step1_title">Open Settings in ChurchPresenter desktop</string>
-    <string name="connect_setup_step1_body">On your desktop or laptop, open the ChurchPresenter app and click the Settings icon.</string>
-    <string name="connect_setup_step2_title">Go to the Server tab</string>
-    <string name="connect_setup_step2_body">Inside Settings, select the Server tab to find your connection details and QR code.</string>
-    <string name="connect_setup_step3_title">Click the QR Code button and scan</string>
-    <string name="connect_setup_step3_body">Click the QR button to display the connection QR code, then tap Scan below to open your camera and scan it.</string>
-    <string name="connect_setup_scan_button">Scan QR Code</string>
-    <string name="connect_setup_connected">✓ Connected to %1$s:%2$s</string>
-    <string name="connect_setup_done_button">Done</string>
-    <string name="connect_setup_skip_button">Skip for now</string>
     <string name="connect_setup_skip_note">You can scan the QR code anytime from Settings.</string>
+
+    <!-- Settings Screen (additional) -->
+    <string name="settings_active_url_label">Currently connecting to:</string>
+    <string name="settings_reset_to_default">Reset to default</string>
+    <string name="settings_draft_url_label">Will connect to after saving:</string>
+    <string name="settings_check_status">Check Server Status</string>
+    <string name="settings_check_status_description">Check server status</string>
+
+    <!-- Status Screen -->
+    <string name="status_connecting">Connecting to server…</string>
+    <string name="status_connected">Server connected</string>
+    <string name="status_continue">Continue</string>
+    <string name="status_retry">Retry</string>
+    <string name="status_open_settings">Open Settings</string>
+    <string name="status_continue_anyway">Continue anyway</string>
+    <string name="status_limited_functionality">Limited Functionality</string>
+    <string name="status_server_version">Server version: %1$s</string>
+    <string name="status_issues_detected">The following issues were detected on the connected server:</string>
+    <string name="status_endpoint_unavailable">Status endpoint not yet available on this server version — update ChurchPresenter desktop for full capability reporting.</string>
+    <string name="status_error_title">Could not reach the server</string>
+    <string name="status_permissions_title">This device\'s permissions</string>
+    <string name="status_permission_present">Control presentation</string>
+    <string name="status_permission_schedule">Add to schedule</string>
+    <string name="status_permission_upload">Upload files</string>
+    <string name="status_permission_blocked">— blocked</string>
+    <string name="status_info_bibles">Bibles available</string>
+    <string name="status_info_songbooks">Song books available</string>
+    <string name="status_info_features">Enabled features</string>
+
+    <!-- Status Warnings -->
+    <string name="status_warn_no_api_key_title">No API Key configured</string>
+    <string name="status_warn_no_api_key_body">The server has no API key set. Certain protected endpoints may reject requests. Consider enabling an API key in ChurchPresenter server settings.</string>
+    <string name="status_warn_no_bibles_title">No Bible translations available</string>
+    <string name="status_warn_no_bibles_body">The server has no Bible translations loaded. The Bible tab will be empty. Add a translation in the ChurchPresenter desktop app.</string>
+    <string name="status_warn_no_songbooks_title">No song books available</string>
+    <string name="status_warn_no_songbooks_body">The server has no song books loaded. The Songs tab will be empty. Import a song book in the ChurchPresenter desktop app.</string>
+    <string name="status_warn_present_blocked_title">Presentation control blocked</string>
+    <string name="status_warn_present_blocked_body">This device is not permitted to control the presentation (project, clear, select slides). Ask the server admin to grant this device the Presenter permission.</string>
+    <string name="status_warn_schedule_blocked_title">Schedule editing blocked</string>
+    <string name="status_warn_schedule_blocked_body">This device is not permitted to add items to the schedule. Ask the server admin to grant this device the Schedule permission.</string>
+    <string name="status_warn_upload_blocked_title">File upload blocked</string>
+    <string name="status_warn_upload_blocked_body">This device is not permitted to upload presentations or pictures. Ask the server admin to grant this device the Upload permission.</string>
+    <string name="upload_blocked_toast">File upload is disabled for this device. Ask the server admin to grant Upload permission.</string>
+    <string name="status_warn_unknown_version_title">Unrecognised server version</string>
+    <string name="status_warn_unknown_version_body">Server reported version \'%1$s\'. Some features of this app may not be compatible with this version.</string>
+    <string name="status_warn_missing_endpoint_title">Missing API endpoint: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">The server does not expose the \'%1$s\' endpoint. Features relying on it will be unavailable.</string>
 </resources>

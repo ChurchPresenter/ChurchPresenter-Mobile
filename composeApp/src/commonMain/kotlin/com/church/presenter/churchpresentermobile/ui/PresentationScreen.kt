@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -59,6 +61,7 @@ import churchpresentermobile.composeapp.generated.resources.toast_upload_file_to
 import churchpresentermobile.composeapp.generated.resources.toast_upload_reload_failed
 import churchpresentermobile.composeapp.generated.resources.toast_upload_server_error
 import churchpresentermobile.composeapp.generated.resources.toast_upload_unsupported
+import churchpresentermobile.composeapp.generated.resources.upload_blocked_toast
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -72,6 +75,7 @@ import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.PresentationSlide
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.viewmodel.PresentationsViewModel
+import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import org.jetbrains.compose.resources.stringResource
@@ -99,6 +103,7 @@ fun PresentationScreen(
     pendingNavPresentationId: String? = null,
     onPendingNavHandled: () -> Unit = {},
     onScheduleRefresh: () -> Unit = {},
+    canUploadFiles: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val viewModel: PresentationsViewModel = viewModel(key = isDemoMode.toString()) { PresentationsViewModel(appSettings, isDemoMode) }
@@ -130,6 +135,8 @@ fun PresentationScreen(
     val toastEvent by viewModel.toastEvent.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val uploadBlockedMsg = stringResource(Res.string.upload_blocked_toast)
 
     val toastMessage = toastEvent?.toDisplayString()
     LaunchedEffect(toastEvent) {
@@ -261,11 +268,54 @@ fun PresentationScreen(
     }   // end Column
 
         // ── Action buttons (bottom-right, above snackbar) ─────────────────
-        PresentationFilePicker(
-            onFilePicked = { file ->
-                if (file != null) viewModel.uploadPresentationFile(file)
+        // When uploads are blocked the real PresentationFilePicker is never composed,
+        // so the OS document picker cannot be presented under any timing condition.
+        if (canUploadFiles) {
+            PresentationFilePicker(
+                onFilePicked = { file ->
+                    if (file != null) viewModel.uploadPresentationFile(file)
+                }
+            ) { launchPicker ->
+                ContentActionButtons(
+                    isProjecting       = isProjecting,
+                    scheduleAdded      = scheduleAdded,
+                    onToggleProjecting = {
+                        if (isProjecting) viewModel.clearDisplay()
+                        else {
+                            val pres = selectedPresentation
+                            val idx  = selectedSlideIndex
+                            if (pres != null && idx != null) viewModel.selectPresentation(pres, idx)
+                        }
+                    },
+                    onAddToSchedule = { viewModel.addToSchedule() },
+                    modifier        = Modifier.align(Alignment.BottomEnd),
+                    extraLeadingContent = {
+                        // Upload Presentation FAB — picker is live
+                        FloatingActionButton(
+                            onClick = { if (!isUploading) launchPicker() },
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
+                        ) {
+                            if (isUploading) {
+                                CircularProgressIndicator(
+                                    modifier    = Modifier.size(24.dp),
+                                    color       = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    strokeWidth = 2.5.dp,
+                                )
+                            } else {
+                                Icon(
+                                    imageVector        = Icons.Filled.UploadFile,
+                                    contentDescription = stringResource(Res.string.presentation_upload_file),
+                                )
+                            }
+                        }
+                    }
+                )
             }
-        ) { launchPicker ->
+        } else {
+            // Upload blocked — render a standalone FAB with NO picker wired up.
+            // Tapping it shows the "upload disabled" snackbar; the OS picker is
+            // never registered and therefore can never be presented.
             ContentActionButtons(
                 isProjecting       = isProjecting,
                 scheduleAdded      = scheduleAdded,
@@ -280,24 +330,22 @@ fun PresentationScreen(
                 onAddToSchedule = { viewModel.addToSchedule() },
                 modifier        = Modifier.align(Alignment.BottomEnd),
                 extraLeadingContent = {
-                    // Upload Presentation FAB — opens the native document picker
                     FloatingActionButton(
-                        onClick        = { if (!isUploading) launchPicker() },
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
+                        onClick = {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message  = uploadBlockedMsg,
+                                    duration = SnackbarDuration.Long,
+                                )
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor   = MaterialTheme.colorScheme.onSurfaceVariant,
                     ) {
-                        if (isUploading) {
-                            CircularProgressIndicator(
-                                modifier    = Modifier.size(24.dp),
-                                color       = MaterialTheme.colorScheme.onTertiaryContainer,
-                                strokeWidth = 2.5.dp
-                            )
-                        } else {
-                            Icon(
-                                imageVector        = Icons.Filled.UploadFile,
-                                contentDescription = stringResource(Res.string.presentation_upload_file)
-                            )
-                        }
+                        Icon(
+                            imageVector        = Icons.Filled.Block,
+                            contentDescription = stringResource(Res.string.presentation_upload_file),
+                        )
                     }
                 }
             )

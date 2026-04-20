@@ -76,6 +76,9 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
+import com.church.presenter.churchpresentermobile.ui.StatusScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -254,10 +257,34 @@ fun App() {
 
     // Splash screen state — shown once on first composition
     var showSplash by remember { mutableStateOf(true) }
+    // Status screen state — shown once after splash; re-shown when settings are saved
+    var showStatusScreen by remember { mutableStateOf(false) }
+
+    val statusViewModel: StatusViewModel =
+        viewModel(key = "status_$settingsSaveToken") {
+            StatusViewModel(appSettings)
+        }
+
+    // Derive per-feature permissions from the last known status response.
+    // Defaults to false (deny-by-default) until the server explicitly grants the
+    // permission — this prevents upload pickers from opening before/if the status
+    // check completes, which was the root cause of the "upload disabled on server
+    // but picker still opens" bug.
+    val statusUiState by statusViewModel.uiState.collectAsState()
+    val canUploadFiles = (statusUiState as? StatusUiState.Success)
+        ?.status?.permissions?.canUploadFiles ?: false
 
     AppTheme(themeMode = themeMode) {
         if (showSplash) {
-            SplashScreen(onComplete = { showSplash = false })
+            SplashScreen(onComplete = { showSplash = false; showStatusScreen = true })
+            return@AppTheme
+        }
+        if (showStatusScreen) {
+            StatusScreen(
+                viewModel      = statusViewModel,
+                onContinue     = { showStatusScreen = false },
+                onOpenSettings = { showStatusScreen = false; showSettings = true },
+            )
             return@AppTheme
         }
         ModalNavigationDrawer(
@@ -513,6 +540,7 @@ fun App() {
                                 pendingPictureImageIndex = null
                             },
                             onScheduleRefresh = { scheduleRefreshToken++ },
+                            canUploadFiles = canUploadFiles,
                             providedViewModel = picturesViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
@@ -523,6 +551,7 @@ fun App() {
                             imageLoader = imageLoader,
                             pendingNavPresentationId = pendingPresentationId,
                             onPendingNavHandled = { pendingPresentationId = null },
+                            canUploadFiles = canUploadFiles,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -545,6 +574,11 @@ fun App() {
                             showSettings = false
                             showConnectSetup = true
                         }
+                    },
+                    onCheckStatus = {
+                        showSettings = false
+                        statusViewModel.recheck()
+                        showStatusScreen = true
                     }
                 )
             }

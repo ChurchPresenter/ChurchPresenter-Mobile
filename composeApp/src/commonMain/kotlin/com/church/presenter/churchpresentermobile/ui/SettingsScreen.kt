@@ -14,6 +14,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +67,11 @@ import churchpresentermobile.composeapp.generated.resources.settings_theme_dark
 import churchpresentermobile.composeapp.generated.resources.settings_theme_light
 import churchpresentermobile.composeapp.generated.resources.settings_theme_system
 import churchpresentermobile.composeapp.generated.resources.settings_title
+import churchpresentermobile.composeapp.generated.resources.settings_active_url_label
+import churchpresentermobile.composeapp.generated.resources.settings_reset_to_default
+import churchpresentermobile.composeapp.generated.resources.settings_draft_url_label
+import churchpresentermobile.composeapp.generated.resources.settings_check_status
+import churchpresentermobile.composeapp.generated.resources.settings_check_status_description
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -83,7 +91,8 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsScreen(
     appSettings: AppSettings,
     onDismiss: () -> Unit,
-    onSaved: () -> Unit
+    onSaved: () -> Unit,
+    onCheckStatus: () -> Unit = {},
 ) {
     val viewModel: SettingsViewModel = viewModel { SettingsViewModel(appSettings) }
     val host by viewModel.host.collectAsState()
@@ -175,7 +184,7 @@ fun SettingsScreen(
                 ) {
                     // ── Active URL ────────────────────────────────────────
                     Text(
-                        text = "Currently connecting to:",
+                        text = stringResource(Res.string.settings_active_url_label),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -206,7 +215,7 @@ fun SettingsScreen(
                         )
                         TextButton(onClick = { viewModel.resetToDefaults() }) {
                             Text(
-                                text = "Reset to default",
+                                text = stringResource(Res.string.settings_reset_to_default),
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -279,6 +288,20 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
+                    // Server status — lets user re-check capability / permissions on demand
+                    OutlinedButton(
+                        onClick = onCheckStatus,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Wifi,
+                            contentDescription = stringResource(Res.string.settings_check_status_description),
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Spacer(Modifier.size(8.dp))
+                        Text(stringResource(Res.string.settings_check_status))
+                    }
+
                     // ── Appearance ────────────────────────────────────────
                     HorizontalDivider()
 
@@ -298,7 +321,7 @@ fun SettingsScreen(
                     if (urlChanged) {
                         HorizontalDivider()
                         Text(
-                            text = "Will connect to after saving:",
+                            text = stringResource(Res.string.settings_draft_url_label),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
