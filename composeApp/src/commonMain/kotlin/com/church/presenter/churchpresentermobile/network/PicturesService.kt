@@ -32,6 +32,8 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  */
 class PicturesService(private val settings: AppSettings) {
     private val client: HttpClient = createHttpClient()
+    /** Separate client with no request/socket timeout — required for large photo uploads. */
+    private val uploadClient: HttpClient = createActionHttpClient()
     /** WebSocket service for approval-required actions (add-to-schedule). */
     private val wsService: WebSocketService = WebSocketService(settings)
 
@@ -147,7 +149,8 @@ class PicturesService(private val settings: AppSettings) {
         val body = """{"name":${json.encodeToString(fileName)},"data":${json.encodeToString(dataUri)}}"""
         Logger.d(TAG, "uploadPhoto ▶ POST $url  name=$fileName  mime=$mimeType  bytes=${imageBytes.size}")
         return apiRunCatching {
-            val response = client.post(url) {
+            // uploadClient has no request/socket timeout — required for large photos
+            val response = uploadClient.post(url) {
                 contentType(ContentType.Application.Json)
                 setBody(body)
                 applyApiKey()
@@ -168,6 +171,7 @@ class PicturesService(private val settings: AppSettings) {
     fun closeClient() {
         Logger.d(TAG, "closeClient")
         client.close()
+        uploadClient.close()
         wsService.closeClient()
     }
 }
