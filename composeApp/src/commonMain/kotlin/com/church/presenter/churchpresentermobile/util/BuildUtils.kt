@@ -7,3 +7,9 @@ package com.church.presenter.churchpresentermobile.util
  */
 expect val isDebugBuild: Boolean
 
+/**
+ * The human-readable version name of this build, e.g. "1.0.5".
+ * Sourced from versionName (Android), CFBundleShortVersionString (iOS),
+ * or a fallback string on web targets.
+ */
+expect val appVersion: String

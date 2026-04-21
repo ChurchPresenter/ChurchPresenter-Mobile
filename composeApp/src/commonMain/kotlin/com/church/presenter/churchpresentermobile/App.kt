@@ -574,11 +574,6 @@ fun App() {
                             showSettings = false
                             showConnectSetup = true
                         }
-                    },
-                    onCheckStatus = {
-                        showSettings = false
-                        statusViewModel.recheck()
-                        showStatusScreen = true
                     }
                 )
             }

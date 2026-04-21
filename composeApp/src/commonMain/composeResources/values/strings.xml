@@ -189,6 +189,15 @@
     <string name="settings_draft_url_label">Will connect to after saving:</string>
     <string name="settings_check_status">Check Server Status</string>
     <string name="settings_check_status_description">Check server status</string>
+    <string name="settings_status_recheck">Recheck</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobile: %1$s</string>
+    <string name="settings_status_api_key_enabled">API key: enabled</string>
+    <string name="settings_status_api_key_none">API key: none</string>
+    <string name="settings_status_endpoints">Endpoints</string>
+    <string name="settings_status_bibles">Bibles</string>
+    <string name="settings_status_songbooks">Songbooks</string>
+    <string name="settings_status_none">none</string>
 
     <!-- Status Screen -->
     <string name="status_connecting">Connecting to server…</string>
@@ -202,7 +211,7 @@
     <string name="status_issues_detected">The following issues were detected on the connected server:</string>
     <string name="status_endpoint_unavailable">Status endpoint not yet available on this server version — update ChurchPresenter desktop for full capability reporting.</string>
     <string name="status_error_title">Could not reach the server</string>
-    <string name="status_permissions_title">This device\'s permissions</string>
+    <string name="status_permissions_title">This device's permissions</string>
     <string name="status_permission_present">Control presentation</string>
     <string name="status_permission_schedule">Add to schedule</string>
     <string name="status_permission_upload">Upload files</string>

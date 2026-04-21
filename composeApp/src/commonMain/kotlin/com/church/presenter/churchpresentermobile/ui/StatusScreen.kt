@@ -50,7 +50,6 @@ import churchpresentermobile.composeapp.generated.resources.status_info_songbook
 import churchpresentermobile.composeapp.generated.resources.status_issues_detected
 import churchpresentermobile.composeapp.generated.resources.status_limited_functionality
 import churchpresentermobile.composeapp.generated.resources.status_open_settings
-import churchpresentermobile.composeapp.generated.resources.status_permission_blocked
 import churchpresentermobile.composeapp.generated.resources.status_permission_present
 import churchpresentermobile.composeapp.generated.resources.status_permission_schedule
 import churchpresentermobile.composeapp.generated.resources.status_permission_upload
@@ -183,6 +182,8 @@ private fun AllGoodContent(
         )
         Spacer(Modifier.height(16.dp))
         Text(stringResource(Res.string.status_connected), style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(16.dp))
+        PermissionsSummaryCard(permissions)
         if (!endpointAvailable) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -191,9 +192,6 @@ private fun AllGoodContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
-        } else {
-            Spacer(Modifier.height(16.dp))
-            PermissionsSummaryCard(permissions)
         }
         Spacer(Modifier.height(20.dp))
         Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
@@ -404,15 +402,14 @@ private fun PermissionRow(label: String, granted: Boolean) {
             text = label,
             style = MaterialTheme.typography.bodySmall,
             color = if (granted) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
+            modifier = Modifier.weight(1f),
         )
-        if (!granted) {
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = stringResource(Res.string.status_permission_blocked),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
+        Text(
+            text = if (granted) "true" else "false",
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+            color = if (granted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+        )
     }
 }
 
