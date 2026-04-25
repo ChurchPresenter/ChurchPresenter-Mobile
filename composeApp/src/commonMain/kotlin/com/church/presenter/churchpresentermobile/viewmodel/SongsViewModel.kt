@@ -10,6 +10,9 @@ import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
+import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -189,6 +192,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
         _selectedSong.value = song
         _songDetail.value = null
         _detailError.value = null
+        Analytics.logEvent(AnalyticsEvent.SONG_OPENED)
         if (isDemoMode) {
             Logger.d(TAG, "openSongDetail — DEMO MODE for ${song.number}")
             _songDetail.value = DemoData.getSongDetail(song.number)
@@ -242,6 +246,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
         _isProjecting.value = nowProjecting
         if (!nowProjecting) {
             _selectedVerseIndex.value = null
+            Analytics.logEvent(AnalyticsEvent.SONG_DISPLAY_CLEARED)
             if (isDemoMode) {
                 Logger.d(TAG, "toggleProjecting OFF — DEMO MODE, skipping clear API call")
                 return
@@ -273,6 +278,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
             songService.projectSong(song)
                 .onSuccess {
                     Logger.d(TAG, "projectSong — success")
+                    Analytics.logEvent(AnalyticsEvent.SONG_PROJECTED)
                     _toastEvent.value = ToastEvent.SongLive
                 }
                 .onFailure { e ->
@@ -304,6 +310,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
             songService.addSongToSchedule(song)
                 .onSuccess {
                     Logger.d(TAG, "addSongToSchedule — success")
+                    Analytics.logEvent(AnalyticsEvent.SONG_ADDED_TO_SCHEDULE)
                     _toastEvent.value = ToastEvent.SongAddedToSchedule(song.title)
                     _scheduleAdded.value = true
                     _scheduleRefreshTrigger.value++
@@ -346,6 +353,10 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
     fun selectVerse(index: Int) {
         if (!_isProjecting.value) return
         _selectedVerseIndex.value = index
+        Analytics.logEvent(
+            AnalyticsEvent.SONG_VERSE_SELECTED,
+            mapOf(AnalyticsParam.VERSE_INDEX to index.toString())
+        )
         if (isDemoMode) {
             Logger.d(TAG, "selectVerse — DEMO MODE, skipping API call")
             return

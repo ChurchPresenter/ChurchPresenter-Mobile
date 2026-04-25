@@ -10,6 +10,8 @@ import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -219,6 +221,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         _selectedBookNumber.value = bookNumber
         _selectedChapter.value = null
         _verses.value = emptyList()
+        Analytics.logEvent(AnalyticsEvent.BIBLE_BOOK_SELECTED)
     }
 
     /**
@@ -237,6 +240,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         _selectedVerseIndices.value = emptySet()
         _projectedVerseIndex.value = null
         _scheduleAdded.value = false
+        Analytics.logEvent(AnalyticsEvent.BIBLE_CHAPTER_SELECTED)
 
         if (isDemoMode) {
             Logger.d(TAG, "selectChapter — DEMO MODE, serving demo verses")
@@ -312,6 +316,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         if (_isProjecting.value) {
             _isProjecting.value        = false
             _projectedVerseIndex.value = null
+            Analytics.logEvent(AnalyticsEvent.BIBLE_DISPLAY_CLEARED)
             if (isDemoMode) {
                 Logger.d(TAG, "toggleProjecting OFF — DEMO MODE, skipping clear API call")
                 return
@@ -354,6 +359,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                 _isProjecting.value        = true
                 _projectedVerseIndex.value = _selectedVerseIndices.value.minOrNull()
                 _toastEvent.value          = ToastEvent.BibleLive
+                Analytics.logEvent(AnalyticsEvent.BIBLE_PROJECTED)
             }.onFailure { e ->
                 Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e)
                 _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse"))
@@ -447,6 +453,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                 _scheduleAdded.value = true
                 _scheduleRefreshTrigger.value++
                 _toastEvent.value = ToastEvent.BibleAddedToSchedule(ref)
+                Analytics.logEvent(AnalyticsEvent.BIBLE_ADDED_TO_SCHEDULE)
             }.onFailure { e ->
                 Logger.e(TAG, "addBibleToSchedule — FAILED: ${e.message}", e)
                 _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddBibleSchedule(e.recordNetworkError(TAG, "addToSchedule/addBibleToSchedule")) }

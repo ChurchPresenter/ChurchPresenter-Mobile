@@ -74,6 +74,9 @@ import com.church.presenter.churchpresentermobile.util.RemoteConfigDefaults
 import com.church.presenter.churchpresentermobile.util.RemoteConfigKeys
 import com.church.presenter.churchpresentermobile.util.Logger
 import com.church.presenter.churchpresentermobile.util.CrashReporting
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
+import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
@@ -158,6 +161,9 @@ fun App() {
         CrashReporting.setCustomKey("server_url", appSettings.apiBaseUrl)
         CrashReporting.setCustomKey("server_host", appSettings.host)
         CrashReporting.setCustomKey("server_port", appSettings.port.toString())
+        if (settingsSaveToken > 0) {
+            Analytics.logEvent(AnalyticsEvent.SETTINGS_SAVED)
+        }
     }
     // Settings are only opened manually by the user — not on first launch
     var showSettings by remember { mutableStateOf(false) }
@@ -244,6 +250,17 @@ fun App() {
         val targetPage = tabs.indexOf(selectedTab)
         if (pagerState.currentPage != targetPage) {
             pagerState.animateScrollToPage(targetPage)
+        }
+        Analytics.logEvent(
+            AnalyticsEvent.TAB_SELECTED,
+            mapOf(AnalyticsParam.TAB_NAME to selectedTab.name.lowercase())
+        )
+    }
+
+    // Schedule drawer open → log event
+    LaunchedEffect(drawerState.currentValue) {
+        if (drawerState.currentValue == DrawerValue.Open) {
+            Analytics.logEvent(AnalyticsEvent.SCHEDULE_DRAWER_OPENED)
         }
     }
 

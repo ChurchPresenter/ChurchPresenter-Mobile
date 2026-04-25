@@ -5,11 +5,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.church.presenter.churchpresentermobile.service.FirebasePushService
+import com.church.presenter.churchpresentermobile.util.Analytics
 
 class ChurchPresenterApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Analytics.init()
         createNotificationChannel()
     }
 

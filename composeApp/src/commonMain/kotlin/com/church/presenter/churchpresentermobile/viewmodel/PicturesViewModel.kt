@@ -10,6 +10,8 @@ import com.church.presenter.churchpresentermobile.network.PicturesService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.network.toFriendlyNetworkMessage
 import com.church.presenter.churchpresentermobile.ui.PickedPhoto
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -130,11 +132,9 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
             try {
                 picturesService.getPictures(folderId)
                     .onSuccess { newFolder ->
-                        // Set folder first, THEN pendingScrollIndex — the LaunchedEffect
-                        // in PicturesScreen keys on both, so it will see the correct folder
-                        // when it fires.
                         _folder.value = newFolder
                         _pendingScrollIndex.value = imageIndex
+                        Analytics.logEvent(AnalyticsEvent.PICTURE_FOLDER_OPENED)
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "navigateTo — FAILED: ${e.message}", e)
@@ -166,6 +166,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
             return
         }
         _isProjecting.value = true
+        Analytics.logEvent(AnalyticsEvent.PICTURE_SELECTED)
         if (isDemoMode) {
             Logger.d(TAG, "selectPicture — DEMO MODE folderId=$folderId fileName=${image.fileName}")
             return
@@ -217,6 +218,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                     Logger.d(TAG, "addToSchedule — success")
                     _scheduleAdded.value = true
                     _scheduleRefreshTrigger.value++
+                    Analytics.logEvent(AnalyticsEvent.PICTURE_ADDED_TO_SCHEDULE)
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)
@@ -253,6 +255,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
                     .onSuccess { uploaded ->
                         Logger.d(TAG, "uploadDevicePhotos — uploaded ${photo.fileName} folderId=${uploaded.folderId} index=${uploaded.imageIndex}")
                         lastUploaded = uploaded
+                        Analytics.logEvent(AnalyticsEvent.PHOTO_UPLOADED)
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "uploadDevicePhotos — FAILED for ${photo.fileName}: ${e.message}", e)

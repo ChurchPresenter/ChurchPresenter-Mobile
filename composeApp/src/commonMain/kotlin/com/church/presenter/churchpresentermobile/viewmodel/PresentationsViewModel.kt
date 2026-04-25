@@ -10,6 +10,9 @@ import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.PresentationService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.ui.PickedFile
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
+import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -183,7 +186,13 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
         Logger.d(TAG, "selectPresentation — id=$id name=${presentation.displayName} slideIndex=$slideIndex")
         viewModelScope.launch {
             presentationService.selectPresentation(id, slideIndex)
-                .onSuccess { Logger.d(TAG, "selectPresentation — success") }
+                .onSuccess {
+                    Logger.d(TAG, "selectPresentation — success")
+                    Analytics.logEvent(
+                        AnalyticsEvent.SLIDE_SELECTED,
+                        mapOf(AnalyticsParam.SLIDE_INDEX to slideIndex.toString())
+                    )
+                }
                 .onFailure { e ->
                     Logger.e(TAG, "selectPresentation — FAILED: ${e.message}", e)
                     _toastEvent.value = ToastEvent.FailedToSelectPresentation(e.recordNetworkError(TAG, "selectPresentation"))
@@ -249,6 +258,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                     Logger.d(TAG, "addToSchedule — success")
                     _scheduleAdded.value = true
                     _scheduleRefreshTrigger.value++
+                    Analytics.logEvent(AnalyticsEvent.PRESENTATION_ADDED)
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)
@@ -277,6 +287,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
             presentationService.uploadPresentation(file.bytes, file.fileName)
                 .onSuccess { uploaded ->
                     Logger.d(TAG, "uploadPresentationFile — success id=${uploaded.id} name=${uploaded.name}")
+                    Analytics.logEvent(AnalyticsEvent.PRESENTATION_UPLOADED)
                     // Clear the previous list immediately so the UI doesn't show stale entries
                     // while we wait for the server to finish rendering slides.
                     _presentations.value = emptyList()

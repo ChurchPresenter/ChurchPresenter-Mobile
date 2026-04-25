@@ -1,4 +1,5 @@
 import ComposeApp
+import FirebaseAnalytics
 import FirebaseCore
 import FirebaseCrashlytics
 import FirebaseMessaging
@@ -54,9 +55,11 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         // 1. Initialise Firebase (Crashlytics auto-starts here)
         FirebaseApp.configure()
 
-        // 1a. Bridge iOS Crashlytics to Kotlin — lets CrashReporting.ios.kt
-        //     route non-fatal exceptions and logs to the real Crashlytics SDK.
+        // 1a. Bridge iOS Crashlytics to Kotlin
         IosCrashlyticsReporterBridge.shared.reporter = SwiftCrashlyticsReporter()
+
+        // 1b. Bridge iOS Analytics to Kotlin
+        IosAnalyticsBridge.shared.reporter = SwiftAnalyticsReporter()
 
         // 2. Track launches and show the App Store review prompt at milestones
         let defaults = UserDefaults.standard
@@ -285,6 +288,23 @@ class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
 
     func setCustomKey(key: String, value: String) {
         Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+    }
+}
+
+// MARK: - Analytics bridge
+
+/**
+ * Swift implementation of the Kotlin [IosAnalyticsReporter] interface.
+ * Registered from [AppDelegate.application(_:didFinishLaunchingWithOptions:)]
+ * so that Kotlin's Analytics can forward events to Firebase Analytics on iOS.
+ */
+class SwiftAnalyticsReporter: NSObject, IosAnalyticsReporter {
+    func logEvent(name: String, params: [String: String]) {
+        // Firebase Analytics accepts [String: Any], so cast the string map.
+        // Use the fully-qualified FirebaseAnalytics.Analytics to avoid the
+        // naming collision with the Kotlin-exported Analytics object from ComposeApp.
+        let analyticsParams: [String: Any] = params.reduce(into: [:]) { $0[$1.key] = $1.value }
+        FirebaseAnalytics.Analytics.logEvent(name, parameters: analyticsParams.isEmpty ? nil : analyticsParams)
     }
 }
 
