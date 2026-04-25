@@ -54,6 +54,9 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    /** Surfaces an error message to the UI (e.g. file-too-large before any network call). */
+    fun reportError(message: String) { _error.value = message }
+
     /** True once a slide has been sent to the display via [selectPresentation]. */
     private val _isProjecting = MutableStateFlow(false)
     val isProjecting: StateFlow<Boolean> = _isProjecting.asStateFlow()

@@ -25,6 +25,7 @@ import platform.posix.time
 @Composable
 actual fun PresentationFilePicker(
     onFilePicked: OnFilePickedCallback,
+    onError: (String) -> Unit,
     content: @Composable (launch: () -> Unit) -> Unit,
 ) {
     val delegate = remember { IosDocumentPickerDelegate(onFilePicked) }

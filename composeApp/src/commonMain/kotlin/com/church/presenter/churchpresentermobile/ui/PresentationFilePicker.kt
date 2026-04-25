@@ -38,6 +38,7 @@ typealias OnFilePickedCallback = (file: PickedFile?) -> Unit
 @Composable
 expect fun PresentationFilePicker(
     onFilePicked: OnFilePickedCallback,
+    onError: (String) -> Unit = {},
     content: @Composable (launch: () -> Unit) -> Unit,
 )
 

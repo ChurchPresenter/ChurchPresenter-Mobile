@@ -274,7 +274,8 @@ fun PresentationScreen(
             PresentationFilePicker(
                 onFilePicked = { file ->
                     if (file != null) viewModel.uploadPresentationFile(file)
-                }
+                },
+                onError = { message -> viewModel.reportError(message) },
             ) { launchPicker ->
                 ContentActionButtons(
                     isProjecting       = isProjecting,
