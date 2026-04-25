@@ -226,7 +226,10 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
         viewModelScope.launch {
             presentationService.clearDisplay()
                 .onSuccess { Logger.d(TAG, "clearDisplay — success") }
-                .onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
+                .onFailure { e ->
+                    Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e)
+                    e.recordNetworkError(TAG, "clearDisplay")
+                }
         }
     }
 
@@ -298,6 +301,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val i
                             }
                             .onFailure { e ->
                                 Logger.e(TAG, "uploadPresentationFile — poll FAILED: ${e.message}", e)
+                                e.recordNetworkError(TAG, "uploadPresentationFile/poll")
                             }
                     }
                     if (!found) {

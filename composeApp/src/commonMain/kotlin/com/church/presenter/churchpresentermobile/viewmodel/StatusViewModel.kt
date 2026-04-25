@@ -7,6 +7,7 @@ import com.church.presenter.churchpresentermobile.model.ServerStatus
 import com.church.presenter.churchpresentermobile.model.StatusWarning
 import com.church.presenter.churchpresentermobile.model.deriveWarnings
 import com.church.presenter.churchpresentermobile.network.StatusService
+import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,8 +61,9 @@ class StatusViewModel(private val appSettings: AppSettings) : ViewModel() {
                     _uiState.value = StatusUiState.Success(status, warnings)
                 }
                 .onFailure { e ->
+                    val friendly = e.recordNetworkError(TAG, "fetchStatus")
                     Logger.e(TAG, "fetchStatus ✗ — ${e.message}", e)
-                    _uiState.value = StatusUiState.Error(e.message ?: "Unknown error")
+                    _uiState.value = StatusUiState.Error(friendly)
                 }
         }
     }

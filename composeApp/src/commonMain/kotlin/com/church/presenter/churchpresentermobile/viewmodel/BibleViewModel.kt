@@ -320,7 +320,10 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
             viewModelScope.launch {
                 bibleService.clearDisplay()
                     .onSuccess { Logger.d(TAG, "clearDisplay — success") }
-                    .onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
+                    .onFailure { e ->
+                        Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e)
+                        e.recordNetworkError(TAG, "toggleProjecting/clearDisplay")
+                    }
             }
             return
         }
@@ -353,7 +356,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                 _toastEvent.value          = ToastEvent.BibleLive
             }.onFailure { e ->
                 Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e)
-                _toastEvent.value = ToastEvent.FailedToProjectBible(e.message ?: "Unknown error")
+                _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse"))
             }
         }
     }
@@ -402,7 +405,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                 Logger.d(TAG, "selectBibleVerse — success")
             }.onFailure { e ->
                 Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e)
-                _toastEvent.value = ToastEvent.FailedToProjectBible(e.message ?: "Unknown error")
+                _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "projectVerseAtIndex/selectBibleVerse"))
             }
         }
     }
@@ -446,7 +449,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
                 _toastEvent.value = ToastEvent.BibleAddedToSchedule(ref)
             }.onFailure { e ->
                 Logger.e(TAG, "addBibleToSchedule — FAILED: ${e.message}", e)
-                _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddBibleSchedule(e.message ?: "Unknown error") }
+                _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddBibleSchedule(e.recordNetworkError(TAG, "addToSchedule/addBibleToSchedule")) }
             }
         }
     }

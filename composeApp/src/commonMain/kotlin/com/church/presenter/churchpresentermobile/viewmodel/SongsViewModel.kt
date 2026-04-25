@@ -250,7 +250,10 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
             viewModelScope.launch {
                 songService.clearDisplay()
                     .onSuccess { Logger.d(TAG, "clearDisplay — success") }
-                    .onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
+                    .onFailure { e ->
+                        Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e)
+                        e.recordNetworkError(TAG, "toggleProjecting/clearDisplay")
+                    }
             }
             return
         }
@@ -275,7 +278,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
                 .onFailure { e ->
                     Logger.e(TAG, "projectSong — FAILED: ${e.message}", e)
                     _isProjecting.value = false
-                    _toastEvent.value = e.toToastEvent { ToastEvent.FailedToProject(e.message ?: "") }
+                    _toastEvent.value = e.toToastEvent { ToastEvent.FailedToProject(e.recordNetworkError(TAG, "toggleProjecting/projectSong")) }
                 }
         }
     }
@@ -307,7 +310,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addSongToSchedule — FAILED: ${e.message}", e)
-                    _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddSchedule(e.message ?: "") }
+                    _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddSchedule(e.recordNetworkError(TAG, "addSongToSchedule")) }
                 }
         }
     }
