@@ -181,7 +181,19 @@
 
     <!-- Connect Setup Screen -->
     <string name="connect_setup_title">Connect to Desktop</string>
+    <string name="connect_setup_subtitle">One-time setup required</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile connects to the ChurchPresenter desktop app on your local network. Scan the QR code from the desktop to configure the connection automatically.</string>
+    <string name="connect_setup_skip_button">Skip for now</string>
+    <string name="connect_setup_done_button">Done — Connected</string>
     <string name="connect_setup_skip_note">You can scan the QR code anytime from Settings.</string>
+    <string name="connect_setup_step1_title">Open ChurchPresenter on your computer</string>
+    <string name="connect_setup_step1_body">Launch the ChurchPresenter desktop application and make sure it is running on the same Wi-Fi network as this device.</string>
+    <string name="connect_setup_step2_title">Show the connection QR code</string>
+    <string name="connect_setup_step2_body">In the desktop app go to Settings → Mobile → and press "Show QR Code". A QR code with the connection details will appear on screen.</string>
+    <string name="connect_setup_step3_title">Scan the QR code below</string>
+    <string name="connect_setup_step3_body">Tap the button below to open the camera and scan the QR code shown on the desktop. The connection will be configured automatically.</string>
+    <string name="connect_setup_scan_button">Scan QR Code</string>
+    <string name="connect_setup_connected">✓ Connected to %1$s:%2$s</string>
 
     <!-- Settings Screen (additional) -->
     <string name="settings_active_url_label">Currently connecting to:</string>
