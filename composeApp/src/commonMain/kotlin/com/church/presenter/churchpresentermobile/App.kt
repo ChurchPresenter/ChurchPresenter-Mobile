@@ -77,6 +77,7 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
+import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
@@ -171,6 +172,13 @@ fun App() {
     // first launch (when !appSettings.isConnectSetupDone) or from SettingsScreen.
     var showConnectSetup by remember { mutableStateOf(false) }
 
+    LaunchedEffect(showSettings) {
+        if (showSettings) Analytics.logScreenView(AnalyticsScreen.SETTINGS)
+    }
+    LaunchedEffect(showConnectSetup) {
+        if (showConnectSetup) Analytics.logScreenView(AnalyticsScreen.CONNECT_SETUP)
+    }
+
     // Apply deep-linked settings and notify screens to reload.
     // deepLinkConnectedMsg is evaluated in composable scope so it picks up the
     // fresh host/port values written by DeepLinkHandler before recomposition.
@@ -245,7 +253,7 @@ fun App() {
         }
     }
 
-    // Tab click → animate pager to matching page
+    // Tab click → animate pager to matching page + log screen view
     LaunchedEffect(selectedTab) {
         val targetPage = tabs.indexOf(selectedTab)
         if (pagerState.currentPage != targetPage) {
@@ -254,6 +262,32 @@ fun App() {
         Analytics.logEvent(
             AnalyticsEvent.TAB_SELECTED,
             mapOf(AnalyticsParam.TAB_NAME to selectedTab.name.lowercase())
+        )
+        // Only log the tab-level screen when not inside a detail sub-screen
+        val tabScreen = when (selectedTab) {
+            AppTab.SONGS         -> AnalyticsScreen.SONGS
+            AppTab.BIBLE         -> AnalyticsScreen.BIBLE_BOOKS
+            AppTab.PICTURES      -> AnalyticsScreen.PICTURES
+            AppTab.PRESENTATION  -> AnalyticsScreen.PRESENTATIONS
+        }
+        Analytics.logScreenView(tabScreen)
+    }
+
+    // Song detail open/close → update screen name
+    LaunchedEffect(songDetailTitle) {
+        if (songDetailTitle != null) Analytics.logScreenView(AnalyticsScreen.SONG_DETAIL)
+        else if (selectedTab == AppTab.SONGS) Analytics.logScreenView(AnalyticsScreen.SONGS)
+    }
+
+    // Bible depth navigation → update screen name
+    LaunchedEffect(bibleBook, bibleChapter) {
+        if (selectedTab != AppTab.BIBLE) return@LaunchedEffect
+        Analytics.logScreenView(
+            when {
+                bibleChapter != null -> AnalyticsScreen.BIBLE_VERSES
+                bibleBook    != null -> AnalyticsScreen.BIBLE_CHAPTERS
+                else                 -> AnalyticsScreen.BIBLE_BOOKS
+            }
         )
     }
 
@@ -284,6 +318,9 @@ fun App() {
     var showSplash by remember { mutableStateOf(true) }
     // Status screen state — shown once after splash; re-shown when settings are saved
     var showStatusScreen by remember { mutableStateOf(false) }
+    LaunchedEffect(showStatusScreen) {
+        if (showStatusScreen) Analytics.logScreenView(AnalyticsScreen.STATUS)
+    }
 
     val statusViewModel: StatusViewModel =
         viewModel(key = "status_$settingsSaveToken") {

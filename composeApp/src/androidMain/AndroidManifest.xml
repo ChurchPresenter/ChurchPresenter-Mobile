@@ -24,6 +24,15 @@
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
                 android:value="church_presenter_channel"/>
 
+        <!--
+            Disable automatic Activity-class screen tracking. We manually call
+            Analytics.logScreenView() with friendly names at every navigation point
+            so the Firebase "Pages and screens" report shows meaningful screen names.
+        -->
+        <meta-data
+                android:name="google_analytics_automatic_screen_reporting_enabled"
+                android:value="false"/>
+
         <activity
                 android:exported="true"
                 android:name=".MainActivity"

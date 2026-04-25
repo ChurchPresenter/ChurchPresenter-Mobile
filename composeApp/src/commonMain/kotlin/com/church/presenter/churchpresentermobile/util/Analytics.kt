@@ -25,6 +25,14 @@ expect object Analytics {
      * @param params Optional key-value pairs; values are automatically truncated to 100 chars.
      */
     fun logEvent(name: String, params: Map<String, String> = emptyMap())
+
+    /**
+     * Log a screen_view event — populates the Firebase "Pages and screens" report
+     * with a friendly [screenName] instead of the raw Activity/ViewController class name.
+     *
+     * Call this whenever the user navigates to a new logical screen.
+     */
+    fun logScreenView(screenName: String)
 }
 
 // ── Convenience event constants ───────────────────────────────────────────────
@@ -61,6 +69,22 @@ object AnalyticsEvent {
 
     // Settings
     const val SETTINGS_SAVED             = "settings_saved"
+}
+
+// ── Screen name constants (shown in Firebase "Pages and screens") ─────────────
+
+object AnalyticsScreen {
+    const val SONGS              = "Songs"
+    const val SONG_DETAIL        = "Song Detail"
+    const val BIBLE_BOOKS        = "Bible – Books"
+    const val BIBLE_CHAPTERS     = "Bible – Chapters"
+    const val BIBLE_VERSES       = "Bible – Verses"
+    const val PICTURES           = "Pictures"
+    const val PRESENTATIONS      = "Presentations"
+    const val SETTINGS           = "Settings"
+    const val SCHEDULE           = "Schedule"
+    const val CONNECT_SETUP      = "Connect Setup"
+    const val STATUS             = "Status Check"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

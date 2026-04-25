@@ -12,5 +12,10 @@ actual object Analytics {
             ?: println("[Analytics] $name $sanitised")
         Logger.d("Analytics", "logEvent: $name $sanitised")
     }
-}
 
+    actual fun logScreenView(screenName: String) {
+        IosAnalyticsBridge.reporter?.logScreenView(screenName)
+            ?: println("[Analytics] screenView: $screenName")
+        Logger.d("Analytics", "screenView: $screenName")
+    }
+}

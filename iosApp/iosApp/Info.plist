@@ -6,6 +6,13 @@
         <true/>
 
         <!--
+            Disable automatic ViewController-class screen tracking so only our
+            manual logScreenView() calls appear in Firebase "Pages and screens".
+        -->
+        <key>FirebaseAutomaticScreenReportingEnabled</key>
+        <false/>
+
+        <!--
             Allow plain HTTP (http://) connections to local Church Presenter servers
             on the LAN (e.g. 192.168.x.x:8765). The server no longer uses HTTPS —
             no SSL certificates required.

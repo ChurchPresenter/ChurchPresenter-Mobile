@@ -300,11 +300,16 @@ class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
  */
 class SwiftAnalyticsReporter: NSObject, IosAnalyticsReporter {
     func logEvent(name: String, params: [String: String]) {
-        // Firebase Analytics accepts [String: Any], so cast the string map.
-        // Use the fully-qualified FirebaseAnalytics.Analytics to avoid the
-        // naming collision with the Kotlin-exported Analytics object from ComposeApp.
         let analyticsParams: [String: Any] = params.reduce(into: [:]) { $0[$1.key] = $1.value }
         FirebaseAnalytics.Analytics.logEvent(name, parameters: analyticsParams.isEmpty ? nil : analyticsParams)
+    }
+
+    func logScreenView(screenName: String) {
+        // Logs a screen_view event — populates Firebase "Pages and screens" with friendly names.
+        FirebaseAnalytics.Analytics.logEvent(AnalyticsEventScreenView, parameters: [
+            AnalyticsParameterScreenName:  screenName,
+            AnalyticsParameterScreenClass: screenName,
+        ])
     }
 }
 

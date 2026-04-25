@@ -5,5 +5,7 @@ actual object Analytics {
     actual fun logEvent(name: String, params: Map<String, String>) {
         println("[Analytics] $name $params")
     }
+    actual fun logScreenView(screenName: String) {
+        println("[Analytics] screenView: $screenName")
+    }
 }
-
