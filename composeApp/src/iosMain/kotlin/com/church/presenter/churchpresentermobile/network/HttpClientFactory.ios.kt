@@ -5,6 +5,8 @@ import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.pingInterval
+import kotlin.time.Duration.Companion.seconds
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -38,6 +40,13 @@ actual fun createImageHttpClient(): HttpClient = HttpClient(Darwin) {
 }
 
 actual fun createWebSocketClient(): HttpClient = HttpClient(Darwin) {
-    install(WebSockets)
+    install(HttpTimeout) {
+        connectTimeoutMillis = 10_000
+    }
+    install(WebSockets) {
+        // pingInterval is required for Ktor's Darwin (NSURLSessionWebSocketTask) engine —
+        // without it the iOS WebSocket handshake can fail with NSURLErrorBadServerResponse (-1011).
+        pingInterval = 20.seconds
+    }
 }
 

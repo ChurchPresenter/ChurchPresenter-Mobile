@@ -8,12 +8,18 @@ import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 
 private const val TAG = "WebSocketService"
+
+/** Maximum number of attempts for a single [WebSocketService.sendAction] call. */
+private const val WS_MAX_ATTEMPTS = 3
+/** Delay between retry attempts in milliseconds. */
+private const val WS_RETRY_DELAY_MS = 500L
 
 /** Message type constants matching the server's WebSocket protocol. */
 object WsMessageType {
@@ -86,62 +92,76 @@ class WebSocketService(private val settings: AppSettings) {
     suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit> {
         val url = settings.wsBaseUrl
         Logger.d(TAG, "sendAction ▶ type=$type  url=$url")
-        return apiRunCatching {
-            client.webSocket(
-                urlString = url,
-                request = {
-                    val key = settings.apiKey
-                    if (key.isNotBlank()) {
-                        headers.append(ApiConstants.API_KEY_HEADER, key)
-                    }
-                    headers.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
-                }
-            ) {
-                val envelope = json.encodeToString(
-                    WsOutboundMessage(type = type, payload = payloadJson)
-                )
-                Logger.d(TAG, "sendAction ▶ sending frame: ${envelope.take(300)}")
-                send(Frame.Text(envelope))
-
-                if (fireAndForget) {
-                    // Instant command — no response expected, close immediately.
-                    close()
-                } else {
-                    // Approval-gated command — wait for {"ok": true/false} response,
-                    // skipping any server-push event frames sent on connect.
-                    for (frame in incoming) {
-                        if (frame !is Frame.Text) continue
-                        val responseText = frame.readText()
-                        Logger.d(TAG, "sendAction ◀ received: ${responseText.take(200)}")
-                        val jsonObj = runCatching {
-                            json.parseToJsonElement(responseText).jsonObject
-                        }.getOrNull() ?: continue
-
-                        // Skip server-push events (have "type" but no "ok")
-                        if (jsonObj.containsKey("type") && !jsonObj.containsKey("ok")) {
-                            Logger.d(TAG, "sendAction — skipping server-push event: ${responseText.take(80)}")
-                            continue
-                        }
-
-                        val response = runCatching {
-                            json.decodeFromString<WsResponse>(responseText)
-                        }.getOrNull()
-                        val isOk = response?.ok ?: true
-                        if (!isOk) {
-                            throw ApiException(
-                                httpStatus = 400,
-                                reason = response?.reason ?: response?.error,
-                            )
-                        }
-                        break
-                    }
-                    close()
-                }
+        var lastException: Throwable? = null
+        repeat(WS_MAX_ATTEMPTS) { attempt ->
+            if (attempt > 0) {
+                Logger.d(TAG, "sendAction — retry attempt ${attempt + 1}/$WS_MAX_ATTEMPTS  type=$type")
+                delay(WS_RETRY_DELAY_MS * attempt)
             }
-            Logger.d(TAG, "sendAction ◀ completed  type=$type")
-        }.onFailure { e ->
-            Logger.e(TAG, "sendAction — FAILED type=$type: ${e.message}", e)
+            val result = apiRunCatching {
+                client.webSocket(
+                    urlString = url,
+                    request = {
+                        val key = settings.apiKey
+                        if (key.isNotBlank()) {
+                            headers.append(ApiConstants.API_KEY_HEADER, key)
+                        }
+                        headers.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+                    }
+                ) {
+                    val envelope = json.encodeToString(
+                        WsOutboundMessage(type = type, payload = payloadJson)
+                    )
+                    Logger.d(TAG, "sendAction ▶ sending frame: ${envelope.take(300)}")
+                    send(Frame.Text(envelope))
+
+                    if (fireAndForget) {
+                        // Instant command — no response expected, close immediately.
+                        close()
+                    } else {
+                        // Approval-gated command — wait for {"ok": true/false} response,
+                        // skipping any server-push event frames sent on connect.
+                        for (frame in incoming) {
+                            if (frame !is Frame.Text) continue
+                            val responseText = frame.readText()
+                            Logger.d(TAG, "sendAction ◀ received: ${responseText.take(200)}")
+                            val jsonObj = runCatching {
+                                json.parseToJsonElement(responseText).jsonObject
+                            }.getOrNull() ?: continue
+
+                            // Skip server-push events (have "type" but no "ok")
+                            if (jsonObj.containsKey("type") && !jsonObj.containsKey("ok")) {
+                                Logger.d(TAG, "sendAction — skipping server-push event: ${responseText.take(80)}")
+                                continue
+                            }
+
+                            val response = runCatching {
+                                json.decodeFromString<WsResponse>(responseText)
+                            }.getOrNull()
+                            val isOk = response?.ok ?: true
+                            if (!isOk) {
+                                throw ApiException(
+                                    httpStatus = 400,
+                                    reason = response?.reason ?: response?.error,
+                                )
+                            }
+                            break
+                        }
+                        close()
+                    }
+                }
+                Logger.d(TAG, "sendAction ◀ completed  type=$type")
+            }
+            if (result.isSuccess) return result
+            lastException = result.exceptionOrNull()
+            // Don't retry on application-level rejections (server said ok=false)
+            if (lastException is ApiException) {
+                Logger.e(TAG, "sendAction — server rejection, not retrying: ${lastException?.message}")
+                return result
+            }
+            Logger.e(TAG, "sendAction — attempt ${attempt + 1} FAILED type=$type: ${lastException?.message}", lastException)
         }
+        return Result.failure(lastException ?: Exception("sendAction failed after $WS_MAX_ATTEMPTS attempts"))
     }
 
     /** Releases the underlying WebSocket HTTP client. Call when the owning service is closed. */
