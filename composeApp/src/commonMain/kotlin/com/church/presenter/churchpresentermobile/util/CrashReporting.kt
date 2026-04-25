@@ -19,5 +19,12 @@ expect object CrashReporting {
 
     /** Associate all future reports with this user / device identifier. */
     fun setUserId(userId: String)
+
+    /**
+     * Attach a key-value pair to all subsequent Crashlytics reports in this session.
+     * Useful for pinning the server URL, last operation, or error type so every
+     * non-fatal report carries that context automatically.
+     */
+    fun setCustomKey(key: String, value: String)
 }
 

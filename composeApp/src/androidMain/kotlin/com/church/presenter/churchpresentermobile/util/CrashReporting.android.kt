@@ -18,5 +18,9 @@ actual object CrashReporting {
     actual fun setUserId(userId: String) {
         FirebaseCrashlytics.getInstance().setUserId(userId)
     }
+
+    actual fun setCustomKey(key: String, value: String) {
+        FirebaseCrashlytics.getInstance().setCustomKey(key, value)
+    }
 }
 

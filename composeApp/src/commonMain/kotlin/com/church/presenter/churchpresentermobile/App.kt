@@ -73,6 +73,7 @@ import com.church.presenter.churchpresentermobile.util.RemoteConfig
 import com.church.presenter.churchpresentermobile.util.RemoteConfigDefaults
 import com.church.presenter.churchpresentermobile.util.RemoteConfigKeys
 import com.church.presenter.churchpresentermobile.util.Logger
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
@@ -150,6 +151,14 @@ fun App() {
 
     // Incremented each time the user saves settings; screens react via LaunchedEffect
     var settingsSaveToken by remember { mutableStateOf(0) }
+
+    // Pin the server URL to Crashlytics so every non-fatal report shows which server
+    // the app was connected to at the time of the failure.
+    LaunchedEffect(settingsSaveToken) {
+        CrashReporting.setCustomKey("server_url", appSettings.apiBaseUrl)
+        CrashReporting.setCustomKey("server_host", appSettings.host)
+        CrashReporting.setCustomKey("server_port", appSettings.port.toString())
+    }
     // Settings are only opened manually by the user — not on first launch
     var showSettings by remember { mutableStateOf(false) }
     // Show connect QR-scan setup screen — set to true by the splash callback on

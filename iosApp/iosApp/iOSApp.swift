@@ -1,5 +1,6 @@
 import ComposeApp
 import FirebaseCore
+import FirebaseCrashlytics
 import FirebaseMessaging
 import FirebaseRemoteConfig
 import StoreKit
@@ -52,6 +53,10 @@ class AppDelegate: NSObject, UIApplicationDelegate,
     ) -> Bool {
         // 1. Initialise Firebase (Crashlytics auto-starts here)
         FirebaseApp.configure()
+
+        // 1a. Bridge iOS Crashlytics to Kotlin — lets CrashReporting.ios.kt
+        //     route non-fatal exceptions and logs to the real Crashlytics SDK.
+        IosCrashlyticsReporterBridge.shared.reporter = SwiftCrashlyticsReporter()
 
         // 2. Track launches and show the App Store review prompt at milestones
         let defaults = UserDefaults.standard
@@ -243,3 +248,43 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         completionHandler()
     }
 }
+
+// MARK: - Crashlytics bridge
+
+/**
+ * Swift implementation of the Kotlin [IosCrashlyticsReporter] interface.
+ * Registered from [AppDelegate.application(_:didFinishLaunchingWithOptions:)]
+ * so that Kotlin's CrashReporting can forward non-fatal errors and logs to
+ * the real Firebase Crashlytics SDK on iOS.
+ */
+class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
+
+    func log(message: String) {
+        Crashlytics.crashlytics().log(message)
+    }
+
+    func recordError(message: String, type: String, stackTrace: String) {
+        // Firebase Crashlytics on iOS records non-fatals as NSError.
+        // We encode the Kotlin exception class and stack trace as user-info keys
+        // so they appear in the Crashlytics dashboard alongside the error.
+        let error = NSError(
+            domain: "com.church.presenter.network",
+            code: -1,
+            userInfo: [
+                NSLocalizedDescriptionKey       : message,
+                "kotlin_exception_type"         : type,
+                "kotlin_stack_trace"            : String(stackTrace.prefix(3_900)),
+            ]
+        )
+        Crashlytics.crashlytics().record(error: error)
+    }
+
+    func setUserId(userId: String) {
+        Crashlytics.crashlytics().setUserID(userId)
+    }
+
+    func setCustomKey(key: String, value: String) {
+        Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+    }
+}
+

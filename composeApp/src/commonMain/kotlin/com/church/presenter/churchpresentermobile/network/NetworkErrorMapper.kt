@@ -11,12 +11,25 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
  * intentionally not forwarded to Crashlytics because they are business-logic
  * responses, not bugs.
  *
+ * Custom keys attached to every non-fatal report:
+ *  - `network_tag`        — the class/ViewModel that originated the call
+ *  - `network_operation`  — the specific method that failed (e.g. "loadSongs")
+ *  - `network_error_type` — Kotlin class name of the exception
+ *  - `network_error_msg`  — first 200 chars of the exception message
+ *
  * @param tag       ViewModel/class tag (shown as a breadcrumb key in Crashlytics).
  * @param operation Human-readable operation name, e.g. `"loadSongs"`.
  */
 fun Throwable.recordNetworkError(tag: String, operation: String): String {
     if (this !is ApiException) {
-        CrashReporting.log("[$tag] $operation FAILED: ${message?.take(200)}")
+        val errorMsg = message?.take(200) ?: "unknown"
+        // Breadcrumb log — visible in the Crashlytics log tab
+        CrashReporting.log("[$tag] $operation FAILED (${this::class.simpleName}): $errorMsg")
+        // Custom keys — pinned to the session for every subsequent report
+        CrashReporting.setCustomKey("network_tag",        tag)
+        CrashReporting.setCustomKey("network_operation",  operation)
+        CrashReporting.setCustomKey("network_error_type", this::class.simpleName ?: "Throwable")
+        CrashReporting.setCustomKey("network_error_msg",  errorMsg)
         CrashReporting.recordException(this)
     }
     return toFriendlyNetworkMessage()
@@ -85,4 +98,3 @@ fun Throwable.toFriendlyNetworkMessage(): String {
         else -> raw.take(120)
     }
 }
-

@@ -8,6 +8,7 @@ import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -161,10 +162,18 @@ class WebSocketService(private val settings: AppSettings) {
             }
             Logger.e(TAG, "sendAction — attempt ${attempt + 1} FAILED type=$type: ${lastException?.message}", lastException)
         }
-        return Result.failure(lastException ?: Exception("sendAction failed after $WS_MAX_ATTEMPTS attempts"))
+        // All attempts exhausted — report the final failure to Crashlytics with WS context.
+        val finalError = lastException ?: Exception("sendAction failed after $WS_MAX_ATTEMPTS attempts")
+        if (finalError !is com.church.presenter.churchpresentermobile.model.ApiException) {
+            CrashReporting.log("WS sendAction FAILED after $WS_MAX_ATTEMPTS attempts  type=$type  url=$url")
+            CrashReporting.setCustomKey("ws_action_type",    type)
+            CrashReporting.setCustomKey("ws_server_url",     url)
+            CrashReporting.setCustomKey("network_error_type", finalError::class.simpleName ?: "Throwable")
+            CrashReporting.setCustomKey("network_error_msg",  finalError.message?.take(200) ?: "unknown")
+            CrashReporting.recordException(finalError)
+        }
+        return Result.failure(finalError)
     }
-
-    /** Releases the underlying WebSocket HTTP client. Call when the owning service is closed. */
     fun closeClient() {
         Logger.d(TAG, "closeClient — closing WebSocket client")
         client.close()
