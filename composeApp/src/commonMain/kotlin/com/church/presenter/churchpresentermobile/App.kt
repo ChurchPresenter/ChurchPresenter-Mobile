@@ -152,10 +152,9 @@ fun App() {
     var settingsSaveToken by remember { mutableStateOf(0) }
     // Settings are only opened manually by the user — not on first launch
     var showSettings by remember { mutableStateOf(false) }
-    // Show connect QR-scan setup screen if the user hasn't completed it yet
-    var showConnectSetup by remember {
-        mutableStateOf(!appSettings.isConnectSetupDone)
-    }
+    // Show connect QR-scan setup screen — set to true by the splash callback on
+    // first launch (when !appSettings.isConnectSetupDone) or from SettingsScreen.
+    var showConnectSetup by remember { mutableStateOf(false) }
 
     // Apply deep-linked settings and notify screens to reload.
     // deepLinkConnectedMsg is evaluated in composable scope so it picks up the
@@ -276,7 +275,17 @@ fun App() {
 
     AppTheme(themeMode = themeMode) {
         if (showSplash) {
-            SplashScreen(onComplete = { showSplash = false; showStatusScreen = true })
+            SplashScreen(onComplete = {
+                showSplash = false
+                // On first launch skip the status check — show the connect-setup
+                // screen directly so the user configures the server first.
+                // On subsequent launches go straight to the status check as usual.
+                if (!appSettings.isConnectSetupDone) {
+                    showConnectSetup = true
+                } else {
+                    showStatusScreen = true
+                }
+            })
             return@AppTheme
         }
         if (showStatusScreen) {
@@ -284,6 +293,27 @@ fun App() {
                 viewModel      = statusViewModel,
                 onContinue     = { showStatusScreen = false },
                 onOpenSettings = { showStatusScreen = false; showSettings = true },
+            )
+            return@AppTheme
+        }
+        // First-launch connect setup — shown full-screen, after splash, before main content.
+        // On subsequent launches showConnectSetup is false so this block is skipped entirely.
+        if (showConnectSetup && !appSettings.isConnectSetupDone) {
+            ConnectSetupScreen(
+                appSettings = appSettings,
+                onDone = {
+                    appSettings.isConnectSetupDone = true
+                    appSettings.isSetupComplete = true
+                    settingsSaveToken++
+                    showConnectSetup = false
+                    showStatusScreen = true   // now check server status
+                },
+                onSkip = {
+                    appSettings.isConnectSetupDone = true
+                    appSettings.isSetupComplete = true
+                    showConnectSetup = false
+                    showStatusScreen = true   // still check status even if skipped
+                }
             )
             return@AppTheme
         }
@@ -574,23 +604,6 @@ fun App() {
                             showSettings = false
                             showConnectSetup = true
                         }
-                    }
-                )
-            }
-
-            if (showConnectSetup) {
-                ConnectSetupScreen(
-                    appSettings = appSettings,
-                    onDone = {
-                        appSettings.isConnectSetupDone = true
-                        appSettings.isSetupComplete = true
-                        settingsSaveToken++
-                        showConnectSetup = false
-                    },
-                    onSkip = {
-                        appSettings.isConnectSetupDone = true
-                        appSettings.isSetupComplete = true
-                        showConnectSetup = false
                     }
                 )
             }
