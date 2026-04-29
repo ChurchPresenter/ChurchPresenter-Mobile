@@ -26,4 +26,5 @@ iosApp/Pods/
 # iOS signing — symlinked from the private signing repo by scripts/setup_signing.sh
 iosApp/Configuration/Signing.xcconfig
 
+kotlin-js-store/
 /.claude
