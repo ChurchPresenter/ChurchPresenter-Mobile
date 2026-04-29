@@ -91,6 +91,30 @@ fun SongDetailScreen(
 
                 detail != null -> {
                     if (detail.allVerses.isNotEmpty()) {
+                        // Build numbered labels: "Verse 1", "Verse 2", "Chorus", "Chorus 2", etc.
+                        val sectionLabels = remember(detail) {
+                            val typeCounts = mutableMapOf<String, Int>()
+                            detail.allVerses.map { v ->
+                                val rawType = (v.label ?: v.type ?: v.name)
+                                    ?.trim()?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                                if (rawType != null) {
+                                    val count = (typeCounts[rawType] ?: 0) + 1
+                                    typeCounts[rawType] = count
+                                    rawType to count
+                                } else null
+                            }.let { pairs ->
+                                // Only append number if there are multiple sections of that type
+                                val totalPerType = mutableMapOf<String, Int>()
+                                pairs.forEach { p -> if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1 }
+                                pairs.mapIndexed { i, p ->
+                                    when {
+                                        p == null -> (i + 1).toString()
+                                        totalPerType[p.first] == 1 -> p.first
+                                        else -> "${p.first} ${p.second}"
+                                    }
+                                }
+                            }
+                        }
                         val versesState = rememberLazyListState()
                         LazyColumn(
                             state = versesState,
@@ -107,6 +131,7 @@ fun SongDetailScreen(
                                 VerseCard(
                                     verse = verse,
                                     index = index,
+                                    label = sectionLabels.getOrElse(index) { (index + 1).toString() },
                                     isSelected = isProjecting && selectedVerseIndex == index,
                                     isProjecting = isProjecting,
                                     onClick = { onVerseSelected(index) }
@@ -162,6 +187,7 @@ fun SongDetailScreen(
 private fun VerseCard(
     verse: SongVerse,
     index: Int,
+    label: String = (index + 1).toString(),
     isSelected: Boolean,
     isProjecting: Boolean,
     onClick: () -> Unit
@@ -201,7 +227,6 @@ private fun VerseCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val label = verse.displayLabel ?: (index + 1).toString()
                 Text(
                     text = label,
                     style = MaterialTheme.typography.labelMedium,

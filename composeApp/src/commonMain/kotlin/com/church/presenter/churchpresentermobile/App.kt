@@ -80,6 +80,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.ScheduleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
@@ -138,6 +139,24 @@ fun App() {
     }
     val picturesViewModel: PicturesViewModel = viewModel(key = "pictures_$isDemoMode") {
         PicturesViewModel(appSettings, isDemoMode)
+    }
+    val scheduleViewModel: ScheduleViewModel = viewModel(key = isDemoMode.toString()) {
+        ScheduleViewModel(appSettings, isDemoMode)
+    }
+
+    // When the desktop clears its display, reset projection state on mobile
+    LaunchedEffect(scheduleViewModel) {
+        scheduleViewModel.displayCleared.collect {
+            bibleViewModel.onDisplayCleared()
+            songsViewModel.onDisplayCleared()
+        }
+    }
+
+    // When the desktop switches Bible translation, reload books on mobile
+    LaunchedEffect(scheduleViewModel) {
+        scheduleViewModel.bibleUpdated.collect {
+            bibleViewModel.loadBooks(forceReload = true)
+        }
     }
 
     // Theme mode – updated whenever the user saves settings

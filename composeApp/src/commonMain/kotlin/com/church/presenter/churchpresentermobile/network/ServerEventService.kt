@@ -48,6 +48,14 @@ class ServerEventService(private val settings: AppSettings) {
     /** Emits [Unit] each time the server pushes a `songs_updated` event. */
     val songsUpdated: SharedFlow<Unit> = _songsUpdated.asSharedFlow()
 
+    private val _displayCleared = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    /** Emits [Unit] each time the server pushes a `display_cleared` event. */
+    val displayCleared: SharedFlow<Unit> = _displayCleared.asSharedFlow()
+
+    private val _bibleUpdated = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    /** Emits [Unit] each time the server pushes a `bible_updated` event (e.g. translation switched). */
+    val bibleUpdated: SharedFlow<Unit> = _bibleUpdated.asSharedFlow()
+
     /**
      * Connects to `ws://<host>:<port>/ws` and listens for server-push events.
      * Automatically reconnects after any error or disconnection.
@@ -83,6 +91,8 @@ class ServerEventService(private val settings: AppSettings) {
                         when (event.type) {
                             "schedule_updated"     -> _scheduleUpdated.tryEmit(Unit)
                             "songs_updated"        -> _songsUpdated.tryEmit(Unit)
+                            "bible_updated"        -> _bibleUpdated.tryEmit(Unit)
+                            "display_cleared"      -> _displayCleared.tryEmit(Unit)
                         }
                     }
                     Logger.d(TAG, "listen — session closed normally")

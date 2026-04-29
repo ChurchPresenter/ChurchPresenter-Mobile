@@ -56,12 +56,15 @@ fun BibleDetailScreen(
     verses: List<BibleVerse>,
     isLoading: Boolean = false,
     isProjecting: Boolean,
+    isHolding: Boolean = false,
     scheduleAdded: Boolean,
     selectedVerseIndices: Set<Int>,
     projectedVerseIndex: Int?,
     onChapterSelect: (Int) -> Unit,
     onVerseToggleSelection: (Int) -> Unit,
     onToggleProjecting: () -> Unit,
+    onToggleHold: () -> Unit = {},
+    onClearDisplay: () -> Unit = {},
     onAddToSchedule: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -128,6 +131,9 @@ fun BibleDetailScreen(
                 onAddToSchedule    = onAddToSchedule,
                 modifier           = Modifier.align(Alignment.BottomEnd),
                 castBadgeCount     = selectedVerseIndices.size,
+                isHolding          = isHolding,
+                onToggleHold       = onToggleHold,
+                onClearDisplay     = onClearDisplay,
             )
         }
     } else {

@@ -10,6 +10,7 @@ import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -33,6 +34,12 @@ class ScheduleViewModel(private val appSettings: AppSettings, private val isDemo
 
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
+
+    /** Emits when the desktop clears its display. Other ViewModels can collect this to reset projection state. */
+    val displayCleared: SharedFlow<Unit> get() = eventService.displayCleared
+
+    /** Emits when the desktop switches Bible translation. */
+    val bibleUpdated: SharedFlow<Unit> get() = eventService.bibleUpdated
 
     init {
         loadSchedule()

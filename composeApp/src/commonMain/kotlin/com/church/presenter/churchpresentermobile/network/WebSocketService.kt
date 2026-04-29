@@ -35,6 +35,7 @@ object WsMessageType {
     const val SELECT_PICTURE      = "select_picture"
     const val SELECT_SLIDE        = "select_slide"
     const val CLEAR               = "clear"
+    const val BIBLE_HOLD          = "bible_hold"
 }
 
 /** Outbound WebSocket message envelope. */

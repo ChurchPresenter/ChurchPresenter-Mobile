@@ -95,13 +95,16 @@ class SongService(private val settings: AppSettings) {
      * Uses a two-pass approach: standard JSON decode first, then a flexible
      * JsonObject scan as a safety net for any unrecognised field names.
      */
-    suspend fun getSongDetail(number: String, bookName: String?): Result<SongDetail> {
-        val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}/$number"
-        Logger.d(TAG, "getSongDetail — requesting URL: $url  bookName=$bookName")
+    suspend fun getSongDetail(number: String, bookName: String?, songId: Int = -1, title: String? = null): Result<SongDetail> {
+        val pathSegment = number.ifBlank { "_" }
+        val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}/$pathSegment"
+        Logger.d(TAG, "getSongDetail — requesting URL: $url  bookName=$bookName  songId=$songId  title=$title")
         return apiRunCatching {
             val httpResponse = client.get(url) {
                 applyApiKey()
                 if (!bookName.isNullOrBlank()) parameter("songbook", bookName)
+                if (songId >= 0) parameter("id", songId)
+                if (number.isBlank() && !title.isNullOrBlank()) parameter("title", title)
             }
             Logger.d(TAG, "getSongDetail — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()

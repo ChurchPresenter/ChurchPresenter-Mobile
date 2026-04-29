@@ -174,6 +174,17 @@ class BibleService(private val settings: AppSettings) {
     }
 
     /**
+     * Toggles Bible hold mode on the desktop. When held, the display freezes on the
+     * current verse even as the user browses other verses on mobile.
+     */
+    suspend fun setBibleHold(hold: Boolean): Result<Unit> {
+        Logger.d(TAG, "setBibleHold ▶ WS bible_hold hold=$hold")
+        return apiRunCatching {
+            wsService.sendAction(WsMessageType.BIBLE_HOLD, """{"hold":$hold}""", fireAndForget = true).getOrThrow()
+        }.onFailure { e -> Logger.e(TAG, "setBibleHold — FAILED: ${e.message}", e) }
+    }
+
+    /**
      * Sends a single Bible verse to the presenter window immediately via POST /api/project.
      * Requires desktop approval before the verse appears on screen.
      *

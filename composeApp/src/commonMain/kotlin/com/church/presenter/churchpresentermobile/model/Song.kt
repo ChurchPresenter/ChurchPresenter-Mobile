@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Song(
+    val id: Int = -1,
     val number: String,
     val title: String,
     val tune: String? = null,
@@ -129,6 +130,7 @@ data class SongDetail(
     @SerialName("song-book")    val songBookKebab: String? = null,
     // Verse arrays — every common container name
     val verses: List<SongVerse>? = null,
+    val sections: List<SongVerse>? = null,
     val lyrics: List<SongVerse>? = null,
     val slides: List<SongVerse>? = null,
     val stanzas: List<SongVerse>? = null,
@@ -148,7 +150,7 @@ data class SongDetail(
             .firstOrNull { it.isNotBlank() }
 
     val allVerses: List<SongVerse>
-        get() = listOfNotNull(verses, lyrics, slides, stanzas, songVersesKebab, songVersesCamel, verseListKebab)
+        get() = listOfNotNull(verses, sections, lyrics, slides, stanzas, songVersesKebab, songVersesCamel, verseListKebab)
             .firstOrNull { it.isNotEmpty() } ?: emptyList()
 
     val hasLyrics: Boolean

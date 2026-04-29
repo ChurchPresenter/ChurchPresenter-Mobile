@@ -106,6 +106,7 @@ fun BibleScreen(
     val isLoading           by vm.isLoading.collectAsState()
     val error               by vm.error.collectAsState()
     val isProjecting        by vm.isProjecting.collectAsState()
+    val isHolding           by vm.isHolding.collectAsState()
     val selectedVerseIndices by vm.selectedVerseIndices.collectAsState()
     val projectedVerseIndex  by vm.projectedVerseIndex.collectAsState()
     val scheduleAdded       by vm.scheduleAdded.collectAsState()
@@ -204,12 +205,15 @@ fun BibleScreen(
                         verses = verses,
                         isLoading = isLoading,
                         isProjecting = isProjecting,
+                        isHolding = isHolding,
                         scheduleAdded = scheduleAdded,
                         selectedVerseIndices = selectedVerseIndices,
                         projectedVerseIndex = projectedVerseIndex,
                         onChapterSelect = { vm.selectChapter(it) },
                         onVerseToggleSelection = { vm.toggleVerseSelection(it) },
                         onToggleProjecting = { vm.toggleProjecting() },
+                        onToggleHold = { vm.toggleHold() },
+                        onClearDisplay = { vm.clearDisplay() },
                         onAddToSchedule = { vm.addToSchedule() },
                         modifier = Modifier.fillMaxSize()
                     )

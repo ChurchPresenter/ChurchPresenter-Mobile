@@ -67,6 +67,9 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
     private val _isProjecting = MutableStateFlow(false)
     val isProjecting = _isProjecting.asStateFlow()
 
+    private val _isHolding = MutableStateFlow(false)
+    val isHolding = _isHolding.asStateFlow()
+
     /** 0-based indices of all verses the user has tapped to select (multi-select). */
     private val _selectedVerseIndices = MutableStateFlow<Set<Int>>(emptySet())
     val selectedVerseIndices = _selectedVerseIndices.asStateFlow()
@@ -368,6 +371,50 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
     }
 
     /**
+     * Toggles Bible hold mode. When held, the desktop display freezes on the current verse
+     * so the user can browse other verses without changing the projection.
+     */
+    fun toggleHold() {
+        val newHold = !_isHolding.value
+        _isHolding.value = newHold
+        if (isDemoMode) {
+            Logger.d(TAG, "toggleHold — DEMO MODE, hold=$newHold")
+            return
+        }
+        Logger.d(TAG, "toggleHold — firing setBibleHold hold=$newHold")
+        viewModelScope.launch {
+            bibleService.setBibleHold(newHold)
+                .onSuccess { Logger.d(TAG, "setBibleHold — success") }
+                .onFailure { e ->
+                    Logger.e(TAG, "setBibleHold — FAILED: ${e.message}", e)
+                    e.recordNetworkError(TAG, "toggleHold/setBibleHold")
+                }
+        }
+    }
+
+    /**
+     * Clears the desktop display without toggling projection mode off.
+     */
+    fun clearDisplay() {
+        _isProjecting.value = false
+        _projectedVerseIndex.value = null
+        _isHolding.value = false
+        if (isDemoMode) {
+            Logger.d(TAG, "clearDisplay — DEMO MODE")
+            return
+        }
+        Logger.d(TAG, "clearDisplay — firing clear")
+        viewModelScope.launch {
+            bibleService.clearDisplay()
+                .onSuccess { Logger.d(TAG, "clearDisplay — success") }
+                .onFailure { e ->
+                    Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e)
+                    e.recordNetworkError(TAG, "clearDisplay")
+                }
+        }
+    }
+
+    /**
      * Toggles whether the verse at [index] is in the multi-select set.
      * Always available — does not require projecting to be active.
      */
@@ -461,6 +508,13 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         }
     }
 
+    /** Resets projection state when the desktop clears its display. */
+    fun onDisplayCleared() {
+        _isProjecting.value = false
+        _isHolding.value = false
+        _projectedVerseIndex.value = null
+    }
+
     /** Called after the UI has consumed a toast event. */
     fun toastShown() { _toastEvent.value = null }
 
@@ -510,6 +564,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         _verses.value = emptyList()
         _bookSearchQuery.value = ""
         _isProjecting.value = false
+        _isHolding.value = false
         _selectedVerseIndices.value = emptySet()
         _projectedVerseIndex.value = null
         _scheduleAdded.value = false

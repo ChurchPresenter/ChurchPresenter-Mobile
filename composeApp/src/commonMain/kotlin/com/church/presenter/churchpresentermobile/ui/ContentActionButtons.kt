@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Cast
+import androidx.compose.material.icons.filled.DesktopAccessDisabled
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.action_add_to_schedule
+import churchpresentermobile.composeapp.generated.resources.action_clear_display
+import churchpresentermobile.composeapp.generated.resources.action_hold_display
 import churchpresentermobile.composeapp.generated.resources.action_project_to_screen
 import churchpresentermobile.composeapp.generated.resources.action_stop_projecting
 import org.jetbrains.compose.resources.stringResource
@@ -51,6 +55,9 @@ fun ContentActionButtons(
     onAddToSchedule: () -> Unit,
     modifier: Modifier = Modifier,
     castBadgeCount: Int = 0,
+    isHolding: Boolean = false,
+    onToggleHold: (() -> Unit)? = null,
+    onClearDisplay: (() -> Unit)? = null,
     extraLeadingContent: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(
@@ -61,6 +68,40 @@ fun ContentActionButtons(
     ) {
         // ── Screen-specific extra buttons (e.g. photo picker) ─────────────
         extraLeadingContent()
+
+        // ── Clear Display ───────────────────────────────────────────────
+        if (onClearDisplay != null && isProjecting) {
+            FloatingActionButton(
+                onClick = onClearDisplay,
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
+            ) {
+                Icon(
+                    imageVector        = Icons.Filled.DesktopAccessDisabled,
+                    contentDescription = stringResource(Res.string.action_clear_display)
+                )
+            }
+        }
+
+        // ── Hold / Freeze Display ───────────────────────────────────────
+        if (onToggleHold != null && isProjecting) {
+            FloatingActionButton(
+                onClick = onToggleHold,
+                containerColor = if (isHolding)
+                    MaterialTheme.colorScheme.error
+                else
+                    MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (isHolding)
+                    MaterialTheme.colorScheme.onError
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(
+                    imageVector        = Icons.Filled.Pause,
+                    contentDescription = stringResource(Res.string.action_hold_display)
+                )
+            }
+        }
 
         // ── Add to Schedule ───────────────────────────────────────────────
         FloatingActionButton(

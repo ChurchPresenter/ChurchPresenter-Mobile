@@ -200,7 +200,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
         }
         viewModelScope.launch {
             _isLoadingDetail.value = true
-            songService.getSongDetail(song.number, song.bookName)
+            songService.getSongDetail(song.number, song.bookName, song.id, song.title)
                 .onSuccess { detail ->
                     _songDetail.value = detail
                     Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${detail.allVerses.size}")
@@ -232,6 +232,12 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
         _isProjecting.value = false
         _toastEvent.value = null
         _scheduleAdded.value = false
+    }
+
+    /** Resets projection state when the desktop clears its display. */
+    fun onDisplayCleared() {
+        _isProjecting.value = false
+        _selectedVerseIndex.value = null
     }
 
     /** Called after the UI has consumed a toast event. */
