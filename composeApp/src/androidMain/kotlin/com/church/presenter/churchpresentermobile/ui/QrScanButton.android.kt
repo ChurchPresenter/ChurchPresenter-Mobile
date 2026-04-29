@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import android.content.ActivityNotFoundException
+import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -21,6 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Android implementation: uses the Google Play Services Code Scanner.
  * No camera permission is required — Google provides the full scanning UI.
+ * Falls back gracefully on devices without Google Play Services.
  */
 @Composable
 actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
@@ -28,17 +31,25 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
 
     OutlinedButton(
         onClick = {
-            val options = GmsBarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                .build()
-            GmsBarcodeScanning.getClient(context, options)
-                .startScan()
-                .addOnSuccessListener { barcode ->
-                    barcode.rawValue?.let { onScanned(it) }
-                }
-                .addOnFailureListener {
-                    // User cancelled or scanner unavailable — no-op
-                }
+            try {
+                val options = GmsBarcodeScannerOptions.Builder()
+                    .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                    .build()
+                GmsBarcodeScanning.getClient(context, options)
+                    .startScan()
+                    .addOnSuccessListener { barcode ->
+                        barcode.rawValue?.let { onScanned(it) }
+                    }
+                    .addOnFailureListener {
+                        // User cancelled or scanner unavailable — no-op
+                    }
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    context,
+                    "QR scanning requires Google Play Services, which is not available on this device.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         },
         modifier = modifier
     ) {
@@ -47,4 +58,3 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
         Text(stringResource(Res.string.qr_scan_button))
     }
 }
-
