@@ -74,6 +74,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.PresentationSlide
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.PresentationsViewModel
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -104,9 +105,11 @@ fun PresentationScreen(
     onPendingNavHandled: () -> Unit = {},
     onScheduleRefresh: () -> Unit = {},
     canUploadFiles: Boolean = false,
+    providedViewModel: PresentationsViewModel? = null,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: PresentationsViewModel = viewModel(key = isDemoMode.toString()) { PresentationsViewModel(appSettings, isDemoMode) }
+    val viewModel: PresentationsViewModel = providedViewModel
+        ?: viewModel(key = isDemoMode.toString()) { PresentationsViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
 
     // React to settings changes – rebuild the service and reload
     LaunchedEffect(settingsSaveToken) {

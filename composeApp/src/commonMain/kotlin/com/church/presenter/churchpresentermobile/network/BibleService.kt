@@ -56,10 +56,8 @@ private fun checkApiResponse(statusCode: Int, rawBody: String) {
  *
  * @param settings The current [AppSettings] used to build the base URL and supply the API key.
  */
-class BibleService(private val settings: AppSettings) {
+class BibleService(private val settings: AppSettings, private val wsService: ServerEventService) {
     private val client: HttpClient = createHttpClient()
-    /** WebSocket service for approval-required actions (project / add-to-schedule). */
-    private val wsService: WebSocketService = WebSocketService(settings)
 
     init {
         Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
@@ -266,8 +264,7 @@ class BibleService(private val settings: AppSettings) {
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
-        Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
+        Logger.d(TAG, "closeClient — closing HTTP client")
         client.close()
-        wsService.closeClient()
     }
 }

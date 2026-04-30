@@ -59,10 +59,8 @@ private fun checkApiResponse(statusCode: Int, rawBody: String) {
  *
  * @param settings The current [AppSettings] used to build the base URL and supply the API key.
  */
-class SongService(private val settings: AppSettings) {
+class SongService(private val settings: AppSettings, private val wsService: ServerEventService) {
     private val client: HttpClient = createHttpClient()
-    /** WebSocket service for approval-required actions (project / add-to-schedule). */
-    private val wsService: WebSocketService = WebSocketService(settings)
 
     init {
         Logger.d(TAG, "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
@@ -251,11 +249,10 @@ class SongService(private val settings: AppSettings) {
         header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
     }
 
-    /** Releases the underlying HTTP and WebSocket clients. Call when the owning ViewModel is cleared. */
+    /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
-        Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
+        Logger.d(TAG, "closeClient — closing HTTP client")
         client.close()
-        wsService.closeClient()
     }
 }
 

@@ -15,14 +15,13 @@ private const val KEY_DEVICE_ID = "device_id"
 private const val KEY_FCM_TOKEN        = "fcm_token"
 private const val KEY_APP_OPEN_COUNT   = "app_open_count"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
-private const val KEY_CERT_TRUSTED     = "cert_trusted"
 private const val KEY_CONNECT_SETUP    = "connect_setup_done"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
  * Causes stored host/port to be reset to the platform-appropriate defaults on next launch.
  */
-private const val CURRENT_SETTINGS_VERSION = 4
+private const val CURRENT_SETTINGS_VERSION = 5
 
 /**
  * Returns the appropriate default host for this platform/environment.
@@ -130,14 +129,6 @@ class AppSettings {
     var isSetupComplete: Boolean
         get() = storage.getInt(KEY_SETUP_COMPLETE, 0) == 1
         set(value) { storage.putInt(KEY_SETUP_COMPLETE, if (value) 1 else 0) }
-
-    /**
-     * Always returns true — SSL certificates are no longer required since the server
-     * uses plain HTTP/WS. Kept for backward compatibility with stored settings.
-     */
-    var isCertTrusted: Boolean
-        get() = true
-        set(_) { storage.putInt(KEY_CERT_TRUSTED, 1) }
 
     /**
      * True once the user has completed (or skipped) the first-launch

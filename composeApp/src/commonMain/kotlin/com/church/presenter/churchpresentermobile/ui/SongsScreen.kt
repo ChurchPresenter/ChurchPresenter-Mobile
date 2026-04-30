@@ -26,6 +26,7 @@ import churchpresentermobile.composeapp.generated.resources.toast_song_added_to_
 import churchpresentermobile.composeapp.generated.resources.toast_song_live
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import org.jetbrains.compose.resources.stringResource
 
@@ -58,7 +59,7 @@ fun SongsTable(
     // isolation (e.g. Compose Previews or tests).
     val vm: SongsViewModel = providedViewModel
         ?: viewModel(key = isDemoMode.toString()) {
-            SongsViewModel(appSettings, isDemoMode)
+            SongsViewModel(appSettings, ServerEventService(appSettings), isDemoMode)
         }
 
     LaunchedEffect(settingsSaveToken) {
@@ -135,6 +136,7 @@ fun SongsTable(
                 onVerseSelected = { vm.selectVerse(it) },
                 onToggleProjecting = { vm.toggleProjecting() },
                 onAddToSchedule = { vm.addSongToSchedule() },
+                onClearDisplay = { vm.clearDisplay() },
                 modifier = Modifier.fillMaxSize()
             )
         } else {

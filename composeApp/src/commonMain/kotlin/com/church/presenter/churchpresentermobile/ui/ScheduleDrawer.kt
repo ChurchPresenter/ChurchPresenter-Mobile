@@ -49,6 +49,7 @@ import churchpresentermobile.composeapp.generated.resources.schedule_drawer_refr
 import churchpresentermobile.composeapp.generated.resources.schedule_drawer_title
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.ScheduleViewModel
 import org.jetbrains.compose.resources.stringResource
 
@@ -69,9 +70,11 @@ fun ScheduleDrawerContent(
     settingsSaveToken: Int,
     scheduleRefreshToken: Int = 0,
     onItemClick: (ScheduleItem) -> Unit = {},
+    providedViewModel: ScheduleViewModel? = null,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: ScheduleViewModel = viewModel(key = isDemoMode.toString()) { ScheduleViewModel(appSettings, isDemoMode) }
+    val viewModel: ScheduleViewModel = providedViewModel
+        ?: viewModel(key = isDemoMode.toString()) { ScheduleViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
 
     LaunchedEffect(settingsSaveToken) {
         if (settingsSaveToken > 0) viewModel.onSettingsSaved()

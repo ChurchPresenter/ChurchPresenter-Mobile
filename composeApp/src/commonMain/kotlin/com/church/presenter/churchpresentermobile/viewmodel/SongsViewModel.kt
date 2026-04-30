@@ -8,6 +8,7 @@ import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
@@ -23,8 +24,8 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "SongsViewModel"
 
-class SongsViewModel(private val appSettings: AppSettings, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var songService = SongService(appSettings)
+class SongsViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
+    private var songService = SongService(appSettings, eventService)
 
     private val _allSongs = MutableStateFlow<List<Song>>(emptyList())
 
@@ -96,7 +97,16 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
     private var pendingOpenTitle: String? = null
     private var pendingOpenBook: String? = null
 
-    init { loadSongs() }
+    init {
+        loadSongs()
+        viewModelScope.launch {
+            eventService.songSectionSelected.collect { index ->
+                if (_isProjecting.value) {
+                    _selectedVerseIndex.value = index
+                }
+            }
+        }
+    }
 
     /**
      * Token of the last [onSettingsSaved] call that was fully processed.
@@ -295,6 +305,26 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
         }
     }
 
+    /** Clears the desktop display without toggling projection mode off. */
+    fun clearDisplay() {
+        _isProjecting.value = false
+        _selectedVerseIndex.value = null
+        Analytics.logEvent(AnalyticsEvent.SONG_DISPLAY_CLEARED)
+        if (isDemoMode) {
+            Logger.d(TAG, "clearDisplay — DEMO MODE")
+            return
+        }
+        Logger.d(TAG, "clearDisplay — firing clear")
+        viewModelScope.launch {
+            songService.clearDisplay()
+                .onSuccess { Logger.d(TAG, "clearDisplay — success") }
+                .onFailure { e ->
+                    Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e)
+                    e.recordNetworkError(TAG, "clearDisplay")
+                }
+        }
+    }
+
     /** Adds the current song to the schedule via POST /api/schedule/add.
      *  In demo mode, simulates success without any API call. */
     fun addSongToSchedule() {
@@ -340,7 +370,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val isDemoMod
         // the new server's songs load, preventing a "no songs" flash.
         _isLoading.value = true
         songService.closeClient()
-        songService = SongService(appSettings)
+        songService = SongService(appSettings, eventService)
         _selectedSong.value = null
         _selectedBook.value = null
         _searchQuery.value = ""

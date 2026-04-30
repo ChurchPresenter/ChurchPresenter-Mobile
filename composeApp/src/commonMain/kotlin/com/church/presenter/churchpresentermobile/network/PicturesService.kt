@@ -30,12 +30,10 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  *
  * @param settings The shared [AppSettings] used to build the base URL.
  */
-class PicturesService(private val settings: AppSettings) {
+class PicturesService(private val settings: AppSettings, private val wsService: ServerEventService) {
     private val client: HttpClient = createHttpClient()
     /** Separate client with no request/socket timeout — required for large photo uploads. */
     private val uploadClient: HttpClient = createActionHttpClient()
-    /** WebSocket service for approval-required actions (add-to-schedule). */
-    private val wsService: WebSocketService = WebSocketService(settings)
 
     init {
         Logger.d(TAG, "PicturesService created — baseUrl=${settings.apiBaseUrl}")
@@ -172,7 +170,6 @@ class PicturesService(private val settings: AppSettings) {
         Logger.d(TAG, "closeClient")
         client.close()
         uploadClient.close()
-        wsService.closeClient()
     }
 }
 

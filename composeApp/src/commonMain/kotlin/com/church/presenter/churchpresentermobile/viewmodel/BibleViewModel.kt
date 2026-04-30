@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.BibleService
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
@@ -28,8 +29,8 @@ private const val TAG = "BibleViewModel"
  * @param appSettings The shared [AppSettings] instance used to configure the API service.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
  */
-class BibleViewModel(private val appSettings: AppSettings, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var bibleService = BibleService(appSettings)
+class BibleViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
+    private var bibleService = BibleService(appSettings, eventService)
 
     // ── Books ─────────────────────────────────────────────────────────────────
 
@@ -557,7 +558,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val isDemoMod
         // the new server's books load, preventing a "no books" flash.
         _isLoading.value = true
         bibleService.closeClient()
-        bibleService = BibleService(appSettings)
+        bibleService = BibleService(appSettings, eventService)
         _selectedBook.value = null
         _selectedBookNumber.value = null
         _selectedChapter.value = null

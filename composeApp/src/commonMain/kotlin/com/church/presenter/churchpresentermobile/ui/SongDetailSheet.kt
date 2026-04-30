@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -60,6 +61,7 @@ fun SongDetailScreen(
     onVerseSelected: (Int) -> Unit,
     onToggleProjecting: () -> Unit,
     onAddToSchedule: () -> Unit,
+    onClearDisplay: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -177,6 +179,7 @@ fun SongDetailScreen(
             scheduleAdded      = scheduleAdded,
             onToggleProjecting = onToggleProjecting,
             onAddToSchedule    = onAddToSchedule,
+            onClearDisplay     = onClearDisplay,
             modifier           = Modifier.align(Alignment.BottomEnd),
         )
     }

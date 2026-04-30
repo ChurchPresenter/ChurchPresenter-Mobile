@@ -19,12 +19,16 @@ private const val TAG = "ScheduleViewModel"
 /**
  * Manages loading and state for the service schedule drawer.
  *
- * @param appSettings The shared [AppSettings] used to configure the API service.
- * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
+ * @param appSettings  The shared [AppSettings] used to configure the API service.
+ * @param eventService The shared [ServerEventService] for the persistent WebSocket connection.
+ * @param isDemoMode   When true, demo content from [DemoData] is used instead of live API calls.
  */
-class ScheduleViewModel(private val appSettings: AppSettings, private val isDemoMode: Boolean = false) : ViewModel() {
+class ScheduleViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: ServerEventService,
+    private val isDemoMode: Boolean = false,
+) : ViewModel() {
     private var scheduleService = ScheduleService(appSettings)
-    private var eventService = ServerEventService(appSettings)
 
     private val _items = MutableStateFlow<List<ScheduleItem>>(emptyList())
     val items = _items.asStateFlow()
@@ -40,6 +44,15 @@ class ScheduleViewModel(private val appSettings: AppSettings, private val isDemo
 
     /** Emits when the desktop switches Bible translation. */
     val bibleUpdated: SharedFlow<Unit> get() = eventService.bibleUpdated
+
+    /** Emits when the server pushes a `songs_updated` event. */
+    val songsUpdated: SharedFlow<Unit> get() = eventService.songsUpdated
+
+    /** Emits when the server pushes a `presentation_updated` event. */
+    val presentationUpdated: SharedFlow<Unit> get() = eventService.presentationUpdated
+
+    /** Emits when the server pushes a `pictures_updated` event. */
+    val picturesUpdated: SharedFlow<Unit> get() = eventService.picturesUpdated
 
     init {
         loadSchedule()
@@ -81,15 +94,16 @@ class ScheduleViewModel(private val appSettings: AppSettings, private val isDemo
 
     /**
      * Called when the user saves new settings.
-     * Rebuilds the service and reloads data against the new server.
+     * Rebuilds the schedule service and reloads data against the new server.
+     * The shared [eventService] is rebuilt externally — this ViewModel just
+     * re-subscribes to its flows and restarts the listener.
      */
     fun onSettingsSaved() {
         if (isDemoMode) return
         Logger.d(TAG, "onSettingsSaved — rebuilding service and reloading")
         scheduleService.closeClient()
         scheduleService = ScheduleService(appSettings)
-        eventService.closeClient()
-        eventService = ServerEventService(appSettings)
+        eventService.reconnect()
         viewModelScope.launch { eventService.listen() }
         viewModelScope.launch {
             eventService.scheduleUpdated.collect {

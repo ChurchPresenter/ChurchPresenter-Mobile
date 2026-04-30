@@ -78,8 +78,10 @@ import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.PresentationsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.ScheduleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
@@ -127,21 +129,29 @@ fun App() {
         Logger.d("App", "isDemoMode = $isDemoMode")
     }
 
+    // ── Shared persistent WebSocket connection ──────────────────────────
+    // Single ServerEventService used by all ViewModels for both receiving
+    // server-push events and sending action messages.
+    val eventService = remember { ServerEventService(appSettings) }
+
     // ── Session-scoped ViewModels ─────────────────────────────────────────
     // Created ONCE here in App() which is never removed from the composition.
     // This guarantees the loaded book/song lists survive tab switches forever —
     // no data is ever discarded just because the user navigated to another tab.
     val bibleViewModel: BibleViewModel = viewModel(key = "bible_$isDemoMode") {
-        BibleViewModel(appSettings, isDemoMode)
+        BibleViewModel(appSettings, eventService, isDemoMode)
     }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
-        SongsViewModel(appSettings, isDemoMode)
+        SongsViewModel(appSettings, eventService, isDemoMode)
     }
     val picturesViewModel: PicturesViewModel = viewModel(key = "pictures_$isDemoMode") {
-        PicturesViewModel(appSettings, isDemoMode)
+        PicturesViewModel(appSettings, eventService, isDemoMode)
+    }
+    val presentationsViewModel: PresentationsViewModel = viewModel(key = "presentations_$isDemoMode") {
+        PresentationsViewModel(appSettings, eventService, isDemoMode)
     }
     val scheduleViewModel: ScheduleViewModel = viewModel(key = isDemoMode.toString()) {
-        ScheduleViewModel(appSettings, isDemoMode)
+        ScheduleViewModel(appSettings, eventService, isDemoMode)
     }
 
     // When the desktop clears its display, reset projection state on mobile
@@ -156,6 +166,27 @@ fun App() {
     LaunchedEffect(scheduleViewModel) {
         scheduleViewModel.bibleUpdated.collect {
             bibleViewModel.loadBooks(forceReload = true)
+        }
+    }
+
+    // When the server pushes a songs_updated event, reload songs on mobile
+    LaunchedEffect(scheduleViewModel) {
+        scheduleViewModel.songsUpdated.collect {
+            songsViewModel.loadSongs(forceReload = true)
+        }
+    }
+
+    // When the server pushes a presentation_updated event, reload presentations on mobile
+    LaunchedEffect(scheduleViewModel) {
+        scheduleViewModel.presentationUpdated.collect {
+            presentationsViewModel.loadPresentations()
+        }
+    }
+
+    // When the server pushes a pictures_updated event, reload pictures on mobile
+    LaunchedEffect(scheduleViewModel) {
+        scheduleViewModel.picturesUpdated.collect {
+            picturesViewModel.loadPictures()
         }
     }
 
@@ -407,6 +438,7 @@ fun App() {
                     isDemoMode = isDemoMode,
                     settingsSaveToken = settingsSaveToken,
                     scheduleRefreshToken = scheduleRefreshToken,
+                    providedViewModel = scheduleViewModel,
                                     onItemClick = { item ->
                                         coroutineScope.launch {
                                             drawerState.close()
@@ -664,6 +696,7 @@ fun App() {
                             pendingNavPresentationId = pendingPresentationId,
                             onPendingNavHandled = { pendingPresentationId = null },
                             canUploadFiles = canUploadFiles,
+                            providedViewModel = presentationsViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
                     }

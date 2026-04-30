@@ -7,6 +7,7 @@ import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.PictureImage
 import com.church.presenter.churchpresentermobile.model.PicturesFolder
 import com.church.presenter.churchpresentermobile.network.PicturesService
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.network.toFriendlyNetworkMessage
 import com.church.presenter.churchpresentermobile.ui.PickedPhoto
@@ -25,8 +26,8 @@ private const val TAG = "PicturesViewModel"
  * @param appSettings The shared [AppSettings] instance.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
  */
-class PicturesViewModel(private val appSettings: AppSettings, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var picturesService = PicturesService(appSettings)
+class PicturesViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
+    private var picturesService = PicturesService(appSettings, eventService)
 
     private val _folder = MutableStateFlow<PicturesFolder?>(null)
     val folder = _folder.asStateFlow()
@@ -299,7 +300,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val isDemo
     fun onSettingsSaved() {
         Logger.d(TAG, "onSettingsSaved — new url=${appSettings.apiBaseUrl}")
         picturesService.closeClient()
-        picturesService = PicturesService(appSettings)
+        picturesService = PicturesService(appSettings, eventService)
         _folder.value = null
         _selectedImage.value = null
         _pendingScrollIndex.value = null

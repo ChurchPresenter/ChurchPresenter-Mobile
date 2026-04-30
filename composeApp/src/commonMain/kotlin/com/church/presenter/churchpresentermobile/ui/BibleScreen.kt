@@ -57,6 +57,7 @@ import churchpresentermobile.composeapp.generated.resources.toast_session_blocke
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import org.jetbrains.compose.resources.stringResource
 
@@ -91,7 +92,7 @@ fun BibleScreen(
     // isolation (e.g. Compose Previews or tests).
     val vm: BibleViewModel = providedViewModel
         ?: viewModel(key = isDemoMode.toString()) {
-            BibleViewModel(appSettings, isDemoMode)
+            BibleViewModel(appSettings, ServerEventService(appSettings), isDemoMode)
         }
 
     LaunchedEffect(settingsSaveToken) {

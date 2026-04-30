@@ -37,10 +37,8 @@ private val json = Json {
  *
  * @param settings The current [AppSettings] used to build the base URL and supply the API key.
  */
-class PresentationService(private val settings: AppSettings) {
+class PresentationService(private val settings: AppSettings, private val wsService: ServerEventService) {
     private val client: HttpClient = createHttpClient()
-    /** WebSocket service for approval-required actions (add-to-schedule). */
-    private val wsService: WebSocketService = WebSocketService(settings)
     /** Separate client with no timeout — needed only for large file uploads. */
     private val uploadClient: HttpClient = createActionHttpClient()
 
@@ -220,10 +218,9 @@ class PresentationService(private val settings: AppSettings) {
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
-        Logger.d(TAG, "closeClient — closing HTTP and WebSocket clients")
+        Logger.d(TAG, "closeClient — closing HTTP client")
         client.close()
         uploadClient.close()
-        wsService.closeClient()
     }
 }
 

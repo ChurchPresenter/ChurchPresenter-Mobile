@@ -69,6 +69,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.PictureImage
+import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import org.jetbrains.compose.resources.stringResource
 
@@ -109,7 +110,7 @@ fun PicturesScreen(
     // The internal fallback is only here so the composable still works in
     // isolation (e.g. Compose Previews or tests).
     val viewModel: PicturesViewModel = providedViewModel
-        ?: viewModel(key = isDemoMode.toString()) { PicturesViewModel(appSettings, isDemoMode) }
+        ?: viewModel(key = isDemoMode.toString()) { PicturesViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
 
     // React to settings changes – rebuild the service and reload
     LaunchedEffect(settingsSaveToken) {
