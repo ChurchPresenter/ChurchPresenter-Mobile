@@ -13,8 +13,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
@@ -33,6 +35,8 @@ private const val WS_MAX_ATTEMPTS = 3
 private const val WS_RETRY_DELAY_MS = 500L
 /** Timeout for waiting for an approval response (2 minutes — approval dialog may stay open). */
 private const val ACTION_RESPONSE_TIMEOUT_MS = 120_000L
+/** Maximum time sendAction() will wait for the WebSocket connection to become ready. */
+private const val WS_CONNECTION_TIMEOUT_MS = 10_000L
 
 /** Server-push event envelope — `{ "type": "...", "payload": "..." }`. */
 @Serializable
@@ -92,6 +96,9 @@ class ServerEventService(private val settings: AppSettings) {
     /** The currently active WebSocket session, or null when disconnected. */
     private var activeSession: DefaultWebSocketSession? = null
 
+    /** Signals that [activeSession] is set and the connection is usable. */
+    private val connectionReady = MutableStateFlow(false)
+
     /** Serialises approval-gated actions so only one waits for a response at a time. */
     private val actionMutex = Mutex()
 
@@ -137,6 +144,21 @@ class ServerEventService(private val settings: AppSettings) {
      */
     suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit> {
         Logger.d(TAG, "sendAction ▶ type=$type  url=${settings.wsBaseUrl}")
+
+        // Wait for the WebSocket connection to be ready (handles first-launch and reconnect races)
+        if (!connectionReady.value) {
+            Logger.d(TAG, "sendAction — waiting for WebSocket connection…")
+            try {
+                withTimeout(WS_CONNECTION_TIMEOUT_MS) {
+                    connectionReady.first { it }
+                }
+            } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
+                val err = Exception("Timed out waiting for WebSocket connection to ${settings.wsBaseUrl}")
+                Logger.e(TAG, "sendAction — connection timeout", err)
+                return Result.failure(err)
+            }
+        }
+
         var lastException: Throwable? = null
         repeat(WS_MAX_ATTEMPTS) { attempt ->
             if (attempt > 0) {
@@ -221,6 +243,7 @@ class ServerEventService(private val settings: AppSettings) {
                 ) {
                     Logger.d(TAG, "listen — connected")
                     activeSession = this
+                    connectionReady.value = true
                     everConnected = true
                     reconnectDelay = INITIAL_RECONNECT_DELAY_MS
                     for (frame in incoming) {
@@ -283,6 +306,7 @@ class ServerEventService(private val settings: AppSettings) {
                 pendingResponse = null
             } finally {
                 activeSession = null
+                connectionReady.value = false
             }
             delay(reconnectDelay)
             reconnectDelay = (reconnectDelay * 2).coerceAtMost(MAX_RECONNECT_DELAY_MS)
@@ -298,6 +322,7 @@ class ServerEventService(private val settings: AppSettings) {
         Logger.d(TAG, "reconnect — closing current session to force reconnect")
         val session = activeSession ?: return
         activeSession = null
+        connectionReady.value = false
         pendingResponse?.completeExceptionally(Exception("Reconnecting"))
         pendingResponse = null
         // Cancel the session's coroutine scope, which terminates the incoming
@@ -309,6 +334,7 @@ class ServerEventService(private val settings: AppSettings) {
     fun closeClient() {
         Logger.d(TAG, "closeClient")
         activeSession = null
+        connectionReady.value = false
         pendingResponse?.cancel()
         pendingResponse = null
         client.close()
