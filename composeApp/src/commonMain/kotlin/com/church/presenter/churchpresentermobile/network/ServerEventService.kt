@@ -184,8 +184,14 @@ class ServerEventService(private val settings: AppSettings) {
                         pendingResponse = deferred
                         try {
                             session.send(Frame.Text(envelope))
-                            val response = withTimeout(ACTION_RESPONSE_TIMEOUT_MS) {
-                                deferred.await()
+                            val response = try {
+                                withTimeout(ACTION_RESPONSE_TIMEOUT_MS) {
+                                    deferred.await()
+                                }
+                            } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
+                                // Convert to a non-cancelling exception so apiRunCatching wraps
+                                // it in Result.failure instead of silently cancelling the caller.
+                                throw ApiException(httpStatus = 408, reason = "No response from server — approval timed out")
                             }
                             if (response.ok != true) {
                                 throw ApiException(
@@ -301,10 +307,11 @@ class ServerEventService(private val settings: AppSettings) {
                 } else {
                     CrashReporting.log("[$TAG] listen — session dropped (${e::class.simpleName}): $errorMsg")
                 }
-                // Cancel any pending action — the connection is gone
-                pendingResponse?.completeExceptionally(e)
-                pendingResponse = null
             } finally {
+                // Complete any pending action — covers both exception and normal close.
+                // If the catch block already called completeExceptionally, this is a no-op.
+                pendingResponse?.completeExceptionally(Exception("WebSocket session ended"))
+                pendingResponse = null
                 activeSession = null
                 connectionReady.value = false
             }
