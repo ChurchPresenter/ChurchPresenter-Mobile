@@ -34,6 +34,10 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
     /** Current API key field value. */
     val apiKey = _apiKey.asStateFlow()
 
+    private val _displayName = MutableStateFlow(appSettings.displayName)
+    /** Current display name field value. */
+    val displayName = _displayName.asStateFlow()
+
     private val _activeUrl = MutableStateFlow(appSettings.apiBaseUrl)
     /** The URL currently saved in storage — what the app is actually using right now. */
     val activeUrl = _activeUrl.asStateFlow()
@@ -107,6 +111,10 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
         _apiKey.value = value
     }
 
+    fun setDisplayName(value: String) {
+        _displayName.value = value
+    }
+
     /**
      * Updates the theme mode selection.
      *
@@ -146,6 +154,7 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
         appSettings.host = _host.value.trim()
         appSettings.port = portInt!!
         appSettings.apiKey = _apiKey.value.trim()
+        appSettings.displayName = _displayName.value.trim()
         appSettings.themeMode = _themeMode.value
         _activeUrl.value = appSettings.apiBaseUrl
         Logger.d(TAG, "save — persisted host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl} themeMode=${appSettings.themeMode}")
@@ -168,6 +177,7 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
         _host.value = appSettings.host
         _port.value = appSettings.port.toString()
         _apiKey.value = appSettings.apiKey
+        _displayName.value = appSettings.displayName
         _themeMode.value = appSettings.themeMode
         _hostError.value = null
         _portError.value = null

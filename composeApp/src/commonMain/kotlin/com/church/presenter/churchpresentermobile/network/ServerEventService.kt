@@ -133,6 +133,10 @@ class ServerEventService(private val settings: AppSettings) {
     /** Emits the section index each time the server pushes a `song_section_selected` event. */
     val songSectionSelected: SharedFlow<Int> = _songSectionSelected.asSharedFlow()
 
+    private val _questionsUpdated = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    /** Emits [Unit] each time the server pushes a `questions_updated` event (Q&A question added/changed). */
+    val questionsUpdated: SharedFlow<Unit> = _questionsUpdated.asSharedFlow()
+
     /**
      * Sends an action message over the persistent WebSocket connection.
      *
@@ -286,6 +290,7 @@ class ServerEventService(private val settings: AppSettings) {
                                 val index = event.payload?.toIntOrNull()
                                 if (index != null) _songSectionSelected.tryEmit(index)
                             }
+                            "questions_updated" -> _questionsUpdated.tryEmit(Unit)
                         }
                     }
                     Logger.d(TAG, "listen — session closed normally")

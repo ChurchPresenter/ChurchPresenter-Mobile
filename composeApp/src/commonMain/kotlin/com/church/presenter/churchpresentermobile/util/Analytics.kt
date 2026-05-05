@@ -85,6 +85,7 @@ object AnalyticsScreen {
     const val SCHEDULE           = "Schedule"
     const val CONNECT_SETUP      = "Connect Setup"
     const val STATUS             = "Status Check"
+    const val QA_ADMIN           = "Q&A Admin"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

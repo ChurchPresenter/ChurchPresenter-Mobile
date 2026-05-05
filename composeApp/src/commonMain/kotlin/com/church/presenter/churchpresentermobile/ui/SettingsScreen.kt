@@ -66,6 +66,8 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.settings_active_url_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_display_name_label
+import churchpresentermobile.composeapp.generated.resources.settings_display_name_placeholder
 import churchpresentermobile.composeapp.generated.resources.settings_appearance_section
 import churchpresentermobile.composeapp.generated.resources.settings_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_check_status
@@ -122,6 +124,7 @@ fun SettingsScreen(
     val host         by viewModel.host.collectAsState()
     val port         by viewModel.port.collectAsState()
     val apiKey       by viewModel.apiKey.collectAsState()
+    val displayName  by viewModel.displayName.collectAsState()
     val hostError    by viewModel.hostError.collectAsState()
     val portError    by viewModel.portError.collectAsState()
     val activeUrl    by viewModel.activeUrl.collectAsState()
@@ -261,6 +264,16 @@ fun SettingsScreen(
                                 Icon(if (apiKeyVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, null)
                             }
                         },
+                    )
+
+                    // Display name for Q&A
+                    OutlinedTextField(
+                        value = displayName, onValueChange = { viewModel.setDisplayName(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(Res.string.settings_display_name_label)) },
+                        placeholder = { Text(stringResource(Res.string.settings_display_name_placeholder)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
                     )
 
                     // QR scanner

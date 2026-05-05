@@ -52,6 +52,7 @@ import churchpresentermobile.composeapp.generated.resources.schedule_drawer_open
 import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.tab_pictures
 import churchpresentermobile.composeapp.generated.resources.tab_presentation
+import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
 import churchpresentermobile.composeapp.generated.resources.tab_songs
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -63,6 +64,7 @@ import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
 import com.church.presenter.churchpresentermobile.ui.PresentationScreen
+import com.church.presenter.churchpresentermobile.ui.QAAdminScreen
 import com.church.presenter.churchpresentermobile.ui.ScheduleDrawerContent
 import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SongsTable
@@ -82,6 +84,7 @@ import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PresentationsViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.QAViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.ScheduleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
@@ -152,6 +155,9 @@ fun App() {
     }
     val scheduleViewModel: ScheduleViewModel = viewModel(key = isDemoMode.toString()) {
         ScheduleViewModel(appSettings, eventService, isDemoMode)
+    }
+    val qaViewModel: QAViewModel = viewModel(key = "qa") {
+        QAViewModel(appSettings, eventService)
     }
 
     // When the desktop clears its display, reset projection state on mobile
@@ -319,6 +325,7 @@ fun App() {
             AppTab.BIBLE         -> AnalyticsScreen.BIBLE_BOOKS
             AppTab.PICTURES      -> AnalyticsScreen.PICTURES
             AppTab.PRESENTATION  -> AnalyticsScreen.PRESENTATIONS
+            AppTab.QA_ADMIN      -> AnalyticsScreen.QA_ADMIN
         }
         Analytics.logScreenView(tabScreen)
     }
@@ -591,7 +598,8 @@ fun App() {
                                 stringResource(Res.string.tab_songs),
                                 stringResource(Res.string.tab_bible),
                                 stringResource(Res.string.tab_pictures),
-                                stringResource(Res.string.tab_presentation)
+                                stringResource(Res.string.tab_presentation),
+                                stringResource(Res.string.tab_qa_admin)
                             )
                             // Use pagerState.currentPage so the indicator tracks mid-swipe
                             ScrollableTabRow(
@@ -697,6 +705,10 @@ fun App() {
                             onPendingNavHandled = { pendingPresentationId = null },
                             canUploadFiles = canUploadFiles,
                             providedViewModel = presentationsViewModel,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        AppTab.QA_ADMIN -> QAAdminScreen(
+                            viewModel = qaViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
                     }

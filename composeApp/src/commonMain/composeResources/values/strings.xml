@@ -28,6 +28,8 @@
     <string name="settings_port_placeholder">8765</string>
     <string name="settings_api_key_label">API Key (optional)</string>
     <string name="settings_api_key_placeholder">Leave blank if not required</string>
+    <string name="settings_display_name_label">Your Name (for Q&amp;A)</string>
+    <string name="settings_display_name_placeholder">Leave blank to use device ID</string>
     <string name="settings_save">Save</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_invalid_port">Port must be a number between 1 and 65535</string>
@@ -44,6 +46,27 @@
     <string name="tab_bible">Bible</string>
     <string name="tab_pictures">Pictures</string>
     <string name="tab_presentation">Presentation</string>
+    <string name="tab_qa_admin">Q&amp;A</string>
+
+    <!-- Q&A Admin Panel -->
+    <string name="qa_admin_session_active">Session Active</string>
+    <string name="qa_admin_session_stopped">Session Stopped</string>
+    <string name="qa_admin_incoming_tab">Incoming (%1$d)</string>
+    <string name="qa_admin_finished_tab">Finished (%1$d)</string>
+    <string name="qa_admin_no_incoming">No incoming questions</string>
+    <string name="qa_admin_no_finished">No finished questions</string>
+    <string name="qa_admin_approve">Approve</string>
+    <string name="qa_admin_deny">Deny</string>
+    <string name="qa_admin_go_live">Go Live</string>
+    <string name="qa_admin_done">Mark Done</string>
+    <string name="qa_admin_clear_display">Clear Display</string>
+    <string name="qa_admin_now_live">Live:</string>
+    <string name="qa_admin_edit_hint">Edit question text…</string>
+    <string name="qa_admin_add_question">Add Question</string>
+    <string name="qa_admin_add_question_hint">Type your question…</string>
+    <string name="qa_admin_save">Save</string>
+    <string name="qa_admin_cancel">Cancel</string>
+    <string name="qa_admin_error_retry">Retry</string>
 
     <!-- Placeholder Screens -->
     <string name="bible_coming_soon">📖  Bible — coming soon</string>

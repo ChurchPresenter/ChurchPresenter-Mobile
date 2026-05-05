@@ -5,6 +5,7 @@ enum class AppTab {
     SONGS,
     BIBLE,
     PICTURES,
-    PRESENTATION
+    PRESENTATION,
+    QA_ADMIN
 }
 

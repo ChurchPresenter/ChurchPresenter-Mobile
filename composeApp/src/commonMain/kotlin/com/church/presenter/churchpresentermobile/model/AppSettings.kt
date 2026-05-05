@@ -12,6 +12,7 @@ private const val KEY_API_KEY = "api_key"
 private const val KEY_THEME_MODE = "theme_mode"
 private const val KEY_SETTINGS_VERSION = "settings_version"
 private const val KEY_DEVICE_ID = "device_id"
+private const val KEY_DISPLAY_NAME     = "display_name"
 private const val KEY_FCM_TOKEN        = "fcm_token"
 private const val KEY_APP_OPEN_COUNT   = "app_open_count"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
@@ -102,6 +103,14 @@ class AppSettings {
         get() = storage.getString(KEY_THEME_MODE, ThemeMode.SYSTEM.name)
             .let { stored -> ThemeMode.entries.firstOrNull { it.name == stored } ?: ThemeMode.SYSTEM }
         set(value) { storage.putString(KEY_THEME_MODE, value.name) }
+
+    /**
+     * User-chosen display name sent as the author when submitting Q&A questions.
+     * Falls back to [deviceId] when blank so there is always some identifier.
+     */
+    var displayName: String
+        get() = storage.getString(KEY_DISPLAY_NAME, "")
+        set(value) { storage.putString(KEY_DISPLAY_NAME, value) }
 
     /**
      * FCM (Firebase Cloud Messaging) registration token for this device.
