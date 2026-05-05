@@ -110,6 +110,7 @@ fun BibleScreen(
     val isHolding           by vm.isHolding.collectAsState()
     val selectedVerseIndices by vm.selectedVerseIndices.collectAsState()
     val projectedVerseIndex  by vm.projectedVerseIndex.collectAsState()
+    val isMultiSelectMode   by vm.isMultiSelectMode.collectAsState()
     val scheduleAdded       by vm.scheduleAdded.collectAsState()
     val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val toastEvent          by vm.toastEvent.collectAsState()
@@ -210,6 +211,8 @@ fun BibleScreen(
                         scheduleAdded = scheduleAdded,
                         selectedVerseIndices = selectedVerseIndices,
                         projectedVerseIndex = projectedVerseIndex,
+                        isMultiSelectMode = isMultiSelectMode,
+                        onToggleMultiSelect = { vm.toggleMultiSelectMode() },
                         onChapterSelect = { vm.selectChapter(it) },
                         onVerseToggleSelection = { vm.toggleVerseSelection(it) },
                         onToggleProjecting = { vm.toggleProjecting() },

@@ -71,6 +71,9 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
     private val _isHolding = MutableStateFlow(false)
     val isHolding = _isHolding.asStateFlow()
 
+    private val _isMultiSelectMode = MutableStateFlow(false)
+    val isMultiSelectMode = _isMultiSelectMode.asStateFlow()
+
     /** 0-based indices of all verses the user has tapped to select (multi-select). */
     private val _selectedVerseIndices = MutableStateFlow<Set<Int>>(emptySet())
     val selectedVerseIndices = _selectedVerseIndices.asStateFlow()
@@ -241,6 +244,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         _selectedChapter.value = chapter
         _verses.value = emptyList()
         _isProjecting.value = false
+        _isMultiSelectMode.value = false
         _selectedVerseIndices.value = emptySet()
         _projectedVerseIndex.value = null
         _scheduleAdded.value = false
@@ -297,6 +301,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
                 _verses.value = emptyList()
                 _error.value = null
                 _isProjecting.value = false
+                _isMultiSelectMode.value = false
                 _selectedVerseIndices.value = emptySet()
                 _projectedVerseIndex.value = null
                 _scheduleAdded.value = false
@@ -351,13 +356,19 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
             _toastEvent.value          = ToastEvent.BibleLive
             return
         }
-        Logger.d(TAG, "toggleProjecting ON — firing selectBibleVerse ${book.displayName} $chapter:${firstVerse.number}")
+        val nums = selectedVerses.map { it.number }
+        val verseRange: String? = if (nums.size <= 1) null else {
+            val isContiguous = nums.zipWithNext().all { (a, b) -> b == a + 1 }
+            if (isContiguous) "${nums.first()}-${nums.last()}" else nums.joinToString(",")
+        }
+        Logger.d(TAG, "toggleProjecting ON — firing selectBibleVerse ${book.displayName} $chapter:${firstVerse.number} range=$verseRange")
         viewModelScope.launch {
             bibleService.selectBibleVerse(
                 bookName    = book.displayName,
                 chapter     = chapter,
                 verseNumber = firstVerse.number,
-                verseText   = selectedVerses.joinToString("\n") { it.displayText }
+                verseText   = selectedVerses.joinToString("\n") { it.displayText },
+                verseRange  = verseRange
             ).onSuccess {
                 Logger.d(TAG, "selectBibleVerse — success")
                 _isProjecting.value        = true
@@ -421,10 +432,23 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
      */
     fun toggleVerseSelection(index: Int) {
         val current = _selectedVerseIndices.value
-        _selectedVerseIndices.value =
-            if (index in current) current - index else current + index
+        if (_isMultiSelectMode.value) {
+            // Multi-select: toggle verse in/out of the set
+            _selectedVerseIndices.value =
+                if (index in current) current - index else current + index
+        } else {
+            // Single-select: replace the selection (or deselect if already selected)
+            _selectedVerseIndices.value =
+                if (current == setOf(index)) emptySet() else setOf(index)
+        }
         // If projecting, immediately project the tapped verse
         if (_isProjecting.value) projectVerseAtIndex(index)
+    }
+
+    fun toggleMultiSelectMode() {
+        val newValue = !_isMultiSelectMode.value
+        _isMultiSelectMode.value = newValue
+        if (!newValue) _selectedVerseIndices.value = emptySet()
     }
 
     /**
@@ -479,10 +503,13 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         }
         val selectedVerses = indices.mapNotNull { _verses.value.getOrNull(it) }
         val nums = selectedVerses.map { it.number }
-        val ref = if (nums.size == 1)
+        val ref = if (nums.size == 1) {
             "${book.displayName} $chapter:${nums.first()}"
-        else
-            "${book.displayName} $chapter:${nums.first()}-${nums.last()}"
+        } else {
+            val isContiguous = nums.zipWithNext().all { (a, b) -> b == a + 1 }
+            val range = if (isContiguous) "${nums.first()}-${nums.last()}" else nums.joinToString(",")
+            "${book.displayName} $chapter:$range"
+        }
         if (isDemoMode) {
             Logger.d(TAG, "addToSchedule — DEMO MODE, simulating success")
             _scheduleAdded.value = true
@@ -566,6 +593,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         _bookSearchQuery.value = ""
         _isProjecting.value = false
         _isHolding.value = false
+        _isMultiSelectMode.value = false
         _selectedVerseIndices.value = emptySet()
         _projectedVerseIndex.value = null
         _scheduleAdded.value = false

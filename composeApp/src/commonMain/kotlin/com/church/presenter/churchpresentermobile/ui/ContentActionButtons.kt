@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Cast
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.FloatingActionButton
@@ -25,6 +26,7 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.action_add_to_schedule
 import churchpresentermobile.composeapp.generated.resources.action_clear_display
 import churchpresentermobile.composeapp.generated.resources.action_hold_display
+import churchpresentermobile.composeapp.generated.resources.action_multi_select
 import churchpresentermobile.composeapp.generated.resources.action_project_to_screen
 import churchpresentermobile.composeapp.generated.resources.action_stop_projecting
 import org.jetbrains.compose.resources.stringResource
@@ -58,6 +60,8 @@ fun ContentActionButtons(
     isHolding: Boolean = false,
     onToggleHold: (() -> Unit)? = null,
     onClearDisplay: (() -> Unit)? = null,
+    isMultiSelectMode: Boolean = false,
+    onToggleMultiSelect: (() -> Unit)? = null,
     extraLeadingContent: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(
@@ -99,6 +103,26 @@ fun ContentActionButtons(
                 Icon(
                     imageVector        = Icons.Filled.Pause,
                     contentDescription = stringResource(Res.string.action_hold_display)
+                )
+            }
+        }
+
+        // ── Multi-Select Toggle ──────────────────────────────────────────
+        if (onToggleMultiSelect != null) {
+            FloatingActionButton(
+                onClick = onToggleMultiSelect,
+                containerColor = if (isMultiSelectMode)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (isMultiSelectMode)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(
+                    imageVector        = Icons.Filled.Checklist,
+                    contentDescription = stringResource(Res.string.action_multi_select)
                 )
             }
         }

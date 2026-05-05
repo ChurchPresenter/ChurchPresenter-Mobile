@@ -136,6 +136,8 @@
     <string name="action_stop_projecting">Stop Projecting</string>
     <string name="action_clear_display">Clear Display</string>
     <string name="action_hold_display">Hold Display</string>
+    <string name="action_multi_select">Select Multiple</string>
+    <string name="bible_multi_select_count">%1$d selected</string>
     <string name="pictures_uploading">Uploading…</string>
     <string name="upload_overlay_subtitle">Please wait, do not close the app</string>
     <string name="upload_overlay_photo_counter">Photo %1$d of %2$d</string>
