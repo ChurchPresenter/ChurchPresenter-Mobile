@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_title
+import churchpresentermobile.composeapp.generated.resources.bible_multi_select_count
 import churchpresentermobile.composeapp.generated.resources.bible_no_verses
 import churchpresentermobile.composeapp.generated.resources.bible_detail_projecting_badge
 import com.church.presenter.churchpresentermobile.model.BibleBook
@@ -60,6 +61,8 @@ fun BibleDetailScreen(
     scheduleAdded: Boolean,
     selectedVerseIndices: Set<Int>,
     projectedVerseIndex: Int?,
+    isMultiSelectMode: Boolean = false,
+    onToggleMultiSelect: () -> Unit = {},
     onChapterSelect: (Int) -> Unit,
     onVerseToggleSelection: (Int) -> Unit,
     onToggleProjecting: () -> Unit,
@@ -106,6 +109,7 @@ fun BibleDetailScreen(
                     VersesList(
                         verses               = verses,
                         isProjecting         = isProjecting,
+                        isMultiSelectMode    = isMultiSelectMode,
                         selectedVerseIndices = selectedVerseIndices,
                         projectedVerseIndex  = projectedVerseIndex,
                         onVerseToggle        = onVerseToggleSelection,
@@ -134,6 +138,8 @@ fun BibleDetailScreen(
                 isHolding          = isHolding,
                 onToggleHold       = onToggleHold,
                 onClearDisplay     = onClearDisplay,
+                isMultiSelectMode  = isMultiSelectMode,
+                onToggleMultiSelect = onToggleMultiSelect,
             )
         }
     } else {
@@ -206,6 +212,7 @@ private fun ChaptersGrid(
 private fun VersesList(
     verses: List<BibleVerse>,
     isProjecting: Boolean,
+    isMultiSelectMode: Boolean,
     selectedVerseIndices: Set<Int>,
     projectedVerseIndex: Int?,
     onVerseToggle: (Int) -> Unit,
@@ -222,10 +229,26 @@ private fun VersesList(
         return
     }
 
+    Column(modifier = modifier.fillMaxSize()) {
+        if (isMultiSelectMode && selectedVerseIndices.isNotEmpty()) {
+            Surface(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(Res.string.bible_multi_select_count, selectedVerseIndices.size),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+        }
+
     val listState = rememberLazyListState()
     LazyColumn(
         state          = listState,
-        modifier       = modifier.fillMaxSize().verticalScrollbar(listState),
+        modifier       = Modifier.weight(1f).fillMaxWidth().verticalScrollbar(listState),
         contentPadding = PaddingValues(bottom = 200.dp) // clear both action buttons above snackbar
     ) {
         itemsIndexed(verses) { index, verse ->
@@ -303,4 +326,5 @@ private fun VersesList(
             )
         }
     }
+    } // Column
 }
