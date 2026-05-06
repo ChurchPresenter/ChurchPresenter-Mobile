@@ -133,7 +133,8 @@ fun QAAdminScreen(
                     onDelete = viewModel::deleteQuestion,
                     onAddQuestion = viewModel::addQuestion,
                     onClearDisplay = viewModel::clearDisplay,
-                    onRefresh = { viewModel.loadQuestions() }
+                    onRefresh = { viewModel.loadQuestions() },
+                    votingEnabled = state.votingEnabled
                 )
             }
         }
@@ -153,7 +154,8 @@ private fun QAAdminContent(
     onDelete: (String) -> Unit,
     onAddQuestion: (String) -> Unit,
     onClearDisplay: () -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    votingEnabled: Boolean = false
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var showAddDialog by remember { mutableStateOf(false) }
@@ -254,6 +256,7 @@ private fun QAAdminContent(
                         QuestionItem(
                             question = question,
                             isDisplayed = question.id == state.displayedQuestionId,
+                            showVotes = votingEnabled,
                             onApprove = { onApprove(question.id) },
                             onDeny = { onDeny(question.id) },
                             onEdit = { newText -> onEdit(question.id, newText) },
@@ -289,6 +292,7 @@ private fun QAAdminContent(
 private fun QuestionItem(
     question: Question,
     isDisplayed: Boolean,
+    showVotes: Boolean = false,
     onApprove: () -> Unit,
     onDeny: () -> Unit,
     onEdit: (String) -> Unit,
@@ -328,6 +332,20 @@ private fun QuestionItem(
                         )
                     }
                     Text(question.text, style = MaterialTheme.typography.bodyMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                    if (showVotes) {
+                        Spacer(Modifier.height(4.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            if (question.upvotes > 0) {
+                                VoteChip(label = "▲ ${question.upvotes}", color = Color(0xFF43A047))
+                            }
+                            if (question.downvotes > 0) {
+                                VoteChip(label = "▼ ${question.downvotes}", color = Color(0xFFE53935))
+                            }
+                            if (question.upvotes == 0 && question.downvotes == 0) {
+                                Text("no votes", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
+                            }
+                        }
+                    }
                 }
             } else {
                 Spacer(modifier = Modifier.weight(1f))
@@ -404,6 +422,18 @@ private fun QuestionItem(
                 textStyle = MaterialTheme.typography.bodyMedium
             )
         }
+    }
+}
+
+@Composable
+private fun VoteChip(label: String, color: Color) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    ) {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
     }
 }
 

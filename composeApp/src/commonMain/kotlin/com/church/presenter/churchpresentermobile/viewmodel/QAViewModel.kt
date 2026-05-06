@@ -18,7 +18,8 @@ sealed class QAUiState {
     data class Admin(
         val sessionActive: Boolean,
         val questions: List<Question>,
-        val displayedQuestionId: String
+        val displayedQuestionId: String,
+        val votingEnabled: Boolean = false
     ) : QAUiState()
     data class Error(val message: String) : QAUiState()
 }
@@ -57,7 +58,8 @@ class QAViewModel(
                 _uiState.value = QAUiState.Admin(
                     sessionActive = status.sessionActive,
                     questions = questionsResult.getOrNull()!!,
-                    displayedQuestionId = status.displayedQuestionId
+                    displayedQuestionId = status.displayedQuestionId,
+                    votingEnabled = status.votingEnabled
                 )
             } else if (!silent) {
                 val err = questionsResult.exceptionOrNull() ?: statusResult.exceptionOrNull()

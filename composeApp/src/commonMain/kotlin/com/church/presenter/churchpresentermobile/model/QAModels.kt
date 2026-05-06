@@ -9,7 +9,9 @@ data class Question(
     val text: String,
     val submitterName: String = "",
     val timestamp: Long,
-    val status: QuestionStatus = QuestionStatus.PENDING
+    val status: QuestionStatus = QuestionStatus.PENDING,
+    val upvotes: Int = 0,
+    val downvotes: Int = 0
 )
 
 @Serializable
@@ -18,14 +20,17 @@ data class QuestionDto(
     val text: String,
     val submitterName: String = "",
     val timestamp: Long,
-    val status: String
+    val status: String,
+    val upvotes: Int = 0,
+    val downvotes: Int = 0
 )
 
 @Serializable
 data class QAStatusResponse(
     val sessionActive: Boolean,
     val cooldownSeconds: Int = 30,
-    val displayedQuestionId: String = ""
+    val displayedQuestionId: String = "",
+    val votingEnabled: Boolean = false
 )
 
 @Serializable
@@ -36,5 +41,7 @@ fun QuestionDto.toQuestion() = Question(
     text = text,
     submitterName = submitterName,
     timestamp = timestamp,
-    status = try { QuestionStatus.valueOf(status) } catch (_: Exception) { QuestionStatus.PENDING }
+    status = try { QuestionStatus.valueOf(status) } catch (_: Exception) { QuestionStatus.PENDING },
+    upvotes = upvotes,
+    downvotes = downvotes
 )
