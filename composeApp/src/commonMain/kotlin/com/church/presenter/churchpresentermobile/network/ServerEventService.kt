@@ -149,24 +149,26 @@ class ServerEventService(private val settings: AppSettings) {
     suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit> {
         Logger.d(TAG, "sendAction ▶ type=$type  url=${settings.wsBaseUrl}")
 
-        // Wait for the WebSocket connection to be ready (handles first-launch and reconnect races)
-        if (!connectionReady.value) {
-            Logger.d(TAG, "sendAction — waiting for WebSocket connection…")
-            try {
-                withTimeout(WS_CONNECTION_TIMEOUT_MS) {
-                    connectionReady.first { it }
-                }
-            } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
-                val err = Exception("Timed out waiting for WebSocket connection to ${settings.wsBaseUrl}")
-                Logger.e(TAG, "sendAction — connection timeout", err)
-                return Result.failure(err)
-            }
-        }
-
         var lastException: Throwable? = null
         repeat(WS_MAX_ATTEMPTS) { attempt ->
             if (attempt > 0) {
                 Logger.d(TAG, "sendAction — retry attempt ${attempt + 1}/$WS_MAX_ATTEMPTS  type=$type")
+            }
+            // Wait for the connection to be ready before each attempt (handles first-launch,
+            // reconnect races, and connection drops that occur while queued behind actionMutex).
+            if (!connectionReady.value) {
+                Logger.d(TAG, "sendAction — waiting for WebSocket connection (attempt ${attempt + 1})…")
+                try {
+                    withTimeout(WS_CONNECTION_TIMEOUT_MS) {
+                        connectionReady.first { it }
+                    }
+                } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
+                    val err = Exception("Timed out waiting for WebSocket connection to ${settings.wsBaseUrl}")
+                    Logger.e(TAG, "sendAction — connection timeout on attempt ${attempt + 1}", err)
+                    lastException = err
+                    return@repeat
+                }
+            } else if (attempt > 0) {
                 delay(WS_RETRY_DELAY_MS * attempt)
             }
             val result = apiRunCatching {
@@ -317,8 +319,8 @@ class ServerEventService(private val settings: AppSettings) {
                 // If the catch block already called completeExceptionally, this is a no-op.
                 pendingResponse?.completeExceptionally(Exception("WebSocket session ended"))
                 pendingResponse = null
-                activeSession = null
                 connectionReady.value = false
+                activeSession = null
             }
             delay(reconnectDelay)
             reconnectDelay = (reconnectDelay * 2).coerceAtMost(MAX_RECONNECT_DELAY_MS)
@@ -333,8 +335,8 @@ class ServerEventService(private val settings: AppSettings) {
     fun reconnect() {
         Logger.d(TAG, "reconnect — closing current session to force reconnect")
         val session = activeSession ?: return
-        activeSession = null
         connectionReady.value = false
+        activeSession = null
         pendingResponse?.completeExceptionally(Exception("Reconnecting"))
         pendingResponse = null
         // Cancel the session's coroutine scope, which terminates the incoming
@@ -345,8 +347,8 @@ class ServerEventService(private val settings: AppSettings) {
     /** Releases the underlying WebSocket client. Call when the owning ViewModel is cleared. */
     fun closeClient() {
         Logger.d(TAG, "closeClient")
-        activeSession = null
         connectionReady.value = false
+        activeSession = null
         pendingResponse?.cancel()
         pendingResponse = null
         client.close()
