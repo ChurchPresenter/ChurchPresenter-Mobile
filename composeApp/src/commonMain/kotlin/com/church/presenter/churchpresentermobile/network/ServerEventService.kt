@@ -37,6 +37,8 @@ private const val WS_RETRY_DELAY_MS = 500L
 private const val ACTION_RESPONSE_TIMEOUT_MS = 120_000L
 /** Maximum time sendAction() will wait for the WebSocket connection to become ready. */
 private const val WS_CONNECTION_TIMEOUT_MS = 10_000L
+/** Maximum time allowed for the actual WebSocket frame write — guards against a hung send on iOS. */
+private const val WS_SEND_TIMEOUT_MS = 5_000L
 
 /** Server-push event envelope — `{ "type": "...", "payload": "..." }`. */
 @Serializable
@@ -181,7 +183,15 @@ class ServerEventService(private val settings: AppSettings) {
                 Logger.d(TAG, "sendAction ▶ sending frame: ${envelope.take(300)}")
 
                 if (fireAndForget) {
-                    session.send(Frame.Text(envelope))
+                    try {
+                        withTimeout(WS_SEND_TIMEOUT_MS) { session.send(Frame.Text(envelope)) }
+                    } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
+                        reconnect()
+                        throw Exception("WebSocket send timed out — connection may be broken")
+                    } catch (e: Exception) {
+                        reconnect()
+                        throw e
+                    }
                     Logger.d(TAG, "sendAction ◀ fire-and-forget completed  type=$type")
                 } else {
                     // Approval-gated: serialise so only one action waits at a time
@@ -189,7 +199,16 @@ class ServerEventService(private val settings: AppSettings) {
                         val deferred = CompletableDeferred<WsResponse>()
                         pendingResponse = deferred
                         try {
-                            session.send(Frame.Text(envelope))
+                            try {
+                                withTimeout(WS_SEND_TIMEOUT_MS) { session.send(Frame.Text(envelope)) }
+                            } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
+                                // Send hung — mark connection broken so the next retry waits for a fresh session.
+                                reconnect()
+                                throw Exception("WebSocket send timed out — connection may be broken")
+                            } catch (e: Exception) {
+                                reconnect()
+                                throw e
+                            }
                             val response = try {
                                 withTimeout(ACTION_RESPONSE_TIMEOUT_MS) {
                                     deferred.await()
@@ -216,6 +235,9 @@ class ServerEventService(private val settings: AppSettings) {
             lastException = result.exceptionOrNull()
             // Don't retry on application-level rejections (server said ok=false)
             if (lastException is ApiException) {
+                // A 408 means the frame may never have reached the server — force reconnect
+                // so the broken send path is cleared before the next user action.
+                if ((lastException as ApiException).httpStatus == 408) reconnect()
                 Logger.e(TAG, "sendAction — server rejection, not retrying: ${lastException?.message}")
                 return result
             }
