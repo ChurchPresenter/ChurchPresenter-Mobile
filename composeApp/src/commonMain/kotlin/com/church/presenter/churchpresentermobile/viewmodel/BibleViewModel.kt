@@ -222,7 +222,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
      * @param book The [BibleBook] the user tapped.
      */
     fun selectBook(book: BibleBook) {
-        val bookNumber = _allBooks.value.indexOf(book) + 1
+        val bookNumber = book.bookId ?: (_allBooks.value.indexOf(book) + 1)
         Logger.d(TAG, "selectBook — ${book.displayName} (bookNumber=$bookNumber)")
         _selectedBook.value = book
         _selectedBookNumber.value = bookNumber

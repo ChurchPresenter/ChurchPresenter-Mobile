@@ -24,6 +24,7 @@ data class BibleBook(
     val name: String? = null,
     @SerialName("book-name") val bookName: String? = null,
     @SerialName("book_name") val bookNameAlt: String? = null,
+    @SerialName("book-id") val bookId: Int? = null,
     val testament: String? = null,
     @SerialName("chapter-total") val chapterTotal: Int? = null,
     @SerialName("chapter_count") val chapterCount: Int? = null,
@@ -34,10 +35,6 @@ data class BibleBook(
     val displayName: String
         get() = listOfNotNull(name, bookName, bookNameAlt, id)
             .firstOrNull { it.isNotBlank() } ?: "Unknown"
-
-    /** Best available identifier for URL construction. */
-    val bookId: String
-        get() = id ?: bookName ?: bookNameAlt ?: name ?: displayName
 
     /** Total number of chapters in this book. */
     val totalChapters: Int
