@@ -7,3 +7,6 @@ import androidx.compose.ui.Modifier
 @Composable
 actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) = Unit
 
+@Composable
+actual fun hasCameraAvailable(): Boolean = false
+

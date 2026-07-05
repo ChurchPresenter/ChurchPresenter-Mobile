@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import android.content.ActivityNotFoundException
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
@@ -10,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -57,4 +59,10 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
         Spacer(Modifier.width(8.dp))
         Text(stringResource(Res.string.qr_scan_button))
     }
+}
+
+@Composable
+actual fun hasCameraAvailable(): Boolean {
+    val context = LocalContext.current
+    return remember { context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) }
 }

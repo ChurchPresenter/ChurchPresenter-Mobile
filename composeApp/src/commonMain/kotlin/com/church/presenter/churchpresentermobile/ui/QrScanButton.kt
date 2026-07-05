@@ -19,3 +19,14 @@ expect fun QrScanButton(
     modifier: Modifier = Modifier
 )
 
+/**
+ * True when this device has a usable camera for QR scanning.
+ * Android: checks [android.content.pm.PackageManager.FEATURE_CAMERA_ANY].
+ * iOS: checks whether AVFoundation reports a default video capture device.
+ * Web: always false — [QrScanButton] renders nothing there regardless.
+ *
+ * Callers should offer a manual entry fallback when this is false.
+ */
+@Composable
+expect fun hasCameraAvailable(): Boolean
+

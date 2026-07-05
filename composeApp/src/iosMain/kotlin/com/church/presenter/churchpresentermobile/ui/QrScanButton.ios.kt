@@ -134,6 +134,11 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+actual fun hasCameraAvailable(): Boolean =
+    remember { AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) != null }
+
 // ── AVFoundation helpers ───────────────────────────────────────────────────
 
 @OptIn(ExperimentalForeignApi::class)

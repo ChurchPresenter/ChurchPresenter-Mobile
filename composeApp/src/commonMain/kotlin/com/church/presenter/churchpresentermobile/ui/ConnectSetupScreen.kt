@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -25,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,12 +42,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.connect_setup_connected
 import churchpresentermobile.composeapp.generated.resources.connect_setup_done_button
 import churchpresentermobile.composeapp.generated.resources.connect_setup_intro
+import churchpresentermobile.composeapp.generated.resources.connect_setup_manual_apply_button
+import churchpresentermobile.composeapp.generated.resources.connect_setup_manual_entry_toggle
+import churchpresentermobile.composeapp.generated.resources.connect_setup_no_camera_note
+import churchpresentermobile.composeapp.generated.resources.connect_setup_scan_instead_toggle
 import churchpresentermobile.composeapp.generated.resources.connect_setup_skip_button
 import churchpresentermobile.composeapp.generated.resources.connect_setup_skip_note
 import churchpresentermobile.composeapp.generated.resources.connect_setup_step1_body
@@ -56,6 +64,14 @@ import churchpresentermobile.composeapp.generated.resources.connect_setup_step3_
 import churchpresentermobile.composeapp.generated.resources.connect_setup_step3_title
 import churchpresentermobile.composeapp.generated.resources.connect_setup_subtitle
 import churchpresentermobile.composeapp.generated.resources.connect_setup_title
+import churchpresentermobile.composeapp.generated.resources.settings_host_empty
+import churchpresentermobile.composeapp.generated.resources.settings_host_label
+import churchpresentermobile.composeapp.generated.resources.settings_host_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_api_key_label
+import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_invalid_port
+import churchpresentermobile.composeapp.generated.resources.settings_port_label
+import churchpresentermobile.composeapp.generated.resources.settings_port_placeholder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import org.jetbrains.compose.resources.stringResource
 
@@ -75,10 +91,37 @@ fun ConnectSetupScreen(
     onDone: () -> Unit,
     onSkip: () -> Unit,
 ) {
-    // Track whether a valid QR was scanned this session
+    // Track whether a valid QR was scanned (or manually applied) this session
     var scannedHost by remember { mutableStateOf("") }
     var scannedPort by remember { mutableStateOf(0) }
     val connected = scannedHost.isNotBlank()
+
+    // Manual entry fallback — shown automatically when no camera is available,
+    // or on demand if the user prefers not to scan.
+    val cameraAvailable = hasCameraAvailable()
+    var showManualEntry by remember(cameraAvailable) { mutableStateOf(!cameraAvailable) }
+    var hostInput by remember { mutableStateOf(appSettings.host) }
+    var portInput by remember { mutableStateOf(appSettings.port.toString()) }
+    var apiKeyInput by remember { mutableStateOf(appSettings.apiKey) }
+    var manualHostError by remember { mutableStateOf<String?>(null) }
+    var manualPortError by remember { mutableStateOf<String?>(null) }
+
+    val hostEmptyError   = stringResource(Res.string.settings_host_empty)
+    val invalidPortError = stringResource(Res.string.settings_invalid_port)
+
+    fun applyManualEntry() {
+        val host = hostInput.trim()
+        val port = portInput.trim().toIntOrNull()
+        manualHostError = if (host.isBlank()) hostEmptyError else null
+        manualPortError = if (port == null || port !in 1..65535) invalidPortError else null
+        if (manualHostError == null && manualPortError == null && port != null) {
+            appSettings.host = host
+            appSettings.port = port
+            appSettings.apiKey = apiKeyInput.trim()
+            scannedHost = host
+            scannedPort = port
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -173,7 +216,7 @@ fun ConnectSetupScreen(
                 )
             }
 
-            // ── Step 3 — Scan ──────────────────────────────────────────────────
+            // ── Step 3 — Scan or enter manually ─────────────────────────────────
             ConnectStep(number = "3", title = stringResource(Res.string.connect_setup_step3_title)) {
                 Text(
                     text = stringResource(Res.string.connect_setup_step3_body),
@@ -181,28 +224,89 @@ fun ConnectSetupScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(10.dp))
-                QrScanButton(
-                    onScanned = { url ->
-                        if (url.lowercase().startsWith("churchpresenter://connect")) {
-                            val query = url.substringAfter("?", "")
-                            val params = query.split("&").mapNotNull { pair ->
-                                val idx = pair.indexOf('=')
-                                if (idx < 0) null else pair.substring(0, idx).lowercase() to pair.substring(idx + 1)
-                            }.toMap()
-                            val host = params["host"]?.trim()?.takeIf { it.isNotBlank() }
-                            val port = params["port"]?.trim()?.toIntOrNull()
-                            if (host != null && port != null && port in 1..65535) {
-                                appSettings.host = host
-                                appSettings.port = port
-                                params["apikey"]?.trim()?.let { appSettings.apiKey = it }
-                                scannedHost = host
-                                scannedPort = port
+
+                if (!showManualEntry) {
+                    QrScanButton(
+                        onScanned = { url ->
+                            if (url.lowercase().startsWith("churchpresenter://connect")) {
+                                val query = url.substringAfter("?", "")
+                                val params = query.split("&").mapNotNull { pair ->
+                                    val idx = pair.indexOf('=')
+                                    if (idx < 0) null else pair.substring(0, idx).lowercase() to pair.substring(idx + 1)
+                                }.toMap()
+                                val host = params["host"]?.trim()?.takeIf { it.isNotBlank() }
+                                val port = params["port"]?.trim()?.toIntOrNull()
+                                if (host != null && port != null && port in 1..65535) {
+                                    appSettings.host = host
+                                    appSettings.port = port
+                                    params["apikey"]?.trim()?.let { appSettings.apiKey = it }
+                                    scannedHost = host
+                                    scannedPort = port
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    TextButton(onClick = { showManualEntry = true }) {
+                        Text(stringResource(Res.string.connect_setup_manual_entry_toggle))
+                    }
+                } else {
+                    if (!cameraAvailable) {
+                        Text(
+                            text = stringResource(Res.string.connect_setup_no_camera_note),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    OutlinedTextField(
+                        value = hostInput, onValueChange = { hostInput = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(Res.string.settings_host_label)) },
+                        placeholder = { Text(stringResource(Res.string.settings_host_placeholder)) },
+                        isError = manualHostError != null,
+                        supportingText = manualHostError?.let { msg -> { Text(msg, color = MaterialTheme.colorScheme.error) } },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = portInput, onValueChange = { portInput = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(Res.string.settings_port_label)) },
+                        placeholder = { Text(stringResource(Res.string.settings_port_placeholder)) },
+                        isError = manualPortError != null,
+                        supportingText = manualPortError?.let { msg -> { Text(msg, color = MaterialTheme.colorScheme.error) } },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = apiKeyInput, onValueChange = { apiKeyInput = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(Res.string.settings_api_key_label)) },
+                        placeholder = { Text(stringResource(Res.string.settings_api_key_placeholder)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(onClick = { applyManualEntry() }) {
+                            Text(stringResource(Res.string.connect_setup_manual_apply_button))
+                        }
+                        if (cameraAvailable) {
+                            TextButton(onClick = { showManualEntry = false }) {
+                                Text(stringResource(Res.string.connect_setup_scan_instead_toggle))
                             }
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                // Success banner shown after a successful scan
+                    }
+                }
+
+                // Success banner shown after a successful scan or manual apply
                 if (connected) {
                     Spacer(Modifier.height(8.dp))
                     Surface(

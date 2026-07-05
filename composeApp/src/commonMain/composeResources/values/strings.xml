@@ -221,6 +221,10 @@
     <string name="connect_setup_step3_body">Tap the button below to open the camera and scan the QR code shown on the desktop. The connection will be configured automatically.</string>
     <string name="connect_setup_scan_button">Scan QR Code</string>
     <string name="connect_setup_connected">✓ Connected to %1$s:%2$s</string>
+    <string name="connect_setup_no_camera_note">No camera detected on this device. Enter the connection details manually:</string>
+    <string name="connect_setup_manual_entry_toggle">Enter manually instead</string>
+    <string name="connect_setup_scan_instead_toggle">Scan QR code instead</string>
+    <string name="connect_setup_manual_apply_button">Apply</string>
 
     <!-- Settings Screen (additional) -->
     <string name="settings_active_url_label">Currently connecting to:</string>
