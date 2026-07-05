@@ -4,8 +4,6 @@ name: Android Release Build
 # Generates a signed APK or AAB and uploads it as a workflow artifact.
 # Required secrets: ANDROID_KEYSTORE_BASE64, ANDROID_STORE_PASSWORD,
 #   ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD, GOOGLE_SERVICES_JSON_BASE64
-# Optional secret: SENTRY_AUTH_TOKEN (enables Sentry source-context upload;
-#   build succeeds without it, just without source context on stack traces).
 # See GITHUB_SECRETS_SETUP.md for encoding instructions (always use -b 0).
 
 on:
@@ -106,14 +104,12 @@ jobs:
         run: ./gradlew :composeApp:bundleRelease
         env:
           SIGNING_REPO_PATH: /tmp/signing
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Build release APK
         if: ${{ inputs.build_type == 'apk' }}
         run: ./gradlew :composeApp:assembleRelease
         env:
           SIGNING_REPO_PATH: /tmp/signing
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Upload AAB
         if: ${{ inputs.build_type == 'aab' }}

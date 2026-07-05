@@ -12,7 +12,6 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
-    alias(libs.plugins.sentry)
 }
 
 kotlin {
@@ -218,18 +217,16 @@ dependencies {
 }
 
 // ---------------------------------------------------------------------------
-// Sentry source context: uploads a source bundle at build time so stack traces
-// show actual source lines. Only enabled when SENTRY_AUTH_TOKEN is present
-// (CI/release), so ordinary developer builds without the token are unaffected.
-// Mirrors the desktop app's io.sentry.jvm.gradle configuration.
+// NOTE on Sentry source-context upload: the io.sentry.android.gradle plugin
+// (which provides that feature) isn't Kotlin-Multiplatform-aware — applying it
+// to this module leaks Android-only companion artifacts (sentry-compose-android,
+// sentry-kotlin-extensions) into the JS/WasmJs dependency graph and breaks
+// resolution there, regardless of its autoInstallation/tracingInstrumentation
+// toggles. So it's deliberately not applied here; Sentry itself works fully via
+// the plain io.sentry:sentry-android dependency in androidMain below — this
+// only costs the "source context" (readable source lines in the Sentry
+// dashboard), not any actual crash/error reporting functionality.
 // ---------------------------------------------------------------------------
-sentry {
-    val sentryAuthToken = System.getenv("SENTRY_AUTH_TOKEN")
-    includeSourceContext.set(sentryAuthToken != null)
-    org.set("church-projector")
-    projectName.set("church-presenter-mobile")
-    authToken.set(sentryAuthToken)
-}
 
 // ---------------------------------------------------------------------------
 // Disable ART startup-profile compilation tasks to prevent

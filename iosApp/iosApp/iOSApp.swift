@@ -59,12 +59,15 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         // 0. Initialise Sentry first so it can catch crashes during the rest of startup too.
         SentrySDK.start { options in
             options.dsn = AppConstants.sentryDsn
+            // Tracing/performance transactions consume a separate quota from error
+            // events — off in production to avoid burning it on auto-instrumented
+            // transactions we don't otherwise use.
             #if DEBUG
             options.environment = "development"
             options.tracesSampleRate = 1.0
             #else
             options.environment = "production"
-            options.tracesSampleRate = 0.2
+            options.tracesSampleRate = 0.0
             #endif
             options.attachStacktrace = true
             options.releaseName = "\(AppConstants.bundleId)@\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown")"

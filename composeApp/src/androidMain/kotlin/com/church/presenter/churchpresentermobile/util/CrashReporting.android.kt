@@ -28,7 +28,10 @@ actual object CrashReporting {
             options.release = appVersion
             options.isAttachStacktrace = true
             options.isAttachThreads = false
-            options.tracesSampleRate = if (isDebugBuild) 1.0 else 0.2
+            // Tracing/performance transactions consume a separate quota from error
+            // events — off in production to avoid burning it on auto-instrumented
+            // activity/app-start transactions we don't otherwise use.
+            options.tracesSampleRate = if (isDebugBuild) 1.0 else 0.0
         }
     }
 

@@ -59,6 +59,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
+import com.church.presenter.churchpresentermobile.network.PingReporter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
@@ -98,6 +99,11 @@ import org.jetbrains.compose.resources.stringResource
 @Preview
 fun App() {
     val appSettings = remember { AppSettings() }
+
+    // Anonymous, city-level ping to the live user map — fires once per app launch.
+    LaunchedEffect(Unit) {
+        PingReporter.pingOnOpen(appSettings.deviceId)
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -319,6 +325,9 @@ fun App() {
             AnalyticsEvent.TAB_SELECTED,
             mapOf(AnalyticsParam.TAB_NAME to selectedTab.name.lowercase())
         )
+        // Breadcrumb only — doesn't count against Sentry's event quota, but gives
+        // crash reports a trail of which tabs were visited leading up to the crash.
+        CrashReporting.log("Tab selected: ${selectedTab.name.lowercase()}")
         // Only log the tab-level screen when not inside a detail sub-screen
         val tabScreen = when (selectedTab) {
             AppTab.SONGS         -> AnalyticsScreen.SONGS
