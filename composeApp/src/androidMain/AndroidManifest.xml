@@ -25,6 +25,18 @@
                 android:value="church_presenter_channel"/>
 
         <!--
+            Disable Sentry's auto-init ContentProvider. It runs before
+            Application.onCreate and would look for the DSN in an io.sentry.dsn
+            manifest meta-data entry — which we don't set. Instead we init Sentry
+            manually in ChurchPresenterApp.onCreate (CrashReporting.initSentry),
+            where the DSN comes from SentryConfig.kt. Without this, auto-init
+            crashes at startup with "DSN is required".
+        -->
+        <meta-data
+                android:name="io.sentry.auto-init"
+                android:value="false"/>
+
+        <!--
             Disable automatic Activity-class screen tracking. We manually call
             Analytics.logScreenView() with friendly names at every navigation point
             so the Firebase "Pages and screens" report shows meaningful screen names.
