@@ -3,7 +3,9 @@ package com.church.presenter.churchpresentermobile.util
 /**
  * Interface implemented in Swift and injected from [iOSApp.swift] so that
  * Kotlin can call Firebase Crashlytics on iOS without requiring a CocoaPods
- * dependency in the KMP build.
+ * dependency in the KMP build. The Swift implementation (SwiftCrashlyticsReporter)
+ * also forwards every call to Sentry — the interface name is kept as-is to
+ * avoid a wider Kotlin+Swift rename.
  *
  * Swift usage (in AppDelegate.application(_:didFinishLaunchingWithOptions:)):
  * ```swift

@@ -6,11 +6,15 @@ import android.app.NotificationManager
 import android.os.Build
 import com.church.presenter.churchpresentermobile.service.FirebasePushService
 import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 
 class ChurchPresenterApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Start Sentry as early as possible so it can catch crashes during
+        // the rest of app startup too.
+        CrashReporting.initSentry(this)
         Analytics.init()
         createNotificationChannel()
     }

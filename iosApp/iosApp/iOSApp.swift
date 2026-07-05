@@ -4,6 +4,7 @@ import FirebaseCore
 import FirebaseCrashlytics
 import FirebaseMessaging
 import FirebaseRemoteConfig
+import Sentry
 import StoreKit
 import SwiftUI
 import UserNotifications
@@ -15,6 +16,9 @@ private enum AppConstants {
     static let appStoreLookupUrl  = "https://itunes.apple.com/lookup?bundleId=\(bundleId)"
     static let appOpenCountKey    = "app_open_count"
     static let fcmTokenKey        = "fcm_token"
+    // Keep in sync with SENTRY_DSN in util/SentryConfig.kt (commonMain).
+    // Not a secret — see the comment there for why it's safe to embed.
+    static let sentryDsn = "https://cb9ec0c479f83c5c143e7e9a2093cf8d@o4511050918723584.ingest.us.sentry.io/4511681144356864"
 }
 
 private enum AppUpdateStrings {
@@ -52,6 +56,20 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        // 0. Initialise Sentry first so it can catch crashes during the rest of startup too.
+        SentrySDK.start { options in
+            options.dsn = AppConstants.sentryDsn
+            #if DEBUG
+            options.environment = "development"
+            options.tracesSampleRate = 1.0
+            #else
+            options.environment = "production"
+            options.tracesSampleRate = 0.2
+            #endif
+            options.attachStacktrace = true
+            options.releaseName = "\(AppConstants.bundleId)@\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown")"
+        }
+
         // 1. Initialise Firebase (Crashlytics auto-starts here)
         FirebaseApp.configure()
 
@@ -258,12 +276,17 @@ class AppDelegate: NSObject, UIApplicationDelegate,
  * Swift implementation of the Kotlin [IosCrashlyticsReporter] interface.
  * Registered from [AppDelegate.application(_:didFinishLaunchingWithOptions:)]
  * so that Kotlin's CrashReporting can forward non-fatal errors and logs to
- * the real Firebase Crashlytics SDK on iOS.
+ * the real Firebase Crashlytics SDK on iOS. Despite the name (kept to avoid
+ * a wider Kotlin+Swift rename), this now also forwards every call to Sentry,
+ * started separately above in didFinishLaunchingWithOptions.
  */
 class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
 
     func log(message: String) {
         Crashlytics.crashlytics().log(message)
+        let crumb = Breadcrumb(level: .info, category: "log")
+        crumb.message = message
+        SentrySDK.addBreadcrumb(crumb)
     }
 
     func recordError(message: String, type: String, stackTrace: String) {
@@ -280,14 +303,21 @@ class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
             ]
         )
         Crashlytics.crashlytics().record(error: error)
+        SentrySDK.capture(error: error)
     }
 
     func setUserId(userId: String) {
         Crashlytics.crashlytics().setUserID(userId)
+        let user = User()
+        user.userId = userId
+        SentrySDK.setUser(user)
     }
 
     func setCustomKey(key: String, value: String) {
         Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        SentrySDK.configureScope { scope in
+            scope.setTag(value: value, key: key)
+        }
     }
 }
 

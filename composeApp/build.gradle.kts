@@ -12,6 +12,7 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
+    alias(libs.plugins.sentry)
 }
 
 kotlin {
@@ -82,6 +83,7 @@ kotlin {
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.config)
             implementation(libs.firebase.inappmessaging)
+            implementation(libs.sentry.android)
             implementation(libs.play.review)
             implementation(libs.play.app.update)
             // QR code scanner — no camera permission required, Google provides the UI
@@ -213,6 +215,20 @@ dependencies {
     debugImplementation(libs.compose.uiTooling)
     // Firebase BOM — constrains all firebase-* library versions for the Android target
     add("androidMainImplementation", platform(libs.firebase.bom))
+}
+
+// ---------------------------------------------------------------------------
+// Sentry source context: uploads a source bundle at build time so stack traces
+// show actual source lines. Only enabled when SENTRY_AUTH_TOKEN is present
+// (CI/release), so ordinary developer builds without the token are unaffected.
+// Mirrors the desktop app's io.sentry.jvm.gradle configuration.
+// ---------------------------------------------------------------------------
+sentry {
+    val sentryAuthToken = System.getenv("SENTRY_AUTH_TOKEN")
+    includeSourceContext.set(sentryAuthToken != null)
+    org.set("church-projector")
+    projectName.set("church-presenter-mobile")
+    authToken.set(sentryAuthToken)
 }
 
 // ---------------------------------------------------------------------------
