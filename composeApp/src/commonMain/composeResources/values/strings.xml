@@ -231,6 +231,9 @@
     <string name="settings_reset_to_default">Reset to default</string>
     <string name="settings_draft_url_label">Will connect to after saving:</string>
     <string name="settings_check_status">Check Server Status</string>
+    <string name="settings_developer_section">Developer</string>
+    <string name="settings_send_test_error">Send Test Error to Sentry</string>
+    <string name="settings_test_error_sent">✓ Test error sent to Sentry</string>
     <string name="settings_check_status_description">Check server status</string>
     <string name="settings_status_recheck">Recheck</string>
     <string name="settings_status_server_version">Server: %1$s</string>

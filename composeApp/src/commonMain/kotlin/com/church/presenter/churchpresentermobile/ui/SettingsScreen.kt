@@ -73,6 +73,9 @@ import churchpresentermobile.composeapp.generated.resources.settings_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_check_status
 import churchpresentermobile.composeapp.generated.resources.settings_check_status_description
 import churchpresentermobile.composeapp.generated.resources.settings_draft_url_label
+import churchpresentermobile.composeapp.generated.resources.settings_developer_section
+import churchpresentermobile.composeapp.generated.resources.settings_send_test_error
+import churchpresentermobile.composeapp.generated.resources.settings_test_error_sent
 import churchpresentermobile.composeapp.generated.resources.settings_host_empty
 import churchpresentermobile.composeapp.generated.resources.settings_host_label
 import churchpresentermobile.composeapp.generated.resources.settings_host_placeholder
@@ -103,7 +106,9 @@ import churchpresentermobile.composeapp.generated.resources.status_permissions_t
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ThemeMode
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.appVersion
+import com.church.presenter.churchpresentermobile.util.isDebugBuild
 import com.church.presenter.churchpresentermobile.viewmodel.SettingsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
@@ -135,6 +140,7 @@ fun SettingsScreen(
     // Show/hide state for the API key field
     var apiKeyVisible    by remember { mutableStateOf(false) }
     var showStatusDialog by remember { mutableStateOf(false) }
+    var testErrorSent    by remember { mutableStateOf(false) }
 
     // Inline server-status check
     val statusViewModel: StatusViewModel =
@@ -311,6 +317,32 @@ fun SettingsScreen(
                                 .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                         )
+                    }
+
+                    // Developer — debug builds only
+                    if (isDebugBuild) {
+                        HorizontalDivider()
+                        Text(stringResource(Res.string.settings_developer_section),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary)
+                        OutlinedButton(
+                            onClick = {
+                                CrashReporting.recordException(
+                                    RuntimeException("Test error — ChurchPresenter Mobile v$appVersion")
+                                )
+                                testErrorSent = true
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(stringResource(Res.string.settings_send_test_error))
+                        }
+                        if (testErrorSent) {
+                            Text(
+                                text = stringResource(Res.string.settings_test_error_sent),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 }
             }
