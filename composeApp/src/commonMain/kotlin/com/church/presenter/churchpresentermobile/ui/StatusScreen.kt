@@ -31,6 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -119,7 +122,7 @@ fun StatusScreen(
             contentAlignment = Alignment.Center,
         ) {
             when (val state = uiState) {
-                is StatusUiState.Loading -> LoadingContent()
+                is StatusUiState.Loading -> LoadingContent(onOpenSettings = onOpenSettings)
                 is StatusUiState.Error   -> ErrorContent(
                     message        = state.message,
                     onRetry        = { viewModel.recheck() },
@@ -156,11 +159,25 @@ fun StatusScreen(
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
-private fun LoadingContent() {
+private fun LoadingContent(onOpenSettings: () -> Unit) {
+    // If the check is still loading after a few seconds (e.g. an unreachable
+    // host that hangs rather than failing fast), reveal a way out instead of
+    // leaving the user stuck on a bare spinner with no escape.
+    var showEscapeHatch by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(5000)
+        showEscapeHatch = true
+    }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator()
         Spacer(Modifier.height(16.dp))
         Text(stringResource(Res.string.status_connecting), style = MaterialTheme.typography.bodyLarge)
+        if (showEscapeHatch) {
+            Spacer(Modifier.height(24.dp))
+            TextButton(onClick = onOpenSettings) {
+                Text(stringResource(Res.string.status_open_settings))
+            }
+        }
     }
 }
 
