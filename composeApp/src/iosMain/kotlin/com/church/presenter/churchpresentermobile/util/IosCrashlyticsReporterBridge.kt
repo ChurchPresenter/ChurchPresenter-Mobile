@@ -17,6 +17,7 @@ interface IosCrashlyticsReporter {
     fun recordError(message: String, type: String, stackTrace: String)
     fun setUserId(userId: String)
     fun setCustomKey(key: String, value: String)
+    fun setEnabled(enabled: Boolean)
 }
 
 /**

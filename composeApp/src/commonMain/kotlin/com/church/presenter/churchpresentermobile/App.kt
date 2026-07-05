@@ -101,8 +101,12 @@ fun App() {
     val appSettings = remember { AppSettings() }
 
     // Anonymous, city-level ping to the live user map — fires once per app launch.
+    // Only send the persistent device id when the user has opted into usage
+    // analytics — matching the desktop app's equivalent gate (main.kt) and the
+    // server's documented privacy intent. Opted-out users still send an
+    // anonymous geo ping (PingReporter treats a blank id as "no id").
     LaunchedEffect(Unit) {
-        PingReporter.pingOnOpen(appSettings.deviceId)
+        PingReporter.pingOnOpen(if (appSettings.isTelemetryEnabled) appSettings.deviceId else "")
     }
 
     val snackbarHostState = remember { SnackbarHostState() }

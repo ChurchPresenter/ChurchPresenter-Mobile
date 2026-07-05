@@ -17,6 +17,10 @@ actual object Analytics {
         fa.setDefaultEventParameters(null)
     }
 
+    actual fun setEnabled(enabled: Boolean) {
+        fa.setAnalyticsCollectionEnabled(enabled)
+    }
+
     actual fun logEvent(name: String, params: Map<String, String>) {
         val bundle = Bundle()
         params.forEach { (k, v) -> bundle.putString(k, v.take(100)) }

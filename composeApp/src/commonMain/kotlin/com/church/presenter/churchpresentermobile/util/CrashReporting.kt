@@ -11,6 +11,9 @@ expect object CrashReporting {
     /** Enable collection and mark Crashlytics as ready. */
     fun init()
 
+    /** Enable or disable sending crash reports, per the user's privacy preference. */
+    fun setEnabled(enabled: Boolean)
+
     /** Send a breadcrumb log message that appears alongside any subsequent crash report. */
     fun log(message: String)
 

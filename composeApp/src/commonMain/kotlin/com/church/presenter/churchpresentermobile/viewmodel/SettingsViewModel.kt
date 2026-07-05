@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.network.ApiConstants
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -70,6 +72,10 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
     /** The currently selected [ThemeMode] option. */
     val themeMode = _themeMode.asStateFlow()
 
+    private val _telemetryEnabled = MutableStateFlow(appSettings.isTelemetryEnabled)
+    /** Whether usage analytics and crash reports are currently being shared. */
+    val telemetryEnabled = _telemetryEnabled.asStateFlow()
+
     init {
         Logger.d(TAG, "SettingsViewModel init — loaded from storage: host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl}")
     }
@@ -122,6 +128,22 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
      */
     fun setThemeMode(value: ThemeMode) {
         _themeMode.value = value
+    }
+
+    /**
+     * Updates the telemetry (analytics + crash reporting) privacy preference.
+     * Unlike the other fields, this applies and persists immediately rather
+     * than waiting for [save] — there's no reason to require a Save tap for
+     * turning tracking on/off.
+     *
+     * @param enabled True to share usage analytics and crash reports.
+     */
+    fun setTelemetryEnabled(enabled: Boolean) {
+        _telemetryEnabled.value = enabled
+        appSettings.isTelemetryEnabled = enabled
+        CrashReporting.setEnabled(enabled)
+        Analytics.setEnabled(enabled)
+        Logger.d(TAG, "setTelemetryEnabled — $enabled")
     }
 
     /**

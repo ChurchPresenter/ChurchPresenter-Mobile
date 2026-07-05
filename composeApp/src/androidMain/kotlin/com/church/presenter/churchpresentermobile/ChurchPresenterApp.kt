@@ -4,6 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.initSettingsContext
 import com.church.presenter.churchpresentermobile.service.FirebasePushService
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.CrashReporting
@@ -12,10 +14,18 @@ class ChurchPresenterApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Needed before any AppSettings() use below — also covers entry points
+        // other than MainActivity (e.g. FirebasePushService) that run first.
+        initSettingsContext(this)
         // Start Sentry as early as possible so it can catch crashes during
         // the rest of app startup too.
         CrashReporting.initSentry(this)
         Analytics.init()
+        // Re-apply the user's persisted privacy preference — Sentry doesn't
+        // remember being closed across process restarts.
+        val telemetryEnabled = AppSettings().isTelemetryEnabled
+        CrashReporting.setEnabled(telemetryEnabled)
+        Analytics.setEnabled(telemetryEnabled)
         createNotificationChannel()
     }
 

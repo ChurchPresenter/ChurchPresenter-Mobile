@@ -16,6 +16,9 @@ private enum AppConstants {
     static let appStoreLookupUrl  = "https://itunes.apple.com/lookup?bundleId=\(bundleId)"
     static let appOpenCountKey    = "app_open_count"
     static let fcmTokenKey        = "fcm_token"
+    // Keep in sync with KEY_TELEMETRY_ENABLED in model/AppSettings.kt (commonMain) —
+    // read directly from UserDefaults here so Sentry can be gated before Kotlin runs.
+    static let telemetryEnabledKey = "telemetry_enabled"
     // Keep in sync with SENTRY_DSN in util/SentryConfig.kt (commonMain).
     // Not a secret — see the comment there for why it's safe to embed.
     static let sentryDsn = "https://cb9ec0c479f83c5c143e7e9a2093cf8d@o4511050918723584.ingest.us.sentry.io/4511681144356864"
@@ -56,25 +59,18 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        let telemetryEnabled = AppDelegate.isTelemetryEnabled
+
         // 0. Initialise Sentry first so it can catch crashes during the rest of startup too.
-        SentrySDK.start { options in
-            options.dsn = AppConstants.sentryDsn
-            // Tracing/performance transactions consume a separate quota from error
-            // events — off in production to avoid burning it on auto-instrumented
-            // transactions we don't otherwise use.
-            #if DEBUG
-            options.environment = "development"
-            options.tracesSampleRate = 1.0
-            #else
-            options.environment = "production"
-            options.tracesSampleRate = 0.0
-            #endif
-            options.attachStacktrace = true
-            options.releaseName = "\(AppConstants.bundleId)@\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown")"
+        //    Skipped entirely when the user has opted out.
+        if telemetryEnabled {
+            AppDelegate.startSentry()
         }
 
         // 1. Initialise Firebase (Crashlytics auto-starts here)
         FirebaseApp.configure()
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(telemetryEnabled)
+        FirebaseAnalytics.Analytics.setAnalyticsCollectionEnabled(telemetryEnabled)
 
         // 1a. Bridge iOS Crashlytics to Kotlin
         IosCrashlyticsReporterBridge.shared.reporter = SwiftCrashlyticsReporter()
@@ -151,6 +147,37 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         application.registerForRemoteNotifications()
 
         return true
+    }
+
+    // MARK: - Telemetry
+
+    /// Mirrors `AppSettings.isTelemetryEnabled` (`KEY_TELEMETRY_ENABLED`), read directly
+    /// from `UserDefaults` so Sentry can be gated before any Kotlin code runs.
+    static var isTelemetryEnabled: Bool {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: AppConstants.telemetryEnabledKey) != nil else { return true }
+        return defaults.integer(forKey: AppConstants.telemetryEnabledKey) == 1
+    }
+
+    /// Starts the Sentry SDK. Extracted so it can be re-invoked from
+    /// `SwiftCrashlyticsReporter.setEnabled(_:)` when the user re-enables telemetry
+    /// after it was closed.
+    static func startSentry() {
+        SentrySDK.start { options in
+            options.dsn = AppConstants.sentryDsn
+            // Tracing/performance transactions consume a separate quota from error
+            // events — off in production to avoid burning it on auto-instrumented
+            // transactions we don't otherwise use.
+            #if DEBUG
+            options.environment = "development"
+            options.tracesSampleRate = 1.0
+            #else
+            options.environment = "production"
+            options.tracesSampleRate = 0.0
+            #endif
+            options.attachStacktrace = true
+            options.releaseName = "\(AppConstants.bundleId)@\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown")"
+        }
     }
 
     // MARK: - Home-screen quick actions (long-press app icon)
@@ -322,6 +349,20 @@ class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
             scope.setTag(value: value, key: key)
         }
     }
+
+    /// Toggles crash reporting per the user's privacy preference. Crashlytics has a
+    /// native runtime flag; Sentry doesn't, so it's closed when disabling and
+    /// re-started (if not already running) when re-enabling.
+    func setEnabled(enabled: Bool) {
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(enabled)
+        if enabled {
+            if !SentrySDK.isEnabled {
+                AppDelegate.startSentry()
+            }
+        } else {
+            SentrySDK.close()
+        }
+    }
 }
 
 // MARK: - Analytics bridge
@@ -343,6 +384,10 @@ class SwiftAnalyticsReporter: NSObject, IosAnalyticsReporter {
             AnalyticsParameterScreenName:  screenName,
             AnalyticsParameterScreenClass: screenName,
         ])
+    }
+
+    func setEnabled(enabled: Bool) {
+        FirebaseAnalytics.Analytics.setAnalyticsCollectionEnabled(enabled)
     }
 }
 

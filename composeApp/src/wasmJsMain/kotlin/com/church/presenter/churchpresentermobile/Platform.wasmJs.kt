@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile
 
 class WasmPlatform : Platform {
     override val name: String = "Web with Kotlin/Wasm"
+    override val os: String = "web"
 }
 
 actual fun getPlatform(): Platform = WasmPlatform()

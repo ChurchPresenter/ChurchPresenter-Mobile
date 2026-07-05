@@ -16,6 +16,10 @@ actual object CrashReporting {
         // Crashlytics auto-starts after FirebaseApp.configure() in iOSApp.swift
     }
 
+    actual fun setEnabled(enabled: Boolean) {
+        IosCrashlyticsReporterBridge.reporter?.setEnabled(enabled)
+    }
+
     actual fun log(message: String) {
         IosCrashlyticsReporterBridge.reporter?.log(message)
             ?: println("[Crashlytics] $message")

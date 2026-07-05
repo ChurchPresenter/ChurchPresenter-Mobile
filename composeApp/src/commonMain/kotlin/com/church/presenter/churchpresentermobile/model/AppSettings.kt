@@ -17,6 +17,7 @@ private const val KEY_FCM_TOKEN        = "fcm_token"
 private const val KEY_APP_OPEN_COUNT   = "app_open_count"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
 private const val KEY_CONNECT_SETUP    = "connect_setup_done"
+private const val KEY_TELEMETRY_ENABLED = "telemetry_enabled"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -146,6 +147,17 @@ class AppSettings {
     var isConnectSetupDone: Boolean
         get() = storage.getInt(KEY_CONNECT_SETUP, 0) == 1
         set(value) { storage.putInt(KEY_CONNECT_SETUP, if (value) 1 else 0) }
+
+    /**
+     * True when the user allows sending usage analytics and crash reports
+     * (Firebase Analytics, Firebase Crashlytics, Sentry). Defaults to enabled;
+     * the "telemetry_enabled" key is also read directly from native storage by
+     * the iOS Swift startup code so Sentry can be gated before Kotlin runs —
+     * keep the key name in sync with [iOSApp.swift]'s `AppConstants.telemetryEnabledKey`.
+     */
+    var isTelemetryEnabled: Boolean
+        get() = storage.getInt(KEY_TELEMETRY_ENABLED, 1) == 1
+        set(value) { storage.putInt(KEY_TELEMETRY_ENABLED, if (value) 1 else 0) }
 
     /** Builds the full HTTP API base URL from the current host and port. */
     val apiBaseUrl: String

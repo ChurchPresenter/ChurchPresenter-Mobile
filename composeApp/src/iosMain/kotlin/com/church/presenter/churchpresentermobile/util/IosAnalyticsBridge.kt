@@ -8,6 +8,7 @@ package com.church.presenter.churchpresentermobile.util
 interface IosAnalyticsReporter {
     fun logEvent(name: String, params: Map<String, String>)
     fun logScreenView(screenName: String)
+    fun setEnabled(enabled: Boolean)
 }
 
 /**

@@ -41,6 +41,11 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
 
+    <!-- Privacy -->
+    <string name="settings_privacy_section">Privacy</string>
+    <string name="settings_telemetry_label">Share usage &amp; crash data</string>
+    <string name="settings_telemetry_description">Helps us find and fix bugs. Turn off to stop sending analytics and crash reports.</string>
+
     <!-- Navigation Tabs -->
     <string name="tab_songs">Songs</string>
     <string name="tab_bible">Bible</string>

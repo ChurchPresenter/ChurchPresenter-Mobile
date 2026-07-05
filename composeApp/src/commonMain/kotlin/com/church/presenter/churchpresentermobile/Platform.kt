@@ -2,6 +2,8 @@ package com.church.presenter.churchpresentermobile
 
 interface Platform {
     val name: String
+    /** One of "android", "ios", or "web" — used to tag analytics pings by OS. */
+    val os: String
 }
 
 expect fun getPlatform(): Platform

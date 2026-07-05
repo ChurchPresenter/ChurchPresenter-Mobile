@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.util
 
 import android.content.Context
+import com.church.presenter.churchpresentermobile.model.getAppContext
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
@@ -32,6 +33,21 @@ actual object CrashReporting {
             // events — off in production to avoid burning it on auto-instrumented
             // activity/app-start transactions we don't otherwise use.
             options.tracesSampleRate = if (isDebugBuild) 1.0 else 0.0
+        }
+    }
+
+    /**
+     * Toggles crash reporting per the user's privacy preference. Firebase Crashlytics
+     * has a native runtime flag; Sentry doesn't, so we [Sentry.close] it when disabling
+     * and re-run [initSentry] (using the context stashed by [getAppContext]) when
+     * re-enabling.
+     */
+    actual fun setEnabled(enabled: Boolean) {
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
+        if (enabled) {
+            getAppContext()?.let { initSentry(it) }
+        } else {
+            Sentry.close()
         }
     }
 

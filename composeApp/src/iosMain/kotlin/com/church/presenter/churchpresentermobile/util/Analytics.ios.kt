@@ -6,6 +6,10 @@ actual object Analytics {
         // Analytics auto-starts after FirebaseApp.configure() in iOSApp.swift
     }
 
+    actual fun setEnabled(enabled: Boolean) {
+        IosAnalyticsBridge.reporter?.setEnabled(enabled)
+    }
+
     actual fun logEvent(name: String, params: Map<String, String>) {
         val sanitised = params.mapValues { (_, v) -> v.take(100) }
         IosAnalyticsBridge.reporter?.logEvent(name, sanitised)

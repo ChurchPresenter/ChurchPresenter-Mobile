@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -82,6 +83,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_host_placeh
 import churchpresentermobile.composeapp.generated.resources.settings_invalid_port
 import churchpresentermobile.composeapp.generated.resources.settings_port_label
 import churchpresentermobile.composeapp.generated.resources.settings_port_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_privacy_section
 import churchpresentermobile.composeapp.generated.resources.settings_reset_to_default
 import churchpresentermobile.composeapp.generated.resources.settings_save
 import churchpresentermobile.composeapp.generated.resources.settings_server_section
@@ -91,6 +93,8 @@ import churchpresentermobile.composeapp.generated.resources.settings_status_none
 import churchpresentermobile.composeapp.generated.resources.settings_status_recheck
 import churchpresentermobile.composeapp.generated.resources.settings_status_server_version
 import churchpresentermobile.composeapp.generated.resources.settings_status_songbooks
+import churchpresentermobile.composeapp.generated.resources.settings_telemetry_description
+import churchpresentermobile.composeapp.generated.resources.settings_telemetry_label
 import churchpresentermobile.composeapp.generated.resources.settings_theme_dark
 import churchpresentermobile.composeapp.generated.resources.settings_theme_light
 import churchpresentermobile.composeapp.generated.resources.settings_theme_system
@@ -136,6 +140,7 @@ fun SettingsScreen(
     val draftBaseUrl by viewModel.draftBaseUrl.collectAsState()
     val urlChanged   by viewModel.urlChanged.collectAsState()
     val themeMode    by viewModel.themeMode.collectAsState()
+    val telemetryEnabled by viewModel.telemetryEnabled.collectAsState()
 
     // Show/hide state for the API key field
     var apiKeyVisible    by remember { mutableStateOf(false) }
@@ -303,6 +308,30 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary)
                     ThemeModeSelector(selected = themeMode, onSelect = { viewModel.setThemeMode(it) })
+
+                    // Privacy
+                    HorizontalDivider()
+                    Text(stringResource(Res.string.settings_privacy_section),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(stringResource(Res.string.settings_telemetry_label))
+                            Text(
+                                text = stringResource(Res.string.settings_telemetry_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Switch(
+                            checked = telemetryEnabled,
+                            onCheckedChange = { viewModel.setTelemetryEnabled(it) },
+                        )
+                    }
 
                     // Draft URL preview
                     if (urlChanged) {

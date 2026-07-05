@@ -18,6 +18,9 @@ expect object Analytics {
     /** Call once at startup (after FirebaseApp.configure on iOS / Application.onCreate on Android). */
     fun init()
 
+    /** Enable or disable sending usage analytics, per the user's privacy preference. */
+    fun setEnabled(enabled: Boolean)
+
     /**
      * Log a custom event to Firebase Analytics.
      *

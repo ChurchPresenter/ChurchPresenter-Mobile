@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.getPlatform
 import com.church.presenter.churchpresentermobile.util.isDebugBuild
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -31,6 +32,7 @@ object PingReporter {
         val url = buildString {
             append(PING_URL)
             append("?platform=mobile")
+            append("&os=${getPlatform().os}")
             if (isDebugBuild) append("&src=dev")
         }
         scope.launch {
