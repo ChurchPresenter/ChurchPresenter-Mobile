@@ -14,6 +14,44 @@ plugins {
     alias(libs.plugins.firebaseCrashlytics)
 }
 
+// ---------------------------------------------------------------------------
+// Generates the actual isDebugBuild for the JS/WasmJs targets (webMain), since
+// neither has a runtime debug flag analogous to Android's BuildConfig.DEBUG.
+// Mirrors the desktop app's generateBuildConfig task: dev-vs-prod is inferred
+// from which Gradle task was requested. Every relevant JS/Wasm compile task
+// literally contains "Development" or "Production" (e.g.
+// compileDevelopmentExecutableKotlinJs vs compileProductionExecutableKotlinJs),
+// except the CI distribution tasks (jsBrowserDistribution/wasmJsBrowserDistribution,
+// used by .github/workflows/web-deploy.yml) which build the production executable
+// under the hood without saying "production" in the task name itself — hence the
+// extra "distribution" check.
+// ---------------------------------------------------------------------------
+val generateWebBuildConfig by tasks.registering {
+    val isRelease = gradle.startParameter.taskNames.any { task ->
+        val t = task.lowercase()
+        t.contains("production") || t.contains("distribution")
+    }
+    val outputDir = layout.buildDirectory.dir("generated/webbuildconfig")
+    // isRelease depends on the requested task names, not on any tracked file input,
+    // so Gradle's normal up-to-date check can't detect when it needs to rerun —
+    // always re-run (same as desktop's generateBuildConfig task).
+    outputs.upToDateWhen { false }
+    outputs.dir(outputDir)
+
+    doLast {
+        val dir = outputDir.get().asFile
+            .resolve("com/church/presenter/churchpresentermobile/util")
+        dir.mkdirs()
+        dir.resolve("WebBuildUtils.kt").writeText(
+            """
+            |package com.church.presenter.churchpresentermobile.util
+            |
+            |actual val isDebugBuild: Boolean = ${!isRelease}
+            """.trimMargin()
+        )
+    }
+}
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
@@ -66,6 +104,15 @@ kotlin {
     sourceSets {
         // NOTE: webMain is created automatically by the applyDefaultHierarchyTemplate
         // call above — do NOT add dependsOn(webMain) to jsMain or wasmJsMain here.
+
+        // Provides the actual isDebugBuild for both JS and WasmJs from one generated
+        // file (see generateWebBuildConfig above) — an actual declared on this shared
+        // intermediate source set satisfies the expect for both leaf targets. "web" is
+        // a custom hierarchy-template group (not a built-in name like jsMain/androidMain),
+        // so it has no typesafe accessor — look it up by name instead.
+        getByName("webMain") {
+            kotlin.srcDir(generateWebBuildConfig.map { layout.buildDirectory.dir("generated/webbuildconfig") })
+        }
 
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
