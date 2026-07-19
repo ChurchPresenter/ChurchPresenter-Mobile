@@ -447,4 +447,5 @@
     <string name="announce_anim_slide_down">În jos</string>
     <string name="announce_anim_slide_left">Din stânga</string>
     <string name="announce_anim_slide_right">Din dreapta</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>

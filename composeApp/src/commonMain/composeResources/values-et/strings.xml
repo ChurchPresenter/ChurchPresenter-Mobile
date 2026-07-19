@@ -447,4 +447,5 @@
     <string name="announce_anim_slide_down">Alla</string>
     <string name="announce_anim_slide_left">Vasakult</string>
     <string name="announce_anim_slide_right">Paremalt</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>

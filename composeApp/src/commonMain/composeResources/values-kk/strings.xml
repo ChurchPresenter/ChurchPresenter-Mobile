@@ -416,5 +416,6 @@
     <string name="announce_anim_slide_down">Төмен</string>
     <string name="announce_anim_slide_left">Солдан</string>
     <string name="announce_anim_slide_right">Оңнан</string>
+    <string name="announce_duration_seconds">%1$s с</string>
 </resources>
 

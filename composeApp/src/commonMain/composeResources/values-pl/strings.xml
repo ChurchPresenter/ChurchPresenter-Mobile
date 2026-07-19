@@ -416,5 +416,6 @@
     <string name="announce_anim_slide_down">W dół</string>
     <string name="announce_anim_slide_left">Z lewej</string>
     <string name="announce_anim_slide_right">Z prawej</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>
 

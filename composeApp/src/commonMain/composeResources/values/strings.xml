@@ -449,4 +449,5 @@
     <string name="announce_anim_slide_down">Slide down</string>
     <string name="announce_anim_slide_left">Slide from left</string>
     <string name="announce_anim_slide_right">Slide from right</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>

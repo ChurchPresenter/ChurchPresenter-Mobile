@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -170,6 +173,8 @@ fun ScheduleDrawerContent(
                     val listState = rememberLazyListState()
                     LazyColumn(
                         state = listState,
+                        // Pad the bottom so the last item clears the system navigation bar.
+                        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                         modifier = Modifier.fillMaxSize().verticalScrollbar(listState)
                     ) {
                         items(visibleItems) { item ->

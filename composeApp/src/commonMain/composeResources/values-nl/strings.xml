@@ -447,4 +447,5 @@
     <string name="announce_anim_slide_down">Omlaag</string>
     <string name="announce_anim_slide_left">Van links</string>
     <string name="announce_anim_slide_right">Van rechts</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>

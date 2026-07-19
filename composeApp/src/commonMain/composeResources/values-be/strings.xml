@@ -416,5 +416,6 @@
     <string name="announce_anim_slide_down">Уніз</string>
     <string name="announce_anim_slide_left">Злева</string>
     <string name="announce_anim_slide_right">Справа</string>
+    <string name="announce_duration_seconds">%1$s с</string>
 </resources>
 

@@ -447,4 +447,5 @@
     <string name="announce_anim_slide_down">Deslizar para baixo</string>
     <string name="announce_anim_slide_left">Da esquerda</string>
     <string name="announce_anim_slide_right">Da direita</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>

@@ -447,4 +447,5 @@
     <string name="announce_anim_slide_down">Nadol</string>
     <string name="announce_anim_slide_left">Zľava</string>
     <string name="announce_anim_slide_right">Sprava</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>

@@ -70,7 +70,7 @@ import churchpresentermobile.composeapp.generated.resources.announce_type_text
 import churchpresentermobile.composeapp.generated.resources.action_cancel
 import churchpresentermobile.composeapp.generated.resources.action_clear
 import churchpresentermobile.composeapp.generated.resources.action_go_live
-import churchpresentermobile.composeapp.generated.resources.animation_duration_ms
+import churchpresentermobile.composeapp.generated.resources.announce_duration_seconds
 import churchpresentermobile.composeapp.generated.resources.announcements_add_new
 import churchpresentermobile.composeapp.generated.resources.announcements_animation_duration_label
 import churchpresentermobile.composeapp.generated.resources.announcements_clock_desc
@@ -98,6 +98,7 @@ import churchpresentermobile.composeapp.generated.resources.stepper_min
 import churchpresentermobile.composeapp.generated.resources.stepper_sec
 import churchpresentermobile.composeapp.generated.resources.swatch_background
 import churchpresentermobile.composeapp.generated.resources.swatch_text
+import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.stringResource
 import com.church.presenter.churchpresentermobile.model.AnnouncementAnimation
 import com.church.presenter.churchpresentermobile.model.AnnouncementType
@@ -201,12 +202,16 @@ fun AnnouncementsScreen(
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.announcements_animation_duration_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text(stringResource(Res.string.animation_duration_ms, form.animationDuration), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                // Show the duration in seconds with one decimal (0.5 s steps), e.g. "5.0".
+                val halfSecs = form.animationDuration / 500
+                val secondsLabel = "${halfSecs / 2}.${if (halfSecs % 2 == 0) "0" else "5"}"
+                Text(stringResource(Res.string.announce_duration_seconds, secondsLabel), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             }
             Slider(
-                value = form.animationDuration.toFloat(),
-                onValueChange = { v -> viewModel.update { it.copy(animationDuration = (v / 50).toInt() * 50) } },
-                valueRange = 0f..3000f,
+                value = (form.animationDuration / 1000f).coerceIn(0f, 30f),
+                onValueChange = { v -> viewModel.update { it.copy(animationDuration = (v * 2).roundToInt() * 500) } },
+                valueRange = 0f..30f,
+                steps = 59, // 0–30 s in 0.5 s increments
                 colors = SliderDefaults.colors(
                     thumbColor = colors.accent,
                     activeTrackColor = colors.accent,

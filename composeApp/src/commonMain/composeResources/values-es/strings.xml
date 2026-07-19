@@ -416,5 +416,6 @@
     <string name="announce_anim_slide_down">Deslizar abajo</string>
     <string name="announce_anim_slide_left">Desde la izquierda</string>
     <string name="announce_anim_slide_right">Desde la derecha</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>
 

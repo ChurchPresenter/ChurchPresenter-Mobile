@@ -416,5 +416,6 @@
     <string name="announce_anim_slide_down">Dolů</string>
     <string name="announce_anim_slide_left">Zleva</string>
     <string name="announce_anim_slide_right">Zprava</string>
+    <string name="announce_duration_seconds">%1$s s</string>
 </resources>
 
