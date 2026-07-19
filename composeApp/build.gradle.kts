@@ -197,8 +197,8 @@ android {
         applicationId = "com.church.presenter.churchpresentermobile"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 13
-        versionName = "1.0.12"
+        versionCode = 14
+        versionName = "1.0.13"
     }
     packaging {
         resources {
