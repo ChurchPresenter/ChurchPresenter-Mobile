@@ -24,6 +24,7 @@ object ApiConstants {
     const val SCHEDULE_ENDPOINT = "schedule"
     const val CLEAR_ENDPOINT = "clear"
     const val STATUS_ENDPOINT = "status"
+    const val DICTIONARY_ENDPOINT       = "dictionary"
     const val QA_STATUS_ENDPOINT        = "qa/status"
     const val QA_QUESTIONS_ENDPOINT     = "qa/questions"
     const val QA_ADD_ENDPOINT           = "qa/add"

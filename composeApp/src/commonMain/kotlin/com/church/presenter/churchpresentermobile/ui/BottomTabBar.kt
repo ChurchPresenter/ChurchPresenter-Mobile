@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.DesktopWindows
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.MusicNote
@@ -40,7 +40,7 @@ private val tabSpecs = listOf(
     TabSpec(AppTab.BIBLE, "Bible", Icons.AutoMirrored.Outlined.MenuBook),
     TabSpec(AppTab.PICTURES, "Media", Icons.Outlined.Image),
     TabSpec(AppTab.PRESENTATION, "Present", Icons.Outlined.DesktopWindows),
-    TabSpec(AppTab.QA_ADMIN, "Q&A", Icons.Outlined.ChatBubbleOutline),
+    TabSpec(AppTab.MORE, "More", Icons.Filled.MoreHoriz),
 )
 
 /**

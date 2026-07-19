@@ -42,12 +42,16 @@ import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.BottomTabBar
+import com.church.presenter.churchpresentermobile.ui.DictionaryScreen
+import com.church.presenter.churchpresentermobile.ui.MoreScreen
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
@@ -71,6 +75,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.DictionaryViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PresentationsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.QAViewModel
@@ -157,6 +162,9 @@ fun App() {
     val qaViewModel: QAViewModel = viewModel(key = "qa") {
         QAViewModel(appSettings, eventService)
     }
+    val dictionaryViewModel: DictionaryViewModel = viewModel(key = "dictionary") {
+        DictionaryViewModel(appSettings, eventService)
+    }
 
     // When the desktop clears its display, reset projection state on mobile
     LaunchedEffect(scheduleViewModel) {
@@ -220,6 +228,9 @@ fun App() {
             Analytics.logEvent(AnalyticsEvent.SETTINGS_SAVED)
         }
     }
+    // Secondary destination selected inside the "More" tab (Q&A / Dictionary), or null for the launcher grid.
+    var moreDestination by remember { mutableStateOf<MoreDestination?>(null) }
+
     // Settings are only opened manually by the user — not on first launch
     var showSettings by remember { mutableStateOf(false) }
     // Show connect QR-scan setup screen — set to true by the splash callback on
@@ -326,7 +337,7 @@ fun App() {
             AppTab.BIBLE         -> AnalyticsScreen.BIBLE_BOOKS
             AppTab.PICTURES      -> AnalyticsScreen.PICTURES
             AppTab.PRESENTATION  -> AnalyticsScreen.PRESENTATIONS
-            AppTab.QA_ADMIN      -> AnalyticsScreen.QA_ADMIN
+            AppTab.MORE          -> AnalyticsScreen.MORE
         }
         Analytics.logScreenView(tabScreen)
     }
@@ -359,6 +370,19 @@ fun App() {
     // ── Detail-screen flags (hoisted so both toolbar and pager can read them)
     val inSongDetail = selectedTab == AppTab.SONGS && songDetailTitle != null
     val inBibleDetail = selectedTab == AppTab.BIBLE && bibleBook != null
+    val inMoreDetail = selectedTab == AppTab.MORE && moreDestination != null
+
+    // System back inside a More sub-screen returns to the More launcher grid.
+    AppBackHandler(enabled = inMoreDetail) { moreDestination = null }
+
+    // Log More sub-screen views
+    LaunchedEffect(moreDestination) {
+        when (moreDestination) {
+            MoreDestination.QA -> Analytics.logScreenView(AnalyticsScreen.QA_ADMIN)
+            MoreDestination.DICTIONARY -> Analytics.logScreenView(AnalyticsScreen.DICTIONARY)
+            null -> {}
+        }
+    }
 
     // Dedicated image HTTP client: same SSL bypass but no ContentNegotiation,
     // so Coil can read raw JPEG bytes without Ktor interfering.
@@ -537,13 +561,23 @@ fun App() {
                             largeTitle = bibleChapter != null,
                             onBack = { bibleNavigateBack?.invoke() }
                         )
+                        inMoreDetail -> ScreenHeader(
+                            title = when (moreDestination) {
+                                MoreDestination.QA -> qaTitle
+                                MoreDestination.DICTIONARY -> "Strong's Dictionary"
+                                null -> ""
+                            },
+                            onBack = { moreDestination = null },
+                            // Q&A keeps the settings gear; the dictionary header (screen 11) has none.
+                            onSettings = if (moreDestination == MoreDestination.QA) ({ showSettings = true }) else null
+                        )
                         else -> when (selectedTab) {
                             AppTab.BIBLE -> ScreenHeader(
                                 title = bibleTitle,
                                 onSettings = { showSettings = true }
                             )
-                            AppTab.QA_ADMIN -> ScreenHeader(
-                                title = qaTitle,
+                            AppTab.MORE -> ScreenHeader(
+                                title = "More",
                                 onSettings = { showSettings = true }
                             )
                             else -> ScreenHeader(
@@ -558,14 +592,18 @@ fun App() {
                 bottomBar = {
                     BottomTabBar(
                         selectedTab = selectedTab,
-                        onTabSelected = { selectedTab = it }
+                        onTabSelected = { tab ->
+                            // Re-tapping the active More tab returns to its launcher grid.
+                            if (tab == AppTab.MORE && selectedTab == AppTab.MORE) moreDestination = null
+                            selectedTab = tab
+                        }
                     )
                 }
             ) { innerPadding ->
                 // Swipe-between-tabs — swiping is locked while inside a detail screen
                 HorizontalPager(
                     state = pagerState,
-                    userScrollEnabled = !inSongDetail && !inBibleDetail,
+                    userScrollEnabled = !inSongDetail && !inBibleDetail && !inMoreDetail,
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
                     beyondViewportPageCount = 0  // only compose the visible page
                 ) { page ->
@@ -641,11 +679,22 @@ fun App() {
                             providedViewModel = presentationsViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
-                        AppTab.QA_ADMIN -> QAAdminScreen(
-                            viewModel = qaViewModel,
-                            settingsSaveToken = settingsSaveToken,
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        AppTab.MORE -> when (moreDestination) {
+                            MoreDestination.QA -> QAAdminScreen(
+                                viewModel = qaViewModel,
+                                settingsSaveToken = settingsSaveToken,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            MoreDestination.DICTIONARY -> DictionaryScreen(
+                                viewModel = dictionaryViewModel,
+                                settingsSaveToken = settingsSaveToken,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            null -> MoreScreen(
+                                onSelect = { moreDestination = it },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }

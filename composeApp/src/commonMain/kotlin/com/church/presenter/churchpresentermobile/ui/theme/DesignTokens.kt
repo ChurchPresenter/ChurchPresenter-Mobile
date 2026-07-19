@@ -26,6 +26,8 @@ data class AppColors(
     val surfaceStrong: Color,
     // Elevated neutral surface (Select FAB, segmented active pill)
     val surfaceElevated: Color,
+    // Opaque surface for modals/sheets that float over a scrim (must not be translucent)
+    val sheetBackground: Color,
     // Input fill (search field, settings field cards)
     val inputBg: Color,
     // Borders / hairlines — three weights
@@ -73,6 +75,7 @@ private val DarkAppColors = AppColors(
     surface = Color(0x0DFFFFFF),          // rgba(255,255,255,.05)
     surfaceStrong = Color(0x14FFFFFF),    // rgba(255,255,255,.08)
     surfaceElevated = Color(0xFF2B2B3D),
+    sheetBackground = Color(0xFF17171F),  // opaque elevated bg for modals/sheets
     inputBg = Color(0x0DFFFFFF),          // rgba(255,255,255,.05)
     borderSubtle = Color(0x0FFFFFFF),     // rgba(255,255,255,.06)
     border = Color(0x14FFFFFF),           // rgba(255,255,255,.08)
@@ -113,6 +116,7 @@ private val LightAppColors = AppColors(
     surface = Color(0xFFFFFFFF),
     surfaceStrong = Color(0xFFFFFFFF),
     surfaceElevated = Color(0xFFFFFFFF),
+    sheetBackground = Color(0xFFFFFFFF),
     inputBg = Color(0xFFF0F0EE),
     borderSubtle = Color(0x0F000000),     // rgba(0,0,0,.06)
     border = Color(0x14000000),           // rgba(0,0,0,.08)
