@@ -24,15 +24,10 @@ import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,6 +40,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.pictures_loading_error
 import churchpresentermobile.composeapp.generated.resources.pictures_no_items
@@ -163,37 +160,36 @@ fun PicturesScreen(
         viewModel.onPendingScrollHandled()
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    val colors = LocalAppColors.current
+    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
 
         Column(modifier = Modifier.fillMaxSize()) {
 
         // ── Error banner ──────────────────────────────────────────────
         if (error != null) {
-            Surface(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.errorContainer
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(colors.danger.copy(alpha = 0.12f))
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = error ?: stringResource(Res.string.pictures_loading_error),
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    TextButton(onClick = { viewModel.loadPictures() }) {
-                        Text(
-                            text = stringResource(Res.string.pictures_retry),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
+                Text(
+                    text = error ?: stringResource(Res.string.pictures_loading_error),
+                    color = colors.danger,
+                    fontSize = 13.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = stringResource(Res.string.pictures_retry),
+                    color = colors.danger,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 12.dp).clickable { viewModel.loadPictures() }
+                )
             }
         }
 
@@ -211,32 +207,17 @@ fun PicturesScreen(
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(GRID_COLUMNS),
                         state = gridState,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        // ── Folder header ─────────────────────────────────
+                        // ── Folder header (overline) ──────────────────────
                         item(span = { GridItemSpan(maxLineSpan) }) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = currentFolder.displayName,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = "${currentFolder.totalImages} ${stringResource(Res.string.pictures_photos)}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                )
-                            }
+                            OverlineRow(
+                                label = currentFolder.displayName,
+                                trailing = "${currentFolder.totalImages} ${stringResource(Res.string.pictures_photos)}",
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
+                            )
                         }
 
                         // ── Image grid ────────────────────────────────────
@@ -260,8 +241,8 @@ fun PicturesScreen(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = stringResource(Res.string.pictures_no_items),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = colors.muted,
+                            fontSize = 15.sp
                         )
                     }
                 }
@@ -290,23 +271,31 @@ fun PicturesScreen(
                     modifier           = Modifier.align(Alignment.BottomEnd),
                     extraLeadingContent = {
                         // From Device FAB — picker is live
-                        FloatingActionButton(
-                            onClick = { if (!isUploading) launchPicker() },
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
-                        ) {
-                            if (isUploading) {
+                        val neutralShadow = if (colors.isDark) androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
+                            else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                        if (isUploading) {
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(colors.surfaceElevated),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 CircularProgressIndicator(
-                                    modifier    = Modifier.size(24.dp),
-                                    color       = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    modifier = Modifier.size(22.dp),
+                                    color = colors.accent,
                                     strokeWidth = 2.5.dp,
                                 )
-                            } else {
-                                Icon(
-                                    imageVector        = Icons.Filled.AddPhotoAlternate,
-                                    contentDescription = stringResource(Res.string.pictures_pick_from_device),
-                                )
                             }
+                        } else {
+                            SquareFab(
+                                icon = Icons.Filled.AddPhotoAlternate,
+                                contentDescription = stringResource(Res.string.pictures_pick_from_device),
+                                containerColor = colors.surfaceElevated,
+                                iconColor = colors.accent,
+                                shadowColor = neutralShadow,
+                                onClick = { launchPicker() },
+                            )
                         }
                     }
                 )
@@ -325,7 +314,14 @@ fun PicturesScreen(
                 onAddToSchedule    = { viewModel.addToSchedule() },
                 modifier           = Modifier.align(Alignment.BottomEnd),
                 extraLeadingContent = {
-                    FloatingActionButton(
+                    val neutralShadow = if (colors.isDark) androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
+                        else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                    SquareFab(
+                        icon = Icons.Filled.Block,
+                        contentDescription = stringResource(Res.string.pictures_pick_from_device),
+                        containerColor = colors.surfaceElevated,
+                        iconColor = colors.muted,
+                        shadowColor = neutralShadow,
                         onClick = {
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
@@ -334,14 +330,7 @@ fun PicturesScreen(
                                 )
                             }
                         },
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor   = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Filled.Block,
-                            contentDescription = stringResource(Res.string.pictures_pick_from_device),
-                        )
-                    }
+                    )
                 }
             )
         }
@@ -373,7 +362,8 @@ private fun PictureCell(
     isSelected: Boolean,
     onTap: () -> Unit
 ) {
-    val selectedBorderColor = MaterialTheme.colorScheme.secondary
+    val colors = LocalAppColors.current
+    val selectedBorderColor = colors.accent
     val context = LocalPlatformContext.current
 
     // Epoch day (increments every 24 h) used as a cache-buster: images cached
@@ -401,10 +391,10 @@ private fun PictureCell(
         modifier = Modifier
             .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp)
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(8.dp))
             .clickable { onTap() }
             .then(
-                if (isSelected) Modifier.border(2.dp, selectedBorderColor, RoundedCornerShape(4.dp))
+                if (isSelected) Modifier.border(3.dp, selectedBorderColor, RoundedCornerShape(8.dp))
                 else Modifier
             )
     ) {
@@ -415,13 +405,13 @@ private fun PictureCell(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(colors.surface),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.primary
+                        color = colors.accent
                     )
                 }
             }
@@ -429,7 +419,7 @@ private fun PictureCell(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .background(colors.danger.copy(alpha = 0.12f))
                 )
             }
             else -> SubcomposeAsyncImageContent()

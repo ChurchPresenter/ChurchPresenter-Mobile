@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,24 +8,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -35,16 +34,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_loading_error
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
 import churchpresentermobile.composeapp.generated.resources.bible_retry
-import churchpresentermobile.composeapp.generated.resources.bible_search_clear
 import churchpresentermobile.composeapp.generated.resources.bible_search_placeholder
 import churchpresentermobile.composeapp.generated.resources.toast_bible_added_to_schedule
 import churchpresentermobile.composeapp.generated.resources.toast_bible_live
@@ -163,34 +163,33 @@ fun BibleScreen(
     }
 
     // ── Error banner ──────────────────────────────────────────────────────
-    Box(modifier = modifier.fillMaxSize()) {
+    val colors = LocalAppColors.current
+    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (error != null) {
-                Surface(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.errorContainer
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(colors.danger.copy(alpha = 0.12f))
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = error ?: stringResource(Res.string.bible_loading_error),
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.weight(1f)
-                        )
-                        TextButton(onClick = { vm.refresh() }) {
-                            Text(
-                                text = stringResource(Res.string.bible_retry),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
+                    Text(
+                        text = error ?: stringResource(Res.string.bible_loading_error),
+                        color = colors.danger,
+                        fontSize = 13.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = stringResource(Res.string.bible_retry),
+                        color = colors.danger,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp).clickable { vm.refresh() }
+                    )
                 }
             }
 
@@ -268,46 +267,13 @@ fun BibleBooksScreen(
     isLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        OutlinedTextField(
+    val colors = LocalAppColors.current
+    Column(modifier = modifier.fillMaxSize().background(colors.background)) {
+        SearchField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            placeholder = {
-                Text(
-                    text = stringResource(Res.string.bible_search_placeholder),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            leadingIcon = {
-                Text("🔍", fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-            },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(
-                        onClick = { onSearchQueryChange("") },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.bible_search_clear),
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(50.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-            ),
-            textStyle = MaterialTheme.typography.bodyMedium
+            placeholder = stringResource(Res.string.bible_search_placeholder),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
         when {
@@ -317,8 +283,8 @@ fun BibleBooksScreen(
             ) {
                 Text(
                     text = stringResource(Res.string.bible_no_match),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = colors.muted,
+                    fontSize = 15.sp
                 )
             }
             books.isEmpty() && !isLoading -> Box(
@@ -327,8 +293,8 @@ fun BibleBooksScreen(
             ) {
                 Text(
                     text = stringResource(Res.string.bible_no_books),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = colors.muted,
+                    fontSize = 15.sp
                 )
             }
             books.isNotEmpty() -> {
@@ -339,9 +305,7 @@ fun BibleBooksScreen(
                 ) {
                     items(books) { book ->
                         BibleBookRow(book = book, onSelect = { onBookSelect(book) })
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                        )
+                        HorizontalDivider(color = colors.borderSubtle)
                     }
                 }
             }
@@ -351,32 +315,36 @@ fun BibleBooksScreen(
 
 @Composable
 private fun BibleBookRow(book: BibleBook, onSelect: () -> Unit) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(if (colors.isDark) androidx.compose.ui.graphics.Color.Transparent else colors.surface)
             .clickable { onSelect() }
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .height(60.dp)
+            .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
             text = book.displayName,
-            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = colors.text,
             modifier = Modifier.weight(1f)
         )
         if (book.totalChapters > 0) {
             Text(
                 text = "${book.totalChapters} ch",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = 13.sp,
+                color = colors.dim
             )
         }
-        Text(
-            text = " ›",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = colors.dim,
+            modifier = Modifier.size(20.dp)
         )
     }
 }

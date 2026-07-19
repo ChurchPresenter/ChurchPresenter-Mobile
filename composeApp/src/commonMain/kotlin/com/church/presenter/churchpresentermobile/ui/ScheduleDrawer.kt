@@ -21,13 +21,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.DesktopWindows
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -38,6 +39,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,22 +50,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.schedule_drawer_empty
-import churchpresentermobile.composeapp.generated.resources.schedule_drawer_refresh
 import churchpresentermobile.composeapp.generated.resources.schedule_drawer_title
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.network.ServerEventService
-import com.church.presenter.churchpresentermobile.viewmodel.ScheduleViewModel
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
+import com.church.presenter.churchpresentermobile.viewmodel.ScheduleViewModel
 
 /**
  * Side-drawer content that displays the service schedule loaded from /api/schedule.
- *
- * @param appSettings        Shared [AppSettings] used to create the [ScheduleViewModel].
- * @param isDemoMode         When true, shows pre-built demo schedule items instead of live API data.
- * @param settingsSaveToken  Incremented when settings are saved; triggers a reload.
- * @param scheduleRefreshToken Incremented whenever a song is added to the schedule from
- *                           another screen; triggers a silent reload.
+ * Restyled to the redesign: 320-wide drawer, header w/ subtitle + close, type-colored
+ * icon tiles, active item marked with an accent left-border + "Live" marker.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,9 +71,11 @@ fun ScheduleDrawerContent(
     settingsSaveToken: Int,
     scheduleRefreshToken: Int = 0,
     onItemClick: (ScheduleItem) -> Unit = {},
+    onClose: () -> Unit = {},
     providedViewModel: ScheduleViewModel? = null,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     val viewModel: ScheduleViewModel = providedViewModel
         ?: viewModel(key = isDemoMode.toString()) { ScheduleViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
 
@@ -88,10 +91,6 @@ fun ScheduleDrawerContent(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    // Only surface the four content types the app currently supports.
-    // Uses contains() rather than exact equality so the filter is tolerant of
-    // longer type strings the server may return (e.g. "SongItem", "BibleVerseItem",
-    // fully-qualified class names, etc.).
     val visibleItems = remember(allItems) {
         allItems.filter { item ->
             val type = item.type?.lowercase() ?: return@filter false
@@ -106,55 +105,51 @@ fun ScheduleDrawerContent(
     Column(
         modifier = modifier
             .fillMaxHeight()
-            .width(300.dp)
-            .background(MaterialTheme.colorScheme.surface)
+            .width(320.dp)
+            .background(colors.background)
     ) {
         // ── Drawer header ─────────────────────────────────────────────────
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
                 .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = stringResource(Res.string.schedule_drawer_title),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            IconButton(
-                onClick = { viewModel.loadSchedule() },
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Refresh,
-                    contentDescription = stringResource(Res.string.schedule_drawer_refresh),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(Res.string.schedule_drawer_title),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.text
+                )
+                Text(
+                    text = "${visibleItems.size} items",
+                    fontSize = 11.sp,
+                    color = colors.muted
                 )
             }
+            IconTileButton(
+                icon = Icons.Filled.Close,
+                contentDescription = "Close",
+                tint = colors.muted,
+                onClick = onClose,
+                modifier = Modifier.size(32.dp)
+            )
         }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+        HorizontalDivider(color = colors.borderSubtle)
 
         // ── Error banner ──────────────────────────────────────────────────
         if (error != null) {
-            Surface(
+            Text(
+                text = "Error: $error",
+                color = colors.danger,
+                fontSize = 13.sp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.errorContainer
-            ) {
-                Text(
-                    text = "Error: $error",
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                )
-            }
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+            )
         }
 
         // ── Body ──────────────────────────────────────────────────────────
@@ -163,32 +158,27 @@ fun ScheduleDrawerContent(
             onRefresh = { viewModel.loadSchedule() },
             modifier = Modifier.weight(1f).fillMaxWidth()
         ) {
-                when {
-                    visibleItems.isNotEmpty() -> {
-                        val listState = rememberLazyListState()
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier.fillMaxSize().verticalScrollbar(listState)
-                        ) {
-                            items(visibleItems) { item ->
-                                ScheduleItemRow(item = item, onClick = { onItemClick(item) })
-                                HorizontalDivider(
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                                )
-                            }
+            when {
+                visibleItems.isNotEmpty() -> {
+                    val listState = rememberLazyListState()
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize().verticalScrollbar(listState)
+                    ) {
+                        items(visibleItems) { item ->
+                            ScheduleItemRow(item = item, onClick = { onItemClick(item) })
                         }
                     }
+                }
                 !isLoading -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(32.dp),
+                        modifier = Modifier.fillMaxSize().padding(32.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(Res.string.schedule_drawer_empty),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = colors.muted,
+                            fontSize = 14.sp
                         )
                     }
                 }
@@ -197,85 +187,78 @@ fun ScheduleDrawerContent(
     }
 }
 
-/**
- * A single row in the schedule drawer.
- */
+private data class ScheduleTypeStyle(val icon: ImageVector, val fg: Color, val bg: Color)
+
+@Composable
+private fun scheduleTypeStyleFor(type: String?): ScheduleTypeStyle {
+    val colors = LocalAppColors.current
+    val t = type?.lowercase() ?: ""
+    return when {
+        t.contains("song") -> ScheduleTypeStyle(Icons.Outlined.MusicNote, colors.scheduleSongFg, colors.scheduleSongBg)
+        t.contains("bible") -> ScheduleTypeStyle(Icons.AutoMirrored.Outlined.MenuBook, colors.scheduleBibleFg, colors.scheduleBibleBg)
+        t.contains("picture") || t.contains("image") -> ScheduleTypeStyle(Icons.Outlined.Image, colors.schedulePictureFg, colors.schedulePictureBg)
+        else -> ScheduleTypeStyle(Icons.Outlined.DesktopWindows, colors.muted, colors.inputBg)
+    }
+}
+
 @Composable
 private fun ScheduleItemRow(item: ScheduleItem, onClick: () -> Unit = {}) {
+    val colors = LocalAppColors.current
+    val style = scheduleTypeStyleFor(item.type)
+    val leftBorder = if (item.active) colors.accent else Color.Transparent
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(if (item.active) colors.accentTint else colors.background)
+            .drawBehind {
+                drawRect(color = leftBorder, size = Size(3.dp.toPx(), size.height))
+            }
             .clickable(onClick = onClick)
-            .background(
-                if (item.active) MaterialTheme.colorScheme.secondaryContainer
-                else MaterialTheme.colorScheme.surface
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 20.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(13.dp)
     ) {
-        // Type icon badge
+        // Type icon tile
         Box(
             modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(
-                    if (item.active) MaterialTheme.colorScheme.secondary
-                    else MaterialTheme.colorScheme.surfaceVariant
-                ),
+                .size(40.dp)
+                .clip(RoundedCornerShape(11.dp))
+                .background(style.bg),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = item.typeIcon, fontSize = 16.sp)
+            Icon(imageVector = style.icon, contentDescription = null, tint = style.fg, modifier = Modifier.size(18.dp))
         }
-
-        Spacer(modifier = Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.displayTitle,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (item.active) FontWeight.SemiBold else FontWeight.Normal,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                color = if (item.active)
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                else
-                    MaterialTheme.colorScheme.onSurface
+                color = colors.text
             )
-            if (!item.details.isNullOrBlank()) {
+            val subtitle = item.details?.takeIf { it.isNotBlank() }
+                ?: item.type?.lowercase()?.replaceFirstChar { it.uppercaseChar() }
+            if (subtitle != null) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = item.details,
-                    style = MaterialTheme.typography.bodySmall,
+                    text = subtitle,
+                    fontSize = 11.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (item.active)
-                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            if (!item.type.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = item.type.lowercase().replaceFirstChar { it.uppercaseChar() },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (item.active)
-                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f)
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = colors.muted
                 )
             }
         }
 
-        // Active indicator dot
+        // Active "Live" marker
         if (item.active) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(colors.accent))
+                Text("Live", color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+            }
         }
     }
 }
-

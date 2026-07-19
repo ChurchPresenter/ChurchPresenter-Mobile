@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,34 +16,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -61,19 +55,16 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question
 import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question_hint
 import churchpresentermobile.composeapp.generated.resources.qa_admin_cancel
-import churchpresentermobile.composeapp.generated.resources.qa_admin_clear_display
 import churchpresentermobile.composeapp.generated.resources.qa_admin_edit_hint
 import churchpresentermobile.composeapp.generated.resources.qa_admin_error_retry
 import churchpresentermobile.composeapp.generated.resources.qa_admin_finished_tab
 import churchpresentermobile.composeapp.generated.resources.qa_admin_incoming_tab
 import churchpresentermobile.composeapp.generated.resources.qa_admin_no_finished
 import churchpresentermobile.composeapp.generated.resources.qa_admin_no_incoming
-import churchpresentermobile.composeapp.generated.resources.qa_admin_now_live
 import churchpresentermobile.composeapp.generated.resources.qa_admin_save
-import churchpresentermobile.composeapp.generated.resources.qa_admin_session_active
-import churchpresentermobile.composeapp.generated.resources.qa_admin_session_stopped
 import com.church.presenter.churchpresentermobile.model.Question
 import com.church.presenter.churchpresentermobile.model.QuestionStatus
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.QAUiState
 import com.church.presenter.churchpresentermobile.viewmodel.QAViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -84,6 +75,7 @@ fun QAAdminScreen(
     viewModel: QAViewModel,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     val uiState by viewModel.uiState.collectAsState()
     val actionError by viewModel.actionError.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -95,53 +87,51 @@ fun QAAdminScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            when (val state = uiState) {
-                is QAUiState.Loading -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
+        when (val state = uiState) {
+            is QAUiState.Loading -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = colors.accent)
+            }
+            is QAUiState.Error -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(24.dp)
                 ) {
-                    CircularProgressIndicator()
-                }
-                is QAUiState.Error -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.padding(24.dp)
-                    ) {
-                        Text(state.message, color = MaterialTheme.colorScheme.error)
-                        Button(onClick = { viewModel.loadQuestions() }) {
-                            Text(stringResource(Res.string.qa_admin_error_retry))
-                        }
+                    Text(state.message, color = colors.danger)
+                    Button(onClick = { viewModel.loadQuestions() }) {
+                        Text(stringResource(Res.string.qa_admin_error_retry))
                     }
                 }
-                is QAUiState.Admin -> QAAdminContent(
-                    state = state,
-                    onApprove = viewModel::approveQuestion,
-                    onDeny = viewModel::denyQuestion,
-                    onEdit = viewModel::editQuestion,
-                    onMarkDone = viewModel::markDone,
-                    onDisplay = viewModel::displayQuestion,
-                    onApproveAndDisplay = viewModel::approveAndDisplay,
-                    onDelete = viewModel::deleteQuestion,
-                    onAddQuestion = viewModel::addQuestion,
-                    onClearDisplay = viewModel::clearDisplay,
-                    onRefresh = { viewModel.loadQuestions() },
-                    votingEnabled = state.votingEnabled
-                )
             }
+            is QAUiState.Admin -> QAAdminContent(
+                state = state,
+                onApprove = viewModel::approveQuestion,
+                onDeny = viewModel::denyQuestion,
+                onEdit = viewModel::editQuestion,
+                onMarkDone = viewModel::markDone,
+                onDisplay = viewModel::displayQuestion,
+                onApproveAndDisplay = viewModel::approveAndDisplay,
+                onDelete = viewModel::deleteQuestion,
+                onAddQuestion = viewModel::addQuestion,
+                onClearDisplay = viewModel::clearDisplay,
+                votingEnabled = state.votingEnabled
+            )
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QAAdminContent(
     state: QAUiState.Admin,
@@ -154,9 +144,9 @@ private fun QAAdminContent(
     onDelete: (String) -> Unit,
     onAddQuestion: (String) -> Unit,
     onClearDisplay: () -> Unit,
-    onRefresh: () -> Unit,
     votingEnabled: Boolean = false
 ) {
+    val colors = LocalAppColors.current
     var selectedTab by remember { mutableStateOf(0) }
     var showAddDialog by remember { mutableStateOf(false) }
 
@@ -168,76 +158,18 @@ private fun QAAdminContent(
         it.status == QuestionStatus.DONE || it.status == QuestionStatus.DENIED
     }
 
-    val displayedQuestion = state.questions.firstOrNull { it.id == state.displayedQuestionId }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Session badge + refresh
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val sessionColor = if (state.sessionActive) Color(0xFF43A047) else Color(0xFFE53935)
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(sessionColor.copy(alpha = 0.15f))
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = if (state.sessionActive)
-                            stringResource(Res.string.qa_admin_session_active)
-                        else
-                            stringResource(Res.string.qa_admin_session_stopped),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = sessionColor,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = onRefresh, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
-                }
-            }
-
-            // Live display banner
-            if (displayedQuestion != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF43A047).copy(alpha = 0.12f))
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.Tv, contentDescription = null, tint = Color(0xFF43A047), modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        stringResource(Res.string.qa_admin_now_live) + " " + displayedQuestion.text.take(60),
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.weight(1f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    TextButton(onClick = onClearDisplay) {
-                        Text(stringResource(Res.string.qa_admin_clear_display), fontSize = 11.sp)
-                    }
-                }
-            }
-
-            // Tab row
-            PrimaryTabRow(selectedTabIndex = selectedTab) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text(stringResource(Res.string.qa_admin_incoming_tab, incoming.size)) }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text(stringResource(Res.string.qa_admin_finished_tab, finished.size)) }
-                )
-            }
+            // ── Segmented filter (Incoming / Answered) ────────────────────
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.qa_admin_incoming_tab, incoming.size),
+                    stringResource(Res.string.qa_admin_finished_tab, finished.size),
+                ),
+                selectedIndex = selectedTab,
+                onSelect = { selectedTab = it },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
+            )
 
             val displayedList = if (selectedTab == 0) incoming else finished
 
@@ -246,14 +178,20 @@ private fun QAAdminContent(
                     Text(
                         if (selectedTab == 0) stringResource(Res.string.qa_admin_no_incoming)
                         else stringResource(Res.string.qa_admin_no_finished),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = colors.muted,
+                        fontSize = 15.sp
                     )
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        start = 16.dp, end = 16.dp, bottom = 90.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(9.dp)
+                ) {
                     items(displayedList, key = { it.id }) { question ->
-                        QuestionItem(
+                        QuestionCard(
                             question = question,
                             isDisplayed = question.id == state.displayedQuestionId,
                             showVotes = votingEnabled,
@@ -263,21 +201,24 @@ private fun QAAdminContent(
                             onMarkDone = { onMarkDone(question.id) },
                             onDisplay = { onDisplay(question.id) },
                             onApproveAndDisplay = { onApproveAndDisplay(question.id) },
-                            onDelete = { onDelete(question.id) }
+                            onDelete = { onDelete(question.id) },
+                            onStop = onClearDisplay,
                         )
-                        HorizontalDivider()
                     }
                 }
             }
         }
 
-        FloatingActionButton(
+        // Add-question FAB (accent)
+        SquareFab(
+            icon = Icons.Filled.Add,
+            contentDescription = stringResource(Res.string.qa_admin_add_question),
+            containerColor = colors.accent,
+            iconColor = colors.onAccent,
+            shadowColor = colors.accent.copy(alpha = if (colors.isDark) 0.35f else 0.3f),
             onClick = { showAddDialog = true },
             modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-            containerColor = MaterialTheme.colorScheme.primary
-        ) {
-            Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.qa_admin_add_question))
-        }
+        )
     }
 
     if (showAddDialog) {
@@ -289,7 +230,7 @@ private fun QAAdminContent(
 }
 
 @Composable
-private fun QuestionItem(
+private fun QuestionCard(
     question: Question,
     isDisplayed: Boolean,
     showVotes: Boolean = false,
@@ -299,15 +240,13 @@ private fun QuestionItem(
     onMarkDone: () -> Unit,
     onDisplay: () -> Unit,
     onApproveAndDisplay: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onStop: () -> Unit,
 ) {
-    val statusColor = when (question.status) {
-        QuestionStatus.PENDING  -> Color(0xFFFFA726)
-        QuestionStatus.APPROVED -> Color(0xFF66BB6A)
-        QuestionStatus.DENIED   -> Color(0xFFEF5350)
-        QuestionStatus.DONE     -> Color(0xFF42A5F5)
-    }
-    val bgColor = if (isDisplayed) Color(0xFF43A047).copy(alpha = 0.08f) else Color.Transparent
+    val colors = LocalAppColors.current
+    val isLive = isDisplayed
+    val isPending = question.status == QuestionStatus.PENDING
+    val shape = RoundedCornerShape(14.dp)
 
     var editing by remember { mutableStateOf(false) }
     var editText by remember(question.text) { mutableStateOf(question.text) }
@@ -315,103 +254,84 @@ private fun QuestionItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(bgColor)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .clip(shape)
+            .background(if (isLive) colors.accentTint else colors.surface)
+            .border(
+                width = if (isLive) 1.5.dp else 1.dp,
+                color = if (isLive) colors.accent else colors.borderSubtle,
+                shape = shape
+            )
+            .padding(horizontal = 14.dp, vertical = 13.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(8.dp).clip(RoundedCornerShape(4.dp)).background(statusColor))
-            Spacer(Modifier.width(8.dp))
-
-            if (!editing) {
-                Column(modifier = Modifier.weight(1f)) {
-                    if (question.submitterName.isNotBlank()) {
-                        Text(
-                            question.submitterName,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Text(question.text, style = MaterialTheme.typography.bodyMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
-                    if (showVotes) {
-                        Spacer(Modifier.height(4.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            if (question.upvotes > 0) {
-                                VoteChip(label = "▲ ${question.upvotes}", color = Color(0xFF43A047))
-                            }
-                            if (question.downvotes > 0) {
-                                VoteChip(label = "▼ ${question.downvotes}", color = Color(0xFFE53935))
-                            }
-                            if (question.upvotes == 0 && question.downvotes == 0) {
-                                Text("no votes", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
-                            }
-                        }
-                    }
+        // Row 1: question text + status badge
+        Row(verticalAlignment = Alignment.Top) {
+            Column(modifier = Modifier.weight(1f)) {
+                if (question.submitterName.isNotBlank()) {
+                    Text(
+                        question.submitterName,
+                        fontSize = 11.sp,
+                        color = colors.muted,
+                    )
+                    Spacer(Modifier.height(2.dp))
                 }
-            } else {
-                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    question.text,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isPending && !isLive) colors.muted else colors.text,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
+            Spacer(Modifier.width(10.dp))
+            StatusBadge(question = question, isLive = isLive)
+        }
 
-            when {
-                editing -> {
-                    IconButton(onClick = {
-                        if (editText.isNotBlank() && editText.trim() != question.text) onEdit(editText.trim())
-                        editing = false
-                    }, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Check, null, tint = Color(0xFF43A047), modifier = Modifier.size(18.dp))
-                    }
-                    IconButton(onClick = { editText = question.text; editing = false }, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Close, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                    }
+        Spacer(Modifier.height(12.dp))
+
+        // Row 2: votes (left) + actions (right)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (showVotes) {
+                Icon(Icons.Filled.Star, contentDescription = null, tint = colors.muted, modifier = Modifier.size(13.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("${question.upvotes}", fontSize = 12.sp, color = colors.muted)
+            }
+            Spacer(Modifier.weight(1f))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (!editing) {
+                    IconSquareButton(Icons.Outlined.Edit, "Edit", colors.muted) { editing = true; editText = question.text }
+                    IconSquareButton(Icons.Outlined.Delete, "Delete", colors.muted, onClick = onDelete)
                 }
-                question.status == QuestionStatus.PENDING -> {
-                    IconButton(onClick = { editing = true; editText = question.text }, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Edit, null, tint = Color(0xFFFF9800), modifier = Modifier.size(18.dp))
-                    }
-                    IconButton(onClick = onApprove, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Check, null, tint = Color(0xFF43A047), modifier = Modifier.size(18.dp))
-                    }
-                    IconButton(onClick = onDeny, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Close, null, tint = Color(0xFFE53935), modifier = Modifier.size(18.dp))
-                    }
-                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                    }
-                }
-                question.status == QuestionStatus.APPROVED -> {
-                    IconButton(onClick = { editing = true; editText = question.text }, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Edit, null, tint = Color(0xFFFF9800), modifier = Modifier.size(18.dp))
-                    }
-                    if (!isDisplayed) {
-                        IconButton(onClick = onDisplay, modifier = Modifier.size(36.dp)) {
-                            Icon(Icons.Default.Tv, null, tint = Color(0xFF1E88E5), modifier = Modifier.size(18.dp))
+                when {
+                    editing -> {
+                        IconSquareButton(Icons.Filled.Check, "Save", colors.accent) {
+                            if (editText.isNotBlank() && editText.trim() != question.text) onEdit(editText.trim())
+                            editing = false
                         }
+                        IconSquareButton(Icons.Filled.Close, "Cancel", colors.muted) { editText = question.text; editing = false }
                     }
-                    IconButton(onClick = onMarkDone, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Done, null, tint = Color(0xFF42A5F5), modifier = Modifier.size(18.dp))
+                    isLive -> {
+                        ActionPill("Stop", PillStyle.RED_TINT, onStop)
                     }
-                    IconButton(onClick = onDeny, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Close, null, tint = Color(0xFFE53935), modifier = Modifier.size(18.dp))
+                    question.status == QuestionStatus.APPROVED -> {
+                        IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
+                        ActionPill("Project", PillStyle.ACCENT_FILL, onDisplay)
                     }
-                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    question.status == QuestionStatus.PENDING -> {
+                        IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
+                        ActionPill("Approve", PillStyle.ACCENT_TINT, onApprove)
                     }
-                }
-                else -> { // DONE or DENIED
-                    IconButton(onClick = onApprove, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Refresh, null, tint = Color(0xFFFFA726), modifier = Modifier.size(18.dp))
-                    }
-                    IconButton(onClick = onApproveAndDisplay, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Tv, null, tint = Color(0xFF1E88E5).copy(alpha = 0.7f), modifier = Modifier.size(18.dp))
-                    }
-                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    else -> { // DONE / DENIED (finished tab)
+                        ActionPill("Approve", PillStyle.ACCENT_TINT, onApprove)
+                        ActionPill("Project", PillStyle.ACCENT_FILL, onApproveAndDisplay)
                     }
                 }
             }
         }
 
         if (editing) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             OutlinedTextField(
                 value = editText,
                 onValueChange = { editText = it },
@@ -419,21 +339,77 @@ private fun QuestionItem(
                 placeholder = { Text(stringResource(Res.string.qa_admin_edit_hint)) },
                 singleLine = false,
                 maxLines = 4,
-                textStyle = MaterialTheme.typography.bodyMedium
             )
         }
     }
 }
 
 @Composable
-private fun VoteChip(label: String, color: Color) {
+private fun StatusBadge(question: Question, isLive: Boolean) {
+    val colors = LocalAppColors.current
+    when {
+        isLive -> Badge(text = "LIVE", fg = colors.accent, bg = colors.accentTint, dot = true)
+        question.status == QuestionStatus.APPROVED -> Badge(text = "✓ Approved", fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true)
+        question.status == QuestionStatus.DENIED -> Badge(text = "Denied", fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f))
+        question.status == QuestionStatus.DONE -> Badge(text = "Answered", fg = colors.muted, bg = colors.inputBg)
+        else -> {} // pending: no badge (muted text conveys it)
+    }
+}
+
+@Composable
+private fun Badge(text: String, fg: Color, bg: Color, dot: Boolean = false, border: Boolean = false) {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .then(if (border) Modifier.border(1.dp, colors.border, RoundedCornerShape(20.dp)) else Modifier)
+            .padding(horizontal = 10.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        if (dot) {
+            Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(fg))
+        }
+        Text(text, color = fg, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+private enum class PillStyle { ACCENT_TINT, ACCENT_FILL, RED_TINT }
+
+@Composable
+private fun ActionPill(label: String, style: PillStyle, onClick: () -> Unit) {
+    val colors = LocalAppColors.current
+    val (bg, fg) = when (style) {
+        PillStyle.ACCENT_TINT -> colors.accentTint to colors.accent
+        PillStyle.ACCENT_FILL -> colors.accent to colors.onAccent
+        PillStyle.RED_TINT -> colors.danger.copy(alpha = 0.12f) to colors.danger
+    }
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(color.copy(alpha = 0.12f))
-            .padding(horizontal = 6.dp, vertical = 2.dp)
+            .height(30.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
+        Text(label, color = fg, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Composable
+private fun IconSquareButton(icon: ImageVector, desc: String, tint: Color, onClick: () -> Unit) {
+    val colors = LocalAppColors.current
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(colors.inputBg)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(icon, contentDescription = desc, tint = tint, modifier = Modifier.size(16.dp))
     }
 }
 

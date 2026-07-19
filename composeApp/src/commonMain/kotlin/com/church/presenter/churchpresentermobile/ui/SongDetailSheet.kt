@@ -17,10 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -31,11 +30,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.song_detail_no_lyrics
-import churchpresentermobile.composeapp.generated.resources.song_detail_projecting_badge
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongVerse
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -64,20 +65,21 @@ fun SongDetailScreen(
     onClearDisplay: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     Box(modifier = modifier.fillMaxSize()) {
 
         // ── Main content ──────────────────────────────────────────────────
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colors.background)
         ) {
             when {
                 isLoading -> Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(modifier = Modifier.size(44.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(44.dp), color = colors.accent)
                 }
 
                 error != null -> Box(
@@ -86,8 +88,8 @@ fun SongDetailScreen(
                 ) {
                     Text(
                         text = error,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium
+                        color = colors.danger,
+                        fontSize = 14.sp
                     )
                 }
 
@@ -150,9 +152,9 @@ fun SongDetailScreen(
                             item {
                                 Text(
                                     text = detail.plainText!!,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    lineHeight = MaterialTheme.typography.bodyMedium.fontSize * 1.6
+                                    color = colors.secondary,
+                                    fontSize = 14.sp,
+                                    lineHeight = (14 * 1.75).sp
                                 )
                             }
                         }
@@ -163,8 +165,8 @@ fun SongDetailScreen(
                         ) {
                             Text(
                                 text = stringResource(Res.string.song_detail_no_lyrics),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = colors.muted,
+                                fontSize = 14.sp,
                                 fontStyle = FontStyle.Italic
                             )
                         }
@@ -195,71 +197,68 @@ private fun VerseCard(
     isProjecting: Boolean,
     onClick: () -> Unit
 ) {
-    val containerColor = if (isSelected)
-        MaterialTheme.colorScheme.primaryContainer
-    else
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-
-    val borderColor = if (isSelected)
-        MaterialTheme.colorScheme.primary
-    else
-        MaterialTheme.colorScheme.outlineVariant
-
-    val textColor = if (isSelected)
-        MaterialTheme.colorScheme.onPrimaryContainer
-    else
-        MaterialTheme.colorScheme.onSurface
-
-    Surface(
+    val colors = LocalAppColors.current
+    val shape = RoundedCornerShape(14.dp)
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(shape)
+            .background(if (isSelected) colors.accentTint else colors.surface)
             .border(
-                width = if (isSelected) 2.dp else 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(12.dp)
+                width = if (isSelected) 1.5.dp else 1.dp,
+                color = if (isSelected) colors.accent else colors.borderSubtle,
+                shape = shape
             )
-            .clickable(enabled = isProjecting) { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        color = containerColor,
-        tonalElevation = if (isSelected) 4.dp else 0.dp
+            .clickable(enabled = isProjecting) { onClick() }
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isSelected)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                if (isSelected) {
-                    Surface(
-                        shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.song_detail_projecting_badge),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(6.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(
-                text = verse.displayText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = textColor,
-                lineHeight = MaterialTheme.typography.bodyMedium.fontSize * 1.7
+                text = label.uppercase(),
+                color = colors.muted,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.05.em,
             )
+            if (isSelected) LivePill()
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = verse.displayText,
+            color = colors.secondary,
+            fontSize = 14.sp,
+            lineHeight = (14 * 1.75).sp,
+        )
+    }
+}
+
+/** Accent-tint "• Live" pill shown on the projected verse card. */
+@Composable
+private fun LivePill() {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(colors.accentTint)
+            .padding(horizontal = 10.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(colors.accent)
+        )
+        Text(
+            text = "Live",
+            color = colors.accent,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }

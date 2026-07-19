@@ -1,7 +1,9 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,9 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -22,8 +25,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Wifi
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,12 +34,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -50,15 +49,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -110,6 +109,7 @@ import churchpresentermobile.composeapp.generated.resources.status_permissions_t
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ThemeMode
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.appVersion
 import com.church.presenter.churchpresentermobile.util.isDebugBuild
@@ -166,6 +166,7 @@ fun SettingsScreen(
         )
     }
 
+    val colors = LocalAppColors.current
     Dialog(
         onDismissRequest = { viewModel.cancel(); onDismiss() },
         properties = DialogProperties(
@@ -174,157 +175,162 @@ fun SettingsScreen(
             dismissOnClickOutside   = false,
         )
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(stringResource(Res.string.settings_title)) },
-                        navigationIcon = {
-                            TextButton(onClick = { viewModel.cancel(); onDismiss() }) {
-                                Text(stringResource(Res.string.settings_cancel))
+        Surface(modifier = Modifier.fillMaxSize(), color = colors.background) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // ── Modal header: Cancel / Settings / Save pill ───────────────
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 20.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(Res.string.settings_cancel),
+                        color = colors.muted,
+                        fontSize = 15.sp,
+                        modifier = Modifier.clickable { viewModel.cancel(); onDismiss() }
+                    )
+                    Text(
+                        text = stringResource(Res.string.settings_title),
+                        color = colors.text,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = stringResource(Res.string.settings_save),
+                        color = colors.background,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(colors.text)
+                            .clickable {
+                                viewModel.save(
+                                    onSuccess        = { onSaved(); onDismiss() },
+                                    emptyHostError   = emptyHostError,
+                                    invalidPortError = invalidPortError,
+                                )
                             }
-                        },
-                        actions = {
-                            Button(
-                                onClick = {
-                                    viewModel.save(
-                                        onSuccess        = { onSaved(); onDismiss() },
-                                        emptyHostError   = emptyHostError,
-                                        invalidPortError = invalidPortError,
-                                    )
-                                },
-                                modifier = Modifier.padding(end = 8.dp)
-                            ) { Text(stringResource(Res.string.settings_save)) }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor             = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor          = MaterialTheme.colorScheme.onPrimaryContainer,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            actionIconContentColor     = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
+                            .padding(horizontal = 16.dp, vertical = 7.dp)
                     )
                 }
-            ) { innerPadding ->
+                HorizontalDivider(color = colors.borderSubtle)
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    // Active URL
-                    Text(stringResource(Res.string.settings_active_url_label),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(
-                        text = "$activeUrl/songs", fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(4.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                    )
-
-                    // Server section header
-                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                        Text(stringResource(Res.string.settings_server_section),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary)
-                        TextButton(onClick = { viewModel.resetToDefaults() }) {
-                            Text(stringResource(Res.string.settings_reset_to_default),
-                                style = MaterialTheme.typography.labelSmall)
+                    // ── Connected card ────────────────────────────────────────
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(colors.accentTint)
+                            .padding(horizontal = 14.dp, vertical = 11.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(colors.accent)
+                        )
+                        Column {
+                            Text(stringResource(Res.string.status_connected),
+                                color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                            Text(activeUrl, color = colors.muted, fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace)
                         }
                     }
-                    HorizontalDivider()
 
-                    // Host
-                    OutlinedTextField(
+                    // ── Server section header ─────────────────────────────────
+                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                        Text(stringResource(Res.string.settings_server_section),
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                        Text(stringResource(Res.string.settings_reset_to_default),
+                            fontSize = 12.sp, color = colors.muted,
+                            modifier = Modifier.clickable { viewModel.resetToDefaults() })
+                    }
+
+                    SettingsField(
+                        label = stringResource(Res.string.settings_host_label),
                         value = host, onValueChange = { viewModel.setHost(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(Res.string.settings_host_label)) },
-                        placeholder = { Text(stringResource(Res.string.settings_host_placeholder)) },
-                        isError = hostError != null,
-                        supportingText = hostError?.let { msg -> { Text(msg, color = MaterialTheme.colorScheme.error) } },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
+                        placeholder = stringResource(Res.string.settings_host_placeholder),
+                        mono = true,
+                        keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next,
+                        error = hostError,
                     )
-
-                    // Port
-                    OutlinedTextField(
+                    SettingsField(
+                        label = stringResource(Res.string.settings_port_label),
                         value = port, onValueChange = { viewModel.setPort(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(Res.string.settings_port_label)) },
-                        placeholder = { Text(stringResource(Res.string.settings_port_placeholder)) },
-                        isError = portError != null,
-                        supportingText = portError?.let { msg -> { Text(msg, color = MaterialTheme.colorScheme.error) } },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                        placeholder = stringResource(Res.string.settings_port_placeholder),
+                        mono = true,
+                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next,
+                        error = portError,
                     )
-
-                    // API Key
-                    OutlinedTextField(
+                    SettingsField(
+                        label = stringResource(Res.string.settings_api_key_label),
                         value = apiKey, onValueChange = { viewModel.setApiKey(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(Res.string.settings_api_key_label)) },
-                        placeholder = { Text(stringResource(Res.string.settings_api_key_placeholder)) },
-                        singleLine = true,
-                        visualTransformation = if (apiKeyVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                        trailingIcon = {
-                            IconButton(onClick = { apiKeyVisible = !apiKeyVisible }) {
-                                Icon(if (apiKeyVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, null)
-                            }
-                        },
+                        placeholder = stringResource(Res.string.settings_api_key_placeholder),
+                        password = true, passwordVisible = apiKeyVisible,
+                        onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
+                        keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
                     )
-
-                    // Display name for Q&A
-                    OutlinedTextField(
+                    SettingsField(
+                        label = stringResource(Res.string.settings_display_name_label),
                         value = displayName, onValueChange = { viewModel.setDisplayName(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(Res.string.settings_display_name_label)) },
-                        placeholder = { Text(stringResource(Res.string.settings_display_name_placeholder)) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                        placeholder = stringResource(Res.string.settings_display_name_placeholder),
+                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
                     )
 
-                    // QR scanner
+                    // QR scanner (platform button)
                     QrScanButton(onScanned = { url -> DeepLinkHandler.handle(url, appSettings) },
                         modifier = Modifier.fillMaxWidth())
 
                     // Check Server Status → opens full-screen dialog
-                    OutlinedButton(
+                    OutlineActionButton(
+                        label = stringResource(Res.string.settings_check_status),
+                        icon = Icons.Filled.Wifi,
                         onClick = { statusViewModel.recheck(); showStatusDialog = true },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Filled.Wifi, stringResource(Res.string.settings_check_status_description),
-                            modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.size(8.dp))
-                        Text(stringResource(Res.string.settings_check_status))
-                    }
+                    )
 
-                    // Appearance
-                    HorizontalDivider()
+                    // ── Appearance (segmented, drives theme live) ─────────────
+                    HorizontalDivider(color = colors.borderSubtle)
                     Text(stringResource(Res.string.settings_appearance_section),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary)
-                    ThemeModeSelector(selected = themeMode, onSelect = { viewModel.setThemeMode(it) })
+                        fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                    val themeOptions = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
+                    SegmentedControl(
+                        options = listOf(
+                            stringResource(Res.string.settings_theme_system),
+                            stringResource(Res.string.settings_theme_light),
+                            stringResource(Res.string.settings_theme_dark),
+                        ),
+                        selectedIndex = themeOptions.indexOf(themeMode).coerceAtLeast(0),
+                        onSelect = { viewModel.setThemeMode(themeOptions[it]) },
+                    )
 
-                    // Privacy
-                    HorizontalDivider()
+                    // ── Privacy ───────────────────────────────────────────────
+                    HorizontalDivider(color = colors.borderSubtle)
                     Text(stringResource(Res.string.settings_privacy_section),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary)
+                        fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column(Modifier.weight(1f)) {
-                            Text(stringResource(Res.string.settings_telemetry_label))
+                            Text(stringResource(Res.string.settings_telemetry_label), color = colors.text, fontSize = 14.sp)
                             Text(
                                 text = stringResource(Res.string.settings_telemetry_description),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 12.sp,
+                                color = colors.muted,
                             )
                         }
                         Switch(
@@ -335,41 +341,39 @@ fun SettingsScreen(
 
                     // Draft URL preview
                     if (urlChanged) {
-                        HorizontalDivider()
+                        HorizontalDivider(color = colors.borderSubtle)
                         Text(stringResource(Res.string.settings_draft_url_label),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            fontSize = 9.sp, letterSpacing = 0.05.em, color = colors.muted)
                         Text(
                             text = "$draftBaseUrl/songs", fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = colors.text,
                             modifier = Modifier.fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(colors.inputBg)
+                                .padding(horizontal = 10.dp, vertical = 6.dp),
                         )
                     }
 
                     // Developer — debug builds only
                     if (isDebugBuild) {
-                        HorizontalDivider()
+                        HorizontalDivider(color = colors.borderSubtle)
                         Text(stringResource(Res.string.settings_developer_section),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary)
-                        OutlinedButton(
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                        OutlineActionButton(
+                            label = stringResource(Res.string.settings_send_test_error),
+                            icon = Icons.Filled.Warning,
                             onClick = {
                                 CrashReporting.recordException(
                                     RuntimeException("Test error — ChurchPresenter Mobile v$appVersion")
                                 )
                                 testErrorSent = true
                             },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(stringResource(Res.string.settings_send_test_error))
-                        }
+                        )
                         if (testErrorSent) {
                             Text(
                                 text = stringResource(Res.string.settings_test_error_sent),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 12.sp,
+                                color = colors.accent,
                             )
                         }
                     }
@@ -646,31 +650,3 @@ private fun StatusRecheckButton(onClick: () -> Unit) {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Theme mode selector
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun ThemeModeSelector(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
-    val options = listOf(
-        ThemeMode.SYSTEM to stringResource(Res.string.settings_theme_system),
-        ThemeMode.LIGHT  to stringResource(Res.string.settings_theme_light),
-        ThemeMode.DARK   to stringResource(Res.string.settings_theme_dark),
-    )
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { (mode, label) ->
-            if (selected == mode) {
-                Button(onClick = { onSelect(mode) }, modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor   = MaterialTheme.colorScheme.onPrimary,
-                    )
-                ) { Text(label, style = MaterialTheme.typography.labelMedium) }
-            } else {
-                OutlinedButton(onClick = { onSelect(mode) }, modifier = Modifier.weight(1f)) {
-                    Text(label, style = MaterialTheme.typography.labelMedium)
-                }
-            }
-        }
-    }
-}

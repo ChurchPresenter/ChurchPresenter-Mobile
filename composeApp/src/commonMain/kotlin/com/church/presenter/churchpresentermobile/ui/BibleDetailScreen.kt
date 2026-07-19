@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,8 +24,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,15 +31,20 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.bible_chapters_title
 import churchpresentermobile.composeapp.generated.resources.bible_multi_select_count
 import churchpresentermobile.composeapp.generated.resources.bible_no_verses
-import churchpresentermobile.composeapp.generated.resources.bible_detail_projecting_badge
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -71,6 +76,7 @@ fun BibleDetailScreen(
     onAddToSchedule: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     if (selectedChapter != null) {
         val totalChapters = if (book.totalChapters > 0) book.totalChapters else 150
         val pagerState = rememberPagerState(
@@ -117,12 +123,10 @@ fun BibleDetailScreen(
                     )
                 } else {
                     Box(
-                        modifier         = Modifier.fillMaxSize(),
+                        modifier         = Modifier.fillMaxSize().background(colors.background),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        CircularProgressIndicator(color = colors.accent)
                     }
                 }
             }
@@ -158,51 +162,34 @@ private fun ChaptersGrid(
     onChapterSelect: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(Res.string.bible_chapters_title),
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(horizontal = 16.dp, vertical = 10.dp)
-        )
-        HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-
-        val count = if (book.totalChapters > 0) book.totalChapters else 150
-        val gridState = rememberLazyGridState()
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 64.dp),
-                state = gridState,
-                modifier = Modifier.fillMaxSize().verticalScrollbar(gridState),
-                contentPadding = PaddingValues(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+    val colors = LocalAppColors.current
+    val count = if (book.totalChapters > 0) book.totalChapters else 150
+    val gridState = rememberLazyGridState()
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(4),
+        state = gridState,
+        modifier = modifier.fillMaxSize().background(colors.background).verticalScrollbar(gridState),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(count) { index ->
+            val chapter = index + 1
+            Box(
+                modifier = Modifier
+                    .height(52.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(colors.surface)
+                    .border(1.dp, colors.borderSubtle, RoundedCornerShape(10.dp))
+                    .clickable { onChapterSelect(chapter) },
+                contentAlignment = Alignment.Center
             ) {
-                items(count) { index ->
-                    val chapter = index + 1
-                    Surface(
-                        modifier = Modifier.clickable { onChapterSelect(chapter) },
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 1.dp
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(vertical = 12.dp)
-                        ) {
-                            Text(
-                                text = "$chapter",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
+                Text(
+                    text = "$chapter",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.text
+                )
             }
         }
     }
@@ -218,113 +205,79 @@ private fun VersesList(
     onVerseToggle: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     if (verses.isEmpty()) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = modifier.fillMaxSize().background(colors.background),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                text  = stringResource(Res.string.bible_no_verses),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = stringResource(Res.string.bible_no_verses),
+                color = colors.muted,
+                fontSize = 15.sp
             )
         }
         return
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().background(colors.background)) {
         if (isMultiSelectMode && selectedVerseIndices.isNotEmpty()) {
-            Surface(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(Res.string.bible_multi_select_count, selectedVerseIndices.size),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
-        }
-
-    val listState = rememberLazyListState()
-    LazyColumn(
-        state          = listState,
-        modifier       = Modifier.weight(1f).fillMaxWidth().verticalScrollbar(listState),
-        contentPadding = PaddingValues(bottom = 200.dp) // clear both action buttons above snackbar
-    ) {
-        itemsIndexed(verses) { index, verse ->
-            val isSelected  = index in selectedVerseIndices
-            val isProjected = isProjecting && projectedVerseIndex == index
-
-            val bgColor = when {
-                isProjected -> MaterialTheme.colorScheme.primaryContainer
-                isSelected  -> MaterialTheme.colorScheme.secondaryContainer
-                else        -> MaterialTheme.colorScheme.surface
-            }
-
-            Row(
+            Text(
+                text = stringResource(Res.string.bible_multi_select_count, selectedVerseIndices.size),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colors.accent,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(bgColor)
-                    .then(
-                        if (isProjected) Modifier.border(
-                            width  = 2.dp,
-                            color  = MaterialTheme.colorScheme.primary,
-                            shape  = RoundedCornerShape(0.dp)
-                        ) else Modifier
-                    )
-                    .clickable { onVerseToggle(index) }
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment   = Alignment.Top,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // Verse number column — always show the number; selection shown via row background
-                Box(
-                    modifier         = Modifier.padding(top = 2.dp),
-                    contentAlignment = Alignment.Center
+                    .background(colors.accentTint)
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+            )
+        }
+
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state          = listState,
+            modifier       = Modifier.weight(1f).fillMaxWidth().verticalScrollbar(listState),
+            contentPadding = PaddingValues(bottom = 200.dp) // clear FABs above snackbar
+        ) {
+            itemsIndexed(verses) { index, verse ->
+                val isSelected  = index in selectedVerseIndices
+                val isProjected = isProjecting && projectedVerseIndex == index
+                val highlighted = isProjected || isSelected
+                val leftBorderColor = if (highlighted) colors.accent else androidx.compose.ui.graphics.Color.Transparent
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (highlighted) colors.accentTint else colors.background)
+                        .drawBehind {
+                            drawRect(
+                                color = leftBorderColor,
+                                size = androidx.compose.ui.geometry.Size(3.dp.toPx(), size.height)
+                            )
+                        }
+                        .clickable { onVerseToggle(index) }
+                        .padding(horizontal = 20.dp, vertical = 13.dp),
+                    verticalAlignment   = Alignment.Top,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Text(
                         text  = "${verse.number}",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = when {
-                            isProjected -> MaterialTheme.colorScheme.primary
-                            isSelected  -> MaterialTheme.colorScheme.secondary
-                            else        -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                        }
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        color = colors.accent,
+                        modifier = Modifier.padding(top = 2.dp).widthIn(min = 18.dp)
                     )
-                }
-
-                // Verse text column
-                Column {
                     Text(
                         text  = verse.displayText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = when {
-                            isProjected -> MaterialTheme.colorScheme.onPrimaryContainer
-                            isSelected  -> MaterialTheme.colorScheme.onSecondaryContainer
-                            else        -> MaterialTheme.colorScheme.onSurface
-                        }
+                        fontSize = 14.sp,
+                        lineHeight = (14 * 1.7).sp,
+                        color = if (highlighted) colors.text else colors.secondary,
                     )
-                    if (isProjected) {
-                        Surface(
-                            shape    = RoundedCornerShape(4.dp),
-                            color    = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(top = 4.dp)
-                        ) {
-                            Text(
-                                text     = stringResource(Res.string.bible_detail_projecting_badge),
-                                style    = MaterialTheme.typography.labelSmall,
-                                color    = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
                 }
+                HorizontalDivider(color = colors.borderSubtle)
             }
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-            )
         }
     }
-    } // Column
 }

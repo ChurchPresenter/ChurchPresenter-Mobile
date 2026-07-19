@@ -21,19 +21,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +42,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.presentation_loading_error
@@ -174,37 +172,36 @@ fun PresentationScreen(
         }
     }
 
+    val colors = LocalAppColors.current
     Box(modifier = modifier.fillMaxSize()) {
 
-        Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
+        Column(modifier = Modifier.fillMaxSize().background(colors.background)) {
 
         // ── Error banner ──────────────────────────────────────────────
         if (error != null) {
-            Surface(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.errorContainer
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(colors.danger.copy(alpha = 0.12f))
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = error ?: stringResource(Res.string.presentation_loading_error),
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    TextButton(onClick = { viewModel.loadPresentations() }) {
-                        Text(
-                            text = stringResource(Res.string.presentation_retry),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
+                Text(
+                    text = error ?: stringResource(Res.string.presentation_loading_error),
+                    color = colors.danger,
+                    fontSize = 13.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = stringResource(Res.string.presentation_retry),
+                    color = colors.danger,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 12.dp).clickable { viewModel.loadPresentations() }
+                )
             }
         }
 
@@ -248,10 +245,7 @@ fun PresentationScreen(
                             }
 
                             item(key = "divider_${presentation.id}") {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                                )
+                                Spacer(modifier = Modifier.size(8.dp))
                             }
                         }
                     }
@@ -260,8 +254,8 @@ fun PresentationScreen(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = stringResource(Res.string.presentation_no_items),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = colors.muted,
+                            fontSize = 15.sp
                         )
                     }
                 }
@@ -295,23 +289,31 @@ fun PresentationScreen(
                     modifier        = Modifier.align(Alignment.BottomEnd),
                     extraLeadingContent = {
                         // Upload Presentation FAB — picker is live
-                        FloatingActionButton(
-                            onClick = { if (!isUploading) launchPicker() },
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor   = MaterialTheme.colorScheme.onTertiaryContainer,
-                        ) {
-                            if (isUploading) {
+                        val neutralShadow = if (colors.isDark) androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
+                            else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                        if (isUploading) {
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(colors.surfaceElevated),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 CircularProgressIndicator(
-                                    modifier    = Modifier.size(24.dp),
-                                    color       = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    modifier = Modifier.size(22.dp),
+                                    color = colors.accent,
                                     strokeWidth = 2.5.dp,
                                 )
-                            } else {
-                                Icon(
-                                    imageVector        = Icons.Filled.UploadFile,
-                                    contentDescription = stringResource(Res.string.presentation_upload_file),
-                                )
                             }
+                        } else {
+                            SquareFab(
+                                icon = Icons.Filled.UploadFile,
+                                contentDescription = stringResource(Res.string.presentation_upload_file),
+                                containerColor = colors.surfaceElevated,
+                                iconColor = colors.accent,
+                                shadowColor = neutralShadow,
+                                onClick = { launchPicker() },
+                            )
                         }
                     }
                 )
@@ -334,7 +336,14 @@ fun PresentationScreen(
                 onAddToSchedule = { viewModel.addToSchedule() },
                 modifier        = Modifier.align(Alignment.BottomEnd),
                 extraLeadingContent = {
-                    FloatingActionButton(
+                    val neutralShadow = if (colors.isDark) androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
+                        else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                    SquareFab(
+                        icon = Icons.Filled.Block,
+                        contentDescription = stringResource(Res.string.presentation_upload_file),
+                        containerColor = colors.surfaceElevated,
+                        iconColor = colors.muted,
+                        shadowColor = neutralShadow,
                         onClick = {
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
@@ -343,14 +352,7 @@ fun PresentationScreen(
                                 )
                             }
                         },
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor   = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Filled.Block,
-                            contentDescription = stringResource(Res.string.presentation_upload_file),
-                        )
-                    }
+                    )
                 }
             )
         }
@@ -387,32 +389,31 @@ private fun ToastEvent.toDisplayString(): String = when (this) {
 
 @Composable
 private fun PresentationHeader(presentation: Presentation, isSelected: Boolean) {
-    val bg = if (isSelected) MaterialTheme.colorScheme.secondaryContainer
-             else MaterialTheme.colorScheme.surfaceVariant
-    val fg = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer
-             else MaterialTheme.colorScheme.onSurfaceVariant
-
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(bg)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        Icon(
+            imageVector = Icons.Outlined.Description,
+            contentDescription = null,
+            tint = if (isSelected) colors.accent else colors.muted,
+            modifier = Modifier.size(16.dp)
+        )
         Text(
             text = presentation.displayName,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = fg,
-            modifier = Modifier.weight(1f)
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = colors.text,
         )
         if (presentation.totalSlides > 0) {
             Text(
-                text = "${presentation.totalSlides} ${stringResource(Res.string.presentation_slides)}",
-                style = MaterialTheme.typography.labelSmall,
-                color = fg.copy(alpha = 0.7f),
-                modifier = Modifier.padding(start = 8.dp)
+                text = "· ${presentation.totalSlides} ${stringResource(Res.string.presentation_slides)}",
+                fontSize = 11.sp,
+                color = colors.muted,
             )
         }
     }
@@ -428,14 +429,14 @@ private fun SlideRow(
     imageLoader: ImageLoader,
     onSlideTap: (slideIndex: Int) -> Unit
 ) {
-    val selectedBorderColor = MaterialTheme.colorScheme.secondary
+    val colors = LocalAppColors.current
     val isThisPresSelected = thisPresentationId != null && thisPresentationId == selectedPresentationId
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .background(colors.background)
+            .padding(horizontal = 12.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         val context = LocalPlatformContext.current
@@ -450,47 +451,61 @@ private fun SlideRow(
                 .crossfade(true)
                 .build()
 
-            SubcomposeAsyncImage(
-                model = request,
-                contentDescription = "Slide ${slide.slideIndex + 1}",
-                imageLoader = imageLoader,
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .widthIn(max = 500.dp)
-                    .aspectRatio(4f / 3f)
+                    .aspectRatio(16f / 9f)
                     .clip(RoundedCornerShape(8.dp))
                     .then(
-                        if (isSlideSelected) Modifier.border(2.dp, selectedBorderColor, RoundedCornerShape(8.dp))
+                        if (isSlideSelected) Modifier.border(2.5.dp, colors.accent, RoundedCornerShape(8.dp))
                         else Modifier
                     )
                     .clickable { onSlideTap(slide.slideIndex) }
             ) {
-                val state by painter.state.collectAsState()
-                when (state) {
-                    is AsyncImagePainter.State.Loading,
-                    AsyncImagePainter.State.Empty -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                SubcomposeAsyncImage(
+                    model = request,
+                    contentDescription = "Slide ${slide.slideIndex + 1}",
+                    imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    val state by painter.state.collectAsState()
+                    when (state) {
+                        is AsyncImagePainter.State.Loading,
+                        AsyncImagePainter.State.Empty -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize().background(colors.surface),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${slide.slideIndex + 1}",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colors.dim
+                                )
+                            }
                         }
+                        is AsyncImagePainter.State.Error -> {
+                            Box(modifier = Modifier.fillMaxSize().background(colors.danger.copy(alpha = 0.12f)))
+                        }
+                        else -> SubcomposeAsyncImageContent()
                     }
-                    is AsyncImagePainter.State.Error -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.errorContainer)
-                        )
-                    }
-                    else -> SubcomposeAsyncImageContent()
+                }
+                // ── "▶ LIVE" chip on the selected slide ──────────────────
+                if (isSlideSelected) {
+                    Text(
+                        text = "▶ LIVE",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.onAccent,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(colors.accent)
+                            .padding(horizontal = 7.dp, vertical = 2.dp)
+                    )
                 }
             }
         }

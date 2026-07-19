@@ -1,53 +1,34 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.action_add_to_schedule
 import churchpresentermobile.composeapp.generated.resources.action_clear_display
 import churchpresentermobile.composeapp.generated.resources.action_hold_display
-import churchpresentermobile.composeapp.generated.resources.action_multi_select
-import churchpresentermobile.composeapp.generated.resources.action_project_to_screen
-import churchpresentermobile.composeapp.generated.resources.action_stop_projecting
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Shared FAB column shown in the bottom-right corner of every content screen.
+ * Shared FAB stack shown in the bottom-right corner of every content screen,
+ * styled to the redesign (see [FabStack]).
  *
- * Layout (top → bottom):
- *   [extraLeadingContent] — optional screen-specific buttons (e.g. "Pick from Device" in PicturesScreen)
- *   [Add to Schedule FAB] — PlaylistAdd icon; turns primary-filled once the item is added
- *   [Cast FAB]            — Cast icon; turns primary-filled while projecting; shows [castBadgeCount]
- *                           badge when > 0 (used by BibleDetailScreen for multi-verse selection)
- *
- * @param isProjecting         True while content is being projected to the display.
- * @param scheduleAdded        True once the current item has been added to the schedule.
- * @param onToggleProjecting   Called when the user taps the Cast FAB.
- * @param onAddToSchedule      Called when the user taps the Add-to-Schedule FAB.
- * @param modifier             Applied to the outer [Column].
- * @param castBadgeCount       When > 0 a red circle badge with this number is shown on the Cast FAB.
- * @param extraLeadingContent  Optional slot rendered above the two standard FABs. Use this for
- *                             screen-specific actions (e.g. photo picker in PicturesScreen).
+ * Standard stack, top → bottom:
+ *   [extraLeadingContent] — optional screen-specific buttons (e.g. photo picker)
+ *   [Clear Display]       — danger FAB, only while projecting
+ *   [Hold / Freeze]       — neutral FAB, only while projecting
+ *   [Select]              — elevated neutral, shown only when [onToggleMultiSelect] is provided
+ *   [Add to Schedule]     — amber (primary queue action)
+ *   [Cast / Project]      — accent, with [castBadgeCount] red badge
  */
 @Composable
 fun ContentActionButtons(
@@ -64,128 +45,46 @@ fun ContentActionButtons(
     onToggleMultiSelect: (() -> Unit)? = null,
     extraLeadingContent: @Composable ColumnScope.() -> Unit = {},
 ) {
+    val colors = LocalAppColors.current
     Column(
-        modifier = modifier
-            .padding(end = 16.dp, bottom = 72.dp),
+        modifier = modifier.padding(end = 16.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         // ── Screen-specific extra buttons (e.g. photo picker) ─────────────
         extraLeadingContent()
 
-        // ── Clear Display ───────────────────────────────────────────────
+        // ── Clear Display (danger) — only while projecting ────────────────
         if (onClearDisplay != null && isProjecting) {
-            FloatingActionButton(
+            SquareFab(
+                icon = Icons.Filled.DesktopAccessDisabled,
+                contentDescription = stringResource(Res.string.action_clear_display),
+                containerColor = colors.danger,
+                iconColor = Color.White,
+                shadowColor = colors.danger.copy(alpha = 0.4f),
                 onClick = onClearDisplay,
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer
-            ) {
-                Icon(
-                    imageVector        = Icons.Filled.DesktopAccessDisabled,
-                    contentDescription = stringResource(Res.string.action_clear_display)
-                )
-            }
-        }
-
-        // ── Hold / Freeze Display ───────────────────────────────────────
-        if (onToggleHold != null && isProjecting) {
-            FloatingActionButton(
-                onClick = onToggleHold,
-                containerColor = if (isHolding)
-                    MaterialTheme.colorScheme.error
-                else
-                    MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (isHolding)
-                    MaterialTheme.colorScheme.onError
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant
-            ) {
-                Icon(
-                    imageVector        = Icons.Filled.Pause,
-                    contentDescription = stringResource(Res.string.action_hold_display)
-                )
-            }
-        }
-
-        // ── Multi-Select Toggle ──────────────────────────────────────────
-        if (onToggleMultiSelect != null) {
-            FloatingActionButton(
-                onClick = onToggleMultiSelect,
-                containerColor = if (isMultiSelectMode)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (isMultiSelectMode)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant
-            ) {
-                Icon(
-                    imageVector        = Icons.Filled.Checklist,
-                    contentDescription = stringResource(Res.string.action_multi_select)
-                )
-            }
-        }
-
-        // ── Add to Schedule ───────────────────────────────────────────────
-        FloatingActionButton(
-            onClick = { if (!scheduleAdded) onAddToSchedule() },
-            containerColor = if (scheduleAdded)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = if (scheduleAdded)
-                MaterialTheme.colorScheme.onPrimary
-            else
-                MaterialTheme.colorScheme.onSecondaryContainer
-        ) {
-            Icon(
-                imageVector        = Icons.AutoMirrored.Filled.PlaylistAdd,
-                contentDescription = stringResource(Res.string.action_add_to_schedule)
             )
         }
 
-        // ── Cast / Project to Screen ──────────────────────────────────────
-        Box {
-            FloatingActionButton(
-                onClick = { onToggleProjecting() },
-                containerColor = if (isProjecting)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.primaryContainer,
-                contentColor = if (isProjecting)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(
-                    imageVector        = Icons.Filled.Cast,
-                    contentDescription = if (isProjecting)
-                        stringResource(Res.string.action_stop_projecting)
-                    else
-                        stringResource(Res.string.action_project_to_screen)
-                )
-            }
-
-            // Badge — shown when multiple items are selected (e.g. Bible multi-verse)
-            if (castBadgeCount > 0) {
-                Surface(
-                    shape    = CircleShape,
-                    color    = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .size(20.dp)
-                        .align(Alignment.TopEnd)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text  = "$castBadgeCount",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onError
-                        )
-                    }
-                }
-            }
+        // ── Hold / Freeze — only while projecting ─────────────────────────
+        if (onToggleHold != null && isProjecting) {
+            SquareFab(
+                icon = Icons.Filled.Pause,
+                contentDescription = stringResource(Res.string.action_hold_display),
+                containerColor = if (isHolding) colors.danger else colors.surfaceElevated,
+                iconColor = if (isHolding) Color.White else colors.secondary,
+                shadowColor = if (isHolding) colors.danger.copy(alpha = 0.4f)
+                else if (colors.isDark) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.18f),
+                onClick = onToggleHold,
+            )
         }
+
+        // ── Select / Add / Cast — the design FAB stack ────────────────────
+        FabStack(
+            onSelect = onToggleMultiSelect,
+            onAddToSchedule = onAddToSchedule,
+            onCast = onToggleProjecting,
+            castBadgeCount = castBadgeCount,
+        )
     }
 }
-

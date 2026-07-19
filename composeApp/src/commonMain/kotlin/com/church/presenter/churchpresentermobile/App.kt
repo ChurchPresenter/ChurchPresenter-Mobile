@@ -5,14 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarDuration
@@ -20,11 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Composable
@@ -38,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.drop
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
@@ -48,12 +37,8 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
 import churchpresentermobile.composeapp.generated.resources.deep_link_connected
-import churchpresentermobile.composeapp.generated.resources.schedule_drawer_open
 import churchpresentermobile.composeapp.generated.resources.tab_bible
-import churchpresentermobile.composeapp.generated.resources.tab_pictures
-import churchpresentermobile.composeapp.generated.resources.tab_presentation
 import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
-import churchpresentermobile.composeapp.generated.resources.tab_songs
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
@@ -62,6 +47,8 @@ import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
+import com.church.presenter.churchpresentermobile.ui.BottomTabBar
+import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
 import com.church.presenter.churchpresentermobile.ui.PresentationScreen
@@ -71,6 +58,7 @@ import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
+import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.util.isDebugBuild
 import com.church.presenter.churchpresentermobile.util.RemoteConfig
 import com.church.presenter.churchpresentermobile.util.RemoteConfigDefaults
@@ -452,6 +440,7 @@ fun App() {
         }
         ModalNavigationDrawer(
             drawerState = drawerState,
+            scrimColor = LocalAppColors.current.scrim,
             drawerContent = {
                 ScheduleDrawerContent(
                     appSettings = appSettings,
@@ -459,6 +448,7 @@ fun App() {
                     settingsSaveToken = settingsSaveToken,
                     scheduleRefreshToken = scheduleRefreshToken,
                     providedViewModel = scheduleViewModel,
+                    onClose = { coroutineScope.launch { drawerState.close() } },
                                     onItemClick = { item ->
                                         coroutineScope.launch {
                                             drawerState.close()
@@ -525,120 +515,51 @@ fun App() {
             }
         ) {
             Scaffold(
+                containerColor = MaterialTheme.colorScheme.background,
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
-                    Column {
-                        val chapterLabel = stringResource(Res.string.bible_chapter_label)
-                        val appTitle = stringResource(Res.string.app_title)
-
-                        TopAppBar(
-                            title = {
-                                when {
-                                    inSongDetail -> Column {
-                                        Text(
-                                            text = songDetailTitle!!,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        if (!songDetailBookName.isNullOrBlank()) {
-                                            Text(
-                                                text = songDetailBookName!!,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
-                                            )
-                                        }
-                                    }
-                                    inBibleDetail -> Text(
-                                        text = if (bibleChapter != null)
-                                            "${bibleBook!!.displayName}  ›  $chapterLabel $bibleChapter"
-                                        else
-                                            bibleBook!!.displayName,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    else -> Text(text = appTitle, maxLines = 1)
-                                }
-                            },
-                            navigationIcon = {
-                                when {
-                                    inSongDetail -> IconButton(onClick = { songNavigateBack?.invoke() }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Back",
-                                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    }
-                                    inBibleDetail -> IconButton(onClick = { bibleNavigateBack?.invoke() }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Back",
-                                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    }
-                                    else -> IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Menu,
-                                            contentDescription = stringResource(Res.string.schedule_drawer_open),
-                                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    }
-                                }
-                            },
-                            actions = {
-                                if (!inSongDetail && !inBibleDetail) {
-                                    IconButton(onClick = { showSettings = true }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Settings,
-                                            contentDescription = "Settings",
-                                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    }
-                                }
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                    val chapterLabel = stringResource(Res.string.bible_chapter_label)
+                    val appTitle = stringResource(Res.string.app_title)
+                    val bibleTitle = stringResource(Res.string.tab_bible)
+                    val qaTitle = stringResource(Res.string.tab_qa_admin)
+                    when {
+                        inSongDetail -> ScreenHeader(
+                            title = songDetailTitle!!,
+                            subtitle = songDetailBookName?.takeIf { it.isNotBlank() },
+                            largeTitle = false,
+                            onBack = { songNavigateBack?.invoke() }
                         )
-
-                        // Tab row — hidden while drilling into a detail screen
-                        if (!inSongDetail && !inBibleDetail) {
-                            val tabLabels = listOf(
-                                stringResource(Res.string.tab_songs),
-                                stringResource(Res.string.tab_bible),
-                                stringResource(Res.string.tab_pictures),
-                                stringResource(Res.string.tab_presentation),
-                                stringResource(Res.string.tab_qa_admin)
+                        inBibleDetail -> ScreenHeader(
+                            title = if (bibleChapter != null)
+                                "${bibleBook!!.displayName} · $chapterLabel $bibleChapter"
+                            else bibleBook!!.displayName,
+                            subtitle = if (bibleChapter == null) "Select a chapter" else null,
+                            largeTitle = bibleChapter != null,
+                            onBack = { bibleNavigateBack?.invoke() }
+                        )
+                        else -> when (selectedTab) {
+                            AppTab.BIBLE -> ScreenHeader(
+                                title = bibleTitle,
+                                onSettings = { showSettings = true }
                             )
-                            // Use pagerState.currentPage so the indicator tracks mid-swipe
-                            ScrollableTabRow(
-                                selectedTabIndex = pagerState.currentPage,
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                edgePadding = 0.dp
-                            ) {
-                                tabs.forEachIndexed { index, tab ->
-                                    Tab(
-                                        selected = pagerState.currentPage == index,
-                                        onClick = { selectedTab = tab },
-                                        text = {
-                                            Text(
-                                                text = tabLabels[index],
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        },
-                                        selectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        unselectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
-                                    )
-                                }
-                            }
+                            AppTab.QA_ADMIN -> ScreenHeader(
+                                title = qaTitle,
+                                onSettings = { showSettings = true }
+                            )
+                            else -> ScreenHeader(
+                                title = appTitle,
+                                largeTitle = false,
+                                onMenu = { coroutineScope.launch { drawerState.open() } },
+                                onSettings = { showSettings = true }
+                            )
                         }
                     }
+                },
+                bottomBar = {
+                    BottomTabBar(
+                        selectedTab = selectedTab,
+                        onTabSelected = { selectedTab = it }
+                    )
                 }
             ) { innerPadding ->
                 // Swipe-between-tabs — swiping is locked while inside a detail screen
