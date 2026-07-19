@@ -7,7 +7,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private const val TAG = "WebService"
-private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+// encodeDefaults = true so payload fields equal to their default value still reach the desktop.
+private val json = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefaults = true }
 
 /**
  * Sends web pages to the desktop over the shared WebSocket (same `project` /

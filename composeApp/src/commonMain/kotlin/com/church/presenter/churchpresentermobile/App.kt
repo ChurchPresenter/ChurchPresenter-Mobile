@@ -34,11 +34,16 @@ import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.announcements_title
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
 import churchpresentermobile.composeapp.generated.resources.deep_link_connected
+import churchpresentermobile.composeapp.generated.resources.media_title
+import churchpresentermobile.composeapp.generated.resources.more_photos_title
+import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
+import churchpresentermobile.composeapp.generated.resources.web_title
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
@@ -48,6 +53,7 @@ import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.ui.AnnouncementsScreen
+import com.church.presenter.churchpresentermobile.ui.MediaScreen
 import com.church.presenter.churchpresentermobile.ui.WebScreen
 import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
@@ -77,6 +83,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.MediaViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.WebViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.DictionaryViewModel
@@ -174,6 +181,9 @@ fun App() {
     }
     val webViewModel: WebViewModel = viewModel(key = "web") {
         WebViewModel(appSettings, eventService)
+    }
+    val mediaViewModel: MediaViewModel = viewModel(key = "media") {
+        MediaViewModel(appSettings, eventService)
     }
 
     // When the desktop clears its display, reset projection state on mobile
@@ -345,7 +355,7 @@ fun App() {
         val tabScreen = when (selectedTab) {
             AppTab.SONGS         -> AnalyticsScreen.SONGS
             AppTab.BIBLE         -> AnalyticsScreen.BIBLE_BOOKS
-            AppTab.PICTURES      -> AnalyticsScreen.PICTURES
+            AppTab.MEDIA         -> AnalyticsScreen.MEDIA
             AppTab.PRESENTATION  -> AnalyticsScreen.PRESENTATIONS
             AppTab.MORE          -> AnalyticsScreen.MORE
         }
@@ -388,6 +398,7 @@ fun App() {
     // Log More sub-screen views
     LaunchedEffect(moreDestination) {
         when (moreDestination) {
+            MoreDestination.PICTURES -> Analytics.logScreenView(AnalyticsScreen.PICTURES)
             MoreDestination.QA -> Analytics.logScreenView(AnalyticsScreen.QA_ADMIN)
             MoreDestination.DICTIONARY -> Analytics.logScreenView(AnalyticsScreen.DICTIONARY)
             MoreDestination.ANNOUNCEMENTS -> Analytics.logScreenView(AnalyticsScreen.ANNOUNCEMENTS)
@@ -429,6 +440,14 @@ fun App() {
     val statusUiState by statusViewModel.uiState.collectAsState()
     val canUploadFiles = (statusUiState as? StatusUiState.Success)
         ?.status?.permissions?.canUploadFiles ?: false
+    val maxMediaUploadMb = (statusUiState as? StatusUiState.Success)
+        ?.status?.permissions?.maxMediaUploadMb ?: 700
+
+    // The Media tab gates its upload UI on the server's live "file uploads allowed" permission —
+    // re-fetch on entry so a desktop-side toggle is reflected without restarting the app.
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == AppTab.MEDIA) statusViewModel.refreshQuietly()
+    }
 
     AppTheme(themeMode = themeMode) {
         if (showSplash) {
@@ -532,7 +551,9 @@ fun App() {
                                                     }
                                                 }
                                                 "image", "picture" -> {
-                                                    selectedTab              = AppTab.PICTURES
+                                                    // Pictures now live under the More tab.
+                                                    selectedTab              = AppTab.MORE
+                                                    moreDestination          = MoreDestination.PICTURES
                                                     // Server puts the folder UUID in the generic "id" field
                                                     pendingPictureFolderId   = item.id ?: item.folderId
                                                     pendingPictureImageIndex = item.imageIndex
@@ -575,10 +596,11 @@ fun App() {
                         )
                         inMoreDetail -> ScreenHeader(
                             title = when (moreDestination) {
+                                MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)
                                 MoreDestination.QA -> qaTitle
-                                MoreDestination.DICTIONARY -> "Strong's Dictionary"
-                                MoreDestination.ANNOUNCEMENTS -> "Announcements"
-                                MoreDestination.WEB -> "Web"
+                                MoreDestination.DICTIONARY -> stringResource(Res.string.strongs_dictionary_title)
+                                MoreDestination.ANNOUNCEMENTS -> stringResource(Res.string.announcements_title)
+                                MoreDestination.WEB -> stringResource(Res.string.web_title)
                                 null -> ""
                             },
                             onBack = { moreDestination = null },
@@ -588,6 +610,10 @@ fun App() {
                         else -> when (selectedTab) {
                             AppTab.BIBLE -> ScreenHeader(
                                 title = bibleTitle,
+                                onSettings = { showSettings = true }
+                            )
+                            AppTab.MEDIA -> ScreenHeader(
+                                title = stringResource(Res.string.media_title),
                                 onSettings = { showSettings = true }
                             )
                             AppTab.MORE -> ScreenHeader(
@@ -666,20 +692,10 @@ fun App() {
                             onScheduleRefresh = { scheduleRefreshToken++ },
                             modifier = Modifier.fillMaxSize()
                         )
-                        AppTab.PICTURES -> PicturesScreen(
-                            appSettings = appSettings,
-                            isDemoMode = isDemoMode,
-                            settingsSaveToken = settingsSaveToken,
-                            imageLoader = imageLoader,
-                            pendingNavFolderId = pendingPictureFolderId,
-                            pendingNavImageIndex = pendingPictureImageIndex,
-                            onPendingNavHandled = {
-                                pendingPictureFolderId   = null
-                                pendingPictureImageIndex = null
-                            },
-                            onScheduleRefresh = { scheduleRefreshToken++ },
+                        AppTab.MEDIA -> MediaScreen(
+                            viewModel = mediaViewModel,
                             canUploadFiles = canUploadFiles,
-                            providedViewModel = picturesViewModel,
+                            maxUploadMb = maxMediaUploadMb,
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.PRESENTATION -> PresentationScreen(
@@ -694,6 +710,22 @@ fun App() {
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.MORE -> when (moreDestination) {
+                            MoreDestination.PICTURES -> PicturesScreen(
+                                appSettings = appSettings,
+                                isDemoMode = isDemoMode,
+                                settingsSaveToken = settingsSaveToken,
+                                imageLoader = imageLoader,
+                                pendingNavFolderId = pendingPictureFolderId,
+                                pendingNavImageIndex = pendingPictureImageIndex,
+                                onPendingNavHandled = {
+                                    pendingPictureFolderId   = null
+                                    pendingPictureImageIndex = null
+                                },
+                                onScheduleRefresh = { scheduleRefreshToken++ },
+                                canUploadFiles = canUploadFiles,
+                                providedViewModel = picturesViewModel,
+                                modifier = Modifier.fillMaxSize()
+                            )
                             MoreDestination.QA -> QAAdminScreen(
                                 viewModel = qaViewModel,
                                 settingsSaveToken = settingsSaveToken,

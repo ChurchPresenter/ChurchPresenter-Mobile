@@ -21,6 +21,7 @@ object ApiConstants {
     const val PICTURES_ENDPOINT = "pictures"
     const val PICTURES_SELECT_ENDPOINT = "pictures/select"
     const val PICTURES_UPLOAD_ENDPOINT = "pictures/upload"
+    const val MEDIA_UPLOAD_ENDPOINT = "media/upload"
     const val SCHEDULE_ENDPOINT = "schedule"
     const val CLEAR_ENDPOINT = "clear"
     const val STATUS_ENDPOINT = "status"

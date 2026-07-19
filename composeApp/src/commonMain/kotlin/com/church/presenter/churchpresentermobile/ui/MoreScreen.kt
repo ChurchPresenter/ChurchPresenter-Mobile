@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,8 +31,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.more_announcements_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_announcements_title
+import churchpresentermobile.composeapp.generated.resources.more_dictionary_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_dictionary_title
+import churchpresentermobile.composeapp.generated.resources.more_photos_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_photos_title
+import churchpresentermobile.composeapp.generated.resources.more_qa_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_qa_title
+import churchpresentermobile.composeapp.generated.resources.more_web_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_web_title
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import org.jetbrains.compose.resources.stringResource
 
 private data class MoreEntry(
     val destination: MoreDestination,
@@ -52,10 +65,11 @@ fun MoreScreen(
 ) {
     val colors = LocalAppColors.current
     val entries = listOf(
-        MoreEntry(MoreDestination.QA, "Q&A", "Review and project audience questions", Icons.Outlined.ChatBubbleOutline),
-        MoreEntry(MoreDestination.DICTIONARY, "Dictionary", "Strong's Hebrew & Greek lexicon", Icons.AutoMirrored.Outlined.MenuBook),
-        MoreEntry(MoreDestination.ANNOUNCEMENTS, "Announcements", "Text, clocks & countdown timers", Icons.Outlined.Campaign),
-        MoreEntry(MoreDestination.WEB, "Web", "Project a web page on screen", Icons.Outlined.Public),
+        MoreEntry(MoreDestination.PICTURES, stringResource(Res.string.more_photos_title), stringResource(Res.string.more_photos_subtitle), Icons.Outlined.Image),
+        MoreEntry(MoreDestination.QA, stringResource(Res.string.more_qa_title), stringResource(Res.string.more_qa_subtitle), Icons.Outlined.ChatBubbleOutline),
+        MoreEntry(MoreDestination.DICTIONARY, stringResource(Res.string.more_dictionary_title), stringResource(Res.string.more_dictionary_subtitle), Icons.AutoMirrored.Outlined.MenuBook),
+        MoreEntry(MoreDestination.ANNOUNCEMENTS, stringResource(Res.string.more_announcements_title), stringResource(Res.string.more_announcements_subtitle), Icons.Outlined.Campaign),
+        MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
     )
     LazyColumn(
         modifier = modifier.fillMaxSize().background(colors.background),

@@ -289,4 +289,55 @@
     <string name="status_warn_unknown_version_body">Server reported version \'%1$s\'. Some features of this app may not be compatible with this version.</string>
     <string name="status_warn_missing_endpoint_title">Missing API endpoint: %1$s</string>
     <string name="status_warn_missing_endpoint_body">The server does not expose the \'%1$s\' endpoint. Features relying on it will be unavailable.</string>
+
+    <!-- Media tab -->
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">No media loaded</string>
+    <string name="media_playing">Playing</string>
+    <string name="media_playing_on_desktop">Playing on desktop</string>
+    <string name="media_local_ready">Local file · ready to go live</string>
+    <string name="media_pick_to_upload">Pick a file to upload</string>
+    <string name="media_source_network_url">Network URL</string>
+    <string name="media_source_upload">Upload from phone</string>
+    <string name="media_subtitle_url">%1$s · Network URL</string>
+    <string name="media_subtitle_empty">Paste a network URL below to send media</string>
+    <string name="media_on_screen">ON SCREEN</string>
+    <string name="media_cd_stop">Stop</string>
+    <string name="media_cd_back10">Back 10 seconds</string>
+    <string name="media_cd_forward10">Forward 10 seconds</string>
+    <string name="media_cd_play">Play</string>
+    <string name="media_cd_pause">Pause</string>
+    <string name="media_cd_mute">Mute</string>
+    <string name="media_add_to_schedule">Add to Schedule</string>
+    <string name="media_go_live">Go Live</string>
+    <string name="media_clear_screen">Clear screen</string>
+    <string name="media_source_label">SOURCE</string>
+    <string name="media_will_send">Will send: %1$s</string>
+    <string name="media_target_uploaded">Uploaded file · %1$s</string>
+    <string name="media_target_loaded">Loaded on desktop · %1$s</string>
+    <string name="media_target_url">Network URL</string>
+    <string name="media_target_none">Choose a source below to send media</string>
+    <string name="media_load_label">LOAD MEDIA</string>
+    <string name="media_uploading_percent">Uploading… %1$d%%</string>
+    <string name="media_choose_file">Choose a video or audio file</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Uploads are turned off on the desktop</string>
+    <string name="media_uploads_disabled_hint">Enable “Allow file uploads from mobile devices” in the desktop app’s Server settings.</string>
+    <string name="media_playing_generic">media</string>
+
+    <!-- More launcher -->
+    <string name="more_photos_title">Photos</string>
+    <string name="more_photos_subtitle">Browse and project image folders</string>
+    <string name="more_qa_title">Q&amp;A</string>
+    <string name="more_qa_subtitle">Review and project audience questions</string>
+    <string name="more_dictionary_title">Dictionary</string>
+    <string name="more_dictionary_subtitle">Strong\'s Hebrew &amp; Greek lexicon</string>
+    <string name="more_announcements_title">Announcements</string>
+    <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Project a web page on screen</string>
+    <!-- Section detail header titles -->
+    <string name="strongs_dictionary_title">Strong\'s Dictionary</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Announcements</string>
 </resources>

@@ -83,6 +83,7 @@ object AnalyticsScreen {
     const val BIBLE_CHAPTERS     = "Bible – Chapters"
     const val BIBLE_VERSES       = "Bible – Verses"
     const val PICTURES           = "Pictures"
+    const val MEDIA              = "Media"
     const val PRESENTATIONS      = "Presentations"
     const val SETTINGS           = "Settings"
     const val SCHEDULE           = "Schedule"

@@ -51,6 +51,20 @@ class StatusViewModel(private val appSettings: AppSettings) : ViewModel() {
         fetchStatus()
     }
 
+    /**
+     * Re-fetches status without flipping the UI back to [StatusUiState.Loading]. Used when the
+     * user revisits a screen whose gating depends on live server permissions (e.g. the Media tab,
+     * where the desktop operator may have toggled file uploads since the last fetch).
+     */
+    fun refreshQuietly() {
+        viewModelScope.launch {
+            service.fetchStatus().onSuccess { status ->
+                _uiState.value = StatusUiState.Success(status, status.deriveWarnings())
+            }
+            // On failure keep the existing state — a transient blip shouldn't blank the UI.
+        }
+    }
+
     private fun fetchStatus() {
         _uiState.value = StatusUiState.Loading
         viewModelScope.launch {

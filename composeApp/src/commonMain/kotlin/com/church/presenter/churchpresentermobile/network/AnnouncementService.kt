@@ -7,7 +7,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private const val TAG = "AnnouncementService"
-private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+// encodeDefaults = true so payload fields equal to their default value still reach the desktop.
+private val json = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefaults = true }
 
 /**
  * Sends composed announcements / timers to the desktop schedule over the shared

@@ -17,8 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.DesktopWindows
-import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +38,7 @@ private data class TabSpec(val tab: AppTab, val label: String, val icon: ImageVe
 private val tabSpecs = listOf(
     TabSpec(AppTab.SONGS, "Songs", Icons.Outlined.MusicNote),
     TabSpec(AppTab.BIBLE, "Bible", Icons.AutoMirrored.Outlined.MenuBook),
-    TabSpec(AppTab.PICTURES, "Media", Icons.Outlined.Image),
+    TabSpec(AppTab.MEDIA, "Media", Icons.Outlined.PlayCircleOutline),
     TabSpec(AppTab.PRESENTATION, "Present", Icons.Outlined.DesktopWindows),
     TabSpec(AppTab.MORE, "More", Icons.Filled.MoreHoriz),
 )

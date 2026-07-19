@@ -21,6 +21,8 @@ data class DevicePermissions(
     @SerialName("canAddToSchedule")   val canAddToSchedule: Boolean  = true,
     /** Whether this device is allowed to upload files (presentations, pictures). */
     @SerialName("canUploadFiles")     val canUploadFiles: Boolean    = true,
+    /** Max media-file upload size (MB) the desktop will accept. */
+    @SerialName("maxMediaUploadMb")   val maxMediaUploadMb: Int      = 700,
 )
 
 /**

@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.MediaPlaybackState
 import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.client.HttpClient
@@ -15,7 +16,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -74,6 +77,14 @@ object WsMessageType {
     const val SELECT_SLIDE        = "select_slide"
     const val CLEAR               = "clear"
     const val BIBLE_HOLD          = "bible_hold"
+    // Media transport controls
+    const val MEDIA_PLAY_PAUSE    = "media_play_pause"
+    const val MEDIA_STOP          = "media_stop"
+    const val MEDIA_SEEK_FORWARD  = "media_seek_forward"
+    const val MEDIA_SEEK_BACKWARD = "media_seek_backward"
+    const val MEDIA_SEEK_TO       = "media_seek_to"
+    const val MEDIA_SET_VOLUME    = "media_set_volume"
+    const val MEDIA_MUTE_TOGGLE   = "media_mute_toggle"
 }
 
 private val json = Json { ignoreUnknownKeys = true; isLenient = true }
@@ -138,6 +149,10 @@ class ServerEventService(private val settings: AppSettings) {
     private val _questionsUpdated = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     /** Emits [Unit] each time the server pushes a `questions_updated` event (Q&A question added/changed). */
     val questionsUpdated: SharedFlow<Unit> = _questionsUpdated.asSharedFlow()
+
+    private val _mediaState = MutableStateFlow<MediaPlaybackState?>(null)
+    /** Latest desktop media-player state pushed via `media_state_changed` (null when never reported). */
+    val mediaState: StateFlow<MediaPlaybackState?> = _mediaState.asStateFlow()
 
     /**
      * Sends an action message over the persistent WebSocket connection.
@@ -315,6 +330,12 @@ class ServerEventService(private val settings: AppSettings) {
                                 if (index != null) _songSectionSelected.tryEmit(index)
                             }
                             "questions_updated" -> _questionsUpdated.tryEmit(Unit)
+                            "media_state_changed" -> {
+                                val state = runCatching {
+                                    json.decodeFromString<MediaPlaybackState>(event.payload)
+                                }.getOrNull()
+                                if (state != null) _mediaState.value = state
+                            }
                         }
                     }
                     Logger.d(TAG, "listen — session closed normally")

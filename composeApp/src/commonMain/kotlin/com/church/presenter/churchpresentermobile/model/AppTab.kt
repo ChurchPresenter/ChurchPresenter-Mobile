@@ -4,16 +4,16 @@ package com.church.presenter.churchpresentermobile.model
 enum class AppTab {
     SONGS,
     BIBLE,
-    PICTURES,
+    MEDIA,
     PRESENTATION,
     MORE
 }
 
 /** Secondary destinations reached from the [AppTab.MORE] launcher. */
 enum class MoreDestination {
+    PICTURES,
     QA,
     DICTIONARY,
     ANNOUNCEMENTS,
     WEB
 }
-
