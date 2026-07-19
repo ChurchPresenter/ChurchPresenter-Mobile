@@ -91,6 +91,7 @@ object AnalyticsScreen {
     const val QA_ADMIN           = "Q&A Admin"
     const val MORE               = "More"
     const val DICTIONARY         = "Dictionary"
+    const val ANNOUNCEMENTS      = "Announcements"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

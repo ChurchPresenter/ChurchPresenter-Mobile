@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -52,6 +53,7 @@ fun MoreScreen(
     val entries = listOf(
         MoreEntry(MoreDestination.QA, "Q&A", "Review and project audience questions", Icons.Outlined.ChatBubbleOutline),
         MoreEntry(MoreDestination.DICTIONARY, "Dictionary", "Strong's Hebrew & Greek lexicon", Icons.AutoMirrored.Outlined.MenuBook),
+        MoreEntry(MoreDestination.ANNOUNCEMENTS, "Announcements", "Text, clocks & countdown timers", Icons.Outlined.Campaign),
     )
     LazyColumn(
         modifier = modifier.fillMaxSize().background(colors.background),

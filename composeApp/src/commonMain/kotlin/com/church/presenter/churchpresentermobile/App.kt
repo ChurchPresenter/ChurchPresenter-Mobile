@@ -47,6 +47,7 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.ui.AnnouncementsScreen
 import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.BottomTabBar
@@ -74,6 +75,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.DictionaryViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.PicturesViewModel
@@ -164,6 +166,9 @@ fun App() {
     }
     val dictionaryViewModel: DictionaryViewModel = viewModel(key = "dictionary") {
         DictionaryViewModel(appSettings, eventService)
+    }
+    val announcementsViewModel: AnnouncementsViewModel = viewModel(key = "announcements") {
+        AnnouncementsViewModel(appSettings, eventService)
     }
 
     // When the desktop clears its display, reset projection state on mobile
@@ -380,6 +385,7 @@ fun App() {
         when (moreDestination) {
             MoreDestination.QA -> Analytics.logScreenView(AnalyticsScreen.QA_ADMIN)
             MoreDestination.DICTIONARY -> Analytics.logScreenView(AnalyticsScreen.DICTIONARY)
+            MoreDestination.ANNOUNCEMENTS -> Analytics.logScreenView(AnalyticsScreen.ANNOUNCEMENTS)
             null -> {}
         }
     }
@@ -565,6 +571,7 @@ fun App() {
                             title = when (moreDestination) {
                                 MoreDestination.QA -> qaTitle
                                 MoreDestination.DICTIONARY -> "Strong's Dictionary"
+                                MoreDestination.ANNOUNCEMENTS -> "Announcements"
                                 null -> ""
                             },
                             onBack = { moreDestination = null },
@@ -688,6 +695,10 @@ fun App() {
                             MoreDestination.DICTIONARY -> DictionaryScreen(
                                 viewModel = dictionaryViewModel,
                                 settingsSaveToken = settingsSaveToken,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            MoreDestination.ANNOUNCEMENTS -> AnnouncementsScreen(
+                                viewModel = announcementsViewModel,
                                 modifier = Modifier.fillMaxSize()
                             )
                             null -> MoreScreen(

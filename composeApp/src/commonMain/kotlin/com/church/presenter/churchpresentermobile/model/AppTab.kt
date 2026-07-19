@@ -12,6 +12,7 @@ enum class AppTab {
 /** Secondary destinations reached from the [AppTab.MORE] launcher. */
 enum class MoreDestination {
     QA,
-    DICTIONARY
+    DICTIONARY,
+    ANNOUNCEMENTS
 }
 

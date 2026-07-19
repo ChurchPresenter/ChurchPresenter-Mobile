@@ -13,6 +13,7 @@ private const val KEY_THEME_MODE = "theme_mode"
 private const val KEY_SETTINGS_VERSION = "settings_version"
 private const val KEY_DEVICE_ID = "device_id"
 private const val KEY_DISPLAY_NAME     = "display_name"
+private const val KEY_SAVED_ANNOUNCEMENTS = "saved_announcements"
 private const val KEY_FCM_TOKEN        = "fcm_token"
 private const val KEY_APP_OPEN_COUNT   = "app_open_count"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
@@ -98,6 +99,11 @@ class AppSettings {
             }
             return id
         }
+
+    /** JSON array of the user's saved announcements (composer presets). Defaults to "[]". */
+    var savedAnnouncementsJson: String
+        get() = storage.getString(KEY_SAVED_ANNOUNCEMENTS, "[]")
+        set(value) { storage.putString(KEY_SAVED_ANNOUNCEMENTS, value) }
 
     /** The user's preferred colour scheme. Defaults to [ThemeMode.SYSTEM]. */
     var themeMode: ThemeMode
