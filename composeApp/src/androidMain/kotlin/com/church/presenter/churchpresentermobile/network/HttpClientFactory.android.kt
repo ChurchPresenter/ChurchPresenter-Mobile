@@ -30,9 +30,22 @@ actual fun createActionHttpClient(): HttpClient = HttpClient(OkHttp) {
 
 actual fun createImageHttpClient(): HttpClient = HttpClient(OkHttp) {
     install(HttpTimeout) {
-        requestTimeoutMillis = 15_000
-        connectTimeoutMillis = 10_000
-        socketTimeoutMillis = 15_000
+        // Thumbnails are generated on-demand by the desktop and can be slow under a
+        // burst of grid requests, so give them generous timeouts.
+        requestTimeoutMillis = 30_000
+        connectTimeoutMillis = 15_000
+        socketTimeoutMillis = 30_000
+    }
+    engine {
+        // OkHttp defaults to maxRequestsPerHost = 5, which starves a photo/slide
+        // grid that loads many thumbnails from the same server at once (queued
+        // requests then time out). Raise the per-host cap so the grid fills in.
+        config {
+            dispatcher(okhttp3.Dispatcher().apply {
+                maxRequests = 64
+                maxRequestsPerHost = 12
+            })
+        }
     }
     // No ContentNegotiation — lets Coil read raw image bytes without interference
 }

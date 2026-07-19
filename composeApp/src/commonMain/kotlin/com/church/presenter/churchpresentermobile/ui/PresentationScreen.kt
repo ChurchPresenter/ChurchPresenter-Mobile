@@ -65,6 +65,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
@@ -238,6 +239,8 @@ fun PresentationScreen(
                                     thisPresentationId = presentation.id,
                                     selectedSlideIndex = selectedSlideIndex,
                                     imageLoader = imageLoader,
+                                    apiKey = appSettings.apiKey,
+                                    deviceId = appSettings.deviceId,
                                     onSlideTap = { slideIndex ->
                                         viewModel.selectPresentation(presentation, slideIndex)
                                     }
@@ -427,6 +430,8 @@ private fun SlideRow(
     thisPresentationId: String?,
     selectedSlideIndex: Int?,
     imageLoader: ImageLoader,
+    apiKey: String,
+    deviceId: String,
     onSlideTap: (slideIndex: Int) -> Unit
 ) {
     val colors = LocalAppColors.current
@@ -445,6 +450,7 @@ private fun SlideRow(
             val isSlideSelected = isThisPresSelected && slide.slideIndex == selectedSlideIndex
             val request = ImageRequest.Builder(context)
                 .data(slide.thumbnailUrl)
+                .httpHeaders(apiImageHeaders(apiKey, deviceId))
                 .diskCacheKey("${slide.thumbnailUrl}_d$epochDay")
                 .size(500, 500)
                 .scale(Scale.FILL)

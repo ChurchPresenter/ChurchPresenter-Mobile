@@ -56,6 +56,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
@@ -228,6 +229,8 @@ fun PicturesScreen(
                             PictureCell(
                                 image = image,
                                 imageLoader = imageLoader,
+                                apiKey = appSettings.apiKey,
+                                deviceId = appSettings.deviceId,
                                 isSelected = selectedImage?.let { sel ->
                                     if (sel.fileName != null && image.fileName != null) sel.fileName == image.fileName
                                     else sel.index == image.index
@@ -359,6 +362,8 @@ fun PicturesScreen(
 private fun PictureCell(
     image: PictureImage,
     imageLoader: ImageLoader,
+    apiKey: String,
+    deviceId: String,
     isSelected: Boolean,
     onTap: () -> Unit
 ) {
@@ -371,12 +376,11 @@ private fun PictureCell(
     val epochDay = Clock.System.now().toEpochMilliseconds() / 86_400_000L
 
     // Build an explicit ImageRequest capping the decode size at 500×500 px.
-    // For a 4000×2252 source this sets inSampleSize ≈ 8, reducing the decoded
-    // bitmap from ~36 MB to ~600 KB and cutting decode time proportionally.
-    // The full JPEG bytes are still downloaded (API has no resize endpoint),
-    // but they are cached to disk so subsequent loads are instant.
+    // The API-key header is required — the /api/pictures/.../images endpoint is
+    // behind checkApiKey, so without it Coil gets a 401 and shows nothing.
     val request = ImageRequest.Builder(context)
         .data(image.thumbnailUrl)
+        .httpHeaders(apiImageHeaders(apiKey, deviceId))
         .diskCacheKey("${image.thumbnailUrl}_d$epochDay")
         .size(500, 500)
         .scale(Scale.FILL)
