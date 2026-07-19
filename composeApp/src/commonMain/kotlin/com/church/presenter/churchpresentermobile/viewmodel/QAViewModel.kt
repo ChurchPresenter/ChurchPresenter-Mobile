@@ -41,11 +41,21 @@ class QAViewModel(
         loadQuestions()
         viewModelScope.launch {
             eventService.questionsUpdated.collect {
-                if (_uiState.value is QAUiState.Admin) {
-                    loadQuestions(silent = true)
-                }
+                // Reload regardless of current state so the tab self-heals from a
+                // transient error (e.g. a 401 during the brief window before the
+                // API key was saved). silent = true avoids flashing the spinner.
+                loadQuestions(silent = true)
             }
         }
+    }
+
+    /**
+     * Called by the Q&A screen after the user saves Settings (host/port/API key).
+     * Re-fetches so a newly-entered API key takes effect immediately — without it
+     * the tab would keep showing the pre-key 401 until the app restarts.
+     */
+    fun onSettingsSaved() {
+        loadQuestions()
     }
 
     fun loadQuestions(silent: Boolean = false) {

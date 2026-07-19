@@ -73,12 +73,19 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun QAAdminScreen(
     viewModel: QAViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    settingsSaveToken: Int = 0,
 ) {
     val colors = LocalAppColors.current
     val uiState by viewModel.uiState.collectAsState()
     val actionError by viewModel.actionError.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Re-fetch when the user saves Settings so a newly-entered API key is used
+    // immediately (otherwise the tab would stay on the pre-key 401).
+    LaunchedEffect(settingsSaveToken) {
+        if (settingsSaveToken > 0) viewModel.onSettingsSaved()
+    }
 
     LaunchedEffect(actionError) {
         if (actionError != null) {

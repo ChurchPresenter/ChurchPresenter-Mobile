@@ -29,7 +29,13 @@ class QAService(private val settings: AppSettings) {
 
     private fun HttpRequestBuilder.applyApiKey() {
         val key = settings.apiKey
-        if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
+        if (key.isNotBlank()) {
+            header(ApiConstants.API_KEY_HEADER, key)
+            // The Q&A admin endpoints authenticate via X-QA-Password (checkQaAdmin),
+            // which the server sets equal to the API key when the key is enabled.
+            // Without this the admin routes return 401 "Invalid admin password".
+            header(ApiConstants.QA_ADMIN_PASSWORD_HEADER, key)
+        }
         header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
     }
 

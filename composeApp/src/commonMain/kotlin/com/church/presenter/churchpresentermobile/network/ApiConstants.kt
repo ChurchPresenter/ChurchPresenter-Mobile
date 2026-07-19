@@ -29,6 +29,12 @@ object ApiConstants {
     const val QA_ADD_ENDPOINT           = "qa/add"
     const val QA_CLEAR_DISPLAY_ENDPOINT = "qa/clear-display"
     const val API_KEY_HEADER        = "X-Api-Key"
+    /**
+     * Header the server's Q&A admin endpoints authenticate with (see the desktop
+     * `CompanionServer.checkQaAdmin`). When the server has the API key enabled it
+     * sets the Q&A admin password to the API key, so we send the same value here.
+     */
+    const val QA_ADMIN_PASSWORD_HEADER = "X-QA-Password"
     const val DEVICE_ID_HEADER      = "X-Device-Id"
     const val APP_VERSION_HEADER    = "X-App-Version"
     const val SERVER_VERSION_HEADER = "X-Server-Version"
