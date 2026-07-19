@@ -290,7 +290,7 @@ private fun EntryDetailSheet(
                 Spacer(Modifier.size(8.dp))
                 IconTileButton(
                     icon = Icons.Outlined.DesktopWindows,
-                    contentDescription = "Project",
+                    contentDescription = "Go live",
                     tint = colors.accent,
                     onClick = onProject,
                 )

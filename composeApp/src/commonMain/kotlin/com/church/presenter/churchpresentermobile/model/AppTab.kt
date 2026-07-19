@@ -13,6 +13,7 @@ enum class AppTab {
 enum class MoreDestination {
     QA,
     DICTIONARY,
-    ANNOUNCEMENTS
+    ANNOUNCEMENTS,
+    WEB
 }
 

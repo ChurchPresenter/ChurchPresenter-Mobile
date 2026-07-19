@@ -92,6 +92,7 @@ object AnalyticsScreen {
     const val MORE               = "More"
     const val DICTIONARY         = "Dictionary"
     const val ANNOUNCEMENTS      = "Announcements"
+    const val WEB                = "Web"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

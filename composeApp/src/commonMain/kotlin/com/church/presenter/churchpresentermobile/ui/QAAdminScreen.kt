@@ -325,7 +325,7 @@ private fun QuestionCard(
                     isLive -> ActionPill("Stop", PillStyle.RED_TINT, onStop)
                     question.status == QuestionStatus.APPROVED -> {
                         IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
-                        ActionPill("Project", PillStyle.ACCENT_FILL, onDisplay)
+                        ActionPill("Go live", PillStyle.ACCENT_FILL, onDisplay)
                     }
                     question.status == QuestionStatus.PENDING -> {
                         IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
@@ -333,7 +333,7 @@ private fun QuestionCard(
                     }
                     else -> { // DONE / DENIED (finished tab)
                         ActionPill("Approve", PillStyle.ACCENT_TINT, onApprove)
-                        ActionPill("Project", PillStyle.ACCENT_FILL, onApproveAndDisplay)
+                        ActionPill("Go live", PillStyle.ACCENT_FILL, onApproveAndDisplay)
                     }
                 }
             }

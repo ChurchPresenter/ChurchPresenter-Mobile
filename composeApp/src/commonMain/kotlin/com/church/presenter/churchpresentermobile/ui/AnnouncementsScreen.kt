@@ -197,7 +197,7 @@ fun AnnouncementsScreen(
                 ) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.size(8.dp))
-                    Text("Show on screen", color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Go live", color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
             Spacer(Modifier.height(12.dp))
