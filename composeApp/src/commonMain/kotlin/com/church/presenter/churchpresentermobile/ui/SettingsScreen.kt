@@ -63,6 +63,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.cd_close
 import churchpresentermobile.composeapp.generated.resources.settings_active_url_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
@@ -427,7 +428,7 @@ fun ServerStatusDialog(
                         },
                         navigationIcon = {
                             IconButton(onClick = onDismiss) {
-                                Icon(Icons.Filled.Close, contentDescription = "Close")
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_close))
                             }
                         },
                         actions = {

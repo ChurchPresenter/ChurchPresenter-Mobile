@@ -49,7 +49,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.cd_close
+import churchpresentermobile.composeapp.generated.resources.label_live
 import churchpresentermobile.composeapp.generated.resources.schedule_drawer_empty
+import churchpresentermobile.composeapp.generated.resources.schedule_drawer_error
+import churchpresentermobile.composeapp.generated.resources.schedule_drawer_item_count
 import churchpresentermobile.composeapp.generated.resources.schedule_drawer_title
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
@@ -124,14 +128,14 @@ fun ScheduleDrawerContent(
                     color = colors.text
                 )
                 Text(
-                    text = "${visibleItems.size} items",
+                    text = stringResource(Res.string.schedule_drawer_item_count, visibleItems.size),
                     fontSize = 11.sp,
                     color = colors.muted
                 )
             }
             IconTileButton(
                 icon = Icons.Filled.Close,
-                contentDescription = "Close",
+                contentDescription = stringResource(Res.string.cd_close),
                 tint = colors.muted,
                 onClick = onClose,
                 modifier = Modifier.size(32.dp)
@@ -141,9 +145,10 @@ fun ScheduleDrawerContent(
         HorizontalDivider(color = colors.borderSubtle)
 
         // ── Error banner ──────────────────────────────────────────────────
-        if (error != null) {
+        val currentError = error
+        if (currentError != null) {
             Text(
-                text = "Error: $error",
+                text = stringResource(Res.string.schedule_drawer_error, currentError),
                 color = colors.danger,
                 fontSize = 13.sp,
                 modifier = Modifier
@@ -257,7 +262,7 @@ private fun ScheduleItemRow(item: ScheduleItem, onClick: () -> Unit = {}) {
         if (item.active) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(colors.accent))
-                Text("Live", color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }

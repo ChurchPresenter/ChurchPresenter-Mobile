@@ -27,8 +27,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.cd_cast
+import churchpresentermobile.composeapp.generated.resources.cd_select
+import churchpresentermobile.composeapp.generated.resources.label_add_to_schedule
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Vertical FAB stack shown bottom-right on content screens (Songs detail,
@@ -56,7 +61,7 @@ fun FabStack(
         onSelect?.let {
             SquareFab(
                 icon = Icons.Outlined.Checklist,
-                contentDescription = "Select",
+                contentDescription = stringResource(Res.string.cd_select),
                 containerColor = colors.surfaceElevated,
                 iconColor = colors.accent,
                 shadowColor = if (colors.isDark) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.18f),
@@ -66,7 +71,7 @@ fun FabStack(
         onAddToSchedule?.let {
             SquareFab(
                 icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-                contentDescription = "Add to schedule",
+                contentDescription = stringResource(Res.string.label_add_to_schedule),
                 containerColor = colors.amber,
                 iconColor = colors.amberStroke,
                 shadowColor = colors.amber.copy(alpha = if (colors.isDark) 0.4f else 0.45f),
@@ -77,7 +82,7 @@ fun FabStack(
             Box {
                 SquareFab(
                     icon = Icons.Filled.Cast,
-                    contentDescription = "Cast",
+                    contentDescription = stringResource(Res.string.cd_cast),
                     containerColor = colors.accent,
                     iconColor = colors.onAccent,
                     shadowColor = colors.accent.copy(alpha = if (colors.isDark) 0.35f else 0.3f),

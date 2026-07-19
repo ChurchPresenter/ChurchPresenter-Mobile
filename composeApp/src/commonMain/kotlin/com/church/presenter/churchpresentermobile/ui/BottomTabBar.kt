@@ -29,18 +29,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.tab_bible
+import churchpresentermobile.composeapp.generated.resources.tab_media
+import churchpresentermobile.composeapp.generated.resources.tab_more
+import churchpresentermobile.composeapp.generated.resources.tab_present
+import churchpresentermobile.composeapp.generated.resources.tab_songs
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
-private data class TabSpec(val tab: AppTab, val label: String, val icon: ImageVector)
+private data class TabSpec(val tab: AppTab, val label: StringResource, val icon: ImageVector)
 
 private val tabSpecs = listOf(
-    TabSpec(AppTab.SONGS, "Songs", Icons.Outlined.MusicNote),
-    TabSpec(AppTab.BIBLE, "Bible", Icons.AutoMirrored.Outlined.MenuBook),
-    TabSpec(AppTab.MEDIA, "Media", Icons.Outlined.PlayCircleOutline),
-    TabSpec(AppTab.PRESENTATION, "Present", Icons.Outlined.DesktopWindows),
-    TabSpec(AppTab.MORE, "More", Icons.Filled.MoreHoriz),
+    TabSpec(AppTab.SONGS, Res.string.tab_songs, Icons.Outlined.MusicNote),
+    TabSpec(AppTab.BIBLE, Res.string.tab_bible, Icons.AutoMirrored.Outlined.MenuBook),
+    TabSpec(AppTab.MEDIA, Res.string.tab_media, Icons.Outlined.PlayCircleOutline),
+    TabSpec(AppTab.PRESENTATION, Res.string.tab_present, Icons.Outlined.DesktopWindows),
+    TabSpec(AppTab.MORE, Res.string.tab_more, Icons.Filled.MoreHoriz),
 )
 
 /**
@@ -74,6 +82,7 @@ fun BottomTabBar(
             tabSpecs.forEach { spec ->
                 val active = spec.tab == selectedTab
                 val contentColor = if (active) colors.accent else colors.dim
+                val label = stringResource(spec.label)
                 val interaction = remember { MutableInteractionSource() }
                 Column(
                     modifier = Modifier
@@ -96,13 +105,13 @@ fun BottomTabBar(
                     ) {
                         Icon(
                             imageVector = spec.icon,
-                            contentDescription = spec.label,
+                            contentDescription = label,
                             tint = contentColor,
                             modifier = Modifier.size(20.dp),
                         )
                     }
                     Text(
-                        text = spec.label,
+                        text = label,
                         fontSize = 10.sp,
                         fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
                         color = contentColor,

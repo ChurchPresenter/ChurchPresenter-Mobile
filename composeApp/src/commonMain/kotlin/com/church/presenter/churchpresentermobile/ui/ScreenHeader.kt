@@ -29,7 +29,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.cd_back
+import churchpresentermobile.composeapp.generated.resources.cd_schedule
+import churchpresentermobile.composeapp.generated.resources.cd_settings
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Shared top header for content screens in the redesign.
@@ -62,7 +67,7 @@ fun ScreenHeader(
             onBack != null -> {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(Res.string.cd_back),
                     tint = colors.accent,
                     modifier = Modifier
                         .size(24.dp)
@@ -73,7 +78,7 @@ fun ScreenHeader(
             onMenu != null -> {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = "Schedule",
+                    contentDescription = stringResource(Res.string.cd_schedule),
                     tint = colors.text,
                     modifier = Modifier
                         .size(22.dp)
@@ -118,7 +123,7 @@ fun GearButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     IconTileButton(
         icon = Icons.Outlined.Settings,
-        contentDescription = "Settings",
+        contentDescription = stringResource(Res.string.cd_settings),
         tint = colors.muted,
         onClick = onClick,
         modifier = modifier,

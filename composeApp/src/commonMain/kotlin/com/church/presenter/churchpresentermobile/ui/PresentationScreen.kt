@@ -49,6 +49,8 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.presentation_loading_error
 import churchpresentermobile.composeapp.generated.resources.presentation_no_items
 import churchpresentermobile.composeapp.generated.resources.presentation_retry
+import churchpresentermobile.composeapp.generated.resources.presentation_slide_desc
+import churchpresentermobile.composeapp.generated.resources.presentation_slide_live
 import churchpresentermobile.composeapp.generated.resources.presentation_slides
 import churchpresentermobile.composeapp.generated.resources.presentation_upload_file
 import churchpresentermobile.composeapp.generated.resources.presentation_uploading
@@ -471,7 +473,7 @@ private fun SlideRow(
             ) {
                 SubcomposeAsyncImage(
                     model = request,
-                    contentDescription = "Slide ${slide.slideIndex + 1}",
+                    contentDescription = stringResource(Res.string.presentation_slide_desc, slide.slideIndex + 1),
                     imageLoader = imageLoader,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -501,7 +503,7 @@ private fun SlideRow(
                 // ── "▶ LIVE" chip on the selected slide ──────────────────
                 if (isSlideSelected) {
                     Text(
-                        text = "▶ LIVE",
+                        text = stringResource(Res.string.presentation_slide_live),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.onAccent,

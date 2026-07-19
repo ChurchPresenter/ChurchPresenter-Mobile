@@ -30,8 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.app_title
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SplashScreen(onComplete: () -> Unit) {
@@ -84,7 +87,7 @@ fun SplashScreen(onComplete: () -> Unit) {
             Spacer(modifier = Modifier.height(28.dp))
 
             Text(
-                text = "Church Presenter",
+                text = stringResource(Res.string.app_title),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.7).sp,

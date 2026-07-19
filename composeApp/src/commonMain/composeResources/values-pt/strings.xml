@@ -1,0 +1,437 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Título</string>
+    <string name="songs_table_header_book">Livro</string>
+    <string name="songs_table_header_tune">Melodia</string>
+    <string name="songs_table_search_placeholder">Pesquisar por # ou título…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Nenhuma música disponível</string>
+    <string name="songs_table_no_match">Nenhuma música corresponde ao filtro</string>
+    <string name="songs_table_loading_error">Falha ao carregar as músicas</string>
+    <string name="songs_table_retry">Tentar novamente</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Todos os livros</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Abrir configurações</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_server_section">Servidor</string>
+    <string name="settings_host_label">Host / Endereço IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Porta</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">Chave de API (opcional)</string>
+    <string name="settings_api_key_placeholder">Deixe em branco se não for necessário</string>
+    <string name="settings_display_name_label">Seu nome (para Perguntas e Respostas)</string>
+    <string name="settings_display_name_placeholder">Deixe em branco para usar o ID do dispositivo</string>
+    <string name="settings_save">Salvar</string>
+    <string name="settings_cancel">Cancelar</string>
+    <string name="settings_invalid_port">A porta deve ser um número entre 1 e 65535</string>
+    <string name="settings_host_empty">O host não pode estar vazio</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Aparência</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+
+    <!-- Privacy -->
+    <string name="settings_privacy_section">Privacidade</string>
+    <string name="settings_telemetry_label">Compartilhar dados de uso e falhas</string>
+    <string name="settings_telemetry_description">Ajuda-nos a encontrar e corrigir erros. Desative para parar de enviar dados de análise e relatórios de falhas.</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Músicas</string>
+    <string name="tab_bible">Bíblia</string>
+    <string name="tab_pictures">Imagens</string>
+    <string name="tab_presentation">Apresentação</string>
+    <string name="tab_qa_admin">Perguntas e Respostas</string>
+
+    <!-- Q&A Admin Panel -->
+    <string name="qa_admin_session_active">Sessão ativa</string>
+    <string name="qa_admin_session_stopped">Sessão parada</string>
+    <string name="qa_admin_incoming_tab">Recebidas (%1$d)</string>
+    <string name="qa_admin_finished_tab">Concluídas (%1$d)</string>
+    <string name="qa_admin_no_incoming">Nenhuma pergunta recebida</string>
+    <string name="qa_admin_no_finished">Nenhuma pergunta concluída</string>
+    <string name="qa_admin_approve">Aprovar</string>
+    <string name="qa_admin_deny">Recusar</string>
+    <string name="qa_admin_go_live">Exibir ao vivo</string>
+    <string name="qa_admin_done">Marcar como concluída</string>
+    <string name="qa_admin_clear_display">Limpar exibição</string>
+    <string name="qa_admin_now_live">Ao vivo:</string>
+    <string name="qa_admin_edit_hint">Editar texto da pergunta…</string>
+    <string name="qa_admin_add_question">Adicionar pergunta</string>
+    <string name="qa_admin_add_question_hint">Digite sua pergunta…</string>
+    <string name="qa_admin_save">Salvar</string>
+    <string name="qa_admin_cancel">Cancelar</string>
+    <string name="qa_admin_error_retry">Tentar novamente</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bíblia — em breve</string>
+    <string name="pictures_coming_soon">🖼  Imagens — em breve</string>
+    <string name="presentation_coming_soon">📽  Apresentação — em breve</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Nenhuma apresentação disponível</string>
+    <string name="presentation_loading_error">Falha ao carregar as apresentações</string>
+    <string name="presentation_retry">Tentar novamente</string>
+    <string name="presentation_slides">slides</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Nenhuma imagem disponível</string>
+    <string name="pictures_loading_error">Falha ao carregar as imagens</string>
+    <string name="pictures_retry">Tentar novamente</string>
+    <string name="pictures_photos">fotos</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Pesquisar livros…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Nenhum livro da Bíblia disponível</string>
+    <string name="bible_no_match">Nenhum livro corresponde à sua pesquisa</string>
+    <string name="bible_chapter_label">Capítulo</string>
+    <string name="bible_chapters_title">Capítulos</string>
+    <string name="bible_no_verses">Nenhum versículo disponível</string>
+    <string name="bible_back">← Voltar</string>
+    <string name="bible_loading_error">Falha ao carregar</string>
+    <string name="bible_retry">Tentar novamente</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Programação</string>
+    <string name="schedule_drawer_refresh">Atualizar programação</string>
+    <string name="schedule_drawer_empty">Nenhum item na programação</string>
+    <string name="schedule_drawer_error">Erro: %1$s</string>
+    <string name="schedule_drawer_open">Abrir programação</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Adicionar à programação</string>
+    <string name="song_detail_schedule_request_sent">Solicitação enviada ✓</string>
+    <string name="song_detail_project_to_screen">Projetar na tela</string>
+    <string name="song_detail_stop_projecting">Parar projeção</string>
+    <string name="song_detail_fab_actions">Ações</string>
+    <string name="song_detail_fab_close_actions">Fechar ações</string>
+    <string name="song_detail_projecting_badge">▶  Projetando</string>
+    <string name="song_detail_no_lyrics">Nenhuma letra disponível</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Adicionar à programação</string>
+    <string name="bible_detail_schedule_request_sent">Solicitação enviada ✓</string>
+    <string name="bible_detail_project_to_screen">Projetar na tela</string>
+    <string name="bible_detail_stop_projecting">Parar projeção</string>
+    <string name="bible_detail_fab_actions">Ações</string>
+    <string name="bible_detail_fab_close_actions">Fechar ações</string>
+    <string name="bible_detail_projecting_badge">▶  Projetando</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Adicionar à programação</string>
+    <string name="pictures_schedule_request_sent">Solicitação enviada ✓</string>
+    <string name="pictures_project_to_screen">Projetar na tela</string>
+    <string name="pictures_stop_projecting">Parar projeção</string>
+    <string name="pictures_pick_from_device">Escolher do dispositivo</string>
+
+    <!-- Shared action FAB labels (used by ContentActionButtons across all screens) -->
+    <string name="action_add_to_schedule">Adicionar à programação</string>
+    <string name="action_project_to_screen">Projetar na tela</string>
+    <string name="action_stop_projecting">Parar projeção</string>
+    <string name="action_clear_display">Limpar exibição</string>
+    <string name="action_hold_display">Manter exibição</string>
+    <string name="action_multi_select">Selecionar vários</string>
+    <string name="bible_multi_select_count">%1$d selecionados</string>
+    <string name="pictures_uploading">Enviando…</string>
+    <string name="upload_overlay_subtitle">Aguarde, não feche o aplicativo</string>
+    <string name="upload_overlay_photo_counter">Foto %1$d de %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Imagem adicionada à programação</string>
+    <string name="toast_pictures_failed_to_add_schedule">Falha ao adicionar a imagem à programação: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Adicionar à programação</string>
+    <string name="presentation_schedule_request_sent">Solicitação enviada ✓</string>
+    <string name="presentation_project_to_screen">Projetar na tela</string>
+    <string name="presentation_stop_projecting">Parar projeção</string>
+    <string name="presentation_upload_file">Enviar apresentação</string>
+    <string name="presentation_uploading">Enviando…</string>
+    <string name="toast_presentation_added_to_schedule">Apresentação adicionada à programação</string>
+    <string name="toast_presentation_failed_to_add_schedule">Falha ao adicionar a apresentação à programação: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Falha ao selecionar a apresentação: %1$s</string>
+    <string name="toast_upload_unsupported">Envio não suportado por este servidor. Atualize o ChurchPresenter no seu computador para a versão mais recente.</string>
+    <string name="toast_upload_file_too_large">O arquivo é grande demais para o servidor aceitar. Tente um arquivo menor.</string>
+    <string name="toast_upload_server_error">O servidor rejeitou o envio: %1$s</string>
+    <string name="toast_upload_failed">Falha no envio: %1$s</string>
+    <string name="toast_upload_reload_failed">Enviado, mas falha ao recarregar a lista: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">A música está agora ao vivo na tela</string>
+    <string name="toast_request_failed">Falha na solicitação</string>
+    <string name="toast_no_song_selected">Nenhuma música selecionada</string>
+    <string name="toast_song_added_to_schedule">\"%1$s\" adicionada à programação</string>
+    <string name="toast_failed_to_project">Falha ao projetar a música: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Falha ao adicionar à programação: %1$s</string>
+    <string name="toast_request_denied">A solicitação foi recusada</string>
+    <string name="toast_session_blocked">A sessão está bloqueada — nenhuma outra solicitação será aceita</string>
+    <string name="toast_request_rejected">Solicitação rejeitada pelo servidor (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Solicitação rejeitada: %1$s</string>
+    <string name="toast_bible_live">A passagem bíblica está agora ao vivo na tela</string>
+    <string name="toast_bible_added_to_schedule">\"%1$s\" adicionada à programação</string>
+    <string name="toast_failed_to_project_bible">Falha ao projetar: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Falha ao adicionar à programação: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Servidor definido como %1$s:%2$s</string>
+    <string name="qr_scan_button">Ler código QR</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Confiar no certificado do servidor</string>
+    <string name="cert_setup_subtitle">Configuração única necessária</string>
+    <string name="cert_setup_intro">O ChurchPresenter usa um certificado HTTPS privado para comunicação segura. Você precisa instalá-lo uma vez para que seu dispositivo confie na conexão.</string>
+    <string name="cert_setup_scan_title">Leia o código QR do certificado</string>
+    <string name="cert_setup_scan_desktop_hint">No ChurchPresenter para computador: Configurações → Servidor → pressione \"Baixar certificado\" para exibir o código QR.</string>
+    <string name="cert_setup_scan_button">Ler código QR</string>
+    <string name="cert_setup_scan_or_divider">ou use o endereço salvo</string>
+    <string name="cert_setup_url_scanned">✓ URL lida</string>
+    <string name="cert_setup_url_label">URL do certificado</string>
+    <string name="cert_setup_open_button">Abrir URL do certificado</string>
+    <string name="cert_setup_step2_ios_title">iOS — Instale o perfil</string>
+    <string name="cert_setup_step2_ios_body">O Safari pedirá para baixar um perfil de configuração. Toque em Permitir, depois vá em Ajustes → Geral → Gerenciamento de VPN e Dispositivo, toque em ChurchPresenter e instale.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Confie no certificado</string>
+    <string name="cert_setup_step3_ios_body">Ajustes → Geral → Sobre → Ajustes de Confiança do Certificado → ative a confiança total para ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Instale o certificado</string>
+    <string name="cert_setup_step2_android_body">O Chrome baixa o arquivo .crt. Toque nele na notificação de Downloads, escolha \"Certificado CA\" e dê um nome como \"ChurchPresenter\".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ \"Não é possível instalar de fontes desconhecidas\"?</string>
+    <string name="cert_setup_android_unknown_sources_body">O Android pode bloquear a instalação se o seu navegador não tiver permissão para instalar arquivos. Vá em Configurações → Apps → [seu navegador] → Instalar apps desconhecidos, depois ative \"Permitir desta fonte\". Volte aqui e toque no arquivo novamente.</string>
+    <string name="cert_setup_fingerprint_title">Verifique a impressão digital (recomendado)</string>
+    <string name="cert_setup_fingerprint_body">Compare esta impressão digital com a que o ChurchPresenter para computador mostra em Configurações → Servidor → Certificado SHA-256. Elas devem coincidir.</string>
+    <string name="cert_setup_fingerprint_unavailable">Conecte-se ao servidor primeiro para ver a impressão digital</string>
+    <string name="cert_setup_done_button">Concluído — Certificado instalado</string>
+    <string name="cert_setup_skip_button">Ignorar por enquanto</string>
+    <string name="cert_setup_skip_note">Você pode voltar a este guia a qualquer momento nas Configurações.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Conectar ao computador</string>
+    <string name="connect_setup_subtitle">Configuração única necessária</string>
+    <string name="connect_setup_intro">O ChurchPresenter Mobile conecta-se ao aplicativo ChurchPresenter para computador na sua rede local. Leia o código QR do computador para configurar a conexão automaticamente.</string>
+    <string name="connect_setup_skip_button">Ignorar por enquanto</string>
+    <string name="connect_setup_done_button">Concluído — Conectado</string>
+    <string name="connect_setup_skip_note">Você pode ler o código QR a qualquer momento nas Configurações.</string>
+    <string name="connect_setup_step1_title">Abra o ChurchPresenter no seu computador</string>
+    <string name="connect_setup_step1_body">Inicie o aplicativo ChurchPresenter para computador e certifique-se de que ele está na mesma rede Wi-Fi que este dispositivo.</string>
+    <string name="connect_setup_step2_title">Exiba o código QR de conexão</string>
+    <string name="connect_setup_step2_body">No aplicativo para computador vá em Configurações → Mobile → e pressione \"Mostrar código QR\". Um código QR com os detalhes da conexão aparecerá na tela.</string>
+    <string name="connect_setup_step3_title">Leia o código QR abaixo</string>
+    <string name="connect_setup_step3_body">Toque no botão abaixo para abrir a câmera e ler o código QR exibido no computador. A conexão será configurada automaticamente.</string>
+    <string name="connect_setup_scan_button">Ler código QR</string>
+    <string name="connect_setup_connected">✓ Conectado a %1$s:%2$s</string>
+    <string name="connect_setup_no_camera_note">Nenhuma câmera detectada neste dispositivo. Insira os detalhes da conexão manualmente:</string>
+    <string name="connect_setup_manual_entry_toggle">Inserir manualmente</string>
+    <string name="connect_setup_scan_instead_toggle">Ler código QR</string>
+    <string name="connect_setup_manual_apply_button">Aplicar</string>
+
+    <!-- Settings Screen (additional) -->
+    <string name="settings_active_url_label">Conectando atualmente a:</string>
+    <string name="settings_reset_to_default">Restaurar padrão</string>
+    <string name="settings_draft_url_label">Conectará a isto após salvar:</string>
+    <string name="settings_check_status">Verificar status do servidor</string>
+    <string name="settings_developer_section">Desenvolvedor</string>
+    <string name="settings_send_test_error">Enviar erro de teste ao Sentry</string>
+    <string name="settings_test_error_sent">✓ Erro de teste enviado ao Sentry</string>
+    <string name="settings_check_status_description">Verificar status do servidor</string>
+    <string name="settings_status_recheck">Verificar novamente</string>
+    <string name="settings_status_server_version">Servidor: %1$s</string>
+    <string name="settings_status_mobile_version">Mobile: %1$s</string>
+    <string name="settings_status_api_key_enabled">Chave de API: ativada</string>
+    <string name="settings_status_api_key_none">Chave de API: nenhuma</string>
+    <string name="settings_status_endpoints">Endpoints</string>
+    <string name="settings_status_bibles">Bíblias</string>
+    <string name="settings_status_songbooks">Hinários</string>
+    <string name="settings_status_none">nenhum</string>
+
+    <!-- Status Screen -->
+    <string name="status_connecting">Conectando ao servidor…</string>
+    <string name="status_connected">Servidor conectado</string>
+    <string name="status_continue">Continuar</string>
+    <string name="status_retry">Tentar novamente</string>
+    <string name="status_open_settings">Abrir configurações</string>
+    <string name="status_continue_anyway">Continuar mesmo assim</string>
+    <string name="status_limited_functionality">Funcionalidade limitada</string>
+    <string name="status_server_version">Versão do servidor: %1$s</string>
+    <string name="status_issues_detected">Os seguintes problemas foram detectados no servidor conectado:</string>
+    <string name="status_endpoint_unavailable">O endpoint de status ainda não está disponível nesta versão do servidor — atualize o ChurchPresenter para computador para obter o relatório completo de recursos.</string>
+    <string name="status_error_title">Não foi possível acessar o servidor</string>
+    <string name="status_permissions_title">Permissões deste dispositivo</string>
+    <string name="status_permission_present">Controlar apresentação</string>
+    <string name="status_permission_schedule">Adicionar à programação</string>
+    <string name="status_permission_upload">Enviar arquivos</string>
+    <string name="status_permission_blocked">— bloqueado</string>
+    <string name="status_info_bibles">Bíblias disponíveis</string>
+    <string name="status_info_songbooks">Hinários disponíveis</string>
+    <string name="status_info_features">Recursos ativados</string>
+
+    <!-- Status Warnings -->
+    <string name="status_warn_no_api_key_title">Nenhuma chave de API configurada</string>
+    <string name="status_warn_no_api_key_body">O servidor não tem chave de API definida. Certos endpoints protegidos podem rejeitar solicitações. Considere ativar uma chave de API nas configurações do servidor ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Nenhuma tradução da Bíblia disponível</string>
+    <string name="status_warn_no_bibles_body">O servidor não tem traduções da Bíblia carregadas. A aba Bíblia ficará vazia. Adicione uma tradução no aplicativo ChurchPresenter para computador.</string>
+    <string name="status_warn_no_songbooks_title">Nenhum hinário disponível</string>
+    <string name="status_warn_no_songbooks_body">O servidor não tem hinários carregados. A aba Músicas ficará vazia. Importe um hinário no aplicativo ChurchPresenter para computador.</string>
+    <string name="status_warn_present_blocked_title">Controle de apresentação bloqueado</string>
+    <string name="status_warn_present_blocked_body">Este dispositivo não tem permissão para controlar a apresentação (projetar, limpar, selecionar slides). Peça ao administrador do servidor para conceder a este dispositivo a permissão de Apresentador.</string>
+    <string name="status_warn_schedule_blocked_title">Edição da programação bloqueada</string>
+    <string name="status_warn_schedule_blocked_body">Este dispositivo não tem permissão para adicionar itens à programação. Peça ao administrador do servidor para conceder a este dispositivo a permissão de Programação.</string>
+    <string name="status_warn_upload_blocked_title">Envio de arquivos bloqueado</string>
+    <string name="status_warn_upload_blocked_body">Este dispositivo não tem permissão para enviar apresentações ou imagens. Peça ao administrador do servidor para conceder a este dispositivo a permissão de Envio.</string>
+    <string name="upload_blocked_toast">O envio de arquivos está desativado para este dispositivo. Peça ao administrador do servidor para conceder a permissão de Envio.</string>
+    <string name="status_warn_unknown_version_title">Versão do servidor não reconhecida</string>
+    <string name="status_warn_unknown_version_body">O servidor informou a versão \'%1$s\'. Alguns recursos deste aplicativo podem não ser compatíveis com esta versão.</string>
+    <string name="status_warn_missing_endpoint_title">Endpoint de API ausente: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">O servidor não expõe o endpoint \'%1$s\'. Os recursos que dependem dele ficarão indisponíveis.</string>
+
+    <!-- Media tab -->
+    <string name="media_title">Mídia</string>
+    <string name="media_no_media_loaded">Nenhuma mídia carregada</string>
+    <string name="media_playing">Reproduzindo</string>
+    <string name="media_playing_on_desktop">Reproduzindo no computador</string>
+    <string name="media_local_ready">Arquivo local · pronto para ir ao vivo</string>
+    <string name="media_pick_to_upload">Escolha um arquivo para enviar</string>
+    <string name="media_source_network_url">URL de rede</string>
+    <string name="media_source_upload">Enviar do telefone</string>
+    <string name="media_subtitle_url">%1$s · URL de rede</string>
+    <string name="media_subtitle_empty">Cole uma URL de rede abaixo para enviar mídia</string>
+    <string name="media_on_screen">NA TELA</string>
+    <string name="media_cd_stop">Parar</string>
+    <string name="media_cd_back10">Voltar 10 segundos</string>
+    <string name="media_cd_forward10">Avançar 10 segundos</string>
+    <string name="media_cd_play">Reproduzir</string>
+    <string name="media_cd_pause">Pausar</string>
+    <string name="media_cd_mute">Silenciar</string>
+    <string name="media_add_to_schedule">Adicionar à programação</string>
+    <string name="media_go_live">Exibir ao vivo</string>
+    <string name="media_clear_screen">Limpar tela</string>
+    <string name="media_source_label">FONTE</string>
+    <string name="media_will_send">Vai enviar: %1$s</string>
+    <string name="media_target_uploaded">Arquivo enviado · %1$s</string>
+    <string name="media_target_loaded">Carregado no computador · %1$s</string>
+    <string name="media_target_url">URL de rede</string>
+    <string name="media_target_none">Escolha uma fonte abaixo para enviar mídia</string>
+    <string name="media_load_label">CARREGAR MÍDIA</string>
+    <string name="media_uploading_percent">Enviando… %1$d%%</string>
+    <string name="media_choose_file">Escolha um arquivo de vídeo ou áudio</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Os envios estão desativados no computador</string>
+    <string name="media_uploads_disabled_hint">Ative “Permitir envios de arquivos de dispositivos móveis” nas configurações de Servidor do aplicativo para computador.</string>
+    <string name="media_playing_generic">mídia</string>
+
+    <!-- More launcher -->
+    <string name="more_photos_title">Fotos</string>
+    <string name="more_photos_subtitle">Navegue e projete pastas de imagens</string>
+    <string name="more_qa_title">Perguntas e Respostas</string>
+    <string name="more_qa_subtitle">Revise e projete perguntas do público</string>
+    <string name="more_dictionary_title">Dicionário</string>
+    <string name="more_dictionary_subtitle">Léxico hebraico e grego de Strong</string>
+    <string name="more_announcements_title">Avisos</string>
+    <string name="more_announcements_subtitle">Texto, relógios e cronômetros de contagem regressiva</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Projetar uma página web na tela</string>
+    <!-- Section detail header titles -->
+    <string name="strongs_dictionary_title">Dicionário de Strong</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Avisos</string>
+
+    <!-- Shared generic labels / content descriptions -->
+    <string name="action_clear">Limpar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_go_live">Exibir ao vivo</string>
+    <string name="label_add_to_schedule">Adicionar à programação</string>
+    <string name="label_live">Ao vivo</string>
+    <string name="cd_delete">Excluir</string>
+    <string name="cd_close">Fechar</string>
+    <string name="cd_select">Selecionar</string>
+    <string name="cd_cast">Transmitir</string>
+    <string name="cd_back">Voltar</string>
+    <string name="cd_settings">Configurações</string>
+    <string name="cd_schedule">Programação</string>
+    <string name="overline_on_screen_preview">Prévia na tela</string>
+
+    <!-- Announcements Screen -->
+    <string name="announcements_text_placeholder">Texto do aviso…</string>
+    <string name="overline_duration">Duração</string>
+    <string name="overline_target_time">Horário alvo</string>
+    <string name="overline_animation">Animação</string>
+    <string name="stepper_hrs">Horas</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Seg</string>
+    <string name="stepper_hour">Hora</string>
+    <string name="stepper_font_size">Tamanho da fonte</string>
+    <string name="swatch_text">Texto</string>
+    <string name="swatch_background">Fundo</string>
+    <string name="announcements_clock_desc">Mostra a hora atual, ao vivo.</string>
+    <string name="announcements_count_up_desc">Conta a partir do zero quando vai ao vivo.</string>
+    <string name="announcements_animation_duration_label">DURAÇÃO DA ANIMAÇÃO</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SALVOS</string>
+    <string name="announcements_add_new">+ Novo</string>
+    <string name="announcements_no_saved">Nenhum aviso salvo ainda. Componha um e toque em “+ Novo”.</string>
+    <string name="color_picker_title">Escolha uma cor</string>
+    <string name="color_picker_use">Usar cor</string>
+    <string name="color_slider_hue">Matiz</string>
+    <string name="color_slider_saturation">Saturação</string>
+    <string name="color_slider_brightness">Brilho</string>
+    <string name="cd_custom_color">Cor personalizada</string>
+    <string name="announcements_preview_placeholder">Seu aviso</string>
+
+    <!-- Web Screen -->
+    <string name="web_bookmarks_label">FAVORITOS</string>
+    <string name="web_add_bookmark">+ Adicionar</string>
+    <string name="web_no_bookmarks">Nenhum favorito ainda. Insira uma URL e toque em “+ Adicionar”.</string>
+    <string name="web_url_placeholder">example.org</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_search_placeholder">Pesquisar número, palavra ou significado…</string>
+    <string name="dictionary_filter_all">Todos</string>
+    <string name="dictionary_filter_hebrew">Hebraico</string>
+    <string name="dictionary_filter_greek">Grego</string>
+    <string name="dictionary_no_entries">Nenhuma entrada encontrada</string>
+    <string name="dictionary_uses">USOS</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Classe gramatical</string>
+    <string name="dictionary_occurrences">Ocorrências</string>
+    <string name="dictionary_root">Raiz</string>
+    <string name="dictionary_definition">Definição</string>
+    <string name="dictionary_kjv_usage">Uso na KJV</string>
+
+    <!-- Q&A Admin (additional) -->
+    <string name="qa_edit_question_title">Editar pergunta</string>
+    <string name="qa_delete_question">Excluir pergunta</string>
+    <string name="qa_submitted_by">Enviada por %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Parar</string>
+    <string name="qa_action_approve">Aprovar</string>
+    <string name="cd_edit">Editar</string>
+    <string name="cd_deny">Recusar</string>
+    <string name="qa_badge_live">AO VIVO</string>
+    <string name="qa_badge_approved">✓ Aprovada</string>
+    <string name="qa_badge_denied">Recusada</string>
+    <string name="qa_badge_answered">Respondida</string>
+
+    <!-- Schedule Drawer (additional) -->
+    <string name="schedule_drawer_item_count">%1$d itens</string>
+
+    <!-- Presentation Screen (additional) -->
+    <string name="presentation_slide_desc">Slide %1$d</string>
+    <string name="presentation_slide_live">▶ AO VIVO</string>
+
+    <!-- Bottom Tab Bar -->
+    <string name="tab_media">Mídia</string>
+    <string name="tab_present">Apresentar</string>
+    <string name="tab_more">Mais</string>
+
+    <!-- Count / summary labels -->
+    <string name="songs_count">%1$d músicas</string>
+    <string name="bible_chapters_count">%1$d cap</string>
+    <string name="status_version_line">Servidor: %1$s · Mobile: %2$s</string>
+</resources>

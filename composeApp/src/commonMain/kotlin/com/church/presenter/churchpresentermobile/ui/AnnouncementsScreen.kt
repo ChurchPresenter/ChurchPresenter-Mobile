@@ -55,6 +55,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.action_cancel
+import churchpresentermobile.composeapp.generated.resources.action_clear
+import churchpresentermobile.composeapp.generated.resources.action_go_live
+import churchpresentermobile.composeapp.generated.resources.animation_duration_ms
+import churchpresentermobile.composeapp.generated.resources.announcements_add_new
+import churchpresentermobile.composeapp.generated.resources.announcements_animation_duration_label
+import churchpresentermobile.composeapp.generated.resources.announcements_clock_desc
+import churchpresentermobile.composeapp.generated.resources.announcements_count_up_desc
+import churchpresentermobile.composeapp.generated.resources.announcements_no_saved
+import churchpresentermobile.composeapp.generated.resources.announcements_preview_placeholder
+import churchpresentermobile.composeapp.generated.resources.announcements_saved_label
+import churchpresentermobile.composeapp.generated.resources.announcements_text_placeholder
+import churchpresentermobile.composeapp.generated.resources.cd_custom_color
+import churchpresentermobile.composeapp.generated.resources.cd_delete
+import churchpresentermobile.composeapp.generated.resources.color_picker_title
+import churchpresentermobile.composeapp.generated.resources.color_picker_use
+import churchpresentermobile.composeapp.generated.resources.color_slider_brightness
+import churchpresentermobile.composeapp.generated.resources.color_slider_hue
+import churchpresentermobile.composeapp.generated.resources.color_slider_saturation
+import churchpresentermobile.composeapp.generated.resources.label_add_to_schedule
+import churchpresentermobile.composeapp.generated.resources.overline_animation
+import churchpresentermobile.composeapp.generated.resources.overline_duration
+import churchpresentermobile.composeapp.generated.resources.overline_on_screen_preview
+import churchpresentermobile.composeapp.generated.resources.overline_target_time
+import churchpresentermobile.composeapp.generated.resources.stepper_font_size
+import churchpresentermobile.composeapp.generated.resources.stepper_hour
+import churchpresentermobile.composeapp.generated.resources.stepper_hrs
+import churchpresentermobile.composeapp.generated.resources.stepper_min
+import churchpresentermobile.composeapp.generated.resources.stepper_sec
+import churchpresentermobile.composeapp.generated.resources.swatch_background
+import churchpresentermobile.composeapp.generated.resources.swatch_text
+import org.jetbrains.compose.resources.stringResource
 import com.church.presenter.churchpresentermobile.model.AnnouncementAnimation
 import com.church.presenter.churchpresentermobile.model.AnnouncementType
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -104,7 +137,7 @@ fun AnnouncementsScreen(
 
             Spacer(Modifier.height(18.dp))
             // ── On-screen preview ─────────────────────────────────────────
-            Overline("On-screen preview")
+            Overline(stringResource(Res.string.overline_on_screen_preview))
             PreviewCard(form)
 
             Spacer(Modifier.height(14.dp))
@@ -113,26 +146,26 @@ fun AnnouncementsScreen(
                 AnnouncementType.TEXT -> TextArea(
                     value = form.text,
                     onValueChange = { v -> viewModel.update { it.copy(text = v) } },
-                    placeholder = "Announcement text…",
+                    placeholder = stringResource(Res.string.announcements_text_placeholder),
                 )
                 AnnouncementType.COUNTDOWN -> {
-                    Overline("Duration")
+                    Overline(stringResource(Res.string.overline_duration))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Stepper("Hrs", form.hours, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(hours = v) } }
-                        Stepper("Min", form.minutes, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(minutes = v) } }
-                        Stepper("Sec", form.seconds, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(seconds = v) } }
+                        Stepper(stringResource(Res.string.stepper_hrs), form.hours, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(hours = v) } }
+                        Stepper(stringResource(Res.string.stepper_min), form.minutes, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(minutes = v) } }
+                        Stepper(stringResource(Res.string.stepper_sec), form.seconds, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(seconds = v) } }
                     }
                 }
                 AnnouncementType.COUNTDOWN_TO_TIME -> {
-                    Overline("Target time")
+                    Overline(stringResource(Res.string.overline_target_time))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Stepper("Hour", form.targetHour, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetHour = v) } }
-                        Stepper("Min", form.targetMinute, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetMinute = v) } }
+                        Stepper(stringResource(Res.string.stepper_hour), form.targetHour, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetHour = v) } }
+                        Stepper(stringResource(Res.string.stepper_min), form.targetMinute, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetMinute = v) } }
                     }
                 }
                 AnnouncementType.CLOCK, AnnouncementType.COUNT_UP -> Text(
-                    if (form.type == AnnouncementType.CLOCK) "Shows the current time, live."
-                    else "Counts up from zero when it goes live.",
+                    if (form.type == AnnouncementType.CLOCK) stringResource(Res.string.announcements_clock_desc)
+                    else stringResource(Res.string.announcements_count_up_desc),
                     color = colors.muted, fontSize = 13.sp,
                 )
             }
@@ -140,24 +173,24 @@ fun AnnouncementsScreen(
             Spacer(Modifier.height(16.dp))
             // ── Colors: TEXT + BACKGROUND (matches design) ────────────────
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                SwatchGroup("Text", TEXT_SWATCHES, form.textColor,
+                SwatchGroup(stringResource(Res.string.swatch_text), TEXT_SWATCHES, form.textColor,
                     onSelect = { hex -> viewModel.update { it.copy(textColor = hex) } },
                     onOpenPicker = { pickerTarget = "text" })
-                SwatchGroup("Background", BG_SWATCHES, form.backgroundColor,
+                SwatchGroup(stringResource(Res.string.swatch_background), BG_SWATCHES, form.backgroundColor,
                     onSelect = { hex -> viewModel.update { it.copy(backgroundColor = hex) } },
                     onOpenPicker = { pickerTarget = "background" })
             }
 
             Spacer(Modifier.height(18.dp))
             // ── Style extras (font size / animation) ──────────────────────
-            Stepper("Font size", form.fontSize, 16, 160, step = 4) { v -> viewModel.update { it.copy(fontSize = v) } }
+            Stepper(stringResource(Res.string.stepper_font_size), form.fontSize, 16, 160, step = 4) { v -> viewModel.update { it.copy(fontSize = v) } }
             Spacer(Modifier.height(14.dp))
-            Overline("Animation")
+            Overline(stringResource(Res.string.overline_animation))
             AnimationDropdown(form.animation) { a -> viewModel.update { it.copy(animation = a) } }
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("ANIMATION DURATION", color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text("${form.animationDuration} ms", color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.announcements_animation_duration_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
+                Text(stringResource(Res.string.animation_duration_ms, form.animationDuration), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             }
             Slider(
                 value = form.animationDuration.toFloat(),
@@ -183,7 +216,7 @@ fun AnnouncementsScreen(
                         .clickable { viewModel.clearScreen() },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("Clear", color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 }
                 Row(
                     modifier = Modifier
@@ -197,7 +230,7 @@ fun AnnouncementsScreen(
                 ) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.size(8.dp))
-                    Text("Go live", color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -214,18 +247,18 @@ fun AnnouncementsScreen(
             ) {
                 Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
-                Text("Add to schedule", color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(Modifier.height(24.dp))
             // ── Saved (matches design) ────────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("SAVED", color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text("+ New", color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.saveCurrent() })
+                Text(stringResource(Res.string.announcements_saved_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
+                Text(stringResource(Res.string.announcements_add_new), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.saveCurrent() })
             }
             Spacer(Modifier.height(10.dp))
             if (saved.isEmpty()) {
-                Text("No saved announcements yet. Compose one and tap “+ New”.", color = colors.muted, fontSize = 13.sp)
+                Text(stringResource(Res.string.announcements_no_saved), color = colors.muted, fontSize = 13.sp)
             } else {
                 saved.forEach { item ->
                     SavedRow(
@@ -314,7 +347,7 @@ private fun SwatchGroup(label: String, swatches: List<String>, selected: String,
                     .clickable(onClick = onOpenPicker),
                 contentAlignment = Alignment.Center,
             ) {
-                if (!isCustom) Icon(Icons.Outlined.Palette, contentDescription = "Custom color", tint = colors.muted, modifier = Modifier.size(16.dp))
+                if (!isCustom) Icon(Icons.Outlined.Palette, contentDescription = stringResource(Res.string.cd_custom_color), tint = colors.muted, modifier = Modifier.size(16.dp))
             }
         }
     }
@@ -339,7 +372,7 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
                 .background(colors.sheetBackground)
                 .padding(20.dp),
         ) {
-            Text("Pick a color", color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(Res.string.color_picker_title), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(14.dp))
             Box(
                 Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(12.dp)).background(current)
@@ -347,9 +380,9 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
                 contentAlignment = Alignment.Center,
             ) { Text(hex, color = if (value > 0.6f && sat < 0.5f) Color.Black else Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium) }
 
-            ColorSlider("Hue", hue / 360f, colors.accent) { hue = it * 360f }
-            ColorSlider("Saturation", sat, colors.accent) { sat = it }
-            ColorSlider("Brightness", value, colors.accent) { value = it }
+            ColorSlider(stringResource(Res.string.color_slider_hue), hue / 360f, colors.accent) { hue = it * 360f }
+            ColorSlider(stringResource(Res.string.color_slider_saturation), sat, colors.accent) { sat = it }
+            ColorSlider(stringResource(Res.string.color_slider_brightness), value, colors.accent) { value = it }
 
             Spacer(Modifier.height(14.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -357,12 +390,12 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
                     Modifier.weight(1f).height(46.dp).clip(RoundedCornerShape(12.dp)).background(colors.surface)
                         .border(1.dp, colors.border, RoundedCornerShape(12.dp)).clickable(onClick = onDismiss),
                     contentAlignment = Alignment.Center,
-                ) { Text("Cancel", color = colors.text, fontSize = 14.sp) }
+                ) { Text(stringResource(Res.string.action_cancel), color = colors.text, fontSize = 14.sp) }
                 Box(
                     Modifier.weight(1f).height(46.dp).clip(RoundedCornerShape(12.dp)).background(colors.accent)
                         .clickable { onPick(hex) },
                     contentAlignment = Alignment.Center,
-                ) { Text("Use color", color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) }
+                ) { Text(stringResource(Res.string.color_picker_use), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) }
             }
         }
     }
@@ -421,7 +454,7 @@ private fun SavedRow(label: String, onClick: () -> Unit, onDelete: () -> Unit) {
             modifier = Modifier.size(28.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onDelete),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Filled.Close, contentDescription = "Delete", tint = colors.muted, modifier = Modifier.size(16.dp))
+            Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -429,8 +462,9 @@ private fun SavedRow(label: String, onClick: () -> Unit, onDelete: () -> Unit) {
 @Composable
 private fun PreviewCard(form: AnnouncementForm) {
     val colors = LocalAppColors.current
+    val previewPlaceholder = stringResource(Res.string.announcements_preview_placeholder)
     val previewText = when (form.type) {
-        AnnouncementType.TEXT -> form.text.ifBlank { "Your announcement" }
+        AnnouncementType.TEXT -> form.text.ifBlank { previewPlaceholder }
         AnnouncementType.COUNTDOWN -> "${p2(form.hours)}:${p2(form.minutes)}:${p2(form.seconds)}"
         AnnouncementType.COUNT_UP -> "00:00"
         AnnouncementType.CLOCK -> "12:00:00"

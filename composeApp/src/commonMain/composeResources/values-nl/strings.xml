@@ -1,0 +1,437 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Titel</string>
+    <string name="songs_table_header_book">Boek</string>
+    <string name="songs_table_header_tune">Melodie</string>
+    <string name="songs_table_search_placeholder">Zoek op # of titel…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Geen liederen beschikbaar</string>
+    <string name="songs_table_no_match">Geen liederen komen overeen met je filter</string>
+    <string name="songs_table_loading_error">Laden van liederen mislukt</string>
+    <string name="songs_table_retry">Opnieuw proberen</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Alle boeken</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Instellingen openen</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Instellingen</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Host / IP-adres</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Poort</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API-sleutel (optioneel)</string>
+    <string name="settings_api_key_placeholder">Laat leeg indien niet vereist</string>
+    <string name="settings_display_name_label">Je naam (voor Q&amp;A)</string>
+    <string name="settings_display_name_placeholder">Laat leeg om apparaat-ID te gebruiken</string>
+    <string name="settings_save">Opslaan</string>
+    <string name="settings_cancel">Annuleren</string>
+    <string name="settings_invalid_port">Poort moet een getal tussen 1 en 65535 zijn</string>
+    <string name="settings_host_empty">Host mag niet leeg zijn</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Weergave</string>
+    <string name="settings_theme_system">Systeem</string>
+    <string name="settings_theme_light">Licht</string>
+    <string name="settings_theme_dark">Donker</string>
+
+    <!-- Privacy -->
+    <string name="settings_privacy_section">Privacy</string>
+    <string name="settings_telemetry_label">Gebruiks- &amp; crashgegevens delen</string>
+    <string name="settings_telemetry_description">Helpt ons bugs te vinden en op te lossen. Schakel uit om het verzenden van analyses en crashrapporten te stoppen.</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Liederen</string>
+    <string name="tab_bible">Bijbel</string>
+    <string name="tab_pictures">Afbeeldingen</string>
+    <string name="tab_presentation">Presentatie</string>
+    <string name="tab_qa_admin">Q&amp;A</string>
+
+    <!-- Q and A Admin Panel -->
+    <string name="qa_admin_session_active">Sessie actief</string>
+    <string name="qa_admin_session_stopped">Sessie gestopt</string>
+    <string name="qa_admin_incoming_tab">Binnenkomend (%1$d)</string>
+    <string name="qa_admin_finished_tab">Afgehandeld (%1$d)</string>
+    <string name="qa_admin_no_incoming">Geen binnenkomende vragen</string>
+    <string name="qa_admin_no_finished">Geen afgehandelde vragen</string>
+    <string name="qa_admin_approve">Goedkeuren</string>
+    <string name="qa_admin_deny">Weigeren</string>
+    <string name="qa_admin_go_live">Live gaan</string>
+    <string name="qa_admin_done">Markeer als klaar</string>
+    <string name="qa_admin_clear_display">Scherm wissen</string>
+    <string name="qa_admin_now_live">Live:</string>
+    <string name="qa_admin_edit_hint">Vraagtekst bewerken…</string>
+    <string name="qa_admin_add_question">Vraag toevoegen</string>
+    <string name="qa_admin_add_question_hint">Typ je vraag…</string>
+    <string name="qa_admin_save">Opslaan</string>
+    <string name="qa_admin_cancel">Annuleren</string>
+    <string name="qa_admin_error_retry">Opnieuw proberen</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bijbel — binnenkort beschikbaar</string>
+    <string name="pictures_coming_soon">🖼  Afbeeldingen — binnenkort beschikbaar</string>
+    <string name="presentation_coming_soon">📽  Presentatie — binnenkort beschikbaar</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Geen presentaties beschikbaar</string>
+    <string name="presentation_loading_error">Laden van presentaties mislukt</string>
+    <string name="presentation_retry">Opnieuw proberen</string>
+    <string name="presentation_slides">dia\'s</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Geen afbeeldingen beschikbaar</string>
+    <string name="pictures_loading_error">Laden van afbeeldingen mislukt</string>
+    <string name="pictures_retry">Opnieuw proberen</string>
+    <string name="pictures_photos">foto\'s</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Zoek boeken…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Geen Bijbelboeken beschikbaar</string>
+    <string name="bible_no_match">Geen boeken komen overeen met je zoekopdracht</string>
+    <string name="bible_chapter_label">Hoofdstuk</string>
+    <string name="bible_chapters_title">Hoofdstukken</string>
+    <string name="bible_no_verses">Geen verzen beschikbaar</string>
+    <string name="bible_back">← Terug</string>
+    <string name="bible_loading_error">Laden mislukt</string>
+    <string name="bible_retry">Opnieuw proberen</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Schema</string>
+    <string name="schedule_drawer_refresh">Schema vernieuwen</string>
+    <string name="schedule_drawer_empty">Geen schema-items</string>
+    <string name="schedule_drawer_error">Fout: %1$s</string>
+    <string name="schedule_drawer_open">Schema openen</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Toevoegen aan schema</string>
+    <string name="song_detail_schedule_request_sent">Verzoek verzonden ✓</string>
+    <string name="song_detail_project_to_screen">Projecteren op scherm</string>
+    <string name="song_detail_stop_projecting">Projectie stoppen</string>
+    <string name="song_detail_fab_actions">Acties</string>
+    <string name="song_detail_fab_close_actions">Acties sluiten</string>
+    <string name="song_detail_projecting_badge">▶  Projecteren</string>
+    <string name="song_detail_no_lyrics">Geen songtekst beschikbaar</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Toevoegen aan schema</string>
+    <string name="bible_detail_schedule_request_sent">Verzoek verzonden ✓</string>
+    <string name="bible_detail_project_to_screen">Projecteren op scherm</string>
+    <string name="bible_detail_stop_projecting">Projectie stoppen</string>
+    <string name="bible_detail_fab_actions">Acties</string>
+    <string name="bible_detail_fab_close_actions">Acties sluiten</string>
+    <string name="bible_detail_projecting_badge">▶  Projecteren</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Toevoegen aan schema</string>
+    <string name="pictures_schedule_request_sent">Verzoek verzonden ✓</string>
+    <string name="pictures_project_to_screen">Projecteren op scherm</string>
+    <string name="pictures_stop_projecting">Projectie stoppen</string>
+    <string name="pictures_pick_from_device">Kiezen van apparaat</string>
+
+    <!-- Shared action FAB labels (used by ContentActionButtons across all screens) -->
+    <string name="action_add_to_schedule">Toevoegen aan schema</string>
+    <string name="action_project_to_screen">Projecteren op scherm</string>
+    <string name="action_stop_projecting">Projectie stoppen</string>
+    <string name="action_clear_display">Scherm wissen</string>
+    <string name="action_hold_display">Scherm vasthouden</string>
+    <string name="action_multi_select">Meerdere selecteren</string>
+    <string name="bible_multi_select_count">%1$d geselecteerd</string>
+    <string name="pictures_uploading">Uploaden…</string>
+    <string name="upload_overlay_subtitle">Even geduld, sluit de app niet</string>
+    <string name="upload_overlay_photo_counter">Foto %1$d van %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Afbeelding toegevoegd aan schema</string>
+    <string name="toast_pictures_failed_to_add_schedule">Toevoegen van afbeelding aan schema mislukt: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Toevoegen aan schema</string>
+    <string name="presentation_schedule_request_sent">Verzoek verzonden ✓</string>
+    <string name="presentation_project_to_screen">Projecteren op scherm</string>
+    <string name="presentation_stop_projecting">Projectie stoppen</string>
+    <string name="presentation_upload_file">Presentatie uploaden</string>
+    <string name="presentation_uploading">Uploaden…</string>
+    <string name="toast_presentation_added_to_schedule">Presentatie toegevoegd aan schema</string>
+    <string name="toast_presentation_failed_to_add_schedule">Toevoegen van presentatie aan schema mislukt: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Selecteren van presentatie mislukt: %1$s</string>
+    <string name="toast_upload_unsupported">Uploaden wordt niet ondersteund door deze server. Werk ChurchPresenter op je desktop bij naar de nieuwste versie.</string>
+    <string name="toast_upload_file_too_large">Bestand is te groot voor de server om te accepteren. Probeer een kleiner bestand.</string>
+    <string name="toast_upload_server_error">Server heeft de upload geweigerd: %1$s</string>
+    <string name="toast_upload_failed">Upload mislukt: %1$s</string>
+    <string name="toast_upload_reload_failed">Geüpload maar herladen van lijst mislukt: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Lied is nu live op het scherm</string>
+    <string name="toast_request_failed">Verzoek mislukt</string>
+    <string name="toast_no_song_selected">Geen lied geselecteerd</string>
+    <string name="toast_song_added_to_schedule">\"%1$s\" toegevoegd aan schema</string>
+    <string name="toast_failed_to_project">Projecteren van lied mislukt: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Toevoegen aan schema mislukt: %1$s</string>
+    <string name="toast_request_denied">Verzoek is geweigerd</string>
+    <string name="toast_session_blocked">Sessie is geblokkeerd — er worden geen verdere verzoeken geaccepteerd</string>
+    <string name="toast_request_rejected">Verzoek geweigerd door server (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Verzoek geweigerd: %1$s</string>
+    <string name="toast_bible_live">Bijbelpassage is nu live op het scherm</string>
+    <string name="toast_bible_added_to_schedule">\"%1$s\" toegevoegd aan schema</string>
+    <string name="toast_failed_to_project_bible">Projecteren mislukt: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Toevoegen aan schema mislukt: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server ingesteld op %1$s:%2$s</string>
+    <string name="qr_scan_button">QR-code scannen</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Servercertificaat vertrouwen</string>
+    <string name="cert_setup_subtitle">Eenmalige installatie vereist</string>
+    <string name="cert_setup_intro">ChurchPresenter gebruikt een privé HTTPS-certificaat voor veilige communicatie. Je moet het eenmalig installeren zodat je apparaat de verbinding vertrouwt.</string>
+    <string name="cert_setup_scan_title">Scan de QR-code van het certificaat</string>
+    <string name="cert_setup_scan_desktop_hint">In ChurchPresenter desktop: Instellingen → Server → druk op \"Download Cert\" om de QR-code te tonen.</string>
+    <string name="cert_setup_scan_button">QR-code scannen</string>
+    <string name="cert_setup_scan_or_divider">of gebruik opgeslagen adres</string>
+    <string name="cert_setup_url_scanned">✓ URL gescand</string>
+    <string name="cert_setup_url_label">Certificaat-URL</string>
+    <string name="cert_setup_open_button">Certificaat-URL openen</string>
+    <string name="cert_setup_step2_ios_title">iOS — Installeer het profiel</string>
+    <string name="cert_setup_step2_ios_body">Safari vraagt om een configuratieprofiel te downloaden. Tik op Toestaan, ga daarna naar Instellingen → Algemeen → VPN &amp; apparaatbeheer, tik op ChurchPresenter en installeer.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Vertrouw het certificaat</string>
+    <string name="cert_setup_step3_ios_body">Instellingen → Algemeen → Info → Certificaatvertrouwensinstellingen → schakel volledig vertrouwen in voor ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Installeer het certificaat</string>
+    <string name="cert_setup_step2_android_body">Chrome downloadt het .crt-bestand. Tik erop vanuit de downloadmelding, kies \"CA-certificaat\" en geef het een naam zoals \"ChurchPresenter\".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ \"Kan niet installeren vanuit onbekende bronnen\"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android kan de installatie blokkeren als je browser geen bestanden mag installeren. Ga naar Instellingen → Apps → [je browser] → Onbekende apps installeren en schakel \"Toestaan vanuit deze bron\" in. Kom hier terug en tik het bestand opnieuw aan.</string>
+    <string name="cert_setup_fingerprint_title">Vingerafdruk verifiëren (aanbevolen)</string>
+    <string name="cert_setup_fingerprint_body">Vergelijk deze vingerafdruk met wat ChurchPresenter desktop toont in Instellingen → Server → Certificaat SHA-256. Ze moeten overeenkomen.</string>
+    <string name="cert_setup_fingerprint_unavailable">Maak eerst verbinding met de server om de vingerafdruk te zien</string>
+    <string name="cert_setup_done_button">Klaar — Certificaat geïnstalleerd</string>
+    <string name="cert_setup_skip_button">Nu overslaan</string>
+    <string name="cert_setup_skip_note">Je kunt op elk moment terugkeren naar deze handleiding vanuit Instellingen.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Verbinden met desktop</string>
+    <string name="connect_setup_subtitle">Eenmalige installatie vereist</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile verbindt met de ChurchPresenter desktop-app op je lokale netwerk. Scan de QR-code van de desktop om de verbinding automatisch te configureren.</string>
+    <string name="connect_setup_skip_button">Nu overslaan</string>
+    <string name="connect_setup_done_button">Klaar — Verbonden</string>
+    <string name="connect_setup_skip_note">Je kunt de QR-code op elk moment scannen vanuit Instellingen.</string>
+    <string name="connect_setup_step1_title">Open ChurchPresenter op je computer</string>
+    <string name="connect_setup_step1_body">Start de ChurchPresenter desktop-applicatie en zorg dat deze op hetzelfde Wi-Fi-netwerk draait als dit apparaat.</string>
+    <string name="connect_setup_step2_title">Toon de verbindings-QR-code</string>
+    <string name="connect_setup_step2_body">Ga in de desktop-app naar Instellingen → Mobiel → en druk op \"QR-code tonen\". Een QR-code met de verbindingsgegevens verschijnt op het scherm.</string>
+    <string name="connect_setup_step3_title">Scan de QR-code hieronder</string>
+    <string name="connect_setup_step3_body">Tik op de knop hieronder om de camera te openen en de QR-code op de desktop te scannen. De verbinding wordt automatisch geconfigureerd.</string>
+    <string name="connect_setup_scan_button">QR-code scannen</string>
+    <string name="connect_setup_connected">✓ Verbonden met %1$s:%2$s</string>
+    <string name="connect_setup_no_camera_note">Geen camera gedetecteerd op dit apparaat. Voer de verbindingsgegevens handmatig in:</string>
+    <string name="connect_setup_manual_entry_toggle">Handmatig invoeren</string>
+    <string name="connect_setup_scan_instead_toggle">QR-code scannen</string>
+    <string name="connect_setup_manual_apply_button">Toepassen</string>
+
+    <!-- Settings Screen (additional) -->
+    <string name="settings_active_url_label">Momenteel verbinding maken met:</string>
+    <string name="settings_reset_to_default">Terugzetten naar standaard</string>
+    <string name="settings_draft_url_label">Verbindt met na opslaan:</string>
+    <string name="settings_check_status">Serverstatus controleren</string>
+    <string name="settings_developer_section">Ontwikkelaar</string>
+    <string name="settings_send_test_error">Testfout naar Sentry sturen</string>
+    <string name="settings_test_error_sent">✓ Testfout naar Sentry verzonden</string>
+    <string name="settings_check_status_description">Serverstatus controleren</string>
+    <string name="settings_status_recheck">Opnieuw controleren</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobiel: %1$s</string>
+    <string name="settings_status_api_key_enabled">API-sleutel: ingeschakeld</string>
+    <string name="settings_status_api_key_none">API-sleutel: geen</string>
+    <string name="settings_status_endpoints">Endpoints</string>
+    <string name="settings_status_bibles">Bijbels</string>
+    <string name="settings_status_songbooks">Liedbundels</string>
+    <string name="settings_status_none">geen</string>
+
+    <!-- Status Screen -->
+    <string name="status_connecting">Verbinden met server…</string>
+    <string name="status_connected">Server verbonden</string>
+    <string name="status_continue">Doorgaan</string>
+    <string name="status_retry">Opnieuw proberen</string>
+    <string name="status_open_settings">Instellingen openen</string>
+    <string name="status_continue_anyway">Toch doorgaan</string>
+    <string name="status_limited_functionality">Beperkte functionaliteit</string>
+    <string name="status_server_version">Serverversie: %1$s</string>
+    <string name="status_issues_detected">De volgende problemen zijn gedetecteerd op de verbonden server:</string>
+    <string name="status_endpoint_unavailable">Statusendpoint nog niet beschikbaar op deze serverversie — werk ChurchPresenter desktop bij voor volledige rapportage van mogelijkheden.</string>
+    <string name="status_error_title">Kon de server niet bereiken</string>
+    <string name="status_permissions_title">Machtigingen van dit apparaat</string>
+    <string name="status_permission_present">Presentatie besturen</string>
+    <string name="status_permission_schedule">Toevoegen aan schema</string>
+    <string name="status_permission_upload">Bestanden uploaden</string>
+    <string name="status_permission_blocked">— geblokkeerd</string>
+    <string name="status_info_bibles">Bijbels beschikbaar</string>
+    <string name="status_info_songbooks">Liedbundels beschikbaar</string>
+    <string name="status_info_features">Ingeschakelde functies</string>
+
+    <!-- Status Warnings -->
+    <string name="status_warn_no_api_key_title">Geen API-sleutel geconfigureerd</string>
+    <string name="status_warn_no_api_key_body">De server heeft geen API-sleutel ingesteld. Bepaalde beveiligde endpoints kunnen verzoeken weigeren. Overweeg een API-sleutel in te schakelen in de serverinstellingen van ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Geen Bijbelvertalingen beschikbaar</string>
+    <string name="status_warn_no_bibles_body">De server heeft geen Bijbelvertalingen geladen. Het tabblad Bijbel zal leeg zijn. Voeg een vertaling toe in de ChurchPresenter desktop-app.</string>
+    <string name="status_warn_no_songbooks_title">Geen liedbundels beschikbaar</string>
+    <string name="status_warn_no_songbooks_body">De server heeft geen liedbundels geladen. Het tabblad Liederen zal leeg zijn. Importeer een liedbundel in de ChurchPresenter desktop-app.</string>
+    <string name="status_warn_present_blocked_title">Presentatiebesturing geblokkeerd</string>
+    <string name="status_warn_present_blocked_body">Dit apparaat mag de presentatie niet besturen (projecteren, wissen, dia\'s selecteren). Vraag de serverbeheerder om dit apparaat de Presentator-machtiging te geven.</string>
+    <string name="status_warn_schedule_blocked_title">Schema bewerken geblokkeerd</string>
+    <string name="status_warn_schedule_blocked_body">Dit apparaat mag geen items aan het schema toevoegen. Vraag de serverbeheerder om dit apparaat de Schema-machtiging te geven.</string>
+    <string name="status_warn_upload_blocked_title">Bestandsupload geblokkeerd</string>
+    <string name="status_warn_upload_blocked_body">Dit apparaat mag geen presentaties of afbeeldingen uploaden. Vraag de serverbeheerder om dit apparaat de Upload-machtiging te geven.</string>
+    <string name="upload_blocked_toast">Bestandsupload is uitgeschakeld voor dit apparaat. Vraag de serverbeheerder om Upload-machtiging.</string>
+    <string name="status_warn_unknown_version_title">Niet-herkende serverversie</string>
+    <string name="status_warn_unknown_version_body">Server rapporteerde versie \'%1$s\'. Sommige functies van deze app zijn mogelijk niet compatibel met deze versie.</string>
+    <string name="status_warn_missing_endpoint_title">Ontbrekend API-endpoint: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">De server biedt het \'%1$s\'-endpoint niet aan. Functies die hierop vertrouwen zullen niet beschikbaar zijn.</string>
+
+    <!-- Media tab -->
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Geen media geladen</string>
+    <string name="media_playing">Afspelen</string>
+    <string name="media_playing_on_desktop">Afspelen op desktop</string>
+    <string name="media_local_ready">Lokaal bestand · klaar om live te gaan</string>
+    <string name="media_pick_to_upload">Kies een bestand om te uploaden</string>
+    <string name="media_source_network_url">Netwerk-URL</string>
+    <string name="media_source_upload">Uploaden van telefoon</string>
+    <string name="media_subtitle_url">%1$s · Netwerk-URL</string>
+    <string name="media_subtitle_empty">Plak hieronder een netwerk-URL om media te verzenden</string>
+    <string name="media_on_screen">OP SCHERM</string>
+    <string name="media_cd_stop">Stoppen</string>
+    <string name="media_cd_back10">10 seconden terug</string>
+    <string name="media_cd_forward10">10 seconden vooruit</string>
+    <string name="media_cd_play">Afspelen</string>
+    <string name="media_cd_pause">Pauzeren</string>
+    <string name="media_cd_mute">Dempen</string>
+    <string name="media_add_to_schedule">Toevoegen aan schema</string>
+    <string name="media_go_live">Live gaan</string>
+    <string name="media_clear_screen">Scherm wissen</string>
+    <string name="media_source_label">BRON</string>
+    <string name="media_will_send">Wordt verzonden: %1$s</string>
+    <string name="media_target_uploaded">Geüpload bestand · %1$s</string>
+    <string name="media_target_loaded">Geladen op desktop · %1$s</string>
+    <string name="media_target_url">Netwerk-URL</string>
+    <string name="media_target_none">Kies hieronder een bron om media te verzenden</string>
+    <string name="media_load_label">MEDIA LADEN</string>
+    <string name="media_uploading_percent">Uploaden… %1$d%%</string>
+    <string name="media_choose_file">Kies een video- of audiobestand</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Uploads zijn uitgeschakeld op de desktop</string>
+    <string name="media_uploads_disabled_hint">Schakel “Bestandsuploads van mobiele apparaten toestaan” in bij de serverinstellingen van de desktop-app.</string>
+    <string name="media_playing_generic">media</string>
+
+    <!-- More launcher -->
+    <string name="more_photos_title">Foto\'s</string>
+    <string name="more_photos_subtitle">Blader door en projecteer afbeeldingsmappen</string>
+    <string name="more_qa_title">Q&amp;A</string>
+    <string name="more_qa_subtitle">Beoordeel en projecteer vragen van het publiek</string>
+    <string name="more_dictionary_title">Woordenboek</string>
+    <string name="more_dictionary_subtitle">Strong\'s Hebreeuws &amp; Grieks lexicon</string>
+    <string name="more_announcements_title">Mededelingen</string>
+    <string name="more_announcements_subtitle">Tekst, klokken &amp; afteltimers</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Projecteer een webpagina op het scherm</string>
+    <!-- Section detail header titles -->
+    <string name="strongs_dictionary_title">Strong\'s Woordenboek</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Mededelingen</string>
+
+    <!-- Shared generic labels / content descriptions -->
+    <string name="action_clear">Wissen</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_go_live">Live gaan</string>
+    <string name="label_add_to_schedule">Toevoegen aan schema</string>
+    <string name="label_live">Live</string>
+    <string name="cd_delete">Verwijderen</string>
+    <string name="cd_close">Sluiten</string>
+    <string name="cd_select">Selecteren</string>
+    <string name="cd_cast">Casten</string>
+    <string name="cd_back">Terug</string>
+    <string name="cd_settings">Instellingen</string>
+    <string name="cd_schedule">Schema</string>
+    <string name="overline_on_screen_preview">Schermvoorbeeld</string>
+
+    <!-- Announcements Screen -->
+    <string name="announcements_text_placeholder">Mededelingstekst…</string>
+    <string name="overline_duration">Duur</string>
+    <string name="overline_target_time">Doeltijd</string>
+    <string name="overline_animation">Animatie</string>
+    <string name="stepper_hrs">Uur</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sec</string>
+    <string name="stepper_hour">Uur</string>
+    <string name="stepper_font_size">Lettergrootte</string>
+    <string name="swatch_text">Tekst</string>
+    <string name="swatch_background">Achtergrond</string>
+    <string name="announcements_clock_desc">Toont de huidige tijd, live.</string>
+    <string name="announcements_count_up_desc">Telt op vanaf nul wanneer het live gaat.</string>
+    <string name="announcements_animation_duration_label">ANIMATIEDUUR</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">OPGESLAGEN</string>
+    <string name="announcements_add_new">+ Nieuw</string>
+    <string name="announcements_no_saved">Nog geen opgeslagen mededelingen. Stel er een op en tik op “+ Nieuw”.</string>
+    <string name="color_picker_title">Kies een kleur</string>
+    <string name="color_picker_use">Kleur gebruiken</string>
+    <string name="color_slider_hue">Tint</string>
+    <string name="color_slider_saturation">Verzadiging</string>
+    <string name="color_slider_brightness">Helderheid</string>
+    <string name="cd_custom_color">Aangepaste kleur</string>
+    <string name="announcements_preview_placeholder">Je mededeling</string>
+
+    <!-- Web Screen -->
+    <string name="web_bookmarks_label">BLADWIJZERS</string>
+    <string name="web_add_bookmark">+ Toevoegen</string>
+    <string name="web_no_bookmarks">Nog geen bladwijzers. Voer een URL in en tik op “+ Toevoegen”.</string>
+    <string name="web_url_placeholder">example.org</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_search_placeholder">Zoek nummer, woord of betekenis…</string>
+    <string name="dictionary_filter_all">Alle</string>
+    <string name="dictionary_filter_hebrew">Hebreeuws</string>
+    <string name="dictionary_filter_greek">Grieks</string>
+    <string name="dictionary_no_entries">Geen resultaten gevonden</string>
+    <string name="dictionary_uses">GEBRUIK</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Woordsoort</string>
+    <string name="dictionary_occurrences">Voorkomens</string>
+    <string name="dictionary_root">Stam</string>
+    <string name="dictionary_definition">Definitie</string>
+    <string name="dictionary_kjv_usage">KJV-gebruik</string>
+
+    <!-- Q and A Admin (additional) -->
+    <string name="qa_edit_question_title">Vraag bewerken</string>
+    <string name="qa_delete_question">Vraag verwijderen</string>
+    <string name="qa_submitted_by">Ingediend door %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Stoppen</string>
+    <string name="qa_action_approve">Goedkeuren</string>
+    <string name="cd_edit">Bewerken</string>
+    <string name="cd_deny">Weigeren</string>
+    <string name="qa_badge_live">LIVE</string>
+    <string name="qa_badge_approved">✓ Goedgekeurd</string>
+    <string name="qa_badge_denied">Geweigerd</string>
+    <string name="qa_badge_answered">Beantwoord</string>
+
+    <!-- Schedule Drawer (additional) -->
+    <string name="schedule_drawer_item_count">%1$d items</string>
+
+    <!-- Presentation Screen (additional) -->
+    <string name="presentation_slide_desc">Dia %1$d</string>
+    <string name="presentation_slide_live">▶ LIVE</string>
+
+    <!-- Bottom Tab Bar -->
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Presenteren</string>
+    <string name="tab_more">Meer</string>
+
+    <!-- Count / summary labels -->
+    <string name="songs_count">%1$d liederen</string>
+    <string name="bible_chapters_count">%1$d hfdst</string>
+    <string name="status_version_line">Server: %1$s · Mobiel: %2$s</string>
+</resources>

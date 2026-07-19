@@ -32,7 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.action_clear
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Redesign search field: 44 tall, radius 12, magnifier + placeholder, input fill.
@@ -81,7 +84,7 @@ fun SearchField(
         if (value.isNotEmpty()) {
             Icon(
                 imageVector = Icons.Filled.Close,
-                contentDescription = "Clear",
+                contentDescription = stringResource(Res.string.action_clear),
                 tint = colors.muted,
                 modifier = Modifier.size(18.dp).clickable { onValueChange("") },
             )

@@ -50,6 +50,22 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.action_go_live
+import churchpresentermobile.composeapp.generated.resources.dictionary_definition
+import churchpresentermobile.composeapp.generated.resources.dictionary_filter_all
+import churchpresentermobile.composeapp.generated.resources.dictionary_filter_greek
+import churchpresentermobile.composeapp.generated.resources.dictionary_filter_hebrew
+import churchpresentermobile.composeapp.generated.resources.dictionary_kjv_usage
+import churchpresentermobile.composeapp.generated.resources.dictionary_no_entries
+import churchpresentermobile.composeapp.generated.resources.dictionary_occurrences
+import churchpresentermobile.composeapp.generated.resources.dictionary_occurrences_count
+import churchpresentermobile.composeapp.generated.resources.dictionary_part_of_speech
+import churchpresentermobile.composeapp.generated.resources.dictionary_root
+import churchpresentermobile.composeapp.generated.resources.dictionary_search_placeholder
+import churchpresentermobile.composeapp.generated.resources.dictionary_uses
+import churchpresentermobile.composeapp.generated.resources.label_add_to_schedule
+import org.jetbrains.compose.resources.stringResource
 import com.church.presenter.churchpresentermobile.model.StrongsEntry
 import com.church.presenter.churchpresentermobile.network.DictionaryFilter
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -106,11 +122,15 @@ fun DictionaryScreen(
             SearchField(
                 value = query,
                 onValueChange = { viewModel.setSearchQuery(it) },
-                placeholder = "Search number, word, or meaning…",
+                placeholder = stringResource(Res.string.dictionary_search_placeholder),
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
             SegmentedControl(
-                options = listOf("All", "Hebrew", "Greek"),
+                options = listOf(
+                    stringResource(Res.string.dictionary_filter_all),
+                    stringResource(Res.string.dictionary_filter_hebrew),
+                    stringResource(Res.string.dictionary_filter_greek),
+                ),
                 selectedIndex = when (filter) {
                     DictionaryFilter.ALL -> 0
                     DictionaryFilter.HEBREW -> 1
@@ -136,7 +156,7 @@ fun DictionaryScreen(
                     CircularProgressIndicator(color = colors.accent)
                 }
                 entries.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    Text("No entries found", color = colors.muted, fontSize = 15.sp)
+                    Text(stringResource(Res.string.dictionary_no_entries), color = colors.muted, fontSize = 15.sp)
                 }
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -240,7 +260,7 @@ private fun EntryRow(entry: StrongsEntry, isLive: Boolean, onClick: () -> Unit) 
         if (entry.occurrences > 0) {
             Column(horizontalAlignment = Alignment.End) {
                 Text(entry.occurrences.grouped(), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                Text("USES", color = colors.dim, fontSize = 9.sp, letterSpacing = 0.05.em)
+                Text(stringResource(Res.string.dictionary_uses), color = colors.dim, fontSize = 9.sp, letterSpacing = 0.05.em)
             }
         }
     }
@@ -276,21 +296,21 @@ private fun EntryDetailSheet(
                 NumberPill(entry.number, solid = true)
                 Spacer(Modifier.size(10.dp))
                 Text(
-                    text = if (entry.isHebrew) "Hebrew" else if (entry.isGreek) "Greek" else "",
+                    text = if (entry.isHebrew) stringResource(Res.string.dictionary_filter_hebrew) else if (entry.isGreek) stringResource(Res.string.dictionary_filter_greek) else "",
                     color = colors.muted,
                     fontSize = 12.sp,
                 )
                 Spacer(Modifier.weight(1f))
                 IconTileButton(
                     icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-                    contentDescription = "Add to schedule",
+                    contentDescription = stringResource(Res.string.label_add_to_schedule),
                     tint = if (scheduleAdded) colors.accent else colors.amber,
                     onClick = onAddToSchedule,
                 )
                 Spacer(Modifier.size(8.dp))
                 IconTileButton(
                     icon = Icons.Outlined.DesktopWindows,
-                    contentDescription = "Go live",
+                    contentDescription = stringResource(Res.string.action_go_live),
                     tint = colors.accent,
                     onClick = onProject,
                 )
@@ -313,13 +333,13 @@ private fun EntryDetailSheet(
             // Meta cards: Part of Speech / Occurrences / Root (matches design's 3-card row).
             // Part of Speech has no data source yet, so it shows "—".
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MetaCard(label = "Part of speech", modifier = Modifier.weight(1f)) {
+                MetaCard(label = stringResource(Res.string.dictionary_part_of_speech), modifier = Modifier.weight(1f)) {
                     Text("—", color = colors.muted, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 }
-                MetaCard(label = "Occurrences", modifier = Modifier.weight(1f)) {
-                    Text("${entry.occurrences.grouped()}×", color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                MetaCard(label = stringResource(Res.string.dictionary_occurrences), modifier = Modifier.weight(1f)) {
+                    Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 }
-                MetaCard(label = "Root", modifier = Modifier.weight(1f)) {
+                MetaCard(label = stringResource(Res.string.dictionary_root), modifier = Modifier.weight(1f)) {
                     if (entry.root.isNotBlank()) {
                         Text(
                             entry.root,
@@ -336,11 +356,11 @@ private fun EntryDetailSheet(
             }
 
             if (entry.definition.isNotBlank()) {
-                SectionLabel("Definition")
+                SectionLabel(stringResource(Res.string.dictionary_definition))
                 DefinitionText(entry.definition, entry.number, onOpenNumber)
             }
             if (entry.kjvUsage.isNotBlank()) {
-                SectionLabel("KJV usage")
+                SectionLabel(stringResource(Res.string.dictionary_kjv_usage))
                 Text(entry.kjvUsage, color = colors.secondary, fontSize = 14.sp, lineHeight = (14 * 1.6).sp)
             }
         }

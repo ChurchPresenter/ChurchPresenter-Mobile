@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.bible_chapters_count
 import churchpresentermobile.composeapp.generated.resources.bible_loading_error
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
@@ -335,7 +336,7 @@ private fun BibleBookRow(book: BibleBook, onSelect: () -> Unit) {
         )
         if (book.totalChapters > 0) {
             Text(
-                text = "${book.totalChapters} ch",
+                text = stringResource(Res.string.bible_chapters_count, book.totalChapters),
                 fontSize = 13.sp,
                 color = colors.dim
             )

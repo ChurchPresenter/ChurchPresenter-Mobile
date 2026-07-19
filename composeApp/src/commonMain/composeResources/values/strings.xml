@@ -340,4 +340,98 @@
     <string name="strongs_dictionary_title">Strong\'s Dictionary</string>
     <string name="web_title">Web</string>
     <string name="announcements_title">Announcements</string>
+
+    <!-- Shared generic labels / content descriptions -->
+    <string name="action_clear">Clear</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_go_live">Go live</string>
+    <string name="label_add_to_schedule">Add to schedule</string>
+    <string name="label_live">Live</string>
+    <string name="cd_delete">Delete</string>
+    <string name="cd_close">Close</string>
+    <string name="cd_select">Select</string>
+    <string name="cd_cast">Cast</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_schedule">Schedule</string>
+    <string name="overline_on_screen_preview">On-screen preview</string>
+
+    <!-- Announcements Screen -->
+    <string name="announcements_text_placeholder">Announcement text…</string>
+    <string name="overline_duration">Duration</string>
+    <string name="overline_target_time">Target time</string>
+    <string name="overline_animation">Animation</string>
+    <string name="stepper_hrs">Hrs</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sec</string>
+    <string name="stepper_hour">Hour</string>
+    <string name="stepper_font_size">Font size</string>
+    <string name="swatch_text">Text</string>
+    <string name="swatch_background">Background</string>
+    <string name="announcements_clock_desc">Shows the current time, live.</string>
+    <string name="announcements_count_up_desc">Counts up from zero when it goes live.</string>
+    <string name="announcements_animation_duration_label">ANIMATION DURATION</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SAVED</string>
+    <string name="announcements_add_new">+ New</string>
+    <string name="announcements_no_saved">No saved announcements yet. Compose one and tap “+ New”.</string>
+    <string name="color_picker_title">Pick a color</string>
+    <string name="color_picker_use">Use color</string>
+    <string name="color_slider_hue">Hue</string>
+    <string name="color_slider_saturation">Saturation</string>
+    <string name="color_slider_brightness">Brightness</string>
+    <string name="cd_custom_color">Custom color</string>
+    <string name="announcements_preview_placeholder">Your announcement</string>
+
+    <!-- Web Screen -->
+    <string name="web_bookmarks_label">BOOKMARKS</string>
+    <string name="web_add_bookmark">+ Add</string>
+    <string name="web_no_bookmarks">No bookmarks yet. Enter a URL and tap “+ Add”.</string>
+    <string name="web_url_placeholder">example.org</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_search_placeholder">Search number, word, or meaning…</string>
+    <string name="dictionary_filter_all">All</string>
+    <string name="dictionary_filter_hebrew">Hebrew</string>
+    <string name="dictionary_filter_greek">Greek</string>
+    <string name="dictionary_no_entries">No entries found</string>
+    <string name="dictionary_uses">USES</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Part of speech</string>
+    <string name="dictionary_occurrences">Occurrences</string>
+    <string name="dictionary_root">Root</string>
+    <string name="dictionary_definition">Definition</string>
+    <string name="dictionary_kjv_usage">KJV usage</string>
+
+    <!-- Q&A Admin (additional) -->
+    <string name="qa_edit_question_title">Edit question</string>
+    <string name="qa_delete_question">Delete question</string>
+    <string name="qa_submitted_by">Submitted by %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Stop</string>
+    <string name="qa_action_approve">Approve</string>
+    <string name="cd_edit">Edit</string>
+    <string name="cd_deny">Deny</string>
+    <string name="qa_badge_live">LIVE</string>
+    <string name="qa_badge_approved">✓ Approved</string>
+    <string name="qa_badge_denied">Denied</string>
+    <string name="qa_badge_answered">Answered</string>
+
+    <!-- Schedule Drawer (additional) -->
+    <string name="schedule_drawer_item_count">%1$d items</string>
+
+    <!-- Presentation Screen (additional) -->
+    <string name="presentation_slide_desc">Slide %1$d</string>
+    <string name="presentation_slide_live">▶ LIVE</string>
+
+    <!-- Bottom Tab Bar -->
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Present</string>
+    <string name="tab_more">More</string>
+
+    <!-- Count / summary labels -->
+    <string name="songs_count">%1$d songs</string>
+    <string name="bible_chapters_count">%1$d ch</string>
+    <string name="status_version_line">Server: %1$s · Mobile: %2$s</string>
 </resources>

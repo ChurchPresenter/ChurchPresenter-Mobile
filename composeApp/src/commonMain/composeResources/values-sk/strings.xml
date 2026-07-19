@@ -1,0 +1,437 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Názov</string>
+    <string name="songs_table_header_book">Kniha</string>
+    <string name="songs_table_header_tune">Melódia</string>
+    <string name="songs_table_search_placeholder">Hľadať podľa # alebo názvu…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Žiadne piesne nie sú k dispozícii</string>
+    <string name="songs_table_no_match">Žiadne piesne nezodpovedajú filtru</string>
+    <string name="songs_table_loading_error">Načítanie piesní zlyhalo</string>
+    <string name="songs_table_retry">Skúsiť znova</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Všetky knihy</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Otvoriť nastavenia</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Nastavenia</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Hostiteľ / IP adresa</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API kľúč (voliteľné)</string>
+    <string name="settings_api_key_placeholder">Nechajte prázdne, ak sa nevyžaduje</string>
+    <string name="settings_display_name_label">Vaše meno (pre Q&amp;A)</string>
+    <string name="settings_display_name_placeholder">Nechajte prázdne pre použitie ID zariadenia</string>
+    <string name="settings_save">Uložiť</string>
+    <string name="settings_cancel">Zrušiť</string>
+    <string name="settings_invalid_port">Port musí byť číslo od 1 do 65535</string>
+    <string name="settings_host_empty">Hostiteľ nemôže byť prázdny</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Vzhľad</string>
+    <string name="settings_theme_system">Systém</string>
+    <string name="settings_theme_light">Svetlý</string>
+    <string name="settings_theme_dark">Tmavý</string>
+
+    <!-- Privacy -->
+    <string name="settings_privacy_section">Súkromie</string>
+    <string name="settings_telemetry_label">Zdieľať údaje o používaní a chybách</string>
+    <string name="settings_telemetry_description">Pomáha nám nájsť a opraviť chyby. Vypnite pre zastavenie odosielania analytiky a hlásení o zlyhaní.</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Piesne</string>
+    <string name="tab_bible">Biblia</string>
+    <string name="tab_pictures">Obrázky</string>
+    <string name="tab_presentation">Prezentácia</string>
+    <string name="tab_qa_admin">Q&amp;A</string>
+
+    <!-- Q&A Admin Panel -->
+    <string name="qa_admin_session_active">Relácia aktívna</string>
+    <string name="qa_admin_session_stopped">Relácia zastavená</string>
+    <string name="qa_admin_incoming_tab">Prichádzajúce (%1$d)</string>
+    <string name="qa_admin_finished_tab">Dokončené (%1$d)</string>
+    <string name="qa_admin_no_incoming">Žiadne prichádzajúce otázky</string>
+    <string name="qa_admin_no_finished">Žiadne dokončené otázky</string>
+    <string name="qa_admin_approve">Schváliť</string>
+    <string name="qa_admin_deny">Zamietnuť</string>
+    <string name="qa_admin_go_live">Spustiť naživo</string>
+    <string name="qa_admin_done">Označiť ako hotové</string>
+    <string name="qa_admin_clear_display">Vymazať displej</string>
+    <string name="qa_admin_now_live">Naživo:</string>
+    <string name="qa_admin_edit_hint">Upraviť text otázky…</string>
+    <string name="qa_admin_add_question">Pridať otázku</string>
+    <string name="qa_admin_add_question_hint">Napíšte svoju otázku…</string>
+    <string name="qa_admin_save">Uložiť</string>
+    <string name="qa_admin_cancel">Zrušiť</string>
+    <string name="qa_admin_error_retry">Skúsiť znova</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Biblia — čoskoro</string>
+    <string name="pictures_coming_soon">🖼  Obrázky — čoskoro</string>
+    <string name="presentation_coming_soon">📽  Prezentácia — čoskoro</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Žiadne prezentácie nie sú k dispozícii</string>
+    <string name="presentation_loading_error">Načítanie prezentácií zlyhalo</string>
+    <string name="presentation_retry">Skúsiť znova</string>
+    <string name="presentation_slides">snímky</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Žiadne obrázky nie sú k dispozícii</string>
+    <string name="pictures_loading_error">Načítanie obrázkov zlyhalo</string>
+    <string name="pictures_retry">Skúsiť znova</string>
+    <string name="pictures_photos">fotky</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Hľadať knihy…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Žiadne biblické knihy nie sú k dispozícii</string>
+    <string name="bible_no_match">Žiadne knihy nezodpovedajú vyhľadávaniu</string>
+    <string name="bible_chapter_label">Kapitola</string>
+    <string name="bible_chapters_title">Kapitoly</string>
+    <string name="bible_no_verses">Žiadne verše nie sú k dispozícii</string>
+    <string name="bible_back">← Späť</string>
+    <string name="bible_loading_error">Načítanie zlyhalo</string>
+    <string name="bible_retry">Skúsiť znova</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Program</string>
+    <string name="schedule_drawer_refresh">Obnoviť program</string>
+    <string name="schedule_drawer_empty">Žiadne položky programu</string>
+    <string name="schedule_drawer_error">Chyba: %1$s</string>
+    <string name="schedule_drawer_open">Otvoriť program</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Pridať do programu</string>
+    <string name="song_detail_schedule_request_sent">Požiadavka odoslaná ✓</string>
+    <string name="song_detail_project_to_screen">Premietnuť na obrazovku</string>
+    <string name="song_detail_stop_projecting">Zastaviť premietanie</string>
+    <string name="song_detail_fab_actions">Akcie</string>
+    <string name="song_detail_fab_close_actions">Zavrieť akcie</string>
+    <string name="song_detail_projecting_badge">▶  Premieta sa</string>
+    <string name="song_detail_no_lyrics">Žiadny text nie je k dispozícii</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Pridať do programu</string>
+    <string name="bible_detail_schedule_request_sent">Požiadavka odoslaná ✓</string>
+    <string name="bible_detail_project_to_screen">Premietnuť na obrazovku</string>
+    <string name="bible_detail_stop_projecting">Zastaviť premietanie</string>
+    <string name="bible_detail_fab_actions">Akcie</string>
+    <string name="bible_detail_fab_close_actions">Zavrieť akcie</string>
+    <string name="bible_detail_projecting_badge">▶  Premieta sa</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Pridať do programu</string>
+    <string name="pictures_schedule_request_sent">Požiadavka odoslaná ✓</string>
+    <string name="pictures_project_to_screen">Premietnuť na obrazovku</string>
+    <string name="pictures_stop_projecting">Zastaviť premietanie</string>
+    <string name="pictures_pick_from_device">Vybrať zo zariadenia</string>
+
+    <!-- Shared action FAB labels (used by ContentActionButtons across all screens) -->
+    <string name="action_add_to_schedule">Pridať do programu</string>
+    <string name="action_project_to_screen">Premietnuť na obrazovku</string>
+    <string name="action_stop_projecting">Zastaviť premietanie</string>
+    <string name="action_clear_display">Vymazať displej</string>
+    <string name="action_hold_display">Podržať displej</string>
+    <string name="action_multi_select">Vybrať viacero</string>
+    <string name="bible_multi_select_count">%1$d vybraných</string>
+    <string name="pictures_uploading">Nahráva sa…</string>
+    <string name="upload_overlay_subtitle">Počkajte prosím, nezatvárajte aplikáciu</string>
+    <string name="upload_overlay_photo_counter">Fotka %1$d z %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Obrázok pridaný do programu</string>
+    <string name="toast_pictures_failed_to_add_schedule">Pridanie obrázka do programu zlyhalo: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Pridať do programu</string>
+    <string name="presentation_schedule_request_sent">Požiadavka odoslaná ✓</string>
+    <string name="presentation_project_to_screen">Premietnuť na obrazovku</string>
+    <string name="presentation_stop_projecting">Zastaviť premietanie</string>
+    <string name="presentation_upload_file">Nahrať prezentáciu</string>
+    <string name="presentation_uploading">Nahráva sa…</string>
+    <string name="toast_presentation_added_to_schedule">Prezentácia pridaná do programu</string>
+    <string name="toast_presentation_failed_to_add_schedule">Pridanie prezentácie do programu zlyhalo: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Výber prezentácie zlyhal: %1$s</string>
+    <string name="toast_upload_unsupported">Nahrávanie tento server nepodporuje. Aktualizujte ChurchPresenter na počítači na najnovšiu verziu.</string>
+    <string name="toast_upload_file_too_large">Súbor je príliš veľký na to, aby ho server prijal. Skúste menší súbor.</string>
+    <string name="toast_upload_server_error">Server odmietol nahrávanie: %1$s</string>
+    <string name="toast_upload_failed">Nahrávanie zlyhalo: %1$s</string>
+    <string name="toast_upload_reload_failed">Nahrané, ale obnovenie zoznamu zlyhalo: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Pieseň je teraz naživo na obrazovke</string>
+    <string name="toast_request_failed">Požiadavka zlyhala</string>
+    <string name="toast_no_song_selected">Žiadna pieseň nie je vybraná</string>
+    <string name="toast_song_added_to_schedule">\"%1$s\" pridaná do programu</string>
+    <string name="toast_failed_to_project">Premietnutie piesne zlyhalo: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Pridanie do programu zlyhalo: %1$s</string>
+    <string name="toast_request_denied">Požiadavka bola zamietnutá</string>
+    <string name="toast_session_blocked">Relácia je zablokovaná — žiadne ďalšie požiadavky nebudú prijaté</string>
+    <string name="toast_request_rejected">Požiadavka odmietnutá serverom (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Požiadavka odmietnutá: %1$s</string>
+    <string name="toast_bible_live">Biblická pasáž je teraz naživo na obrazovke</string>
+    <string name="toast_bible_added_to_schedule">\"%1$s\" pridaná do programu</string>
+    <string name="toast_failed_to_project_bible">Premietnutie zlyhalo: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Pridanie do programu zlyhalo: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server nastavený na %1$s:%2$s</string>
+    <string name="qr_scan_button">Naskenovať QR kód</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Dôverovať certifikátu servera</string>
+    <string name="cert_setup_subtitle">Vyžaduje sa jednorazové nastavenie</string>
+    <string name="cert_setup_intro">ChurchPresenter používa súkromný HTTPS certifikát pre bezpečnú komunikáciu. Musíte ho jednorazovo nainštalovať, aby vaše zariadenie dôverovalo pripojeniu.</string>
+    <string name="cert_setup_scan_title">Naskenujte QR kód certifikátu</string>
+    <string name="cert_setup_scan_desktop_hint">Na počítači v ChurchPresenter: Nastavenia → Server → stlačte \"Stiahnuť cert\" pre zobrazenie QR kódu.</string>
+    <string name="cert_setup_scan_button">Naskenovať QR kód</string>
+    <string name="cert_setup_scan_or_divider">alebo použiť uloženú adresu</string>
+    <string name="cert_setup_url_scanned">✓ URL naskenovaná</string>
+    <string name="cert_setup_url_label">URL certifikátu</string>
+    <string name="cert_setup_open_button">Otvoriť URL certifikátu</string>
+    <string name="cert_setup_step2_ios_title">iOS — Nainštalujte profil</string>
+    <string name="cert_setup_step2_ios_body">Safari požiada o stiahnutie konfiguračného profilu. Ťuknite na Povoliť, potom prejdite do Nastavenia → Všeobecné → VPN a správa zariadenia, ťuknite na ChurchPresenter a nainštalujte.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Dôverovať certifikátu</string>
+    <string name="cert_setup_step3_ios_body">Nastavenia → Všeobecné → Informácie → Nastavenia dôvery certifikátov → povoľte plnú dôveru pre ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Nainštalujte certifikát</string>
+    <string name="cert_setup_step2_android_body">Chrome stiahne súbor .crt. Ťuknite naň z upozornenia v priečinku Stiahnuté, vyberte \"CA certifikát\" a pomenujte ho napríklad \"ChurchPresenter\".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ \"Nedá sa nainštalovať z neznámych zdrojov\"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android môže zablokovať inštaláciu, ak váš prehliadač nemá povolené inštalovať súbory. Prejdite do Nastavenia → Aplikácie → [váš prehliadač] → Inštalovať neznáme aplikácie, potom povoľte \"Povoliť z tohto zdroja\". Vráťte sa sem a znova ťuknite na súbor.</string>
+    <string name="cert_setup_fingerprint_title">Overiť odtlačok (odporúčané)</string>
+    <string name="cert_setup_fingerprint_body">Porovnajte tento odtlačok s tým, čo ChurchPresenter na počítači zobrazuje v Nastavenia → Server → Certifikát SHA-256. Musia sa zhodovať.</string>
+    <string name="cert_setup_fingerprint_unavailable">Najprv sa pripojte k serveru, aby ste videli odtlačok</string>
+    <string name="cert_setup_done_button">Hotovo — Certifikát nainštalovaný</string>
+    <string name="cert_setup_skip_button">Preskočiť zatiaľ</string>
+    <string name="cert_setup_skip_note">K tomuto sprievodcovi sa môžete kedykoľvek vrátiť z Nastavení.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Pripojiť k počítaču</string>
+    <string name="connect_setup_subtitle">Vyžaduje sa jednorazové nastavenie</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile sa pripája k aplikácii ChurchPresenter na počítači vo vašej lokálnej sieti. Naskenujte QR kód z počítača pre automatické nastavenie pripojenia.</string>
+    <string name="connect_setup_skip_button">Preskočiť zatiaľ</string>
+    <string name="connect_setup_done_button">Hotovo — Pripojené</string>
+    <string name="connect_setup_skip_note">QR kód môžete naskenovať kedykoľvek z Nastavení.</string>
+    <string name="connect_setup_step1_title">Otvorte ChurchPresenter na svojom počítači</string>
+    <string name="connect_setup_step1_body">Spustite aplikáciu ChurchPresenter na počítači a uistite sa, že beží v rovnakej sieti Wi-Fi ako toto zariadenie.</string>
+    <string name="connect_setup_step2_title">Zobrazte QR kód pripojenia</string>
+    <string name="connect_setup_step2_body">V aplikácii na počítači prejdite do Nastavenia → Mobil → a stlačte \"Zobraziť QR kód\". Na obrazovke sa zobrazí QR kód s údajmi o pripojení.</string>
+    <string name="connect_setup_step3_title">Naskenujte QR kód nižšie</string>
+    <string name="connect_setup_step3_body">Ťuknite na tlačidlo nižšie pre otvorenie fotoaparátu a naskenovanie QR kódu zobrazeného na počítači. Pripojenie sa nastaví automaticky.</string>
+    <string name="connect_setup_scan_button">Naskenovať QR kód</string>
+    <string name="connect_setup_connected">✓ Pripojené k %1$s:%2$s</string>
+    <string name="connect_setup_no_camera_note">Na tomto zariadení nebol zistený žiadny fotoaparát. Zadajte údaje o pripojení manuálne:</string>
+    <string name="connect_setup_manual_entry_toggle">Zadať manuálne namiesto toho</string>
+    <string name="connect_setup_scan_instead_toggle">Naskenovať QR kód namiesto toho</string>
+    <string name="connect_setup_manual_apply_button">Použiť</string>
+
+    <!-- Settings Screen (additional) -->
+    <string name="settings_active_url_label">Aktuálne pripojenie k:</string>
+    <string name="settings_reset_to_default">Obnoviť predvolené</string>
+    <string name="settings_draft_url_label">Po uložení sa pripojí k:</string>
+    <string name="settings_check_status">Skontrolovať stav servera</string>
+    <string name="settings_developer_section">Vývojár</string>
+    <string name="settings_send_test_error">Odoslať testovaciu chybu do Sentry</string>
+    <string name="settings_test_error_sent">✓ Testovacia chyba odoslaná do Sentry</string>
+    <string name="settings_check_status_description">Skontrolovať stav servera</string>
+    <string name="settings_status_recheck">Skontrolovať znova</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobil: %1$s</string>
+    <string name="settings_status_api_key_enabled">API kľúč: povolený</string>
+    <string name="settings_status_api_key_none">API kľúč: žiadny</string>
+    <string name="settings_status_endpoints">Koncové body</string>
+    <string name="settings_status_bibles">Biblie</string>
+    <string name="settings_status_songbooks">Spevníky</string>
+    <string name="settings_status_none">žiadne</string>
+
+    <!-- Status Screen -->
+    <string name="status_connecting">Pripája sa k serveru…</string>
+    <string name="status_connected">Server pripojený</string>
+    <string name="status_continue">Pokračovať</string>
+    <string name="status_retry">Skúsiť znova</string>
+    <string name="status_open_settings">Otvoriť nastavenia</string>
+    <string name="status_continue_anyway">Pokračovať aj tak</string>
+    <string name="status_limited_functionality">Obmedzená funkčnosť</string>
+    <string name="status_server_version">Verzia servera: %1$s</string>
+    <string name="status_issues_detected">Na pripojenom serveri boli zistené nasledujúce problémy:</string>
+    <string name="status_endpoint_unavailable">Koncový bod stavu ešte nie je dostupný v tejto verzii servera — aktualizujte ChurchPresenter na počítači pre úplné hlásenie schopností.</string>
+    <string name="status_error_title">Nepodarilo sa dosiahnuť server</string>
+    <string name="status_permissions_title">Oprávnenia tohto zariadenia</string>
+    <string name="status_permission_present">Ovládať prezentáciu</string>
+    <string name="status_permission_schedule">Pridať do programu</string>
+    <string name="status_permission_upload">Nahrávať súbory</string>
+    <string name="status_permission_blocked">— zablokované</string>
+    <string name="status_info_bibles">Dostupné biblie</string>
+    <string name="status_info_songbooks">Dostupné spevníky</string>
+    <string name="status_info_features">Povolené funkcie</string>
+
+    <!-- Status Warnings -->
+    <string name="status_warn_no_api_key_title">Nie je nakonfigurovaný žiadny API kľúč</string>
+    <string name="status_warn_no_api_key_body">Server nemá nastavený žiadny API kľúč. Niektoré chránené koncové body môžu odmietnuť požiadavky. Zvážte povolenie API kľúča v nastaveniach servera ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Žiadne biblické preklady nie sú k dispozícii</string>
+    <string name="status_warn_no_bibles_body">Server nemá načítané žiadne biblické preklady. Karta Biblia bude prázdna. Pridajte preklad v aplikácii ChurchPresenter na počítači.</string>
+    <string name="status_warn_no_songbooks_title">Žiadne spevníky nie sú k dispozícii</string>
+    <string name="status_warn_no_songbooks_body">Server nemá načítané žiadne spevníky. Karta Piesne bude prázdna. Importujte spevník v aplikácii ChurchPresenter na počítači.</string>
+    <string name="status_warn_present_blocked_title">Ovládanie prezentácie zablokované</string>
+    <string name="status_warn_present_blocked_body">Toto zariadenie nemá povolenie ovládať prezentáciu (premietať, mazať, vyberať snímky). Požiadajte správcu servera o udelenie oprávnenia Prezentér tomuto zariadeniu.</string>
+    <string name="status_warn_schedule_blocked_title">Úprava programu zablokovaná</string>
+    <string name="status_warn_schedule_blocked_body">Toto zariadenie nemá povolenie pridávať položky do programu. Požiadajte správcu servera o udelenie oprávnenia Program tomuto zariadeniu.</string>
+    <string name="status_warn_upload_blocked_title">Nahrávanie súborov zablokované</string>
+    <string name="status_warn_upload_blocked_body">Toto zariadenie nemá povolenie nahrávať prezentácie alebo obrázky. Požiadajte správcu servera o udelenie oprávnenia Nahrávanie tomuto zariadeniu.</string>
+    <string name="upload_blocked_toast">Nahrávanie súborov je pre toto zariadenie vypnuté. Požiadajte správcu servera o udelenie oprávnenia Nahrávanie.</string>
+    <string name="status_warn_unknown_version_title">Nerozpoznaná verzia servera</string>
+    <string name="status_warn_unknown_version_body">Server nahlásil verziu \'%1$s\'. Niektoré funkcie tejto aplikácie nemusia byť kompatibilné s touto verziou.</string>
+    <string name="status_warn_missing_endpoint_title">Chýbajúci API koncový bod: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Server nesprístupňuje koncový bod \'%1$s\'. Funkcie, ktoré sa naň spoliehajú, nebudú k dispozícii.</string>
+
+    <!-- Media tab -->
+    <string name="media_title">Médiá</string>
+    <string name="media_no_media_loaded">Žiadne médiá nie sú načítané</string>
+    <string name="media_playing">Prehráva sa</string>
+    <string name="media_playing_on_desktop">Prehráva sa na počítači</string>
+    <string name="media_local_ready">Lokálny súbor · pripravený na spustenie naživo</string>
+    <string name="media_pick_to_upload">Vyberte súbor na nahranie</string>
+    <string name="media_source_network_url">Sieťová URL</string>
+    <string name="media_source_upload">Nahrať z telefónu</string>
+    <string name="media_subtitle_url">%1$s · Sieťová URL</string>
+    <string name="media_subtitle_empty">Vložte sieťovú URL nižšie pre odoslanie médií</string>
+    <string name="media_on_screen">NA OBRAZOVKE</string>
+    <string name="media_cd_stop">Zastaviť</string>
+    <string name="media_cd_back10">Späť o 10 sekúnd</string>
+    <string name="media_cd_forward10">Vpred o 10 sekúnd</string>
+    <string name="media_cd_play">Prehrať</string>
+    <string name="media_cd_pause">Pozastaviť</string>
+    <string name="media_cd_mute">Stlmiť</string>
+    <string name="media_add_to_schedule">Pridať do programu</string>
+    <string name="media_go_live">Spustiť naživo</string>
+    <string name="media_clear_screen">Vymazať obrazovku</string>
+    <string name="media_source_label">ZDROJ</string>
+    <string name="media_will_send">Odošle sa: %1$s</string>
+    <string name="media_target_uploaded">Nahraný súbor · %1$s</string>
+    <string name="media_target_loaded">Načítané na počítači · %1$s</string>
+    <string name="media_target_url">Sieťová URL</string>
+    <string name="media_target_none">Vyberte zdroj nižšie pre odoslanie médií</string>
+    <string name="media_load_label">NAČÍTAŤ MÉDIÁ</string>
+    <string name="media_uploading_percent">Nahráva sa… %1$d%%</string>
+    <string name="media_choose_file">Vyberte video alebo audio súbor</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Nahrávanie je na počítači vypnuté</string>
+    <string name="media_uploads_disabled_hint">Povoľte „Povoliť nahrávanie súborov z mobilných zariadení“ v nastaveniach servera aplikácie na počítači.</string>
+    <string name="media_playing_generic">médiá</string>
+
+    <!-- More launcher -->
+    <string name="more_photos_title">Fotky</string>
+    <string name="more_photos_subtitle">Prehliadať a premietať priečinky s obrázkami</string>
+    <string name="more_qa_title">Q&amp;A</string>
+    <string name="more_qa_subtitle">Kontrolovať a premietať otázky publika</string>
+    <string name="more_dictionary_title">Slovník</string>
+    <string name="more_dictionary_subtitle">Strongov hebrejský a grécky lexikón</string>
+    <string name="more_announcements_title">Oznamy</string>
+    <string name="more_announcements_subtitle">Text, hodiny a odpočítavače</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Premietnuť webovú stránku na obrazovku</string>
+    <!-- Section detail header titles -->
+    <string name="strongs_dictionary_title">Strongov slovník</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Oznamy</string>
+
+    <!-- Shared generic labels / content descriptions -->
+    <string name="action_clear">Vymazať</string>
+    <string name="action_cancel">Zrušiť</string>
+    <string name="action_go_live">Spustiť naživo</string>
+    <string name="label_add_to_schedule">Pridať do programu</string>
+    <string name="label_live">Naživo</string>
+    <string name="cd_delete">Odstrániť</string>
+    <string name="cd_close">Zavrieť</string>
+    <string name="cd_select">Vybrať</string>
+    <string name="cd_cast">Prenášať</string>
+    <string name="cd_back">Späť</string>
+    <string name="cd_settings">Nastavenia</string>
+    <string name="cd_schedule">Program</string>
+    <string name="overline_on_screen_preview">Ukážka na obrazovke</string>
+
+    <!-- Announcements Screen -->
+    <string name="announcements_text_placeholder">Text oznamu…</string>
+    <string name="overline_duration">Trvanie</string>
+    <string name="overline_target_time">Cieľový čas</string>
+    <string name="overline_animation">Animácia</string>
+    <string name="stepper_hrs">Hod</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sek</string>
+    <string name="stepper_hour">Hodina</string>
+    <string name="stepper_font_size">Veľkosť písma</string>
+    <string name="swatch_text">Text</string>
+    <string name="swatch_background">Pozadie</string>
+    <string name="announcements_clock_desc">Zobrazuje aktuálny čas, naživo.</string>
+    <string name="announcements_count_up_desc">Počíta nahor od nuly po spustení naživo.</string>
+    <string name="announcements_animation_duration_label">TRVANIE ANIMÁCIE</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">ULOŽENÉ</string>
+    <string name="announcements_add_new">+ Nový</string>
+    <string name="announcements_no_saved">Zatiaľ žiadne uložené oznamy. Vytvorte jeden a ťuknite na „+ Nový“.</string>
+    <string name="color_picker_title">Vyberte farbu</string>
+    <string name="color_picker_use">Použiť farbu</string>
+    <string name="color_slider_hue">Odtieň</string>
+    <string name="color_slider_saturation">Sýtosť</string>
+    <string name="color_slider_brightness">Jas</string>
+    <string name="cd_custom_color">Vlastná farba</string>
+    <string name="announcements_preview_placeholder">Váš oznam</string>
+
+    <!-- Web Screen -->
+    <string name="web_bookmarks_label">ZÁLOŽKY</string>
+    <string name="web_add_bookmark">+ Pridať</string>
+    <string name="web_no_bookmarks">Zatiaľ žiadne záložky. Zadajte URL a ťuknite na „+ Pridať“.</string>
+    <string name="web_url_placeholder">example.org</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_search_placeholder">Hľadať číslo, slovo alebo význam…</string>
+    <string name="dictionary_filter_all">Všetko</string>
+    <string name="dictionary_filter_hebrew">Hebrejčina</string>
+    <string name="dictionary_filter_greek">Gréčtina</string>
+    <string name="dictionary_no_entries">Nenašli sa žiadne položky</string>
+    <string name="dictionary_uses">POUŽITIA</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Slovný druh</string>
+    <string name="dictionary_occurrences">Výskyty</string>
+    <string name="dictionary_root">Koreň</string>
+    <string name="dictionary_definition">Definícia</string>
+    <string name="dictionary_kjv_usage">Použitie KJV</string>
+
+    <!-- Q&A Admin (additional) -->
+    <string name="qa_edit_question_title">Upraviť otázku</string>
+    <string name="qa_delete_question">Odstrániť otázku</string>
+    <string name="qa_submitted_by">Odoslal %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Zastaviť</string>
+    <string name="qa_action_approve">Schváliť</string>
+    <string name="cd_edit">Upraviť</string>
+    <string name="cd_deny">Zamietnuť</string>
+    <string name="qa_badge_live">NAŽIVO</string>
+    <string name="qa_badge_approved">✓ Schválené</string>
+    <string name="qa_badge_denied">Zamietnuté</string>
+    <string name="qa_badge_answered">Zodpovedané</string>
+
+    <!-- Schedule Drawer (additional) -->
+    <string name="schedule_drawer_item_count">%1$d položiek</string>
+
+    <!-- Presentation Screen (additional) -->
+    <string name="presentation_slide_desc">Snímka %1$d</string>
+    <string name="presentation_slide_live">▶ NAŽIVO</string>
+
+    <!-- Bottom Tab Bar -->
+    <string name="tab_media">Médiá</string>
+    <string name="tab_present">Premietať</string>
+    <string name="tab_more">Viac</string>
+
+    <!-- Count / summary labels -->
+    <string name="songs_count">%1$d piesní</string>
+    <string name="bible_chapters_count">%1$d kap.</string>
+    <string name="status_version_line">Server: %1$s · Mobil: %2$s</string>
+</resources>

@@ -1,0 +1,437 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Titlu</string>
+    <string name="songs_table_header_book">Carte</string>
+    <string name="songs_table_header_tune">Melodie</string>
+    <string name="songs_table_search_placeholder">Caută după # sau titlu…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Niciun cântec disponibil</string>
+    <string name="songs_table_no_match">Niciun cântec nu corespunde filtrului</string>
+    <string name="songs_table_loading_error">Încărcarea cântecelor a eșuat</string>
+    <string name="songs_table_retry">Reîncearcă</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Toate cărțile</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Deschide setările</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Setări</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Gazdă / Adresă IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">Cheie API (opțional)</string>
+    <string name="settings_api_key_placeholder">Lasă gol dacă nu este necesară</string>
+    <string name="settings_display_name_label">Numele tău (pentru Î&amp;R)</string>
+    <string name="settings_display_name_placeholder">Lasă gol pentru a folosi ID-ul dispozitivului</string>
+    <string name="settings_save">Salvează</string>
+    <string name="settings_cancel">Anulează</string>
+    <string name="settings_invalid_port">Portul trebuie să fie un număr între 1 și 65535</string>
+    <string name="settings_host_empty">Gazda nu poate fi goală</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Aspect</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Luminos</string>
+    <string name="settings_theme_dark">Întunecat</string>
+
+    <!-- Privacy -->
+    <string name="settings_privacy_section">Confidențialitate</string>
+    <string name="settings_telemetry_label">Partajează date de utilizare &amp; erori</string>
+    <string name="settings_telemetry_description">Ne ajută să găsim și să reparăm erorile. Dezactivează pentru a opri trimiterea analizelor și a rapoartelor de erori.</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Cântece</string>
+    <string name="tab_bible">Biblia</string>
+    <string name="tab_pictures">Imagini</string>
+    <string name="tab_presentation">Prezentare</string>
+    <string name="tab_qa_admin">Î&amp;R</string>
+
+    <!-- Q&A Admin Panel -->
+    <string name="qa_admin_session_active">Sesiune activă</string>
+    <string name="qa_admin_session_stopped">Sesiune oprită</string>
+    <string name="qa_admin_incoming_tab">Primite (%1$d)</string>
+    <string name="qa_admin_finished_tab">Finalizate (%1$d)</string>
+    <string name="qa_admin_no_incoming">Nicio întrebare primită</string>
+    <string name="qa_admin_no_finished">Nicio întrebare finalizată</string>
+    <string name="qa_admin_approve">Aprobă</string>
+    <string name="qa_admin_deny">Respinge</string>
+    <string name="qa_admin_go_live">Transmite live</string>
+    <string name="qa_admin_done">Marchează ca gata</string>
+    <string name="qa_admin_clear_display">Șterge afișajul</string>
+    <string name="qa_admin_now_live">Live:</string>
+    <string name="qa_admin_edit_hint">Editează textul întrebării…</string>
+    <string name="qa_admin_add_question">Adaugă întrebare</string>
+    <string name="qa_admin_add_question_hint">Scrie întrebarea ta…</string>
+    <string name="qa_admin_save">Salvează</string>
+    <string name="qa_admin_cancel">Anulează</string>
+    <string name="qa_admin_error_retry">Reîncearcă</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Biblia — în curând</string>
+    <string name="pictures_coming_soon">🖼  Imagini — în curând</string>
+    <string name="presentation_coming_soon">📽  Prezentare — în curând</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Nicio prezentare disponibilă</string>
+    <string name="presentation_loading_error">Încărcarea prezentărilor a eșuat</string>
+    <string name="presentation_retry">Reîncearcă</string>
+    <string name="presentation_slides">diapozitive</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Nicio imagine disponibilă</string>
+    <string name="pictures_loading_error">Încărcarea imaginilor a eșuat</string>
+    <string name="pictures_retry">Reîncearcă</string>
+    <string name="pictures_photos">fotografii</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Caută cărți…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Nicio carte biblică disponibilă</string>
+    <string name="bible_no_match">Nicio carte nu corespunde căutării</string>
+    <string name="bible_chapter_label">Capitol</string>
+    <string name="bible_chapters_title">Capitole</string>
+    <string name="bible_no_verses">Niciun verset disponibil</string>
+    <string name="bible_back">← Înapoi</string>
+    <string name="bible_loading_error">Încărcarea a eșuat</string>
+    <string name="bible_retry">Reîncearcă</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Program</string>
+    <string name="schedule_drawer_refresh">Reîmprospătează programul</string>
+    <string name="schedule_drawer_empty">Niciun element în program</string>
+    <string name="schedule_drawer_error">Eroare: %1$s</string>
+    <string name="schedule_drawer_open">Deschide programul</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Adaugă în program</string>
+    <string name="song_detail_schedule_request_sent">Cerere trimisă ✓</string>
+    <string name="song_detail_project_to_screen">Proiectează pe ecran</string>
+    <string name="song_detail_stop_projecting">Oprește proiecția</string>
+    <string name="song_detail_fab_actions">Acțiuni</string>
+    <string name="song_detail_fab_close_actions">Închide acțiunile</string>
+    <string name="song_detail_projecting_badge">▶  Se proiectează</string>
+    <string name="song_detail_no_lyrics">Niciun text disponibil</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Adaugă în program</string>
+    <string name="bible_detail_schedule_request_sent">Cerere trimisă ✓</string>
+    <string name="bible_detail_project_to_screen">Proiectează pe ecran</string>
+    <string name="bible_detail_stop_projecting">Oprește proiecția</string>
+    <string name="bible_detail_fab_actions">Acțiuni</string>
+    <string name="bible_detail_fab_close_actions">Închide acțiunile</string>
+    <string name="bible_detail_projecting_badge">▶  Se proiectează</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Adaugă în program</string>
+    <string name="pictures_schedule_request_sent">Cerere trimisă ✓</string>
+    <string name="pictures_project_to_screen">Proiectează pe ecran</string>
+    <string name="pictures_stop_projecting">Oprește proiecția</string>
+    <string name="pictures_pick_from_device">Alege de pe dispozitiv</string>
+
+    <!-- Shared action FAB labels (used by ContentActionButtons across all screens) -->
+    <string name="action_add_to_schedule">Adaugă în program</string>
+    <string name="action_project_to_screen">Proiectează pe ecran</string>
+    <string name="action_stop_projecting">Oprește proiecția</string>
+    <string name="action_clear_display">Șterge afișajul</string>
+    <string name="action_hold_display">Menține afișajul</string>
+    <string name="action_multi_select">Selectează mai multe</string>
+    <string name="bible_multi_select_count">%1$d selectate</string>
+    <string name="pictures_uploading">Se încarcă…</string>
+    <string name="upload_overlay_subtitle">Te rugăm să aștepți, nu închide aplicația</string>
+    <string name="upload_overlay_photo_counter">Fotografia %1$d din %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Imagine adăugată în program</string>
+    <string name="toast_pictures_failed_to_add_schedule">Adăugarea imaginii în program a eșuat: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Adaugă în program</string>
+    <string name="presentation_schedule_request_sent">Cerere trimisă ✓</string>
+    <string name="presentation_project_to_screen">Proiectează pe ecran</string>
+    <string name="presentation_stop_projecting">Oprește proiecția</string>
+    <string name="presentation_upload_file">Încarcă prezentarea</string>
+    <string name="presentation_uploading">Se încarcă…</string>
+    <string name="toast_presentation_added_to_schedule">Prezentare adăugată în program</string>
+    <string name="toast_presentation_failed_to_add_schedule">Adăugarea prezentării în program a eșuat: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Selectarea prezentării a eșuat: %1$s</string>
+    <string name="toast_upload_unsupported">Încărcarea nu este acceptată de acest server. Actualizează ChurchPresenter pe desktop la ultima versiune.</string>
+    <string name="toast_upload_file_too_large">Fișierul este prea mare pentru a fi acceptat de server. Încearcă un fișier mai mic.</string>
+    <string name="toast_upload_server_error">Serverul a respins încărcarea: %1$s</string>
+    <string name="toast_upload_failed">Încărcarea a eșuat: %1$s</string>
+    <string name="toast_upload_reload_failed">Încărcat, dar reîncărcarea listei a eșuat: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Cântecul este acum live pe ecran</string>
+    <string name="toast_request_failed">Cererea a eșuat</string>
+    <string name="toast_no_song_selected">Niciun cântec selectat</string>
+    <string name="toast_song_added_to_schedule">"%1$s" adăugat în program</string>
+    <string name="toast_failed_to_project">Proiectarea cântecului a eșuat: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Adăugarea în program a eșuat: %1$s</string>
+    <string name="toast_request_denied">Cererea a fost respinsă</string>
+    <string name="toast_session_blocked">Sesiunea este blocată — nu vor mai fi acceptate alte cereri</string>
+    <string name="toast_request_rejected">Cerere respinsă de server (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Cerere respinsă: %1$s</string>
+    <string name="toast_bible_live">Pasajul biblic este acum live pe ecran</string>
+    <string name="toast_bible_added_to_schedule">"%1$s" adăugat în program</string>
+    <string name="toast_failed_to_project_bible">Proiectarea a eșuat: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Adăugarea în program a eșuat: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server setat la %1$s:%2$s</string>
+    <string name="qr_scan_button">Scanează codul QR</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Aprobă certificatul serverului</string>
+    <string name="cert_setup_subtitle">Configurare unică necesară</string>
+    <string name="cert_setup_intro">ChurchPresenter folosește un certificat HTTPS privat pentru comunicare securizată. Trebuie să îl instalezi o singură dată pentru ca dispozitivul tău să aibă încredere în conexiune.</string>
+    <string name="cert_setup_scan_title">Scanează codul QR al certificatului</string>
+    <string name="cert_setup_scan_desktop_hint">Pe ChurchPresenter desktop: Setări → Server → apasă „Download Cert” pentru a afișa codul QR.</string>
+    <string name="cert_setup_scan_button">Scanează codul QR</string>
+    <string name="cert_setup_scan_or_divider">sau folosește adresa salvată</string>
+    <string name="cert_setup_url_scanned">✓ URL scanat</string>
+    <string name="cert_setup_url_label">URL certificat</string>
+    <string name="cert_setup_open_button">Deschide URL-ul certificatului</string>
+    <string name="cert_setup_step2_ios_title">iOS — Instalează profilul</string>
+    <string name="cert_setup_step2_ios_body">Safari va cere descărcarea unui profil de configurare. Apasă Permite, apoi mergi la Setări → General → VPN &amp; Device Management, apasă ChurchPresenter și instalează.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Aprobă certificatul</string>
+    <string name="cert_setup_step3_ios_body">Setări → General → Despre → Setări de încredere a certificatelor → activează încrederea completă pentru ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Instalează certificatul</string>
+    <string name="cert_setup_step2_android_body">Chrome descarcă fișierul .crt. Apasă-l din notificarea de descărcări, alege „CA Certificate” și dă-i un nume precum „ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ „Nu se poate instala din surse necunoscute”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android poate bloca instalarea dacă browserul tău nu are voie să instaleze fișiere. Mergi la Setări → Aplicații → [browserul tău] → Instalare aplicații necunoscute, apoi activează „Permite din această sursă”. Revino aici și apasă din nou pe fișier.</string>
+    <string name="cert_setup_fingerprint_title">Verifică amprenta (recomandat)</string>
+    <string name="cert_setup_fingerprint_body">Compară această amprentă cu ceea ce afișează ChurchPresenter desktop în Setări → Server → Certificate SHA-256. Trebuie să coincidă.</string>
+    <string name="cert_setup_fingerprint_unavailable">Conectează-te mai întâi la server pentru a vedea amprenta</string>
+    <string name="cert_setup_done_button">Gata — Certificat instalat</string>
+    <string name="cert_setup_skip_button">Omite deocamdată</string>
+    <string name="cert_setup_skip_note">Poți reveni la acest ghid oricând din Setări.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Conectare la desktop</string>
+    <string name="connect_setup_subtitle">Configurare unică necesară</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile se conectează la aplicația desktop ChurchPresenter din rețeaua ta locală. Scanează codul QR de pe desktop pentru a configura automat conexiunea.</string>
+    <string name="connect_setup_skip_button">Omite deocamdată</string>
+    <string name="connect_setup_done_button">Gata — Conectat</string>
+    <string name="connect_setup_skip_note">Poți scana codul QR oricând din Setări.</string>
+    <string name="connect_setup_step1_title">Deschide ChurchPresenter pe computerul tău</string>
+    <string name="connect_setup_step1_body">Lansează aplicația desktop ChurchPresenter și asigură-te că rulează în aceeași rețea Wi-Fi ca acest dispozitiv.</string>
+    <string name="connect_setup_step2_title">Afișează codul QR de conexiune</string>
+    <string name="connect_setup_step2_body">În aplicația desktop mergi la Setări → Mobile → și apasă „Show QR Code”. Un cod QR cu detaliile conexiunii va apărea pe ecran.</string>
+    <string name="connect_setup_step3_title">Scanează codul QR de mai jos</string>
+    <string name="connect_setup_step3_body">Apasă butonul de mai jos pentru a deschide camera și a scana codul QR afișat pe desktop. Conexiunea va fi configurată automat.</string>
+    <string name="connect_setup_scan_button">Scanează codul QR</string>
+    <string name="connect_setup_connected">✓ Conectat la %1$s:%2$s</string>
+    <string name="connect_setup_no_camera_note">Nicio cameră detectată pe acest dispozitiv. Introdu detaliile conexiunii manual:</string>
+    <string name="connect_setup_manual_entry_toggle">Introdu manual în schimb</string>
+    <string name="connect_setup_scan_instead_toggle">Scanează codul QR în schimb</string>
+    <string name="connect_setup_manual_apply_button">Aplică</string>
+
+    <!-- Settings Screen (additional) -->
+    <string name="settings_active_url_label">Conectare curentă la:</string>
+    <string name="settings_reset_to_default">Resetează la valorile implicite</string>
+    <string name="settings_draft_url_label">Se va conecta la, după salvare:</string>
+    <string name="settings_check_status">Verifică starea serverului</string>
+    <string name="settings_developer_section">Dezvoltator</string>
+    <string name="settings_send_test_error">Trimite eroare de test către Sentry</string>
+    <string name="settings_test_error_sent">✓ Eroare de test trimisă către Sentry</string>
+    <string name="settings_check_status_description">Verifică starea serverului</string>
+    <string name="settings_status_recheck">Reverifică</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobil: %1$s</string>
+    <string name="settings_status_api_key_enabled">Cheie API: activată</string>
+    <string name="settings_status_api_key_none">Cheie API: niciuna</string>
+    <string name="settings_status_endpoints">Endpoint-uri</string>
+    <string name="settings_status_bibles">Biblii</string>
+    <string name="settings_status_songbooks">Cărți de cântece</string>
+    <string name="settings_status_none">niciuna</string>
+
+    <!-- Status Screen -->
+    <string name="status_connecting">Se conectează la server…</string>
+    <string name="status_connected">Server conectat</string>
+    <string name="status_continue">Continuă</string>
+    <string name="status_retry">Reîncearcă</string>
+    <string name="status_open_settings">Deschide setările</string>
+    <string name="status_continue_anyway">Continuă oricum</string>
+    <string name="status_limited_functionality">Funcționalitate limitată</string>
+    <string name="status_server_version">Versiune server: %1$s</string>
+    <string name="status_issues_detected">Următoarele probleme au fost detectate pe serverul conectat:</string>
+    <string name="status_endpoint_unavailable">Endpoint-ul de stare nu este încă disponibil pe această versiune de server — actualizează ChurchPresenter desktop pentru raportarea completă a capabilităților.</string>
+    <string name="status_error_title">Serverul nu a putut fi accesat</string>
+    <string name="status_permissions_title">Permisiunile acestui dispozitiv</string>
+    <string name="status_permission_present">Control prezentare</string>
+    <string name="status_permission_schedule">Adăugare în program</string>
+    <string name="status_permission_upload">Încărcare fișiere</string>
+    <string name="status_permission_blocked">— blocat</string>
+    <string name="status_info_bibles">Biblii disponibile</string>
+    <string name="status_info_songbooks">Cărți de cântece disponibile</string>
+    <string name="status_info_features">Funcții activate</string>
+
+    <!-- Status Warnings -->
+    <string name="status_warn_no_api_key_title">Nicio cheie API configurată</string>
+    <string name="status_warn_no_api_key_body">Serverul nu are o cheie API setată. Anumite endpoint-uri protejate pot respinge cererile. Ia în considerare activarea unei chei API în setările serverului ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Nicio traducere a Bibliei disponibilă</string>
+    <string name="status_warn_no_bibles_body">Serverul nu are traduceri ale Bibliei încărcate. Fila Biblia va fi goală. Adaugă o traducere în aplicația desktop ChurchPresenter.</string>
+    <string name="status_warn_no_songbooks_title">Nicio carte de cântece disponibilă</string>
+    <string name="status_warn_no_songbooks_body">Serverul nu are cărți de cântece încărcate. Fila Cântece va fi goală. Importă o carte de cântece în aplicația desktop ChurchPresenter.</string>
+    <string name="status_warn_present_blocked_title">Control prezentare blocat</string>
+    <string name="status_warn_present_blocked_body">Acest dispozitiv nu are permisiunea de a controla prezentarea (proiectare, ștergere, selectare diapozitive). Cere administratorului serverului să acorde acestui dispozitiv permisiunea de Prezentator.</string>
+    <string name="status_warn_schedule_blocked_title">Editare program blocată</string>
+    <string name="status_warn_schedule_blocked_body">Acest dispozitiv nu are permisiunea de a adăuga elemente în program. Cere administratorului serverului să acorde acestui dispozitiv permisiunea de Program.</string>
+    <string name="status_warn_upload_blocked_title">Încărcare fișiere blocată</string>
+    <string name="status_warn_upload_blocked_body">Acest dispozitiv nu are permisiunea de a încărca prezentări sau imagini. Cere administratorului serverului să acorde acestui dispozitiv permisiunea de Încărcare.</string>
+    <string name="upload_blocked_toast">Încărcarea fișierelor este dezactivată pentru acest dispozitiv. Cere administratorului serverului să acorde permisiunea de Încărcare.</string>
+    <string name="status_warn_unknown_version_title">Versiune server nerecunoscută</string>
+    <string name="status_warn_unknown_version_body">Serverul a raportat versiunea \'%1$s\'. Unele funcții ale acestei aplicații pot să nu fie compatibile cu această versiune.</string>
+    <string name="status_warn_missing_endpoint_title">Endpoint API lipsă: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Serverul nu expune endpoint-ul \'%1$s\'. Funcțiile care depind de el vor fi indisponibile.</string>
+
+    <!-- Media tab -->
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Niciun fișier media încărcat</string>
+    <string name="media_playing">Se redă</string>
+    <string name="media_playing_on_desktop">Se redă pe desktop</string>
+    <string name="media_local_ready">Fișier local · gata de transmis live</string>
+    <string name="media_pick_to_upload">Alege un fișier pentru încărcare</string>
+    <string name="media_source_network_url">URL de rețea</string>
+    <string name="media_source_upload">Încarcă de pe telefon</string>
+    <string name="media_subtitle_url">%1$s · URL de rețea</string>
+    <string name="media_subtitle_empty">Lipește un URL de rețea mai jos pentru a trimite media</string>
+    <string name="media_on_screen">PE ECRAN</string>
+    <string name="media_cd_stop">Oprește</string>
+    <string name="media_cd_back10">Înapoi 10 secunde</string>
+    <string name="media_cd_forward10">Înainte 10 secunde</string>
+    <string name="media_cd_play">Redă</string>
+    <string name="media_cd_pause">Pauză</string>
+    <string name="media_cd_mute">Fără sunet</string>
+    <string name="media_add_to_schedule">Adaugă în program</string>
+    <string name="media_go_live">Transmite live</string>
+    <string name="media_clear_screen">Șterge ecranul</string>
+    <string name="media_source_label">SURSĂ</string>
+    <string name="media_will_send">Se va trimite: %1$s</string>
+    <string name="media_target_uploaded">Fișier încărcat · %1$s</string>
+    <string name="media_target_loaded">Încărcat pe desktop · %1$s</string>
+    <string name="media_target_url">URL de rețea</string>
+    <string name="media_target_none">Alege o sursă mai jos pentru a trimite media</string>
+    <string name="media_load_label">ÎNCARCĂ MEDIA</string>
+    <string name="media_uploading_percent">Se încarcă… %1$d%%</string>
+    <string name="media_choose_file">Alege un fișier video sau audio</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Încărcările sunt dezactivate pe desktop</string>
+    <string name="media_uploads_disabled_hint">Activează „Allow file uploads from mobile devices” în setările Server ale aplicației desktop.</string>
+    <string name="media_playing_generic">media</string>
+
+    <!-- More launcher -->
+    <string name="more_photos_title">Fotografii</string>
+    <string name="more_photos_subtitle">Răsfoiește și proiectează foldere cu imagini</string>
+    <string name="more_qa_title">Î&amp;R</string>
+    <string name="more_qa_subtitle">Analizează și proiectează întrebările publicului</string>
+    <string name="more_dictionary_title">Dicționar</string>
+    <string name="more_dictionary_subtitle">Lexicon ebraic &amp; grec Strong\'s</string>
+    <string name="more_announcements_title">Anunțuri</string>
+    <string name="more_announcements_subtitle">Text, ceasuri &amp; cronometre cu numărătoare inversă</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Proiectează o pagină web pe ecran</string>
+    <!-- Section detail header titles -->
+    <string name="strongs_dictionary_title">Dicționar Strong\'s</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Anunțuri</string>
+
+    <!-- Shared generic labels / content descriptions -->
+    <string name="action_clear">Șterge</string>
+    <string name="action_cancel">Anulează</string>
+    <string name="action_go_live">Transmite live</string>
+    <string name="label_add_to_schedule">Adaugă în program</string>
+    <string name="label_live">Live</string>
+    <string name="cd_delete">Șterge</string>
+    <string name="cd_close">Închide</string>
+    <string name="cd_select">Selectează</string>
+    <string name="cd_cast">Proiectează</string>
+    <string name="cd_back">Înapoi</string>
+    <string name="cd_settings">Setări</string>
+    <string name="cd_schedule">Program</string>
+    <string name="overline_on_screen_preview">Previzualizare pe ecran</string>
+
+    <!-- Announcements Screen -->
+    <string name="announcements_text_placeholder">Text anunț…</string>
+    <string name="overline_duration">Durată</string>
+    <string name="overline_target_time">Ora țintă</string>
+    <string name="overline_animation">Animație</string>
+    <string name="stepper_hrs">Ore</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sec</string>
+    <string name="stepper_hour">Oră</string>
+    <string name="stepper_font_size">Dimensiune font</string>
+    <string name="swatch_text">Text</string>
+    <string name="swatch_background">Fundal</string>
+    <string name="announcements_clock_desc">Afișează ora curentă, live.</string>
+    <string name="announcements_count_up_desc">Numără crescător de la zero când devine live.</string>
+    <string name="announcements_animation_duration_label">DURATĂ ANIMAȚIE</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SALVATE</string>
+    <string name="announcements_add_new">+ Nou</string>
+    <string name="announcements_no_saved">Niciun anunț salvat încă. Compune unul și apasă „+ Nou”.</string>
+    <string name="color_picker_title">Alege o culoare</string>
+    <string name="color_picker_use">Folosește culoarea</string>
+    <string name="color_slider_hue">Nuanță</string>
+    <string name="color_slider_saturation">Saturație</string>
+    <string name="color_slider_brightness">Luminozitate</string>
+    <string name="cd_custom_color">Culoare personalizată</string>
+    <string name="announcements_preview_placeholder">Anunțul tău</string>
+
+    <!-- Web Screen -->
+    <string name="web_bookmarks_label">MARCAJE</string>
+    <string name="web_add_bookmark">+ Adaugă</string>
+    <string name="web_no_bookmarks">Niciun marcaj încă. Introdu un URL și apasă „+ Adaugă”.</string>
+    <string name="web_url_placeholder">example.org</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_search_placeholder">Caută număr, cuvânt sau sens…</string>
+    <string name="dictionary_filter_all">Toate</string>
+    <string name="dictionary_filter_hebrew">Ebraică</string>
+    <string name="dictionary_filter_greek">Greacă</string>
+    <string name="dictionary_no_entries">Nicio intrare găsită</string>
+    <string name="dictionary_uses">UTILIZĂRI</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Parte de vorbire</string>
+    <string name="dictionary_occurrences">Apariții</string>
+    <string name="dictionary_root">Rădăcină</string>
+    <string name="dictionary_definition">Definiție</string>
+    <string name="dictionary_kjv_usage">Utilizare KJV</string>
+
+    <!-- Q&A Admin (additional) -->
+    <string name="qa_edit_question_title">Editează întrebarea</string>
+    <string name="qa_delete_question">Șterge întrebarea</string>
+    <string name="qa_submitted_by">Trimisă de %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Oprește</string>
+    <string name="qa_action_approve">Aprobă</string>
+    <string name="cd_edit">Editează</string>
+    <string name="cd_deny">Respinge</string>
+    <string name="qa_badge_live">LIVE</string>
+    <string name="qa_badge_approved">✓ Aprobată</string>
+    <string name="qa_badge_denied">Respinsă</string>
+    <string name="qa_badge_answered">Răspuns</string>
+
+    <!-- Schedule Drawer (additional) -->
+    <string name="schedule_drawer_item_count">%1$d elemente</string>
+
+    <!-- Presentation Screen (additional) -->
+    <string name="presentation_slide_desc">Diapozitivul %1$d</string>
+    <string name="presentation_slide_live">▶ LIVE</string>
+
+    <!-- Bottom Tab Bar -->
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Prezintă</string>
+    <string name="tab_more">Mai mult</string>
+
+    <!-- Count / summary labels -->
+    <string name="songs_count">%1$d cântece</string>
+    <string name="bible_chapters_count">%1$d cap.</string>
+    <string name="status_version_line">Server: %1$s · Mobil: %2$s</string>
+</resources>

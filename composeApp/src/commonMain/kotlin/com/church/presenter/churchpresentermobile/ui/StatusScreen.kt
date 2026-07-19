@@ -52,6 +52,7 @@ import com.church.presenter.churchpresentermobile.util.appVersion
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.status_connected
 import churchpresentermobile.composeapp.generated.resources.status_connecting
+import churchpresentermobile.composeapp.generated.resources.status_version_line
 import churchpresentermobile.composeapp.generated.resources.status_continue
 import churchpresentermobile.composeapp.generated.resources.status_continue_anyway
 import churchpresentermobile.composeapp.generated.resources.status_endpoint_unavailable
@@ -233,7 +234,7 @@ private fun AllGoodContent(
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "Server: ${serverVersion ?: "—"} · Mobile: $appVersion",
+            text = stringResource(Res.string.status_version_line, serverVersion ?: "—", appVersion),
             fontSize = 13.sp,
             color = colors.muted,
         )

@@ -49,6 +49,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.action_clear
+import churchpresentermobile.composeapp.generated.resources.action_go_live
+import churchpresentermobile.composeapp.generated.resources.cd_delete
+import churchpresentermobile.composeapp.generated.resources.label_add_to_schedule
+import churchpresentermobile.composeapp.generated.resources.label_live
+import churchpresentermobile.composeapp.generated.resources.overline_on_screen_preview
+import churchpresentermobile.composeapp.generated.resources.web_add_bookmark
+import churchpresentermobile.composeapp.generated.resources.web_bookmarks_label
+import churchpresentermobile.composeapp.generated.resources.web_no_bookmarks
+import churchpresentermobile.composeapp.generated.resources.web_url_placeholder
+import org.jetbrains.compose.resources.stringResource
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.Bookmark
 import com.church.presenter.churchpresentermobile.viewmodel.WebViewModel
@@ -92,7 +104,7 @@ fun WebScreen(
 
             Spacer(Modifier.height(18.dp))
             // ── On-screen preview ─────────────────────────────────────────
-            Overline("On-screen preview")
+            Overline(stringResource(Res.string.overline_on_screen_preview))
             PreviewCard(url)
 
             Spacer(Modifier.height(14.dp))
@@ -108,7 +120,7 @@ fun WebScreen(
                         .clickable { viewModel.clearScreen() },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("Clear", color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 }
                 Row(
                     modifier = Modifier
@@ -122,7 +134,7 @@ fun WebScreen(
                 ) {
                     Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.size(8.dp))
-                    Text("Go live", color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -139,18 +151,18 @@ fun WebScreen(
             ) {
                 Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
-                Text("Add to schedule", color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(Modifier.height(24.dp))
             // ── Bookmarks (matches design) ────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("BOOKMARKS", color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text("+ Add", color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.addBookmark() })
+                Text(stringResource(Res.string.web_bookmarks_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
+                Text(stringResource(Res.string.web_add_bookmark), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.addBookmark() })
             }
             Spacer(Modifier.height(10.dp))
             if (bookmarks.isEmpty()) {
-                Text("No bookmarks yet. Enter a URL and tap “+ Add”.", color = colors.muted, fontSize = 13.sp)
+                Text(stringResource(Res.string.web_no_bookmarks), color = colors.muted, fontSize = 13.sp)
             } else {
                 bookmarks.forEach { bm ->
                     BookmarkRow(
@@ -193,7 +205,7 @@ private fun UrlBar(value: String, onValueChange: (String) -> Unit, onGo: () -> U
         Icon(Icons.Outlined.Lock, contentDescription = null, tint = colors.accent, modifier = Modifier.size(15.dp))
         Box(Modifier.weight(1f)) {
             if (value.isEmpty()) {
-                Text("example.org", color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)
+                Text(stringResource(Res.string.web_url_placeholder), color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)
             }
             BasicTextField(
                 value = value,
@@ -211,7 +223,8 @@ private fun UrlBar(value: String, onValueChange: (String) -> Unit, onGo: () -> U
 @Composable
 private fun PreviewCard(url: String) {
     val colors = LocalAppColors.current
-    val domain = domainOf(url).ifBlank { "example.org" }
+    val urlPlaceholder = stringResource(Res.string.web_url_placeholder)
+    val domain = domainOf(url).ifBlank { urlPlaceholder }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -279,14 +292,14 @@ private fun BookmarkRow(bookmark: Bookmark, isLive: Boolean, onClick: () -> Unit
         if (isLive) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 Box(Modifier.size(6.dp).clip(RoundedCornerShape(3.dp)).background(colors.accent))
-                Text("Live", color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
             }
         } else {
             Box(
                 modifier = Modifier.size(28.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onDelete),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.Close, contentDescription = "Delete", tint = colors.muted, modifier = Modifier.size(16.dp))
+                Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))
             }
         }
     }

@@ -1,0 +1,437 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Pealkiri</string>
+    <string name="songs_table_header_book">Raamat</string>
+    <string name="songs_table_header_tune">Viis</string>
+    <string name="songs_table_search_placeholder">Otsi # või pealkirja järgi…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Laule pole saadaval</string>
+    <string name="songs_table_no_match">Ükski laul ei vasta filtrile</string>
+    <string name="songs_table_loading_error">Laulude laadimine ebaõnnestus</string>
+    <string name="songs_table_retry">Proovi uuesti</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Kõik raamatud</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Ava seaded</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Seaded</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Host / IP-aadress</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API-võti (valikuline)</string>
+    <string name="settings_api_key_placeholder">Jäta tühjaks, kui pole vajalik</string>
+    <string name="settings_display_name_label">Sinu nimi (K&amp;V jaoks)</string>
+    <string name="settings_display_name_placeholder">Jäta tühjaks, et kasutada seadme ID-d</string>
+    <string name="settings_save">Salvesta</string>
+    <string name="settings_cancel">Tühista</string>
+    <string name="settings_invalid_port">Port peab olema arv vahemikus 1 kuni 65535</string>
+    <string name="settings_host_empty">Host ei tohi olla tühi</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Välimus</string>
+    <string name="settings_theme_system">Süsteem</string>
+    <string name="settings_theme_light">Hele</string>
+    <string name="settings_theme_dark">Tume</string>
+
+    <!-- Privacy -->
+    <string name="settings_privacy_section">Privaatsus</string>
+    <string name="settings_telemetry_label">Jaga kasutus- &amp; krahhiandmeid</string>
+    <string name="settings_telemetry_description">Aitab meil vigu leida ja parandada. Lülita välja, et lõpetada analüütika ja krahhiaruannete saatmine.</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Laulud</string>
+    <string name="tab_bible">Piibel</string>
+    <string name="tab_pictures">Pildid</string>
+    <string name="tab_presentation">Esitlus</string>
+    <string name="tab_qa_admin">K&amp;V</string>
+
+    <!-- Q&A Admin Panel -->
+    <string name="qa_admin_session_active">Seanss aktiivne</string>
+    <string name="qa_admin_session_stopped">Seanss peatatud</string>
+    <string name="qa_admin_incoming_tab">Sissetulevad (%1$d)</string>
+    <string name="qa_admin_finished_tab">Lõpetatud (%1$d)</string>
+    <string name="qa_admin_no_incoming">Sissetulevaid küsimusi pole</string>
+    <string name="qa_admin_no_finished">Lõpetatud küsimusi pole</string>
+    <string name="qa_admin_approve">Kinnita</string>
+    <string name="qa_admin_deny">Keeldu</string>
+    <string name="qa_admin_go_live">Näita ekraanil</string>
+    <string name="qa_admin_done">Märgi valmis</string>
+    <string name="qa_admin_clear_display">Tühjenda ekraan</string>
+    <string name="qa_admin_now_live">Ekraanil:</string>
+    <string name="qa_admin_edit_hint">Muuda küsimuse teksti…</string>
+    <string name="qa_admin_add_question">Lisa küsimus</string>
+    <string name="qa_admin_add_question_hint">Kirjuta oma küsimus…</string>
+    <string name="qa_admin_save">Salvesta</string>
+    <string name="qa_admin_cancel">Tühista</string>
+    <string name="qa_admin_error_retry">Proovi uuesti</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Piibel — tulekul</string>
+    <string name="pictures_coming_soon">🖼  Pildid — tulekul</string>
+    <string name="presentation_coming_soon">📽  Esitlus — tulekul</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Esitlusi pole saadaval</string>
+    <string name="presentation_loading_error">Esitluste laadimine ebaõnnestus</string>
+    <string name="presentation_retry">Proovi uuesti</string>
+    <string name="presentation_slides">slaidi</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Pilte pole saadaval</string>
+    <string name="pictures_loading_error">Piltide laadimine ebaõnnestus</string>
+    <string name="pictures_retry">Proovi uuesti</string>
+    <string name="pictures_photos">fotot</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Otsi raamatuid…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Piibliraamatuid pole saadaval</string>
+    <string name="bible_no_match">Ükski raamat ei vasta otsingule</string>
+    <string name="bible_chapter_label">Peatükk</string>
+    <string name="bible_chapters_title">Peatükid</string>
+    <string name="bible_no_verses">Salme pole saadaval</string>
+    <string name="bible_back">← Tagasi</string>
+    <string name="bible_loading_error">Laadimine ebaõnnestus</string>
+    <string name="bible_retry">Proovi uuesti</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Kava</string>
+    <string name="schedule_drawer_refresh">Värskenda kava</string>
+    <string name="schedule_drawer_empty">Kavas pole kirjeid</string>
+    <string name="schedule_drawer_error">Viga: %1$s</string>
+    <string name="schedule_drawer_open">Ava kava</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Lisa kavva</string>
+    <string name="song_detail_schedule_request_sent">Päring saadetud ✓</string>
+    <string name="song_detail_project_to_screen">Kuva ekraanile</string>
+    <string name="song_detail_stop_projecting">Lõpeta kuvamine</string>
+    <string name="song_detail_fab_actions">Tegevused</string>
+    <string name="song_detail_fab_close_actions">Sulge tegevused</string>
+    <string name="song_detail_projecting_badge">▶  Kuvatakse</string>
+    <string name="song_detail_no_lyrics">Sõnu pole saadaval</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Lisa kavva</string>
+    <string name="bible_detail_schedule_request_sent">Päring saadetud ✓</string>
+    <string name="bible_detail_project_to_screen">Kuva ekraanile</string>
+    <string name="bible_detail_stop_projecting">Lõpeta kuvamine</string>
+    <string name="bible_detail_fab_actions">Tegevused</string>
+    <string name="bible_detail_fab_close_actions">Sulge tegevused</string>
+    <string name="bible_detail_projecting_badge">▶  Kuvatakse</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Lisa kavva</string>
+    <string name="pictures_schedule_request_sent">Päring saadetud ✓</string>
+    <string name="pictures_project_to_screen">Kuva ekraanile</string>
+    <string name="pictures_stop_projecting">Lõpeta kuvamine</string>
+    <string name="pictures_pick_from_device">Vali seadmest</string>
+
+    <!-- Shared action FAB labels (used by ContentActionButtons across all screens) -->
+    <string name="action_add_to_schedule">Lisa kavva</string>
+    <string name="action_project_to_screen">Kuva ekraanile</string>
+    <string name="action_stop_projecting">Lõpeta kuvamine</string>
+    <string name="action_clear_display">Tühjenda ekraan</string>
+    <string name="action_hold_display">Peata ekraan</string>
+    <string name="action_multi_select">Vali mitu</string>
+    <string name="bible_multi_select_count">%1$d valitud</string>
+    <string name="pictures_uploading">Üleslaadimine…</string>
+    <string name="upload_overlay_subtitle">Palun oota, ära sulge rakendust</string>
+    <string name="upload_overlay_photo_counter">Foto %1$d / %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Pilt lisati kavva</string>
+    <string name="toast_pictures_failed_to_add_schedule">Pildi kavva lisamine ebaõnnestus: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Lisa kavva</string>
+    <string name="presentation_schedule_request_sent">Päring saadetud ✓</string>
+    <string name="presentation_project_to_screen">Kuva ekraanile</string>
+    <string name="presentation_stop_projecting">Lõpeta kuvamine</string>
+    <string name="presentation_upload_file">Laadi esitlus üles</string>
+    <string name="presentation_uploading">Üleslaadimine…</string>
+    <string name="toast_presentation_added_to_schedule">Esitlus lisati kavva</string>
+    <string name="toast_presentation_failed_to_add_schedule">Esitluse kavva lisamine ebaõnnestus: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Esitluse valimine ebaõnnestus: %1$s</string>
+    <string name="toast_upload_unsupported">See server ei toeta üleslaadimist. Uuenda ChurchPresenter töölauarakendus uusimale versioonile.</string>
+    <string name="toast_upload_file_too_large">Fail on serveri jaoks liiga suur. Proovi väiksemat faili.</string>
+    <string name="toast_upload_server_error">Server lükkas üleslaadimise tagasi: %1$s</string>
+    <string name="toast_upload_failed">Üleslaadimine ebaõnnestus: %1$s</string>
+    <string name="toast_upload_reload_failed">Üles laaditud, kuid loendi värskendamine ebaõnnestus: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Laul on nüüd ekraanil</string>
+    <string name="toast_request_failed">Päring ebaõnnestus</string>
+    <string name="toast_no_song_selected">Ühtegi laulu pole valitud</string>
+    <string name="toast_song_added_to_schedule">\"%1$s\" lisati kavva</string>
+    <string name="toast_failed_to_project">Laulu kuvamine ebaõnnestus: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Kavva lisamine ebaõnnestus: %1$s</string>
+    <string name="toast_request_denied">Päringust keelduti</string>
+    <string name="toast_session_blocked">Seanss on blokeeritud — rohkem päringuid vastu ei võeta</string>
+    <string name="toast_request_rejected">Server lükkas päringu tagasi (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Päring lükati tagasi: %1$s</string>
+    <string name="toast_bible_live">Piiblikoht on nüüd ekraanil</string>
+    <string name="toast_bible_added_to_schedule">\"%1$s\" lisati kavva</string>
+    <string name="toast_failed_to_project_bible">Kuvamine ebaõnnestus: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Kavva lisamine ebaõnnestus: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server määratud: %1$s:%2$s</string>
+    <string name="qr_scan_button">Skaneeri QR-kood</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Usalda serveri sertifikaat</string>
+    <string name="cert_setup_subtitle">Vajalik ühekordne seadistus</string>
+    <string name="cert_setup_intro">ChurchPresenter kasutab turvaliseks suhtluseks privaatset HTTPS-sertifikaati. Pead selle korra installima, et sinu seade ühendust usaldaks.</string>
+    <string name="cert_setup_scan_title">Skaneeri sertifikaadi QR-kood</string>
+    <string name="cert_setup_scan_desktop_hint">ChurchPresenter töölauarakenduses: Seaded → Server → vajuta \"Download Cert\", et kuvada QR-kood.</string>
+    <string name="cert_setup_scan_button">Skaneeri QR-kood</string>
+    <string name="cert_setup_scan_or_divider">või kasuta salvestatud aadressi</string>
+    <string name="cert_setup_url_scanned">✓ URL skaneeritud</string>
+    <string name="cert_setup_url_label">Sertifikaadi URL</string>
+    <string name="cert_setup_open_button">Ava sertifikaadi URL</string>
+    <string name="cert_setup_step2_ios_title">iOS — installi profiil</string>
+    <string name="cert_setup_step2_ios_body">Safari palub laadida alla konfiguratsiooniprofiili. Vajuta Luba, seejärel mine Seaded → Üldine → VPN &amp; seadmehaldus, vajuta ChurchPresenter ja installi.</string>
+    <string name="cert_setup_step3_ios_title">iOS — usalda sertifikaat</string>
+    <string name="cert_setup_step3_ios_body">Seaded → Üldine → Teave → Sertifikaadi usaldusseaded → luba täielik usaldus ChurchPresenter CA jaoks.</string>
+    <string name="cert_setup_step2_android_title">Android — installi sertifikaat</string>
+    <string name="cert_setup_step2_android_body">Chrome laadib alla .crt faili. Vajuta seda allalaadimiste teavituses, vali \"CA-sertifikaat\" ja anna sellele nimi, näiteks \"ChurchPresenter\".</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ \"Ei saa installida tundmatutest allikatest\"?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android võib installi blokeerida, kui sinu brauseril pole lubatud faile installida. Mine Seaded → Rakendused → [sinu brauser] → Installi tundmatuid rakendusi, seejärel luba \"Luba sellest allikast\". Naase siia ja vajuta failile uuesti.</string>
+    <string name="cert_setup_fingerprint_title">Kontrolli sõrmejälge (soovituslik)</string>
+    <string name="cert_setup_fingerprint_body">Võrdle seda sõrmejälge sellega, mida ChurchPresenter töölauarakendus näitab jaotises Seaded → Server → Sertifikaadi SHA-256. Need peavad kattuma.</string>
+    <string name="cert_setup_fingerprint_unavailable">Sõrmejälje nägemiseks ühenda esmalt serveriga</string>
+    <string name="cert_setup_done_button">Valmis — sertifikaat installitud</string>
+    <string name="cert_setup_skip_button">Jäta praegu vahele</string>
+    <string name="cert_setup_skip_note">Saad selle juhendi juurde igal ajal Seadetest naasta.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Ühenda töölauaga</string>
+    <string name="connect_setup_subtitle">Vajalik ühekordne seadistus</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile ühendub sinu kohtvõrgus oleva ChurchPresenter töölauarakendusega. Skaneeri töölaual olev QR-kood, et ühendus automaatselt seadistada.</string>
+    <string name="connect_setup_skip_button">Jäta praegu vahele</string>
+    <string name="connect_setup_done_button">Valmis — ühendatud</string>
+    <string name="connect_setup_skip_note">Saad QR-koodi igal ajal Seadetest skaneerida.</string>
+    <string name="connect_setup_step1_title">Ava arvutis ChurchPresenter</string>
+    <string name="connect_setup_step1_body">Käivita ChurchPresenter töölauarakendus ja veendu, et see töötab samas Wi-Fi võrgus kui see seade.</string>
+    <string name="connect_setup_step2_title">Kuva ühenduse QR-kood</string>
+    <string name="connect_setup_step2_body">Töölauarakenduses mine Seaded → Mobiil → ja vajuta \"Show QR Code\". Ekraanile ilmub ühenduse üksikasjadega QR-kood.</string>
+    <string name="connect_setup_step3_title">Skaneeri allolev QR-kood</string>
+    <string name="connect_setup_step3_body">Vajuta allolevat nuppu, et avada kaamera ja skaneerida töölaual kuvatav QR-kood. Ühendus seadistatakse automaatselt.</string>
+    <string name="connect_setup_scan_button">Skaneeri QR-kood</string>
+    <string name="connect_setup_connected">✓ Ühendatud: %1$s:%2$s</string>
+    <string name="connect_setup_no_camera_note">Sellel seadmel kaamerat ei tuvastatud. Sisesta ühenduse üksikasjad käsitsi:</string>
+    <string name="connect_setup_manual_entry_toggle">Sisesta hoopis käsitsi</string>
+    <string name="connect_setup_scan_instead_toggle">Skaneeri hoopis QR-kood</string>
+    <string name="connect_setup_manual_apply_button">Rakenda</string>
+
+    <!-- Settings Screen (additional) -->
+    <string name="settings_active_url_label">Praegu ühendumas:</string>
+    <string name="settings_reset_to_default">Lähtesta vaikeväärtusele</string>
+    <string name="settings_draft_url_label">Pärast salvestamist ühendub:</string>
+    <string name="settings_check_status">Kontrolli serveri olekut</string>
+    <string name="settings_developer_section">Arendaja</string>
+    <string name="settings_send_test_error">Saada testviga Sentryle</string>
+    <string name="settings_test_error_sent">✓ Testviga saadetud Sentryle</string>
+    <string name="settings_check_status_description">Kontrolli serveri olekut</string>
+    <string name="settings_status_recheck">Kontrolli uuesti</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobiil: %1$s</string>
+    <string name="settings_status_api_key_enabled">API-võti: lubatud</string>
+    <string name="settings_status_api_key_none">API-võti: puudub</string>
+    <string name="settings_status_endpoints">Lõpp-punktid</string>
+    <string name="settings_status_bibles">Piiblid</string>
+    <string name="settings_status_songbooks">Lauluraamatud</string>
+    <string name="settings_status_none">puudub</string>
+
+    <!-- Status Screen -->
+    <string name="status_connecting">Serveriga ühendumine…</string>
+    <string name="status_connected">Server ühendatud</string>
+    <string name="status_continue">Jätka</string>
+    <string name="status_retry">Proovi uuesti</string>
+    <string name="status_open_settings">Ava seaded</string>
+    <string name="status_continue_anyway">Jätka siiski</string>
+    <string name="status_limited_functionality">Piiratud funktsionaalsus</string>
+    <string name="status_server_version">Serveri versioon: %1$s</string>
+    <string name="status_issues_detected">Ühendatud serveril tuvastati järgmised probleemid:</string>
+    <string name="status_endpoint_unavailable">Oleku lõpp-punkt pole selles serveriversioonis veel saadaval — uuenda ChurchPresenter töölauarakendus, et saada täielikke võimekusaruandeid.</string>
+    <string name="status_error_title">Serverini ei jõutud</string>
+    <string name="status_permissions_title">Selle seadme õigused</string>
+    <string name="status_permission_present">Juhi esitlust</string>
+    <string name="status_permission_schedule">Lisa kavva</string>
+    <string name="status_permission_upload">Laadi faile üles</string>
+    <string name="status_permission_blocked">— blokeeritud</string>
+    <string name="status_info_bibles">Saadaolevad piiblid</string>
+    <string name="status_info_songbooks">Saadaolevad lauluraamatud</string>
+    <string name="status_info_features">Lubatud funktsioonid</string>
+
+    <!-- Status Warnings -->
+    <string name="status_warn_no_api_key_title">API-võti pole seadistatud</string>
+    <string name="status_warn_no_api_key_body">Serveril pole API-võtit määratud. Teatud kaitstud lõpp-punktid võivad päringud tagasi lükata. Kaalu API-võtme lubamist ChurchPresenteri serveri seadetes.</string>
+    <string name="status_warn_no_bibles_title">Piiblitõlkeid pole saadaval</string>
+    <string name="status_warn_no_bibles_body">Serveril pole piiblitõlkeid laaditud. Piibli vahekaart on tühi. Lisa tõlge ChurchPresenter töölauarakenduses.</string>
+    <string name="status_warn_no_songbooks_title">Lauluraamatuid pole saadaval</string>
+    <string name="status_warn_no_songbooks_body">Serveril pole lauluraamatuid laaditud. Laulude vahekaart on tühi. Impordi lauluraamat ChurchPresenter töölauarakenduses.</string>
+    <string name="status_warn_present_blocked_title">Esitluse juhtimine blokeeritud</string>
+    <string name="status_warn_present_blocked_body">Sellel seadmel pole lubatud esitlust juhtida (kuvada, tühjendada, slaide valida). Palu serveri administraatoril anda sellele seadmele Esitleja õigus.</string>
+    <string name="status_warn_schedule_blocked_title">Kava muutmine blokeeritud</string>
+    <string name="status_warn_schedule_blocked_body">Sellel seadmel pole lubatud kavva kirjeid lisada. Palu serveri administraatoril anda sellele seadmele Kava õigus.</string>
+    <string name="status_warn_upload_blocked_title">Failide üleslaadimine blokeeritud</string>
+    <string name="status_warn_upload_blocked_body">Sellel seadmel pole lubatud esitlusi ega pilte üles laadida. Palu serveri administraatoril anda sellele seadmele Üleslaadimise õigus.</string>
+    <string name="upload_blocked_toast">Failide üleslaadimine on selle seadme jaoks keelatud. Palu serveri administraatoril anda Üleslaadimise õigus.</string>
+    <string name="status_warn_unknown_version_title">Tundmatu serveriversioon</string>
+    <string name="status_warn_unknown_version_body">Server teatas versiooni \'%1$s\'. Mõned selle rakenduse funktsioonid ei pruugi selle versiooniga ühilduda.</string>
+    <string name="status_warn_missing_endpoint_title">Puuduv API lõpp-punkt: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Server ei paku \'%1$s\' lõpp-punkti. Sellest sõltuvad funktsioonid pole saadaval.</string>
+
+    <!-- Media tab -->
+    <string name="media_title">Meedia</string>
+    <string name="media_no_media_loaded">Meediat pole laaditud</string>
+    <string name="media_playing">Esitatakse</string>
+    <string name="media_playing_on_desktop">Esitatakse töölaual</string>
+    <string name="media_local_ready">Kohalik fail · valmis ekraanile</string>
+    <string name="media_pick_to_upload">Vali fail üleslaadimiseks</string>
+    <string name="media_source_network_url">Võrgu-URL</string>
+    <string name="media_source_upload">Laadi telefonist üles</string>
+    <string name="media_subtitle_url">%1$s · Võrgu-URL</string>
+    <string name="media_subtitle_empty">Kleebi allolev võrgu-URL, et meediat saata</string>
+    <string name="media_on_screen">EKRAANIL</string>
+    <string name="media_cd_stop">Peata</string>
+    <string name="media_cd_back10">10 sekundit tagasi</string>
+    <string name="media_cd_forward10">10 sekundit edasi</string>
+    <string name="media_cd_play">Esita</string>
+    <string name="media_cd_pause">Paus</string>
+    <string name="media_cd_mute">Vaigista</string>
+    <string name="media_add_to_schedule">Lisa kavva</string>
+    <string name="media_go_live">Näita ekraanil</string>
+    <string name="media_clear_screen">Tühjenda ekraan</string>
+    <string name="media_source_label">ALLIKAS</string>
+    <string name="media_will_send">Saadetakse: %1$s</string>
+    <string name="media_target_uploaded">Üles laaditud fail · %1$s</string>
+    <string name="media_target_loaded">Laaditud töölaual · %1$s</string>
+    <string name="media_target_url">Võrgu-URL</string>
+    <string name="media_target_none">Vali allpool allikas, et meediat saata</string>
+    <string name="media_load_label">LAADI MEEDIA</string>
+    <string name="media_uploading_percent">Üleslaadimine… %1$d%%</string>
+    <string name="media_choose_file">Vali video- või helifail</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Üleslaadimine on töölaual välja lülitatud</string>
+    <string name="media_uploads_disabled_hint">Luba töölauarakenduse serveri seadetes “Allow file uploads from mobile devices”.</string>
+    <string name="media_playing_generic">meedia</string>
+
+    <!-- More launcher -->
+    <string name="more_photos_title">Fotod</string>
+    <string name="more_photos_subtitle">Sirvi ja kuva pildikaustu</string>
+    <string name="more_qa_title">K&amp;V</string>
+    <string name="more_qa_subtitle">Vaata üle ja kuva publiku küsimusi</string>
+    <string name="more_dictionary_title">Sõnastik</string>
+    <string name="more_dictionary_subtitle">Strong\'i heebrea &amp; kreeka leksikon</string>
+    <string name="more_announcements_title">Teated</string>
+    <string name="more_announcements_subtitle">Tekst, kellad &amp; taimerid</string>
+    <string name="more_web_title">Veeb</string>
+    <string name="more_web_subtitle">Kuva veebileht ekraanil</string>
+    <!-- Section detail header titles -->
+    <string name="strongs_dictionary_title">Strong\'i sõnastik</string>
+    <string name="web_title">Veeb</string>
+    <string name="announcements_title">Teated</string>
+
+    <!-- Shared generic labels / content descriptions -->
+    <string name="action_clear">Tühjenda</string>
+    <string name="action_cancel">Tühista</string>
+    <string name="action_go_live">Näita ekraanil</string>
+    <string name="label_add_to_schedule">Lisa kavva</string>
+    <string name="label_live">Ekraanil</string>
+    <string name="cd_delete">Kustuta</string>
+    <string name="cd_close">Sulge</string>
+    <string name="cd_select">Vali</string>
+    <string name="cd_cast">Edasta</string>
+    <string name="cd_back">Tagasi</string>
+    <string name="cd_settings">Seaded</string>
+    <string name="cd_schedule">Kava</string>
+    <string name="overline_on_screen_preview">Ekraani eelvaade</string>
+
+    <!-- Announcements Screen -->
+    <string name="announcements_text_placeholder">Teate tekst…</string>
+    <string name="overline_duration">Kestus</string>
+    <string name="overline_target_time">Sihtaeg</string>
+    <string name="overline_animation">Animatsioon</string>
+    <string name="stepper_hrs">t</string>
+    <string name="stepper_min">min</string>
+    <string name="stepper_sec">sek</string>
+    <string name="stepper_hour">Tund</string>
+    <string name="stepper_font_size">Fondi suurus</string>
+    <string name="swatch_text">Tekst</string>
+    <string name="swatch_background">Taust</string>
+    <string name="announcements_clock_desc">Näitab praegust kellaaega reaalajas.</string>
+    <string name="announcements_count_up_desc">Loeb ekraanile ilmudes nullist ülespoole.</string>
+    <string name="announcements_animation_duration_label">ANIMATSIOONI KESTUS</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SALVESTATUD</string>
+    <string name="announcements_add_new">+ Uus</string>
+    <string name="announcements_no_saved">Salvestatud teateid veel pole. Koosta üks ja vajuta “+ Uus”.</string>
+    <string name="color_picker_title">Vali värv</string>
+    <string name="color_picker_use">Kasuta värvi</string>
+    <string name="color_slider_hue">Toon</string>
+    <string name="color_slider_saturation">Küllastus</string>
+    <string name="color_slider_brightness">Heledus</string>
+    <string name="cd_custom_color">Kohandatud värv</string>
+    <string name="announcements_preview_placeholder">Sinu teade</string>
+
+    <!-- Web Screen -->
+    <string name="web_bookmarks_label">JÄRJEHOIDJAD</string>
+    <string name="web_add_bookmark">+ Lisa</string>
+    <string name="web_no_bookmarks">Järjehoidjaid veel pole. Sisesta URL ja vajuta “+ Lisa”.</string>
+    <string name="web_url_placeholder">example.org</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_search_placeholder">Otsi numbrit, sõna või tähendust…</string>
+    <string name="dictionary_filter_all">Kõik</string>
+    <string name="dictionary_filter_hebrew">Heebrea</string>
+    <string name="dictionary_filter_greek">Kreeka</string>
+    <string name="dictionary_no_entries">Kirjeid ei leitud</string>
+    <string name="dictionary_uses">KASUTUSED</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Sõnaliik</string>
+    <string name="dictionary_occurrences">Esinemised</string>
+    <string name="dictionary_root">Tüvi</string>
+    <string name="dictionary_definition">Definitsioon</string>
+    <string name="dictionary_kjv_usage">KJV kasutus</string>
+
+    <!-- Q&A Admin (additional) -->
+    <string name="qa_edit_question_title">Muuda küsimust</string>
+    <string name="qa_delete_question">Kustuta küsimus</string>
+    <string name="qa_submitted_by">Esitas %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Peata</string>
+    <string name="qa_action_approve">Kinnita</string>
+    <string name="cd_edit">Muuda</string>
+    <string name="cd_deny">Keeldu</string>
+    <string name="qa_badge_live">EKRAANIL</string>
+    <string name="qa_badge_approved">✓ Kinnitatud</string>
+    <string name="qa_badge_denied">Keeldutud</string>
+    <string name="qa_badge_answered">Vastatud</string>
+
+    <!-- Schedule Drawer (additional) -->
+    <string name="schedule_drawer_item_count">%1$d kirjet</string>
+
+    <!-- Presentation Screen (additional) -->
+    <string name="presentation_slide_desc">Slaid %1$d</string>
+    <string name="presentation_slide_live">▶ EKRAANIL</string>
+
+    <!-- Bottom Tab Bar -->
+    <string name="tab_media">Meedia</string>
+    <string name="tab_present">Esitle</string>
+    <string name="tab_more">Rohkem</string>
+
+    <!-- Count / summary labels -->
+    <string name="songs_count">%1$d laulu</string>
+    <string name="bible_chapters_count">%1$d pt</string>
+    <string name="status_version_line">Server: %1$s · Mobiil: %2$s</string>
+</resources>

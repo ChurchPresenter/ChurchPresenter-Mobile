@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.label_live
 import churchpresentermobile.composeapp.generated.resources.song_detail_no_lyrics
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongVerse
@@ -255,7 +256,7 @@ private fun LivePill() {
                 .background(colors.accent)
         )
         Text(
-            text = "Live",
+            text = stringResource(Res.string.label_live),
             color = colors.accent,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,

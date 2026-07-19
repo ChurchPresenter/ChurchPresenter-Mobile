@@ -58,6 +58,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.action_go_live
+import churchpresentermobile.composeapp.generated.resources.cd_delete
+import churchpresentermobile.composeapp.generated.resources.cd_deny
+import churchpresentermobile.composeapp.generated.resources.cd_edit
+import churchpresentermobile.composeapp.generated.resources.qa_action_approve
+import churchpresentermobile.composeapp.generated.resources.qa_action_stop
+import churchpresentermobile.composeapp.generated.resources.qa_badge_answered
+import churchpresentermobile.composeapp.generated.resources.qa_badge_approved
+import churchpresentermobile.composeapp.generated.resources.qa_badge_denied
+import churchpresentermobile.composeapp.generated.resources.qa_badge_live
+import churchpresentermobile.composeapp.generated.resources.qa_char_counter
+import churchpresentermobile.composeapp.generated.resources.qa_delete_question
+import churchpresentermobile.composeapp.generated.resources.qa_edit_question_title
+import churchpresentermobile.composeapp.generated.resources.qa_submitted_by
+import churchpresentermobile.composeapp.generated.resources.qa_upvotes_count
 import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question
 import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question_hint
 import churchpresentermobile.composeapp.generated.resources.qa_admin_cancel
@@ -314,26 +329,26 @@ private fun QuestionCard(
             if (showVotes) {
                 Icon(Icons.Filled.Star, contentDescription = null, tint = colors.muted, modifier = Modifier.size(13.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("${question.upvotes}", fontSize = 12.sp, color = colors.muted)
+                Text(stringResource(Res.string.qa_upvotes_count, question.upvotes), fontSize = 12.sp, color = colors.muted)
             }
             Spacer(Modifier.weight(1f))
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconSquareButton(Icons.Outlined.Edit, "Edit", colors.muted, onClick = onStartEdit)
-                IconSquareButton(Icons.Outlined.Delete, "Delete", colors.muted, onClick = onDelete)
+                IconSquareButton(Icons.Outlined.Edit, stringResource(Res.string.cd_edit), colors.muted, onClick = onStartEdit)
+                IconSquareButton(Icons.Outlined.Delete, stringResource(Res.string.cd_delete), colors.muted, onClick = onDelete)
                 when {
-                    isLive -> ActionPill("Stop", PillStyle.RED_TINT, onStop)
+                    isLive -> ActionPill(stringResource(Res.string.qa_action_stop), PillStyle.RED_TINT, onStop)
                     question.status == QuestionStatus.APPROVED -> {
-                        IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
-                        ActionPill("Go live", PillStyle.ACCENT_FILL, onDisplay)
+                        IconSquareButton(Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger, onClick = onDeny)
+                        ActionPill(stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onDisplay)
                     }
                     question.status == QuestionStatus.PENDING -> {
-                        IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
-                        ActionPill("Approve", PillStyle.ACCENT_TINT, onApprove)
+                        IconSquareButton(Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger, onClick = onDeny)
+                        ActionPill(stringResource(Res.string.qa_action_approve), PillStyle.ACCENT_TINT, onApprove)
                     }
                     else -> { // DONE / DENIED (finished tab)
-                        ActionPill("Approve", PillStyle.ACCENT_TINT, onApprove)
-                        ActionPill("Go live", PillStyle.ACCENT_FILL, onApproveAndDisplay)
+                        ActionPill(stringResource(Res.string.qa_action_approve), PillStyle.ACCENT_TINT, onApprove)
+                        ActionPill(stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onApproveAndDisplay)
                     }
                 }
             }
@@ -345,10 +360,10 @@ private fun QuestionCard(
 private fun StatusBadge(question: Question, isLive: Boolean) {
     val colors = LocalAppColors.current
     when {
-        isLive -> Badge(text = "LIVE", fg = colors.accent, bg = colors.accentTint, dot = true)
-        question.status == QuestionStatus.APPROVED -> Badge(text = "✓ Approved", fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true)
-        question.status == QuestionStatus.DENIED -> Badge(text = "Denied", fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f))
-        question.status == QuestionStatus.DONE -> Badge(text = "Answered", fg = colors.muted, bg = colors.inputBg)
+        isLive -> Badge(text = stringResource(Res.string.qa_badge_live), fg = colors.accent, bg = colors.accentTint, dot = true)
+        question.status == QuestionStatus.APPROVED -> Badge(text = stringResource(Res.string.qa_badge_approved), fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true)
+        question.status == QuestionStatus.DENIED -> Badge(text = stringResource(Res.string.qa_badge_denied), fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f))
+        question.status == QuestionStatus.DONE -> Badge(text = stringResource(Res.string.qa_badge_answered), fg = colors.muted, bg = colors.inputBg)
         else -> {} // pending: no badge (muted text conveys it)
     }
 }
@@ -438,7 +453,7 @@ private fun EditQuestionSheet(
                     modifier = Modifier.clickable { onDismiss() },
                 )
                 Text(
-                    "Edit question",
+                    stringResource(Res.string.qa_edit_question_title),
                     color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
                 )
@@ -480,10 +495,10 @@ private fun EditQuestionSheet(
             // Meta: submitter + char counter
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
-                    if (question.submitterName.isNotBlank()) "Submitted by ${question.submitterName}" else "",
+                    if (question.submitterName.isNotBlank()) stringResource(Res.string.qa_submitted_by, question.submitterName) else "",
                     color = colors.muted, fontSize = 11.sp,
                 )
-                Text("${text.length} / 200", color = colors.muted, fontSize = 11.sp)
+                Text(stringResource(Res.string.qa_char_counter, text.length), color = colors.muted, fontSize = 11.sp)
             }
 
             Spacer(Modifier.height(20.dp))
@@ -501,7 +516,7 @@ private fun EditQuestionSheet(
             ) {
                 Icon(Icons.Outlined.Delete, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Delete question", color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.qa_delete_question), color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }

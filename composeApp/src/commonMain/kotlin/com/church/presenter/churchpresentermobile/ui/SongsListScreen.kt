@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.songs_count
 import churchpresentermobile.composeapp.generated.resources.book_filter_all_books
 import churchpresentermobile.composeapp.generated.resources.songs_table_no_match
 import churchpresentermobile.composeapp.generated.resources.songs_table_no_songs
@@ -216,7 +217,7 @@ private fun SongsOverline(
             }
         }
         Text(
-            text = "$count songs",
+            text = stringResource(Res.string.songs_count, count),
             color = colors.muted,
             fontSize = 12.sp,
         )
