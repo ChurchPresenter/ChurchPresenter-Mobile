@@ -56,6 +56,17 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.announce_anim_fade
+import churchpresentermobile.composeapp.generated.resources.announce_anim_none
+import churchpresentermobile.composeapp.generated.resources.announce_anim_slide_down
+import churchpresentermobile.composeapp.generated.resources.announce_anim_slide_left
+import churchpresentermobile.composeapp.generated.resources.announce_anim_slide_right
+import churchpresentermobile.composeapp.generated.resources.announce_anim_slide_up
+import churchpresentermobile.composeapp.generated.resources.announce_type_clock
+import churchpresentermobile.composeapp.generated.resources.announce_type_count_up
+import churchpresentermobile.composeapp.generated.resources.announce_type_countdown
+import churchpresentermobile.composeapp.generated.resources.announce_type_countdown_to_time
+import churchpresentermobile.composeapp.generated.resources.announce_type_text
 import churchpresentermobile.composeapp.generated.resources.action_cancel
 import churchpresentermobile.composeapp.generated.resources.action_clear
 import churchpresentermobile.composeapp.generated.resources.action_go_live
@@ -131,7 +142,7 @@ fun AnnouncementsScreen(
             // ── Type (extra — not in the base design) ─────────────────────
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AnnouncementType.entries.forEach { t ->
-                    Chip(t.label, form.type == t) { viewModel.update { it.copy(type = t) } }
+                    Chip(announcementTypeLabel(t), form.type == t) { viewModel.update { it.copy(type = t) } }
                 }
             }
 
@@ -557,13 +568,36 @@ private fun AnimationDropdown(selected: AnnouncementAnimation, onSelect: (Announ
                 .padding(horizontal = 14.dp, vertical = 13.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(selected.label, color = colors.text, fontSize = 15.sp, modifier = Modifier.weight(1f))
+            Text(announcementAnimationLabel(selected), color = colors.text, fontSize = 15.sp, modifier = Modifier.weight(1f))
             Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, tint = colors.muted, modifier = Modifier.size(20.dp))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             AnnouncementAnimation.entries.forEach { a ->
-                DropdownMenuItem(text = { Text(a.label) }, onClick = { onSelect(a); expanded = false })
+                DropdownMenuItem(text = { Text(announcementAnimationLabel(a)) }, onClick = { onSelect(a); expanded = false })
             }
         }
     }
 }
+
+@Composable
+private fun announcementTypeLabel(type: AnnouncementType): String = stringResource(
+    when (type) {
+        AnnouncementType.TEXT -> Res.string.announce_type_text
+        AnnouncementType.COUNTDOWN -> Res.string.announce_type_countdown
+        AnnouncementType.COUNT_UP -> Res.string.announce_type_count_up
+        AnnouncementType.CLOCK -> Res.string.announce_type_clock
+        AnnouncementType.COUNTDOWN_TO_TIME -> Res.string.announce_type_countdown_to_time
+    }
+)
+
+@Composable
+private fun announcementAnimationLabel(animation: AnnouncementAnimation): String = stringResource(
+    when (animation) {
+        AnnouncementAnimation.NONE -> Res.string.announce_anim_none
+        AnnouncementAnimation.FADE -> Res.string.announce_anim_fade
+        AnnouncementAnimation.SLIDE_BOTTOM -> Res.string.announce_anim_slide_up
+        AnnouncementAnimation.SLIDE_TOP -> Res.string.announce_anim_slide_down
+        AnnouncementAnimation.SLIDE_LEFT -> Res.string.announce_anim_slide_left
+        AnnouncementAnimation.SLIDE_RIGHT -> Res.string.announce_anim_slide_right
+    }
+)

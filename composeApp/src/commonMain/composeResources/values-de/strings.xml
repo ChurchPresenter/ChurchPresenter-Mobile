@@ -403,5 +403,18 @@
     <string name="songs_count">%1$d Lieder</string>
     <string name="bible_chapters_count">%1$d Kap.</string>
     <string name="status_version_line">Server: %1$s · Mobil: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Text</string>
+    <string name="announce_type_countdown">Countdown</string>
+    <string name="announce_type_count_up">Hochzählen</string>
+    <string name="announce_type_clock">Uhr</string>
+    <string name="announce_type_countdown_to_time">Countdown bis Uhrzeit</string>
+    <string name="announce_anim_none">Keine</string>
+    <string name="announce_anim_fade">Überblenden</string>
+    <string name="announce_anim_slide_up">Nach oben</string>
+    <string name="announce_anim_slide_down">Nach unten</string>
+    <string name="announce_anim_slide_left">Von links</string>
+    <string name="announce_anim_slide_right">Von rechts</string>
 </resources>
 

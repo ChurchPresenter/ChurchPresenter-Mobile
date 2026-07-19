@@ -403,5 +403,18 @@
     <string name="songs_count">Песень: %1$d</string>
     <string name="bible_chapters_count">%1$d разд.</string>
     <string name="status_version_line">Сервер: %1$s · Мабільны: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Тэкст</string>
+    <string name="announce_type_countdown">Адваротны адлік</string>
+    <string name="announce_type_count_up">Прамы адлік</string>
+    <string name="announce_type_clock">Гадзіннік</string>
+    <string name="announce_type_countdown_to_time">Адлік да часу</string>
+    <string name="announce_anim_none">Няма</string>
+    <string name="announce_anim_fade">Згасанне</string>
+    <string name="announce_anim_slide_up">Уверх</string>
+    <string name="announce_anim_slide_down">Уніз</string>
+    <string name="announce_anim_slide_left">Злева</string>
+    <string name="announce_anim_slide_right">Справа</string>
 </resources>
 
