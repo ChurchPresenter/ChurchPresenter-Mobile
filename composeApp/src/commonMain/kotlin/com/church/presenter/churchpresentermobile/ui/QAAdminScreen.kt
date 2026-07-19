@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,9 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -30,11 +31,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,8 +49,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -156,6 +162,7 @@ private fun QAAdminContent(
     val colors = LocalAppColors.current
     var selectedTab by remember { mutableStateOf(0) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingQuestion by remember { mutableStateOf<Question?>(null) }
 
     val incoming = state.questions.filter {
         it.status == QuestionStatus.PENDING || it.status == QuestionStatus.APPROVED
@@ -204,7 +211,7 @@ private fun QAAdminContent(
                             showVotes = votingEnabled,
                             onApprove = { onApprove(question.id) },
                             onDeny = { onDeny(question.id) },
-                            onEdit = { newText -> onEdit(question.id, newText) },
+                            onStartEdit = { editingQuestion = question },
                             onMarkDone = { onMarkDone(question.id) },
                             onDisplay = { onDisplay(question.id) },
                             onApproveAndDisplay = { onApproveAndDisplay(question.id) },
@@ -234,6 +241,15 @@ private fun QAAdminContent(
             onDismiss = { showAddDialog = false }
         )
     }
+
+    editingQuestion?.let { q ->
+        EditQuestionSheet(
+            question = q,
+            onSave = { text -> onEdit(q.id, text); editingQuestion = null },
+            onDelete = { onDelete(q.id); editingQuestion = null },
+            onDismiss = { editingQuestion = null },
+        )
+    }
 }
 
 @Composable
@@ -243,7 +259,7 @@ private fun QuestionCard(
     showVotes: Boolean = false,
     onApprove: () -> Unit,
     onDeny: () -> Unit,
-    onEdit: (String) -> Unit,
+    onStartEdit: () -> Unit,
     onMarkDone: () -> Unit,
     onDisplay: () -> Unit,
     onApproveAndDisplay: () -> Unit,
@@ -254,9 +270,6 @@ private fun QuestionCard(
     val isLive = isDisplayed
     val isPending = question.status == QuestionStatus.PENDING
     val shape = RoundedCornerShape(14.dp)
-
-    var editing by remember { mutableStateOf(false) }
-    var editText by remember(question.text) { mutableStateOf(question.text) }
 
     Column(
         modifier = Modifier
@@ -306,21 +319,10 @@ private fun QuestionCard(
             Spacer(Modifier.weight(1f))
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (!editing) {
-                    IconSquareButton(Icons.Outlined.Edit, "Edit", colors.muted) { editing = true; editText = question.text }
-                    IconSquareButton(Icons.Outlined.Delete, "Delete", colors.muted, onClick = onDelete)
-                }
+                IconSquareButton(Icons.Outlined.Edit, "Edit", colors.muted, onClick = onStartEdit)
+                IconSquareButton(Icons.Outlined.Delete, "Delete", colors.muted, onClick = onDelete)
                 when {
-                    editing -> {
-                        IconSquareButton(Icons.Filled.Check, "Save", colors.accent) {
-                            if (editText.isNotBlank() && editText.trim() != question.text) onEdit(editText.trim())
-                            editing = false
-                        }
-                        IconSquareButton(Icons.Filled.Close, "Cancel", colors.muted) { editText = question.text; editing = false }
-                    }
-                    isLive -> {
-                        ActionPill("Stop", PillStyle.RED_TINT, onStop)
-                    }
+                    isLive -> ActionPill("Stop", PillStyle.RED_TINT, onStop)
                     question.status == QuestionStatus.APPROVED -> {
                         IconSquareButton(Icons.Filled.Close, "Deny", colors.danger, onClick = onDeny)
                         ActionPill("Project", PillStyle.ACCENT_FILL, onDisplay)
@@ -335,18 +337,6 @@ private fun QuestionCard(
                     }
                 }
             }
-        }
-
-        if (editing) {
-            Spacer(Modifier.height(10.dp))
-            OutlinedTextField(
-                value = editText,
-                onValueChange = { editText = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(Res.string.qa_admin_edit_hint)) },
-                singleLine = false,
-                maxLines = 4,
-            )
         }
     }
 }
@@ -417,6 +407,103 @@ private fun IconSquareButton(icon: ImageVector, desc: String, tint: Color, onCli
         contentAlignment = Alignment.Center
     ) {
         Icon(icon, contentDescription = desc, tint = tint, modifier = Modifier.size(16.dp))
+    }
+}
+
+/** Bottom-sheet editor for a question (design screens 6c/6d). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditQuestionSheet(
+    question: Question,
+    onSave: (String) -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val colors = LocalAppColors.current
+    val sheetState = rememberModalBottomSheetState()
+    var text by remember(question.id) { mutableStateOf(question.text) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = colors.sheetBackground,
+        scrimColor = colors.scrim,
+    ) {
+        Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
+            // Header: Cancel / Edit question / Save
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(Res.string.qa_admin_cancel),
+                    color = colors.muted, fontSize = 15.sp,
+                    modifier = Modifier.clickable { onDismiss() },
+                )
+                Text(
+                    "Edit question",
+                    color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
+                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(colors.accent)
+                        .clickable { if (text.isNotBlank()) onSave(text.trim()) }
+                        .padding(horizontal = 18.dp, vertical = 8.dp),
+                ) {
+                    Text(stringResource(Res.string.qa_admin_save), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+            // Editable text field with accent focus ring
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 110.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(colors.inputBg)
+                    .border(1.5.dp, colors.accent, RoundedCornerShape(14.dp))
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+            ) {
+                if (text.isEmpty()) {
+                    Text(stringResource(Res.string.qa_admin_edit_hint), color = colors.muted, fontSize = 15.sp)
+                }
+                BasicTextField(
+                    value = text,
+                    onValueChange = { if (it.length <= 200) text = it },
+                    textStyle = TextStyle(color = colors.text, fontSize = 15.sp, lineHeight = (15 * 1.5).sp),
+                    cursorBrush = SolidColor(colors.accent),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+            // Meta: submitter + char counter
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    if (question.submitterName.isNotBlank()) "Submitted by ${question.submitterName}" else "",
+                    color = colors.muted, fontSize = 11.sp,
+                )
+                Text("${text.length} / 200", color = colors.muted, fontSize = 11.sp)
+            }
+
+            Spacer(Modifier.height(20.dp))
+            // Full-width delete button
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(13.dp))
+                    .background(colors.danger.copy(alpha = 0.12f))
+                    .border(1.dp, colors.danger.copy(alpha = 0.5f), RoundedCornerShape(13.dp))
+                    .clickable { onDelete() },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Outlined.Delete, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Delete question", color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            }
+        }
     }
 }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!--
+        Themed-icon (monochrome) layer — the Latin cross silhouette in the
+        adaptive safe zone. The system recolours this with the device theme,
+        so a single solid fill on a transparent background is all that's needed.
+    -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M51.86,24 L56.14,24 L56.14,39 L69,39 L69,43.29 L56.14,43.29 L56.14,84 L51.86,84 L51.86,43.29 L39,43.29 L39,39 L51.86,39 Z"/>
+</vector>
