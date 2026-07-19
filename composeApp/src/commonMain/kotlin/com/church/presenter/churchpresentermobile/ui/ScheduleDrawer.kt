@@ -23,9 +23,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.DesktopWindows
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.PlayCircleOutline
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -98,11 +102,9 @@ fun ScheduleDrawerContent(
     val visibleItems = remember(allItems) {
         allItems.filter { item ->
             val type = item.type?.lowercase() ?: return@filter false
-            type.contains("song") ||
-            type.contains("bible") ||
-            type.contains("picture") ||
-            type.contains("image") ||
-            type.contains("presentation")
+            // Show every schedule item except the ones the mobile app can't drive:
+            // lower-thirds and canvas/scene items.
+            !type.contains("lower") && !type.contains("scene") && !type.contains("canvas")
         }
     }
 
@@ -202,6 +204,10 @@ private fun scheduleTypeStyleFor(type: String?): ScheduleTypeStyle {
         t.contains("song") -> ScheduleTypeStyle(Icons.Outlined.MusicNote, colors.scheduleSongFg, colors.scheduleSongBg)
         t.contains("bible") -> ScheduleTypeStyle(Icons.AutoMirrored.Outlined.MenuBook, colors.scheduleBibleFg, colors.scheduleBibleBg)
         t.contains("picture") || t.contains("image") -> ScheduleTypeStyle(Icons.Outlined.Image, colors.schedulePictureFg, colors.schedulePictureBg)
+        t.contains("dictionary") -> ScheduleTypeStyle(Icons.Outlined.Translate, colors.accent, colors.accentTint)
+        t.contains("announcement") -> ScheduleTypeStyle(Icons.Outlined.Campaign, colors.accent, colors.accentTint)
+        t.contains("website") || t.contains("web") -> ScheduleTypeStyle(Icons.Outlined.Public, colors.accent, colors.accentTint)
+        t.contains("media") -> ScheduleTypeStyle(Icons.Outlined.PlayCircleOutline, colors.accent, colors.accentTint)
         else -> ScheduleTypeStyle(Icons.Outlined.DesktopWindows, colors.muted, colors.inputBg)
     }
 }

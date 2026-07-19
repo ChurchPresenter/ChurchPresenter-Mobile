@@ -42,12 +42,14 @@ import churchpresentermobile.composeapp.generated.resources.media_title
 import churchpresentermobile.composeapp.generated.resources.more_photos_title
 import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
+import churchpresentermobile.composeapp.generated.resources.tab_more
 import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
 import churchpresentermobile.composeapp.generated.resources.web_title
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.MoreDestination
+import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
@@ -83,6 +85,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.MediaSource
 import com.church.presenter.churchpresentermobile.viewmodel.MediaViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.WebViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.BibleViewModel
@@ -298,6 +301,11 @@ fun App() {
     var pendingPictureImageIndex by remember { mutableStateOf<Int?>(null) }
     // Presentation
     var pendingPresentationId by remember { mutableStateOf<String?>(null) }
+    // Media / Web / Announcement / Dictionary (from schedule-drawer taps)
+    var pendingMediaUrl by remember { mutableStateOf<String?>(null) }
+    var pendingWebUrl by remember { mutableStateOf<String?>(null) }
+    var pendingAnnouncement by remember { mutableStateOf<ScheduleItem?>(null) }
+    var pendingDictionaryQuery by remember { mutableStateOf<String?>(null) }
 
     val tabs = AppTab.entries
 
@@ -449,6 +457,20 @@ fun App() {
         if (selectedTab == AppTab.MEDIA) statusViewModel.refreshQuietly()
     }
 
+    // Preload the target screen's content when a schedule-drawer tap requests it.
+    LaunchedEffect(pendingMediaUrl) {
+        pendingMediaUrl?.let { mediaViewModel.setSource(MediaSource.URL); mediaViewModel.setUrl(it); pendingMediaUrl = null }
+    }
+    LaunchedEffect(pendingWebUrl) {
+        pendingWebUrl?.let { webViewModel.setUrl(it); pendingWebUrl = null }
+    }
+    LaunchedEffect(pendingAnnouncement) {
+        pendingAnnouncement?.let { announcementsViewModel.preload(it); pendingAnnouncement = null }
+    }
+    LaunchedEffect(pendingDictionaryQuery) {
+        pendingDictionaryQuery?.let { if (it.isNotBlank()) dictionaryViewModel.setSearchQuery(it); pendingDictionaryQuery = null }
+    }
+
     AppTheme(themeMode = themeMode) {
         if (showSplash) {
             SplashScreen(onComplete = {
@@ -507,6 +529,13 @@ fun App() {
                                     onItemClick = { item ->
                                         coroutineScope.launch {
                                             drawerState.close()
+                                            // Clear any leftover song/bible detail state so the
+                                            // destination shows its own header (with the right back
+                                            // button) rather than the previous screen's.
+                                            songDetailTitle = null
+                                            songDetailBookName = null
+                                            bibleBook = null
+                                            bibleChapter = null
                                             when (item.type?.lowercase()) {
                                                 "song" -> {
                                                     val title = item.title
@@ -565,6 +594,27 @@ fun App() {
                                                         pendingPresentationId = id
                                                     }
                                                 }
+                                                "media" -> {
+                                                    selectedTab = AppTab.MEDIA
+                                                    pendingMediaUrl = item.mediaUrl
+                                                }
+                                                "announcement" -> {
+                                                    selectedTab     = AppTab.MORE
+                                                    moreDestination = MoreDestination.ANNOUNCEMENTS
+                                                    pendingAnnouncement = item
+                                                }
+                                                "website", "web" -> {
+                                                    selectedTab     = AppTab.MORE
+                                                    moreDestination = MoreDestination.WEB
+                                                    pendingWebUrl = item.url ?: item.displayText
+                                                }
+                                                "dictionary" -> {
+                                                    selectedTab     = AppTab.MORE
+                                                    moreDestination = MoreDestination.DICTIONARY
+                                                    // Schedule sends "word (translit): definition" — search by the word.
+                                                    pendingDictionaryQuery =
+                                                        (item.text ?: item.displayText)?.substringBefore(" (")?.trim()
+                                                }
                                             }
                                         }
                                     }
@@ -610,14 +660,17 @@ fun App() {
                         else -> when (selectedTab) {
                             AppTab.BIBLE -> ScreenHeader(
                                 title = bibleTitle,
+                                onMenu = { coroutineScope.launch { drawerState.open() } },
                                 onSettings = { showSettings = true }
                             )
                             AppTab.MEDIA -> ScreenHeader(
                                 title = stringResource(Res.string.media_title),
+                                onMenu = { coroutineScope.launch { drawerState.open() } },
                                 onSettings = { showSettings = true }
                             )
                             AppTab.MORE -> ScreenHeader(
-                                title = "More",
+                                title = stringResource(Res.string.tab_more),
+                                onMenu = { coroutineScope.launch { drawerState.open() } },
                                 onSettings = { showSettings = true }
                             )
                             else -> ScreenHeader(

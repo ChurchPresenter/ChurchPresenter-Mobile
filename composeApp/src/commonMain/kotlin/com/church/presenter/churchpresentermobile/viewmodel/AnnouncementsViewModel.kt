@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.AnnouncementAnimation
 import com.church.presenter.churchpresentermobile.model.AnnouncementItemPayload
 import com.church.presenter.churchpresentermobile.model.AnnouncementType
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.network.AnnouncementService
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.util.Logger
@@ -68,6 +69,65 @@ class AnnouncementsViewModel(
 
     fun update(transform: (AnnouncementForm) -> AnnouncementForm) {
         _form.value = transform(_form.value)
+    }
+
+    /** Reconstructs the composer from a schedule item (used when tapped in the schedule drawer). */
+    fun preload(item: ScheduleItem) {
+        val label = item.displayText ?: ""
+        // Prefer the structured isTimer/timerMode fields (newer desktop). Fall back to the
+        // display label, which every desktop version sends (e.g. "Timer 05:00", "Clock", "Until 12:00:00").
+        val type = when {
+            item.isTimer == true -> when (item.timerMode) {
+                "count_up" -> AnnouncementType.COUNT_UP
+                "clock_display" -> AnnouncementType.CLOCK
+                "clock" -> AnnouncementType.COUNTDOWN_TO_TIME
+                else -> AnnouncementType.COUNTDOWN
+            }
+            item.isTimer == false -> AnnouncementType.TEXT
+            label.startsWith("Until ") -> AnnouncementType.COUNTDOWN_TO_TIME
+            label.equals("Duration Timer", ignoreCase = true) -> AnnouncementType.COUNT_UP
+            label.equals("Clock", ignoreCase = true) -> AnnouncementType.CLOCK
+            label.startsWith("Timer ") -> AnnouncementType.COUNTDOWN
+            else -> AnnouncementType.TEXT
+        }
+        // Numbers embedded in the label — used to recover timer values when the structured
+        // timer fields aren't provided by an older desktop.
+        val nums = Regex("\\d+").findAll(label).map { it.value.toIntOrNull() ?: 0 }.toList()
+        val hours = item.timerHours
+            ?: if (type == AnnouncementType.COUNTDOWN && nums.size >= 3) nums[0] else 0
+        val minutes = item.timerMinutes
+            ?: when {
+                type == AnnouncementType.COUNTDOWN && nums.size >= 3 -> nums[1]
+                type == AnnouncementType.COUNTDOWN && nums.size == 2 -> nums[0]
+                else -> 5
+            }
+        val seconds = item.timerSeconds
+            ?: when {
+                type == AnnouncementType.COUNTDOWN && nums.size >= 3 -> nums[2]
+                type == AnnouncementType.COUNTDOWN && nums.size == 2 -> nums[1]
+                else -> 0
+            }
+        val targetHour = item.targetHour
+            ?: if (type == AnnouncementType.COUNTDOWN_TO_TIME && nums.isNotEmpty()) nums[0] else 12
+        val targetMinute = item.targetMinute
+            ?: if (type == AnnouncementType.COUNTDOWN_TO_TIME && nums.size >= 2) nums[1] else 0
+        val animation = AnnouncementAnimation.entries.firstOrNull { it.value == item.animationType }
+            ?: AnnouncementAnimation.SLIDE_BOTTOM
+        _form.value = AnnouncementForm(
+            type = type,
+            text = if (type == AnnouncementType.TEXT) (item.text ?: label) else (item.text ?: ""),
+            textColor = item.textColor ?: "#FFFFFF",
+            backgroundColor = item.backgroundColor ?: "#000000",
+            fontSize = item.fontSize ?: 48,
+            animation = animation,
+            animationDuration = item.animationDuration ?: 500,
+            hours = hours,
+            minutes = minutes,
+            seconds = seconds,
+            targetHour = targetHour,
+            targetMinute = targetMinute,
+            expiredText = item.timerExpiredText ?: "",
+        )
     }
 
     fun clearMessage() { _message.value = null }

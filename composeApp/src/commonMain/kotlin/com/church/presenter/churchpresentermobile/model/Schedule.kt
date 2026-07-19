@@ -44,6 +44,28 @@ data class ScheduleItem(
     @SerialName("image_index")  val imageIndexSnake: Int? = null,
     @SerialName("image-index")  val imageIndexKebab: Int? = null,
     @SerialName("imageNumber")  val imageNumber: Int? = null,
+    // Media
+    @SerialName("mediaUrl")   val mediaUrl: String? = null,
+    @SerialName("mediaType")  val mediaType: String? = null,
+    // Website
+    @SerialName("url")        val url: String? = null,
+    // Announcement / dictionary text payload
+    @SerialName("text")            val text: String? = null,
+    @SerialName("textColor")       val textColor: String? = null,
+    @SerialName("backgroundColor") val backgroundColor: String? = null,
+    // Announcement / timer details (to reconstruct the composer)
+    @SerialName("fontSize")          val fontSize: Int? = null,
+    @SerialName("animationType")     val animationType: String? = null,
+    @SerialName("animationDuration") val animationDuration: Int? = null,
+    @SerialName("isTimer")           val isTimer: Boolean? = null,
+    @SerialName("timerMode")         val timerMode: String? = null,
+    @SerialName("timerHours")        val timerHours: Int? = null,
+    @SerialName("timerMinutes")      val timerMinutes: Int? = null,
+    @SerialName("timerSeconds")      val timerSeconds: Int? = null,
+    @SerialName("timerExpiredText")  val timerExpiredText: String? = null,
+    @SerialName("targetHour")        val targetHour: Int? = null,
+    @SerialName("targetMinute")      val targetMinute: Int? = null,
+    @SerialName("liveClockFormat")   val liveClockFormat: String? = null,
 ) {
     /** Best available Bible book name. */
     val bookName: String?
