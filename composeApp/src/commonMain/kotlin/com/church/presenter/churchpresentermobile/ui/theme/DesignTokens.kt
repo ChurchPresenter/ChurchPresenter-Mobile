@@ -54,6 +54,9 @@ data class AppColors(
     val amberStroke: Color,
     // Danger / deny
     val danger: Color,
+    // Warning / limited-functionality (lilac) — distinct from amber (info) and danger
+    val warning: Color,
+    val warningTint: Color,
     // Splash tagline + cross
     val crossBrush: Brush,
     val taglineWorship: Color,
@@ -97,6 +100,8 @@ private val DarkAppColors = AppColors(
     amber = Color(0xFFD4A853),
     amberStroke = Color(0xFF4A3A12),
     danger = Color(0xFFEF4444),
+    warning = Color(0xFFC4B5FD),          // lilac (violet-300)
+    warningTint = Color(0x1AC4B5FD),      // rgba(196,181,253,.10)
     crossBrush = Brush.verticalGradient(listOf(Color(0xFFD4FCE8), Color(0xFF52C98E))),
     taglineWorship = Color(0xFF86EFAC),
     taglinePresent = Color(0xFF7DD3FC),
@@ -140,6 +145,8 @@ private val LightAppColors = AppColors(
     amber = Color(0xFFE0A94F),
     amberStroke = Color(0xFF4A3410),
     danger = Color(0xFFEF4444),
+    warning = Color(0xFF7C3AED),          // lilac/violet-600 (readable on light bg)
+    warningTint = Color(0x147C3AED),      // rgba(124,58,237,.08)
     crossBrush = Brush.verticalGradient(listOf(Color(0xFF5072D8), Color(0xFF17307E))),
     taglineWorship = Color(0xFF1E3A8A),
     taglinePresent = Color(0xFF2563EB),

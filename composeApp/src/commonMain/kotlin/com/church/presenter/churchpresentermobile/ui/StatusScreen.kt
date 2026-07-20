@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -21,10 +23,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -342,6 +341,7 @@ private fun WarningsContent(
     onContinue: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
+    val colors = LocalAppColors.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -349,37 +349,47 @@ private fun WarningsContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(16.dp))
-        Icon(
-            imageVector = Icons.Filled.Warning,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.size(52.dp),
-        )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = stringResource(Res.string.status_limited_functionality),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        if (appVersion != null) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = stringResource(Res.string.status_server_version, appVersion),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        // Lilac warning triangle inside a tinted circle
+        Box(
+            modifier = Modifier
+                .size(72.dp)
+                .clip(CircleShape)
+                .background(colors.warningTint),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Warning,
+                contentDescription = null,
+                tint = colors.warning,
+                modifier = Modifier.size(36.dp),
             )
         }
         Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(Res.string.status_limited_functionality),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = (-0.025).em,
+            color = colors.text,
+            textAlign = TextAlign.Center,
+        )
+        if (appVersion != null) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = stringResource(Res.string.status_server_version, appVersion),
+                fontSize = 13.sp,
+                color = colors.muted,
+            )
+        }
+        Spacer(Modifier.height(24.dp))
         PermissionsSummaryCard(permissions)
-        Spacer(Modifier.height(12.dp))
-        HorizontalDivider()
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(20.dp))
         Text(
             text = stringResource(Res.string.status_issues_detected),
-            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 13.sp,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = colors.muted,
+            lineHeight = (13 * 1.5).sp,
         )
         Spacer(Modifier.height(12.dp))
         warnings.forEach { warning ->
@@ -411,12 +421,38 @@ private fun WarningsContent(
             Spacer(Modifier.height(8.dp))
         }
         Spacer(Modifier.height(16.dp))
-        Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.status_continue))
+        // Primary Continue + subtle Open Settings, in the redesign palette
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(RoundedCornerShape(13.dp))
+                .background(colors.accent)
+                .clickable(onClick = onContinue),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                stringResource(Res.string.status_continue),
+                color = colors.onAccent,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
-        Spacer(Modifier.height(8.dp))
-        TextButton(onClick = onOpenSettings) {
-            Text(stringResource(Res.string.status_open_settings))
+        Spacer(Modifier.height(6.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .clip(RoundedCornerShape(13.dp))
+                .clickable(onClick = onOpenSettings),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                stringResource(Res.string.status_open_settings),
+                color = colors.muted,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+            )
         }
         Spacer(Modifier.height(16.dp))
     }
@@ -424,32 +460,28 @@ private fun WarningsContent(
 
 @Composable
 private fun WarningCard(warning: StatusWarning) {
+    val colors = LocalAppColors.current
     val (icon, title, body) = warningDetails(warning)
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(colors.danger.copy(alpha = 0.10f))
+            .border(1.dp, colors.danger.copy(alpha = 0.30f), RoundedCornerShape(14.dp))
+            .padding(14.dp),
+        verticalAlignment = Alignment.Top,
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onErrorContainer,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(Modifier.width(10.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = body,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                )
-            }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = colors.danger,
+            modifier = Modifier.size(20.dp),
+        )
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(title, color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(2.dp))
+            Text(body, color = colors.muted, fontSize = 12.sp, lineHeight = (12 * 1.5).sp)
         }
     }
 }
@@ -508,31 +540,27 @@ private fun PermissionRow(label: String, granted: Boolean) {
 
 @Composable
 private fun InfoCard(icon: ImageVector, title: String, body: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(colors.amber.copy(alpha = 0.10f))
+            .border(1.dp, colors.amber.copy(alpha = 0.30f), RoundedCornerShape(14.dp))
+            .padding(14.dp),
+        verticalAlignment = Alignment.Top,
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(Modifier.width(10.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = body,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = colors.amber,
+            modifier = Modifier.size(20.dp),
+        )
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(title, color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(2.dp))
+            Text(body, color = colors.muted, fontSize = 12.sp, lineHeight = (12 * 1.5).sp)
         }
     }
 }
