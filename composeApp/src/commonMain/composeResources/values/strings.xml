@@ -394,6 +394,10 @@
     <string name="dictionary_filter_all">All</string>
     <string name="dictionary_filter_hebrew">Hebrew</string>
     <string name="dictionary_filter_greek">Greek</string>
+    <string name="dictionary_ref_book">Book</string>
+    <string name="dictionary_ref_chapter">Chapter</string>
+    <string name="dictionary_ref_verse">Verse</string>
+    <string name="dictionary_ref_clear">Clear reference filter</string>
     <string name="dictionary_no_entries">No entries found</string>
     <string name="dictionary_uses">USES</string>
     <string name="dictionary_occurrences_count">%1$s×</string>
@@ -402,6 +406,8 @@
     <string name="dictionary_root">Root</string>
     <string name="dictionary_definition">Definition</string>
     <string name="dictionary_kjv_usage">KJV usage</string>
+    <string name="dictionary_appears_in">Appears in</string>
+    <string name="dictionary_appears_in_count">%1$s of %2$s</string>
 
     <!-- Q&A Admin (additional) -->
     <string name="qa_edit_question_title">Edit question</string>

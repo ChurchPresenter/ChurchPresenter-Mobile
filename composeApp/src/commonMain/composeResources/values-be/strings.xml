@@ -417,5 +417,11 @@
     <string name="announce_anim_slide_left">Злева</string>
     <string name="announce_anim_slide_right">Справа</string>
     <string name="announce_duration_seconds">%1$s с</string>
+    <string name="dictionary_ref_book">Кніга</string>
+    <string name="dictionary_ref_chapter">Раздзел</string>
+    <string name="dictionary_ref_verse">Верш</string>
+    <string name="dictionary_ref_clear">Ачысціць фільтр спасылкі</string>
+    <string name="dictionary_appears_in">Сустракаецца ў</string>
+    <string name="dictionary_appears_in_count">%1$s з %2$s</string>
 </resources>
 

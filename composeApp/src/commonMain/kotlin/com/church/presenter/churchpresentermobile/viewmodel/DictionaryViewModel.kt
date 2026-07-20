@@ -3,7 +3,10 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.BibleBook
+import com.church.presenter.churchpresentermobile.model.DictionaryVersesResponse
 import com.church.presenter.churchpresentermobile.model.StrongsEntry
+import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.DictionaryFilter
 import com.church.presenter.churchpresentermobile.network.DictionaryService
 import com.church.presenter.churchpresentermobile.network.ServerEventService
@@ -27,12 +30,34 @@ class DictionaryViewModel(
 ) : ViewModel() {
 
     private val service = DictionaryService(appSettings, eventService)
+    private val bibleService = BibleService(appSettings, eventService)
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
     private val _filter = MutableStateFlow(DictionaryFilter.ALL)
     val filter = _filter.asStateFlow()
+
+    // ── Bible-reference filter (Book → Chapter → Verse cascade) ──────────────
+    /** All Bible books, used to populate the reference filter's first dropdown. */
+    private val _books = MutableStateFlow<List<BibleBook>>(emptyList())
+    val books = _books.asStateFlow()
+
+    /** Selected book, or null when the reference filter is inactive. */
+    private val _refBook = MutableStateFlow<BibleBook?>(null)
+    val refBook = _refBook.asStateFlow()
+
+    /** Selected chapter, or null. Only meaningful when [refBook] is set. */
+    private val _refChapter = MutableStateFlow<Int?>(null)
+    val refChapter = _refChapter.asStateFlow()
+
+    /** Selected verse, or null. Only meaningful when [refChapter] is set. */
+    private val _refVerse = MutableStateFlow<Int?>(null)
+    val refVerse = _refVerse.asStateFlow()
+
+    /** Verse count of the selected chapter (0 until known), for the verse dropdown. */
+    private val _refVerseCount = MutableStateFlow(0)
+    val refVerseCount = _refVerseCount.asStateFlow()
 
     private val _entries = MutableStateFlow<List<StrongsEntry>>(emptyList())
     val entries = _entries.asStateFlow()
@@ -45,6 +70,13 @@ class DictionaryViewModel(
 
     private val _selectedEntry = MutableStateFlow<StrongsEntry?>(null)
     val selectedEntry = _selectedEntry.asStateFlow()
+
+    /** "Appears in" verses for the selected entry (null until loaded). */
+    private val _appearsIn = MutableStateFlow<DictionaryVersesResponse?>(null)
+    val appearsIn = _appearsIn.asStateFlow()
+
+    private val _appearsInLoading = MutableStateFlow(false)
+    val appearsInLoading = _appearsInLoading.asStateFlow()
 
     /** Strong's number of the entry currently projected live, or null. */
     private val _projectedNumber = MutableStateFlow<String?>(null)
@@ -60,6 +92,17 @@ class DictionaryViewModel(
 
     init {
         search()
+        loadBooks()
+    }
+
+    /** Loads the Bible book list for the reference filter. Silent on failure — the
+     *  filter simply stays unavailable while search still works. */
+    private fun loadBooks() {
+        viewModelScope.launch {
+            bibleService.getBooks()
+                .onSuccess { _books.value = it }
+                .onFailure { e -> Logger.e(TAG, "loadBooks — FAILED: ${e.message}", e) }
+        }
     }
 
     fun setSearchQuery(query: String) {
@@ -77,12 +120,71 @@ class DictionaryViewModel(
         search()
     }
 
+    /** Selects (or clears, with null) the reference book. Resets chapter + verse. */
+    fun setRefBook(book: BibleBook?) {
+        _refBook.value = book
+        _refChapter.value = null
+        _refVerse.value = null
+        _refVerseCount.value = 0
+        search()
+    }
+
+    /** Selects (or clears, with null) the reference chapter. Resets verse. */
+    fun setRefChapter(chapter: Int?) {
+        _refChapter.value = chapter
+        _refVerse.value = null
+        _refVerseCount.value = 0
+        if (chapter != null) resolveVerseCount(_refBook.value, chapter)
+        search()
+    }
+
+    /** Selects (or clears, with null) the reference verse. */
+    fun setRefVerse(verse: Int?) {
+        _refVerse.value = verse
+        search()
+    }
+
+    /** Clears the entire Book → Chapter → Verse reference filter. */
+    fun clearReference() {
+        _refBook.value = null
+        _refChapter.value = null
+        _refVerse.value = null
+        _refVerseCount.value = 0
+        search()
+    }
+
+    /** 1-based book number the server expects, mirroring [BibleService.getChapter]. */
+    private fun bookNumberOf(book: BibleBook): Int =
+        book.bookId ?: (_books.value.indexOf(book) + 1)
+
+    /** Resolves how many verses [chapter] has: prefer the book metadata, else fetch. */
+    private fun resolveVerseCount(book: BibleBook?, chapter: Int) {
+        if (book == null) return
+        val known = book.chapters?.firstOrNull { it.chapter == chapter }?.verseTotal
+        if (known != null && known > 0) {
+            _refVerseCount.value = known
+            return
+        }
+        viewModelScope.launch {
+            bibleService.getChapter(bookNumberOf(book), chapter)
+                .onSuccess { verses -> _refVerseCount.value = verses.size }
+                .onFailure { e -> Logger.e(TAG, "resolveVerseCount — FAILED: ${e.message}", e) }
+        }
+    }
+
     fun search() {
         searchJob?.cancel()
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-            service.search(query = _searchQuery.value, filter = _filter.value)
+            val book = _refBook.value
+            service.search(
+                query = _searchQuery.value,
+                filter = _filter.value,
+                book = book?.let { bookNumberOf(it) },
+                chapter = _refChapter.value,
+                verse = _refVerse.value,
+            )
                 .onSuccess { _entries.value = it }
                 .onFailure { e -> _error.value = "Failed to load dictionary: ${e.message}" }
             _isLoading.value = false
@@ -92,6 +194,27 @@ class DictionaryViewModel(
     fun selectEntry(entry: StrongsEntry) {
         _selectedEntry.value = entry
         _scheduleAdded.value = false
+        loadAppearsIn(entry)
+    }
+
+    /**
+     * Loads the "Appears in" verses for [entry]. Passes the active reference filter
+     * so occurrences within the filtered book/chapter/verse are ordered first.
+     * Failure is silent — the section simply stays hidden.
+     */
+    private fun loadAppearsIn(entry: StrongsEntry) {
+        _appearsIn.value = null
+        _appearsInLoading.value = true
+        val book = _refBook.value
+        viewModelScope.launch {
+            service.getVerses(
+                number = entry.number,
+                book = book?.let { bookNumberOf(it) },
+                chapter = _refChapter.value,
+                verse = _refVerse.value,
+            ).onSuccess { _appearsIn.value = it }
+            _appearsInLoading.value = false
+        }
     }
 
     /** Opens the entry for [number] (used by tappable H####/G#### links in a definition). */
@@ -105,6 +228,7 @@ class DictionaryViewModel(
 
     fun clearSelection() {
         _selectedEntry.value = null
+        _appearsIn.value = null
     }
 
     fun projectSelected() {
@@ -141,5 +265,6 @@ class DictionaryViewModel(
     override fun onCleared() {
         super.onCleared()
         service.closeClient()
+        bibleService.closeClient()
     }
 }

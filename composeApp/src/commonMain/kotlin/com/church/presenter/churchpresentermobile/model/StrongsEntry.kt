@@ -28,6 +28,28 @@ data class StrongsEntry(
 }
 
 /**
+ * One verse in which a Strong's number appears — a row in the entry sheet's
+ * "Appears in" list. Mirrors the server's `DictionaryVerseDto`.
+ */
+@Serializable
+data class DictionaryVerse(
+    val bookName: String,
+    val chapter: Int,
+    val verse: Int,
+    val reference: String,
+    val text: String = ""
+)
+
+/** Response from `GET /api/dictionary/{number}/verses`. */
+@Serializable
+data class DictionaryVersesResponse(
+    val number: String,
+    /** Total number of verses the number appears in; [verses] is capped below this. */
+    val total: Int = 0,
+    val verses: List<DictionaryVerse> = emptyList()
+)
+
+/**
  * Flat item payload for `POST /api/project` and `POST /api/schedule/add`.
  * The desktop's `RemoteItemDto.toScheduleItem()` infers a dictionary item from
  * [strongsNumber]; the word is carried in [title].

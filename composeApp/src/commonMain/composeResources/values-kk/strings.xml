@@ -417,5 +417,11 @@
     <string name="announce_anim_slide_left">Солдан</string>
     <string name="announce_anim_slide_right">Оңнан</string>
     <string name="announce_duration_seconds">%1$s с</string>
+    <string name="dictionary_ref_book">Кітап</string>
+    <string name="dictionary_ref_chapter">Тарау</string>
+    <string name="dictionary_ref_verse">Өлең</string>
+    <string name="dictionary_ref_clear">Сілтеме сүзгісін тазалау</string>
+    <string name="dictionary_appears_in">Кездеседі</string>
+    <string name="dictionary_appears_in_count">%2$s ішінен %1$s</string>
 </resources>
 

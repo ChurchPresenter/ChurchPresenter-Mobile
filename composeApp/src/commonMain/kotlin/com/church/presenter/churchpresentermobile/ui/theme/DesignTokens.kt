@@ -46,6 +46,9 @@ data class AppColors(
     val onAccent: Color,
     val accentTint: Color,
     val accentTintStrong: Color,
+    // Greek Strong's number accent — distinct from the (Hebrew) accent so the two are tellable apart
+    val greekAccent: Color,
+    val greekAccentTint: Color,
     // Add-to-schedule amber + its dark icon-stroke color
     val amber: Color,
     val amberStroke: Color,
@@ -89,6 +92,8 @@ private val DarkAppColors = AppColors(
     onAccent = Color(0xFF09090B),
     accentTint = Color(0x1A86EFAC),       // rgba(134,239,172,.10)
     accentTintStrong = Color(0x2686EFAC), // rgba(134,239,172,.15)
+    greekAccent = Color(0xFF7DD3FC),      // sky-blue — Greek numbers (vs green Hebrew)
+    greekAccentTint = Color(0x1A7DD3FC),  // rgba(125,211,252,.10)
     amber = Color(0xFFD4A853),
     amberStroke = Color(0xFF4A3A12),
     danger = Color(0xFFEF4444),
@@ -130,6 +135,8 @@ private val LightAppColors = AppColors(
     onAccent = Color(0xFFFFFFFF),
     accentTint = Color(0x1416A34A),       // rgba(22,163,74,.08)
     accentTintStrong = Color(0x1F16A34A), // rgba(22,163,74,.12)
+    greekAccent = Color(0xFF2563EB),      // blue — Greek numbers (vs green Hebrew)
+    greekAccentTint = Color(0x142563EB),  // rgba(37,99,235,.08)
     amber = Color(0xFFE0A94F),
     amberStroke = Color(0xFF4A3410),
     danger = Color(0xFFEF4444),

@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DictionaryItemPayload
+import com.church.presenter.churchpresentermobile.model.DictionaryVersesResponse
 import com.church.presenter.churchpresentermobile.model.ProjectDictionaryRequest
 import com.church.presenter.churchpresentermobile.model.StrongsEntry
 import com.church.presenter.churchpresentermobile.util.Logger
@@ -42,12 +43,22 @@ class DictionaryService(
         header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
     }
 
-    /** Searches the dictionary. Empty [query] returns the first [limit] entries. */
+    /**
+     * Searches the dictionary. Empty [query] returns the first [limit] entries.
+     *
+     * When [book] (1-based book number) is supplied, results are restricted to the
+     * Strong's numbers that occur within that Bible reference. [chapter] and [verse]
+     * narrow the range progressively: book only → whole book, book+chapter → whole
+     * chapter, book+chapter+verse → a single verse. They combine with [query]/[filter].
+     */
     suspend fun search(
         query: String,
         filter: DictionaryFilter = DictionaryFilter.ALL,
         lang: String = "en",
         limit: Int = 100,
+        book: Int? = null,
+        chapter: Int? = null,
+        verse: Int? = null,
     ): Result<List<StrongsEntry>> = apiRunCatching {
         val url = "${settings.apiBaseUrl}/${ApiConstants.DICTIONARY_ENDPOINT}"
         val response = client.get(url) {
@@ -56,11 +67,42 @@ class DictionaryService(
             parameter("filter", filter.apiValue)
             parameter("lang", lang)
             parameter("limit", limit)
+            if (book != null) parameter("book", book)
+            if (chapter != null) parameter("chapter", chapter)
+            if (verse != null) parameter("verse", verse)
         }
         val raw = response.bodyAsText()
         if (response.status.value !in 200..299) throw Exception("HTTP ${response.status.value}")
         json.decodeFromString<List<StrongsEntry>>(raw)
     }.onFailure { e -> Logger.e(TAG, "search — FAILED: ${e.message}", e) }
+
+    /**
+     * Fetches the verses in which [number] appears (the entry sheet's "Appears in"
+     * list), capped at [limit]. When [book] (1-based) — optionally with [chapter]
+     * and [verse] — is supplied, references in that scope are ordered first so the
+     * verse currently being filtered leads the list.
+     */
+    suspend fun getVerses(
+        number: String,
+        limit: Int = 25,
+        book: Int? = null,
+        chapter: Int? = null,
+        verse: Int? = null,
+        lang: String = "en",
+    ): Result<DictionaryVersesResponse> = apiRunCatching {
+        val url = "${settings.apiBaseUrl}/${ApiConstants.DICTIONARY_ENDPOINT}/${number.encodeURLPathPart()}/verses"
+        val response = client.get(url) {
+            applyApiKey()
+            parameter("limit", limit)
+            parameter("lang", lang)
+            if (book != null) parameter("book", book)
+            if (chapter != null) parameter("chapter", chapter)
+            if (verse != null) parameter("verse", verse)
+        }
+        val raw = response.bodyAsText()
+        if (response.status.value !in 200..299) throw Exception("HTTP ${response.status.value}")
+        json.decodeFromString<DictionaryVersesResponse>(raw)
+    }.onFailure { e -> Logger.e(TAG, "getVerses — FAILED: ${e.message}", e) }
 
     /** Looks up a single entry by Strong's number (e.g. "H430"). */
     suspend fun lookup(number: String, lang: String = "en"): Result<StrongsEntry> = apiRunCatching {

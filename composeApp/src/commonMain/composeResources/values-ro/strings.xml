@@ -448,4 +448,10 @@
     <string name="announce_anim_slide_left">Din stânga</string>
     <string name="announce_anim_slide_right">Din dreapta</string>
     <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Carte</string>
+    <string name="dictionary_ref_chapter">Capitol</string>
+    <string name="dictionary_ref_verse">Verset</string>
+    <string name="dictionary_ref_clear">Șterge filtrul de referință</string>
+    <string name="dictionary_appears_in">Apare în</string>
+    <string name="dictionary_appears_in_count">%1$s din %2$s</string>
 </resources>

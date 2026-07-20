@@ -448,4 +448,10 @@
     <string name="announce_anim_slide_left">Vasakult</string>
     <string name="announce_anim_slide_right">Paremalt</string>
     <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Raamat</string>
+    <string name="dictionary_ref_chapter">Peatükk</string>
+    <string name="dictionary_ref_verse">Salm</string>
+    <string name="dictionary_ref_clear">Tühjenda viitefilter</string>
+    <string name="dictionary_appears_in">Esineb</string>
+    <string name="dictionary_appears_in_count">%1$s / %2$s</string>
 </resources>

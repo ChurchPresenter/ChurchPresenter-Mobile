@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +22,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.DesktopWindows
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -35,7 +40,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +59,8 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.action_go_live
+import churchpresentermobile.composeapp.generated.resources.dictionary_appears_in
+import churchpresentermobile.composeapp.generated.resources.dictionary_appears_in_count
 import churchpresentermobile.composeapp.generated.resources.dictionary_definition
 import churchpresentermobile.composeapp.generated.resources.dictionary_filter_all
 import churchpresentermobile.composeapp.generated.resources.dictionary_filter_greek
@@ -60,12 +69,16 @@ import churchpresentermobile.composeapp.generated.resources.dictionary_kjv_usage
 import churchpresentermobile.composeapp.generated.resources.dictionary_no_entries
 import churchpresentermobile.composeapp.generated.resources.dictionary_occurrences
 import churchpresentermobile.composeapp.generated.resources.dictionary_occurrences_count
-import churchpresentermobile.composeapp.generated.resources.dictionary_part_of_speech
-import churchpresentermobile.composeapp.generated.resources.dictionary_root
+import churchpresentermobile.composeapp.generated.resources.dictionary_ref_book
+import churchpresentermobile.composeapp.generated.resources.dictionary_ref_chapter
+import churchpresentermobile.composeapp.generated.resources.dictionary_ref_clear
+import churchpresentermobile.composeapp.generated.resources.dictionary_ref_verse
 import churchpresentermobile.composeapp.generated.resources.dictionary_search_placeholder
 import churchpresentermobile.composeapp.generated.resources.dictionary_uses
 import churchpresentermobile.composeapp.generated.resources.label_add_to_schedule
 import org.jetbrains.compose.resources.stringResource
+import com.church.presenter.churchpresentermobile.model.BibleBook
+import com.church.presenter.churchpresentermobile.model.DictionaryVersesResponse
 import com.church.presenter.churchpresentermobile.model.StrongsEntry
 import com.church.presenter.churchpresentermobile.network.DictionaryFilter
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -99,10 +112,17 @@ fun DictionaryScreen(
     val colors = LocalAppColors.current
     val query by viewModel.searchQuery.collectAsState()
     val filter by viewModel.filter.collectAsState()
+    val books by viewModel.books.collectAsState()
+    val refBook by viewModel.refBook.collectAsState()
+    val refChapter by viewModel.refChapter.collectAsState()
+    val refVerse by viewModel.refVerse.collectAsState()
+    val refVerseCount by viewModel.refVerseCount.collectAsState()
     val entries by viewModel.entries.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val selectedEntry by viewModel.selectedEntry.collectAsState()
+    val appearsIn by viewModel.appearsIn.collectAsState()
+    val appearsInLoading by viewModel.appearsInLoading.collectAsState()
     val projectedNumber by viewModel.projectedNumber.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
     val actionError by viewModel.actionError.collectAsState()
@@ -147,6 +167,18 @@ fun DictionaryScreen(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
             )
+            ReferenceFilterRow(
+                books = books,
+                selectedBook = refBook,
+                selectedChapter = refChapter,
+                selectedVerse = refVerse,
+                verseCount = refVerseCount,
+                onBookSelected = { viewModel.setRefBook(it) },
+                onChapterSelected = { viewModel.setRefChapter(it) },
+                onVerseSelected = { viewModel.setRefVerse(it) },
+                onClear = { viewModel.clearReference() },
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
+            )
 
             when {
                 error != null -> Box(Modifier.fillMaxSize(), Alignment.Center) {
@@ -182,6 +214,8 @@ fun DictionaryScreen(
             entry = selectedEntry!!,
             isLive = projectedNumber == selectedEntry!!.number,
             scheduleAdded = scheduleAdded,
+            appearsIn = appearsIn,
+            appearsInLoading = appearsInLoading,
             onProject = { viewModel.projectSelected() },
             onAddToSchedule = { viewModel.addSelectedToSchedule() },
             onOpenNumber = { viewModel.selectByNumber(it) },
@@ -190,19 +224,152 @@ fun DictionaryScreen(
     }
 }
 
+/**
+ * Cascading Book → Chapter → Verse filter shown under the search bar.
+ *
+ * The chapter dropdown only appears once a book is chosen, and the verse dropdown
+ * only once a chapter is chosen (and its verse count is known). A clear button
+ * resets the whole reference filter. Hidden entirely until the book list loads.
+ */
+@Composable
+private fun ReferenceFilterRow(
+    books: List<BibleBook>,
+    selectedBook: BibleBook?,
+    selectedChapter: Int?,
+    selectedVerse: Int?,
+    verseCount: Int,
+    onBookSelected: (BibleBook?) -> Unit,
+    onChapterSelected: (Int?) -> Unit,
+    onVerseSelected: (Int?) -> Unit,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (books.isEmpty()) return
+    val colors = LocalAppColors.current
+    Row(
+        modifier = modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        RefDropdown(
+            placeholder = stringResource(Res.string.dictionary_ref_book),
+            selectedLabel = selectedBook?.displayName,
+            options = books.map { it.displayName },
+            onSelect = { onBookSelected(books[it]) },
+        )
+        if (selectedBook != null) {
+            val chapters = (1..selectedBook.totalChapters).toList()
+            RefDropdown(
+                placeholder = stringResource(Res.string.dictionary_ref_chapter),
+                selectedLabel = selectedChapter?.toString(),
+                options = chapters.map { it.toString() },
+                onSelect = { onChapterSelected(chapters[it]) },
+            )
+        }
+        if (selectedBook != null && selectedChapter != null && verseCount > 0) {
+            Text(
+                text = ":",
+                color = colors.muted,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            val verses = (1..verseCount).toList()
+            RefDropdown(
+                placeholder = stringResource(Res.string.dictionary_ref_verse),
+                selectedLabel = selectedVerse?.toString(),
+                options = verses.map { it.toString() },
+                onSelect = { onVerseSelected(verses[it]) },
+            )
+        }
+        if (selectedBook != null) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable { onClear() }
+                    .padding(8.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.dictionary_ref_clear),
+                    tint = colors.muted,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
+    }
+}
+
+/** A single pill-style dropdown used by [ReferenceFilterRow]. [onSelect] receives the chosen index. */
+@Composable
+private fun RefDropdown(
+    placeholder: String,
+    selectedLabel: String?,
+    options: List<String>,
+    onSelect: (Int) -> Unit,
+) {
+    val colors = LocalAppColors.current
+    var expanded by remember { mutableStateOf(false) }
+    val active = selectedLabel != null
+    val shape = RoundedCornerShape(10.dp)
+    Box {
+        Row(
+            modifier = Modifier
+                .clip(shape)
+                .background(if (active) colors.accentTint else colors.surface)
+                .border(1.dp, if (active) colors.accent else colors.borderSubtle, shape)
+                .clickable { expanded = true }
+                .padding(start = 12.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = selectedLabel ?: placeholder,
+                color = if (active) colors.accent else colors.muted,
+                fontSize = 13.sp,
+                fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Icon(
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = null,
+                tint = if (active) colors.accent else colors.muted,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEachIndexed { idx, opt ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            opt,
+                            fontWeight = if (opt == selectedLabel) FontWeight.Bold else FontWeight.Normal,
+                        )
+                    },
+                    onClick = { onSelect(idx); expanded = false },
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun NumberPill(number: String, solid: Boolean = false) {
     val colors = LocalAppColors.current
+    // Greek numbers (G####) use a blue accent; Hebrew (H####) keeps the green accent.
+    val isGreek = number.startsWith("G")
+    val fg = if (isGreek) colors.greekAccent else colors.accent
+    val tint = if (isGreek) colors.greekAccentTint else colors.accentTint
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(if (solid) colors.accent else colors.accentTint)
+            .background(if (solid) fg else tint)
             .padding(horizontal = 10.dp, vertical = 5.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = number,
-            color = if (solid) colors.onAccent else colors.accent,
+            color = if (solid) colors.onAccent else fg,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Monospace,
@@ -272,6 +439,8 @@ private fun EntryDetailSheet(
     entry: StrongsEntry,
     isLive: Boolean,
     scheduleAdded: Boolean,
+    appearsIn: DictionaryVersesResponse?,
+    appearsInLoading: Boolean,
     onProject: () -> Unit,
     onAddToSchedule: () -> Unit,
     onOpenNumber: (String) -> Unit,
@@ -330,29 +499,11 @@ private fun EntryDetailSheet(
             }
 
             Spacer(Modifier.height(18.dp))
-            // Meta cards: Part of Speech / Occurrences / Root (matches design's 3-card row).
-            // Part of Speech has no data source yet, so it shows "—".
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MetaCard(label = stringResource(Res.string.dictionary_part_of_speech), modifier = Modifier.weight(1f)) {
-                    Text("—", color = colors.muted, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                }
-                MetaCard(label = stringResource(Res.string.dictionary_occurrences), modifier = Modifier.weight(1f)) {
-                    Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                }
-                MetaCard(label = stringResource(Res.string.dictionary_root), modifier = Modifier.weight(1f)) {
-                    if (entry.root.isNotBlank()) {
-                        Text(
-                            entry.root,
-                            color = colors.accent,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.clickable { onOpenNumber(entry.root) },
-                        )
-                    } else {
-                        Text("—", color = colors.muted, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                }
+            // Occurrences card. Part of Speech and Root were removed — neither is
+            // available in the Strong's data set (Part of Speech has no source; Root
+            // was only a heuristic extracted from the definition text).
+            MetaCard(label = stringResource(Res.string.dictionary_occurrences), modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             }
 
             if (entry.definition.isNotBlank()) {
@@ -362,6 +513,60 @@ private fun EntryDetailSheet(
             if (entry.kjvUsage.isNotBlank()) {
                 SectionLabel(stringResource(Res.string.dictionary_kjv_usage))
                 Text(entry.kjvUsage, color = colors.secondary, fontSize = 14.sp, lineHeight = (14 * 1.6).sp)
+            }
+
+            // Appears in — verses where this Strong's number occurs. The active
+            // reference filter (if any) orders its scope first (see ViewModel).
+            val verses = appearsIn?.verses.orEmpty()
+            if (appearsInLoading && verses.isEmpty()) {
+                SectionLabel(stringResource(Res.string.dictionary_appears_in))
+                Spacer(Modifier.height(4.dp))
+                CircularProgressIndicator(color = colors.accent, modifier = Modifier.size(20.dp))
+            } else if (verses.isNotEmpty()) {
+                val shown = verses.size
+                val total = appearsIn?.total ?: shown
+                Spacer(Modifier.height(18.dp))
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(Res.string.dictionary_appears_in).uppercase(),
+                        color = colors.muted,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.05.em,
+                    )
+                    if (total > shown) {
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            stringResource(
+                                Res.string.dictionary_appears_in_count,
+                                shown.grouped(), total.grouped()
+                            ),
+                            color = colors.muted,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
+                verses.forEach { v ->
+                    Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                        Text(
+                            v.reference,
+                            color = colors.accent,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        if (v.text.isNotBlank()) {
+                            Spacer(Modifier.height(2.dp))
+                            Text(
+                                v.text,
+                                color = colors.secondary,
+                                fontSize = 13.sp,
+                                lineHeight = (13 * 1.5).sp,
+                            )
+                        }
+                    }
+                }
             }
         }
     }

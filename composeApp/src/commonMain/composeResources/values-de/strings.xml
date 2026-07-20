@@ -417,5 +417,11 @@
     <string name="announce_anim_slide_left">Von links</string>
     <string name="announce_anim_slide_right">Von rechts</string>
     <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Buch</string>
+    <string name="dictionary_ref_chapter">Kapitel</string>
+    <string name="dictionary_ref_verse">Vers</string>
+    <string name="dictionary_ref_clear">Referenzfilter löschen</string>
+    <string name="dictionary_appears_in">Kommt vor in</string>
+    <string name="dictionary_appears_in_count">%1$s von %2$s</string>
 </resources>
 

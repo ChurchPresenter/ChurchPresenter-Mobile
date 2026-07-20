@@ -448,4 +448,10 @@
     <string name="announce_anim_slide_left">Van links</string>
     <string name="announce_anim_slide_right">Van rechts</string>
     <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Boek</string>
+    <string name="dictionary_ref_chapter">Hoofdstuk</string>
+    <string name="dictionary_ref_verse">Vers</string>
+    <string name="dictionary_ref_clear">Referentiefilter wissen</string>
+    <string name="dictionary_appears_in">Komt voor in</string>
+    <string name="dictionary_appears_in_count">%1$s van %2$s</string>
 </resources>
