@@ -26,7 +26,7 @@
     <string name="settings_host_placeholder">192.168.1.10</string>
     <string name="settings_port_label">Порт</string>
     <string name="settings_port_placeholder">8765</string>
-    <string name="settings_api_key_label">API-ключ (необов\'язково)</string>
+    <string name="settings_api_key_label">API-ключ (необов'язково)</string>
     <string name="settings_api_key_placeholder">Залиште порожнім, якщо не потрібно</string>
     <string name="settings_save">Зберегти</string>
     <string name="settings_cancel">Скасувати</string>
@@ -127,7 +127,7 @@
     <string name="toast_presentation_added_to_schedule">Презентацію додано до програми</string>
     <string name="toast_presentation_failed_to_add_schedule">Не вдалося додати презентацію до програми: %1$s</string>
     <string name="toast_failed_to_select_presentation">Не вдалося вибрати презентацію: %1$s</string>
-    <string name="toast_upload_unsupported">Завантаження не підтримується цим сервером. Оновіть ChurchPresenter на комп\'ютері.</string>
+    <string name="toast_upload_unsupported">Завантаження не підтримується цим сервером. Оновіть ChurchPresenter на комп'ютері.</string>
     <string name="toast_upload_file_too_large">Файл занадто великий. Спробуйте менший файл.</string>
     <string name="toast_upload_server_error">Сервер відхилив завантаження: %1$s</string>
     <string name="toast_upload_failed">Завантаження не вдалося: %1$s</string>
@@ -156,9 +156,9 @@
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Довіряти сертифікату сервера</string>
     <string name="cert_setup_subtitle">Одноразове налаштування</string>
-    <string name="cert_setup_intro">ChurchPresenter використовує приватний HTTPS-сертифікат для безпечного зв\'язку. Потрібно встановити його один раз, щоб ваш пристрій довіряв з\'єднанню.</string>
+    <string name="cert_setup_intro">ChurchPresenter використовує приватний HTTPS-сертифікат для безпечного зв'язку. Потрібно встановити його один раз, щоб ваш пристрій довіряв з'єднанню.</string>
     <string name="cert_setup_scan_title">Відскануйте QR-код сертифіката</string>
-    <string name="cert_setup_scan_desktop_hint">У ChurchPresenter на комп\'ютері: Налаштування → Сервер → натисніть "Завантажити серт." для відображення QR-коду.</string>
+    <string name="cert_setup_scan_desktop_hint">У ChurchPresenter на комп'ютері: Налаштування → Сервер → натисніть "Завантажити серт." для відображення QR-коду.</string>
     <string name="cert_setup_scan_button">Сканувати QR-код</string>
     <string name="cert_setup_scan_or_divider">або використати збережену адресу</string>
     <string name="cert_setup_url_scanned">✓ URL відскановано</string>
@@ -173,18 +173,18 @@
     <string name="cert_setup_android_unknown_sources_title">⚠ "Неможливо встановити з невідомих джерел"?</string>
     <string name="cert_setup_android_unknown_sources_body">Android може заблокувати встановлення, якщо ваш браузер не має дозволу. Перейдіть до Налаштування → Програми → [ваш браузер] → Встановлення невідомих програм і увімкніть "Дозволити з цього джерела". Поверніться сюди і натисніть файл знову.</string>
     <string name="cert_setup_fingerprint_title">Перевірити відбиток (рекомендовано)</string>
-    <string name="cert_setup_fingerprint_body">Порівняйте цей відбиток із тим, що показує ChurchPresenter на комп\'ютері в Налаштування → Сервер → SHA-256 сертифіката. Вони мають збігатися.</string>
+    <string name="cert_setup_fingerprint_body">Порівняйте цей відбиток із тим, що показує ChurchPresenter на комп'ютері в Налаштування → Сервер → SHA-256 сертифіката. Вони мають збігатися.</string>
     <string name="cert_setup_fingerprint_unavailable">Спочатку підключіться до сервера, щоб побачити відбиток</string>
     <string name="cert_setup_done_button">Готово — Сертифікат встановлено</string>
     <string name="cert_setup_skip_button">Пропустити зараз</string>
     <string name="cert_setup_skip_note">Ви можете повернутися до цього посібника будь-коли з Налаштувань.</string>
 
     <!-- Connect Setup Screen -->
-    <string name="connect_setup_title">Підключитися до комп\'ютера</string>
+    <string name="connect_setup_title">Підключитися до комп'ютера</string>
     <string name="connect_setup_subtitle">Одноразове налаштування</string>
-    <string name="connect_setup_intro">Відскануйте QR-код з ChurchPresenter на комп\'ютері, щоб автоматично налаштувати IP-адресу сервера, порт та необов\'язковий API-ключ.</string>
-    <string name="connect_setup_step1_title">Відкрийте Налаштування в ChurchPresenter на комп\'ютері</string>
-    <string name="connect_setup_step1_body">На вашому комп\'ютері відкрийте програму ChurchPresenter і натисніть значок Налаштування.</string>
+    <string name="connect_setup_intro">Відскануйте QR-код з ChurchPresenter на комп'ютері, щоб автоматично налаштувати IP-адресу сервера, порт та необов'язковий API-ключ.</string>
+    <string name="connect_setup_step1_title">Відкрийте Налаштування в ChurchPresenter на комп'ютері</string>
+    <string name="connect_setup_step1_body">На вашому комп'ютері відкрийте програму ChurchPresenter і натисніть значок Налаштування.</string>
     <string name="connect_setup_step2_title">Перейдіть на вкладку Сервер</string>
     <string name="connect_setup_step2_body">У Налаштуваннях виберіть вкладку Сервер, щоб знайти деталі підключення та QR-код.</string>
     <string name="connect_setup_step3_title">Натисніть кнопку QR і відскануйте</string>
@@ -196,7 +196,7 @@
     <string name="connect_setup_skip_note">Ви можете відсканувати QR-код будь-коли з Налаштувань.</string>
 
     <!-- Added translations -->
-    <string name="settings_display_name_label">Ваше ім\'я (для запитань і відповідей)</string>
+    <string name="settings_display_name_label">Ваше ім'я (для запитань і відповідей)</string>
     <string name="settings_display_name_placeholder">Залиште порожнім, щоб використати ID пристрою</string>
     <string name="settings_privacy_section">Конфіденційність</string>
     <string name="settings_telemetry_label">Ділитися даними про використання та збої</string>
@@ -254,8 +254,8 @@
     <string name="status_limited_functionality">Обмежена функціональність</string>
     <string name="status_server_version">Версія сервера: %1$s</string>
     <string name="status_issues_detected">На підключеному сервері виявлено такі проблеми:</string>
-    <string name="status_endpoint_unavailable">Кінцева точка стану ще недоступна в цій версії сервера — оновіть ChurchPresenter на комп\'ютері для повного звітування про можливості.</string>
-    <string name="status_error_title">Не вдалося зв\'язатися з сервером</string>
+    <string name="status_endpoint_unavailable">Кінцева точка стану ще недоступна в цій версії сервера — оновіть ChurchPresenter на комп'ютері для повного звітування про можливості.</string>
+    <string name="status_error_title">Не вдалося зв'язатися з сервером</string>
     <string name="status_permissions_title">Дозволи цього пристрою</string>
     <string name="status_permission_present">Керувати презентацією</string>
     <string name="status_permission_schedule">Додавати до програми</string>
@@ -267,9 +267,9 @@
     <string name="status_warn_no_api_key_title">API-ключ не налаштовано</string>
     <string name="status_warn_no_api_key_body">На сервері не встановлено API-ключ. Деякі захищені кінцеві точки можуть відхиляти запити. Розгляньте можливість увімкнення API-ключа в налаштуваннях сервера ChurchPresenter.</string>
     <string name="status_warn_no_bibles_title">Немає доступних перекладів Біблії</string>
-    <string name="status_warn_no_bibles_body">На сервері не завантажено жодного перекладу Біблії. Вкладка Біблія буде порожньою. Додайте переклад у застосунку ChurchPresenter на комп\'ютері.</string>
+    <string name="status_warn_no_bibles_body">На сервері не завантажено жодного перекладу Біблії. Вкладка Біблія буде порожньою. Додайте переклад у застосунку ChurchPresenter на комп'ютері.</string>
     <string name="status_warn_no_songbooks_title">Немає доступних збірників пісень</string>
-    <string name="status_warn_no_songbooks_body">На сервері не завантажено жодного збірника пісень. Вкладка Пісні буде порожньою. Імпортуйте збірник пісень у застосунку ChurchPresenter на комп\'ютері.</string>
+    <string name="status_warn_no_songbooks_body">На сервері не завантажено жодного збірника пісень. Вкладка Пісні буде порожньою. Імпортуйте збірник пісень у застосунку ChurchPresenter на комп'ютері.</string>
     <string name="status_warn_present_blocked_title">Керування презентацією заблоковано</string>
     <string name="status_warn_present_blocked_body">Цьому пристрою не дозволено керувати презентацією (показ, очищення, вибір слайдів). Попросіть адміністратора сервера надати цьому пристрою дозвіл Ведучого.</string>
     <string name="status_warn_schedule_blocked_title">Редагування програми заблоковано</string>
@@ -278,13 +278,13 @@
     <string name="status_warn_upload_blocked_body">Цьому пристрою не дозволено завантажувати презентації або зображення. Попросіть адміністратора сервера надати цьому пристрою дозвіл на Завантаження.</string>
     <string name="upload_blocked_toast">Завантаження файлів вимкнено для цього пристрою. Попросіть адміністратора сервера надати дозвіл на Завантаження.</string>
     <string name="status_warn_unknown_version_title">Нерозпізнана версія сервера</string>
-    <string name="status_warn_unknown_version_body">Сервер повідомив версію \'%1$s\'. Деякі функції цього застосунку можуть бути несумісні з цією версією.</string>
+    <string name="status_warn_unknown_version_body">Сервер повідомив версію '%1$s'. Деякі функції цього застосунку можуть бути несумісні з цією версією.</string>
     <string name="status_warn_missing_endpoint_title">Відсутня кінцева точка API: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Сервер не надає кінцеву точку \'%1$s\'. Функції, що залежать від неї, будуть недоступні.</string>
+    <string name="status_warn_missing_endpoint_body">Сервер не надає кінцеву точку '%1$s'. Функції, що залежать від неї, будуть недоступні.</string>
     <string name="media_title">Медіа</string>
     <string name="media_no_media_loaded">Медіа не завантажено</string>
     <string name="media_playing">Відтворення</string>
-    <string name="media_playing_on_desktop">Відтворення на комп\'ютері</string>
+    <string name="media_playing_on_desktop">Відтворення на комп'ютері</string>
     <string name="media_local_ready">Локальний файл · готовий до показу</string>
     <string name="media_pick_to_upload">Виберіть файл для завантаження</string>
     <string name="media_source_network_url">Мережева URL-адреса</string>
@@ -304,15 +304,15 @@
     <string name="media_source_label">ДЖЕРЕЛО</string>
     <string name="media_will_send">Буде надіслано: %1$s</string>
     <string name="media_target_uploaded">Завантажений файл · %1$s</string>
-    <string name="media_target_loaded">Завантажено на комп\'ютері · %1$s</string>
+    <string name="media_target_loaded">Завантажено на комп'ютері · %1$s</string>
     <string name="media_target_url">Мережева URL-адреса</string>
     <string name="media_target_none">Виберіть джерело нижче, щоб надіслати медіа</string>
     <string name="media_load_label">ЗАВАНТАЖИТИ МЕДІА</string>
     <string name="media_uploading_percent">Завантаження… %1$d%%</string>
     <string name="media_choose_file">Виберіть відео- або аудіофайл</string>
     <string name="media_url_placeholder">https://stream.church.local/…</string>
-    <string name="media_uploads_disabled">Завантаження вимкнено на комп\'ютері</string>
-    <string name="media_uploads_disabled_hint">Увімкніть «Дозволити завантаження файлів з мобільних пристроїв» у налаштуваннях Сервера в застосунку на комп\'ютері.</string>
+    <string name="media_uploads_disabled">Завантаження вимкнено на комп'ютері</string>
+    <string name="media_uploads_disabled_hint">Увімкніть «Дозволити завантаження файлів з мобільних пристроїв» у налаштуваннях Сервера в застосунку на комп'ютері.</string>
     <string name="media_playing_generic">медіа</string>
     <string name="more_photos_title">Зображення</string>
     <string name="more_photos_subtitle">Переглядайте та показуйте теки із зображеннями</string>

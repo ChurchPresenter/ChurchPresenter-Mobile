@@ -286,9 +286,9 @@
     <string name="status_warn_upload_blocked_body">Este dispositivo não tem permissão para enviar apresentações ou imagens. Peça ao administrador do servidor para conceder a este dispositivo a permissão de Envio.</string>
     <string name="upload_blocked_toast">O envio de arquivos está desativado para este dispositivo. Peça ao administrador do servidor para conceder a permissão de Envio.</string>
     <string name="status_warn_unknown_version_title">Versão do servidor não reconhecida</string>
-    <string name="status_warn_unknown_version_body">O servidor informou a versão \'%1$s\'. Alguns recursos deste aplicativo podem não ser compatíveis com esta versão.</string>
+    <string name="status_warn_unknown_version_body">O servidor informou a versão '%1$s'. Alguns recursos deste aplicativo podem não ser compatíveis com esta versão.</string>
     <string name="status_warn_missing_endpoint_title">Endpoint de API ausente: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">O servidor não expõe o endpoint \'%1$s\'. Os recursos que dependem dele ficarão indisponíveis.</string>
+    <string name="status_warn_missing_endpoint_body">O servidor não expõe o endpoint '%1$s'. Os recursos que dependem dele ficarão indisponíveis.</string>
 
     <!-- Media tab -->
     <string name="media_title">Mídia</string>

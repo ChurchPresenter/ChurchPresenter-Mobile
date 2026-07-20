@@ -82,13 +82,13 @@
     <string name="presentation_no_items">Geen presentaties beschikbaar</string>
     <string name="presentation_loading_error">Laden van presentaties mislukt</string>
     <string name="presentation_retry">Opnieuw proberen</string>
-    <string name="presentation_slides">dia\'s</string>
+    <string name="presentation_slides">dia's</string>
 
     <!-- Pictures Screen -->
     <string name="pictures_no_items">Geen afbeeldingen beschikbaar</string>
     <string name="pictures_loading_error">Laden van afbeeldingen mislukt</string>
     <string name="pictures_retry">Opnieuw proberen</string>
-    <string name="pictures_photos">foto\'s</string>
+    <string name="pictures_photos">foto's</string>
 
     <!-- Bible Screen -->
     <string name="bible_search_placeholder">Zoek boeken…</string>
@@ -279,16 +279,16 @@
     <string name="status_warn_no_songbooks_title">Geen liedbundels beschikbaar</string>
     <string name="status_warn_no_songbooks_body">De server heeft geen liedbundels geladen. Het tabblad Liederen zal leeg zijn. Importeer een liedbundel in de ChurchPresenter desktop-app.</string>
     <string name="status_warn_present_blocked_title">Presentatiebesturing geblokkeerd</string>
-    <string name="status_warn_present_blocked_body">Dit apparaat mag de presentatie niet besturen (projecteren, wissen, dia\'s selecteren). Vraag de serverbeheerder om dit apparaat de Presentator-machtiging te geven.</string>
+    <string name="status_warn_present_blocked_body">Dit apparaat mag de presentatie niet besturen (projecteren, wissen, dia's selecteren). Vraag de serverbeheerder om dit apparaat de Presentator-machtiging te geven.</string>
     <string name="status_warn_schedule_blocked_title">Schema bewerken geblokkeerd</string>
     <string name="status_warn_schedule_blocked_body">Dit apparaat mag geen items aan het schema toevoegen. Vraag de serverbeheerder om dit apparaat de Schema-machtiging te geven.</string>
     <string name="status_warn_upload_blocked_title">Bestandsupload geblokkeerd</string>
     <string name="status_warn_upload_blocked_body">Dit apparaat mag geen presentaties of afbeeldingen uploaden. Vraag de serverbeheerder om dit apparaat de Upload-machtiging te geven.</string>
     <string name="upload_blocked_toast">Bestandsupload is uitgeschakeld voor dit apparaat. Vraag de serverbeheerder om Upload-machtiging.</string>
     <string name="status_warn_unknown_version_title">Niet-herkende serverversie</string>
-    <string name="status_warn_unknown_version_body">Server rapporteerde versie \'%1$s\'. Sommige functies van deze app zijn mogelijk niet compatibel met deze versie.</string>
+    <string name="status_warn_unknown_version_body">Server rapporteerde versie '%1$s'. Sommige functies van deze app zijn mogelijk niet compatibel met deze versie.</string>
     <string name="status_warn_missing_endpoint_title">Ontbrekend API-endpoint: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">De server biedt het \'%1$s\'-endpoint niet aan. Functies die hierop vertrouwen zullen niet beschikbaar zijn.</string>
+    <string name="status_warn_missing_endpoint_body">De server biedt het '%1$s'-endpoint niet aan. Functies die hierop vertrouwen zullen niet beschikbaar zijn.</string>
 
     <!-- Media tab -->
     <string name="media_title">Media</string>
@@ -326,18 +326,18 @@
     <string name="media_playing_generic">media</string>
 
     <!-- More launcher -->
-    <string name="more_photos_title">Foto\'s</string>
+    <string name="more_photos_title">Foto's</string>
     <string name="more_photos_subtitle">Blader door en projecteer afbeeldingsmappen</string>
     <string name="more_qa_title">Q&amp;A</string>
     <string name="more_qa_subtitle">Beoordeel en projecteer vragen van het publiek</string>
     <string name="more_dictionary_title">Woordenboek</string>
-    <string name="more_dictionary_subtitle">Strong\'s Hebreeuws &amp; Grieks lexicon</string>
+    <string name="more_dictionary_subtitle">Strong's Hebreeuws &amp; Grieks lexicon</string>
     <string name="more_announcements_title">Mededelingen</string>
     <string name="more_announcements_subtitle">Tekst, klokken &amp; afteltimers</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Projecteer een webpagina op het scherm</string>
     <!-- Section detail header titles -->
-    <string name="strongs_dictionary_title">Strong\'s Woordenboek</string>
+    <string name="strongs_dictionary_title">Strong's Woordenboek</string>
     <string name="web_title">Web</string>
     <string name="announcements_title">Mededelingen</string>
 

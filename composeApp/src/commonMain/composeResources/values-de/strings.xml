@@ -278,9 +278,9 @@
     <string name="status_warn_upload_blocked_body">Dieses Gerät ist nicht berechtigt, Präsentationen oder Bilder hochzuladen. Bitten Sie den Server-Administrator, diesem Gerät die Upload-Berechtigung zu erteilen.</string>
     <string name="upload_blocked_toast">Datei-Upload ist für dieses Gerät deaktiviert. Bitten Sie den Server-Administrator, die Upload-Berechtigung zu erteilen.</string>
     <string name="status_warn_unknown_version_title">Unbekannte Serverversion</string>
-    <string name="status_warn_unknown_version_body">Server hat die Version \'%1$s\' gemeldet. Einige Funktionen dieser App sind möglicherweise nicht mit dieser Version kompatibel.</string>
+    <string name="status_warn_unknown_version_body">Server hat die Version '%1$s' gemeldet. Einige Funktionen dieser App sind möglicherweise nicht mit dieser Version kompatibel.</string>
     <string name="status_warn_missing_endpoint_title">Fehlender API-Endpunkt: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Der Server stellt den Endpunkt \'%1$s\' nicht bereit. Darauf angewiesene Funktionen sind nicht verfügbar.</string>
+    <string name="status_warn_missing_endpoint_body">Der Server stellt den Endpunkt '%1$s' nicht bereit. Darauf angewiesene Funktionen sind nicht verfügbar.</string>
     <string name="media_title">Medien</string>
     <string name="media_no_media_loaded">Keine Medien geladen</string>
     <string name="media_playing">Wird abgespielt</string>
@@ -319,12 +319,12 @@
     <string name="more_qa_title">Q&amp;A</string>
     <string name="more_qa_subtitle">Publikumsfragen prüfen und projizieren</string>
     <string name="more_dictionary_title">Wörterbuch</string>
-    <string name="more_dictionary_subtitle">Strong\'s Hebräisch- &amp; Griechisch-Lexikon</string>
+    <string name="more_dictionary_subtitle">Strong's Hebräisch- &amp; Griechisch-Lexikon</string>
     <string name="more_announcements_title">Ankündigungen</string>
     <string name="more_announcements_subtitle">Text, Uhren &amp; Countdown-Timer</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Eine Webseite auf dem Bildschirm projizieren</string>
-    <string name="strongs_dictionary_title">Strong\'s Wörterbuch</string>
+    <string name="strongs_dictionary_title">Strong's Wörterbuch</string>
     <string name="web_title">Web</string>
     <string name="announcements_title">Ankündigungen</string>
     <string name="action_clear">Leeren</string>

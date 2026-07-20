@@ -286,9 +286,9 @@
     <string name="status_warn_upload_blocked_body">This device is not permitted to upload presentations or pictures. Ask the server admin to grant this device the Upload permission.</string>
     <string name="upload_blocked_toast">File upload is disabled for this device. Ask the server admin to grant Upload permission.</string>
     <string name="status_warn_unknown_version_title">Unrecognised server version</string>
-    <string name="status_warn_unknown_version_body">Server reported version \'%1$s\'. Some features of this app may not be compatible with this version.</string>
+    <string name="status_warn_unknown_version_body">Server reported version '%1$s'. Some features of this app may not be compatible with this version.</string>
     <string name="status_warn_missing_endpoint_title">Missing API endpoint: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">The server does not expose the \'%1$s\' endpoint. Features relying on it will be unavailable.</string>
+    <string name="status_warn_missing_endpoint_body">The server does not expose the '%1$s' endpoint. Features relying on it will be unavailable.</string>
 
     <!-- Media tab -->
     <string name="media_title">Media</string>
@@ -331,13 +331,13 @@
     <string name="more_qa_title">Q&amp;A</string>
     <string name="more_qa_subtitle">Review and project audience questions</string>
     <string name="more_dictionary_title">Dictionary</string>
-    <string name="more_dictionary_subtitle">Strong\'s Hebrew &amp; Greek lexicon</string>
+    <string name="more_dictionary_subtitle">Strong's Hebrew &amp; Greek lexicon</string>
     <string name="more_announcements_title">Announcements</string>
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Project a web page on screen</string>
     <!-- Section detail header titles -->
-    <string name="strongs_dictionary_title">Strong\'s Dictionary</string>
+    <string name="strongs_dictionary_title">Strong's Dictionary</string>
     <string name="web_title">Web</string>
     <string name="announcements_title">Announcements</string>
 

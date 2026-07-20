@@ -278,9 +278,9 @@
     <string name="status_warn_upload_blocked_body">Este dispositivo no tiene permiso para subir presentaciones o imágenes. Pida al administrador del servidor que otorgue a este dispositivo el permiso de Carga.</string>
     <string name="upload_blocked_toast">La carga de archivos está deshabilitada para este dispositivo. Pida al administrador del servidor que otorgue el permiso de Carga.</string>
     <string name="status_warn_unknown_version_title">Versión del servidor no reconocida</string>
-    <string name="status_warn_unknown_version_body">El servidor informó la versión \'%1$s\'. Algunas funciones de esta app pueden no ser compatibles con esta versión.</string>
+    <string name="status_warn_unknown_version_body">El servidor informó la versión '%1$s'. Algunas funciones de esta app pueden no ser compatibles con esta versión.</string>
     <string name="status_warn_missing_endpoint_title">Endpoint de API faltante: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">El servidor no expone el endpoint \'%1$s\'. Las funciones que dependen de él no estarán disponibles.</string>
+    <string name="status_warn_missing_endpoint_body">El servidor no expone el endpoint '%1$s'. Las funciones que dependen de él no estarán disponibles.</string>
     <string name="media_title">Multimedia</string>
     <string name="media_no_media_loaded">No hay multimedia cargada</string>
     <string name="media_playing">Reproduciendo</string>

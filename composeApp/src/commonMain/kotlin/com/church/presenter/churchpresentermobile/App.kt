@@ -43,7 +43,9 @@ import churchpresentermobile.composeapp.generated.resources.more_photos_title
 import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.tab_more
+import churchpresentermobile.composeapp.generated.resources.tab_presentation
 import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
+import churchpresentermobile.composeapp.generated.resources.tab_songs
 import churchpresentermobile.composeapp.generated.resources.web_title
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -658,6 +660,11 @@ fun App() {
                             onSettings = if (moreDestination == MoreDestination.QA) ({ showSettings = true }) else null
                         )
                         else -> when (selectedTab) {
+                            AppTab.SONGS -> ScreenHeader(
+                                title = stringResource(Res.string.tab_songs),
+                                onMenu = { coroutineScope.launch { drawerState.open() } },
+                                onSettings = { showSettings = true }
+                            )
                             AppTab.BIBLE -> ScreenHeader(
                                 title = bibleTitle,
                                 onMenu = { coroutineScope.launch { drawerState.open() } },
@@ -665,6 +672,11 @@ fun App() {
                             )
                             AppTab.MEDIA -> ScreenHeader(
                                 title = stringResource(Res.string.media_title),
+                                onMenu = { coroutineScope.launch { drawerState.open() } },
+                                onSettings = { showSettings = true }
+                            )
+                            AppTab.PRESENTATION -> ScreenHeader(
+                                title = stringResource(Res.string.tab_presentation),
                                 onMenu = { coroutineScope.launch { drawerState.open() } },
                                 onSettings = { showSettings = true }
                             )

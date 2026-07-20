@@ -286,9 +286,9 @@
     <string name="status_warn_upload_blocked_body">Acest dispozitiv nu are permisiunea de a încărca prezentări sau imagini. Cere administratorului serverului să acorde acestui dispozitiv permisiunea de Încărcare.</string>
     <string name="upload_blocked_toast">Încărcarea fișierelor este dezactivată pentru acest dispozitiv. Cere administratorului serverului să acorde permisiunea de Încărcare.</string>
     <string name="status_warn_unknown_version_title">Versiune server nerecunoscută</string>
-    <string name="status_warn_unknown_version_body">Serverul a raportat versiunea \'%1$s\'. Unele funcții ale acestei aplicații pot să nu fie compatibile cu această versiune.</string>
+    <string name="status_warn_unknown_version_body">Serverul a raportat versiunea '%1$s'. Unele funcții ale acestei aplicații pot să nu fie compatibile cu această versiune.</string>
     <string name="status_warn_missing_endpoint_title">Endpoint API lipsă: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Serverul nu expune endpoint-ul \'%1$s\'. Funcțiile care depind de el vor fi indisponibile.</string>
+    <string name="status_warn_missing_endpoint_body">Serverul nu expune endpoint-ul '%1$s'. Funcțiile care depind de el vor fi indisponibile.</string>
 
     <!-- Media tab -->
     <string name="media_title">Media</string>
@@ -331,13 +331,13 @@
     <string name="more_qa_title">Î&amp;R</string>
     <string name="more_qa_subtitle">Analizează și proiectează întrebările publicului</string>
     <string name="more_dictionary_title">Dicționar</string>
-    <string name="more_dictionary_subtitle">Lexicon ebraic &amp; grec Strong\'s</string>
+    <string name="more_dictionary_subtitle">Lexicon ebraic &amp; grec Strong's</string>
     <string name="more_announcements_title">Anunțuri</string>
     <string name="more_announcements_subtitle">Text, ceasuri &amp; cronometre cu numărătoare inversă</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Proiectează o pagină web pe ecran</string>
     <!-- Section detail header titles -->
-    <string name="strongs_dictionary_title">Dicționar Strong\'s</string>
+    <string name="strongs_dictionary_title">Dicționar Strong's</string>
     <string name="web_title">Web</string>
     <string name="announcements_title">Anunțuri</string>
 

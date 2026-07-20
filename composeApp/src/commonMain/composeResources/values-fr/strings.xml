@@ -31,7 +31,7 @@
     <string name="settings_save">Enregistrer</string>
     <string name="settings_cancel">Annuler</string>
     <string name="settings_invalid_port">Le port doit être un nombre entre 1 et 65535</string>
-    <string name="settings_host_empty">L\'hôte ne peut pas être vide</string>
+    <string name="settings_host_empty">L'hôte ne peut pas être vide</string>
 
     <!-- Theme -->
     <string name="settings_appearance_section">Apparence</string>
@@ -84,7 +84,7 @@
     <!-- Song Detail -->
     <string name="song_detail_add_to_schedule">Ajouter au programme</string>
     <string name="song_detail_schedule_request_sent">Demande envoyée ✓</string>
-    <string name="song_detail_project_to_screen">Projeter à l\'écran</string>
+    <string name="song_detail_project_to_screen">Projeter à l'écran</string>
     <string name="song_detail_stop_projecting">Arrêter la projection</string>
     <string name="song_detail_fab_actions">Actions</string>
     <string name="song_detail_fab_close_actions">Fermer les actions</string>
@@ -94,7 +94,7 @@
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Ajouter au programme</string>
     <string name="bible_detail_schedule_request_sent">Demande envoyée ✓</string>
-    <string name="bible_detail_project_to_screen">Projeter à l\'écran</string>
+    <string name="bible_detail_project_to_screen">Projeter à l'écran</string>
     <string name="bible_detail_stop_projecting">Arrêter la projection</string>
     <string name="bible_detail_fab_actions">Actions</string>
     <string name="bible_detail_fab_close_actions">Fermer les actions</string>
@@ -103,51 +103,51 @@
     <!-- Pictures FAB -->
     <string name="pictures_add_to_schedule">Ajouter au programme</string>
     <string name="pictures_schedule_request_sent">Demande envoyée ✓</string>
-    <string name="pictures_project_to_screen">Projeter à l\'écran</string>
+    <string name="pictures_project_to_screen">Projeter à l'écran</string>
     <string name="pictures_stop_projecting">Arrêter la projection</string>
-    <string name="pictures_pick_from_device">Choisir depuis l\'appareil</string>
+    <string name="pictures_pick_from_device">Choisir depuis l'appareil</string>
 
     <!-- Shared action FAB labels -->
     <string name="action_add_to_schedule">Ajouter au programme</string>
-    <string name="action_project_to_screen">Projeter à l\'écran</string>
+    <string name="action_project_to_screen">Projeter à l'écran</string>
     <string name="action_stop_projecting">Arrêter la projection</string>
     <string name="pictures_uploading">Envoi en cours…</string>
-    <string name="upload_overlay_subtitle">Veuillez patienter, ne fermez pas l\'application</string>
+    <string name="upload_overlay_subtitle">Veuillez patienter, ne fermez pas l'application</string>
     <string name="upload_overlay_photo_counter">Photo %1$d sur %2$d</string>
     <string name="toast_pictures_added_to_schedule">Image ajoutée au programme</string>
-    <string name="toast_pictures_failed_to_add_schedule">Échec de l\'ajout de l\'image au programme : %1$s</string>
+    <string name="toast_pictures_failed_to_add_schedule">Échec de l'ajout de l'image au programme : %1$s</string>
 
     <!-- Presentation FAB -->
     <string name="presentation_add_to_schedule">Ajouter au programme</string>
     <string name="presentation_schedule_request_sent">Demande envoyée ✓</string>
-    <string name="presentation_project_to_screen">Projeter à l\'écran</string>
+    <string name="presentation_project_to_screen">Projeter à l'écran</string>
     <string name="presentation_stop_projecting">Arrêter la projection</string>
     <string name="presentation_upload_file">Envoyer la présentation</string>
     <string name="presentation_uploading">Envoi en cours…</string>
     <string name="toast_presentation_added_to_schedule">Présentation ajoutée au programme</string>
-    <string name="toast_presentation_failed_to_add_schedule">Échec de l\'ajout de la présentation au programme : %1$s</string>
+    <string name="toast_presentation_failed_to_add_schedule">Échec de l'ajout de la présentation au programme : %1$s</string>
     <string name="toast_failed_to_select_presentation">Échec de la sélection de la présentation : %1$s</string>
     <string name="toast_upload_unsupported">Envoi non pris en charge par ce serveur. Mettez à jour ChurchPresenter sur votre bureau.</string>
     <string name="toast_upload_file_too_large">Le fichier est trop volumineux. Essayez un fichier plus petit.</string>
-    <string name="toast_upload_server_error">Le serveur a rejeté l\'envoi : %1$s</string>
-    <string name="toast_upload_failed">Échec de l\'envoi : %1$s</string>
+    <string name="toast_upload_server_error">Le serveur a rejeté l'envoi : %1$s</string>
+    <string name="toast_upload_failed">Échec de l'envoi : %1$s</string>
     <string name="toast_upload_reload_failed">Envoyé mais échec du rechargement de la liste : %1$s</string>
 
     <!-- Toast / Snackbar Messages -->
-    <string name="toast_song_live">Le cantique est maintenant à l\'écran</string>
+    <string name="toast_song_live">Le cantique est maintenant à l'écran</string>
     <string name="toast_request_failed">Échec de la demande</string>
     <string name="toast_no_song_selected">Aucun cantique sélectionné</string>
     <string name="toast_song_added_to_schedule">"%1$s" ajouté au programme</string>
     <string name="toast_failed_to_project">Échec de la projection du cantique : %1$s</string>
-    <string name="toast_failed_to_add_schedule">Échec de l\'ajout au programme : %1$s</string>
+    <string name="toast_failed_to_add_schedule">Échec de l'ajout au programme : %1$s</string>
     <string name="toast_request_denied">Demande refusée</string>
     <string name="toast_session_blocked">Session bloquée — aucune autre demande ne sera acceptée</string>
     <string name="toast_request_rejected">Demande rejetée par le serveur (HTTP %1$s)</string>
     <string name="toast_request_rejected_reason">Demande rejetée : %1$s</string>
-    <string name="toast_bible_live">Le passage biblique est maintenant à l\'écran</string>
+    <string name="toast_bible_live">Le passage biblique est maintenant à l'écran</string>
     <string name="toast_bible_added_to_schedule">"%1$s" ajouté au programme</string>
     <string name="toast_failed_to_project_bible">Échec de la projection : %1$s</string>
-    <string name="toast_failed_to_add_bible_schedule">Échec de l\'ajout au programme : %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Échec de l'ajout au programme : %1$s</string>
 
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Serveur défini sur %1$s:%2$s</string>
@@ -156,51 +156,51 @@
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Approuver le certificat du serveur</string>
     <string name="cert_setup_subtitle">Configuration unique requise</string>
-    <string name="cert_setup_intro">ChurchPresenter utilise un certificat HTTPS privé pour une communication sécurisée. Vous devez l\'installer une fois pour que votre appareil approuve la connexion.</string>
+    <string name="cert_setup_intro">ChurchPresenter utilise un certificat HTTPS privé pour une communication sécurisée. Vous devez l'installer une fois pour que votre appareil approuve la connexion.</string>
     <string name="cert_setup_scan_title">Scanner le QR code du certificat</string>
     <string name="cert_setup_scan_desktop_hint">Sur ChurchPresenter bureau : Paramètres → Serveur → appuyer sur "Télécharger Cert" pour afficher le QR code.</string>
     <string name="cert_setup_scan_button">Scanner le QR Code</string>
-    <string name="cert_setup_scan_or_divider">ou utiliser l\'adresse enregistrée</string>
+    <string name="cert_setup_scan_or_divider">ou utiliser l'adresse enregistrée</string>
     <string name="cert_setup_url_scanned">✓ URL scannée</string>
     <string name="cert_setup_url_label">URL du certificat</string>
-    <string name="cert_setup_open_button">Ouvrir l\'URL du certificat</string>
+    <string name="cert_setup_open_button">Ouvrir l'URL du certificat</string>
     <string name="cert_setup_step2_ios_title">iOS — Installer le profil</string>
     <string name="cert_setup_step2_ios_body">Safari demandera de télécharger un profil de configuration. Appuyez sur Autoriser, puis allez dans Réglages → Général → VPN et gestion des appareils, appuyez sur ChurchPresenter et installez.</string>
     <string name="cert_setup_step3_ios_title">iOS — Approuver le certificat</string>
     <string name="cert_setup_step3_ios_body">Réglages → Général → Informations → Réglages de confiance des certificats → activer la confiance totale pour ChurchPresenter CA.</string>
     <string name="cert_setup_step2_android_title">Android — Installer le certificat</string>
     <string name="cert_setup_step2_android_body">Chrome télécharge le fichier .crt. Appuyez dessus depuis la notification Téléchargements, choisissez "Certificat CA" et donnez-lui un nom comme "ChurchPresenter".</string>
-    <string name="cert_setup_android_unknown_sources_title">⚠ "Impossible d\'installer depuis des sources inconnues" ?</string>
-    <string name="cert_setup_android_unknown_sources_body">Android peut bloquer l\'installation si votre navigateur n\'est pas autorisé. Allez dans Paramètres → Applications → [votre navigateur] → Installer des applications inconnues et activez "Autoriser depuis cette source". Revenez ici et appuyez à nouveau sur le fichier.</string>
-    <string name="cert_setup_fingerprint_title">Vérifier l\'empreinte digitale (recommandé)</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ "Impossible d'installer depuis des sources inconnues" ?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android peut bloquer l'installation si votre navigateur n'est pas autorisé. Allez dans Paramètres → Applications → [votre navigateur] → Installer des applications inconnues et activez "Autoriser depuis cette source". Revenez ici et appuyez à nouveau sur le fichier.</string>
+    <string name="cert_setup_fingerprint_title">Vérifier l'empreinte digitale (recommandé)</string>
     <string name="cert_setup_fingerprint_body">Comparez cette empreinte avec ce que ChurchPresenter bureau affiche dans Paramètres → Serveur → SHA-256 du certificat. Elles doivent correspondre.</string>
-    <string name="cert_setup_fingerprint_unavailable">Connectez-vous d\'abord au serveur pour voir l\'empreinte</string>
+    <string name="cert_setup_fingerprint_unavailable">Connectez-vous d'abord au serveur pour voir l'empreinte</string>
     <string name="cert_setup_done_button">Terminé — Certificat installé</string>
-    <string name="cert_setup_skip_button">Ignorer pour l\'instant</string>
+    <string name="cert_setup_skip_button">Ignorer pour l'instant</string>
     <string name="cert_setup_skip_note">Vous pouvez revenir à ce guide à tout moment depuis Paramètres.</string>
 
     <!-- Connect Setup Screen -->
     <string name="connect_setup_title">Connecter au bureau</string>
     <string name="connect_setup_subtitle">Configuration unique</string>
-    <string name="connect_setup_intro">Scannez le QR code de ChurchPresenter bureau pour configurer automatiquement l\'adresse IP du serveur, le port et la clé API facultative.</string>
+    <string name="connect_setup_intro">Scannez le QR code de ChurchPresenter bureau pour configurer automatiquement l'adresse IP du serveur, le port et la clé API facultative.</string>
     <string name="connect_setup_step1_title">Ouvrir les paramètres dans ChurchPresenter bureau</string>
-    <string name="connect_setup_step1_body">Sur votre ordinateur de bureau ou portable, ouvrez l\'application ChurchPresenter et cliquez sur l\'icône Paramètres.</string>
-    <string name="connect_setup_step2_title">Aller à l\'onglet Serveur</string>
-    <string name="connect_setup_step2_body">Dans Paramètres, sélectionnez l\'onglet Serveur pour trouver vos détails de connexion et le QR code.</string>
+    <string name="connect_setup_step1_body">Sur votre ordinateur de bureau ou portable, ouvrez l'application ChurchPresenter et cliquez sur l'icône Paramètres.</string>
+    <string name="connect_setup_step2_title">Aller à l'onglet Serveur</string>
+    <string name="connect_setup_step2_body">Dans Paramètres, sélectionnez l'onglet Serveur pour trouver vos détails de connexion et le QR code.</string>
     <string name="connect_setup_step3_title">Cliquer sur le bouton QR et scanner</string>
     <string name="connect_setup_step3_body">Cliquez sur le bouton QR pour afficher le QR code de connexion, puis appuyez sur Scanner ci-dessous pour ouvrir la caméra et le scanner.</string>
     <string name="connect_setup_scan_button">Scanner le QR Code</string>
     <string name="connect_setup_connected">✓ Connecté à %1$s:%2$s</string>
     <string name="connect_setup_done_button">Terminé</string>
-    <string name="connect_setup_skip_button">Ignorer pour l\'instant</string>
+    <string name="connect_setup_skip_button">Ignorer pour l'instant</string>
     <string name="connect_setup_skip_note">Vous pouvez scanner le QR code à tout moment depuis Paramètres.</string>
 
     <!-- Added translations -->
     <string name="settings_display_name_label">Votre nom (pour les Q&amp;R)</string>
-    <string name="settings_display_name_placeholder">Laisser vide pour utiliser l\'ID de l\'appareil</string>
+    <string name="settings_display_name_placeholder">Laisser vide pour utiliser l'ID de l'appareil</string>
     <string name="settings_privacy_section">Confidentialité</string>
-    <string name="settings_telemetry_label">Partager les données d\'utilisation et de plantage</string>
-    <string name="settings_telemetry_description">Nous aide à trouver et corriger les bogues. Désactivez pour arrêter l\'envoi des analyses et des rapports de plantage.</string>
+    <string name="settings_telemetry_label">Partager les données d'utilisation et de plantage</string>
+    <string name="settings_telemetry_description">Nous aide à trouver et corriger les bogues. Désactivez pour arrêter l'envoi des analyses et des rapports de plantage.</string>
     <string name="tab_qa_admin">Q&amp;R</string>
     <string name="qa_admin_session_active">Session active</string>
     <string name="qa_admin_session_stopped">Session arrêtée</string>
@@ -212,7 +212,7 @@
     <string name="qa_admin_deny">Refuser</string>
     <string name="qa_admin_go_live">Diffuser</string>
     <string name="qa_admin_done">Marquer comme terminé</string>
-    <string name="qa_admin_clear_display">Effacer l\'affichage</string>
+    <string name="qa_admin_clear_display">Effacer l'affichage</string>
     <string name="qa_admin_now_live">En direct :</string>
     <string name="qa_admin_edit_hint">Modifier le texte de la question…</string>
     <string name="qa_admin_add_question">Ajouter une question</string>
@@ -220,8 +220,8 @@
     <string name="qa_admin_save">Enregistrer</string>
     <string name="qa_admin_cancel">Annuler</string>
     <string name="qa_admin_error_retry">Réessayer</string>
-    <string name="action_clear_display">Effacer l\'affichage</string>
-    <string name="action_hold_display">Maintenir l\'affichage</string>
+    <string name="action_clear_display">Effacer l'affichage</string>
+    <string name="action_hold_display">Maintenir l'affichage</string>
     <string name="action_multi_select">Sélectionner plusieurs</string>
     <string name="bible_multi_select_count">%1$d sélectionné(s)</string>
     <string name="connect_setup_no_camera_note">Aucune caméra détectée sur cet appareil. Saisissez les détails de connexion manuellement :</string>
@@ -231,11 +231,11 @@
     <string name="settings_active_url_label">Connexion actuelle à :</string>
     <string name="settings_reset_to_default">Réinitialiser par défaut</string>
     <string name="settings_draft_url_label">Se connectera après enregistrement à :</string>
-    <string name="settings_check_status">Vérifier l\'état du serveur</string>
+    <string name="settings_check_status">Vérifier l'état du serveur</string>
     <string name="settings_developer_section">Développeur</string>
     <string name="settings_send_test_error">Envoyer une erreur de test à Sentry</string>
     <string name="settings_test_error_sent">✓ Erreur de test envoyée à Sentry</string>
-    <string name="settings_check_status_description">Vérifier l\'état du serveur</string>
+    <string name="settings_check_status_description">Vérifier l'état du serveur</string>
     <string name="settings_status_recheck">Revérifier</string>
     <string name="settings_status_server_version">Serveur : %1$s</string>
     <string name="settings_status_mobile_version">Mobile : %1$s</string>
@@ -254,7 +254,7 @@
     <string name="status_limited_functionality">Fonctionnalité limitée</string>
     <string name="status_server_version">Version du serveur : %1$s</string>
     <string name="status_issues_detected">Les problèmes suivants ont été détectés sur le serveur connecté :</string>
-    <string name="status_endpoint_unavailable">Le point de terminaison d\'état n\'est pas encore disponible sur cette version du serveur — mettez à jour ChurchPresenter bureau pour un rapport complet des capacités.</string>
+    <string name="status_endpoint_unavailable">Le point de terminaison d'état n'est pas encore disponible sur cette version du serveur — mettez à jour ChurchPresenter bureau pour un rapport complet des capacités.</string>
     <string name="status_error_title">Impossible de joindre le serveur</string>
     <string name="status_permissions_title">Autorisations de cet appareil</string>
     <string name="status_permission_present">Contrôler la présentation</string>
@@ -265,22 +265,22 @@
     <string name="status_info_songbooks">Recueils de cantiques disponibles</string>
     <string name="status_info_features">Fonctionnalités activées</string>
     <string name="status_warn_no_api_key_title">Aucune clé API configurée</string>
-    <string name="status_warn_no_api_key_body">Le serveur n\'a aucune clé API définie. Certains points de terminaison protégés peuvent rejeter les requêtes. Envisagez d\'activer une clé API dans les paramètres du serveur ChurchPresenter.</string>
+    <string name="status_warn_no_api_key_body">Le serveur n'a aucune clé API définie. Certains points de terminaison protégés peuvent rejeter les requêtes. Envisagez d'activer une clé API dans les paramètres du serveur ChurchPresenter.</string>
     <string name="status_warn_no_bibles_title">Aucune traduction biblique disponible</string>
-    <string name="status_warn_no_bibles_body">Le serveur n\'a chargé aucune traduction biblique. L\'onglet Bible sera vide. Ajoutez une traduction dans l\'application ChurchPresenter bureau.</string>
+    <string name="status_warn_no_bibles_body">Le serveur n'a chargé aucune traduction biblique. L'onglet Bible sera vide. Ajoutez une traduction dans l'application ChurchPresenter bureau.</string>
     <string name="status_warn_no_songbooks_title">Aucun recueil de cantiques disponible</string>
-    <string name="status_warn_no_songbooks_body">Le serveur n\'a chargé aucun recueil de cantiques. L\'onglet Cantiques sera vide. Importez un recueil de cantiques dans l\'application ChurchPresenter bureau.</string>
+    <string name="status_warn_no_songbooks_body">Le serveur n'a chargé aucun recueil de cantiques. L'onglet Cantiques sera vide. Importez un recueil de cantiques dans l'application ChurchPresenter bureau.</string>
     <string name="status_warn_present_blocked_title">Contrôle de présentation bloqué</string>
-    <string name="status_warn_present_blocked_body">Cet appareil n\'est pas autorisé à contrôler la présentation (projeter, effacer, sélectionner des diapositives). Demandez à l\'administrateur du serveur d\'accorder l\'autorisation Présentateur à cet appareil.</string>
+    <string name="status_warn_present_blocked_body">Cet appareil n'est pas autorisé à contrôler la présentation (projeter, effacer, sélectionner des diapositives). Demandez à l'administrateur du serveur d'accorder l'autorisation Présentateur à cet appareil.</string>
     <string name="status_warn_schedule_blocked_title">Modification du programme bloquée</string>
-    <string name="status_warn_schedule_blocked_body">Cet appareil n\'est pas autorisé à ajouter des éléments au programme. Demandez à l\'administrateur du serveur d\'accorder l\'autorisation Programme à cet appareil.</string>
+    <string name="status_warn_schedule_blocked_body">Cet appareil n'est pas autorisé à ajouter des éléments au programme. Demandez à l'administrateur du serveur d'accorder l'autorisation Programme à cet appareil.</string>
     <string name="status_warn_upload_blocked_title">Envoi de fichiers bloqué</string>
-    <string name="status_warn_upload_blocked_body">Cet appareil n\'est pas autorisé à envoyer des présentations ou des images. Demandez à l\'administrateur du serveur d\'accorder l\'autorisation Envoi à cet appareil.</string>
-    <string name="upload_blocked_toast">L\'envoi de fichiers est désactivé pour cet appareil. Demandez à l\'administrateur du serveur d\'accorder l\'autorisation Envoi.</string>
+    <string name="status_warn_upload_blocked_body">Cet appareil n'est pas autorisé à envoyer des présentations ou des images. Demandez à l'administrateur du serveur d'accorder l'autorisation Envoi à cet appareil.</string>
+    <string name="upload_blocked_toast">L'envoi de fichiers est désactivé pour cet appareil. Demandez à l'administrateur du serveur d'accorder l'autorisation Envoi.</string>
     <string name="status_warn_unknown_version_title">Version du serveur non reconnue</string>
-    <string name="status_warn_unknown_version_body">Le serveur a signalé la version \'%1$s\'. Certaines fonctionnalités de cette application peuvent ne pas être compatibles avec cette version.</string>
+    <string name="status_warn_unknown_version_body">Le serveur a signalé la version '%1$s'. Certaines fonctionnalités de cette application peuvent ne pas être compatibles avec cette version.</string>
     <string name="status_warn_missing_endpoint_title">Point de terminaison API manquant : %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Le serveur n\'expose pas le point de terminaison \'%1$s\'. Les fonctionnalités qui en dépendent seront indisponibles.</string>
+    <string name="status_warn_missing_endpoint_body">Le serveur n'expose pas le point de terminaison '%1$s'. Les fonctionnalités qui en dépendent seront indisponibles.</string>
     <string name="media_title">Média</string>
     <string name="media_no_media_loaded">Aucun média chargé</string>
     <string name="media_playing">Lecture en cours</string>
@@ -291,7 +291,7 @@
     <string name="media_source_upload">Envoyer depuis le téléphone</string>
     <string name="media_subtitle_url">%1$s · URL réseau</string>
     <string name="media_subtitle_empty">Collez une URL réseau ci-dessous pour envoyer un média</string>
-    <string name="media_on_screen">À L\'ÉCRAN</string>
+    <string name="media_on_screen">À L'ÉCRAN</string>
     <string name="media_cd_stop">Arrêter</string>
     <string name="media_cd_back10">Reculer de 10 secondes</string>
     <string name="media_cd_forward10">Avancer de 10 secondes</string>
@@ -300,7 +300,7 @@
     <string name="media_cd_mute">Muet</string>
     <string name="media_add_to_schedule">Ajouter au programme</string>
     <string name="media_go_live">Diffuser</string>
-    <string name="media_clear_screen">Effacer l\'écran</string>
+    <string name="media_clear_screen">Effacer l'écran</string>
     <string name="media_source_label">SOURCE</string>
     <string name="media_will_send">Enverra : %1$s</string>
     <string name="media_target_uploaded">Fichier envoyé · %1$s</string>
@@ -312,10 +312,10 @@
     <string name="media_choose_file">Choisir un fichier vidéo ou audio</string>
     <string name="media_url_placeholder">https://stream.church.local/…</string>
     <string name="media_uploads_disabled">Les envois sont désactivés sur le bureau</string>
-    <string name="media_uploads_disabled_hint">Activez « Autoriser les envois de fichiers depuis les appareils mobiles » dans les paramètres Serveur de l\'application bureau.</string>
+    <string name="media_uploads_disabled_hint">Activez « Autoriser les envois de fichiers depuis les appareils mobiles » dans les paramètres Serveur de l'application bureau.</string>
     <string name="media_playing_generic">média</string>
     <string name="more_photos_title">Photos</string>
-    <string name="more_photos_subtitle">Parcourir et projeter des dossiers d\'images</string>
+    <string name="more_photos_subtitle">Parcourir et projeter des dossiers d'images</string>
     <string name="more_qa_title">Q&amp;R</string>
     <string name="more_qa_subtitle">Examiner et projeter les questions du public</string>
     <string name="more_dictionary_title">Dictionnaire</string>
@@ -323,7 +323,7 @@
     <string name="more_announcements_title">Annonces</string>
     <string name="more_announcements_subtitle">Texte, horloges et minuteurs de compte à rebours</string>
     <string name="more_web_title">Web</string>
-    <string name="more_web_subtitle">Projeter une page web à l\'écran</string>
+    <string name="more_web_subtitle">Projeter une page web à l'écran</string>
     <string name="strongs_dictionary_title">Dictionnaire Strong</string>
     <string name="web_title">Web</string>
     <string name="announcements_title">Annonces</string>
@@ -339,8 +339,8 @@
     <string name="cd_back">Retour</string>
     <string name="cd_settings">Paramètres</string>
     <string name="cd_schedule">Programme</string>
-    <string name="overline_on_screen_preview">Aperçu à l\'écran</string>
-    <string name="announcements_text_placeholder">Texte de l\'annonce…</string>
+    <string name="overline_on_screen_preview">Aperçu à l'écran</string>
+    <string name="announcements_text_placeholder">Texte de l'annonce…</string>
     <string name="overline_duration">Durée</string>
     <string name="overline_target_time">Heure cible</string>
     <string name="overline_animation">Animation</string>
@@ -351,13 +351,13 @@
     <string name="stepper_font_size">Taille de police</string>
     <string name="swatch_text">Texte</string>
     <string name="swatch_background">Arrière-plan</string>
-    <string name="announcements_clock_desc">Affiche l\'heure actuelle, en direct.</string>
+    <string name="announcements_clock_desc">Affiche l'heure actuelle, en direct.</string>
     <string name="announcements_count_up_desc">Compte à partir de zéro lors de la diffusion.</string>
-    <string name="announcements_animation_duration_label">DURÉE DE L\'ANIMATION</string>
+    <string name="announcements_animation_duration_label">DURÉE DE L'ANIMATION</string>
     <string name="animation_duration_ms">%1$d ms</string>
     <string name="announcements_saved_label">ENREGISTRÉES</string>
     <string name="announcements_add_new">+ Nouvelle</string>
-    <string name="announcements_no_saved">Aucune annonce enregistrée pour l\'instant. Composez-en une et appuyez sur « + Nouvelle ».</string>
+    <string name="announcements_no_saved">Aucune annonce enregistrée pour l'instant. Composez-en une et appuyez sur « + Nouvelle ».</string>
     <string name="color_picker_title">Choisir une couleur</string>
     <string name="color_picker_use">Utiliser la couleur</string>
     <string name="color_slider_hue">Teinte</string>
@@ -367,7 +367,7 @@
     <string name="announcements_preview_placeholder">Votre annonce</string>
     <string name="web_bookmarks_label">FAVORIS</string>
     <string name="web_add_bookmark">+ Ajouter</string>
-    <string name="web_no_bookmarks">Aucun favori pour l\'instant. Saisissez une URL et appuyez sur « + Ajouter ».</string>
+    <string name="web_no_bookmarks">Aucun favori pour l'instant. Saisissez une URL et appuyez sur « + Ajouter ».</string>
     <string name="web_url_placeholder">example.org</string>
     <string name="dictionary_search_placeholder">Rechercher un numéro, un mot ou une signification…</string>
     <string name="dictionary_filter_all">Tous</string>
@@ -409,7 +409,7 @@
     <string name="announce_type_countdown">Compte à rebours</string>
     <string name="announce_type_count_up">Compteur</string>
     <string name="announce_type_clock">Horloge</string>
-    <string name="announce_type_countdown_to_time">Compte à rebours jusqu\'à l\'heure</string>
+    <string name="announce_type_countdown_to_time">Compte à rebours jusqu'à l'heure</string>
     <string name="announce_anim_none">Aucune</string>
     <string name="announce_anim_fade">Fondu</string>
     <string name="announce_anim_slide_up">Vers le haut</string>

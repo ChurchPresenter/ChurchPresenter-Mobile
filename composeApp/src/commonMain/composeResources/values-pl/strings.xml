@@ -278,9 +278,9 @@
     <string name="status_warn_upload_blocked_body">To urządzenie nie ma uprawnień do przesyłania prezentacji ani obrazów. Poproś administratora serwera o nadanie temu urządzeniu uprawnienia Przesyłanie.</string>
     <string name="upload_blocked_toast">Przesyłanie plików jest wyłączone dla tego urządzenia. Poproś administratora serwera o nadanie uprawnienia Przesyłanie.</string>
     <string name="status_warn_unknown_version_title">Nierozpoznana wersja serwera</string>
-    <string name="status_warn_unknown_version_body">Serwer zgłosił wersję \'%1$s\'. Niektóre funkcje tej aplikacji mogą nie być zgodne z tą wersją.</string>
+    <string name="status_warn_unknown_version_body">Serwer zgłosił wersję '%1$s'. Niektóre funkcje tej aplikacji mogą nie być zgodne z tą wersją.</string>
     <string name="status_warn_missing_endpoint_title">Brakujący punkt końcowy API: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Serwer nie udostępnia punktu końcowego \'%1$s\'. Funkcje na nim oparte będą niedostępne.</string>
+    <string name="status_warn_missing_endpoint_body">Serwer nie udostępnia punktu końcowego '%1$s'. Funkcje na nim oparte będą niedostępne.</string>
     <string name="media_title">Media</string>
     <string name="media_no_media_loaded">Nie załadowano mediów</string>
     <string name="media_playing">Odtwarzanie</string>

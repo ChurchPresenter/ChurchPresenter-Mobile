@@ -278,9 +278,9 @@
     <string name="status_warn_upload_blocked_body">Этому устройству не разрешено загружать презентации или изображения. Попросите администратора сервера предоставить этому устройству разрешение на Загрузку.</string>
     <string name="upload_blocked_toast">Загрузка файлов отключена для этого устройства. Попросите администратора сервера предоставить разрешение на Загрузку.</string>
     <string name="status_warn_unknown_version_title">Нераспознанная версия сервера</string>
-    <string name="status_warn_unknown_version_body">Сервер сообщил версию \'%1$s\'. Некоторые функции этого приложения могут быть несовместимы с этой версией.</string>
+    <string name="status_warn_unknown_version_body">Сервер сообщил версию '%1$s'. Некоторые функции этого приложения могут быть несовместимы с этой версией.</string>
     <string name="status_warn_missing_endpoint_title">Отсутствует API-эндпоинт: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Сервер не предоставляет эндпоинт \'%1$s\'. Функции, зависящие от него, будут недоступны.</string>
+    <string name="status_warn_missing_endpoint_body">Сервер не предоставляет эндпоинт '%1$s'. Функции, зависящие от него, будут недоступны.</string>
     <string name="media_title">Медиа</string>
     <string name="media_no_media_loaded">Медиа не загружено</string>
     <string name="media_playing">Воспроизведение</string>

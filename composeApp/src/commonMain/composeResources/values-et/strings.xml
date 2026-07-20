@@ -286,9 +286,9 @@
     <string name="status_warn_upload_blocked_body">Sellel seadmel pole lubatud esitlusi ega pilte üles laadida. Palu serveri administraatoril anda sellele seadmele Üleslaadimise õigus.</string>
     <string name="upload_blocked_toast">Failide üleslaadimine on selle seadme jaoks keelatud. Palu serveri administraatoril anda Üleslaadimise õigus.</string>
     <string name="status_warn_unknown_version_title">Tundmatu serveriversioon</string>
-    <string name="status_warn_unknown_version_body">Server teatas versiooni \'%1$s\'. Mõned selle rakenduse funktsioonid ei pruugi selle versiooniga ühilduda.</string>
+    <string name="status_warn_unknown_version_body">Server teatas versiooni '%1$s'. Mõned selle rakenduse funktsioonid ei pruugi selle versiooniga ühilduda.</string>
     <string name="status_warn_missing_endpoint_title">Puuduv API lõpp-punkt: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Server ei paku \'%1$s\' lõpp-punkti. Sellest sõltuvad funktsioonid pole saadaval.</string>
+    <string name="status_warn_missing_endpoint_body">Server ei paku '%1$s' lõpp-punkti. Sellest sõltuvad funktsioonid pole saadaval.</string>
 
     <!-- Media tab -->
     <string name="media_title">Meedia</string>
@@ -331,13 +331,13 @@
     <string name="more_qa_title">K&amp;V</string>
     <string name="more_qa_subtitle">Vaata üle ja kuva publiku küsimusi</string>
     <string name="more_dictionary_title">Sõnastik</string>
-    <string name="more_dictionary_subtitle">Strong\'i heebrea &amp; kreeka leksikon</string>
+    <string name="more_dictionary_subtitle">Strong'i heebrea &amp; kreeka leksikon</string>
     <string name="more_announcements_title">Teated</string>
     <string name="more_announcements_subtitle">Tekst, kellad &amp; taimerid</string>
     <string name="more_web_title">Veeb</string>
     <string name="more_web_subtitle">Kuva veebileht ekraanil</string>
     <!-- Section detail header titles -->
-    <string name="strongs_dictionary_title">Strong\'i sõnastik</string>
+    <string name="strongs_dictionary_title">Strong'i sõnastik</string>
     <string name="web_title">Veeb</string>
     <string name="announcements_title">Teated</string>
 

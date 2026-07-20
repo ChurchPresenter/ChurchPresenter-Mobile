@@ -278,9 +278,9 @@
     <string name="status_warn_upload_blocked_body">Toto zařízení nemá povoleno nahrávat prezentace nebo obrázky. Požádejte správce serveru o udělení oprávnění Nahrávání tomuto zařízení.</string>
     <string name="upload_blocked_toast">Nahrávání souborů je pro toto zařízení zakázáno. Požádejte správce serveru o udělení oprávnění Nahrávání.</string>
     <string name="status_warn_unknown_version_title">Nerozpoznaná verze serveru</string>
-    <string name="status_warn_unknown_version_body">Server nahlásil verzi \'%1$s\'. Některé funkce této aplikace nemusí být s touto verzí kompatibilní.</string>
+    <string name="status_warn_unknown_version_body">Server nahlásil verzi '%1$s'. Některé funkce této aplikace nemusí být s touto verzí kompatibilní.</string>
     <string name="status_warn_missing_endpoint_title">Chybějící API koncový bod: %1$s</string>
-    <string name="status_warn_missing_endpoint_body">Server nezpřístupňuje koncový bod \'%1$s\'. Funkce, které na něm závisí, nebudou dostupné.</string>
+    <string name="status_warn_missing_endpoint_body">Server nezpřístupňuje koncový bod '%1$s'. Funkce, které na něm závisí, nebudou dostupné.</string>
     <string name="media_title">Média</string>
     <string name="media_no_media_loaded">Nejsou načtena žádná média</string>
     <string name="media_playing">Přehrává se</string>
