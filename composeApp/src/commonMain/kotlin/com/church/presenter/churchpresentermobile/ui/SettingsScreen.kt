@@ -14,11 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
@@ -99,6 +100,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_theme_dark
 import churchpresentermobile.composeapp.generated.resources.settings_theme_light
 import churchpresentermobile.composeapp.generated.resources.settings_theme_system
 import churchpresentermobile.composeapp.generated.resources.settings_title
+import churchpresentermobile.composeapp.generated.resources.settings_active_server
 import churchpresentermobile.composeapp.generated.resources.status_connected
 import churchpresentermobile.composeapp.generated.resources.status_connecting
 import churchpresentermobile.composeapp.generated.resources.status_error_title
@@ -227,25 +229,30 @@ fun SettingsScreen(
                         .padding(horizontal = 20.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    // ── Connected card ────────────────────────────────────────
+                    // ── Active-server card ────────────────────────────────────
+                    // Shows which server the app is configured to use (the saved
+                    // host/port). This is NOT a live connection check — use
+                    // "Check status" for that. Labelled + iconed accordingly so it
+                    // doesn't read as a live "Connected" indicator.
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .background(colors.accentTint)
+                            .background(colors.surface)
+                            .border(1.dp, colors.borderSubtle, RoundedCornerShape(12.dp))
                             .padding(horizontal = 14.dp, vertical = 11.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(CircleShape)
-                                .background(colors.accent)
+                        Icon(
+                            imageVector = Icons.Filled.Dns,
+                            contentDescription = null,
+                            tint = colors.muted,
+                            modifier = Modifier.size(18.dp),
                         )
                         Column {
-                            Text(stringResource(Res.string.status_connected),
-                                color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(Res.string.settings_active_server),
+                                color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                             Text(activeUrl, color = colors.muted, fontSize = 10.sp,
                                 fontFamily = FontFamily.Monospace)
                         }

@@ -454,4 +454,5 @@
     <string name="dictionary_ref_clear">Șterge filtrul de referință</string>
     <string name="dictionary_appears_in">Apare în</string>
     <string name="dictionary_appears_in_count">%1$s din %2$s</string>
+    <string name="settings_active_server">Server activ</string>
 </resources>

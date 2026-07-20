@@ -423,5 +423,6 @@
     <string name="dictionary_ref_clear">Сілтеме сүзгісін тазалау</string>
     <string name="dictionary_appears_in">Кездеседі</string>
     <string name="dictionary_appears_in_count">%2$s ішінен %1$s</string>
+    <string name="settings_active_server">Белсенді сервер</string>
 </resources>
 

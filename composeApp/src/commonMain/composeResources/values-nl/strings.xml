@@ -454,4 +454,5 @@
     <string name="dictionary_ref_clear">Referentiefilter wissen</string>
     <string name="dictionary_appears_in">Komt voor in</string>
     <string name="dictionary_appears_in_count">%1$s van %2$s</string>
+    <string name="settings_active_server">Actieve server</string>
 </resources>

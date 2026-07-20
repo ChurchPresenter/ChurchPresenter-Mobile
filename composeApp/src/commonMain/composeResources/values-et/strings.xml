@@ -454,4 +454,5 @@
     <string name="dictionary_ref_clear">Tühjenda viitefilter</string>
     <string name="dictionary_appears_in">Esineb</string>
     <string name="dictionary_appears_in_count">%1$s / %2$s</string>
+    <string name="settings_active_server">Aktiivne server</string>
 </resources>

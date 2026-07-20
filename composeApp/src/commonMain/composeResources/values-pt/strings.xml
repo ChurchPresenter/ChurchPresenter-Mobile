@@ -454,4 +454,5 @@
     <string name="dictionary_ref_clear">Limpar filtro de referência</string>
     <string name="dictionary_appears_in">Aparece em</string>
     <string name="dictionary_appears_in_count">%1$s de %2$s</string>
+    <string name="settings_active_server">Servidor ativo</string>
 </resources>

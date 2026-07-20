@@ -423,5 +423,6 @@
     <string name="dictionary_ref_clear">Очистить фильтр ссылки</string>
     <string name="dictionary_appears_in">Встречается в</string>
     <string name="dictionary_appears_in_count">%1$s из %2$s</string>
+    <string name="settings_active_server">Активный сервер</string>
 </resources>
 

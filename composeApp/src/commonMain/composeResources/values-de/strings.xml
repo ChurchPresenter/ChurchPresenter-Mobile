@@ -423,5 +423,6 @@
     <string name="dictionary_ref_clear">Referenzfilter löschen</string>
     <string name="dictionary_appears_in">Kommt vor in</string>
     <string name="dictionary_appears_in_count">%1$s von %2$s</string>
+    <string name="settings_active_server">Aktiver Server</string>
 </resources>
 

@@ -423,5 +423,6 @@
     <string name="dictionary_ref_clear">Borrar filtro de referencia</string>
     <string name="dictionary_appears_in">Aparece en</string>
     <string name="dictionary_appears_in_count">%1$s de %2$s</string>
+    <string name="settings_active_server">Servidor activo</string>
 </resources>
 
