@@ -176,6 +176,11 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             options.tracesSampleRate = 0.0
             #endif
             options.attachStacktrace = true
+            // Don't auto-capture failed HTTP responses (defaults to on, catching all
+            // 5xx). The companion server is a LAN device that routinely returns
+            // 5xx/timeouts when starting or unreachable — expected noise. Our own
+            // network layer already reports the failures worth seeing.
+            options.enableCaptureFailedRequests = false
             options.releaseName = "\(AppConstants.bundleId)@\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown")"
         }
     }

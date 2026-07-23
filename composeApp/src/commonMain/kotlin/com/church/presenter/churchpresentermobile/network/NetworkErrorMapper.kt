@@ -9,7 +9,10 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
  *
  * [ApiException]s (expected server rejections — denied, blocked, HTTP 4xx) are
  * intentionally not forwarded to Crashlytics because they are business-logic
- * responses, not bugs.
+ * responses, not bugs. Likewise, transient connectivity failures (timeouts,
+ * connection refused, unreachable/offline — see [isExpectedConnectivityError])
+ * are logged as breadcrumbs but not reported, since an unreachable LAN server is
+ * the normal state for this client, not a defect.
  *
  * Custom keys attached to every non-fatal report:
  *  - `network_tag`        — the class/ViewModel that originated the call
@@ -23,17 +26,75 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
 fun Throwable.recordNetworkError(tag: String, operation: String): String {
     if (this !is ApiException) {
         val errorMsg = message?.take(200) ?: "unknown"
-        // Breadcrumb log — visible in the Crashlytics log tab
+        // Breadcrumb log — visible in the Crashlytics log tab.
+        // Always logged, even for expected connectivity failures, so the
+        // breadcrumb trail is intact if a *real* crash follows.
         CrashReporting.log("[$tag] $operation FAILED (${this::class.simpleName}): $errorMsg")
-        // Custom keys — pinned to the session for every subsequent report
-        CrashReporting.setCustomKey("network_tag",        tag)
-        CrashReporting.setCustomKey("network_operation",  operation)
-        CrashReporting.setCustomKey("network_error_type", this::class.simpleName ?: "Throwable")
-        CrashReporting.setCustomKey("network_error_msg",  errorMsg)
-        CrashReporting.recordException(this)
+
+        // Transient connectivity failures (server off, wrong IP, off the LAN,
+        // phone offline) are the normal state for a LAN client, not bugs. Log
+        // them but don't report them as non-fatals or they drown real signal.
+        if (!isExpectedConnectivityError()) {
+            // Custom keys — pinned to the session for every subsequent report
+            CrashReporting.setCustomKey("network_tag",        tag)
+            CrashReporting.setCustomKey("network_operation",  operation)
+            CrashReporting.setCustomKey("network_error_type", this::class.simpleName ?: "Throwable")
+            CrashReporting.setCustomKey("network_error_msg",  errorMsg)
+            CrashReporting.recordException(this)
+        }
     }
     return toFriendlyNetworkMessage()
 }
+
+/**
+ * True for transient connectivity failures that are expected whenever the
+ * companion server is unreachable — timeouts, connection refused, unresolved
+ * host, device offline. These are handled by the UI (error state) and must not
+ * be reported to crash reporting as non-fatals.
+ *
+ * Detection is by exception class name and message pattern rather than by type,
+ * because the underlying exceptions differ per platform (Ktor Darwin vs OkHttp)
+ * and some aren't referenceable from commonMain.
+ */
+fun Throwable.isExpectedConnectivityError(): Boolean {
+    val name = this::class.simpleName ?: ""
+    if (name in EXPECTED_CONNECTIVITY_EXCEPTIONS) return true
+
+    val raw = message ?: return false
+    return CONNECTIVITY_MESSAGE_MARKERS.any { raw.contains(it, ignoreCase = true) }
+}
+
+private val EXPECTED_CONNECTIVITY_EXCEPTIONS = setOf(
+    "SocketTimeoutException",
+    "HttpRequestTimeoutException",
+    "ConnectTimeoutException",
+    "ConnectException",
+    "UnresolvedAddressException",
+    "UnknownHostException",
+    // WebSocket upgrade rejected — always a proxy/captive-portal/wrong-endpoint
+    // condition (e.g. a gateway answering the /ws upgrade with 504), never a bug.
+    "ProtocolException",
+)
+
+private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
+    "timeout",
+    "timed out",
+    "Connection refused",
+    "ECONNREFUSED",
+    "Unable to resolve host",
+    "Could not connect",
+    "Code=-1001",   // NSURLError timed out
+    "Code=-1004",   // NSURLError could not connect to host
+    "Code=-1009",   // NSURLError not connected to internet
+    "offline",
+    // Internal sentinel exceptions thrown by ServerEventService when the
+    // server is unreachable — expected connectivity conditions, not bugs.
+    "WebSocket not connected",
+    "WebSocket connection",
+    // WebSocket upgrade answered by a plain HTTP response (proxy / captive portal
+    // / server not speaking WS) — e.g. "Expected HTTP 101 response but was 504".
+    "Expected HTTP 101",
+)
 
 /**
  * Converts a raw network [Throwable] into a short, user-readable message.

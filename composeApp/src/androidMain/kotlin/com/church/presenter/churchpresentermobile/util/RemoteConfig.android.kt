@@ -34,8 +34,12 @@ actual object RemoteConfig {
                 onComplete(activated)
             }
             .addOnFailureListener { e ->
+                // A fetch failure is an expected transient condition (server 504,
+                // throttled, device offline). Firebase falls back to cached/default
+                // values and the app keeps working, so log a breadcrumb but don't
+                // report it as a non-fatal — it would be pure noise.
                 Logger.e("RemoteConfig", "fetchAndActivate failed", e)
-                CrashReporting.recordException(e)
+                CrashReporting.log("RemoteConfig fetchAndActivate failed (${e::class.simpleName}): ${e.message?.take(200)}")
                 onComplete(false)
             }
     }

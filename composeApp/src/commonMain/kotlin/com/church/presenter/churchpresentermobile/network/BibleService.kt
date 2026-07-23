@@ -1,6 +1,5 @@
 package com.church.presenter.churchpresentermobile.network
 
-import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleBooksResponse
@@ -16,7 +15,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -26,29 +24,6 @@ private const val TAG = "BibleService"
 private val json = Json {
     ignoreUnknownKeys = true
     isLenient = true
-}
-
-/** Minimal model for the `{"ok":bool,"reason":"...","error":"..."}` shape the API returns. */
-@Serializable
-private data class BibleApiResponseBody(
-    val ok: Boolean? = null,
-    val reason: String? = null,
-    val error: String? = null,
-)
-
-/**
- * Throws [ApiException] when the response indicates failure —
- * either via a non-2xx HTTP status or an `ok:false` body.
- */
-private fun checkApiResponse(statusCode: Int, rawBody: String) {
-    val parsed = runCatching { json.decodeFromString<BibleApiResponseBody>(rawBody) }.getOrNull()
-    val isOk = parsed?.ok ?: (statusCode in 200..299)
-    if (!isOk) {
-        throw ApiException(
-            httpStatus = statusCode,
-            reason     = parsed?.reason ?: parsed?.error,
-        )
-    }
 }
 
 /**

@@ -262,11 +262,15 @@ class ServerEventService(private val settings: AppSettings) {
         val finalError = lastException ?: Exception("sendAction failed after $WS_MAX_ATTEMPTS attempts")
         if (finalError !is ApiException) {
             CrashReporting.log("WS sendAction FAILED after $WS_MAX_ATTEMPTS attempts  type=$type  url=${settings.wsBaseUrl}")
-            CrashReporting.setCustomKey("ws_action_type",    type)
-            CrashReporting.setCustomKey("ws_server_url",     settings.wsBaseUrl)
-            CrashReporting.setCustomKey("network_error_type", finalError::class.simpleName ?: "Throwable")
-            CrashReporting.setCustomKey("network_error_msg",  finalError.message?.take(200) ?: "unknown")
-            CrashReporting.recordException(finalError)
+            // Expected connectivity failures (server off, unreachable) are logged
+            // but not reported as non-fatals — see isExpectedConnectivityError().
+            if (!finalError.isExpectedConnectivityError()) {
+                CrashReporting.setCustomKey("ws_action_type",    type)
+                CrashReporting.setCustomKey("ws_server_url",     settings.wsBaseUrl)
+                CrashReporting.setCustomKey("network_error_type", finalError::class.simpleName ?: "Throwable")
+                CrashReporting.setCustomKey("network_error_msg",  finalError.message?.take(200) ?: "unknown")
+                CrashReporting.recordException(finalError)
+            }
         }
         return Result.failure(finalError)
     }
@@ -346,7 +350,7 @@ class ServerEventService(private val settings: AppSettings) {
             } catch (e: Exception) {
                 Logger.e(TAG, "listen — connection lost: ${e.message} — retrying in ${reconnectDelay}ms", e)
                 val errorMsg = e.message?.take(200) ?: "unknown"
-                if (!everConnected) {
+                if (!everConnected && !e.isExpectedConnectivityError()) {
                     CrashReporting.log("[$TAG] listen — initial connect FAILED (${e::class.simpleName}): $errorMsg url=${settings.wsBaseUrl}")
                     CrashReporting.setCustomKey("network_tag",        TAG)
                     CrashReporting.setCustomKey("network_operation",  "listen/connect")
@@ -354,6 +358,9 @@ class ServerEventService(private val settings: AppSettings) {
                     CrashReporting.setCustomKey("network_error_msg",  errorMsg)
                     CrashReporting.setCustomKey("ws_server_url",      settings.wsBaseUrl)
                     CrashReporting.recordException(e)
+                } else if (!everConnected) {
+                    // Expected connectivity failure on first connect — log only.
+                    CrashReporting.log("[$TAG] listen — initial connect FAILED (${e::class.simpleName}): $errorMsg url=${settings.wsBaseUrl}")
                 } else {
                     CrashReporting.log("[$TAG] listen — session dropped (${e::class.simpleName}): $errorMsg")
                 }

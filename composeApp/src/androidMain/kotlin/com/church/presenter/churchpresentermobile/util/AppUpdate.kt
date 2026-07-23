@@ -6,6 +6,8 @@ import androidx.activity.result.IntentSenderRequest
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.InstallException
+import com.google.android.play.core.install.model.InstallErrorCode
 import com.google.android.play.core.install.model.UpdateAvailability
 
 /**
@@ -21,6 +23,16 @@ import com.google.android.play.core.install.model.UpdateAvailability
 object AppUpdate {
 
     private const val TAG = "AppUpdate"
+
+    /**
+     * Install error codes that simply mean "this build can't talk to the Play
+     * Store" — normal for sideloaded/emulator/non-Play installs. Not real bugs,
+     * so we log them but don't send them to crash reporting.
+     */
+    private val EXPECTED_NO_PLAY_ERRORS = setOf(
+        InstallErrorCode.ERROR_PLAY_STORE_NOT_FOUND,
+        InstallErrorCode.ERROR_APP_NOT_OWNED,
+    )
 
     /**
      * Checks the Play Store for an available update and starts the update flow
@@ -58,8 +70,15 @@ object AppUpdate {
                 }
             }
             .addOnFailureListener { e ->
-                Logger.e(TAG, "Failed to check for app update", e)
-                CrashReporting.recordException(e)
+                // Expected on sideloaded / non-Play installs (emulators, alternative
+                // stores, direct APK) — there is no Play Store to query, so treat it
+                // as noise rather than reporting it to crash reporting.
+                if (e is InstallException && e.errorCode in EXPECTED_NO_PLAY_ERRORS) {
+                    Logger.d(TAG, "Skipping update check — no Play Store (errorCode=${e.errorCode})")
+                } else {
+                    Logger.e(TAG, "Failed to check for app update", e)
+                    CrashReporting.recordException(e)
+                }
             }
     }
 }

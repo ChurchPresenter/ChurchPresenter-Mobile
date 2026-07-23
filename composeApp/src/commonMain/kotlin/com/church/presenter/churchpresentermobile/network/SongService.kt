@@ -1,6 +1,5 @@
 package com.church.presenter.churchpresentermobile.network
 
-import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ProjectSongRequest
 import com.church.presenter.churchpresentermobile.model.SelectSectionRequest
@@ -17,7 +16,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
-import kotlinx.serialization.Serializable
+import io.ktor.http.isSuccess
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -30,29 +29,6 @@ import kotlinx.serialization.json.jsonObject
 private const val TAG = "SongService"
 
 private val json = Json { ignoreUnknownKeys = true; isLenient = true }
-
-/** Minimal model for the `{"ok":bool,"reason":"...","error":"..."}` shape the API returns. */
-@Serializable
-private data class ApiResponseBody(
-    val ok: Boolean? = null,
-    val reason: String? = null,
-    val error: String? = null,
-)
-
-/**
- * Throws [ApiException] when the response indicates failure —
- * either via a non-2xx HTTP status or an `ok:false` body.
- */
-private fun checkApiResponse(statusCode: Int, rawBody: String) {
-    val parsed = runCatching { json.decodeFromString<ApiResponseBody>(rawBody) }.getOrNull()
-    val isOk = parsed?.ok ?: (statusCode in 200..299)
-    if (!isOk) {
-        throw ApiException(
-            httpStatus = statusCode,
-            reason     = parsed?.reason ?: parsed?.error,
-        )
-    }
-}
 
 /**
  * Handles all REST communication with the ChurchPresenter companion API.
@@ -77,6 +53,9 @@ class SongService(private val settings: AppSettings, private val wsService: Serv
             Logger.d(TAG, "getSongs — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getSongs — raw body (first 500 chars): ${raw.take(500)}")
+            if (!httpResponse.status.isSuccess()) {
+                throw Exception("HTTP ${httpResponse.status.value} — ${raw.take(200)}")
+            }
             val response = json.decodeFromString<SongsResponse>(raw)
             val songs = response.songBook.flatMap { book ->
                 book.songs.map { song -> song.copy(bookName = book.bookName) }
@@ -107,6 +86,9 @@ class SongService(private val settings: AppSettings, private val wsService: Serv
             Logger.d(TAG, "getSongDetail — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getSongDetail — FULL raw body:\n$raw")
+            if (!httpResponse.status.isSuccess()) {
+                throw Exception("HTTP ${httpResponse.status.value} — ${raw.take(200)}")
+            }
 
             // Pass 1: standard decode (handles all @SerialName variants in the model)
             val base = json.decodeFromString<SongDetail>(raw)
