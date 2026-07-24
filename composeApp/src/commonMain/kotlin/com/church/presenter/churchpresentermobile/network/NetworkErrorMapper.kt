@@ -57,11 +57,23 @@ fun Throwable.recordNetworkError(tag: String, operation: String): String {
  * and some aren't referenceable from commonMain.
  */
 fun Throwable.isExpectedConnectivityError(): Boolean {
-    val name = this::class.simpleName ?: ""
-    if (name in EXPECTED_CONNECTIVITY_EXCEPTIONS) return true
+    // Walk the cause chain: the connectivity failure is often wrapped (e.g. a
+    // Ktor/engine exception whose cause is the real SocketTimeoutException), and
+    // recordException reports the whole chain, so checking only `this` misses it.
+    var current: Throwable? = this
+    var depth = 0
+    while (current != null && depth < 8) {
+        val name = current::class.simpleName ?: ""
+        if (name in EXPECTED_CONNECTIVITY_EXCEPTIONS) return true
 
-    val raw = message ?: return false
-    return CONNECTIVITY_MESSAGE_MARKERS.any { raw.contains(it, ignoreCase = true) }
+        val raw = current.message
+        if (raw != null && CONNECTIVITY_MESSAGE_MARKERS.any { raw.contains(it, ignoreCase = true) }) {
+            return true
+        }
+        current = current.cause
+        depth++
+    }
+    return false
 }
 
 private val EXPECTED_CONNECTIVITY_EXCEPTIONS = setOf(
@@ -79,6 +91,9 @@ private val EXPECTED_CONNECTIVITY_EXCEPTIONS = setOf(
 private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
     "timeout",
     "timed out",
+    // OkHttp socket-connect timeout message is "failed to connect to <ip> ... after
+    // Nms" — it contains no "timeout" substring, so match the connect phrasing too.
+    "failed to connect",
     "Connection refused",
     "ECONNREFUSED",
     "Unable to resolve host",
