@@ -44,7 +44,8 @@ fun isRunningOnEmulator(): Boolean =
  * otherwise returns the real-device LAN IP [ApiConstants.DEFAULT_HOST].
  */
 actual fun resolveDefaultHost(): String {
-    val onEmulator = isRunningOnEmulator()
+    // Guard against unit-test / non-device JVMs where android.os.Build fields are null.
+    val onEmulator = try { isRunningOnEmulator() } catch (_: Throwable) { false }
     val host = if (onEmulator) ApiConstants.EMULATOR_HOST else ApiConstants.DEFAULT_HOST
     Logger.d(TAG, "resolveDefaultHost — emulator=$onEmulator → host=$host")
     return host

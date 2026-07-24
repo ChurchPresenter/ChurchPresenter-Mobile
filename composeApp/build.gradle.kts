@@ -238,6 +238,12 @@ android {
         versionCode = 15
         versionName = "1.0.14"
     }
+    testOptions {
+        // Let commonTest run on the Android unit-test JVM (used by the best-effort
+        // Kover coverage job): unmocked android.jar methods return defaults (e.g.
+        // Log.* no-ops) instead of throwing.
+        unitTests.isReturnDefaultValues = true
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
