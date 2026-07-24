@@ -38,8 +38,9 @@ expect fun resolveDefaultHost(): String
  * Persists and reads server connection settings using platform-native storage.
  * Uses [expect/actual] so each platform provides its own storage mechanism.
  */
-class AppSettings {
-    private val storage: SettingsStorage = createSettingsStorage()
+class AppSettings(
+    private val storage: SettingsStorage = createSettingsStorage(),
+) {
     private val defaultHost = resolveDefaultHost()
 
     init {
