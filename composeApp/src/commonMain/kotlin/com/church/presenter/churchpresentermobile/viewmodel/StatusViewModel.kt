@@ -38,12 +38,15 @@ sealed class StatusUiState {
  * Callers should pass [settingsSaveToken] when the user updates server settings
  * so that a re-check is triggered automatically via [recheck].
  */
-class StatusViewModel(private val appSettings: AppSettings) : ViewModel() {
+class StatusViewModel(
+    private val appSettings: AppSettings,
+    private val serviceFactory: (AppSettings) -> StatusService = { StatusService(it) },
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<StatusUiState>(StatusUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var service = StatusService(appSettings)
+    private var service = serviceFactory(appSettings)
 
     init {
         fetchStatus()
@@ -52,7 +55,7 @@ class StatusViewModel(private val appSettings: AppSettings) : ViewModel() {
     /** Re-creates the service (picks up new host/port) and retries the status call. */
     fun recheck() {
         service.closeClient()
-        service = StatusService(appSettings)
+        service = serviceFactory(appSettings)
         fetchStatus()
     }
 
