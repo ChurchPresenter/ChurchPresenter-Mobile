@@ -26,10 +26,11 @@ sealed class QAUiState {
 
 class QAViewModel(
     private val appSettings: AppSettings,
-    private val eventService: ServerEventService
+    private val eventService: ServerEventService,
+    private val serviceFactory: (AppSettings) -> QAService = { QAService(it) },
 ) : ViewModel() {
 
-    private val service = QAService(appSettings)
+    private val service = serviceFactory(appSettings)
 
     private val _uiState = MutableStateFlow<QAUiState>(QAUiState.Loading)
     val uiState = _uiState.asStateFlow()
