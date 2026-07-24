@@ -42,20 +42,21 @@ kover {
                     "com.church.presenter.churchpresentermobile.util",
                 )
                 classes(
-                    "com.church.presenter.churchpresentermobile.AppKt",
-                    "com.church.presenter.churchpresentermobile.ComposableSingletons*",
+                    // App.kt Composable + its generated lambda classes ($App$…), and singletons.
+                    "*AppKt*",
+                    "*ComposableSingletons*",
                     // Generated Compose resource accessors.
                     "churchpresentermobile.composeapp.generated.resources.*",
-                    // Data fixtures & WebSocket transport — not unit-test targets.
-                    "*.DemoData",
-                    "*.ServerEventService",
-                    "*.PingReporter",
+                    // Data fixtures & WebSocket transport loop — not unit-test targets.
+                    "*DemoData*",
+                    "*ServerEventService*",
+                    "*PingReporter*",
                     // Platform factories / storage / Android infra (share model|network packages).
                     "*HttpClientFactory*",
                     "*SettingsStorage*",
-                    "*.MainActivity",
-                    "*.ChurchPresenterApp",
-                    "*.FirebasePushService",
+                    "*MainActivity*",
+                    "*ChurchPresenterApp*",
+                    "*FirebasePushService*",
                 )
             }
         }

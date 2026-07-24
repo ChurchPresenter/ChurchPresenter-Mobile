@@ -2,6 +2,8 @@ package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.AnnouncementItemPayload
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.MediaItemPayload
+import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.StrongsEntry
 import com.church.presenter.churchpresentermobile.model.WebsiteItemPayload
@@ -158,5 +160,51 @@ class WsActionsTest {
     fun webActionPropagatesFailure() = runTest {
         val ws = FakeWsSender().apply { failWith(RuntimeException("ws down")) }
         assertTrue(WebService(ws).clearScreen().isFailure)
+    }
+
+    // ── MediaCastService (project/schedule/clear + transport controls) ───────
+
+    @Test
+    fun mediaGoLiveScheduleClearAndTransport() = runTest {
+        val ws = FakeWsSender()
+        val svc = MediaCastService(settings, ws)
+        val item = MediaItemPayload(mediaUrl = "https://h/clip.mp4", mediaTitle = "Clip")
+
+        svc.goLive(item).getOrThrow()
+        assertEquals(WsMessageType.PROJECT, ws.lastType)
+        assertTrue(ws.lastPayload.contains("clip.mp4"))
+
+        svc.addToSchedule(item).getOrThrow()
+        assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
+
+        svc.clearScreen().getOrThrow(); assertEquals(WsMessageType.CLEAR, ws.lastType)
+        svc.playPause().getOrThrow(); assertEquals(WsMessageType.MEDIA_PLAY_PAUSE, ws.lastType)
+        svc.stop().getOrThrow(); assertEquals(WsMessageType.MEDIA_STOP, ws.lastType)
+        svc.seekForward().getOrThrow(); assertEquals(WsMessageType.MEDIA_SEEK_FORWARD, ws.lastType)
+        svc.seekBackward().getOrThrow(); assertEquals(WsMessageType.MEDIA_SEEK_BACKWARD, ws.lastType)
+        svc.seekTo(1500).getOrThrow()
+        assertEquals(WsMessageType.MEDIA_SEEK_TO, ws.lastType); assertEquals("1500", ws.lastPayload)
+        svc.setVolume(0.5f).getOrThrow(); assertEquals(WsMessageType.MEDIA_SET_VOLUME, ws.lastType)
+        svc.muteToggle().getOrThrow(); assertEquals(WsMessageType.MEDIA_MUTE_TOGGLE, ws.lastType)
+        assertTrue(ws.calls.last().third) // transport controls are fire-and-forget
+    }
+
+    // ── PresentationService (WS actions) ─────────────────────────────────────
+
+    @Test
+    fun presentationSelectScheduleAndClear() = runTest {
+        val ws = FakeWsSender()
+        val svc = PresentationService(settings, ws, unusedClient)
+
+        svc.selectPresentation("p1", 3).getOrThrow()
+        assertEquals(WsMessageType.SELECT_SLIDE, ws.lastType)
+        assertTrue(ws.lastPayload.contains("\"index\":3"))
+
+        svc.addToSchedule(Presentation(id = "p1", fileName = "Sermon.pptx")).getOrThrow()
+        assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
+        assertTrue(ws.lastPayload.contains("Sermon.pptx"))
+
+        svc.clearDisplay().getOrThrow()
+        assertEquals(WsMessageType.CLEAR, ws.lastType)
     }
 }
