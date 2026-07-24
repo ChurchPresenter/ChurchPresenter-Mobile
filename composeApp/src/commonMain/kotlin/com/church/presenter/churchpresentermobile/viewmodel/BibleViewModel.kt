@@ -24,6 +24,17 @@ import kotlinx.coroutines.launch
 private const val TAG = "BibleViewModel"
 
 /**
+ * Formats a sorted list of verse numbers into a range string:
+ * a single number → null (no range), a contiguous run → "first-last",
+ * otherwise a comma-separated list. Used for both projecting and schedule-add.
+ */
+internal fun verseRangeString(numbers: List<Int>): String? = when {
+    numbers.size <= 1 -> null
+    numbers.zipWithNext().all { (a, b) -> b == a + 1 } -> "${numbers.first()}-${numbers.last()}"
+    else -> numbers.joinToString(",")
+}
+
+/**
  * Manages Bible navigation state: book list → chapter selection → verse display.
  *
  * @param appSettings The shared [AppSettings] instance used to configure the API service.
@@ -357,10 +368,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
             return
         }
         val nums = selectedVerses.map { it.number }
-        val verseRange: String? = if (nums.size <= 1) null else {
-            val isContiguous = nums.zipWithNext().all { (a, b) -> b == a + 1 }
-            if (isContiguous) "${nums.first()}-${nums.last()}" else nums.joinToString(",")
-        }
+        val verseRange: String? = verseRangeString(nums)
         Logger.d(TAG, "toggleProjecting ON — firing selectBibleVerse ${book.displayName} $chapter:${firstVerse.number} range=$verseRange")
         viewModelScope.launch {
             bibleService.selectBibleVerse(
@@ -506,9 +514,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         val ref = if (nums.size == 1) {
             "${book.displayName} $chapter:${nums.first()}"
         } else {
-            val isContiguous = nums.zipWithNext().all { (a, b) -> b == a + 1 }
-            val range = if (isContiguous) "${nums.first()}-${nums.last()}" else nums.joinToString(",")
-            "${book.displayName} $chapter:$range"
+            "${book.displayName} $chapter:${verseRangeString(nums)}"
         }
         if (isDemoMode) {
             Logger.d(TAG, "addToSchedule — DEMO MODE, simulating success")
