@@ -38,12 +38,24 @@ kover {
                     "com.church.presenter.churchpresentermobile.ui",
                     // Covered on the JS gate, not measurable on the Android JVM (no Main dispatcher).
                     "com.church.presenter.churchpresentermobile.viewmodel",
+                    // Platform glue + constants (Logger/Analytics/CrashReporting/RemoteConfig/BuildUtils).
+                    "com.church.presenter.churchpresentermobile.util",
                 )
                 classes(
                     "com.church.presenter.churchpresentermobile.AppKt",
                     "com.church.presenter.churchpresentermobile.ComposableSingletons*",
                     // Generated Compose resource accessors.
                     "churchpresentermobile.composeapp.generated.resources.*",
+                    // Data fixtures & WebSocket transport — not unit-test targets.
+                    "*.DemoData",
+                    "*.ServerEventService",
+                    "*.PingReporter",
+                    // Platform factories / storage / Android infra (share model|network packages).
+                    "*HttpClientFactory*",
+                    "*SettingsStorage*",
+                    "*.MainActivity",
+                    "*.ChurchPresenterApp",
+                    "*.FirebasePushService",
                 )
             }
         }

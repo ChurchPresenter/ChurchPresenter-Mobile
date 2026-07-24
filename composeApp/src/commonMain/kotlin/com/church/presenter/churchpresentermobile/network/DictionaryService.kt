@@ -33,7 +33,7 @@ enum class DictionaryFilter(val apiValue: String) {
  */
 class DictionaryService(
     private val settings: AppSettings,
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
 ) {
     private fun HttpRequestBuilder.applyApiKey() {

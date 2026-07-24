@@ -33,7 +33,7 @@ private val json = Json {
  */
 class BibleService(
     private val settings: AppSettings,
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
 ) {
     init {

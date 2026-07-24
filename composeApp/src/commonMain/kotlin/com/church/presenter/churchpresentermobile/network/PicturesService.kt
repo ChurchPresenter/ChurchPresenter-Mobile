@@ -32,7 +32,7 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  */
 class PicturesService(
     private val settings: AppSettings,
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
 ) {
     /** Separate client with no request/socket timeout — required for large photo uploads. */

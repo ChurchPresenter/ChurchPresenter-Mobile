@@ -32,7 +32,7 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefa
  */
 class MediaCastService(
     private val settings: AppSettings,
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
 ) {
     /** Separate client with no request/socket timeout — required for large media uploads. */
     private val uploadClient: HttpClient = createActionHttpClient()

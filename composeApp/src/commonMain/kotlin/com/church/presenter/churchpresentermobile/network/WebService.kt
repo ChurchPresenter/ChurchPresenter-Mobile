@@ -15,7 +15,7 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefa
  * `add_to_schedule` path used by songs, bible, announcements, …).
  */
 class WebService(
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
 ) {
     /** Adds the web page to the desktop schedule (does not go live). */
     suspend fun addToSchedule(item: WebsiteItemPayload): Result<Unit> = apiRunCatching {

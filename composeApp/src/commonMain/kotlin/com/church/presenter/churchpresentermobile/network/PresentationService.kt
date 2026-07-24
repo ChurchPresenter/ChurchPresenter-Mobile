@@ -39,7 +39,7 @@ private val json = Json {
  */
 class PresentationService(
     private val settings: AppSettings,
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
 ) {
     /** Separate client with no timeout — needed only for large file uploads. */

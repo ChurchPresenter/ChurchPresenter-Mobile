@@ -15,7 +15,7 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefa
  * WebSocket (same `add_to_schedule` path used by songs, bible, dictionary, …).
  */
 class AnnouncementService(
-    private val wsService: ServerEventService,
+    private val wsService: WsSender,
 ) {
     /** Adds the announcement/timer to the desktop schedule (does not go live). */
     suspend fun addToSchedule(item: AnnouncementItemPayload): Result<Unit> = apiRunCatching {

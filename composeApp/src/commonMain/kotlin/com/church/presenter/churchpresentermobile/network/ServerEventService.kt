@@ -103,7 +103,16 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  *
  * @param settings Shared [AppSettings] supplying host, port, API key, and device ID.
  */
-class ServerEventService(private val settings: AppSettings) {
+/**
+ * Narrow seam for sending an outbound action over the persistent WebSocket.
+ * Services depend on this rather than the whole [ServerEventService], so their
+ * action methods (payload construction) can be unit-tested with a fake.
+ */
+interface WsSender {
+    suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit>
+}
+
+class ServerEventService(private val settings: AppSettings) : WsSender {
     private val client: HttpClient = createWebSocketClient()
 
     /** The currently active WebSocket session, or null when disconnected. */
@@ -171,7 +180,7 @@ class ServerEventService(private val settings: AppSettings) {
      *                       When `false` (default), waits for an `{"ok":…}` response frame —
      *                       required for approval-gated commands.
      */
-    suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit> {
+    override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result<Unit> {
         Logger.d(TAG, "sendAction ▶ type=$type  url=${settings.wsBaseUrl}")
 
         var lastException: Throwable? = null
