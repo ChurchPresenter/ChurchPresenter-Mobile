@@ -12,6 +12,36 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
+    alias(libs.plugins.kover)
+}
+
+// ---------------------------------------------------------------------------
+// Code-coverage (Kover) — scoped to the LOGIC layer (model/network/viewmodel).
+// The Compose UI, App.kt, platform glue and generated code are excluded so the
+// coverage number reflects code that can actually break and be unit-tested.
+// Measured on the Android debug unit-test variant (commonTest runs there);
+// run `./gradlew :composeApp:koverHtmlReport` in CI where google-services.json
+// is present. Report: composeApp/build/reports/kover/.
+// ---------------------------------------------------------------------------
+kover {
+    reports {
+        filters {
+            excludes {
+                // Compose UI is not unit-tested — drop every @Composable plus the ui package.
+                annotatedBy("androidx.compose.runtime.Composable")
+                packages("com.church.presenter.churchpresentermobile.ui")
+                classes(
+                    "com.church.presenter.churchpresentermobile.AppKt",
+                    "com.church.presenter.churchpresentermobile.ComposableSingletons*",
+                    // Generated Compose resource accessors.
+                    "churchpresentermobile.composeapp.generated.resources.*",
+                )
+            }
+        }
+        // TODO(coverage): once the logic layer is broadly covered, enforce the target:
+        //   verify { rule { minBound(85) } }
+        // Left unenforced for now so CI reports the number without blocking.
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -91,7 +121,13 @@ kotlin {
     }
 
     js {
-        browser()
+        browser {
+            // Headless Chrome so `jsBrowserTest` runs the commonTest suite on CI
+            // (and locally) without a visible browser window.
+            testTask {
+                useKarma { useChromeHeadless() }
+            }
+        }
         binaries.executable()
     }
 
