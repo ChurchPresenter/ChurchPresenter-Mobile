@@ -61,6 +61,8 @@ import churchpresentermobile.composeapp.generated.resources.status_info_features
 import churchpresentermobile.composeapp.generated.resources.status_info_songbooks
 import churchpresentermobile.composeapp.generated.resources.status_issues_detected
 import churchpresentermobile.composeapp.generated.resources.status_limited_functionality
+import churchpresentermobile.composeapp.generated.resources.status_not_churchpresenter_body
+import churchpresentermobile.composeapp.generated.resources.status_not_churchpresenter_title
 import churchpresentermobile.composeapp.generated.resources.status_open_settings
 import churchpresentermobile.composeapp.generated.resources.status_permission_present
 import churchpresentermobile.composeapp.generated.resources.status_permission_schedule
@@ -68,6 +70,8 @@ import churchpresentermobile.composeapp.generated.resources.status_permission_up
 import churchpresentermobile.composeapp.generated.resources.status_permissions_title
 import churchpresentermobile.composeapp.generated.resources.status_retry
 import churchpresentermobile.composeapp.generated.resources.status_server_version
+import churchpresentermobile.composeapp.generated.resources.status_unauthorized_body
+import churchpresentermobile.composeapp.generated.resources.status_unauthorized_title
 import churchpresentermobile.composeapp.generated.resources.status_warn_missing_endpoint_body
 import churchpresentermobile.composeapp.generated.resources.status_warn_missing_endpoint_title
 import churchpresentermobile.composeapp.generated.resources.status_warn_no_api_key_body
@@ -133,7 +137,22 @@ fun StatusScreen(
             when (val state = uiState) {
                 is StatusUiState.Loading -> LoadingContent(onOpenSettings = onOpenSettings)
                 is StatusUiState.Error   -> ErrorContent(
+                    title          = stringResource(Res.string.status_error_title),
                     message        = state.message,
+                    onRetry        = { viewModel.recheck() },
+                    onContinue     = onContinue,
+                    onOpenSettings = onOpenSettings,
+                )
+                is StatusUiState.Unauthorized -> ErrorContent(
+                    title          = stringResource(Res.string.status_unauthorized_title),
+                    message        = stringResource(Res.string.status_unauthorized_body),
+                    onRetry        = { viewModel.recheck() },
+                    onContinue     = onContinue,
+                    onOpenSettings = onOpenSettings,
+                )
+                is StatusUiState.NotChurchPresenter -> ErrorContent(
+                    title          = stringResource(Res.string.status_not_churchpresenter_title),
+                    message        = stringResource(Res.string.status_not_churchpresenter_body),
                     onRetry        = { viewModel.recheck() },
                     onContinue     = onContinue,
                     onOpenSettings = onOpenSettings,
@@ -289,6 +308,7 @@ private fun ContentSummaryCard(bibles: List<String>, songbooks: List<String>) {
 
 @Composable
 private fun ErrorContent(
+    title: String,
     message: String,
     onRetry: () -> Unit,
     onContinue: () -> Unit,
@@ -303,7 +323,7 @@ private fun ErrorContent(
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = stringResource(Res.string.status_error_title),
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,

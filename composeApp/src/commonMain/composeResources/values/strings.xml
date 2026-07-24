@@ -263,6 +263,10 @@
     <string name="status_issues_detected">The following issues were detected on the connected server:</string>
     <string name="status_endpoint_unavailable">Status endpoint not yet available on this server version — update ChurchPresenter desktop for full capability reporting.</string>
     <string name="status_error_title">Could not reach the server</string>
+    <string name="status_unauthorized_title">Server rejected the API key</string>
+    <string name="status_unauthorized_body">The server is reachable but refused the request. Check the API key in Settings.</string>
+    <string name="status_not_churchpresenter_title">Not a ChurchPresenter server</string>
+    <string name="status_not_churchpresenter_body">Reached a device at this address, but it isn\'t running ChurchPresenter. Check the IP address and port.</string>
     <string name="status_permissions_title">This device's permissions</string>
     <string name="status_permission_present">Control presentation</string>
     <string name="status_permission_schedule">Add to schedule</string>

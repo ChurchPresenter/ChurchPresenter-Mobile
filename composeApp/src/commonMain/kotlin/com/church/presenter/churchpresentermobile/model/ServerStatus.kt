@@ -53,13 +53,40 @@ data class ServerStatus(
     @SerialName("permissions")     val permissions: DevicePermissions = DevicePermissions(),
     /**
      * NOT part of the wire format — set by [StatusService] to `false` when the
-     * server returned a non-2xx response (e.g. 404 because the endpoint is not
-     * implemented yet). When `false`, content-availability warnings (no bibles,
-     * no songbooks) are suppressed because the server simply didn't tell us —
-     * it doesn't mean the content is missing.
+     * `/api/status` endpoint returned a non-2xx response (e.g. 404 because the
+     * endpoint is not implemented yet) BUT the server was independently confirmed
+     * to be a genuine ChurchPresenter server via the `/api/songs` probe. When
+     * `false`, content-availability warnings (no bibles, no songbooks) are
+     * suppressed because the server simply didn't tell us — it doesn't mean the
+     * content is missing. It never means "some unknown host replied".
      */
     val endpointAvailable: Boolean = true,
 )
+
+/**
+ * Classified outcome of a server status probe.
+ *
+ * "Reachable" is not the same as "this is a ChurchPresenter server". [StatusService]
+ * returns one of these so callers can tell the four cases apart:
+ *  - [Verified]                 — talking to a confirmed ChurchPresenter server.
+ *  - [ReachableNoStatusEndpoint]— confirmed ChurchPresenter server, but an older
+ *                                 desktop that doesn't implement `/api/status`.
+ *  - [Unauthorized]             — reachable, but the request was rejected (401/403).
+ *  - [NotChurchPresenter]       — a host answered HTTP, but it isn't ChurchPresenter.
+ *
+ * A total connectivity failure (timeout / connection refused / unresolved host) is
+ * NOT modelled here — it surfaces as `Result.failure` from [StatusService.fetchStatus].
+ */
+sealed class StatusProbeResult {
+    /** `/api/status` replied 2xx with a ChurchPresenter-shaped body. */
+    data class Verified(val status: ServerStatus) : StatusProbeResult()
+    /** `/api/status` was missing/odd, but `/api/songs` confirmed a ChurchPresenter server. */
+    data object ReachableNoStatusEndpoint : StatusProbeResult()
+    /** Reachable, but the server rejected the request (HTTP 401 or 403). */
+    data class Unauthorized(val httpStatus: Int) : StatusProbeResult()
+    /** A host answered HTTP at this address, but it is not a ChurchPresenter server. */
+    data class NotChurchPresenter(val detail: String) : StatusProbeResult()
+}
 
 /** A human-readable warning derived from a [ServerStatus] response. */
 sealed class StatusWarning {

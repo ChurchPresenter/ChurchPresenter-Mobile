@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -105,6 +106,10 @@ import churchpresentermobile.composeapp.generated.resources.status_connected
 import churchpresentermobile.composeapp.generated.resources.status_connecting
 import churchpresentermobile.composeapp.generated.resources.status_error_title
 import churchpresentermobile.composeapp.generated.resources.status_limited_functionality
+import churchpresentermobile.composeapp.generated.resources.status_not_churchpresenter_body
+import churchpresentermobile.composeapp.generated.resources.status_not_churchpresenter_title
+import churchpresentermobile.composeapp.generated.resources.status_unauthorized_body
+import churchpresentermobile.composeapp.generated.resources.status_unauthorized_title
 import churchpresentermobile.composeapp.generated.resources.status_permission_present
 import churchpresentermobile.composeapp.generated.resources.status_permission_schedule
 import churchpresentermobile.composeapp.generated.resources.status_permission_upload
@@ -404,8 +409,10 @@ fun ServerStatusDialog(
     val uiState by statusViewModel.uiState.collectAsState()
 
     val subtitle = when (val s = uiState) {
-        is StatusUiState.Loading -> stringResource(Res.string.status_connecting)
-        is StatusUiState.Error   -> stringResource(Res.string.status_error_title)
+        is StatusUiState.Loading           -> stringResource(Res.string.status_connecting)
+        is StatusUiState.Error             -> stringResource(Res.string.status_error_title)
+        is StatusUiState.Unauthorized      -> stringResource(Res.string.status_unauthorized_title)
+        is StatusUiState.NotChurchPresenter -> stringResource(Res.string.status_not_churchpresenter_title)
         is StatusUiState.Success -> if (s.warnings.isEmpty())
             stringResource(Res.string.status_connected)
         else
@@ -493,6 +500,52 @@ fun ServerStatusDialog(
                                     color = MaterialTheme.colorScheme.error,
                                     textAlign = TextAlign.Center)
                                 Text(state.message,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center)
+                            }
+                            StatusRecheckButton { statusViewModel.recheck() }
+                        }
+
+                        // ── Unauthorized (API key rejected) ───────────────────
+                        is StatusUiState.Unauthorized -> {
+                            Column(
+                                Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                                verticalArrangement   = Arrangement.spacedBy(12.dp),
+                                horizontalAlignment   = Alignment.CenterHorizontally,
+                            ) {
+                                Icon(Icons.Filled.Lock, null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(48.dp))
+                                Text(stringResource(Res.string.status_unauthorized_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.error,
+                                    textAlign = TextAlign.Center)
+                                Text(stringResource(Res.string.status_unauthorized_body),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center)
+                            }
+                            StatusRecheckButton { statusViewModel.recheck() }
+                        }
+
+                        // ── Not a ChurchPresenter server ──────────────────────
+                        is StatusUiState.NotChurchPresenter -> {
+                            Column(
+                                Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                                verticalArrangement   = Arrangement.spacedBy(12.dp),
+                                horizontalAlignment   = Alignment.CenterHorizontally,
+                            ) {
+                                Icon(Icons.Filled.Warning, null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(48.dp))
+                                Text(stringResource(Res.string.status_not_churchpresenter_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.error,
+                                    textAlign = TextAlign.Center)
+                                Text(stringResource(Res.string.status_not_churchpresenter_body),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center)
