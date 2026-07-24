@@ -22,9 +22,10 @@ private val lenientJson = Json { ignoreUnknownKeys = true; isLenient = true }
  *
  * @param settings The current [AppSettings] used to build the base URL and API key.
  */
-class ScheduleService(private val settings: AppSettings) {
-    private val client: HttpClient = createHttpClient()
-
+class ScheduleService(
+    private val settings: AppSettings,
+    private val client: HttpClient = createHttpClient(),
+) {
     init {
         Logger.d(TAG, "ScheduleService created — baseUrl=${settings.apiBaseUrl}")
     }

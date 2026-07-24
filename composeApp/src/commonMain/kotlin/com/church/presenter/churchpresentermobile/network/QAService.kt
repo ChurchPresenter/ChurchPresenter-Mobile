@@ -24,9 +24,10 @@ import kotlinx.serialization.json.Json
 private const val TAG = "QAService"
 private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
-class QAService(private val settings: AppSettings) {
-    private val client: HttpClient = createHttpClient()
-
+class QAService(
+    private val settings: AppSettings,
+    private val client: HttpClient = createHttpClient(),
+) {
     private fun HttpRequestBuilder.applyApiKey() {
         val key = settings.apiKey
         if (key.isNotBlank()) {

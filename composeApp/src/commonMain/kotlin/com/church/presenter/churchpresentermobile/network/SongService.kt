@@ -35,9 +35,11 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  *
  * @param settings The current [AppSettings] used to build the base URL and supply the API key.
  */
-class SongService(private val settings: AppSettings, private val wsService: ServerEventService) {
-    private val client: HttpClient = createHttpClient()
-
+class SongService(
+    private val settings: AppSettings,
+    private val wsService: ServerEventService,
+    private val client: HttpClient = createHttpClient(),
+) {
     init {
         Logger.d(TAG, "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
     }
