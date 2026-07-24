@@ -56,6 +56,9 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.church.presenter.churchpresentermobile.ui.AnnouncementsScreen
 import com.church.presenter.churchpresentermobile.ui.MediaScreen
 import com.church.presenter.churchpresentermobile.ui.WebScreen
@@ -155,6 +158,22 @@ fun App() {
     // Single ServerEventService used by all ViewModels for both receiving
     // server-push events and sending action messages.
     val eventService = remember { ServerEventService(appSettings) }
+
+    // Pause the WebSocket reconnect loop while the app is backgrounded so it stops
+    // retrying connects to the server (which otherwise keep threads busy and can
+    // surface as a background ANR). Resumes when the app returns to the foreground.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, eventService) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP  -> eventService.pause()
+                Lifecycle.Event.ON_START -> eventService.resume()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     // ── Session-scoped ViewModels ─────────────────────────────────────────
     // Created ONCE here in App() which is never removed from the composition.

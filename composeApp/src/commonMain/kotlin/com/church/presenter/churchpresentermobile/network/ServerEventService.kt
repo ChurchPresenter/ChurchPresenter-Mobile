@@ -112,6 +112,14 @@ class ServerEventService(private val settings: AppSettings) {
     /** Signals that [activeSession] is set and the connection is usable. */
     private val connectionReady = MutableStateFlow(false)
 
+    /**
+     * Gate for the [listen] loop. When `false` the loop parks instead of
+     * (re)connecting — set by [pause]/[resume] so the app stops retrying
+     * socket connects while backgrounded (which otherwise keep threads busy
+     * and can trigger a background ANR).
+     */
+    private val active = MutableStateFlow(true)
+
     /** Serialises approval-gated actions so only one waits for a response at a time. */
     private val actionMutex = Mutex()
 
@@ -284,6 +292,11 @@ class ServerEventService(private val settings: AppSettings) {
         var everConnected = false
         var reconnectDelay = INITIAL_RECONNECT_DELAY_MS
         while (true) {
+            // Park here while paused (app backgrounded) — resumes when active flips true.
+            if (!active.value) {
+                Logger.d(TAG, "listen — paused, waiting to resume")
+                active.first { it }
+            }
             try {
                 Logger.d(TAG, "listen — connecting to ${settings.wsBaseUrl}")
                 client.webSocket(
@@ -392,6 +405,33 @@ class ServerEventService(private val settings: AppSettings) {
         // Cancel the session's coroutine scope, which terminates the incoming
         // frame loop and causes listen() to reconnect with updated settings.
         session.coroutineContext[kotlinx.coroutines.Job]?.cancel()
+    }
+
+    /**
+     * Suspends the [listen] reconnect loop and drops the current session. Call when
+     * the app is backgrounded so it stops retrying connects to the server — those
+     * retries otherwise block on socket connect and keep the process busy while
+     * backgrounded, which can be reported as a background ANR. Idempotent.
+     */
+    fun pause() {
+        if (!active.value) return
+        Logger.d(TAG, "pause — suspending listen loop")
+        active.value = false
+        val session = activeSession
+        connectionReady.value = false
+        activeSession = null
+        pendingResponse?.completeExceptionally(Exception("Paused"))
+        pendingResponse = null
+        // Cancel the live session's scope so the incoming loop unwinds and listen()
+        // returns to the top, where it parks on `active`.
+        session?.coroutineContext?.get(kotlinx.coroutines.Job)?.cancel()
+    }
+
+    /** Resumes the [listen] loop after a [pause], reconnecting on the next iteration. Idempotent. */
+    fun resume() {
+        if (active.value) return
+        Logger.d(TAG, "resume — resuming listen loop")
+        active.value = true
     }
 
     /** Releases the underlying WebSocket client. Call when the owning ViewModel is cleared. */
