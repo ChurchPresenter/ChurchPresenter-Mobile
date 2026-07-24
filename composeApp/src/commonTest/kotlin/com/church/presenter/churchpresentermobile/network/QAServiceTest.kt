@@ -55,4 +55,23 @@ class QAServiceTest {
     fun addQuestionNonSuccessIsFailure() = runTest {
         assertTrue(service("no", HttpStatusCode.BadRequest).addQuestion("hi").isFailure)
     }
+
+    @Test
+    fun adminActionsSucceedOn2xx() = runTest {
+        val svc = service("", HttpStatusCode.OK)
+        assertTrue(svc.approveQuestion("q1").isSuccess)
+        assertTrue(svc.denyQuestion("q1").isSuccess)
+        assertTrue(svc.editQuestion("q1", "new text").isSuccess)
+        assertTrue(svc.markDone("q1").isSuccess)
+        assertTrue(svc.displayQuestion("q1").isSuccess)
+        assertTrue(svc.deleteQuestion("q1").isSuccess)
+        assertTrue(svc.clearDisplay().isSuccess)
+    }
+
+    @Test
+    fun adminActionFailsOnErrorStatus() = runTest {
+        val svc = service("nope", HttpStatusCode.InternalServerError)
+        assertTrue(svc.approveQuestion("q1").isFailure)
+        assertTrue(svc.deleteQuestion("q1").isFailure)
+    }
 }

@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.AnnouncementItemPayload
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.MediaItemPayload
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.Song
@@ -80,6 +81,26 @@ class WsActionsTest {
 
         svc.clearDisplay().getOrThrow()
         assertEquals(WsMessageType.CLEAR, ws.lastType)
+    }
+
+    @Test
+    fun bibleProjectAndScheduleRange() = runTest {
+        val ws = FakeWsSender()
+        val svc = BibleService(settings, ws, unusedClient)
+
+        svc.projectBibleVerse("John", 3, 16, "For God so loved").getOrThrow()
+        assertEquals(WsMessageType.PROJECT, ws.lastType)
+        assertTrue(ws.lastPayload.contains("John"))
+
+        // Contiguous verses -> "16-17" range in the schedule payload.
+        svc.addBibleToSchedule("John", 3, listOf(BibleVerse(verse = 16), BibleVerse(verse = 17))).getOrThrow()
+        assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
+        assertTrue(ws.lastPayload.contains("16-17"))
+
+        // Empty selection is a no-op success (no frame sent).
+        val callsBefore = ws.calls.size
+        assertTrue(svc.addBibleToSchedule("John", 3, emptyList()).isSuccess)
+        assertEquals(callsBefore, ws.calls.size)
     }
 
     // ── PicturesService ──────────────────────────────────────────────────────
