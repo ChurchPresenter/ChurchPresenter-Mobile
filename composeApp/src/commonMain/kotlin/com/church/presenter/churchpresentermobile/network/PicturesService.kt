@@ -30,8 +30,11 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  *
  * @param settings The shared [AppSettings] used to build the base URL.
  */
-class PicturesService(private val settings: AppSettings, private val wsService: ServerEventService) {
-    private val client: HttpClient = createHttpClient()
+class PicturesService(
+    private val settings: AppSettings,
+    private val wsService: ServerEventService,
+    private val client: HttpClient = createHttpClient(),
+) {
     /** Separate client with no request/socket timeout — required for large photo uploads. */
     private val uploadClient: HttpClient = createActionHttpClient()
 

@@ -37,8 +37,11 @@ private val json = Json {
  *
  * @param settings The current [AppSettings] used to build the base URL and supply the API key.
  */
-class PresentationService(private val settings: AppSettings, private val wsService: ServerEventService) {
-    private val client: HttpClient = createHttpClient()
+class PresentationService(
+    private val settings: AppSettings,
+    private val wsService: ServerEventService,
+    private val client: HttpClient = createHttpClient(),
+) {
     /** Separate client with no timeout — needed only for large file uploads. */
     private val uploadClient: HttpClient = createActionHttpClient()
 
