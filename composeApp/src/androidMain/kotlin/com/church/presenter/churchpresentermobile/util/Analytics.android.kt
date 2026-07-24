@@ -7,33 +7,41 @@ import com.google.firebase.ktx.Firebase
 
 actual object Analytics {
 
-    private val fa: FirebaseAnalytics by lazy { Firebase.analytics }
+    // Nullable + guarded: Firebase isn't available on a bare JVM (unit tests) or before
+    // FirebaseApp is initialised — analytics must never crash the caller.
+    private val fa: FirebaseAnalytics? by lazy { runCatching { Firebase.analytics }.getOrNull() }
 
     actual fun init() {
-        fa.setAnalyticsCollectionEnabled(true)
-        // Disable automatic Activity-class screen reporting so only our
-        // manual logScreenView() calls appear in "Pages and screens".
-        fa.setSessionTimeoutDuration(1800_000L) // keep default 30-min session
-        fa.setDefaultEventParameters(null)
+        runCatching {
+            fa?.setAnalyticsCollectionEnabled(true)
+            // Disable automatic Activity-class screen reporting so only our
+            // manual logScreenView() calls appear in "Pages and screens".
+            fa?.setSessionTimeoutDuration(1800_000L) // keep default 30-min session
+            fa?.setDefaultEventParameters(null)
+        }
     }
 
     actual fun setEnabled(enabled: Boolean) {
-        fa.setAnalyticsCollectionEnabled(enabled)
+        runCatching { fa?.setAnalyticsCollectionEnabled(enabled) }
     }
 
     actual fun logEvent(name: String, params: Map<String, String>) {
-        val bundle = Bundle()
-        params.forEach { (k, v) -> bundle.putString(k, v.take(100)) }
-        fa.logEvent(name, bundle)
+        runCatching {
+            val bundle = Bundle()
+            params.forEach { (k, v) -> bundle.putString(k, v.take(100)) }
+            fa?.logEvent(name, bundle)
+        }
         Logger.d("Analytics", "logEvent: $name $params")
     }
 
     actual fun logScreenView(screenName: String) {
-        val bundle = Bundle().apply {
-            putString(FirebaseAnalytics.Param.SCREEN_NAME,  screenName)
-            putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenName)
+        runCatching {
+            val bundle = Bundle().apply {
+                putString(FirebaseAnalytics.Param.SCREEN_NAME,  screenName)
+                putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenName)
+            }
+            fa?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
         }
-        fa.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
         Logger.d("Analytics", "screenView: $screenName")
     }
 }

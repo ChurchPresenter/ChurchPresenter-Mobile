@@ -14,7 +14,7 @@ import io.sentry.protocol.User
  */
 actual object CrashReporting {
     actual fun init() {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        runCatching { FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true) }
     }
 
     /**
@@ -43,32 +43,32 @@ actual object CrashReporting {
      * re-enabling.
      */
     actual fun setEnabled(enabled: Boolean) {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
+        runCatching { FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled) }
         if (enabled) {
-            getAppContext()?.let { initSentry(it) }
+            runCatching { getAppContext()?.let { initSentry(it) } }
         } else {
-            Sentry.close()
+            runCatching { Sentry.close() }
         }
     }
 
     actual fun log(message: String) {
-        FirebaseCrashlytics.getInstance().log(message)
-        Sentry.addBreadcrumb(message)
+        runCatching { FirebaseCrashlytics.getInstance().log(message) }
+        runCatching { Sentry.addBreadcrumb(message) }
     }
 
     actual fun recordException(throwable: Throwable) {
-        FirebaseCrashlytics.getInstance().recordException(throwable)
-        Sentry.captureException(throwable)
+        runCatching { FirebaseCrashlytics.getInstance().recordException(throwable) }
+        runCatching { Sentry.captureException(throwable) }
     }
 
     actual fun setUserId(userId: String) {
-        FirebaseCrashlytics.getInstance().setUserId(userId)
-        Sentry.setUser(User().apply { id = userId })
+        runCatching { FirebaseCrashlytics.getInstance().setUserId(userId) }
+        runCatching { Sentry.setUser(User().apply { id = userId }) }
     }
 
     actual fun setCustomKey(key: String, value: String) {
-        FirebaseCrashlytics.getInstance().setCustomKey(key, value)
-        Sentry.setTag(key, value)
+        runCatching { FirebaseCrashlytics.getInstance().setCustomKey(key, value) }
+        runCatching { Sentry.setTag(key, value) }
     }
 }
 
