@@ -32,8 +32,23 @@ private val json = Json {
  * reporting success. The desktop app is expected to provide `GET /api/status`;
  * older versions that omit it still verify via `/api/songs`.
  */
-class StatusService(private val settings: AppSettings) {
-    private val client: HttpClient = createHttpClient()
+class StatusService internal constructor(
+    private val baseUrl: String,
+    private val apiKey: String,
+    private val deviceId: String,
+    private val client: HttpClient,
+) {
+    /**
+     * Production constructor — reads connection details from [AppSettings] and
+     * builds the real platform HTTP client. Tests use the [internal] constructor
+     * above to inject a [MockEngine]-backed client.
+     */
+    constructor(settings: AppSettings) : this(
+        baseUrl = settings.apiBaseUrl,
+        apiKey = settings.apiKey,
+        deviceId = settings.deviceId,
+        client = createHttpClient(),
+    )
 
     /**
      * Fetches and classifies server status.
@@ -43,7 +58,7 @@ class StatusService(private val settings: AppSettings) {
      * [StatusProbeResult].
      */
     suspend fun fetchStatus(): Result<StatusProbeResult> {
-        val statusUrl = "${settings.apiBaseUrl}/${ApiConstants.STATUS_ENDPOINT}"
+        val statusUrl = "$baseUrl/${ApiConstants.STATUS_ENDPOINT}"
         Logger.d(TAG, "fetchStatus — GET $statusUrl")
         return apiRunCatching {
             val response = client.get(statusUrl) { applyHeaders() }
@@ -97,7 +112,7 @@ class StatusService(private val settings: AppSettings) {
      * to positively identify the server when `/api/status` is missing or unrecognised.
      */
     private suspend fun probeSongs(): StatusProbeResult {
-        val songsUrl = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}"
+        val songsUrl = "$baseUrl/${ApiConstants.SONGS_ENDPOINT}"
         Logger.d(TAG, "probeSongs — GET $songsUrl")
         val response = client.get(songsUrl) { applyHeaders() }
         val raw = response.bodyAsText()
@@ -127,9 +142,8 @@ class StatusService(private val settings: AppSettings) {
         response.status.value == 401 || response.status.value == 403
 
     private fun HttpRequestBuilder.applyHeaders() {
-        val key = settings.apiKey
-        if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        if (apiKey.isNotBlank()) header(ApiConstants.API_KEY_HEADER, apiKey)
+        header(ApiConstants.DEVICE_ID_HEADER, deviceId)
         header(ApiConstants.APP_VERSION_HEADER, appVersion)
     }
 
