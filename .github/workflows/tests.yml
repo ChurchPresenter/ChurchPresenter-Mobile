@@ -38,13 +38,8 @@ jobs:
           if-no-files-found: ignore
 
   coverage:
-    name: Coverage (Kover, logic layer)
+    name: Coverage (Kover, model+network)
     runs-on: ubuntu-latest
-    # Best-effort: the js-tests job above is the enforced correctness gate. Kover
-    # measures the Android unit-test variant, where some platform actuals (Firebase,
-    # etc.) don't run cleanly on a bare JVM without Robolectric — so a failure here
-    # must not fail the build. See project memory for the proper-runner follow-up.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -65,11 +60,13 @@ jobs:
           fi
           echo "$GS_B64" | tr -d '\r\n' | base64 -d > composeApp/google-services.json
           test -s composeApp/google-services.json || { echo "ERROR: google-services.json empty after decode" >&2; exit 1; }
-      - name: Generate coverage report
+      - name: Generate + verify coverage (gates on the 80% floor)
         if: env.SKIP != '1'
-        run: ./gradlew :composeApp:koverXmlReport :composeApp:koverHtmlReport
+        # --continue so the HTML/XML report is still produced even when koverVerify
+        # fails the build, so the uploaded artifact shows what dropped below the floor.
+        run: ./gradlew :composeApp:koverXmlReport :composeApp:koverHtmlReport :composeApp:koverVerify --continue
       - name: Upload coverage report
-        if: env.SKIP != '1'
+        if: always() && env.SKIP != '1'
         uses: actions/upload-artifact@v4
         with:
           name: kover-coverage-report

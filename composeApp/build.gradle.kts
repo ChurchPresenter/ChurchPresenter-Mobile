@@ -60,9 +60,15 @@ kover {
                 )
             }
         }
-        // TODO(coverage): once model+network is broadly covered, enforce the target:
-        //   verify { rule { minBound(85) } }
-        // Left unenforced for now so CI reports the number without blocking.
+        // Enforced floor for the scoped model+network logic (currently ~82% line).
+        // Set to 80 so normal churn doesn't break CI; ratchet toward 85 as the
+        // remaining error branches / upload methods get covered. `koverVerify`
+        // is run in CI (see .github/workflows/tests.yml).
+        verify {
+            rule {
+                minBound(80)
+            }
+        }
     }
 }
 
