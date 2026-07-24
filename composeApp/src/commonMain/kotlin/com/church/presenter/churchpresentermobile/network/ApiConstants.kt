@@ -8,6 +8,20 @@ object ApiConstants {
     /** Host used when running inside the Android emulator (maps to host machine). */
     const val EMULATOR_HOST = "10.0.2.2"
     const val DEFAULT_PORT = 8765
+
+    // ── Network timeouts (milliseconds) ───────────────────────────────────
+    // Kept short so an unreachable server fails fast instead of leaving
+    // coroutines/threads blocked on socket connect — a long connect timeout
+    // combined with launch-time fan-out is what triggered a background ANR.
+    /** Socket-connect timeout for data and action requests. */
+    const val CONNECT_TIMEOUT_MS = 4_000L
+    /** Overall request timeout for data requests. */
+    const val REQUEST_TIMEOUT_MS = 12_000L
+    /** Socket read timeout for data requests. */
+    const val SOCKET_TIMEOUT_MS = 15_000L
+    /** Socket-connect timeout for the persistent WebSocket connection. */
+    const val WS_CONNECT_TIMEOUT_MS = 4_000L
+
     const val SONGS_ENDPOINT = "songs"
     const val SONG_SELECT_ENDPOINT = "select"
     const val PROJECT_ENDPOINT = "project"

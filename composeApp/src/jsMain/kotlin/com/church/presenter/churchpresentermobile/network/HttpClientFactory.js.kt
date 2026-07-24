@@ -11,8 +11,8 @@ import kotlinx.serialization.json.Json
 actual fun createHttpClient(): HttpClient {
     return HttpClient(Js) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 15_000
-            connectTimeoutMillis = 10_000
+            requestTimeoutMillis = ApiConstants.REQUEST_TIMEOUT_MS
+            connectTimeoutMillis = ApiConstants.CONNECT_TIMEOUT_MS
         }
         install(ContentNegotiation) {
             json(Json {

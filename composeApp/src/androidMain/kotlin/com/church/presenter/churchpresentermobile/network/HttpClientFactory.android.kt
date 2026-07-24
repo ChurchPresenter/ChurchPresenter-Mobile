@@ -12,16 +12,16 @@ private val lenientJson = Json { prettyPrint = true; isLenient = true; ignoreUnk
 
 actual fun createHttpClient(): HttpClient = HttpClient(OkHttp) {
     install(HttpTimeout) {
-        requestTimeoutMillis = 15_000
-        connectTimeoutMillis = 10_000
-        socketTimeoutMillis = 15_000
+        requestTimeoutMillis = ApiConstants.REQUEST_TIMEOUT_MS
+        connectTimeoutMillis = ApiConstants.CONNECT_TIMEOUT_MS
+        socketTimeoutMillis = ApiConstants.SOCKET_TIMEOUT_MS
     }
     install(ContentNegotiation) { json(lenientJson) }
 }
 
 actual fun createActionHttpClient(): HttpClient = HttpClient(OkHttp) {
     install(HttpTimeout) {
-        connectTimeoutMillis = 10_000
+        connectTimeoutMillis = ApiConstants.CONNECT_TIMEOUT_MS
         requestTimeoutMillis = null  // no timeout — waits for user Allow/Deny
         socketTimeoutMillis  = null
     }
@@ -51,6 +51,11 @@ actual fun createImageHttpClient(): HttpClient = HttpClient(OkHttp) {
 }
 
 actual fun createWebSocketClient(): HttpClient = HttpClient(OkHttp) {
+    install(HttpTimeout) {
+        // Bound the WS connect so a reconnect attempt against an unreachable
+        // server fails fast instead of blocking ~10s on OkHttp's default.
+        connectTimeoutMillis = ApiConstants.WS_CONNECT_TIMEOUT_MS
+    }
     install(WebSockets)
 }
 
