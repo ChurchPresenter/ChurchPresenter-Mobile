@@ -31,9 +31,11 @@ private val json = Json {
  *
  * @param settings The current [AppSettings] used to build the base URL and supply the API key.
  */
-class BibleService(private val settings: AppSettings, private val wsService: ServerEventService) {
-    private val client: HttpClient = createHttpClient()
-
+class BibleService(
+    private val settings: AppSettings,
+    private val wsService: ServerEventService,
+    private val client: HttpClient = createHttpClient(),
+) {
     init {
         Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
     }

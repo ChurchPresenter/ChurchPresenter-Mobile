@@ -34,9 +34,8 @@ enum class DictionaryFilter(val apiValue: String) {
 class DictionaryService(
     private val settings: AppSettings,
     private val wsService: ServerEventService,
+    private val client: HttpClient = createHttpClient(),
 ) {
-    private val client: HttpClient = createHttpClient()
-
     private fun HttpRequestBuilder.applyApiKey() {
         val key = settings.apiKey
         if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
