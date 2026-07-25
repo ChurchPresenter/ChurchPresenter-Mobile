@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
@@ -158,6 +159,17 @@ fun App() {
     // Single ServerEventService used by all ViewModels for both receiving
     // server-push events and sending action messages.
     val eventService = remember { ServerEventService(appSettings) }
+
+    // Re-ping the live map once this session actually connects to a desktop, so
+    // the server can distinguish paired mobile use from standalone (opened but
+    // never connected). `first { it }` suspends until the first successful
+    // connect and then completes, so reconnects don't re-fire it. If the app
+    // never connects, this just stays suspended until disposed. Same telemetry
+    // gate as pingOnOpen above.
+    LaunchedEffect(eventService) {
+        eventService.connected.first { it }
+        PingReporter.pingConnected(if (appSettings.isTelemetryEnabled) appSettings.deviceId else "")
+    }
 
     // Pause the WebSocket reconnect loop while the app is backgrounded so it stops
     // retrying connects to the server (which otherwise keep threads busy and can

@@ -122,6 +122,13 @@ class ServerEventService(private val settings: AppSettings) : WsSender {
     private val connectionReady = MutableStateFlow(false)
 
     /**
+     * Public read-only view of [connectionReady]: `true` while connected to a
+     * desktop, `false` otherwise. Re-emits `true` on every reconnect, so
+     * once-per-session observers must guard themselves (e.g. `first { it }`).
+     */
+    val connected: StateFlow<Boolean> = connectionReady.asStateFlow()
+
+    /**
      * Gate for the [listen] loop. When `false` the loop parks instead of
      * (re)connecting — set by [pause]/[resume] so the app stops retrying
      * socket connects while backgrounded (which otherwise keep threads busy

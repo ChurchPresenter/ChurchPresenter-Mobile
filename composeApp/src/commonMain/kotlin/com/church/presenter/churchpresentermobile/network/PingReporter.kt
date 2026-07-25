@@ -26,16 +26,29 @@ object PingReporter {
     private const val PING_URL = "https://www.churchpresenter.org/api/ping"
 
     /**
+     * Fired once per app launch, before/independent of any desktop connection.
+     *
      * @param installId Stable anonymous install id (see [com.church.presenter.churchpresentermobile.model.AppSettings.deviceId]),
      * sent as the X-Install-Id header so the server dedupes repeat launches to one row per install.
      */
-    fun pingOnOpen(installId: String) {
+    fun pingOnOpen(installId: String) = send(installId, connected = false)
+
+    /**
+     * Fired once when the app first connects to a desktop over the LAN this
+     * session. Sends `connected=true`, which the server uses to flip this
+     * install's launch row so standalone (never-connected) mobile use stays
+     * distinguishable from paired use. Reconnects must NOT re-fire this.
+     */
+    fun pingConnected(installId: String) = send(installId, connected = true)
+
+    private fun send(installId: String, connected: Boolean) {
         val url = buildString {
             append(PING_URL)
             append("?platform=mobile")
             append("&os=${getPlatform().os}")
             append("&version=$appVersion")
             if (isDebugBuild) append("&src=dev")
+            if (connected) append("&connected=true")
         }
         scope.launch {
             apiRunCatching {
