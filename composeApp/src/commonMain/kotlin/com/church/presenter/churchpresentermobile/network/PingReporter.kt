@@ -3,6 +3,11 @@ package com.church.presenter.churchpresentermobile.network
 import com.church.presenter.churchpresentermobile.getPlatform
 import com.church.presenter.churchpresentermobile.util.appVersion
 import com.church.presenter.churchpresentermobile.util.isDebugBuild
+// Aliased so the buildPingUrl parameters below can carry the obvious names
+// without shadowing the build-time values they default to.
+import com.church.presenter.churchpresentermobile.util.buildType as defaultBuildType
+import com.church.presenter.churchpresentermobile.util.commitHash as defaultCommitHash
+import com.church.presenter.churchpresentermobile.util.repoSlug as defaultRepoSlug
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import kotlinx.coroutines.CoroutineScope
@@ -41,15 +46,42 @@ object PingReporter {
      */
     fun pingConnected(installId: String) = send(installId, connected = true)
 
+    /**
+     * @param repoSlug The git origin this build was made from, as "owner/name"
+     * (see the provenance helpers in build.gradle.kts). The app is open-source
+     * and hardcodes [PING_URL], so without this a fork's launches are
+     * indistinguishable from real installs on the live map. Only the slug is
+     * sent — never the remote URL, which can embed credentials.
+     * @param commit Short commit hash the build was made from.
+     * @param buildType "release", "snapshot", "dirty" or "nogit" — separates a
+     * real end-user run from a self-compiled one, including inside a fork
+     * (src=dev only covers debug builds of our own source).
+     *
+     * Each is omitted when unknown; the server treats a missing value the same
+     * as an unrecognised one and still counts the ping.
+     */
+    internal fun buildPingUrl(
+        os: String,
+        version: String,
+        isDevBuild: Boolean,
+        connected: Boolean,
+        repoSlug: String = defaultRepoSlug,
+        commit: String = defaultCommitHash,
+        buildType: String = defaultBuildType,
+    ): String = buildString {
+        append(PING_URL)
+        append("?platform=mobile")
+        append("&os=$os")
+        append("&version=$version")
+        if (isDevBuild) append("&src=dev")
+        if (connected) append("&connected=true")
+        if (repoSlug.isNotBlank() && repoSlug != "unknown") append("&repo=$repoSlug")
+        if (commit.isNotBlank() && commit != "unknown") append("&commit=$commit")
+        if (buildType.isNotBlank() && buildType != "unknown") append("&build=$buildType")
+    }
+
     private fun send(installId: String, connected: Boolean) {
-        val url = buildString {
-            append(PING_URL)
-            append("?platform=mobile")
-            append("&os=${getPlatform().os}")
-            append("&version=$appVersion")
-            if (isDebugBuild) append("&src=dev")
-            if (connected) append("&connected=true")
-        }
+        val url = buildPingUrl(getPlatform().os, appVersion, isDebugBuild, connected)
         scope.launch {
             apiRunCatching {
                 client.get(url) {
