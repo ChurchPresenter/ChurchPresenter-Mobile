@@ -31,6 +31,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,6 +73,17 @@ import churchpresentermobile.composeapp.generated.resources.settings_api_key_lab
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
 import churchpresentermobile.composeapp.generated.resources.settings_display_name_label
 import churchpresentermobile.composeapp.generated.resources.settings_display_name_placeholder
+import churchpresentermobile.composeapp.generated.resources.mode_remote_body
+import churchpresentermobile.composeapp.generated.resources.mode_remote_title
+import churchpresentermobile.composeapp.generated.resources.mode_section_title
+import churchpresentermobile.composeapp.generated.resources.mode_standalone_body
+import churchpresentermobile.composeapp.generated.resources.mode_standalone_title
+import churchpresentermobile.composeapp.generated.resources.mode_switch_cancel
+import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_action
+import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_body
+import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_title
+import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_body
+import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_title
 import churchpresentermobile.composeapp.generated.resources.settings_appearance_section
 import churchpresentermobile.composeapp.generated.resources.settings_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_check_status
@@ -116,6 +129,9 @@ import churchpresentermobile.composeapp.generated.resources.status_permission_up
 import churchpresentermobile.composeapp.generated.resources.status_permissions_title
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
+import com.church.presenter.churchpresentermobile.model.supportsStandalone
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.util.CrashReporting
@@ -153,6 +169,9 @@ fun SettingsScreen(
     // Show/hide state for the API key field
     var apiKeyVisible    by remember { mutableStateOf(false) }
     var showStatusDialog by remember { mutableStateOf(false) }
+    // Mode the user has tapped but not yet confirmed. Switching mode redirects
+    // where everything projects, so it asks first.
+    var pendingMode      by remember { mutableStateOf<AppMode?>(null) }
     var testErrorSent    by remember { mutableStateOf(false) }
 
     // Inline server-status check
@@ -166,6 +185,15 @@ fun SettingsScreen(
 
     val emptyHostError   = stringResource(Res.string.settings_host_empty)
     val invalidPortError = stringResource(Res.string.settings_invalid_port)
+
+    val appMode by AppModeHolder.mode.collectAsState()
+    pendingMode?.let { target ->
+        ModeSwitchDialog(
+            target = target,
+            onConfirm = { AppModeHolder.set(appSettings, target); pendingMode = null },
+            onDismiss = { pendingMode = null },
+        )
+    }
 
     if (showStatusDialog) {
         ServerStatusDialog(
@@ -261,6 +289,36 @@ fun SettingsScreen(
                             Text(activeUrl, color = colors.muted, fontSize = 10.sp,
                                 fontFamily = FontFamily.Monospace)
                         }
+                    }
+
+                    // ── Mode ──────────────────────────────────────────────────
+                    // Only offered where a standalone output sink can exist; the
+                    // web build has none, so it never sees a choice it can't honour.
+                    if (supportsStandalone) {
+                        Text(stringResource(Res.string.mode_section_title),
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                        val modeOptions = listOf(AppMode.REMOTE, AppMode.STANDALONE)
+                        SegmentedControl(
+                            options = listOf(
+                                stringResource(Res.string.mode_remote_title),
+                                stringResource(Res.string.mode_standalone_title),
+                            ),
+                            selectedIndex = modeOptions.indexOf(appMode).coerceAtLeast(0),
+                            onSelect = { index ->
+                                val target = modeOptions[index]
+                                if (target != appMode) pendingMode = target
+                            },
+                        )
+                        Text(
+                            text = if (appMode == AppMode.STANDALONE) {
+                                stringResource(Res.string.mode_standalone_body)
+                            } else {
+                                stringResource(Res.string.mode_remote_body)
+                            },
+                            fontSize = 12.sp,
+                            color = colors.muted,
+                        )
+                        HorizontalDivider(color = colors.borderSubtle)
                     }
 
                     // ── Server section header ─────────────────────────────────
@@ -711,3 +769,44 @@ private fun StatusRecheckButton(onClick: () -> Unit) {
     }
 }
 
+
+/**
+ * Confirms a mode switch before it takes effect.
+ *
+ * Switching mode redirects where every projection action goes, which is not
+ * something to discover mid-service — so the dialog names the consequence
+ * rather than asking a generic "are you sure?".
+ */
+@Composable
+private fun ModeSwitchDialog(
+    target: AppMode,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val toStandalone = target == AppMode.STANDALONE
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                if (toStandalone) stringResource(Res.string.mode_switch_confirm_title)
+                else stringResource(Res.string.mode_switch_to_remote_title)
+            )
+        },
+        text = {
+            Text(
+                if (toStandalone) stringResource(Res.string.mode_switch_confirm_body)
+                else stringResource(Res.string.mode_switch_to_remote_body)
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(Res.string.mode_switch_confirm_action))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.mode_switch_cancel))
+            }
+        },
+    )
+}

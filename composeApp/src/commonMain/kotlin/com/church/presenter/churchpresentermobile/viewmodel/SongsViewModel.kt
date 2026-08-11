@@ -9,6 +9,9 @@ import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
@@ -24,8 +27,26 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "SongsViewModel"
 
-class SongsViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var songService = SongService(appSettings, eventService)
+/**
+ * @param eventService The persistent WebSocket, used here for the inbound
+ *   `song_section_selected` push event.
+ * @param sender Where outbound projection actions go. Defaults to [eventService]
+ *   so existing callers and tests are unaffected; [com.church.presenter.churchpresentermobile.App]
+ *   passes a [com.church.presenter.churchpresentermobile.present.ProjectionRouter]
+ *   so the same actions can be served locally in standalone mode.
+ * @param presenter The local presenter, when the app can present standalone.
+ *   The desktop protocol only carries indices, so the materialised lyrics have
+ *   to be handed over separately — this is that handoff. Every call on it is a
+ *   no-op in remote mode, so there is no mode branching here.
+ */
+class SongsViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: ServerEventService,
+    private val isDemoMode: Boolean = false,
+    sender: WsSender = eventService,
+    private val presenter: StandaloneEngine? = null,
+) : ViewModel() {
+    private var songService = SongService(appSettings, sender)
 
     private val _allSongs = MutableStateFlow<List<Song>>(emptyList())
 
@@ -205,7 +226,9 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
         Analytics.logEvent(AnalyticsEvent.SONG_OPENED)
         if (isDemoMode) {
             Logger.d(TAG, "openSongDetail — DEMO MODE for ${song.number}")
-            _songDetail.value = DemoData.getSongDetail(song.number)
+            val demoDetail = DemoData.getSongDetail(song.number)
+            _songDetail.value = demoDetail
+            presenter?.setDeck(SlideDeckBuilder.fromSong(song, demoDetail))
             return
         }
         viewModelScope.launch {
@@ -213,6 +236,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
             songService.getSongDetail(song.number, song.bookName, song.id, song.title)
                 .onSuccess { detail ->
                     _songDetail.value = detail
+                    presenter?.setDeck(SlideDeckBuilder.fromSong(song, detail))
                     Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${detail.allVerses.size}")
                 }
                 .onFailure { e ->
@@ -389,6 +413,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
     fun selectVerse(index: Int) {
         if (!_isProjecting.value) return
         _selectedVerseIndex.value = index
+        presenter?.showSlide(index)
         Analytics.logEvent(
             AnalyticsEvent.SONG_VERSE_SELECTED,
             mapOf(AnalyticsParam.VERSE_INDEX to index.toString())

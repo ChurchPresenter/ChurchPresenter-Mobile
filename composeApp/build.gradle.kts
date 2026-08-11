@@ -118,7 +118,10 @@ val generateProvenanceConfig by tasks.registering {
 
 // ---------------------------------------------------------------------------
 // Code-coverage (Kover) — measured on the Android unit-test JVM (where commonTest
-// runs). Scoped to the reliably-JVM-measurable logic: `model` + `network`.
+// runs). Scoped to the reliably-JVM-measurable logic: `model`, `network` and
+// `present` (the standalone presenter's routing/slide logic — pure by design;
+// the platform-specific output sinks live behind expect/actual leaves that are
+// named in the `classes` exclusion list below).
 //
 // The `viewmodel` package is EXCLUDED from the measured number, not because it's
 // untested — it's fully covered and gated by the `jsBrowserTest` CI job — but
@@ -157,6 +160,26 @@ kover {
                     "*MainActivity*",
                     "*ChurchPresenterApp*",
                     "*FirebasePushService*",
+                    // Platform capability flags — three constants per target, no logic.
+                    "*PlatformCapabilities*",
+                    // Output sinks are platform windows/servers, not unit-test targets;
+                    // the routing and slide logic they serve is tested in `present`.
+                    "*ExternalDisplaySink*",
+                    "*SlidePresentation*",
+                    "*PresentationOwners*",
+                    "*ActivityHolder*",
+                    // Embedded server, socket/interface probing, and the OS
+                    // keep-alive hooks — all platform I/O behind narrow seams.
+                    // The pure parts (PortAllocator, WebAssets) ARE measured.
+                    "*LocalWebServer*",
+                    "*WebPageSink*",
+                    "*NetworkInfo*",
+                    "*PresentationKeepAlive*",
+                    "*PresentationForegroundService*",
+                    // Platform file I/O. The repository logic that sits on top of
+                    // it IS measured, via InMemoryFileStorage.
+                    "*FileStore*",
+                    "*DocumentIO*",
                 )
             }
         }
@@ -240,6 +263,14 @@ kotlin {
                 withJs()
                 withWasmJs()
             }
+            // Android + iOS share everything that needs real device APIs the
+            // browser has no analogue for — chiefly the standalone presenter's
+            // embedded HTTP/WebSocket server. One Ktor CIO implementation
+            // serves both (JVM artifact on Android, Kotlin/Native on iOS).
+            group("mobile") {
+                withAndroidTarget()
+                withIos()
+            }
         }
     }
 
@@ -297,6 +328,13 @@ kotlin {
             kotlin.srcDir(generateProvenanceConfig.map { layout.buildDirectory.dir("generated/provenance") })
         }
 
+        getByName("mobileMain").dependencies {
+            // Embedded presentation server — standalone mode only.
+            implementation(libs.ktor.server.core)
+            implementation(libs.ktor.server.cio)
+            implementation(libs.ktor.server.websockets)
+        }
+
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
         }
@@ -338,6 +376,8 @@ kotlin {
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.websockets)
+            // QR generation for the standalone display URL (QrScanButton only scans).
+            implementation(libs.qrose)
             implementation(libs.kotlinx.serialization)
         }
         commonTest.dependencies {

@@ -84,5 +84,61 @@
                 </array>
             </dict>
         </array>
+        <!--
+            Declares the .cpset library/set format so a file arriving by email,
+            AirDrop or Files opens in this app. Conforms to public.json, which
+            is what it actually is — a plain JSON document.
+        -->
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+            <dict>
+                <key>UTTypeIdentifier</key>
+                <string>org.churchpresenter.cpset</string>
+                <key>UTTypeDescription</key>
+                <string>ChurchPresenter Set</string>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.json</string>
+                    <string>public.data</string>
+                </array>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>cpset</string>
+                    </array>
+                </dict>
+            </dict>
+        </array>
+
+        <!-- File types this app will open. -->
+        <key>CFBundleDocumentTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeName</key>
+                <string>ChurchPresenter Set</string>
+                <key>LSHandlerRank</key>
+                <string>Owner</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>org.churchpresenter.cpset</string>
+                </array>
+            </dict>
+            <dict>
+                <key>CFBundleTypeName</key>
+                <string>Song file</string>
+                <!-- Alternate, not Owner: plain text belongs to other apps too. -->
+                <key>LSHandlerRank</key>
+                <string>Alternate</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>public.plain-text</string>
+                </array>
+            </dict>
+        </array>
+
+        <!-- Lets the app be a destination for "Open in…" from Files. -->
+        <key>LSSupportsOpeningDocumentsInPlace</key>
+        <false/>
     </dict>
 </plist>

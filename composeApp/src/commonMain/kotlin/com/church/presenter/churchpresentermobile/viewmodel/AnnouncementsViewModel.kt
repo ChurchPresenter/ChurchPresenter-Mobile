@@ -8,7 +8,7 @@ import com.church.presenter.churchpresentermobile.model.AnnouncementType
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.network.AnnouncementService
-import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,7 +51,7 @@ data class SavedAnnouncement(val id: String, val form: AnnouncementForm) {
 
 class AnnouncementsViewModel(
     private val appSettings: AppSettings,
-    eventService: ServerEventService,
+    eventService: WsSender,
 ) : ViewModel() {
 
     private val service = AnnouncementService(eventService)

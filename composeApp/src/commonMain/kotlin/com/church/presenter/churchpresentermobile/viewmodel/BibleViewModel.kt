@@ -9,7 +9,9 @@ import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.BibleService
-import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
@@ -39,8 +41,17 @@ internal fun verseRangeString(numbers: List<Int>): String? = when {
  *
  * @param appSettings The shared [AppSettings] instance used to configure the API service.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
+ * @param presenter The local presenter, when the app can present standalone. The
+ *   desktop protocol carries only book/chapter/verse ids, so the materialised
+ *   verse text has to be handed over separately — this is that handoff. Every
+ *   call on it is a no-op in remote mode, so there is no mode branching here.
  */
-class BibleViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
+class BibleViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: WsSender,
+    private val isDemoMode: Boolean = false,
+    private val presenter: StandaloneEngine? = null,
+) : ViewModel() {
     private var bibleService = BibleService(appSettings, eventService)
 
     // ── Books ─────────────────────────────────────────────────────────────────
@@ -265,6 +276,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
             Logger.d(TAG, "selectChapter — DEMO MODE, serving demo verses")
             val verses = DemoData.getVerses(book.displayName, chapter)
             _verses.value = verses
+            presenter?.setDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
             val targets = pendingInitialVerseNumbers
             if (targets.isNotEmpty()) {
                 pendingInitialVerseNumbers = emptySet()
@@ -282,6 +294,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
                 bibleService.getChapter(bookNumber, chapter)
                     .onSuccess { verses ->
                         _verses.value = verses
+                        presenter?.setDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
                         // Auto-select verses requested by schedule navigation, if any
                         val targets = pendingInitialVerseNumbers
                         if (targets.isNotEmpty()) {
@@ -466,6 +479,7 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
     fun selectVerse(index: Int) {
         if (!_isProjecting.value) return
         _projectedVerseIndex.value = index
+        presenter?.showSlide(index)
         // ensure it is in the selection set
         _selectedVerseIndices.value = _selectedVerseIndices.value + index
         projectVerseAtIndex(index)

@@ -7,6 +7,7 @@ import com.church.presenter.churchpresentermobile.model.MediaItemPayload
 import com.church.presenter.churchpresentermobile.network.MediaCastService
 import com.church.presenter.churchpresentermobile.network.PickedMediaFile
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,12 +40,20 @@ fun mediaKindFrom(url: String): String {
     }
 }
 
+/**
+ * @param eventService The persistent WebSocket, used here for the inbound
+ *   `media_state_changed` push event.
+ * @param sender Where outbound transport actions go. Defaults to [eventService];
+ *   [com.church.presenter.churchpresentermobile.App] passes a
+ *   [com.church.presenter.churchpresentermobile.present.ProjectionRouter].
+ */
 class MediaViewModel(
     private val appSettings: AppSettings,
-    eventService: ServerEventService,
+    private val eventService: ServerEventService,
+    sender: WsSender = eventService,
 ) : ViewModel() {
 
-    private val service = MediaCastService(appSettings, eventService)
+    private val service = MediaCastService(appSettings, sender)
 
     /** Whether Go Live / Add to Schedule will send a URL or an uploaded local file. */
     private val _source = MutableStateFlow(MediaSource.URL)

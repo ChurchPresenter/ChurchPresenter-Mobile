@@ -4,6 +4,15 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Required on Android 13+ (API 33+) to show push notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!--
+        Standalone presenting: the phone hosts an HTTP/WebSocket server that TVs
+        on the LAN connect to. Without a foreground service plus these two locks,
+        Android suspends the CPU and puts Wi-Fi into power-saving once the screen
+        is off, and the audience screen drops out mid-song.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
             android:name=".ChurchPresenterApp"
@@ -61,11 +70,69 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="churchpresenter"/>
             </intent-filter>
+            <!--
+                Opening a shared .cpset or ChordPro file from Files, email, or a
+                messaging app. pathPattern needs the doubled escapes: Android
+                matches the literal path, and "\\." is a literal dot.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="content"/>
+                <data android:scheme="file"/>
+                <data android:mimeType="*/*"/>
+                <data android:host="*"/>
+                <data android:pathPattern=".*\\.cpset"/>
+                <data android:pathPattern=".*\\.cho"/>
+                <data android:pathPattern=".*\\.chordpro"/>
+                <data android:pathPattern=".*\\.chopro"/>
+            </intent-filter>
+            <!-- Receiving a song or set shared from another app. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/json"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
             <!-- Static app shortcuts (Songs + Bible) shown on home-screen long-press -->
             <meta-data
                     android:name="android.app.shortcuts"
                     android:resource="@xml/shortcuts"/>
         </activity>
+
+        <!--
+            Keeps the standalone presentation server running while the app is
+            backgrounded or the screen is off.
+
+            foregroundServiceType="specialUse" because none of Android's typed
+            categories fit "host a LAN server for the screens in this room" —
+            dataSync is the closest but is quota-limited on Android 15, which
+            would cut a long service short. The subtype value below is what the
+            Play Console review asks for.
+        -->
+        <service
+                android:name=".service.PresentationForegroundService"
+                android:exported="false"
+                android:foregroundServiceType="specialUse">
+            <property
+                    android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                    android:value="local_presentation_server"/>
+        </service>
+
+        <!--
+            Serves exported files to the share sheet from the app's own cache,
+            so no storage permission is needed.
+        -->
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="${applicationId}.fileprovider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths"/>
+        </provider>
 
         <!-- Firebase Cloud Messaging receiver -->
         <service

@@ -9,7 +9,7 @@ import com.church.presenter.churchpresentermobile.model.StrongsEntry
 import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.DictionaryFilter
 import com.church.presenter.churchpresentermobile.network.DictionaryService
-import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,7 +26,7 @@ private const val SEARCH_DEBOUNCE_MS = 300L
  */
 class DictionaryViewModel(
     private val appSettings: AppSettings,
-    eventService: ServerEventService,
+    eventService: WsSender,
 ) : ViewModel() {
 
     private val service = DictionaryService(appSettings, eventService)

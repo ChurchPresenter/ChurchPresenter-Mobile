@@ -1,0 +1,316 @@
+package com.church.presenter.churchpresentermobile.present
+
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.Slide
+import com.church.presenter.churchpresentermobile.model.SlideBackdrop
+import com.church.presenter.churchpresentermobile.model.SlideDeck
+import com.church.presenter.churchpresentermobile.model.SlideEnvelope
+import com.church.presenter.churchpresentermobile.model.SlideKind
+import com.church.presenter.churchpresentermobile.model.SlideMessageType
+import com.church.presenter.churchpresentermobile.model.SlideTextSize
+import com.church.presenter.churchpresentermobile.network.WsMessageType
+import com.church.presenter.churchpresentermobile.testutil.FakeOutputSink
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class StandaloneEngineTest {
+
+    private class Fixture(mode: AppMode = AppMode.STANDALONE) {
+        val modeFlow = MutableStateFlow(mode)
+        val registry = SinkRegistry()
+        val sink = FakeOutputSink()
+        val published = mutableListOf<SlideEnvelope>()
+        val engine: StandaloneEngine
+
+        init {
+            registry.register(sink)
+            engine = StandaloneEngine(modeFlow, registry) { published += it }
+        }
+    }
+
+    private fun deckOf(count: Int, kind: SlideKind = SlideKind.SONG) = SlideDeck(
+        kind = kind,
+        title = "deck",
+        slides = List(count) { Slide(kind = kind, body = "slide $it", reference = "ref $it") },
+    )
+
+    // ── Mode gating ──────────────────────────────────────────────────────
+
+    @Test
+    fun `every mutator is a no-op in remote mode`() {
+        val f = Fixture(AppMode.REMOTE)
+
+        f.engine.setDeck(deckOf(3))
+        f.engine.showSlide(1)
+        f.engine.setBlank(true)
+        f.engine.setLive(false)
+        f.engine.setTextSize(SlideTextSize.LARGE)
+        f.engine.setBackdrop(SlideBackdrop.BLACK)
+        f.engine.clear()
+
+        assertTrue(f.published.isEmpty(), "remote mode must never publish a slide")
+        assertTrue(f.sink.rendered.isEmpty(), "remote mode must never reach a sink")
+        assertTrue(f.engine.deck.value.isEmpty)
+        assertEquals(Slide.BLANK, f.engine.currentSlide.value)
+    }
+
+    @Test
+    fun `switching to standalone at runtime activates the engine`() {
+        val f = Fixture(AppMode.REMOTE)
+        f.engine.setDeck(deckOf(2))
+        assertTrue(f.published.isEmpty())
+
+        f.modeFlow.value = AppMode.STANDALONE
+        f.engine.setDeck(deckOf(2))
+
+        assertEquals(1, f.published.size)
+        assertEquals("slide 0", f.published.last().slide?.body)
+    }
+
+    // ── Deck loading and navigation ──────────────────────────────────────
+
+    @Test
+    fun `setDeck projects the first slide`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(4))
+
+        assertEquals(0, f.engine.index.value)
+        assertEquals("slide 0", f.engine.currentSlide.value.body)
+        assertEquals(4, f.engine.currentSlide.value.total)
+    }
+
+    @Test
+    fun `setDeck clears a previous blank`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+        f.engine.setBlank(true)
+        assertTrue(f.engine.isBlank.value)
+
+        f.engine.setDeck(deckOf(3))
+        assertFalse(f.engine.isBlank.value)
+    }
+
+    @Test
+    fun `setDeck preserves the live flag`() {
+        val f = Fixture()
+        f.engine.setLive(false)
+        f.engine.setDeck(deckOf(2))
+        assertFalse(f.engine.isLive.value)
+    }
+
+    @Test
+    fun `next stops at the end of the deck instead of wrapping`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+
+        f.engine.next()
+        f.engine.next()
+        assertEquals(2, f.engine.index.value)
+
+        f.engine.next()
+        assertEquals(2, f.engine.index.value)
+        assertEquals("slide 2", f.engine.currentSlide.value.body)
+    }
+
+    @Test
+    fun `previous stops at the start of the deck instead of wrapping`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+
+        f.engine.previous()
+        assertEquals(0, f.engine.index.value)
+        assertEquals("slide 0", f.engine.currentSlide.value.body)
+    }
+
+    @Test
+    fun `showSlide clamps an out-of-range index`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+
+        f.engine.showSlide(99)
+        assertEquals(2, f.engine.index.value)
+
+        f.engine.showSlide(-5)
+        assertEquals(0, f.engine.index.value)
+    }
+
+    @Test
+    fun `showSlide on an empty deck emits the blank slide`() {
+        val f = Fixture()
+        f.engine.showSlide(2)
+
+        assertEquals(0, f.engine.index.value)
+        assertEquals(SlideKind.BLANK, f.engine.currentSlide.value.kind)
+    }
+
+    @Test
+    fun `showSlide clears a blank`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+        f.engine.setBlank(true)
+
+        f.engine.showSlide(1)
+        assertFalse(f.engine.isBlank.value)
+        assertFalse(f.engine.currentSlide.value.isBlank)
+    }
+
+    // ── Blank / live ─────────────────────────────────────────────────────
+
+    @Test
+    fun `toggleBlank flips the blank flag onto the projected slide`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+
+        f.engine.toggleBlank()
+        assertTrue(f.engine.currentSlide.value.isBlank)
+        assertTrue(f.engine.currentSlide.value.isHidden)
+
+        f.engine.toggleBlank()
+        assertFalse(f.engine.currentSlide.value.isBlank)
+        assertFalse(f.engine.currentSlide.value.isHidden)
+    }
+
+    @Test
+    fun `blanking keeps the deck and index intact so restoring resumes in place`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(4))
+        f.engine.showSlide(2)
+
+        f.engine.setBlank(true)
+        assertEquals(2, f.engine.index.value)
+        assertEquals("slide 2", f.engine.currentSlide.value.body)
+
+        f.engine.setBlank(false)
+        assertEquals("slide 2", f.engine.currentSlide.value.body)
+        assertFalse(f.engine.currentSlide.value.isHidden)
+    }
+
+    @Test
+    fun `not live hides the slide without blanking it`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+        f.engine.setLive(false)
+
+        val slide = f.engine.currentSlide.value
+        assertFalse(slide.isBlank)
+        assertTrue(slide.isHidden)
+    }
+
+    // ── Styling overrides ────────────────────────────────────────────────
+
+    @Test
+    fun `operator styling is applied to every subsequent slide`() {
+        val f = Fixture()
+        f.engine.setTextSize(SlideTextSize.LARGE)
+        f.engine.setBackdrop(SlideBackdrop.IMAGE, "http://phone/assets/bg.jpg")
+        f.engine.setDeck(deckOf(3))
+        f.engine.next()
+
+        val slide = f.engine.currentSlide.value
+        assertEquals(SlideTextSize.LARGE, slide.textSize)
+        assertEquals(SlideBackdrop.IMAGE, slide.backdrop)
+        assertEquals("http://phone/assets/bg.jpg", slide.backdropUrl)
+    }
+
+    @Test
+    fun `setBackdrop without a url drops a stale image url`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(1))
+        f.engine.setBackdrop(SlideBackdrop.IMAGE, "http://phone/assets/bg.jpg")
+
+        f.engine.setBackdrop(SlideBackdrop.BLACK)
+        assertEquals(null, f.engine.currentSlide.value.backdropUrl)
+    }
+
+    // ── Emission ─────────────────────────────────────────────────────────
+
+    @Test
+    fun `revision increases monotonically across every emission`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+        f.engine.next()
+        f.engine.setBlank(true)
+        f.engine.setLive(false)
+        f.engine.setTextSize(SlideTextSize.SMALL)
+
+        val revisions = f.published.map { it.rev }
+        assertEquals(5, revisions.size)
+        assertEquals(revisions.sorted(), revisions)
+        assertEquals(revisions.distinct(), revisions)
+    }
+
+    @Test
+    fun `every emission reaches both the publisher and the sinks`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+        f.engine.next()
+
+        assertEquals(2, f.published.size)
+        assertEquals(2, f.sink.rendered.size)
+        assertEquals(f.published.map { it.rev }, f.sink.rendered.map { it.rev })
+    }
+
+    @Test
+    fun `index and total are stamped onto the projected slide`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(5))
+        f.engine.showSlide(3)
+
+        val slide = f.published.last().slide!!
+        assertEquals(3, slide.index)
+        assertEquals(5, slide.total)
+    }
+
+    // ── clear / remote actions ───────────────────────────────────────────
+
+    @Test
+    fun `clear unloads the deck and emits a CLEAR envelope`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+        f.engine.next()
+
+        f.engine.clear()
+
+        assertTrue(f.engine.deck.value.isEmpty)
+        assertEquals(0, f.engine.index.value)
+        assertEquals(SlideMessageType.CLEAR, f.published.last().type)
+        assertEquals(SlideKind.BLANK, f.engine.currentSlide.value.kind)
+    }
+
+    @Test
+    fun `a remote clear action blanks the local screen`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+
+        val result = f.engine.handleRemoteAction(WsMessageType.CLEAR, "{}")
+
+        assertTrue(result.isSuccess)
+        assertEquals(SlideMessageType.CLEAR, f.published.last().type)
+        assertTrue(f.engine.deck.value.isEmpty)
+    }
+
+    @Test
+    fun `desktop-only actions are swallowed successfully and change nothing`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+        val before = f.published.size
+
+        val types = listOf(
+            WsMessageType.ADD_TO_SCHEDULE,
+            WsMessageType.ADD_BATCH_TO_SCHEDULE,
+            WsMessageType.BIBLE_HOLD,
+            WsMessageType.MEDIA_PLAY_PAUSE,
+            WsMessageType.MEDIA_STOP,
+            WsMessageType.SELECT_PICTURE,
+        )
+        types.forEach { type ->
+            assertTrue(f.engine.handleRemoteAction(type, "{}").isSuccess, "$type should not fail")
+        }
+
+        assertEquals(before, f.published.size, "desktop-only actions must not emit a slide")
+        assertEquals("slide 0", f.engine.currentSlide.value.body)
+    }
+}

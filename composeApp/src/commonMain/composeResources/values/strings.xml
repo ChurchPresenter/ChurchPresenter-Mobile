@@ -461,4 +461,158 @@
     <string name="announce_anim_slide_left">Slide from left</string>
     <string name="announce_anim_slide_right">Slide from right</string>
     <string name="announce_duration_seconds">%1$s s</string>
+
+    <!-- ── Standalone presenter mode ─────────────────────────────────── -->
+    <string name="tab_library">Library</string>
+
+    <!-- Mode picker -->
+    <string name="mode_picker_title">How will you present?</string>
+    <string name="mode_picker_subtitle">You can change this later in Settings.</string>
+    <string name="mode_remote_title">Remote control</string>
+    <string name="mode_remote_body">Drive ChurchPresenter running on a computer. The computer shows the slides.</string>
+    <string name="mode_standalone_title">Standalone</string>
+    <string name="mode_standalone_body">This phone is the presenter. Project straight to a TV or screen — no computer needed.</string>
+    <string name="mode_continue">Continue</string>
+    <string name="mode_section_title">Mode</string>
+    <string name="mode_switch_confirm_title">Switch to standalone?</string>
+    <string name="mode_switch_confirm_body">Projection will go to your own screens instead of the computer.</string>
+    <string name="mode_switch_to_remote_title">Switch to remote control?</string>
+    <string name="mode_switch_to_remote_body">Projection will go back to ChurchPresenter on your computer.</string>
+    <string name="mode_switch_confirm_action">Switch</string>
+    <string name="mode_switch_cancel">Cancel</string>
+
+    <!-- Standalone controller -->
+    <string name="standalone_title">Present</string>
+    <string name="standalone_source">Source</string>
+    <string name="standalone_source_song">Song</string>
+    <string name="standalone_source_bible">Bible</string>
+    <string name="standalone_source_notice">Notice</string>
+    <string name="standalone_backdrop">Backdrop</string>
+    <string name="standalone_backdrop_gradient">Gradient</string>
+    <string name="standalone_backdrop_image">Image</string>
+    <string name="standalone_backdrop_black">Black</string>
+    <string name="standalone_text_size">Text size</string>
+    <string name="standalone_size_small">Small</string>
+    <string name="standalone_size_medium">Medium</string>
+    <string name="standalone_size_large">Large</string>
+    <string name="standalone_prev">Prev</string>
+    <string name="standalone_next">Next</string>
+    <string name="standalone_blank">Blank</string>
+    <string name="standalone_live">Live</string>
+    <string name="standalone_preview">Preview</string>
+    <string name="standalone_no_output">No screen connected</string>
+    <string name="standalone_output_count">%1$s screen(s)</string>
+    <string name="standalone_empty_title">Nothing loaded</string>
+    <string name="standalone_empty_body">Open a song or a Bible chapter and tap Present to load it here.</string>
+    <string name="standalone_slide_position">%1$s of %2$s</string>
+    <string name="standalone_present_action">Present</string>
+
+    <!-- Output targets -->
+    <string name="outputs_title">Screens</string>
+    <string name="outputs_empty">No output available on this device.</string>
+    <string name="outputs_hint">Connect an HDMI adapter, or start screen mirroring (AirPlay or Cast) — this app will show the slide on the TV and keep the controller on your phone.</string>
+    <string name="outputs_state_attached">Connected</string>
+    <string name="outputs_state_waiting">Waiting for a screen</string>
+    <string name="outputs_state_off">Off</string>
+    <string name="outputs_state_error">Error</string>
+    <string name="outputs_close">Close</string>
+    <string name="outputs_url_label">Open this on your TV or laptop</string>
+    <string name="outputs_scan_hint">Or scan to open it on another phone.</string>
+    <string name="outputs_ios_foreground_warning">Keep this app open and the screen on while presenting.</string>
+
+    <!-- ── On-device library ─────────────────────────────────────────── -->
+    <string name="library_title">Library</string>
+    <string name="library_search_placeholder">Search your library…</string>
+    <string name="library_filter_all">All</string>
+    <string name="library_filter_songs">Songs</string>
+    <string name="library_filter_notices">Notices</string>
+    <string name="library_empty_title">Your library is empty</string>
+    <string name="library_empty_body">Songs and notices you create here work with no computer and no internet.</string>
+    <string name="library_no_results">Nothing matches your search</string>
+    <string name="library_new_song">New song</string>
+    <string name="library_new_notice">New notice</string>
+    <string name="library_add">Add</string>
+    <string name="library_origin_desktop">From computer</string>
+    <string name="library_origin_edited">Edited</string>
+    <string name="library_delete">Delete</string>
+    <string name="library_delete_confirm_title">Delete this item?</string>
+    <string name="library_delete_confirm_body">This cannot be undone.</string>
+    <string name="library_section_songs">Songs</string>
+    <string name="library_section_notices">Notices</string>
+
+    <!-- Song editor -->
+    <string name="editor_song_new_title">New song</string>
+    <string name="editor_song_edit_title">Edit song</string>
+    <string name="editor_song_edit_label">Edit</string>
+    <string name="editor_field_title">Title</string>
+    <string name="editor_field_number">Number</string>
+    <string name="editor_field_author">Author</string>
+    <string name="editor_field_book">Songbook</string>
+    <string name="editor_field_copyright">Copyright</string>
+    <string name="editor_sections">Sections</string>
+    <string name="editor_add_section">Add section</string>
+    <string name="editor_section_text_placeholder">Type the words for this slide…</string>
+    <string name="editor_move_up">Move up</string>
+    <string name="editor_move_down">Move down</string>
+    <string name="editor_remove_section">Remove section</string>
+    <string name="editor_split_section">Split on blank lines</string>
+    <string name="editor_save">Save</string>
+    <string name="editor_cancel">Cancel</string>
+    <string name="editor_discard_title">Discard changes?</string>
+    <string name="editor_discard_body">Your edits will be lost.</string>
+    <string name="editor_discard_confirm">Discard</string>
+    <string name="editor_keep_editing">Keep editing</string>
+    <string name="editor_preview">Slide preview</string>
+
+    <!-- Notice editor -->
+    <string name="editor_notice_new_title">New notice</string>
+    <string name="editor_notice_edit_title">Edit notice</string>
+    <string name="editor_field_body">Text to show</string>
+    <string name="editor_body_placeholder">Welcome!\nService begins at 10:30</string>
+
+    <!-- Section types -->
+    <string name="section_verse">Verse</string>
+    <string name="section_chorus">Chorus</string>
+    <string name="section_bridge">Bridge</string>
+    <string name="section_tag">Tag</string>
+    <string name="section_ending">Ending</string>
+
+    <!-- Desktop sync -->
+    <string name="sync_title">Get songs from your computer</string>
+    <string name="sync_action">Sync from computer</string>
+    <string name="sync_never">Never synced</string>
+    <string name="sync_just_now">Synced just now</string>
+    <string name="sync_minutes_ago">Synced %1$s min ago</string>
+    <string name="sync_hours_ago">Synced %1$s h ago</string>
+    <string name="sync_days_ago">Synced %1$s days ago</string>
+    <string name="sync_running">Copying %1$s of %2$s…</string>
+    <string name="sync_cancel">Stop</string>
+    <string name="sync_done">Copied %1$s songs</string>
+    <string name="sync_done_with_failures">Copied %1$s songs · %2$s could not be read</string>
+    <string name="sync_kept_local">%1$s of your edits were kept</string>
+    <string name="sync_failed">Could not reach your computer: %1$s</string>
+    <string name="sync_cancelled">Stopped — %1$s songs were kept</string>
+    <string name="sync_explain">Copies your computer\'s songs onto this phone so they work with no computer and no internet. Your own songs and edits are never overwritten.</string>
+    <string name="sync_close">Close</string>
+
+    <!-- Import / export -->
+    <string name="share_title">Share &amp; import</string>
+    <string name="share_export">Export my library</string>
+    <string name="share_import">Import a file</string>
+    <string name="share_explain">Send your library to another phone, or bring in songs from a file. ChordPro (.cho, .chordpro) and ChurchPresenter (.cpset) files are supported.</string>
+    <string name="import_preview_title">Import</string>
+    <string name="import_new_count">%1$s new</string>
+    <string name="import_conflict_count">%1$s already in your library</string>
+    <string name="import_conflict_question">What should happen to the ones you already have?</string>
+    <string name="import_keep_mine">Keep mine</string>
+    <string name="import_replace">Use the file\'s</string>
+    <string name="import_confirm">Import</string>
+    <string name="import_cancel">Cancel</string>
+    <string name="import_nothing">There is nothing new in that file.</string>
+    <string name="import_done">Imported %1$s items</string>
+    <string name="import_song_added">Added \"%1$s\"</string>
+    <string name="import_error_unreadable">That file could not be read.</string>
+    <string name="import_error_wrong_format">That is not a ChurchPresenter file.</string>
+    <string name="import_error_too_new">That file was made with a newer version of the app. Update to open it.</string>
+    <string name="import_error_empty">That file has nothing in it.</string>
 </resources>

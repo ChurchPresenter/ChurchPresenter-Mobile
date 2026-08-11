@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ChurchPresenter</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<!--
+  The projected display.
+
+  A fixed DOM: every region exists at load time and is revealed or hidden by
+  class, so a slide change is a couple of property writes rather than a re-render.
+  Nothing here is fetched from the internet — see WebAssets.kt for why that is
+  a hard requirement rather than a preference.
+-->
+<body>
+  <div id="backdrop" class="bd-gradient"></div>
+  <div id="scrim" class="hidden"></div>
+
+  <main id="screen" class="serif">
+    <div id="content" class="content">
+      <p id="body" class="body"></p>
+      <p id="reference" class="reference"></p>
+      <p id="footer" class="footer"></p>
+    </div>
+  </main>
+
+  <div id="brand" class="corner corner-start hidden"></div>
+  <div id="clock" class="corner corner-end hidden"></div>
+
+  <!-- Shown until the first slide arrives, and again if the phone goes away. -->
+  <div id="standby" class="standby">
+    <div class="standby-mark"></div>
+    <p id="standby-text" class="standby-text">Waiting for ChurchPresenter…</p>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

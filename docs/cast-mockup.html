@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChurchPresenter — Standalone Cast Mockup</title>
+<style>
+:root{
+  --bg:#0d0f14;
+  --panel:#161a22;
+  --panel-2:#1e232e;
+  --line:#2b3140;
+  --text:#e8ecf4;
+  --dim:#8d97ab;
+  --accent:#7c5cff;
+  --accent-2:#25b09b;
+  --live:#e14b4b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:24px;
+}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:20px}
+.stage{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+
+/* ───────────── phone controller ───────────── */
+.phone{
+  width:320px;flex:0 0 320px;background:var(--panel);
+  border:1px solid var(--line);border-radius:28px;overflow:hidden;
+  box-shadow:0 20px 50px #0008;
+}
+.phone-top{
+  padding:14px 16px;background:var(--panel-2);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.phone-top .title{font-size:15px;font-weight:600}
+.cast-chip{
+  display:flex;align-items:center;gap:6px;font-size:11px;
+  background:#25b09b22;color:var(--accent-2);
+  border:1px solid #25b09b55;padding:4px 9px;border-radius:99px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);
+  animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+
+.section{padding:12px 16px;border-bottom:1px solid var(--line)}
+.label{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.seg{display:flex;background:#0f1219;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{
+  flex:1;background:none;border:0;color:var(--dim);font-size:11px;padding:7px 0;
+  border-radius:7px;cursor:pointer;font-family:inherit;
+}
+.seg button.on{background:var(--accent);color:#fff;font-weight:600}
+
+.list{max-height:230px;overflow:auto}
+.row{
+  padding:9px 10px;border-radius:9px;cursor:pointer;font-size:13px;
+  display:flex;gap:10px;align-items:baseline;
+}
+.row:hover{background:#ffffff0a}
+.row.on{background:var(--accent);color:#fff}
+.row .num{color:var(--dim);font-size:11px;min-width:26px}
+.row.on .num{color:#fff9}
+.row .meta{color:var(--dim);font-size:11px;margin-left:auto}
+.row.on .meta{color:#fff9}
+
+.controls{display:flex;gap:8px;padding:12px 16px}
+.btn{
+  flex:1;padding:11px 0;border-radius:11px;border:1px solid var(--line);
+  background:var(--panel-2);color:var(--text);font-size:12px;cursor:pointer;font-family:inherit;
+}
+.btn:hover{border-color:var(--accent)}
+.btn.live{background:var(--live);border-color:var(--live);color:#fff;font-weight:600}
+.btn.black{background:#000;color:#fff}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ───────────── tv preview ───────────── */
+.tvwrap{flex:1;min-width:420px}
+.tv{
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;
+  border:10px solid #05070b;box-shadow:0 24px 60px #000a;background:#000;
+}
+.tv-stand{width:120px;height:10px;background:#05070b;border-radius:0 0 6px 6px;margin:0 auto}
+.tv-cap{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.tv-cap .who{font-size:13px;color:var(--dim)}
+.tv-cap .who b{color:var(--text)}
+.badge{font-size:10px;background:var(--live);padding:3px 8px;border-radius:99px;letter-spacing:.08em}
+
+/* backdrop layers */
+#backdrop{position:absolute;inset:0;transition:background .6s ease, opacity .5s ease}
+.bd-gradient{background:radial-gradient(120% 90% at 20% 0%,#2a1d5e 0%,#0b0d1a 60%,#05060d 100%)}
+.bd-photo{
+  background:
+    linear-gradient(#0009,#000c),
+    repeating-linear-gradient(115deg,#1c3d5a 0 40px,#20496b 40px 80px);
+}
+.bd-black{background:#000}
+
+/* content — full screen only */
+#screen{position:absolute;inset:0;font-family:'Georgia',serif;color:#fff;}
+#screen.sans{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+.full{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:6% 8%;
+  gap:.7em;opacity:1;transition:opacity .45s ease;
+}
+.full .body{font-size:clamp(15px,3.5vw,42px);line-height:1.32;
+  text-shadow:0 2px 18px #000a;white-space:pre-line}
+.full .ref{font-size:clamp(10px,1.7vw,20px);letter-spacing:.14em;
+  text-transform:uppercase;opacity:.72}
+
+/* text size control */
+.size-s .full .body{font-size:clamp(12px,2.7vw,32px)}
+.size-l .full .body{font-size:clamp(18px,4.4vw,54px)}
+
+.hide{opacity:0!important}
+
+/* corner extras */
+.clock{position:absolute;top:16px;right:20px;font-size:clamp(9px,1.2vw,14px);
+  font-family:Inter,sans-serif;opacity:.55;letter-spacing:.08em}
+.brand{position:absolute;top:16px;left:20px;font-size:clamp(8px,1vw,12px);
+  font-family:Inter,sans-serif;opacity:.45;letter-spacing:.22em;text-transform:uppercase}
+
+/* notes */
+.notes{margin-top:22px;max-width:780px;color:var(--dim);font-size:13px;line-height:1.65}
+.notes h2{color:var(--text);font-size:14px;margin:20px 0 6px}
+.notes code{background:var(--panel-2);padding:2px 6px;border-radius:5px;color:#c9b8ff;font-size:12px}
+.notes li{margin:3px 0}
+</style>
+</head>
+<body>
+
+<h1>Standalone Cast — visual mockup</h1>
+<div class="sub">Phone acts as the controller; the TV / Chromecast shows the output. No desktop ChurchPresenter required.</div>
+
+<div class="stage">
+
+  <!-- ── CONTROLLER ── -->
+  <div class="phone">
+    <div class="phone-top">
+      <div class="title">Present</div>
+      <div class="cast-chip"><span class="dot"></span><span>Sanctuary TV</span></div>
+    </div>
+
+    <div class="section">
+      <div class="label">Source</div>
+      <div class="seg" id="srcSeg">
+        <button class="on" data-src="song">Song</button>
+        <button data-src="bible">Bible</button>
+        <button data-src="announce">Notice</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="label" id="listLabel">Sections</div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div class="section">
+      <div class="label">Backdrop</div>
+      <div class="seg" id="bdSeg">
+        <button class="on" data-bd="bd-gradient">Gradient</button>
+        <button data-bd="bd-photo">Image</button>
+        <button data-bd="bd-black">Black</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="label">Text size</div>
+      <div class="seg" id="sizeSeg">
+        <button data-size="size-s">Small</button>
+        <button class="on" data-size="">Medium</button>
+        <button data-size="size-l">Large</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prevBtn">◀ Prev</button>
+      <button class="btn" id="nextBtn">Next ▶</button>
+    </div>
+    <div class="controls" style="padding-top:0">
+      <button class="btn black" id="blankBtn">Blank</button>
+      <button class="btn live" id="liveBtn">Live</button>
+    </div>
+  </div>
+
+  <!-- ── TV ── -->
+  <div class="tvwrap">
+    <div class="tv-cap">
+      <div class="who">Casting to <b>Sanctuary TV</b> · 1920×1080</div>
+      <div class="badge" id="liveBadge">LIVE</div>
+    </div>
+    <div class="tv">
+      <div id="backdrop" class="bd-gradient"></div>
+      <div id="screen">
+        <div class="brand">Grace Community Church</div>
+        <div class="clock" id="clock">10:32</div>
+
+        <div class="full" id="fullView">
+          <div class="body" id="fullBody"></div>
+          <div class="ref" id="fullRef"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tv-stand"></div>
+  </div>
+</div>
+
+<div class="notes">
+  <h2>What this shows</h2>
+  <ul>
+    <li><b>Controller / output split.</b> The phone drives the screen, it never mirrors it — the same mental model as the existing remote mode, so the UI stays familiar whether or not the desktop is connected.</li>
+    <li><b>Full-screen output only.</b> One slide, centred, sized to fill the TV.</li>
+    <li><b>Blank</b> is a first-class control — one tap to black out mid-service.</li>
+    <li>Song sections, Bible verses and announcements reuse the models already in <code>model/</code> (<code>Song</code>, <code>Bible</code>, <code>Announcement</code>), so standalone mode is a new <i>output target</i>, not a new content layer.</li>
+  </ul>
+  <p>Interactive: click a row, use ←/→ or space, press <code>b</code> to blank.</p>
+</div>
+
+<script>
+const CONTENT = {
+  song: {
+    label: 'Sections — 42 Amazing Grace',
+    items: [
+      { num:'V1', title:'Amazing grace how sweet…', meta:'verse',
+        body:'Amazing grace! how sweet the sound,\nThat saved a wretch like me!\nI once was lost, but now am found,\nWas blind, but now I see.' },
+      { num:'V2', title:'’Twas grace that taught…', meta:'verse',
+        body:'’Twas grace that taught my heart to fear,\nAnd grace my fears relieved;\nHow precious did that grace appear,\nThe hour I first believed!' },
+      { num:'V3', title:'Through many dangers…', meta:'verse',
+        body:'Through many dangers, toils and snares,\nI have already come;\n’Tis grace hath brought me safe thus far,\nAnd grace will lead me home.' },
+      { num:'V4', title:'When we’ve been there…', meta:'verse',
+        body:'When we’ve been there ten thousand years,\nBright shining as the sun,\nWe’ve no less days to sing God’s praise\nThan when we’d first begun.' }
+    ]
+  },
+  bible: {
+    label: 'John 3 — verses',
+    items: [
+      { num:'14', title:'And as Moses lifted up…', meta:'John 3:14', ref:'John 3:14',
+        body:'And as Moses lifted up the serpent in the wilderness, even so must the Son of man be lifted up.' },
+      { num:'15', title:'That whosoever believeth…', meta:'John 3:15', ref:'John 3:15',
+        body:'That whosoever believeth in him should not perish, but have eternal life.' },
+      { num:'16', title:'For God so loved the world…', meta:'John 3:16', ref:'John 3:16',
+        body:'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.' },
+      { num:'17', title:'For God sent not his Son…', meta:'John 3:17', ref:'John 3:17',
+        body:'For God sent not his Son into the world to condemn the world; but that the world through him might be saved.' }
+    ]
+  },
+  announce: {
+    label: 'Announcements',
+    items: [
+      { num:'1', title:'Welcome', meta:'notice', ref:'Welcome',
+        body:'Welcome!\nService begins at 10:30' },
+      { num:'2', title:'Prayer meeting', meta:'notice', ref:'This week',
+        body:'Prayer meeting\nWednesday · 7:00 pm · Hall B' },
+      { num:'3', title:'Offering', meta:'notice', ref:'Giving',
+        body:'Offering\nScan the QR code at the door\nor give online at gracechurch.org/give' }
+    ]
+  }
+};
+
+let src = 'song', idx = 0, blank = false, live = true;
+const $ = id => document.getElementById(id);
+
+function renderList(){
+  const c = CONTENT[src];
+  $('listLabel').textContent = c.label;
+  $('list').innerHTML = c.items.map((it,i)=>`
+    <div class="row ${i===idx?'on':''}" data-i="${i}">
+      <span class="num">${it.num}</span>
+      <span>${it.title}</span>
+      <span class="meta">${it.meta}</span>
+    </div>`).join('');
+  [...$('list').children].forEach(el=>{
+    el.onclick = ()=>{ idx = +el.dataset.i; blank = false; render(); };
+  });
+}
+
+function render(){
+  renderList();
+  const it = CONTENT[src].items[idx];
+  const ref = it.ref || `Amazing Grace · verse ${idx+1}`;
+
+  $('fullBody').textContent = it.body;
+  $('fullRef').textContent = ref;
+  $('fullView').classList.toggle('hide', blank || !live);
+
+  $('screen').classList.toggle('sans', src==='announce');
+  $('liveBadge').style.visibility = live ? 'visible' : 'hidden';
+  $('liveBtn').classList.toggle('on', live);
+  $('blankBtn').style.opacity = blank ? 1 : .65;
+}
+
+function seg(id, fn){
+  $(id).onclick = e => {
+    const b = e.target.closest('button'); if(!b) return;
+    [...$(id).children].forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); fn(b); render();
+  };
+}
+seg('srcSeg', b => { src = b.dataset.src; idx = 0; blank = false; });
+seg('bdSeg',  b => { $('backdrop').className = b.dataset.bd; });
+seg('sizeSeg',b => { $('screen').className = b.dataset.size; render(); });
+
+$('nextBtn').onclick = ()=>{ idx = Math.min(idx+1, CONTENT[src].items.length-1); blank=false; render(); };
+$('prevBtn').onclick = ()=>{ idx = Math.max(idx-1, 0); blank=false; render(); };
+$('blankBtn').onclick = ()=>{ blank = !blank; render(); };
+$('liveBtn').onclick  = ()=>{ live = !live; render(); };
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'||e.key===' ') $('nextBtn').click();
+  if(e.key==='ArrowLeft') $('prevBtn').click();
+  if(e.key==='b') $('blankBtn').click();
+});
+
+function tick(){
+  const d = new Date();
+  $('clock').textContent = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+tick(); setInterval(tick, 10000);
+render();
+</script>
+</body>
+</html>

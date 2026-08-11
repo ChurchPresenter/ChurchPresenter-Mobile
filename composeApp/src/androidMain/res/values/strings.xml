@@ -13,4 +13,9 @@
     <string name="shortcut_songs_long">Open Songs</string>
     <string name="shortcut_bible_short">Bible</string>
     <string name="shortcut_bible_long">Open Bible</string>
+
+    <!-- Standalone presentation server (foreground service) -->
+    <string name="presentation_service_channel">Presenting</string>
+    <string name="presentation_service_title">Presenting to a screen</string>
+    <string name="presentation_service_text">Your screens stay connected while this is running.</string>
 </resources>

@@ -49,10 +49,20 @@ import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
 import churchpresentermobile.composeapp.generated.resources.tab_songs
 import churchpresentermobile.composeapp.generated.resources.web_title
 import coil3.request.crossfade
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.library.LibraryRepository
+import com.church.presenter.churchpresentermobile.present.ProjectionRouter
+import com.church.presenter.churchpresentermobile.present.SinkRegistry
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.present.sink.WebPageSink
+import com.church.presenter.churchpresentermobile.present.sink.createExternalDisplaySink
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
+import com.church.presenter.churchpresentermobile.model.supportsEmbeddedServer
+import com.church.presenter.churchpresentermobile.model.supportsStandalone
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.network.createImageHttpClient
 import com.church.presenter.churchpresentermobile.network.PingReporter
@@ -76,7 +86,12 @@ import com.church.presenter.churchpresentermobile.ui.QAAdminScreen
 import com.church.presenter.churchpresentermobile.ui.ScheduleDrawerContent
 import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SongsTable
+import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
+import com.church.presenter.churchpresentermobile.ui.library.AnnouncementEditorScreen
+import com.church.presenter.churchpresentermobile.ui.library.LibraryScreen
+import com.church.presenter.churchpresentermobile.ui.library.SongEditorScreen
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.util.isDebugBuild
@@ -104,6 +119,7 @@ import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import com.church.presenter.churchpresentermobile.ui.StatusScreen
+import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -112,6 +128,12 @@ import org.jetbrains.compose.resources.stringResource
 @Preview
 fun App() {
     val appSettings = remember { AppSettings() }
+
+    // Seed the process-wide mode holder from persisted settings before anything
+    // reads it. AppSettings coerces to REMOTE on platforms without an output
+    // sink, so the web build is unaffected by any of this.
+    remember(appSettings) { AppModeHolder.init(appSettings) }
+    val appMode by AppModeHolder.mode.collectAsState()
 
     // Anonymous, city-level ping to the live user map — fires once per app launch.
     // Only send the persistent device id when the user has opted into usage
@@ -160,6 +182,58 @@ fun App() {
     // server-push events and sending action messages.
     val eventService = remember { ServerEventService(appSettings) }
 
+    // ── Projection routing ────────────────────────────────────────────────
+    // In REMOTE mode the router delegates verbatim to eventService, so every
+    // service below behaves exactly as it always has. In STANDALONE mode the
+    // same actions are handled locally by StandaloneEngine and slides are
+    // rendered by whatever output sinks are attached. Services are handed the
+    // router instead of eventService and are unaware the distinction exists.
+    val sinkRegistry = remember { SinkRegistry() }
+    // The on-device library. Owned here so the Library tab and the standalone
+    // controller see the same content without either owning the other.
+    val libraryRepository = remember {
+        LibraryRepository(now = { Clock.System.now().toEpochMilliseconds() })
+    }
+    val standaloneEngine = remember(sinkRegistry) {
+        StandaloneEngine(AppModeHolder.mode, sinkRegistry)
+    }
+    val projectionRouter = remember(standaloneEngine) {
+        ProjectionRouter(AppModeHolder.mode, eventService, standaloneEngine)
+    }
+
+    // ── Output sinks ──────────────────────────────────────────────────────
+    // Registered where the platform supports them at all; attached only while
+    // the app is in standalone mode. Registering up front is what lets the
+    // outputs list say "External display — no screen connected" rather than
+    // silently omitting the option.
+    LaunchedEffect(sinkRegistry) {
+        createExternalDisplaySink()?.let(sinkRegistry::register)
+        if (supportsEmbeddedServer) {
+            sinkRegistry.register(
+                WebPageSink(
+                    preferredPort = appSettings.standalonePort,
+                    // Remember whatever port was actually bound so the URL the
+                    // operator gave the TV stays the same next service.
+                    onPortBound = { appSettings.standalonePort = it },
+                )
+            )
+        }
+        // Sinks report asynchronously — a display can appear seconds after
+        // attach, or vanish mid-service — so mirror each sink's own status flow
+        // into the registry's aggregate for the outputs UI.
+        sinkRegistry.all().forEach { sink ->
+            launch { sink.status.collect { sinkRegistry.refreshStatuses() } }
+        }
+    }
+    // Attach on entering standalone, detach on leaving it, so a remote-mode user
+    // never has a presentation window opened behind their back.
+    LaunchedEffect(appMode) {
+        sinkRegistry.all().forEach { sink ->
+            if (appMode == AppMode.STANDALONE) sink.attach() else sink.detach()
+        }
+        sinkRegistry.refreshStatuses()
+    }
+
     // Re-ping the live map once this session actually connects to a desktop, so
     // the server can distinguish paired mobile use from standalone (opened but
     // never connected). `first { it }` suspends until the first successful
@@ -192,16 +266,16 @@ fun App() {
     // This guarantees the loaded book/song lists survive tab switches forever —
     // no data is ever discarded just because the user navigated to another tab.
     val bibleViewModel: BibleViewModel = viewModel(key = "bible_$isDemoMode") {
-        BibleViewModel(appSettings, eventService, isDemoMode)
+        BibleViewModel(appSettings, projectionRouter, isDemoMode, standaloneEngine)
     }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
-        SongsViewModel(appSettings, eventService, isDemoMode)
+        SongsViewModel(appSettings, eventService, isDemoMode, projectionRouter, standaloneEngine)
     }
     val picturesViewModel: PicturesViewModel = viewModel(key = "pictures_$isDemoMode") {
-        PicturesViewModel(appSettings, eventService, isDemoMode)
+        PicturesViewModel(appSettings, projectionRouter, isDemoMode)
     }
     val presentationsViewModel: PresentationsViewModel = viewModel(key = "presentations_$isDemoMode") {
-        PresentationsViewModel(appSettings, eventService, isDemoMode)
+        PresentationsViewModel(appSettings, projectionRouter, isDemoMode)
     }
     val scheduleViewModel: ScheduleViewModel = viewModel(key = isDemoMode.toString()) {
         ScheduleViewModel(appSettings, eventService, isDemoMode)
@@ -210,16 +284,16 @@ fun App() {
         QAViewModel(appSettings, eventService)
     }
     val dictionaryViewModel: DictionaryViewModel = viewModel(key = "dictionary") {
-        DictionaryViewModel(appSettings, eventService)
+        DictionaryViewModel(appSettings, projectionRouter)
     }
     val announcementsViewModel: AnnouncementsViewModel = viewModel(key = "announcements") {
-        AnnouncementsViewModel(appSettings, eventService)
+        AnnouncementsViewModel(appSettings, projectionRouter)
     }
     val webViewModel: WebViewModel = viewModel(key = "web") {
-        WebViewModel(appSettings, eventService)
+        WebViewModel(appSettings, projectionRouter)
     }
     val mediaViewModel: MediaViewModel = viewModel(key = "media") {
-        MediaViewModel(appSettings, eventService)
+        MediaViewModel(appSettings, eventService, projectionRouter)
     }
 
     // When the desktop clears its display, reset projection state on mobile
@@ -284,6 +358,13 @@ fun App() {
             Analytics.logEvent(AnalyticsEvent.SETTINGS_SAVED)
         }
     }
+    // Library editor navigation. A non-null id edits that item; the "creating"
+    // flags open the editor on a blank one (the id is null in that case).
+    var editingSongId by remember { mutableStateOf<String?>(null) }
+    var creatingSong by remember { mutableStateOf(false) }
+    var editingAnnouncementId by remember { mutableStateOf<String?>(null) }
+    var creatingAnnouncement by remember { mutableStateOf(false) }
+
     // Secondary destination selected inside the "More" tab (Q&A / Dictionary), or null for the launcher grid.
     var moreDestination by remember { mutableStateOf<MoreDestination?>(null) }
 
@@ -340,7 +421,9 @@ fun App() {
     var pendingAnnouncement by remember { mutableStateOf<ScheduleItem?>(null) }
     var pendingDictionaryQuery by remember { mutableStateOf<String?>(null) }
 
-    val tabs = AppTab.entries
+    // The tab strip differs per mode — standalone drops the desktop-only tabs
+    // and adds the local controller and library.
+    val tabs = AppTab.forMode(appMode)
 
     // Seed the initial tab from any pending shortcut/quick-action so that
     // rememberPagerState starts on the correct page immediately.  Without this,
@@ -348,6 +431,13 @@ fun App() {
     // LaunchedEffect(shortcutTab) and can reset navigation back to Songs.
     val initialTab = TabNavigationHandler.requestedTab.value ?: AppTab.SONGS
     var selectedTab by rememberSaveable { mutableStateOf(initialTab) }
+
+    // selectedTab is rememberSaveable, so after a mode switch it can still hold a
+    // tab that is no longer in the strip. Every index lookup below is therefore
+    // written to survive a -1, and this effect settles it on the next frame.
+    LaunchedEffect(appMode) {
+        if (selectedTab !in tabs) selectedTab = tabs.first()
+    }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
@@ -364,7 +454,7 @@ fun App() {
 
     // ── Pager state — drives swipe-between-tabs ───────────────────────────
     val pagerState = rememberPagerState(
-        initialPage = tabs.indexOf(selectedTab),
+        initialPage = tabs.indexOf(selectedTab).coerceAtLeast(0),
         pageCount = { tabs.size }
     )
 
@@ -375,13 +465,13 @@ fun App() {
     // shortcut navigation and resets the tab back to Songs.
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.settledPage }.drop(1).collect { page ->
-            selectedTab = tabs[page]
+            selectedTab = tabs.getOrNull(page) ?: tabs.first()
         }
     }
 
     // Tab click → animate pager to matching page + log screen view
     LaunchedEffect(selectedTab) {
-        val targetPage = tabs.indexOf(selectedTab)
+        val targetPage = tabs.indexOf(selectedTab).coerceAtLeast(0)
         if (pagerState.currentPage != targetPage) {
             pagerState.animateScrollToPage(targetPage)
         }
@@ -394,6 +484,8 @@ fun App() {
         CrashReporting.log("Tab selected: ${selectedTab.name.lowercase()}")
         // Only log the tab-level screen when not inside a detail sub-screen
         val tabScreen = when (selectedTab) {
+            AppTab.PRESENT       -> AnalyticsScreen.STANDALONE
+            AppTab.LIBRARY       -> AnalyticsScreen.LIBRARY
             AppTab.SONGS         -> AnalyticsScreen.SONGS
             AppTab.BIBLE         -> AnalyticsScreen.BIBLE_BOOKS
             AppTab.MEDIA         -> AnalyticsScreen.MEDIA
@@ -462,6 +554,8 @@ fun App() {
 
     // Splash screen state — shown once on first composition
     var showSplash by remember { mutableStateOf(true) }
+    // Mode picker — shown once, after splash, on platforms that can present.
+    var showModePicker by remember { mutableStateOf(false) }
     // Status screen state — shown once after splash; re-shown when settings are saved
     var showStatusScreen by remember { mutableStateOf(false) }
     LaunchedEffect(showStatusScreen) {
@@ -508,18 +602,44 @@ fun App() {
         if (showSplash) {
             SplashScreen(onComplete = {
                 showSplash = false
-                // On first launch skip the status check — show the connect-setup
-                // screen directly so the user configures the server first.
-                // On subsequent launches go straight to the status check as usual.
-                if (!appSettings.isConnectSetupDone) {
-                    showConnectSetup = true
-                } else {
-                    showStatusScreen = true
+                when {
+                    // First launch on a phone: ask how they want to present before
+                    // asking them to find a server they may not need.
+                    supportsStandalone && !appSettings.isModeChosen -> showModePicker = true
+                    // Standalone has no server to connect to or check.
+                    appMode == AppMode.STANDALONE -> Unit
+                    // On first launch skip the status check — show the connect-setup
+                    // screen directly so the user configures the server first.
+                    // On subsequent launches go straight to the status check as usual.
+                    !appSettings.isConnectSetupDone -> showConnectSetup = true
+                    else -> showStatusScreen = true
                 }
             })
             return@AppTheme
         }
-        if (showStatusScreen) {
+        if (showModePicker) {
+            ModePickerScreen(
+                initialMode = appMode,
+                onModeChosen = { chosen ->
+                    AppModeHolder.set(appSettings, chosen)
+                    appSettings.isModeChosen = true
+                    showModePicker = false
+                    Analytics.logEvent(
+                        AnalyticsEvent.SETTINGS_SAVED,
+                        mapOf(AnalyticsParam.TAB_NAME to chosen.name.lowercase()),
+                    )
+                    // Standalone needs neither the server setup nor the status check.
+                    if (chosen == AppMode.REMOTE) {
+                        if (!appSettings.isConnectSetupDone) showConnectSetup = true else showStatusScreen = true
+                    }
+                },
+            )
+            return@AppTheme
+        }
+        // Both gates below talk to a desktop, so neither has anything to say in
+        // standalone mode — guard on the mode as well as their own flags, in case
+        // the user switched mode after one of them was queued.
+        if (showStatusScreen && appMode == AppMode.REMOTE) {
             StatusScreen(
                 viewModel      = statusViewModel,
                 onContinue     = { showStatusScreen = false },
@@ -529,7 +649,7 @@ fun App() {
         }
         // First-launch connect setup — shown full-screen, after splash, before main content.
         // On subsequent launches showConnectSetup is false so this block is skipped entirely.
-        if (showConnectSetup && !appSettings.isConnectSetupDone) {
+        if (showConnectSetup && !appSettings.isConnectSetupDone && appMode == AppMode.REMOTE) {
             ConnectSetupScreen(
                 appSettings = appSettings,
                 onDone = {
@@ -728,6 +848,7 @@ fun App() {
                 bottomBar = {
                     BottomTabBar(
                         selectedTab = selectedTab,
+                        tabs = tabs,
                         onTabSelected = { tab ->
                             // Re-tapping the active More tab returns to its launcher grid.
                             if (tab == AppTab.MORE && selectedTab == AppTab.MORE) moreDestination = null
@@ -743,7 +864,15 @@ fun App() {
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
                     beyondViewportPageCount = 0  // only compose the visible page
                 ) { page ->
-                    when (tabs[page]) {
+                    when (tabs.getOrNull(page) ?: tabs.first()) {
+                        // The standalone live controller. Given the engine and the
+                        // sink registry directly — they are collaborators, not
+                        // ViewModels, so the screen still owns its own ViewModel.
+                        AppTab.PRESENT -> StandaloneControllerScreen(
+                            engine = standaloneEngine,
+                            registry = sinkRegistry,
+                            modifier = Modifier.fillMaxSize()
+                        )
                         AppTab.SONGS -> SongsTable(
                             providedViewModel = songsViewModel,
                             appSettings = appSettings,
@@ -842,6 +971,35 @@ fun App() {
                             )
                             null -> MoreScreen(
                                 onSelect = { moreDestination = it },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        AppTab.LIBRARY -> when {
+                            editingSongId != null || creatingSong -> SongEditorScreen(
+                                repository = libraryRepository,
+                                songId = editingSongId,
+                                onClose = { editingSongId = null; creatingSong = false },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            editingAnnouncementId != null || creatingAnnouncement -> AnnouncementEditorScreen(
+                                repository = libraryRepository,
+                                announcementId = editingAnnouncementId,
+                                onClose = { editingAnnouncementId = null; creatingAnnouncement = false },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            else -> LibraryScreen(
+                                repository = libraryRepository,
+                                engine = standaloneEngine,
+                                settings = appSettings,
+                                sender = projectionRouter,
+                                onEditSong = { id ->
+                                    editingSongId = id
+                                    creatingSong = id == null
+                                },
+                                onEditAnnouncement = { id ->
+                                    editingAnnouncementId = id
+                                    creatingAnnouncement = id == null
+                                },
                                 modifier = Modifier.fillMaxSize()
                             )
                         }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.WebsiteItemPayload
-import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.network.WebService
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +37,7 @@ fun domainOf(url: String): String =
 
 class WebViewModel(
     private val appSettings: AppSettings,
-    eventService: ServerEventService,
+    eventService: WsSender,
 ) : ViewModel() {
 
     private val service = WebService(eventService)

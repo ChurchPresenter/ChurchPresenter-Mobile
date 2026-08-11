@@ -1,6 +1,7 @@
 name: Tests
 
 # Runs the shared commonTest suite on every push/PR.
+#  - offline-assets: guards the bundled display page against remote dependencies.
 #  - js-tests:  fast, headless-browser run of all commonTest — no secrets needed.
 #  - coverage:  Kover coverage over the Android unit-test variant (logic layer),
 #               needs GOOGLE_SERVICES_JSON_BASE64 to configure the Android build.
@@ -15,6 +16,14 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  offline-assets:
+    name: display assets are offline-capable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check bundled display page has no remote dependencies
+        run: bash scripts/check_display_assets_offline.sh
+
   js-tests:
     name: commonTest (headless browser)
     runs-on: ubuntu-latest

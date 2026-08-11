@@ -8,7 +8,7 @@ import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.PresentationService
-import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.ui.PickedFile
 import com.church.presenter.churchpresentermobile.util.Analytics
@@ -35,7 +35,7 @@ private const val UPLOAD_POLL_INTERVAL_MS = 1_000L
  * @param appSettings The shared [AppSettings] instance used to configure the API service.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
  */
-class PresentationsViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
+class PresentationsViewModel(private val appSettings: AppSettings, private val eventService: WsSender, private val isDemoMode: Boolean = false) : ViewModel() {
     private var presentationService = PresentationService(appSettings, eventService)
 
     private val _presentations = MutableStateFlow<List<Presentation>>(emptyList())

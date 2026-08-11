@@ -9,6 +9,21 @@ object ApiConstants {
     const val EMULATOR_HOST = "10.0.2.2"
     const val DEFAULT_PORT = 8765
 
+    /**
+     * Port the phone's own presentation web server listens on in standalone
+     * mode. Deliberately not [DEFAULT_PORT] — a phone and a desktop are often
+     * on the same network, and reusing 8765 would make a mistyped address point
+     * at the wrong machine's presenter.
+     */
+    const val STANDALONE_HTTP_PORT_DEFAULT = 8766
+
+    /**
+     * Ports tried in order when [STANDALONE_HTTP_PORT_DEFAULT] is already taken
+     * (a second instance, or another app). If every candidate is busy the
+     * server falls back to an ephemeral port and reports whatever it got.
+     */
+    val STANDALONE_PORT_CANDIDATES: IntRange = 8766..8775
+
     // ── Network timeouts (milliseconds) ───────────────────────────────────
     // Kept short so an unreachable server fails fast instead of leaving
     // coroutines/threads blocked on socket connect — a long connect timeout
