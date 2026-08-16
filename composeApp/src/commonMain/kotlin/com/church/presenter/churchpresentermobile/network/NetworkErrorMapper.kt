@@ -7,12 +7,8 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
  * Records this exception as a non-fatal event in Crashlytics **and** returns a
  * short, user-readable message for the UI.
  *
- * [ApiException]s (expected server rejections — denied, blocked, HTTP 4xx) are
- * intentionally not forwarded to Crashlytics because they are business-logic
- * responses, not bugs. Likewise, transient connectivity failures (timeouts,
- * connection refused, unreachable/offline — see [isExpectedConnectivityError])
- * are logged as breadcrumbs but not reported, since an unreachable LAN server is
- * the normal state for this client, not a defect.
+ * Every failure is logged as a breadcrumb; only those that [shouldReportAsNonFatal]
+ * considers genuine defects are reported. See that function for the rules.
  *
  * Custom keys attached to every non-fatal report:
  *  - `network_tag`        — the class/ViewModel that originated the call
@@ -24,27 +20,65 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
  * @param operation Human-readable operation name, e.g. `"loadSongs"`.
  */
 fun Throwable.recordNetworkError(tag: String, operation: String): String {
-    if (this !is ApiException) {
-        val errorMsg = message?.take(200) ?: "unknown"
-        // Breadcrumb log — visible in the Crashlytics log tab.
-        // Always logged, even for expected connectivity failures, so the
-        // breadcrumb trail is intact if a *real* crash follows.
-        CrashReporting.log("[$tag] $operation FAILED (${this::class.simpleName}): $errorMsg")
+    val errorMsg = message?.take(200) ?: "unknown"
+    // Breadcrumb log — visible in the Crashlytics log tab. Always logged, even
+    // for expected failures, so the breadcrumb trail is intact if a *real*
+    // crash follows.
+    CrashReporting.log("[$tag] $operation FAILED (${this::class.simpleName}): $errorMsg")
 
-        // Transient connectivity failures (server off, wrong IP, off the LAN,
-        // phone offline) are the normal state for a LAN client, not bugs. Log
-        // them but don't report them as non-fatals or they drown real signal.
-        if (!isExpectedConnectivityError()) {
-            // Custom keys — pinned to the session for every subsequent report
-            CrashReporting.setCustomKey("network_tag",        tag)
-            CrashReporting.setCustomKey("network_operation",  operation)
-            CrashReporting.setCustomKey("network_error_type", this::class.simpleName ?: "Throwable")
-            CrashReporting.setCustomKey("network_error_msg",  errorMsg)
-            CrashReporting.recordException(this)
-        }
+    if (shouldReportAsNonFatal()) {
+        // Custom keys — pinned to the session for every subsequent report
+        CrashReporting.setCustomKey("network_tag",        tag)
+        CrashReporting.setCustomKey("network_operation",  operation)
+        CrashReporting.setCustomKey("network_error_type", this::class.simpleName ?: "Throwable")
+        CrashReporting.setCustomKey("network_error_msg",  errorMsg)
+        CrashReporting.recordException(this)
     }
     return toFriendlyNetworkMessage()
 }
+
+/**
+ * Whether this failure is a genuine defect worth a non-fatal crash report, as
+ * opposed to a condition this client should simply expect to meet in the field.
+ *
+ * Not reported:
+ *  - Transient connectivity failures (timeouts, connection refused, offline —
+ *    see [isExpectedConnectivityError]). An unreachable LAN server is the normal
+ *    state for this client, not a defect.
+ *  - [ApiException]s outside [REPORTABLE_SERVER_FAULT_STATUSES] — the desktop
+ *    answered, and what it said is a business-logic response. That covers 4xx
+ *    rejections (denied, blocked, missing) and 503, which the desktop uses to
+ *    mean "nothing loaded yet" rather than "I am broken".
+ *
+ * Reported: everything else, including 500/502/504 — those indicate the desktop
+ * itself failed, and silencing them would hide real server bugs.
+ */
+fun Throwable.shouldReportAsNonFatal(): Boolean {
+    if (isExpectedConnectivityError()) return false
+    val status = (this as? ApiException)?.httpStatus ?: return true
+    return status in REPORTABLE_SERVER_FAULT_STATUSES
+}
+
+/**
+ * True when the desktop answered "I'm not ready for that yet" rather than failing.
+ *
+ * The companion server uses 503 for ordinary not-loaded states — most visibly
+ * `GET /api/pictures` before the operator has opened a picture folder. Screens
+ * should render their empty state for this, not an error banner: nothing has
+ * gone wrong, and there is nothing the phone can retry into existence.
+ */
+fun Throwable.isServerNotReady(): Boolean =
+    this is ApiException && httpStatus == 503
+
+/**
+ * Server-fault statuses that still warrant a non-fatal report. Deliberately
+ * excludes 503, which the desktop returns for ordinary "not loaded" states.
+ */
+private val REPORTABLE_SERVER_FAULT_STATUSES = setOf(
+    500,   // Internal Server Error
+    502,   // Bad Gateway
+    504,   // Gateway Timeout
+)
 
 /**
  * True for transient connectivity failures that are expected whenever the
@@ -119,6 +153,23 @@ private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
  * This extension collapses the most common patterns into friendly one-liners.
  */
 fun Throwable.toFriendlyNetworkMessage(): String {
+    // ── Server answered with a non-2xx ───────────────────────────────────────
+    // The desktop's own `reason` is written for humans ("No picture folder
+    // loaded"), so prefer it over anything synthesised here. Only when it says
+    // nothing useful does the status code get translated into words — a bare
+    // "HTTP 403" tells the operator nothing they can act on.
+    if (this is ApiException) {
+        reason?.let { return it }
+        return when (httpStatus) {
+            401, 403 -> "Server refused the request. Check the API key in Settings."
+            404      -> "Not found on the server."
+            408      -> "The server took too long to respond."
+            503      -> "The desktop isn't ready yet."
+            in 500..599 -> "The desktop app reported an error."
+            else     -> "Server error ($httpStatus)."
+        }
+    }
+
     val raw = message ?: return "Connection error"
 
     // ── iOS: Ktor Darwin engine wraps NSURLError like

@@ -15,7 +15,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.serialization.encodeToString
@@ -58,13 +57,10 @@ class PicturesService(
         Logger.d(TAG, "getPictures — requesting URL: $url")
         return apiRunCatching {
             val httpResponse = client.get(url) { applyApiKey() }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getPictures — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getPictures — raw body (first 300 chars): ${raw.take(300)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val folder = json.decodeFromString<PicturesFolder>(raw)
             // Thumbnail URLs are root-relative — prefix with scheme+host+port only (not /api)
             val imageBase = "http://${settings.host}:${settings.port}"
@@ -158,7 +154,7 @@ class PicturesService(
             }
             val raw = response.bodyAsText()
             Logger.d(TAG, "uploadPhoto ◀ status=${response.status}  body=${raw.take(200)}")
-            if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value} — ${raw.take(200)}")
+            response.ensureSuccess(raw)
             json.decodeFromString<UploadPhotoResponse>(raw)
         }.onFailure { e -> Logger.e(TAG, "uploadPhoto — FAILED: ${e.message}", e) }
     }

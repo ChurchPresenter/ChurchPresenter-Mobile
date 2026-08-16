@@ -8,6 +8,7 @@ import com.church.presenter.churchpresentermobile.model.PictureImage
 import com.church.presenter.churchpresentermobile.model.PicturesFolder
 import com.church.presenter.churchpresentermobile.network.PicturesService
 import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.network.isServerNotReady
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.network.toFriendlyNetworkMessage
 import com.church.presenter.churchpresentermobile.ui.PickedPhoto
@@ -99,8 +100,18 @@ class PicturesViewModel(private val appSettings: AppSettings, private val eventS
                 picturesService.getPictures(folderId)
                     .onSuccess { _folder.value = it }
                     .onFailure { e ->
-                        Logger.e(TAG, "loadPictures — FAILED: ${e.message}", e)
-                        _error.value = "Failed to load pictures: ${e.recordNetworkError(TAG, "loadPictures")}"
+                        if (e.isServerNotReady()) {
+                            // The operator simply hasn't opened a picture folder on the
+                            // desktop yet. Nothing has gone wrong and there is nothing to
+                            // fix from the phone, so fall through to the ordinary empty
+                            // state instead of a red banner offering a pointless retry.
+                            Logger.d(TAG, "loadPictures — no folder loaded on the desktop")
+                            _folder.value = null
+                            _error.value = null
+                        } else {
+                            Logger.e(TAG, "loadPictures — FAILED: ${e.message}", e)
+                            _error.value = "Failed to load pictures: ${e.recordNetworkError(TAG, "loadPictures")}"
+                        }
                     }
             } finally {
                 _isLoading.value = false
@@ -138,8 +149,14 @@ class PicturesViewModel(private val appSettings: AppSettings, private val eventS
                         Analytics.logEvent(AnalyticsEvent.PICTURE_FOLDER_OPENED)
                     }
                     .onFailure { e ->
-                        Logger.e(TAG, "navigateTo — FAILED: ${e.message}", e)
-                        _error.value = "Failed to load pictures: ${e.recordNetworkError(TAG, "navigateTo")}"
+                        if (e.isServerNotReady()) {
+                            Logger.d(TAG, "navigateTo — no folder loaded on the desktop")
+                            _folder.value = null
+                            _error.value = null
+                        } else {
+                            Logger.e(TAG, "navigateTo — FAILED: ${e.message}", e)
+                            _error.value = "Failed to load pictures: ${e.recordNetworkError(TAG, "navigateTo")}"
+                        }
                     }
             } finally {
                 _isLoading.value = false

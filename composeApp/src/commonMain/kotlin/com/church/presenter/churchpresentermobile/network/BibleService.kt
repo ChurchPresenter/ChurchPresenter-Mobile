@@ -14,7 +14,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -48,14 +47,11 @@ class BibleService(
         Logger.d(TAG, "getBooks — requesting URL: $url")
         return apiRunCatching {
             val httpResponse = client.get(url) { applyApiKey() }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getBooks — HTTP status: ${httpResponse.status}")
             // Read body once as text — avoids double-read and works regardless of Content-Type
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getBooks — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<BibleBooksResponse>(raw)
             val books = response.allBooks
             Logger.d(TAG, "getBooks — parsed ${books.size} books")
@@ -83,13 +79,10 @@ class BibleService(
                 parameter("chapter", chapter)
                 applyApiKey()
             }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getChapter — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getChapter — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode for $url — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<BibleChapterResponse>(raw)
             val verses = response.allVerses
             Logger.d(TAG, "getChapter — parsed ${verses.size} verses")

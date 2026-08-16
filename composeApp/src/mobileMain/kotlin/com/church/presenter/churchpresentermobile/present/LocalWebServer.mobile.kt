@@ -4,9 +4,11 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
+import io.ktor.server.application.serverConfig
 import io.ktor.server.cio.CIO
 import io.ktor.server.cio.CIOApplicationEngine
 import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.response.respondBytes
 import io.ktor.server.response.respondText
@@ -16,10 +18,15 @@ import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 private const val TAG = "LocalWebServer"
 
@@ -70,17 +77,55 @@ actual class LocalWebServer actual constructor(private val assets: WebAssets) {
     }
 
     private suspend fun startOn(port: Int): Int {
-        val engine = embeddedServer(CIO, port = port) { module() }
+        // CIO reports a failed bind by failing its internal accept job, and that
+        // job is a root coroutine — with no handler installed, the BindException
+        // goes straight to the platform's uncaught-exception handler and kills
+        // the app. It never reaches the caller's runCatching, so the port ladder
+        // below never got its chance. Routing the failure into `failed` turns a
+        // crash into an ordinary failed attempt.
+        val failed = CompletableDeferred<Throwable>()
+        val handler = CoroutineExceptionHandler { _, e ->
+            if (!failed.complete(e)) Logger.e(TAG, "presentation server failed: ${e.message}", e)
+        }
+
+        val config = serverConfig {
+            parentCoroutineContext = handler
+            module { module() }
+        }
+        val engine = embeddedServer(CIO, config) {
+            connector { this.port = port }
+            // Sockets accepted by the previous run linger in TIME_WAIT for about
+            // a minute after the process dies. Without SO_REUSEADDR, an operator
+            // who restarts the app inside that window cannot rebind the port —
+            // and it is the port printed on the URL the room was just given.
+            reuseAddress = true
+        }
         engine.start(wait = false)
-        // resolvedConnectors() both reports the real port (needed when we asked
-        // for 0) and surfaces a bind failure that start(wait = false) swallowed.
-        val resolved = engine.engine.resolvedConnectors().firstOrNull()
-            ?: run {
-                engine.stop(gracePeriodMillis = 0, timeoutMillis = 0)
-                error("no connector resolved on port $port")
+
+        // Whichever comes first: connectors resolve (reporting the real port,
+        // which matters when we asked for 0) or the bind fails. resolvedConnectors()
+        // simply never completes on a failed bind, so it cannot be awaited alone.
+        val outcome = coroutineScope {
+            val race = CompletableDeferred<Result<Int>>()
+            val onFailure = launch { race.complete(Result.failure(failed.await())) }
+            val onBound = launch {
+                race.complete(
+                    runCatching {
+                        engine.engine.resolvedConnectors().firstOrNull()?.port
+                            ?: error("no connector resolved on port $port")
+                    }
+                )
             }
-        server = engine
-        return resolved.port
+            val result = withTimeoutOrNull(BIND_TIMEOUT_MS) { race.await() }
+            onFailure.cancel()
+            onBound.cancel()
+            result ?: Result.failure(IllegalStateException("timed out binding port $port"))
+        }
+
+        return outcome
+            .onFailure { runCatching { engine.stop(gracePeriodMillis = 0, timeoutMillis = 0) } }
+            .getOrThrow()
+            .also { server = engine }
     }
 
     actual suspend fun stop() {
@@ -146,6 +191,9 @@ actual class LocalWebServer actual constructor(private val assets: WebAssets) {
 
     private companion object {
         const val EPHEMERAL_PORT = 0
+
+        /** Longest a single bind attempt may take before the next port is tried. */
+        const val BIND_TIMEOUT_MS = 5_000L
         const val STOP_GRACE_MS = 300L
         const val STOP_TIMEOUT_MS = 1_000L
         const val PING_PERIOD_MS = 20_000L

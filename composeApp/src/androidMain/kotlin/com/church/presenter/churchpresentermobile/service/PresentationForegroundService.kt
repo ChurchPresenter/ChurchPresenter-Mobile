@@ -13,6 +13,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import com.church.presenter.churchpresentermobile.MainActivity
 import com.church.presenter.churchpresentermobile.R
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 
 private const val TAG = "PresentationService"
@@ -39,12 +40,41 @@ class PresentationForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, buildNotification(intent?.getStringExtra(EXTRA_URL)))
+        // A null intent means the system restarted us on its own after killing
+        // the process. Calling startForeground() here is what crashed the app:
+        // the restart arrives with the app in the background, where Android 12+
+        // refuses foreground-service starts outright, and the refusal surfaces
+        // as an uncaught ForegroundServiceStartNotAllowedException on the main
+        // thread. There is nothing useful to restart into anyway — the server is
+        // gone with the process, and WebPageSink re-attaches (re-supplying the
+        // URL) when the app comes back. So stand down quietly.
+        if (intent == null) {
+            Logger.d(TAG, "system restart with no intent — standing down")
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+
+        // Even a legitimate start can be denied: startForegroundService() only
+        // buys a few seconds of grace, and if the app is backgrounded or the
+        // device dozes before this runs, the allowance is gone. Losing the
+        // keep-alive degrades the feature; crashing the operator's phone
+        // mid-service is far worse. Caught as Exception rather than by type so
+        // no API 31+ class is referenced on older devices.
+        val started = runCatching {
+            startForeground(NOTIFICATION_ID, buildNotification(intent.getStringExtra(EXTRA_URL)))
+        }
+        if (started.isFailure) {
+            val e = started.exceptionOrNull()
+            Logger.e(TAG, "foreground start refused: ${e?.message}", e)
+            e?.let { CrashReporting.recordException(it) }
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+
         acquireLocks()
         Logger.d(TAG, "presentation service started")
-        // Restart if the system kills us mid-service, but do not redeliver the
-        // intent — the URL is re-supplied by the sink when it re-attaches.
-        return START_STICKY
+        // Deliberately not sticky: see the null-intent branch above.
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {

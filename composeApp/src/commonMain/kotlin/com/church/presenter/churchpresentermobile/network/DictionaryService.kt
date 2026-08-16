@@ -71,7 +71,7 @@ class DictionaryService(
             if (verse != null) parameter("verse", verse)
         }
         val raw = response.bodyAsText()
-        if (response.status.value !in 200..299) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
         json.decodeFromString<List<StrongsEntry>>(raw)
     }.onFailure { e -> Logger.e(TAG, "search — FAILED: ${e.message}", e) }
 
@@ -99,7 +99,7 @@ class DictionaryService(
             if (verse != null) parameter("verse", verse)
         }
         val raw = response.bodyAsText()
-        if (response.status.value !in 200..299) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
         json.decodeFromString<DictionaryVersesResponse>(raw)
     }.onFailure { e -> Logger.e(TAG, "getVerses — FAILED: ${e.message}", e) }
 
@@ -111,7 +111,7 @@ class DictionaryService(
             parameter("lang", lang)
         }
         val raw = response.bodyAsText()
-        if (response.status.value !in 200..299) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
         json.decodeFromString<StrongsEntry>(raw)
     }.onFailure { e -> Logger.e(TAG, "lookup — FAILED: ${e.message}", e) }
 

@@ -13,7 +13,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.encodeURLQueryComponent
-import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteWriteChannel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -96,7 +95,7 @@ class MediaCastService(
             }
             val raw = response.bodyAsText()
             Logger.d(TAG, "uploadMedia ◀ status=${response.status}  body=${raw.take(200)}")
-            if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value} — ${raw.take(200)}")
+            response.ensureSuccess(raw)
             json.decodeFromString<MediaUploadResponse>(raw)
         }.onFailure { e -> Logger.e(TAG, "uploadMedia — FAILED: ${e.message}", e) }
     }

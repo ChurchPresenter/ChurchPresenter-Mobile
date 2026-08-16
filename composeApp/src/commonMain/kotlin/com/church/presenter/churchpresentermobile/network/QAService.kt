@@ -17,7 +17,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -47,7 +46,7 @@ class QAService(
         Logger.d(TAG, "fetchStatus — GET $url")
         val response = client.get(url) { applyApiKey() }
         val raw = response.bodyAsText()
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
         json.decodeFromString<QAStatusResponse>(raw)
     }
 
@@ -56,18 +55,18 @@ class QAService(
         Logger.d(TAG, "fetchQuestions — GET $url")
         val response = client.get(url) { applyApiKey() }
         val raw = response.bodyAsText()
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
         json.decodeFromString<List<QuestionDto>>(raw).map { it.toQuestion() }
     }
 
     suspend fun approveQuestion(id: String): Result<Unit> = apiRunCatching {
         val response = client.post("${baseUrl()}/${ApiConstants.QA_QUESTIONS_ENDPOINT}/$id/approve") { applyApiKey() }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     suspend fun denyQuestion(id: String): Result<Unit> = apiRunCatching {
         val response = client.post("${baseUrl()}/${ApiConstants.QA_QUESTIONS_ENDPOINT}/$id/deny") { applyApiKey() }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     suspend fun editQuestion(id: String, newText: String): Result<Unit> = apiRunCatching {
@@ -76,22 +75,22 @@ class QAService(
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(QATextRequest(newText)))
         }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     suspend fun markDone(id: String): Result<Unit> = apiRunCatching {
         val response = client.post("${baseUrl()}/${ApiConstants.QA_QUESTIONS_ENDPOINT}/$id/done") { applyApiKey() }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     suspend fun displayQuestion(id: String): Result<Unit> = apiRunCatching {
         val response = client.post("${baseUrl()}/${ApiConstants.QA_QUESTIONS_ENDPOINT}/$id/display") { applyApiKey() }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     suspend fun deleteQuestion(id: String): Result<Unit> = apiRunCatching {
         val response = client.delete("${baseUrl()}/${ApiConstants.QA_QUESTIONS_ENDPOINT}/$id") { applyApiKey() }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     suspend fun addQuestion(text: String, name: String = ""): Result<Question> = apiRunCatching {
@@ -101,13 +100,13 @@ class QAService(
             setBody(json.encodeToString(QATextRequest(text, name)))
         }
         val raw = response.bodyAsText()
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
         json.decodeFromString<QuestionDto>(raw).toQuestion()
     }
 
     suspend fun clearDisplay(): Result<Unit> = apiRunCatching {
         val response = client.post("${baseUrl()}/${ApiConstants.QA_CLEAR_DISPLAY_ENDPOINT}") { applyApiKey() }
-        if (!response.status.isSuccess()) throw Exception("HTTP ${response.status.value}")
+        response.ensureSuccess()
     }
 
     fun closeClient() = client.close()

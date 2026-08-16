@@ -12,6 +12,10 @@ name: Android Debug APK
 #
 # For a signed, shippable build use "Android Release Build" (android-release.yml);
 # for the Play internal-testing track use "Android Play Store" (android-play-store.yml).
+#
+# The APK is published as a GitHub **prerelease** rather than a workflow artifact,
+# so testers can download it from the Releases page without a GitHub login and
+# without hunting through run pages.
 
 on:
   workflow_dispatch:
@@ -30,6 +34,9 @@ jobs:
   build:
     name: Build Debug APK
     runs-on: ubuntu-latest
+    # Publishing a release needs write access to repository contents.
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -83,19 +90,70 @@ jobs:
       - name: Build debug APK
         run: ./gradlew :composeApp:assembleDebug
 
-      - name: Name the artifact after the branch and commit
+      # Slashes are legal in git tags but awkward in filenames and URLs, so the
+      # branch is flattened for both the tag and the asset name.
+      - name: Name the release after the branch and commit
         id: naming
         run: |
           BRANCH="${GITHUB_REF_NAME//\//-}"
-          echo "artifact=debug-apk-${BRANCH}-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          SHA7="${GITHUB_SHA::7}"
+          echo "tag=debug-${BRANCH}-${SHA7}" >> "$GITHUB_OUTPUT"
+          echo "asset=churchpresenter-debug-${BRANCH}-${SHA7}.apk" >> "$GITHUB_OUTPUT"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          echo "sha7=${SHA7}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.naming.outputs.artifact }}
-          path: composeApp/build/outputs/apk/debug/*.apk
-          retention-days: 30
-          if-no-files-found: error
+      # Globbed rather than hard-coded to composeApp-debug.apk so a future
+      # rename in build.gradle.kts fails loudly here instead of shipping a
+      # release with no asset attached.
+      - name: Rename APK
+        run: |
+          shopt -s nullglob
+          apks=(composeApp/build/outputs/apk/debug/*.apk)
+          if [ ${#apks[@]} -ne 1 ]; then
+            echo "❌ Expected exactly one debug APK, found ${#apks[@]}: ${apks[*]}" >&2
+            exit 1
+          fi
+          mv "${apks[0]}" "composeApp/build/outputs/apk/debug/${{ steps.naming.outputs.asset }}"
+
+      # `gh release create` fails if the tag already exists, so re-running the
+      # workflow on the same commit deletes and recreates the prerelease. The
+      # tag points at this commit either way.
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.naming.outputs.tag }}
+          ASSET: composeApp/build/outputs/apk/debug/${{ steps.naming.outputs.asset }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Prerelease $TAG already exists — replacing it."
+            gh release delete "$TAG" --yes --cleanup-tag
+          fi
+          # Built line by line rather than with a heredoc: every line of this
+          # `run:` block is indented by YAML, and an indented heredoc terminator
+          # never closes.
+          {
+            echo "Debug-signed APK built from \`${GITHUB_REF_NAME}\` at \`${GITHUB_SHA::7}\`."
+            echo ""
+            echo "Not for distribution — debug keystore, no R8 shrinking, logging enabled."
+            echo ""
+            echo '```bash'
+            echo "adb install -r -g ${{ steps.naming.outputs.asset }}"
+            echo '```'
+            echo ""
+            echo "Each CI run generates a fresh debug keystore, so \`-r\` fails with"
+            echo "\`INSTALL_FAILED_UPDATE_INCOMPATIBLE\` when replacing a build from a"
+            echo "different run. Uninstall first — this also clears app data:"
+            echo ""
+            echo '```bash'
+            echo "adb uninstall com.church.presenter.churchpresentermobile"
+            echo '```'
+          } > /tmp/release-notes.md
+
+          gh release create "$TAG" "$ASSET" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Debug APK — ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7}" \
+            --notes-file /tmp/release-notes.md
 
       - name: Summary
         run: |
@@ -104,12 +162,12 @@ jobs:
             echo ""
             echo "**Branch:** \`${GITHUB_REF_NAME}\`  "
             echo "**Commit:** \`${GITHUB_SHA::7}\`  "
-            echo "**Artifact:** \`${{ steps.naming.outputs.artifact }}\` (scroll to the bottom of this run page)"
+            echo "**Prerelease:** [\`${{ steps.naming.outputs.tag }}\`](https://github.com/${{ github.repository }}/releases/tag/${{ steps.naming.outputs.tag }})"
             echo ""
             echo "### Install"
             echo '```bash'
-            echo "unzip ${{ steps.naming.outputs.artifact }}.zip"
-            echo "adb install -r -g composeApp-debug.apk"
+            echo "gh release download ${{ steps.naming.outputs.tag }} --repo ${{ github.repository }}"
+            echo "adb install -r -g ${{ steps.naming.outputs.asset }}"
             echo '```'
             echo ""
             echo "> Each CI run generates a fresh debug keystore, so \`-r\` fails with"

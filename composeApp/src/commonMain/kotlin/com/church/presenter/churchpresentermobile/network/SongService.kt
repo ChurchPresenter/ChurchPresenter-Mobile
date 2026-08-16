@@ -16,7 +16,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -55,9 +54,7 @@ class SongService(
             Logger.d(TAG, "getSongs — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getSongs — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP ${httpResponse.status.value} — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<SongsResponse>(raw)
             val songs = response.songBook.flatMap { book ->
                 book.songs.map { song -> song.copy(bookName = book.bookName) }
@@ -88,9 +85,7 @@ class SongService(
             Logger.d(TAG, "getSongDetail — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getSongDetail — FULL raw body:\n$raw")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP ${httpResponse.status.value} — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
 
             // Pass 1: standard decode (handles all @SerialName variants in the model)
             val base = json.decodeFromString<SongDetail>(raw)

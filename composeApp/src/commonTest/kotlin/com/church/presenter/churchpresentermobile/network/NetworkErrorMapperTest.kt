@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.model.ApiException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -152,5 +153,71 @@ class NetworkErrorMapperTest {
     @Test
     fun friendlyNullMessage() {
         assertEquals("Connection error", Exception().toFriendlyNetworkMessage())
+    }
+
+    // ── ApiException: friendly copy ──────────────────────────────────────────
+
+    @Test
+    fun friendlyApiExceptionPrefersServerReason() {
+        // The desktop writes its reasons for humans, so they must survive intact
+        // rather than being replaced by a generic per-status sentence.
+        assertEquals(
+            "No picture folder loaded",
+            ApiException(503, "No picture folder loaded").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun friendlyApiExceptionFallsBackToStatusWording() {
+        assertEquals(
+            "Server refused the request. Check the API key in Settings.",
+            ApiException(403).toFriendlyNetworkMessage(),
+        )
+        assertEquals("Not found on the server.", ApiException(404).toFriendlyNetworkMessage())
+        assertEquals("The desktop isn't ready yet.", ApiException(503).toFriendlyNetworkMessage())
+        assertEquals("The desktop app reported an error.", ApiException(500).toFriendlyNetworkMessage())
+        assertEquals("Server error (418).", ApiException(418).toFriendlyNetworkMessage())
+    }
+
+    // ── shouldReportAsNonFatal ───────────────────────────────────────────────
+
+    @Test
+    fun serverRejectionsAreNotReported() {
+        // 4xx are business-logic responses, and 503 is the desktop saying
+        // "nothing loaded yet" — neither is a defect in this app.
+        assertFalse(ApiException(400).shouldReportAsNonFatal())
+        assertFalse(ApiException(401).shouldReportAsNonFatal())
+        assertFalse(ApiException(403, "denied").shouldReportAsNonFatal())
+        assertFalse(ApiException(404).shouldReportAsNonFatal())
+        assertFalse(ApiException(503, "No picture folder loaded").shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun genuineServerFaultsAreReported() {
+        // Silencing these would hide real desktop bugs behind an empty screen.
+        assertTrue(ApiException(500).shouldReportAsNonFatal())
+        assertTrue(ApiException(502).shouldReportAsNonFatal())
+        assertTrue(ApiException(504).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun connectivityFailuresAreNotReported() {
+        assertFalse(Exception("Connection refused").shouldReportAsNonFatal())
+        assertFalse(ConnectException("boom").shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun unexpectedFailuresAreReported() {
+        assertTrue(IllegalStateException("index 5 out of bounds").shouldReportAsNonFatal())
+    }
+
+    // ── isServerNotReady ─────────────────────────────────────────────────────
+
+    @Test
+    fun onlyA503IsServerNotReady() {
+        assertTrue(ApiException(503, "No picture folder loaded").isServerNotReady())
+        assertFalse(ApiException(500).isServerNotReady())
+        assertFalse(ApiException(404).isServerNotReady())
+        assertFalse(Exception("HTTP 503 — No picture folder loaded").isServerNotReady())
     }
 }
