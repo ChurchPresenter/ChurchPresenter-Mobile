@@ -463,14 +463,23 @@ fun App() {
     // drop(1) skips the initial emission whose value always matches the already-
     // correct selectedTab; without it the emission races against a pending
     // shortcut navigation and resets the tab back to Songs.
-    LaunchedEffect(pagerState) {
+    // Keyed on `tabs` as well as the pager: the two strips are both five entries
+    // long, so switching mode neither recreates pagerState (pageCount is
+    // unchanged) nor restarts this effect on its own — and it would go on
+    // translating page indices through the *previous* mode's strip. That put the
+    // app in a permanent media → songs → bible loop after setup, each hop
+    // re-firing every tab's network calls.
+    LaunchedEffect(pagerState, tabs) {
         snapshotFlow { pagerState.settledPage }.drop(1).collect { page ->
             selectedTab = tabs.getOrNull(page) ?: tabs.first()
         }
     }
 
-    // Tab click → animate pager to matching page + log screen view
-    LaunchedEffect(selectedTab) {
+    // Tab click → animate pager to matching page + log screen view.
+    // Also keyed on `tabs`, because a tab keeps its identity across a mode switch
+    // while changing index (SONGS is 0 in remote, 1 in standalone) — without this
+    // the pager would be left showing a different tab than the strip highlights.
+    LaunchedEffect(selectedTab, tabs) {
         val targetPage = tabs.indexOf(selectedTab).coerceAtLeast(0)
         if (pagerState.currentPage != targetPage) {
             pagerState.animateScrollToPage(targetPage)
