@@ -21,6 +21,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -69,8 +71,15 @@ actual class LocalWebServer actual constructor(private val assets: WebAssets) {
                 return actualPort
             }
             attempt.onFailure { e ->
-                if (e is CancellationException) throw e
-                Logger.d(TAG, "port $port unavailable: ${e.message}")
+                // A CancellationException here is ambiguous: CIO reports a failed
+                // bind by cancelling its own engine job, so the failure arrives as
+                // "LazyStandaloneCoroutine is cancelling" with the BindException as
+                // its cause. Rethrowing on that (as a naive cancellation check does)
+                // abandons the ladder on the first taken port — observed on device,
+                // where an occupied 8766 left the sink in ERROR instead of moving to
+                // 8767. Only a cancellation of *this* coroutine may propagate.
+                if (e is CancellationException && !currentCoroutineContext().isActive) throw e
+                Logger.d(TAG, "port $port unavailable: ${(e.cause ?: e).message}")
             }
         }
         throw IllegalStateException("Could not bind any port for the presentation server")
