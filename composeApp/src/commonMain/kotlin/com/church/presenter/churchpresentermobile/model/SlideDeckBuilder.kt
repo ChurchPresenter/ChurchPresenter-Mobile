@@ -63,19 +63,13 @@ object SlideDeckBuilder {
      * user who typed "Verse 1a" meant it.
      */
     fun fromLocalSong(song: LocalSong): SlideDeck {
-        val usable = song.sections.filter { it.text.isNotBlank() }
-        var verseNumber = 0
+        // Labelling is shared with LocalSongAdapter so the heading on the screen
+        // and the heading in the detail sheet cannot drift apart.
+        val usable = LocalSongAdapter.usableSections(song.sections)
+        val labels = LocalSongAdapter.sectionLabels(usable)
 
         val slides = usable.mapIndexed { index, section ->
-            if (section.type == SectionType.VERSE) verseNumber++
-            val label = section.label?.takeIf { it.isNotBlank() }
-                ?: when (section.type) {
-                    SectionType.VERSE -> "Verse $verseNumber"
-                    SectionType.CHORUS -> "Chorus"
-                    SectionType.BRIDGE -> "Bridge"
-                    SectionType.TAG -> "Tag"
-                    SectionType.ENDING -> "Ending"
-                }
+            val label = labels[index]
             Slide(
                 kind = SlideKind.SONG,
                 body = section.text.trim(),

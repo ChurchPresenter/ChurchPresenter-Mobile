@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Aucun cantique disponible</string>
     <string name="songs_table_no_match">Aucun cantique ne correspond au filtre</string>
-    <string name="songs_table_loading_error">Échec du chargement des cantiques</string>
     <string name="songs_table_retry">Réessayer</string>
 
     <!-- Book Filter -->

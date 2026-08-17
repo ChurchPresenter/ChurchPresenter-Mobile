@@ -62,7 +62,8 @@ fun SongDetailScreen(
     scheduleAdded: Boolean,
     onVerseSelected: (Int) -> Unit,
     onToggleProjecting: () -> Unit,
-    onAddToSchedule: () -> Unit,
+    /** Null hides the schedule button — standalone has no desktop schedule. */
+    onAddToSchedule: (() -> Unit)? = null,
     onClearDisplay: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {

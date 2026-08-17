@@ -24,6 +24,16 @@ object AppModeHolder {
     /** The mode the app is running in right now. */
     val mode: StateFlow<AppMode> = _mode.asStateFlow()
 
+    /**
+     * Whether there is a desktop to talk to at all.
+     *
+     * False in standalone, where the phone is the presenter. Screens that only
+     * exist to mirror a desktop check this before loading: their tabs are not
+     * even in the standalone strip, so firing requests at an absent computer
+     * only spends battery and fills the log with timeouts.
+     */
+    val hasDesktop: Boolean get() = _mode.value == AppMode.REMOTE
+
     /** Seeds the holder from persisted settings. Call once, early in [com.church.presenter.churchpresentermobile.App]. */
     fun init(settings: AppSettings) {
         _mode.value = settings.appMode

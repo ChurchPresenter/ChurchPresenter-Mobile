@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -42,6 +43,8 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.songs_count
 import churchpresentermobile.composeapp.generated.resources.book_filter_all_books
 import churchpresentermobile.composeapp.generated.resources.songs_table_no_match
+import churchpresentermobile.composeapp.generated.resources.songs_empty_local_library
+import churchpresentermobile.composeapp.generated.resources.songs_empty_local_library_body
 import churchpresentermobile.composeapp.generated.resources.songs_table_no_songs
 import churchpresentermobile.composeapp.generated.resources.songs_table_retry
 import churchpresentermobile.composeapp.generated.resources.songs_table_search_placeholder
@@ -71,6 +74,8 @@ fun SongsListScreen(
     onBookSelected: (String?) -> Unit,
     onSongClick: (Song) -> Unit,
     onRefresh: () -> Unit,
+    /** True when the list comes from this device's library rather than a desktop. */
+    showsLocalLibrary: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColors.current
@@ -156,14 +161,31 @@ fun SongsListScreen(
                     modifier = Modifier.fillMaxSize().padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = if (hasActiveFilter)
-                            stringResource(Res.string.songs_table_no_match)
-                        else
-                            stringResource(Res.string.songs_table_no_songs),
-                        color = colors.muted,
-                        fontSize = 15.sp
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = when {
+                                hasActiveFilter -> stringResource(Res.string.songs_table_no_match)
+                                // "No songs available" is a statement about the
+                                // desktop's songbook; on device the operator can
+                                // do something about it, so say what.
+                                showsLocalLibrary -> stringResource(Res.string.songs_empty_local_library)
+                                else -> stringResource(Res.string.songs_table_no_songs)
+                            },
+                            color = colors.muted,
+                            fontSize = 15.sp
+                        )
+                        if (showsLocalLibrary && !hasActiveFilter) {
+                            Text(
+                                text = stringResource(Res.string.songs_empty_local_library_body),
+                                color = colors.muted,
+                                fontSize = 13.sp,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
                 }
             }
         }

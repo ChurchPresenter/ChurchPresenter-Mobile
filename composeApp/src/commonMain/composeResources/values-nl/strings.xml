@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Geen liederen beschikbaar</string>
     <string name="songs_table_no_match">Geen liederen komen overeen met je filter</string>
-    <string name="songs_table_loading_error">Laden van liederen mislukt</string>
     <string name="songs_table_retry">Opnieuw proberen</string>
 
     <!-- Book Filter -->

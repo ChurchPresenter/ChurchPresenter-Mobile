@@ -34,6 +34,7 @@ import churchpresentermobile.composeapp.generated.resources.sync_done_with_failu
 import churchpresentermobile.composeapp.generated.resources.sync_explain
 import churchpresentermobile.composeapp.generated.resources.sync_failed
 import churchpresentermobile.composeapp.generated.resources.sync_kept_local
+import churchpresentermobile.composeapp.generated.resources.sync_preparing
 import churchpresentermobile.composeapp.generated.resources.sync_running
 import churchpresentermobile.composeapp.generated.resources.sync_title
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
@@ -96,17 +97,30 @@ fun SyncSheet(
 
             if (progress.isRunning) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    LinearProgressIndicator(
-                        progress = { progress.fraction },
-                        modifier = Modifier.fillMaxWidth(),
-                        color = colors.accent,
-                    )
+                    if (progress.isPreparing) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = colors.accent,
+                        )
+                    } else {
+                        LinearProgressIndicator(
+                            progress = { progress.fraction },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = colors.accent,
+                        )
+                    }
                     Text(
-                        text = stringResource(
-                            Res.string.sync_running,
-                            progress.done.toString(),
-                            progress.total.toString(),
-                        ),
+                        text = if (progress.isPreparing) {
+                            // Before the catalogue answers there is no total, and
+                            // "Copying 0 of 0…" at 0% reads as a hung app.
+                            stringResource(Res.string.sync_preparing)
+                        } else {
+                            stringResource(
+                                Res.string.sync_running,
+                                progress.done.toString(),
+                                progress.total.toString(),
+                            )
+                        },
                         color = colors.muted,
                         fontSize = 11.sp,
                     )

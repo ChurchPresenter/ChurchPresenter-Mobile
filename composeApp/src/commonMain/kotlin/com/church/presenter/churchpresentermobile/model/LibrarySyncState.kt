@@ -41,6 +41,14 @@ data class SyncProgress(
     /** 0f..1f, or 0f before the total is known. */
     val fraction: Float get() = if (total <= 0) 0f else (done.toFloat() / total).coerceIn(0f, 1f)
 
+    /**
+     * Running, but the catalogue request hasn't answered yet so there is no
+     * total to count towards. The UI must show an indeterminate indicator here:
+     * rendering the usual "Copying 0 of 0…" at 0% makes a working sync look
+     * frozen, which is exactly how it was reported.
+     */
+    val isPreparing: Boolean get() = isRunning && total <= 0
+
     companion object {
         val IDLE: SyncProgress = SyncProgress()
     }

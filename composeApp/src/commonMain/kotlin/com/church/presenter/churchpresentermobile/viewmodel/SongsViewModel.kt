@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
@@ -12,6 +13,7 @@ import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -43,10 +46,31 @@ class SongsViewModel(
     private val appSettings: AppSettings,
     private val eventService: ServerEventService,
     private val isDemoMode: Boolean = false,
-    sender: WsSender = eventService,
+    private val sender: WsSender = eventService,
     private val presenter: StandaloneEngine? = null,
+    private val catalog: SongCatalog = SongCatalog(
+        mode = MutableStateFlow(AppMode.REMOTE),
+        remote = SongService(appSettings, sender),
+    ),
 ) : ViewModel() {
     private var songService = SongService(appSettings, sender)
+
+    /**
+     * True when the list is coming from this device's library rather than a
+     * desktop, so the UI can offer the right empty state instead of an error.
+     */
+    val showsLocalLibrary = catalog.isLocalSource
+        .stateIn(viewModelScope, SharingStarted.Eagerly, catalog.isLocal)
+
+    /**
+     * Whether adding to the desktop's schedule is possible. It is not in
+     * standalone: there is no schedule, and the action is swallowed by the
+     * router, which returns success — so the operator would get a cheerful
+     * "Added to schedule" for something that never happened.
+     */
+    val canAddToSchedule = catalog.isLocalSource
+        .map { !it }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, !catalog.isLocal)
 
     private val _allSongs = MutableStateFlow<List<Song>>(emptyList())
 
@@ -157,7 +181,7 @@ class SongsViewModel(
         _error.value = null
         viewModelScope.launch {
             try {
-                songService.getSongs()
+                catalog.list()
                     .onSuccess {
                         _allSongs.value = it
                         tryOpenPendingSong()
@@ -233,11 +257,11 @@ class SongsViewModel(
         }
         viewModelScope.launch {
             _isLoadingDetail.value = true
-            songService.getSongDetail(song.number, song.bookName, song.id, song.title)
-                .onSuccess { detail ->
-                    _songDetail.value = detail
-                    presenter?.setDeck(SlideDeckBuilder.fromSong(song, detail))
-                    Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${detail.allVerses.size}")
+            catalog.detail(song)
+                .onSuccess { loaded ->
+                    _songDetail.value = loaded.detail
+                    presenter?.setDeck(loaded.deck)
+                    Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")
                 }
                 .onFailure { e ->
                     _detailError.value = "Failed to load song details: ${e.recordNetworkError(TAG, "openSongDetail")}"
@@ -394,7 +418,11 @@ class SongsViewModel(
         // the new server's songs load, preventing a "no songs" flash.
         _isLoading.value = true
         songService.closeClient()
-        songService = SongService(appSettings, eventService)
+        // `sender`, not `eventService`: in standalone the sender is the
+        // ProjectionRouter that serves actions locally. Rebuilding with the raw
+        // WebSocket here meant every song action after a settings save went back
+        // to dialling a desktop that isn't there.
+        songService = SongService(appSettings, sender)
         _selectedSong.value = null
         _selectedBook.value = null
         _searchQuery.value = ""

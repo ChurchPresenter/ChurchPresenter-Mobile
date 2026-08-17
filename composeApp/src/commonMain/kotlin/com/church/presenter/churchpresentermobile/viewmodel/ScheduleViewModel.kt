@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
@@ -71,6 +72,11 @@ class ScheduleViewModel(
 
     /** Loads (or reloads) the schedule from the API, or from [DemoData] in demo mode. */
     fun loadSchedule() {
+        // Standalone has no desktop to ask, and this screen is not reachable
+        // there — loading would only time out against an absent computer.
+        // Demo mode still runs: it serves canned content and touches no network.
+        if (!AppModeHolder.hasDesktop && !isDemoMode) return
+
         if (isDemoMode) {
             _items.value = DemoData.scheduleItems
             Logger.d(TAG, "loadSchedule — demo mode: loaded ${DemoData.scheduleItems.size} items")

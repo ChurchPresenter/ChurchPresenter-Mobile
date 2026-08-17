@@ -231,6 +231,86 @@ class LibrarySyncServiceTest {
         assertEquals(0f, com.church.presenter.churchpresentermobile.model.SyncProgress.IDLE.fraction)
     }
 
+    // ── Cancelling ───────────────────────────────────────────────────────
+
+    @Test
+    fun `cancelling reports the cancelled outcome and keeps what was written`() = runTest {
+        // Previously cancel() killed the coroutine awaiting sync(), so the line
+        // publishing the outcome never ran and the sheet just stopped.
+        val repository = repository()
+        val catalogue = (1..120).map { catalogueSong(it.toString()) }
+        lateinit var sync: LibrarySyncService
+        sync = LibrarySyncService(
+            repository = repository,
+            fetchCatalogue = { Result.success(catalogue) },
+            fetchDetail = { song ->
+                // Ask to stop once the first batch is safely written.
+                if (song.number.toInt() > 60) sync.requestCancel()
+                Result.success(detail(song.number, "words"))
+            },
+            now = { 2_000L },
+        )
+
+        val outcome = sync.sync()
+
+        assertIs<SyncOutcome.Cancelled>(outcome)
+        assertTrue(repository.songs.isNotEmpty(), "batches already written are kept")
+        assertTrue(repository.songs.size < catalogue.size, "a cancelled sync stops short")
+    }
+
+    @Test
+    fun `progress returns to idle however the sync ends`() = runTest {
+        val failed = service(repository(), Result.failure(Exception("no route to host")))
+        failed.sync()
+        assertEquals(com.church.presenter.churchpresentermobile.model.SyncProgress.IDLE, failed.progress.value)
+
+        val ok = service(repository(), Result.success(listOf(catalogueSong("1"))))
+        ok.sync()
+        assertEquals(com.church.presenter.churchpresentermobile.model.SyncProgress.IDLE, ok.progress.value)
+    }
+
+    @Test
+    fun `progress is preparing until the catalogue answers`() = runTest {
+        var seenWhileFetching: com.church.presenter.churchpresentermobile.model.SyncProgress? = null
+        lateinit var sync: LibrarySyncService
+        sync = LibrarySyncService(
+            repository = repository(),
+            fetchCatalogue = {
+                seenWhileFetching = sync.progress.value
+                Result.success(listOf(catalogueSong("1")))
+            },
+            fetchDetail = { Result.success(detail(it.number, "words")) },
+            now = { 2_000L },
+        )
+
+        sync.sync()
+
+        // Running with no total — the UI shows an indeterminate bar here rather
+        // than "Copying 0 of 0…", which read as a hung app.
+        assertTrue(seenWhileFetching!!.isPreparing)
+        assertTrue(seenWhileFetching!!.isRunning)
+    }
+
+    @Test
+    fun `every failed detail is counted exactly once`() = runTest {
+        // The counters were incremented from four concurrent coroutines, which
+        // loses updates on any dispatcher that is not single-threaded.
+        val catalogue = (1..40).map { catalogueSong(it.toString()) }
+        val outcome = service(
+            repository(),
+            Result.success(catalogue),
+            details = { song ->
+                if (song.number.toInt() % 3 == 0) Result.failure(Exception("unreadable"))
+                else Result.success(detail(song.number, "words"))
+            },
+        ).sync()
+
+        val expectedFailures = catalogue.count { it.number.toInt() % 3 == 0 }
+        assertIs<SyncOutcome.Success>(outcome)
+        assertEquals(expectedFailures, outcome.failedCount)
+        assertEquals(catalogue.size - expectedFailures, outcome.songCount)
+    }
+
     // ── Section typing ───────────────────────────────────────────────────
 
     @Test

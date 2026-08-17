@@ -7,8 +7,9 @@
     <string name="songs_table_search_placeholder">Search by # or title…</string>
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">No songs available</string>
+    <string name="songs_empty_local_library">Your library is empty</string>
+    <string name="songs_empty_local_library_body">Add songs in the Library tab, or copy them from your computer. They then work with no computer and no internet.</string>
     <string name="songs_table_no_match">No songs match your filter</string>
-    <string name="songs_table_loading_error">Failed to load songs</string>
     <string name="songs_table_retry">Retry</string>
 
     <!-- Book Filter -->
@@ -101,6 +102,8 @@
     <string name="bible_no_verses">No verses available</string>
     <string name="bible_back">← Back</string>
     <string name="bible_loading_error">Failed to load</string>
+    <string name="bible_standalone_empty_title">No Bibles in your library</string>
+    <string name="bible_standalone_empty_body">Bible text comes from a connected computer. Switch to Remote control in Settings to browse it.</string>
     <string name="bible_retry">Retry</string>
 
     <!-- Schedule Drawer -->
@@ -266,7 +269,7 @@
     <string name="status_unauthorized_title">Server rejected the API key</string>
     <string name="status_unauthorized_body">The server is reachable but refused the request. Check the API key in Settings.</string>
     <string name="status_not_churchpresenter_title">Not a ChurchPresenter server</string>
-    <string name="status_not_churchpresenter_body">Reached a device at this address, but it isn\'t running ChurchPresenter. Check the IP address and port.</string>
+    <string name="status_not_churchpresenter_body">Reached a device at this address, but it isn't running ChurchPresenter. Check the IP address and port.</string>
     <string name="status_permissions_title">This device's permissions</string>
     <string name="status_permission_present">Control presentation</string>
     <string name="status_permission_schedule">Add to schedule</string>
@@ -586,13 +589,14 @@
     <string name="sync_hours_ago">Synced %1$s h ago</string>
     <string name="sync_days_ago">Synced %1$s days ago</string>
     <string name="sync_running">Copying %1$s of %2$s…</string>
+    <string name="sync_preparing">Looking on your computer…</string>
     <string name="sync_cancel">Stop</string>
     <string name="sync_done">Copied %1$s songs</string>
     <string name="sync_done_with_failures">Copied %1$s songs · %2$s could not be read</string>
     <string name="sync_kept_local">%1$s of your edits were kept</string>
     <string name="sync_failed">Could not reach your computer: %1$s</string>
     <string name="sync_cancelled">Stopped — %1$s songs were kept</string>
-    <string name="sync_explain">Copies your computer\'s songs onto this phone so they work with no computer and no internet. Your own songs and edits are never overwritten.</string>
+    <string name="sync_explain">Copies your computer's songs onto this phone so they work with no computer and no internet. Your own songs and edits are never overwritten.</string>
     <string name="sync_close">Close</string>
 
     <!-- Import / export -->
@@ -605,7 +609,7 @@
     <string name="import_conflict_count">%1$s already in your library</string>
     <string name="import_conflict_question">What should happen to the ones you already have?</string>
     <string name="import_keep_mine">Keep mine</string>
-    <string name="import_replace">Use the file\'s</string>
+    <string name="import_replace">Use the file's</string>
     <string name="import_confirm">Import</string>
     <string name="import_cancel">Cancel</string>
     <string name="import_nothing">There is nothing new in that file.</string>

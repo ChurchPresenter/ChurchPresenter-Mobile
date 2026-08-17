@@ -10,15 +10,18 @@ import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SyncOutcome
 import com.church.presenter.churchpresentermobile.model.SyncProgress
 import com.church.presenter.churchpresentermobile.util.Logger
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 
 private const val TAG = "LibrarySyncService"
 
@@ -52,77 +55,109 @@ class LibrarySyncService(
     private val _progress = MutableStateFlow(SyncProgress.IDLE)
     val progress: StateFlow<SyncProgress> = _progress.asStateFlow()
 
+    /** Serialises the read-modify-write of [SyncProgress] across concurrent detail fetches. */
+    private val progressLock = Mutex()
+
+    /**
+     * Set by [requestCancel] and checked between units of work.
+     *
+     * Cancellation is cooperative rather than a scope cancel because the caller
+     * needs the outcome back: cancelling the coroutine that is awaiting [sync]
+     * means the line which publishes [SyncOutcome.Cancelled] never runs, and the
+     * sheet just stops with no explanation.
+     */
+    private var cancelRequested = false
+
+    /** Asks a sync in flight to stop. Whatever was already written is kept. */
+    fun requestCancel() {
+        cancelRequested = true
+    }
+
     /**
      * Fetches the catalogue and merges it in.
      *
-     * Cancelling the calling scope stops the sync; whatever batches had already
-     * been written are kept.
+     * All of the work runs on [Dispatchers.Default]. That is not an optimisation:
+     * [LibraryRepository] writes the whole library document synchronously, so on
+     * the caller's main dispatcher every batch blocked the UI thread — the app
+     * appeared to freeze for the duration of a sync.
      */
-    suspend fun sync(): SyncOutcome {
+    suspend fun sync(): SyncOutcome = withContext(Dispatchers.Default) {
+        cancelRequested = false
         _progress.value = SyncProgress(isRunning = true)
 
-        val catalogue = fetchCatalogue().getOrElse { error ->
-            _progress.value = SyncProgress.IDLE
-            Logger.e(TAG, "catalogue fetch failed: ${error.message}")
-            return SyncOutcome.Failed(error.message ?: "Could not reach the computer")
-        }
-
-        if (catalogue.isEmpty()) {
-            _progress.value = SyncProgress.IDLE
-            return SyncOutcome.Success(songCount = 0, failedCount = 0, keptLocal = 0)
-        }
-
-        _progress.value = SyncProgress(done = 0, total = catalogue.size, isRunning = true)
-
-        var failed = 0
-        var completed = 0
-        var keptLocal = 0
-        val pending = mutableListOf<LocalSong>()
-
         try {
+            val catalogue = fetchCatalogue().getOrElse { error ->
+                Logger.e(TAG, "catalogue fetch failed: ${error.message}")
+                return@withContext SyncOutcome.Failed(error.message ?: "Could not reach the computer")
+            }
+
+            if (catalogue.isEmpty()) {
+                return@withContext SyncOutcome.Success(songCount = 0, failedCount = 0, keptLocal = 0)
+            }
+
+            _progress.value = SyncProgress(done = 0, total = catalogue.size, isRunning = true)
+
+            var failed = 0
+            var completed = 0
+            var keptLocal = 0
+            var written = 0
+
             val gate = Semaphore(DETAIL_CONCURRENCY)
-            catalogue.chunked(BATCH_SIZE).forEach { batch ->
+            for (batch in catalogue.chunked(BATCH_SIZE)) {
+                if (cancelRequested) break
+
                 val fetched = coroutineScope {
                     batch.map { song ->
                         async {
                             gate.withPermit {
+                                if (cancelRequested) return@withPermit null
                                 val result = fetchDetail(song)
-                                _progress.value = SyncProgress(
-                                    done = ++completed,
-                                    total = catalogue.size,
-                                    currentTitle = song.title,
-                                    isRunning = true,
-                                )
+                                progressLock.withLock {
+                                    completed++
+                                    _progress.value = SyncProgress(
+                                        done = completed,
+                                        total = catalogue.size,
+                                        currentTitle = song.title,
+                                        isRunning = true,
+                                    )
+                                }
+                                // One unreadable song must not abort the rest of
+                                // the catalogue.
                                 result.getOrNull()?.let { toLocalSong(song, it) }
-                                    ?: run {
-                                        // One unreadable song must not abort the
-                                        // rest of the catalogue.
-                                        failed++
-                                        Logger.e(TAG, "detail failed for ${song.number} ${song.title}")
-                                        null
-                                    }
                             }
                         }
-                    }.awaitAll().filterNotNull()
+                    }.awaitAll()
                 }
 
-                pending += fetched
-                // Write through per batch so an interruption leaves valid data.
-                keptLocal = applyMerge(pending)
-            }
-        } catch (e: CancellationException) {
-            _progress.value = SyncProgress.IDLE
-            Logger.d(TAG, "sync cancelled after $completed of ${catalogue.size}")
-            return SyncOutcome.Cancelled(songCount = pending.size)
-        }
+                // Counted here rather than inside the coroutines: four of them run
+                // at once, and `failed++` from all four is a lost-update race on
+                // every platform whose dispatcher is not single-threaded.
+                failed += fetched.count { it == null }
 
-        _progress.value = SyncProgress.IDLE
-        Logger.d(TAG, "sync complete — ${pending.size} songs, $failed failed, $keptLocal kept local")
-        return SyncOutcome.Success(
-            songCount = pending.size,
-            failedCount = failed,
-            keptLocal = keptLocal,
-        )
+                // Merge only this batch. Merging the running total instead made the
+                // work quadratic in catalogue size — 500 songs meant re-serialising
+                // 50 + 100 + … + 500 songs — which is what made a large sync crawl.
+                val batchSongs = fetched.filterNotNull()
+                written += batchSongs.size
+                keptLocal = applyMerge(batchSongs)
+            }
+
+            if (cancelRequested) {
+                Logger.d(TAG, "sync cancelled after $completed of ${catalogue.size}")
+                return@withContext SyncOutcome.Cancelled(songCount = written)
+            }
+
+            Logger.d(TAG, "sync complete — $written songs, $failed failed, $keptLocal kept local")
+            SyncOutcome.Success(
+                songCount = written,
+                failedCount = failed,
+                keptLocal = keptLocal,
+            )
+        } finally {
+            // Every exit — success, failure, cancel, or the scope dying under us —
+            // must leave the sheet idle, or it stays stuck showing a running sync.
+            _progress.value = SyncProgress.IDLE
+        }
     }
 
     /** Merges everything fetched so far, returning how many local edits were preserved. */

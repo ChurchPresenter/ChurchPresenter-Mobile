@@ -38,7 +38,7 @@ class SongService(
     private val settings: AppSettings,
     private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
-) {
+) : SongReader {
     init {
         Logger.d(TAG, "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
     }
@@ -46,7 +46,7 @@ class SongService(
     /**
      * Fetches the full song catalog from the server and flattens it into a single list.
      */
-    suspend fun getSongs(): Result<List<Song>> {
+    override suspend fun getSongs(): Result<List<Song>> {
         val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}"
         Logger.d(TAG, "getSongs — requesting URL: $url")
         return apiRunCatching {
@@ -71,7 +71,7 @@ class SongService(
      * Uses a two-pass approach: standard JSON decode first, then a flexible
      * JsonObject scan as a safety net for any unrecognised field names.
      */
-    suspend fun getSongDetail(number: String, bookName: String?, songId: Int = -1, title: String? = null): Result<SongDetail> {
+    override suspend fun getSongDetail(number: String, bookName: String?, songId: Int, title: String?): Result<SongDetail> {
         val pathSegment = number.ifBlank { "_" }
         val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}/$pathSegment"
         Logger.d(TAG, "getSongDetail — requesting URL: $url  bookName=$bookName  songId=$songId  title=$title")

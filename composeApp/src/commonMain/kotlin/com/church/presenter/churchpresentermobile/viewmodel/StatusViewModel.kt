@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ServerStatus
 import com.church.presenter.churchpresentermobile.model.StatusProbeResult
@@ -85,6 +86,11 @@ class StatusViewModel(
     }
 
     private fun fetchStatus() {
+        // The status screen only exists to describe a desktop connection,
+        // and App.kt already hides it in standalone. Guard the load too so a
+        // lingering instance cannot probe an absent host.
+        if (!AppModeHolder.hasDesktop) return
+
         _uiState.value = StatusUiState.Loading
         viewModelScope.launch {
             service.fetchStatus()

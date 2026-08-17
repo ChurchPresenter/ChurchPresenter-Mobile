@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -43,6 +44,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_count
 import churchpresentermobile.composeapp.generated.resources.bible_loading_error
+import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_body
+import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_title
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
 import churchpresentermobile.composeapp.generated.resources.bible_retry
@@ -112,6 +115,7 @@ fun BibleScreen(
     val selectedVerseIndices by vm.selectedVerseIndices.collectAsState()
     val projectedVerseIndex  by vm.projectedVerseIndex.collectAsState()
     val isMultiSelectMode   by vm.isMultiSelectMode.collectAsState()
+    val hasNoLocalBibles    by vm.hasNoLocalBibles.collectAsState()
     val scheduleAdded       by vm.scheduleAdded.collectAsState()
     val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val toastEvent          by vm.toastEvent.collectAsState()
@@ -163,8 +167,39 @@ fun BibleScreen(
         }
     }
 
-    // ── Error banner ──────────────────────────────────────────────────────
     val colors = LocalAppColors.current
+
+    // Standalone has no Bible on the device and no computer to ask, so there is
+    // nothing to browse, retry or refresh — say so plainly instead of showing a
+    // failed request as an error the operator is expected to fix.
+    if (hasNoLocalBibles) {
+        Box(
+            modifier = modifier.fillMaxSize().background(colors.background),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(horizontal = 32.dp),
+            ) {
+                Text(
+                    text = stringResource(Res.string.bible_standalone_empty_title),
+                    color = colors.muted,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = stringResource(Res.string.bible_standalone_empty_body),
+                    color = colors.muted,
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+        return
+    }
+
+    // ── Error banner ──────────────────────────────────────────────────────
     Box(modifier = modifier.fillMaxSize().background(colors.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (error != null) {

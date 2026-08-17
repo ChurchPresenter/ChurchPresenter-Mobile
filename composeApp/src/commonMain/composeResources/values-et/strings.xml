@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Laule pole saadaval</string>
     <string name="songs_table_no_match">Ükski laul ei vasta filtrile</string>
-    <string name="songs_table_loading_error">Laulude laadimine ebaõnnestus</string>
     <string name="songs_table_retry">Proovi uuesti</string>
 
     <!-- Book Filter -->

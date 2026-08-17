@@ -3,6 +3,8 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.ApiException
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
@@ -17,6 +19,8 @@ import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,8 +55,22 @@ class BibleViewModel(
     private val eventService: WsSender,
     private val isDemoMode: Boolean = false,
     private val presenter: StandaloneEngine? = null,
+    private val mode: StateFlow<AppMode> = AppModeHolder.mode,
 ) : ViewModel() {
     private var bibleService = BibleService(appSettings, eventService)
+
+    /**
+     * True when there is no Bible to browse: the text lives on a desktop, and
+     * standalone has none. There is no offline Bible on the device, so the
+     * screen shows an ordinary "nothing here" message rather than pretending a
+     * failed request to an absent computer is an error the operator can fix.
+     */
+    val hasNoLocalBibles: StateFlow<Boolean> = mode
+        .map { it == AppMode.STANDALONE }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, mode.value == AppMode.STANDALONE)
+
+    /** Standalone has no Bible source, so every loader is a no-op there. */
+    private val cannotLoad: Boolean get() = mode.value == AppMode.STANDALONE
 
     // ── Books ─────────────────────────────────────────────────────────────────
 
@@ -154,6 +172,15 @@ class BibleViewModel(
      *                    pull-to-refresh and settings-save reload).
      */
     fun loadBooks(forceReload: Boolean = false) {
+        if (cannotLoad) {
+            // One guard covers every caller: init, pull-to-refresh, settings-save
+            // and the server's bible_updated push.
+            Logger.d(TAG, "loadBooks — standalone, no Bible source on this device")
+            _allBooks.value = emptyList()
+            _error.value = null
+            _isLoading.value = false
+            return
+        }
         if (isDemoMode) {
             Logger.d(TAG, "loadBooks — DEMO MODE")
             _allBooks.value = DemoData.books

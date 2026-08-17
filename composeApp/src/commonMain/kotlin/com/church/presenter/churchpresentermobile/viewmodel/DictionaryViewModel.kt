@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.DictionaryVersesResponse
@@ -98,6 +99,10 @@ class DictionaryViewModel(
     /** Loads the Bible book list for the reference filter. Silent on failure — the
      *  filter simply stays unavailable while search still works. */
     private fun loadBooks() {
+        // Strong's data lives on the desktop; standalone has none and the
+        // dictionary is not reachable there.
+        if (!AppModeHolder.hasDesktop) return
+
         viewModelScope.launch {
             bibleService.getBooks()
                 .onSuccess { _books.value = it }
@@ -173,6 +178,10 @@ class DictionaryViewModel(
     }
 
     fun search() {
+        // Strong's data lives on the desktop; standalone has none and the
+        // dictionary is not reachable there.
+        if (!AppModeHolder.hasDesktop) return
+
         searchJob?.cancel()
         viewModelScope.launch {
             _isLoading.value = true

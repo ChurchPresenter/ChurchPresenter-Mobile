@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Žiadne piesne nie sú k dispozícii</string>
     <string name="songs_table_no_match">Žiadne piesne nezodpovedajú filtru</string>
-    <string name="songs_table_loading_error">Načítanie piesní zlyhalo</string>
     <string name="songs_table_retry">Skúsiť znova</string>
 
     <!-- Book Filter -->

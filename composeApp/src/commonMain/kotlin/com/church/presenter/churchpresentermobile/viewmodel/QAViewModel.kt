@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Question
 import com.church.presenter.churchpresentermobile.network.QAService
@@ -60,6 +61,10 @@ class QAViewModel(
     }
 
     fun loadQuestions(silent: Boolean = false) {
+        // Standalone has no desktop to ask, and this screen is not reachable
+        // there — loading would only time out against an absent computer.
+        if (!AppModeHolder.hasDesktop) return
+
         if (!silent) _uiState.value = QAUiState.Loading
         viewModelScope.launch {
             val statusResult = service.fetchStatus()

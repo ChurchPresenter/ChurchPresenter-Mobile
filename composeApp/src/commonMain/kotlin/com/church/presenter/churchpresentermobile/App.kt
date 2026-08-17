@@ -105,6 +105,8 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.SongCatalog
+import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.MediaSource
 import com.church.presenter.churchpresentermobile.viewmodel.MediaViewModel
@@ -268,8 +270,18 @@ fun App() {
     val bibleViewModel: BibleViewModel = viewModel(key = "bible_$isDemoMode") {
         BibleViewModel(appSettings, projectionRouter, isDemoMode, standaloneEngine)
     }
+    // Where song content is read from, decided per call by the current mode —
+    // the desktop in remote, this device's library in standalone. The same idea
+    // as projectionRouter above, applied to reads instead of actions.
+    val songCatalog = remember(appSettings, libraryRepository) {
+        SongCatalog(
+            mode = AppModeHolder.mode,
+            remote = SongService(appSettings, projectionRouter),
+            library = libraryRepository,
+        )
+    }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
-        SongsViewModel(appSettings, eventService, isDemoMode, projectionRouter, standaloneEngine)
+        SongsViewModel(appSettings, eventService, isDemoMode, projectionRouter, standaloneEngine, songCatalog)
     }
     val picturesViewModel: PicturesViewModel = viewModel(key = "pictures_$isDemoMode") {
         PicturesViewModel(appSettings, projectionRouter, isDemoMode)

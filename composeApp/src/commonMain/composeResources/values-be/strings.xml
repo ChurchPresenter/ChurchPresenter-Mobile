@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Няма даступных песень</string>
     <string name="songs_table_no_match">Ніводная песня не адпавядае фільтру</string>
-    <string name="songs_table_loading_error">Не ўдалося загрузіць песні</string>
     <string name="songs_table_retry">Паўтарыць</string>
 
     <!-- Book Filter -->

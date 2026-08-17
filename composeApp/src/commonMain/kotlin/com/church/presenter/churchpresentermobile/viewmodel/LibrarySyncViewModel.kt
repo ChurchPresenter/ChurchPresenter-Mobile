@@ -73,10 +73,16 @@ class LibrarySyncViewModel(
         }
     }
 
-    /** Stops a sync in flight. Whatever was already written stays. */
+    /**
+     * Stops a sync in flight. Whatever was already written stays.
+     *
+     * Asks the service to stop rather than cancelling [job]: cancelling the
+     * coroutine kills the very line that publishes the outcome, so the user saw
+     * the sheet stop with no "cancelled" result. The job is still held, but only
+     * as the re-entrancy guard in [sync].
+     */
     fun cancel() {
-        job?.cancel()
-        job = null
+        service.requestCancel()
     }
 
     fun dismissOutcome() { _outcome.value = null }

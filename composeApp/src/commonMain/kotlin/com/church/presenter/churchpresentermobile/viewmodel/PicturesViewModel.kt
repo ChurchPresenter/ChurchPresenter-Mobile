@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.PictureImage
@@ -86,6 +87,11 @@ class PicturesViewModel(private val appSettings: AppSettings, private val eventS
     /** Fetches the pictures folder from the API.
      *  In demo mode, serves [DemoData.picturesFolder] without any network call. */
     fun loadPictures(folderId: String? = null) {
+        // Standalone has no desktop to ask, and this screen is not reachable
+        // there — loading would only time out against an absent computer.
+        // Demo mode still runs: it serves canned content and touches no network.
+        if (!AppModeHolder.hasDesktop && !isDemoMode) return
+
         if (isDemoMode) {
             Logger.d(TAG, "loadPictures — DEMO MODE folderId=$folderId")
             _folder.value = DemoData.picturesFolder
