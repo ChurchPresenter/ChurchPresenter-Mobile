@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.deviceName
 import com.church.presenter.churchpresentermobile.generateUUID
 import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.util.Logger
@@ -128,6 +129,20 @@ class AppSettings(
     var displayName: String
         get() = storage.getString(KEY_DISPLAY_NAME, "")
         set(value) { storage.putString(KEY_DISPLAY_NAME, value) }
+
+    /**
+     * The name this device reports to a desktop, sent as
+     * [ApiConstants.DEVICE_NAME_HEADER] so an operator approving a connection
+     * reads "Pixel 7 Pro" or "Sound desk" rather than a UUID.
+     *
+     * [displayName] wins when set: the operator typed it precisely because the
+     * OS name was blank, unhelpful ("iPhone"), or the wrong thing to call this
+     * device in this building. Blank when neither exists — a browser with no
+     * custom name — and the caller then sends nothing at all rather than an
+     * empty header.
+     */
+    val reportedDeviceName: String
+        get() = displayName.trim().ifBlank { deviceName().trim() }
 
     /**
      * FCM (Firebase Cloud Messaging) registration token for this device.

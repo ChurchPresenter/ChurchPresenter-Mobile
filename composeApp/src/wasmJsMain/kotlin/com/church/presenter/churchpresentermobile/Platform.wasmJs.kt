@@ -12,6 +12,9 @@ private external fun jsRandomUUID(): String
 
 actual fun generateUUID(): String = jsRandomUUID()
 
+/** Blank for the same reason as the js target — see Platform.js.kt. */
+actual fun deviceName(): String = ""
+
 @JsFun("(url) => { window.open(url, '_blank'); }")
 private external fun jsOpenUrl(url: String)
 

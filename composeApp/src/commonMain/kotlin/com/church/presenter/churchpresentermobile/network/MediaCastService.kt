@@ -82,7 +82,7 @@ class MediaCastService(
             val response = uploadClient.post(url) {
                 val key = settings.apiKey
                 if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
-                header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+                identifyDevice(settings)
                 setBody(object : OutgoingContent.WriteChannelContent() {
                     override val contentType = ContentType.Application.OctetStream
                     override val contentLength = total.takeIf { it > 0 }

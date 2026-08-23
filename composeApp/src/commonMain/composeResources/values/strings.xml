@@ -32,6 +32,11 @@
     <string name="settings_api_key_placeholder">Leave blank if not required</string>
     <string name="settings_display_name_label">Your Name (for Q&amp;A)</string>
     <string name="settings_display_name_placeholder">Leave blank to use device ID</string>
+    <!-- The same field, renamed: it now also names this device in the desktop's
+         approval prompt and its allowed/blocked lists. English-only for now;
+         other locales fall back to this until translated. -->
+    <string name="settings_device_name_label">Device name</string>
+    <string name="settings_device_name_hint">Shown on the computer when it asks whether to allow this device, and beside anything you send it.</string>
     <string name="settings_save">Save</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_invalid_port">Port must be a number between 1 and 65535</string>

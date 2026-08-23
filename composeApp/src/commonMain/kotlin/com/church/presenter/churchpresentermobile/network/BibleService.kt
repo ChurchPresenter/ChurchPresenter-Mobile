@@ -98,7 +98,7 @@ class BibleService(
             Logger.d(TAG, "applyApiKey — adding ${ApiConstants.API_KEY_HEADER} header")
             header(ApiConstants.API_KEY_HEADER, key)
         }
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     /**

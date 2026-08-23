@@ -12,6 +12,18 @@ expect fun getPlatform(): Platform
 expect fun generateUUID(): String
 
 /**
+ * What this device calls itself — the name its owner sees in the OS, or the
+ * model where the OS will not say.
+ *
+ * Reported to the desktop so an operator approving a connection reads
+ * "Pixel 7 Pro" rather than a UUID. Blank when the platform offers nothing
+ * usable, which is a legitimate answer: the caller then sends no name and the
+ * desktop falls back to the id, exactly as it does for clients that predate
+ * this.
+ */
+expect fun deviceName(): String
+
+/**
  * Opens [url] in the platform's default browser / Safari / Chrome.
  * Used by [CertSetupScreen] to open the CA certificate download URL.
  */

@@ -36,7 +36,7 @@ class QAService(
             // Without this the admin routes return 401 "Invalid admin password".
             header(ApiConstants.QA_ADMIN_PASSWORD_HEADER, key)
         }
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     private fun baseUrl() = settings.apiBaseUrl

@@ -91,7 +91,9 @@ class QAViewModel(
     fun displayQuestion(id: String) = runAdminAction { service.displayQuestion(id) }
     fun deleteQuestion(id: String) = runAdminAction { service.deleteQuestion(id) }
     fun addQuestion(text: String) = runAdminAction {
-        val name = appSettings.displayName.ifBlank { appSettings.deviceId }
+        // Same name the desktop was given at approval, so a question arrives from
+        // the device the operator already recognises rather than from a UUID.
+        val name = appSettings.reportedDeviceName.ifBlank { appSettings.deviceId }
         service.addQuestion(text, name).map { }
     }
     fun clearDisplay() = runAdminAction { service.clearDisplay() }

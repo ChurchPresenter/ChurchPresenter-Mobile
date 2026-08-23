@@ -347,6 +347,18 @@ class ServerEventService(
                         val key = settings.apiKey
                         if (key.isNotBlank()) headers.append(ApiConstants.API_KEY_HEADER, key)
                         headers.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+                        val name = settings.reportedDeviceName
+                        if (name.isNotBlank()) headers.append(ApiConstants.DEVICE_NAME_HEADER, name)
+                        // The same values again as query parameters, which is how
+                        // the desktop reads them when the handshake carries no
+                        // headers (WebSocketRoute falls back to a parameter of the
+                        // same name). Ktor's mobile engines do send the headers;
+                        // this app's own web build cannot, and pays nothing for the
+                        // duplication either way.
+                        url {
+                            parameters.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+                            if (name.isNotBlank()) parameters.append(ApiConstants.DEVICE_NAME_HEADER, name)
+                        }
                     }
                 ) {
                     Logger.d(TAG, "listen — connected")

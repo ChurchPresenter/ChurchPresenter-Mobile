@@ -71,7 +71,8 @@ import churchpresentermobile.composeapp.generated.resources.cd_close
 import churchpresentermobile.composeapp.generated.resources.settings_active_url_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
-import churchpresentermobile.composeapp.generated.resources.settings_display_name_label
+import churchpresentermobile.composeapp.generated.resources.settings_device_name_hint
+import churchpresentermobile.composeapp.generated.resources.settings_device_name_label
 import churchpresentermobile.composeapp.generated.resources.settings_display_name_placeholder
 import churchpresentermobile.composeapp.generated.resources.mode_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_remote_title
@@ -129,6 +130,7 @@ import churchpresentermobile.composeapp.generated.resources.status_permission_up
 import churchpresentermobile.composeapp.generated.resources.status_permissions_title
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.deviceName
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.supportsStandalone
@@ -362,11 +364,22 @@ fun SettingsScreen(
                             onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
                             keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
                         )
+                        // The placeholder is what the desktop will be told if this
+                        // is left blank, so the operator can see the OS name and
+                        // decide whether it is good enough — "iPhone" usually isn't
+                        // when there are three in the building.
                         SettingsField(
-                            label = stringResource(Res.string.settings_display_name_label),
+                            label = stringResource(Res.string.settings_device_name_label),
                             value = displayName, onValueChange = { viewModel.setDisplayName(it) },
-                            placeholder = stringResource(Res.string.settings_display_name_placeholder),
+                            placeholder = deviceName().ifBlank {
+                                stringResource(Res.string.settings_display_name_placeholder)
+                            },
                             keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
+                        )
+                        Text(
+                            text = stringResource(Res.string.settings_device_name_hint),
+                            fontSize = 11.sp,
+                            color = colors.muted,
                         )
 
                         // QR scanner (platform button)

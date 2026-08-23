@@ -37,6 +37,8 @@ class StatusService internal constructor(
     private val apiKey: String,
     private val deviceId: String,
     private val client: HttpClient,
+    /** What the desktop should call this device; blank sends no name. */
+    private val deviceName: String = "",
 ) {
     /**
      * Production constructor — reads connection details from [AppSettings] and
@@ -48,6 +50,7 @@ class StatusService internal constructor(
         apiKey = settings.apiKey,
         deviceId = settings.deviceId,
         client = createHttpClient(),
+        deviceName = settings.reportedDeviceName,
     )
 
     /**
@@ -144,6 +147,7 @@ class StatusService internal constructor(
     private fun HttpRequestBuilder.applyHeaders() {
         if (apiKey.isNotBlank()) header(ApiConstants.API_KEY_HEADER, apiKey)
         header(ApiConstants.DEVICE_ID_HEADER, deviceId)
+        if (deviceName.isNotBlank()) header(ApiConstants.DEVICE_NAME_HEADER, deviceName)
         header(ApiConstants.APP_VERSION_HEADER, appVersion)
     }
 

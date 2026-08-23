@@ -225,7 +225,7 @@ class SongService(
     private fun HttpRequestBuilder.applyApiKey() {
         val key = settings.apiKey
         if (key.isNotBlank()) header(ApiConstants.API_KEY_HEADER, key)
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */

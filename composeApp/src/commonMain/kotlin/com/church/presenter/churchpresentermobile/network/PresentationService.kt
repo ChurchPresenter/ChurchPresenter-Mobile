@@ -131,7 +131,7 @@ class PresentationService(
         if (key.isNotBlank()) {
             header(ApiConstants.API_KEY_HEADER, key)
         }
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     /** Tells the presenter to clear the display (show nothing) via WebSocket clear. */

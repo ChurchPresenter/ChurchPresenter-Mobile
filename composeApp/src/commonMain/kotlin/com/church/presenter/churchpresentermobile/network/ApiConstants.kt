@@ -67,6 +67,18 @@ object ApiConstants {
      */
     const val QA_ADMIN_PASSWORD_HEADER = "X-QA-Password"
     const val DEVICE_ID_HEADER      = "X-Device-Id"
+
+    /**
+     * What this device calls itself, so the desktop can name it in an approval
+     * prompt instead of showing a UUID. Omitted when there is no name to send —
+     * the desktop falls back to the id, as it does for older clients.
+     *
+     * The desktop reads the header, then a query parameter of the *same name*
+     * (WebSocketRoute.kt), because a browser cannot set headers on a WebSocket
+     * handshake. Mobile sends both: the header for HTTP and the parameter for
+     * the handshake, which costs nothing and covers this app's own web build.
+     */
+    const val DEVICE_NAME_HEADER    = "X-Device-Name"
     const val APP_VERSION_HEADER    = "X-App-Version"
     const val SERVER_VERSION_HEADER = "X-Server-Version"
 }
