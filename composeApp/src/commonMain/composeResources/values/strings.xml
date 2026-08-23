@@ -612,6 +612,7 @@
     <string name="standalone_brand_line">Church name (top corner)</string>
     <string name="standalone_brand_line_hint">Leave blank for none</string>
     <string name="standalone_show_clock">Show a clock</string>
+    <string name="web_not_a_link">Type a web address, like example.com</string>
     <string name="standalone_show_reference">Show the reference line</string>
     <string name="standalone_show_reference_hint">The song section or verse shown under the words.</string>
     <string name="standalone_look_reset">Reset the look</string>

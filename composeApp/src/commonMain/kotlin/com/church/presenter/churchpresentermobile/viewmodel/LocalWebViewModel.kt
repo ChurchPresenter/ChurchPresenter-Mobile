@@ -53,9 +53,10 @@ class LocalWebViewModel(private val presenter: StandaloneEngine?) : ViewModel() 
      */
     fun project() {
         val engine = presenter ?: return
-        val link = _url.value.trim()
-        if (!SlideDeckBuilder.isProjectableLink(link)) {
-            Logger.e(TAG, "refusing to project a non-http(s) link")
+        // "youtube.com" is what people type; the scheme is filled in here rather than demanded
+        // of them. Anything carrying a scheme that is not http(s) is still refused.
+        val link = SlideDeckBuilder.normaliseLink(_url.value) ?: run {
+            Logger.e(TAG, "refusing to project a link that is not http(s)")
             return
         }
         val deck = if (SlideDeckBuilder.looksLikeVideo(link)) {

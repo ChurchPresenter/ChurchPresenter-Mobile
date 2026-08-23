@@ -215,6 +215,9 @@ fun App() {
     // need the same set: the screen that picks and projects them, and the
     // presentation server that serves the bytes to whatever is displaying.
     val photoLibrary = remember { PhotoLibrary(newId = { generateUUID() }) }
+    // Sink state as a stream. SinkRegistry.hasAttachedSink is a plain getter, so a screen
+    // attaching or detaching would not have recomposed anything reading it.
+    val sinkStatuses by sinkRegistry.statuses.collectAsState()
     val standaloneEngine = remember(sinkRegistry) {
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
@@ -1085,7 +1088,9 @@ fun App() {
                             MoreDestination.WEB if appMode == AppMode.STANDALONE ->
                                 LocalWebScreen(
                                     presenter = standaloneEngine,
-                                    hasOutput = sinkRegistry.hasAttachedSink,
+                                    // Collected, not read: hasAttachedSink is a plain getter, so
+                                    // plugging a screen in never cleared the "no output" warning.
+                                    hasOutput = sinkStatuses.any { it.isAttached },
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             MoreDestination.WEB -> WebScreen(

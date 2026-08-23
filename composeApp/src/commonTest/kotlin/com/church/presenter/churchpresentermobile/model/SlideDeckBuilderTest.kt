@@ -366,8 +366,11 @@ class SlideDeckBuilderTest {
         assertTrue(SlideDeckBuilder.isProjectableLink("HTTPS://Example.org"))
         assertFalse(SlideDeckBuilder.isProjectableLink("javascript:alert(1)"))
         assertFalse(SlideDeckBuilder.isProjectableLink("file:///etc/passwd"))
-        assertFalse(SlideDeckBuilder.isProjectableLink("example.org"))
         assertFalse(SlideDeckBuilder.isProjectableLink("  "))
+        // "example.org" used to be refused here. It is the most ordinary thing an operator
+        // types, and refusing it silently is what made the Web screen look broken — it now
+        // gets its scheme filled in. The refusals above are unchanged.
+        assertTrue(SlideDeckBuilder.isProjectableLink("example.org"))
     }
 
     @Test
@@ -404,5 +407,51 @@ class SlideDeckBuilderTest {
         assertEquals(SlideBackdrop.IMAGE, deck.slides.first().backdrop)
         assertEquals("http://phone/photo/b", deck.slides.last().backdropUrl)
         assertEquals(listOf(0, 1), deck.slides.map { it.index })
+    }
+    // ── Links the operator types ─────────────────────────────────────────
+
+    @Test
+    fun anAddressWithNoSchemeIsTheOrdinaryCase() {
+        // Requiring "https://" made the Go Live button silently do nothing for exactly what
+        // people type, which read as the feature being broken.
+        assertEquals("https://example.com", SlideDeckBuilder.normaliseLink("example.com"))
+        assertEquals("https://youtube.com/watch?v=x", SlideDeckBuilder.normaliseLink("youtube.com/watch?v=x"))
+        assertTrue(SlideDeckBuilder.isProjectableLink("example.com"))
+    }
+
+    @Test
+    fun anAddressThatAlreadyHasASchemeIsLeftAlone() {
+        assertEquals("http://192.168.1.5:8000", SlideDeckBuilder.normaliseLink("http://192.168.1.5:8000"))
+        assertEquals("https://example.com", SlideDeckBuilder.normaliseLink("  https://example.com  "))
+    }
+
+    @Test
+    fun aSchemeThatIsNotHttpIsStillRefused() {
+        // The address reaches an embedded browser and an iframe on the audience screen, where
+        // these are code execution and disk access rather than a page.
+        assertNull(SlideDeckBuilder.normaliseLink("javascript:alert(1)"))
+        assertNull(SlideDeckBuilder.normaliseLink("file:///etc/passwd"))
+        assertNull(SlideDeckBuilder.normaliseLink("data:text/html,<script>"))
+        assertNull(SlideDeckBuilder.normaliseLink("JavaScript:alert(1)"))
+        assertFalse(SlideDeckBuilder.isProjectableLink("javascript:alert(1)"))
+    }
+
+    @Test
+    fun fillingInASchemeCannotCreateOneThatWasRefused() {
+        // The guard is on the scheme, not on the text, so no amount of prefixing turns a
+        // refused link into an allowed one.
+        assertNull(SlideDeckBuilder.normaliseLink("javascript:https://example.com"))
+    }
+
+    @Test
+    fun nothingTypedIsNotALink() {
+        assertNull(SlideDeckBuilder.normaliseLink(""))
+        assertNull(SlideDeckBuilder.normaliseLink("   "))
+        assertFalse(SlideDeckBuilder.isProjectableLink(""))
+    }
+
+    @Test
+    fun aProtocolRelativeAddressGetsAScheme() {
+        assertEquals("https://example.com", SlideDeckBuilder.normaliseLink("//example.com"))
     }
 }

@@ -60,7 +60,7 @@ class LocalWebViewModelTest {
         val engine = engine()
         val vm = LocalWebViewModel(engine)
 
-        for (bad in listOf("javascript:alert(1)", "file:///etc/passwd", "data:text/html,<h1>x", "example.org", "")) {
+        for (bad in listOf("javascript:alert(1)", "file:///etc/passwd", "data:text/html,<h1>x", "")) {
             vm.setUrl(bad)
             assertFalse(vm.canProject.value, "'$bad' must not be projectable")
             vm.project()
@@ -68,6 +68,23 @@ class LocalWebViewModelTest {
             assertTrue(engine.deck.value.slides.isEmpty(), "'$bad' must not become a slide")
             assertNull(vm.projecting.value)
         }
+    }
+
+    @Test
+    fun anAddressTypedWithoutItsSchemeStillReachesTheScreen() = runVmTest {
+        // What people actually type. The Go Live button used to do nothing at all for this.
+        val engine = engine()
+        val vm = LocalWebViewModel(engine)
+
+        vm.setUrl("example.org")
+        // canProject is a stateIn flow, so it holds its initial false until the dispatcher runs.
+        advanceUntilIdle()
+        assertTrue(vm.canProject.value)
+
+        vm.project()
+        advanceUntilIdle()
+
+        assertEquals("https://example.org", engine.currentSlide.value.mediaUrl)
     }
 
     @Test

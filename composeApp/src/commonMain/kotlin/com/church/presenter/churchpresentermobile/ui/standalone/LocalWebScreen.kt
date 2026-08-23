@@ -27,6 +27,7 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.action_clear_display
 import churchpresentermobile.composeapp.generated.resources.action_go_live
 import churchpresentermobile.composeapp.generated.resources.standalone_no_output
+import churchpresentermobile.composeapp.generated.resources.web_not_a_link
 import churchpresentermobile.composeapp.generated.resources.web_url_placeholder
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.ui.OutlineActionButton
@@ -81,6 +82,16 @@ fun LocalWebScreen(
                     modifier = Modifier.weight(1f),
                 )
             }
+        }
+
+        // The button did nothing at all for an address it could not use, which is
+        // indistinguishable from the feature being broken.
+        if (url.isNotBlank() && !canProject) {
+            Text(
+                text = stringResource(Res.string.web_not_a_link),
+                color = colors.danger,
+                fontSize = 12.sp,
+            )
         }
 
         if (!hasOutput) {

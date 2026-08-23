@@ -159,9 +159,32 @@ object SlideDeckBuilder {
      * running code or reading disk on the audience screen. Operator-typed, but
      * typed in a hurry and sometimes pasted from somewhere else.
      */
-    fun isProjectableLink(url: String): Boolean {
-        val trimmed = url.trim().lowercase()
-        return trimmed.startsWith("http://") || trimmed.startsWith("https://")
+    fun isProjectableLink(url: String): Boolean = normaliseLink(url) != null
+
+    /** A scheme at the front of a URL: "https:", "javascript:", "file:". */
+    private val SCHEME = Regex("^[a-zA-Z][a-zA-Z0-9+.\\-]*:")
+
+    /**
+     * The link as it should actually be opened, or null when it is not one to open.
+     *
+     * Operators type "youtube.com", because that is what a browser accepts. Requiring the
+     * scheme meant the Go Live button silently did nothing for the most ordinary input there
+     * is, with no hint as to why — so a missing scheme is now filled in rather than refused.
+     *
+     * What is still refused is anything carrying a scheme that is not http(s). The address
+     * reaches an embedded browser and an iframe, where "javascript:" is code execution and
+     * "file:" is the device's disk, on the screen the congregation is looking at. Adding
+     * "https://" to something schemeless cannot turn it into either.
+     */
+    fun normaliseLink(url: String): String? {
+        val trimmed = url.trim().removePrefix("//")
+        if (trimmed.isBlank()) return null
+        val scheme = SCHEME.find(trimmed)?.value?.lowercase()
+        return when {
+            scheme == null -> "https://$trimmed"
+            scheme == "http:" || scheme == "https:" -> trimmed
+            else -> null
+        }
     }
 
     /** Extensions the output can play as video rather than show as a page. */
