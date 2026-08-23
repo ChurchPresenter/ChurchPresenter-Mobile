@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -144,6 +146,33 @@ class SongsViewModel(
 
     init {
         loadSongs()
+        // A mode switch moves the songs to a different source, so the list has to
+        // be rebuilt — and, just as importantly, any error the previous source
+        // left behind has to go with it. A first launch that starts in remote and
+        // is switched to standalone at the mode picker would otherwise keep
+        // showing "make sure the server is running" on a tab that no longer talks
+        // to one. drop(1) skips the current value, which loadSongs() above covers.
+        viewModelScope.launch {
+            catalog.isLocalSource
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadSongs(forceReload = true) }
+        }
+        // In standalone the Songs tab is a view of the library, so a song added
+        // or edited in the Library tab has to appear here without a reload —
+        // loadSongs() caches, and nothing else re-ran it short of a restart.
+        // Demo mode serves a fixed catalogue and must not be overwritten.
+        if (!isDemoMode) {
+            viewModelScope.launch {
+                catalog.localSongs.collect { songs ->
+                    _allSongs.value = songs
+                    // A local read cannot fail the way a desktop can; if an error
+                    // from an earlier remote load is still on screen, it is stale.
+                    _error.value = null
+                    tryOpenPendingSong()
+                }
+            }
+        }
         viewModelScope.launch {
             eventService.songSectionSelected.collect { index ->
                 if (_isProjecting.value) {

@@ -11,6 +11,9 @@ import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 private const val TAG = "SongCatalog"
@@ -65,6 +68,26 @@ class SongCatalog(
      */
     val isLocalSource: Flow<Boolean> =
         mode.map { it == AppMode.STANDALONE && library != null }
+
+    /**
+     * The library's songs, re-emitted whenever the library changes, for as long
+     * as the library is the source.
+     *
+     * [list] is a one-shot read, so a song written in the Library tab could not
+     * reach a Songs tab that had already loaded — it only appeared after the app
+     * was restarted. Screens collect this to stay level with the library.
+     *
+     * Nothing is emitted while a desktop is the source, so a remote list is
+     * never overwritten by an on-device library the operator isn't looking at.
+     * The disk read still belongs to [list]: this reports the library as it
+     * stands, and standing empty is a legitimate answer.
+     */
+    val localSongs: Flow<List<Song>> =
+        if (library == null) emptyFlow()
+        else combine(mode, library.library) { current, data ->
+            data.songs.map(LocalSongAdapter::toSong)
+                .takeIf { current == AppMode.STANDALONE }
+        }.filterNotNull()
 
     /**
      * The song list.

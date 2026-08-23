@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -111,6 +112,48 @@ class SongsViewModelStandaloneTest {
         assertNull(vm.detailError.value)
     }
 
+    // ── Staying level with the Library tab ───────────────────────────────
+
+    @Test
+    fun aSongAddedInTheLibraryAppearsWithoutARestart() = runVmTest {
+        // Reported: a song saved in the Library tab stayed invisible on the Songs
+        // tab through pull-to-refresh and tab switches, and showed up only after
+        // a force-stop. The list was read once and never watched again.
+        val repository = library()
+        val vm = vm(repository)
+        advanceUntilIdle()
+        assertTrue(vm.songs.value.isEmpty())
+
+        repository.upsertSong(localSong("a", "42", "Adb Standalone Test"))
+        advanceUntilIdle()
+
+        assertEquals(listOf("Adb Standalone Test"), vm.songs.value.map { it.title })
+    }
+
+    @Test
+    fun anEditInTheLibraryReachesTheList() = runVmTest {
+        val repository = library(localSong("a", "42", "Amazing Grace"))
+        val vm = vm(repository)
+        advanceUntilIdle()
+
+        repository.upsertSong(localSong("a", "42", "Amazing Grace (revised)"))
+        advanceUntilIdle()
+
+        assertEquals(listOf("Amazing Grace (revised)"), vm.songs.value.map { it.title })
+    }
+
+    @Test
+    fun aDeletionInTheLibraryLeavesTheList() = runVmTest {
+        val repository = library(localSong("a", "42", "Amazing Grace"))
+        val vm = vm(repository)
+        advanceUntilIdle()
+
+        repository.deleteSong("a")
+        advanceUntilIdle()
+
+        assertTrue(vm.songs.value.isEmpty())
+    }
+
     @Test
     fun savingSettingsKeepsActionsOnTheInjectedSender() = runVmTest {
         // Regression: onSettingsSaved rebuilt the service with the raw WebSocket,
@@ -127,5 +170,47 @@ class SongsViewModelStandaloneTest {
         advanceUntilIdle()
 
         assertTrue(sender.calls.isNotEmpty(), "actions must still reach the injected sender")
+    }
+
+    // ── Switching into standalone ────────────────────────────────────────
+
+    /** A desktop that isn't there — what remote mode meets with no server. */
+    private class TimingOutReader : SongReader {
+        override suspend fun getSongs(): Result<List<Song>> =
+            Result.failure(Exception("Connect timeout has expired [url=http://192.168.1.100:8765/api/songs]"))
+
+        override suspend fun getSongDetail(
+            number: String,
+            bookName: String?,
+            songId: Int,
+            title: String?,
+        ): Result<SongDetail> = Result.failure(Exception("Connect timeout has expired"))
+    }
+
+    @Test
+    fun switchingIntoStandaloneClearsTheServerErrorAndShowsTheLibrary() = runVmTest {
+        // Reported as a banner on a standalone startup. The tab is built before
+        // the mode picker is answered, so on a first launch it has already timed
+        // out against a desktop that isn't there by the time the operator picks
+        // Standalone — and the error outlived the mode it belonged to.
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val settings = AppSettings(InMemorySettingsStorage())
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings, mode),
+            isDemoMode = false,
+            sender = FakeWsSender(),
+            presenter = null,
+            catalog = SongCatalog(mode, TimingOutReader(), library(localSong("a", "42", "Amazing Grace"))),
+        )
+        advanceUntilIdle()
+        assertNotNull(vm.error.value, "remote with no desktop is expected to fail here")
+
+        mode.value = AppMode.STANDALONE
+        advanceUntilIdle()
+
+        assertNull(vm.error.value, "a server error must not survive into a mode with no server")
+        assertEquals(listOf("Amazing Grace"), vm.songs.value.map { it.title })
+        assertTrue(vm.showsLocalLibrary.value)
     }
 }
