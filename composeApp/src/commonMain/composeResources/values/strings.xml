@@ -32,11 +32,12 @@
     <string name="settings_api_key_placeholder">Leave blank if not required</string>
     <string name="settings_display_name_label">Your Name (for Q&amp;A)</string>
     <string name="settings_display_name_placeholder">Leave blank to use device ID</string>
-    <!-- The same field, renamed: it now also names this device in the desktop's
-         approval prompt and its allowed/blocked lists. English-only for now;
+    <!-- Names this device in the desktop's approval prompt and its allowed/blocked
+         lists — a separate thing from the Q&amp;A name above. English-only for now;
          other locales fall back to this until translated. -->
     <string name="settings_device_name_label">Device name</string>
-    <string name="settings_device_name_hint">Shown on the computer when it asks whether to allow this device, and beside anything you send it.</string>
+    <string name="settings_device_name_placeholder">Leave blank to send no name</string>
+    <string name="settings_device_name_hint">Shown on the computer when it asks whether to allow this device.</string>
     <string name="settings_save">Save</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_invalid_port">Port must be a number between 1 and 65535</string>
@@ -76,6 +77,10 @@
     <string name="qa_admin_edit_hint">Edit question text…</string>
     <string name="qa_admin_add_question">Add Question</string>
     <string name="qa_admin_add_question_hint">Type your question…</string>
+    <!-- Asked once, on the first question from this device, then remembered.
+         English-only for now; other locales fall back to this until translated. -->
+    <string name="qa_admin_add_question_name">Your name</string>
+    <string name="qa_admin_add_question_name_hint">Leave blank to use the device name</string>
     <string name="qa_admin_save">Save</string>
     <string name="qa_admin_cancel">Cancel</string>
     <string name="qa_admin_error_retry">Retry</string>

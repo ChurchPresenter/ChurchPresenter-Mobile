@@ -39,6 +39,14 @@ class QAViewModel(
     private val _actionError = MutableStateFlow<String?>(null)
     val actionError = _actionError.asStateFlow()
 
+    private val _needsAuthorName = MutableStateFlow(appSettings.displayName.isBlank())
+    /**
+     * True while nobody has said who they are, so the add-question dialog should
+     * ask. It asks once: the first name given is remembered in Settings, where it
+     * can be changed later.
+     */
+    val needsAuthorName = _needsAuthorName.asStateFlow()
+
     init {
         loadQuestions()
         viewModelScope.launch {
@@ -90,11 +98,26 @@ class QAViewModel(
     fun markDone(id: String) = runAdminAction { service.markDone(id) }
     fun displayQuestion(id: String) = runAdminAction { service.displayQuestion(id) }
     fun deleteQuestion(id: String) = runAdminAction { service.deleteQuestion(id) }
-    fun addQuestion(text: String) = runAdminAction {
-        // Same name the desktop was given at approval, so a question arrives from
-        // the device the operator already recognises rather than from a UUID.
-        val name = appSettings.reportedDeviceName.ifBlank { appSettings.deviceId }
-        service.addQuestion(text, name).map { }
+    /**
+     * Submits a question, attributed to whoever is asking.
+     *
+     * @param name A name typed into the dialog, asked for only while
+     *   [needsAuthorName]. Blank falls back to the saved Q&A name, then to the
+     *   device the operator already recognises, then to the id — a question is
+     *   never unattributed.
+     */
+    fun addQuestion(text: String, name: String = "") = runAdminAction {
+        val typed = name.trim()
+        // Remembered on the way past, so the dialog asks once rather than every time.
+        if (typed.isNotBlank() && appSettings.displayName.isBlank()) {
+            appSettings.displayName = typed
+            _needsAuthorName.value = false
+        }
+        val author = typed
+            .ifBlank { appSettings.displayName.trim() }
+            .ifBlank { appSettings.reportedDeviceName }
+            .ifBlank { appSettings.deviceId }
+        service.addQuestion(text, author).map { }
     }
     fun clearDisplay() = runAdminAction { service.clearDisplay() }
 

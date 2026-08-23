@@ -147,7 +147,7 @@ class StatusService internal constructor(
     private fun HttpRequestBuilder.applyHeaders() {
         if (apiKey.isNotBlank()) header(ApiConstants.API_KEY_HEADER, apiKey)
         header(ApiConstants.DEVICE_ID_HEADER, deviceId)
-        if (deviceName.isNotBlank()) header(ApiConstants.DEVICE_NAME_HEADER, deviceName)
+        if (deviceName.isNotBlank()) header(ApiConstants.DEVICE_NAME_HEADER, encodeDeviceName(deviceName))
         header(ApiConstants.APP_VERSION_HEADER, appVersion)
     }
 

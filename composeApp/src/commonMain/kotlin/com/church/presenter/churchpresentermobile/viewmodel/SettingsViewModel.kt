@@ -44,8 +44,12 @@ class SettingsViewModel(
     val apiKey = _apiKey.asStateFlow()
 
     private val _displayName = MutableStateFlow(appSettings.displayName)
-    /** Current display name field value. */
+    /** Current Q&A author name field value. */
     val displayName = _displayName.asStateFlow()
+
+    private val _customDeviceName = MutableStateFlow(appSettings.customDeviceName)
+    /** Current device name field value — blank means the OS name is reported. */
+    val customDeviceName = _customDeviceName.asStateFlow()
 
     private val _activeUrl = MutableStateFlow(appSettings.apiBaseUrl)
     /** The URL currently saved in storage — what the app is actually using right now. */
@@ -128,6 +132,10 @@ class SettingsViewModel(
         _displayName.value = value
     }
 
+    fun setCustomDeviceName(value: String) {
+        _customDeviceName.value = value
+    }
+
     /**
      * Updates the theme mode selection.
      *
@@ -165,6 +173,12 @@ class SettingsViewModel(
         emptyHostError: String,
         invalidPortError: String
     ) {
+        // Neither name is a server-reachability field, so neither is gated on the
+        // port being valid or on there being a server at all — a device named in
+        // standalone keeps that name, and a typo in the port does not discard it.
+        appSettings.displayName = _displayName.value.trim()
+        appSettings.customDeviceName = _customDeviceName.value.trim()
+
         // Standalone doesn't show the server fields, so they cannot have been
         // edited — and must not be able to veto the settings it does show. A host
         // left blank before the switch would otherwise lock the operator out of
@@ -200,7 +214,6 @@ class SettingsViewModel(
         appSettings.host = _host.value.trim()
         appSettings.port = portInt!!
         appSettings.apiKey = _apiKey.value.trim()
-        appSettings.displayName = _displayName.value.trim()
         return true
     }
 
@@ -221,6 +234,7 @@ class SettingsViewModel(
         _port.value = appSettings.port.toString()
         _apiKey.value = appSettings.apiKey
         _displayName.value = appSettings.displayName
+        _customDeviceName.value = appSettings.customDeviceName
         _themeMode.value = appSettings.themeMode
         _hostError.value = null
         _portError.value = null

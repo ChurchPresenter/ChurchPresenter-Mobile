@@ -14,7 +14,7 @@ class ReportedDeviceNameTest {
         // The operator typed it precisely because the OS name was blank, useless
         // ("iPhone"), or the wrong thing to call this device in this building.
         val settings = AppSettings(InMemorySettingsStorage())
-        settings.displayName = "Sound desk"
+        settings.customDeviceName = "Sound desk"
 
         assertEquals("Sound desk", settings.reportedDeviceName)
     }
@@ -29,16 +29,34 @@ class ReportedDeviceNameTest {
     @Test
     fun clearingTheFieldFallsBackRatherThanReportingNothing() {
         val settings = AppSettings(InMemorySettingsStorage())
-        settings.displayName = "Sound desk"
-        settings.displayName = ""
+        settings.customDeviceName = "Sound desk"
+        settings.customDeviceName = ""
 
         assertEquals(deviceName().trim(), settings.reportedDeviceName)
     }
 
     @Test
+    fun namingThePersonDoesNotRenameTheDevice() {
+        // The desktop shows a question's author and the device it came from on
+        // separate lines; one field feeding both is what this split undid.
+        val settings = AppSettings(InMemorySettingsStorage())
+        settings.displayName = "Ada"
+
+        assertEquals(deviceName().trim(), settings.reportedDeviceName)
+    }
+
+    @Test
+    fun namingTheDeviceDoesNotRenameThePerson() {
+        val settings = AppSettings(InMemorySettingsStorage())
+        settings.customDeviceName = "Sound desk"
+
+        assertEquals("", settings.displayName)
+    }
+
+    @Test
     fun theNameNeverArrivesPaddedWithWhitespace() {
         val settings = AppSettings(InMemorySettingsStorage())
-        settings.displayName = "\t Stage left \n"
+        settings.customDeviceName = "\t Stage left \n"
 
         assertEquals("Stage left", settings.reportedDeviceName)
         assertTrue(settings.reportedDeviceName == settings.reportedDeviceName.trim())

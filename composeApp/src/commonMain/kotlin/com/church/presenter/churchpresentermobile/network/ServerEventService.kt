@@ -347,7 +347,11 @@ class ServerEventService(
                         val key = settings.apiKey
                         if (key.isNotBlank()) headers.append(ApiConstants.API_KEY_HEADER, key)
                         headers.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
-                        val name = settings.reportedDeviceName
+                        // Encoded for the same reason every other request encodes it — see
+                        // encodeDeviceName. A non-ASCII name here would throw before the socket
+                        // was ever opened, so the app would sit in its reconnect loop for ever.
+                        val name = settings.reportedDeviceName.takeIf { it.isNotBlank() }
+                            ?.let { encodeDeviceName(it) }.orEmpty()
                         if (name.isNotBlank()) headers.append(ApiConstants.DEVICE_NAME_HEADER, name)
                         // The same values again as query parameters, which is how
                         // the desktop reads them when the handshake carries no

@@ -73,6 +73,8 @@ import churchpresentermobile.composeapp.generated.resources.settings_api_key_lab
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
 import churchpresentermobile.composeapp.generated.resources.settings_device_name_hint
 import churchpresentermobile.composeapp.generated.resources.settings_device_name_label
+import churchpresentermobile.composeapp.generated.resources.settings_device_name_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_display_name_label
 import churchpresentermobile.composeapp.generated.resources.settings_display_name_placeholder
 import churchpresentermobile.composeapp.generated.resources.mode_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_remote_title
@@ -160,6 +162,7 @@ fun SettingsScreen(
     val port         by viewModel.port.collectAsState()
     val apiKey       by viewModel.apiKey.collectAsState()
     val displayName  by viewModel.displayName.collectAsState()
+    val customDeviceName by viewModel.customDeviceName.collectAsState()
     val hostError    by viewModel.hostError.collectAsState()
     val portError    by viewModel.portError.collectAsState()
     val activeUrl    by viewModel.activeUrl.collectAsState()
@@ -370,16 +373,26 @@ fun SettingsScreen(
                         // when there are three in the building.
                         SettingsField(
                             label = stringResource(Res.string.settings_device_name_label),
-                            value = displayName, onValueChange = { viewModel.setDisplayName(it) },
+                            value = customDeviceName,
+                            onValueChange = { viewModel.setCustomDeviceName(it) },
                             placeholder = deviceName().ifBlank {
-                                stringResource(Res.string.settings_display_name_placeholder)
+                                stringResource(Res.string.settings_device_name_placeholder)
                             },
-                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Next,
                         )
                         Text(
                             text = stringResource(Res.string.settings_device_name_hint),
                             fontSize = 11.sp,
                             color = colors.muted,
+                        )
+                        // A separate field because the desktop shows a question's
+                        // author and the device it came from on separate lines:
+                        // "Sound desk" answers one of those and not the other.
+                        SettingsField(
+                            label = stringResource(Res.string.settings_display_name_label),
+                            value = displayName, onValueChange = { viewModel.setDisplayName(it) },
+                            placeholder = stringResource(Res.string.settings_display_name_placeholder),
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
                         )
 
                         // QR scanner (platform button)

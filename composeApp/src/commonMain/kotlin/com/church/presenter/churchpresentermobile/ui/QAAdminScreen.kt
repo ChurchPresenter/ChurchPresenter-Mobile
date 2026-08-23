@@ -75,6 +75,8 @@ import churchpresentermobile.composeapp.generated.resources.qa_submitted_by
 import churchpresentermobile.composeapp.generated.resources.qa_upvotes_count
 import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question
 import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question_hint
+import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question_name
+import churchpresentermobile.composeapp.generated.resources.qa_admin_add_question_name_hint
 import churchpresentermobile.composeapp.generated.resources.qa_admin_cancel
 import churchpresentermobile.composeapp.generated.resources.qa_admin_edit_hint
 import churchpresentermobile.composeapp.generated.resources.qa_admin_error_retry
@@ -100,6 +102,7 @@ fun QAAdminScreen(
     val colors = LocalAppColors.current
     val uiState by viewModel.uiState.collectAsState()
     val actionError by viewModel.actionError.collectAsState()
+    val needsAuthorName by viewModel.needsAuthorName.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Re-fetch when the user saves Settings so a newly-entered API key is used
@@ -148,6 +151,7 @@ fun QAAdminScreen(
                 onApproveAndDisplay = viewModel::approveAndDisplay,
                 onDelete = viewModel::deleteQuestion,
                 onAddQuestion = viewModel::addQuestion,
+                askForName = needsAuthorName,
                 onClearDisplay = viewModel::clearDisplay,
                 votingEnabled = state.votingEnabled
             )
@@ -170,7 +174,8 @@ private fun QAAdminContent(
     onDisplay: (String) -> Unit,
     onApproveAndDisplay: (String) -> Unit,
     onDelete: (String) -> Unit,
-    onAddQuestion: (String) -> Unit,
+    onAddQuestion: (text: String, name: String) -> Unit,
+    askForName: Boolean = false,
     onClearDisplay: () -> Unit,
     votingEnabled: Boolean = false
 ) {
@@ -252,7 +257,8 @@ private fun QAAdminContent(
 
     if (showAddDialog) {
         AddQuestionDialog(
-            onConfirm = { text -> onAddQuestion(text); showAddDialog = false },
+            askForName = askForName,
+            onConfirm = { text, name -> onAddQuestion(text, name); showAddDialog = false },
             onDismiss = { showAddDialog = false }
         )
     }
@@ -523,23 +529,42 @@ private fun EditQuestionSheet(
 }
 
 @Composable
-private fun AddQuestionDialog(onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
+private fun AddQuestionDialog(
+    askForName: Boolean,
+    onConfirm: (text: String, name: String) -> Unit,
+    onDismiss: () -> Unit,
+) {
     var text by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.qa_admin_add_question)) },
         text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                placeholder = { Text(stringResource(Res.string.qa_admin_add_question_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = false,
-                maxLines = 5
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    placeholder = { Text(stringResource(Res.string.qa_admin_add_question_hint)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = false,
+                    maxLines = 5
+                )
+                // Only while nobody has said who they are — once given, the name is
+                // remembered in Settings and this field stops appearing.
+                if (askForName) {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text(stringResource(Res.string.qa_admin_add_question_name)) },
+                        placeholder = { Text(stringResource(Res.string.qa_admin_add_question_name_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+            }
         },
         confirmButton = {
-            Button(onClick = { if (text.isNotBlank()) onConfirm(text.trim()) }, enabled = text.isNotBlank()) {
+            Button(onClick = { if (text.isNotBlank()) onConfirm(text.trim(), name.trim()) }, enabled = text.isNotBlank()) {
                 Text(stringResource(Res.string.qa_admin_save))
             }
         },

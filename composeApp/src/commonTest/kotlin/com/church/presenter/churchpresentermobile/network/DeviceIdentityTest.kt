@@ -38,7 +38,7 @@ class DeviceIdentityTest {
     @Test
     fun theCustomNameIsWhatTheDesktopIsTold() = runTest {
         val settings = AppSettings(InMemorySettingsStorage())
-        settings.displayName = "Sound desk"
+        settings.customDeviceName = "Sound desk"
 
         send(settings)
 
@@ -49,7 +49,7 @@ class DeviceIdentityTest {
     @Test
     fun aCustomNameIsTrimmedNotSentWithItsWhitespace() = runTest {
         val settings = AppSettings(InMemorySettingsStorage())
-        settings.displayName = "  Stage left  "
+        settings.customDeviceName = "  Stage left  "
 
         send(settings)
 
@@ -61,7 +61,7 @@ class DeviceIdentityTest {
         // On a platform with no OS name this must omit the header rather than
         // send an empty one — a blank label reads worse than the UUID it replaced.
         val settings = AppSettings(InMemorySettingsStorage())
-        settings.displayName = "   "
+        settings.customDeviceName = "   "
 
         send(settings)
 

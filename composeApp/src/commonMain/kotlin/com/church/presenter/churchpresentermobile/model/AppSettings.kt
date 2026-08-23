@@ -14,6 +14,7 @@ private const val KEY_THEME_MODE = "theme_mode"
 private const val KEY_SETTINGS_VERSION = "settings_version"
 private const val KEY_DEVICE_ID = "device_id"
 private const val KEY_DISPLAY_NAME     = "display_name"
+private const val KEY_DEVICE_NAME      = "device_name"
 private const val KEY_SAVED_ANNOUNCEMENTS = "saved_announcements"
 private const val KEY_SAVED_BOOKMARKS = "saved_bookmarks"
 private const val KEY_FCM_TOKEN        = "fcm_token"
@@ -123,26 +124,39 @@ class AppSettings(
         set(value) { storage.putString(KEY_THEME_MODE, value.name) }
 
     /**
-     * User-chosen display name sent as the author when submitting Q&A questions.
-     * Falls back to [deviceId] when blank so there is always some identifier.
+     * The person's name, sent as the author when submitting Q&A questions.
+     *
+     * Not the same thing as [customDeviceName]: the desktop shows a question's
+     * author and the device it came from on separate lines, so "Sound desk" is
+     * the right answer to one and the wrong answer to the other. Blank until
+     * asked for; the caller then falls back down [reportedDeviceName] to
+     * [deviceId] so a question is never unattributed.
      */
     var displayName: String
         get() = storage.getString(KEY_DISPLAY_NAME, "")
         set(value) { storage.putString(KEY_DISPLAY_NAME, value) }
 
     /**
+     * The operator's own name for this device, overriding the one the OS gives.
+     *
+     * Typed precisely because the OS name was blank, unhelpful ("iPhone"), or
+     * the wrong thing to call this device in this building.
+     */
+    var customDeviceName: String
+        get() = storage.getString(KEY_DEVICE_NAME, "")
+        set(value) { storage.putString(KEY_DEVICE_NAME, value) }
+
+    /**
      * The name this device reports to a desktop, sent as
      * [ApiConstants.DEVICE_NAME_HEADER] so an operator approving a connection
      * reads "Pixel 7 Pro" or "Sound desk" rather than a UUID.
      *
-     * [displayName] wins when set: the operator typed it precisely because the
-     * OS name was blank, unhelpful ("iPhone"), or the wrong thing to call this
-     * device in this building. Blank when neither exists — a browser with no
-     * custom name — and the caller then sends nothing at all rather than an
-     * empty header.
+     * [customDeviceName] wins when set. Blank when neither exists — a browser
+     * with no custom name — and the caller then sends nothing at all rather
+     * than an empty header.
      */
     val reportedDeviceName: String
-        get() = displayName.trim().ifBlank { deviceName().trim() }
+        get() = customDeviceName.trim().ifBlank { deviceName().trim() }
 
     /**
      * FCM (Firebase Cloud Messaging) registration token for this device.

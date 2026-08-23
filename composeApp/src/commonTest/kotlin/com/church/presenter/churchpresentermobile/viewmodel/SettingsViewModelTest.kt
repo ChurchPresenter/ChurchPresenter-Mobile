@@ -41,6 +41,35 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun bothNamesSurviveASaveInStandalone() = runVmTest {
+        // Neither name is a server field, so neither may be lost with them. This
+        // used to be written only from the server-field path, which standalone
+        // never reaches — the name was typed, saved, and silently discarded.
+        val settings = AppSettings(InMemorySettingsStorage())
+        val vm = SettingsViewModel(settings, MutableStateFlow(AppMode.STANDALONE))
+        vm.setCustomDeviceName(" Sound desk ")
+        vm.setDisplayName(" Ada ")
+        vm.save(onSuccess = {}, emptyHostError = "EMPTY", invalidPortError = "PORT")
+
+        assertEquals("Sound desk", settings.customDeviceName)
+        assertEquals("Ada", settings.displayName)
+    }
+
+    @Test
+    fun aBadPortDoesNotDiscardANameTypedBesideIt() = runVmTest {
+        val (vm, settings) = vmWith()
+        vm.setHost("10.0.0.5")
+        vm.setPort("nonsense")
+        vm.setCustomDeviceName("Sound desk")
+        var ok = false
+        vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT")
+
+        assertFalse(ok) // the port is still rejected
+        assertEquals("PORT", vm.portError.value)
+        assertEquals("Sound desk", settings.customDeviceName)
+    }
+
+    @Test
     fun saveBlankHostSetsErrorAndDoesNotPersist() = runVmTest {
         val (vm, settings) = vmWith()
         vm.setHost("   ")

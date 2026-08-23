@@ -73,6 +73,10 @@ object ApiConstants {
      * prompt instead of showing a UUID. Omitted when there is no name to send —
      * the desktop falls back to the id, as it does for older clients.
      *
+     * The value is percent-encoded UTF-8 for anything outside printable ASCII — see
+     * `encodeDeviceName`, and note that Android's engine refuses to send an unencoded
+     * one at all. The desktop decodes it, and reads a value with no `%` as plain text.
+     *
      * The desktop reads the header, then a query parameter of the *same name*
      * (WebSocketRoute.kt), because a browser cannot set headers on a WebSocket
      * handshake. Mobile sends both: the header for HTTP and the parameter for
