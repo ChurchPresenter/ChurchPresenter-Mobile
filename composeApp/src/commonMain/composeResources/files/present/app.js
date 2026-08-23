@@ -70,7 +70,7 @@
     if (typeof url !== 'string') { return null; }
     var trimmed = url.trim();
     var lower = trimmed.toLowerCase();
-    if (lower.indexOf('http://') === 0 || lower.indexOf('https://') === 0) { return trimmed; }
+    if (lower.indexOf('http://') === 0 || lower.indexOf('https://') === 0) { return trimmed; } // offline-ok: matching a scheme, not loading an asset
     return null;
   }
 

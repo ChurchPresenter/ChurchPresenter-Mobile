@@ -24,13 +24,21 @@ fi
 # dependency creeps back in.
 PATTERN='https?://|(^|[^:])//[a-zA-Z0-9-]+\.[a-zA-Z]{2,}|@import'
 
-# Two things are not findings: `ws://` built from `window.location.host`, which
-# is how the page reaches its own phone; and comment lines, which legitimately
-# name the very URLs this check exists to prevent. Everything else is.
+# Three things are not findings: `ws://` built from `window.location.host`, which
+# is how the page reaches its own phone; comment lines, which legitimately name
+# the very URLs this check exists to prevent; and lines carrying the marker
+# below. Everything else is.
 COMMENT_LINE='^[^:]+:[0-9]+:[[:space:]]*(\*|/\*|//|#|<!--)'
+
+# The escape hatch, deliberately narrow: a line that names a scheme without
+# fetching anything — an operator-typed address being validated, not an asset
+# being loaded — is annotated `offline-ok` where it sits. Annotate the single
+# line, never a whole file, and only when the page still renders with no uplink.
+ALLOWED_MARKER='offline-ok'
 
 if matches=$(grep -REn "$PATTERN" "$ASSET_DIR" \
       | grep -v 'window.location.host' \
+      | grep -v "$ALLOWED_MARKER" \
       | grep -vE "$COMMENT_LINE"); then
   echo "error: bundled display assets reference a remote resource:" >&2
   echo "$matches" >&2
