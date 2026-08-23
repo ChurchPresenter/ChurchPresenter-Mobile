@@ -130,6 +130,20 @@ private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
     "failed to connect",
     "Connection refused",
     "ECONNREFUSED",
+    // The socket was torn down by the other end or by something in between —
+    // seen in the field when the phone is off the LAN (mobile data, VPN active)
+    // and the configured server address is a private one it can never reach.
+    // Nothing about it is a defect in this app.
+    "Connection reset",
+    "ECONNRESET",
+    "Software caused connection abort",
+    "Broken pipe",
+    "Network is unreachable",
+    "EHOSTUNREACH",
+    "No route to host",
+    // OkHttp's wording when the server closes a pooled connection mid-request —
+    // arrives alongside the reset/no-route errors above when the LAN drops.
+    "unexpected end of stream",
     "Unable to resolve host",
     "Could not connect",
     "Code=-1001",   // NSURLError timed out
@@ -208,7 +222,14 @@ fun Throwable.toFriendlyNetworkMessage(): String {
             "SSL error: could not establish a secure connection. Check server settings."
 
         raw.contains("Connection refused", ignoreCase = true) ||
-        raw.contains("ECONNREFUSED") ->
+        raw.contains("ECONNREFUSED") ||
+        raw.contains("Connection reset", ignoreCase = true) ||
+        raw.contains("ECONNRESET") ||
+        raw.contains("Software caused connection abort", ignoreCase = true) ||
+        raw.contains("Broken pipe", ignoreCase = true) ||
+        raw.contains("Network is unreachable", ignoreCase = true) ||
+        raw.contains("EHOSTUNREACH") ||
+        raw.contains("No route to host", ignoreCase = true) ->
             "Server not reachable. Check the IP address and port."
 
         raw.contains("Unable to resolve host", ignoreCase = true) ||

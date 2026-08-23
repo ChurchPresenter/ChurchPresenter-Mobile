@@ -17,6 +17,10 @@ class NetworkErrorMapperTest {
     private class ConnectException(message: String) : Exception(message)
     private class SocketTimeoutException(message: String) : Exception(message)
 
+    // Classified by message, not by name — SocketException also covers failures
+    // that are genuine defects, so the name deliberately isn't an allowed one.
+    private class SocketException(message: String) : Exception(message)
+
     // ── isExpectedConnectivityError ──────────────────────────────────────────
 
     @Test
@@ -44,6 +48,37 @@ class NetworkErrorMapperTest {
     fun connectionRefusedIsExpected() {
         assertTrue(Exception("Connection refused").isExpectedConnectivityError())
         assertTrue(Exception("ECONNREFUSED (Connection refused)").isExpectedConnectivityError())
+    }
+
+    @Test
+    fun connectionResetIsExpected() {
+        // Exact shape from Sentry 1.0.15: the phone was on mobile data with a VPN
+        // active while pointed at a LAN address (192.168.1.100) it cannot reach.
+        assertTrue(SocketException("Connection reset").isExpectedConnectivityError())
+        assertTrue(Exception("ECONNRESET (Connection reset by peer)").isExpectedConnectivityError())
+    }
+
+    @Test
+    fun severedSocketMessagesAreExpected() {
+        assertTrue(Exception("Software caused connection abort").isExpectedConnectivityError())
+        assertTrue(Exception("Broken pipe").isExpectedConnectivityError())
+        assertTrue(Exception("Network is unreachable").isExpectedConnectivityError())
+        assertTrue(Exception("EHOSTUNREACH (No route to host)").isExpectedConnectivityError())
+        assertTrue(
+            Exception("unexpected end of stream on http://192.168.1.100:8765/...")
+                .isExpectedConnectivityError()
+        )
+    }
+
+    @Test
+    fun connectionResetInCauseIsExpected() {
+        val top = Exception("nothing useful here", SocketException("Connection reset"))
+        assertTrue(top.isExpectedConnectivityError())
+    }
+
+    @Test
+    fun connectionResetIsNotReportedAsNonFatal() {
+        assertFalse(SocketException("Connection reset").shouldReportAsNonFatal())
     }
 
     @Test
@@ -100,6 +135,18 @@ class NetworkErrorMapperTest {
         assertEquals(
             "Server not reachable. Check the IP address and port.",
             Exception("Connection refused").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun friendlyAndroidConnectionReset() {
+        assertEquals(
+            "Server not reachable. Check the IP address and port.",
+            SocketException("Connection reset").toFriendlyNetworkMessage(),
+        )
+        assertEquals(
+            "Server not reachable. Check the IP address and port.",
+            Exception("Network is unreachable").toFriendlyNetworkMessage(),
         )
     }
 
