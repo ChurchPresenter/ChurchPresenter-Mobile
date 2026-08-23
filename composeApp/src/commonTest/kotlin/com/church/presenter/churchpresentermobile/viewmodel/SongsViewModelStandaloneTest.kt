@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
+import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.LocalSong
@@ -58,7 +59,11 @@ class SongsViewModelStandaloneTest {
         sections = listOf(LocalSongSection(SectionType.VERSE, "words")),
     )
 
-    private fun vm(repository: LibraryRepository, sender: FakeWsSender = FakeWsSender()): SongsViewModel {
+    private fun vm(
+        repository: LibraryRepository,
+        sender: FakeWsSender = FakeWsSender(),
+        service: ServiceOrder? = ServiceOrder(repository),
+    ): SongsViewModel {
         val settings = AppSettings(InMemorySettingsStorage())
         return SongsViewModel(
             appSettings = settings,
@@ -66,6 +71,7 @@ class SongsViewModelStandaloneTest {
             isDemoMode = false,
             sender = sender,
             presenter = null,
+            service = service,
             catalog = SongCatalog(MutableStateFlow(AppMode.STANDALONE), ForbiddenReader(), repository),
         )
     }
@@ -91,13 +97,57 @@ class SongsViewModelStandaloneTest {
     }
 
     @Test
-    fun addingToAScheduleIsOfferedOnlyWhenThereIsADesktop() = runVmTest {
+    fun addingToTheRunningOrderIsOfferedWhenThereIsOneToAddTo() = runVmTest {
         val vm = vm(library(localSong("a", "42", "Amazing Grace")))
         advanceUntilIdle()
 
-        // The router swallows the action and reports success, so an offered
-        // button would tell the operator their song was scheduled when it wasn't.
+        assertTrue(vm.canAddToSchedule.value)
+    }
+
+    @Test
+    fun withNoRunningOrderTheActionStaysHidden() = runVmTest {
+        // Without one the action would reach the router, which swallows it and
+        // reports success — a cheerful "Added to schedule" for something that
+        // never happened.
+        val vm = vm(library(localSong("a", "42", "Amazing Grace")), service = null)
+        advanceUntilIdle()
+
         assertFalse(vm.canAddToSchedule.value)
+    }
+
+    @Test
+    fun addingASongWritesItToTheOnDeviceRunningOrder() = runVmTest {
+        val repository = library(localSong("a", "42", "Amazing Grace"))
+        val order = ServiceOrder(repository)
+        val vm = vm(repository, service = order)
+        advanceUntilIdle()
+
+        vm.openSongDetail(vm.songs.value.single())
+        advanceUntilIdle()
+        vm.addSongToSchedule()
+        advanceUntilIdle()
+
+        assertEquals(listOf("Amazing Grace"), order.current.map { it.title })
+        assertEquals("a", order.current.single().reference, "the library id, so an edit still resolves")
+        assertTrue(vm.scheduleAdded.value)
+    }
+
+    @Test
+    fun addingASongNeverReachesTheDesktop() = runVmTest {
+        // ForbiddenReader covers reads; this covers the write path, which used to
+        // go out over the router and be swallowed.
+        val repository = library(localSong("a", "42", "Amazing Grace"))
+        val sender = FakeWsSender()
+        val vm = vm(repository, sender = sender, service = ServiceOrder(repository))
+        advanceUntilIdle()
+
+        vm.openSongDetail(vm.songs.value.single())
+        advanceUntilIdle()
+        val callsBefore = sender.calls.size
+        vm.addSongToSchedule()
+        advanceUntilIdle()
+
+        assertEquals(callsBefore, sender.calls.size, "nothing may be sent for a local add")
     }
 
     @Test

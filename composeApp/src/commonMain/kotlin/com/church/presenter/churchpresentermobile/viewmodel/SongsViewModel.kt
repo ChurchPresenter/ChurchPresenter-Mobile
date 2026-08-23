@@ -12,6 +12,7 @@ import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
+import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongService
@@ -39,6 +40,9 @@ private const val TAG = "SongsViewModel"
  *   so existing callers and tests are unaffected; [com.church.presenter.churchpresentermobile.App]
  *   passes a [com.church.presenter.churchpresentermobile.present.ProjectionRouter]
  *   so the same actions can be served locally in standalone mode.
+ * @param service The on-device running order. Present in standalone, where
+ *   "add to schedule" means this list rather than a desktop's; null in remote,
+ *   where the desktop owns the schedule.
  * @param presenter The local presenter, when the app can present standalone.
  *   The desktop protocol only carries indices, so the materialised lyrics have
  *   to be handed over separately — this is that handoff. Every call on it is a
@@ -50,6 +54,7 @@ class SongsViewModel(
     private val isDemoMode: Boolean = false,
     private val sender: WsSender = eventService,
     private val presenter: StandaloneEngine? = null,
+    private val service: ServiceOrder? = null,
     private val catalog: SongCatalog = SongCatalog(
         mode = MutableStateFlow(AppMode.REMOTE),
         remote = SongService(appSettings, sender),
@@ -65,14 +70,17 @@ class SongsViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, catalog.isLocal)
 
     /**
-     * Whether adding to the desktop's schedule is possible. It is not in
-     * standalone: there is no schedule, and the action is swallowed by the
-     * router, which returns success — so the operator would get a cheerful
-     * "Added to schedule" for something that never happened.
+     * Whether the song can be added to a running order at all.
+     *
+     * Remote adds to the desktop's schedule. Standalone adds to [service], the
+     * on-device order — offered only when there is one, because without it the
+     * action would be swallowed by the router, which returns success, and the
+     * operator would get a cheerful "Added to schedule" for something that never
+     * happened.
      */
     val canAddToSchedule = catalog.isLocalSource
-        .map { !it }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, !catalog.isLocal)
+        .map { local -> if (local) service != null else true }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, if (catalog.isLocal) service != null else true)
 
     private val _allSongs = MutableStateFlow<List<Song>>(emptyList())
 
@@ -413,6 +421,18 @@ class SongsViewModel(
         }
         if (isDemoMode) {
             Logger.d(TAG, "addSongToSchedule — DEMO MODE, simulating success for ${song.number} / ${song.title}")
+            _toastEvent.value = ToastEvent.SongAddedToSchedule(song.title)
+            _scheduleAdded.value = true
+            _scheduleRefreshTrigger.value++
+            return
+        }
+        // Standalone: the running order is on this device, so the add is a local
+        // write with nothing to fail and nothing to wait for.
+        val service = service
+        if (catalog.isLocal && service != null) {
+            service.add(song)
+            Logger.d(TAG, "addSongToSchedule — added to the on-device running order")
+            Analytics.logEvent(AnalyticsEvent.SONG_ADDED_TO_SCHEDULE)
             _toastEvent.value = ToastEvent.SongAddedToSchedule(song.title)
             _scheduleAdded.value = true
             _scheduleRefreshTrigger.value++

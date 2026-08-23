@@ -356,6 +356,10 @@
     <string name="label_add_to_schedule">Add to schedule</string>
     <string name="label_live">Live</string>
     <string name="cd_delete">Delete</string>
+    <!-- Standalone running order: reordering an entry. English-only for now;
+         other locales fall back to this until translated. -->
+    <string name="service_order_move_up">Move up</string>
+    <string name="service_order_move_down">Move down</string>
     <string name="cd_close">Close</string>
     <string name="cd_select">Select</string>
     <string name="cd_cast">Cast</string>

@@ -54,12 +54,14 @@ import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
+import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.present.sink.WebPageSink
 import com.church.presenter.churchpresentermobile.present.sink.createExternalDisplaySink
 import com.church.presenter.churchpresentermobile.model.MoreDestination
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.model.supportsEmbeddedServer
 import com.church.presenter.churchpresentermobile.model.supportsStandalone
@@ -84,6 +86,7 @@ import com.church.presenter.churchpresentermobile.ui.PicturesScreen
 import com.church.presenter.churchpresentermobile.ui.PresentationScreen
 import com.church.presenter.churchpresentermobile.ui.QAAdminScreen
 import com.church.presenter.churchpresentermobile.ui.ScheduleDrawerContent
+import com.church.presenter.churchpresentermobile.ui.ServiceOrderDrawerContent
 import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
@@ -273,6 +276,9 @@ fun App() {
     // Where song content is read from, decided per call by the current mode —
     // the desktop in remote, this device's library in standalone. The same idea
     // as projectionRouter above, applied to reads instead of actions.
+    // What "add to schedule" writes to in standalone: an ordered list on this
+    // device, in place of a desktop schedule that isn't there.
+    val serviceOrder = remember(libraryRepository) { ServiceOrder(libraryRepository) }
     val songCatalog = remember(appSettings, libraryRepository) {
         SongCatalog(
             mode = AppModeHolder.mode,
@@ -281,7 +287,10 @@ fun App() {
         )
     }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
-        SongsViewModel(appSettings, eventService, isDemoMode, projectionRouter, standaloneEngine, songCatalog)
+        SongsViewModel(
+            appSettings, eventService, isDemoMode, projectionRouter, standaloneEngine,
+            service = serviceOrder, catalog = songCatalog,
+        )
     }
     val picturesViewModel: PicturesViewModel = viewModel(key = "pictures_$isDemoMode") {
         PicturesViewModel(appSettings, projectionRouter, isDemoMode)
@@ -697,6 +706,44 @@ fun App() {
             drawerState = drawerState,
             scrimColor = LocalAppColors.current.scrim,
             drawerContent = {
+                // Standalone's running order is this device's own list, so it gets
+                // the same drawer rather than a second idea of "today" somewhere
+                // else — and, being local, it is editable in place.
+                if (appMode == AppMode.STANDALONE) {
+                    val serviceEntries by serviceOrder.entries.collectAsState(initial = serviceOrder.current)
+                    ServiceOrderDrawerContent(
+                        entries = serviceEntries,
+                        onMove = { from, to -> serviceOrder.move(from, to) },
+                        onRemove = { index -> serviceOrder.removeAt(index) },
+                        onClear = { serviceOrder.clear() },
+                        onClose = { coroutineScope.launch { drawerState.close() } },
+                        onItemClick = { entry ->
+                            coroutineScope.launch {
+                                drawerState.close()
+                                // Same reset as the remote drawer below: the
+                                // destination should show its own header rather
+                                // than the previous screen's.
+                                songDetailTitle = null
+                                songDetailBookName = null
+                                bibleBook = null
+                                bibleChapter = null
+                                when (entry.type) {
+                                    SetlistEntryType.SONG -> {
+                                        selectedTab = AppTab.SONGS
+                                        pendingSongTitle = entry.title
+                                        pendingSongBook = null
+                                    }
+                                    // Announcements live in the Library tab in
+                                    // standalone — that is where they are written
+                                    // and where projecting one from starts.
+                                    SetlistEntryType.ANNOUNCEMENT -> selectedTab = AppTab.LIBRARY
+                                    SetlistEntryType.BIBLE -> selectedTab = AppTab.BIBLE
+                                }
+                            }
+                        },
+                    )
+                    return@ModalNavigationDrawer
+                }
                 ScheduleDrawerContent(
                     appSettings = appSettings,
                     isDemoMode = isDemoMode,
