@@ -10,6 +10,8 @@ import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStora
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import com.church.presenter.churchpresentermobile.ui.standalone.normaliseHex
 import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrNull
+import com.church.presenter.churchpresentermobile.ui.standalone.rgbToHex
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -122,6 +124,35 @@ class StandaloneLookTest {
         assertNull(parseHexColorOrNull("#"))
         assertNull(parseHexColorOrNull("#GGGGGG"))
         assertNull(parseHexColorOrNull(""))
+    }
+
+    @Test
+    fun theSlidersProduceTheHexTheyLookLike() {
+        assertEquals("#000000", rgbToHex(0, 0, 0))
+        assertEquals("#FFFFFF", rgbToHex(255, 255, 255))
+        assertEquals("#2A1D5E", rgbToHex(42, 29, 94))
+        // Single-digit channels must not lose their leading zero — "#F0F0F" is not a colour.
+        assertEquals("#0F0F0F", rgbToHex(15, 15, 15))
+    }
+
+    @Test
+    fun aColourSurvivesTheTripThroughTheSliders() {
+        // What the picker opens on must be what the field held, or every open nudges the colour.
+        val original = "#2A1D5E"
+        val parsed = assertNotNull(parseHexColorOrNull(original))
+
+        val roundTripped = rgbToHex(
+            (parsed.red * 255).roundToInt(),
+            (parsed.green * 255).roundToInt(),
+            (parsed.blue * 255).roundToInt(),
+        )
+
+        assertEquals(original, roundTripped)
+    }
+
+    @Test
+    fun aChannelPushedOutOfRangeIsClamped() {
+        assertEquals("#FF0000", rgbToHex(300, -20, 0))
     }
 
     @Test

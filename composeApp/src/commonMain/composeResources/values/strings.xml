@@ -598,6 +598,9 @@
     <!-- Copying content from a computer, and where that computer is. New strings are
          English-only; the other locales fall back until translated. -->
     <!-- The look of the audience screen, set from the Present tab. English-only for now. -->
+    <string name="color_red">Red</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
     <string name="standalone_look">Look</string>
     <string name="standalone_gradient_top">Gradient top</string>
     <string name="standalone_gradient_bottom">Gradient bottom</string>

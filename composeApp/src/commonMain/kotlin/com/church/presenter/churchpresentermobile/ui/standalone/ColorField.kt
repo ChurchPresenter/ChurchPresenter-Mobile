@@ -35,10 +35,10 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 /**
  * One colour of the look, as a live swatch beside the hex that produced it.
  *
- * A hex field rather than a wheel: the operator usually arrives with a colour already in mind —
- * the church's own, or one copied off the desktop — and typing six characters beats hunting for
- * it in a gradient square. The swatch is what makes that honest, updating on every keystroke that
- * parses so a wrong colour is seen before it reaches the audience screen.
+ * Two ways in, because operators arrive in two states. Someone who already knows the value —
+ * the church's own colour, or one copied off the desktop — types it, and the swatch confirms it
+ * on every keystroke that parses. Someone who does not taps the swatch and drags until it looks
+ * right.
  *
  * Half-typed input is kept on screen but not published: "#2A1D" is on the way to something, not a
  * colour to project.
@@ -53,7 +53,17 @@ internal fun ColorField(
     val colors = LocalAppColors.current
     // Local draft so a half-typed value survives; the parsed ones go up as they arrive.
     var draft by remember(value) { mutableStateOf(value) }
+    var showPicker by remember { mutableStateOf(false) }
     val parsed = parseHexColorOrNull(draft)
+
+    if (showPicker) {
+        ColorPickerDialog(
+            title = label,
+            initial = draft,
+            onPick = { picked -> draft = picked; onValueChange(picked) },
+            onDismiss = { showPicker = false },
+        )
+    }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, letterSpacing = 0.08.sp)
@@ -66,13 +76,7 @@ internal fun ColorField(
                 .background(colors.surface)
                 .padding(horizontal = AppDimens.space12, vertical = 10.dp),
         ) {
-            Box(
-                Modifier
-                    .size(22.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(parsed ?: Color.Transparent)
-                    .border(1.dp, colors.borderSubtle, RoundedCornerShape(6.dp))
-            )
+            ColorSwatch(color = parsed, onClick = { showPicker = true })
             BasicTextField(
                 value = draft,
                 onValueChange = { typed ->
