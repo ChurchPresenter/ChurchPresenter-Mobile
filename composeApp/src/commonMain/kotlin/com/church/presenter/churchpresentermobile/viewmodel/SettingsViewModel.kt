@@ -2,6 +2,8 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.network.ApiConstants
@@ -21,8 +23,13 @@ private const val TAG = "SettingsViewModel"
  * Manages the settings UI state and persists changes to [AppSettings].
  *
  * @param appSettings The shared [AppSettings] instance.
+ * @param mode The mode the app is running in. Standalone hides the server
+ *   fields, so [save] must not judge the settings sheet by them.
  */
-class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
+class SettingsViewModel(
+    private val appSettings: AppSettings,
+    private val mode: StateFlow<AppMode> = AppModeHolder.mode,
+) : ViewModel() {
 
     private val _host = MutableStateFlow(appSettings.host)
     /** Current host / IP address field value. */
@@ -158,6 +165,23 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
         emptyHostError: String,
         invalidPortError: String
     ) {
+        // Standalone doesn't show the server fields, so they cannot have been
+        // edited — and must not be able to veto the settings it does show. A host
+        // left blank before the switch would otherwise lock the operator out of
+        // saving a theme change, with no field on screen to fix it.
+        if (mode.value == AppMode.REMOTE && !persistServerFields(emptyHostError, invalidPortError)) return
+
+        appSettings.themeMode = _themeMode.value
+        _activeUrl.value = appSettings.apiBaseUrl
+        Logger.d(TAG, "save — persisted host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl} themeMode=${appSettings.themeMode}")
+        onSuccess()
+    }
+
+    /**
+     * Validates and persists the server fields, reporting whether the sheet is
+     * fit to save. Errors are published to [hostError] / [portError] for the UI.
+     */
+    private fun persistServerFields(emptyHostError: String, invalidPortError: String): Boolean {
         var valid = true
 
         if (_host.value.isBlank()) {
@@ -171,16 +195,13 @@ class SettingsViewModel(private val appSettings: AppSettings) : ViewModel() {
             valid = false
         }
 
-        if (!valid) return
+        if (!valid) return false
 
         appSettings.host = _host.value.trim()
         appSettings.port = portInt!!
         appSettings.apiKey = _apiKey.value.trim()
         appSettings.displayName = _displayName.value.trim()
-        appSettings.themeMode = _themeMode.value
-        _activeUrl.value = appSettings.apiBaseUrl
-        Logger.d(TAG, "save — persisted host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl} themeMode=${appSettings.themeMode}")
-        onSuccess()
+        return true
     }
 
     /**

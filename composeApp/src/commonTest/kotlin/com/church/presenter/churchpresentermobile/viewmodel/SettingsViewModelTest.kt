@@ -1,10 +1,12 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -49,6 +51,27 @@ class SettingsViewModelTest {
         assertFalse(ok)
         assertEquals("EMPTY", vm.hostError.value)
         assertEquals(ApiConstants.DEFAULT_HOST, settings.host) // unchanged
+    }
+
+    @Test
+    fun standaloneSavesWithoutAServerAddress() = runVmTest {
+        // Standalone hides the server fields, so a host left blank before the
+        // switch must not block saving the settings it does show — the operator
+        // would have no field on screen to fix it with.
+        val settings = AppSettings(InMemorySettingsStorage())
+        val vm = SettingsViewModel(settings, MutableStateFlow(AppMode.STANDALONE))
+        vm.setHost("   ")
+        vm.setPort("nonsense")
+        vm.setThemeMode(ThemeMode.DARK)
+        var ok = false
+        vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT")
+
+        assertTrue(ok)
+        assertEquals(ThemeMode.DARK, settings.themeMode)
+        assertNull(vm.hostError.value)
+        assertNull(vm.portError.value)
+        // Fields that aren't on screen aren't written either.
+        assertEquals(ApiConstants.DEFAULT_HOST, settings.host)
     }
 
     @Test

@@ -187,6 +187,11 @@ fun SettingsScreen(
     val invalidPortError = stringResource(Res.string.settings_invalid_port)
 
     val appMode by AppModeHolder.mode.collectAsState()
+    // Everything about a server — its address, its key, its status, the QR
+    // code that configures it — belongs to a mode that has one. Standalone
+    // presents from this device, so the whole block is absent rather than
+    // greyed out: the mode selector above brings it straight back.
+    val hasDesktop = appMode == AppMode.REMOTE
     pendingMode?.let { target ->
         ModeSwitchDialog(
             target = target,
@@ -262,32 +267,34 @@ fun SettingsScreen(
                         .padding(horizontal = 20.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    // ── Active-server card ────────────────────────────────────
-                    // Shows which server the app is configured to use (the saved
-                    // host/port). This is NOT a live connection check — use
-                    // "Check status" for that. Labelled + iconed accordingly so it
-                    // doesn't read as a live "Connected" indicator.
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(colors.surface)
-                            .border(1.dp, colors.borderSubtle, RoundedCornerShape(12.dp))
-                            .padding(horizontal = 14.dp, vertical = 11.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Dns,
-                            contentDescription = null,
-                            tint = colors.muted,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Column {
-                            Text(stringResource(Res.string.settings_active_server),
-                                color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                            Text(activeUrl, color = colors.muted, fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace)
+                    if (hasDesktop) {
+                        // ── Active-server card ────────────────────────────────────
+                        // Shows which server the app is configured to use (the saved
+                        // host/port). This is NOT a live connection check — use
+                        // "Check status" for that. Labelled + iconed accordingly so it
+                        // doesn't read as a live "Connected" indicator.
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(colors.surface)
+                                .border(1.dp, colors.borderSubtle, RoundedCornerShape(12.dp))
+                                .padding(horizontal = 14.dp, vertical = 11.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Dns,
+                                contentDescription = null,
+                                tint = colors.muted,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Column {
+                                Text(stringResource(Res.string.settings_active_server),
+                                    color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                Text(activeUrl, color = colors.muted, fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace)
+                            }
                         }
                     }
 
@@ -321,59 +328,64 @@ fun SettingsScreen(
                         HorizontalDivider(color = colors.borderSubtle)
                     }
 
-                    // ── Server section header ─────────────────────────────────
-                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                        Text(stringResource(Res.string.settings_server_section),
-                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
-                        Text(stringResource(Res.string.settings_reset_to_default),
-                            fontSize = 12.sp, color = colors.muted,
-                            modifier = Modifier.clickable { viewModel.resetToDefaults() })
+                    if (hasDesktop) {
+                        // ── Server section header ─────────────────────────────────
+                        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                            Text(stringResource(Res.string.settings_server_section),
+                                fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                            Text(stringResource(Res.string.settings_reset_to_default),
+                                fontSize = 12.sp, color = colors.muted,
+                                modifier = Modifier.clickable { viewModel.resetToDefaults() })
+                        }
+
+                        SettingsField(
+                            label = stringResource(Res.string.settings_host_label),
+                            value = host, onValueChange = { viewModel.setHost(it) },
+                            placeholder = stringResource(Res.string.settings_host_placeholder),
+                            mono = true,
+                            keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next,
+                            error = hostError,
+                        )
+                        SettingsField(
+                            label = stringResource(Res.string.settings_port_label),
+                            value = port, onValueChange = { viewModel.setPort(it) },
+                            placeholder = stringResource(Res.string.settings_port_placeholder),
+                            mono = true,
+                            keyboardType = KeyboardType.Number, imeAction = ImeAction.Next,
+                            error = portError,
+                        )
+                        SettingsField(
+                            label = stringResource(Res.string.settings_api_key_label),
+                            value = apiKey, onValueChange = { viewModel.setApiKey(it) },
+                            placeholder = stringResource(Res.string.settings_api_key_placeholder),
+                            password = true, passwordVisible = apiKeyVisible,
+                            onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
+                            keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
+                        )
+                        SettingsField(
+                            label = stringResource(Res.string.settings_display_name_label),
+                            value = displayName, onValueChange = { viewModel.setDisplayName(it) },
+                            placeholder = stringResource(Res.string.settings_display_name_placeholder),
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
+                        )
+
+                        // QR scanner (platform button)
+                        QrScanButton(onScanned = { url -> DeepLinkHandler.handle(url, appSettings) },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // Check Server Status → opens full-screen dialog
+                        OutlineActionButton(
+                            label = stringResource(Res.string.settings_check_status),
+                            icon = Icons.Filled.Wifi,
+                            onClick = { statusViewModel.recheck(); showStatusDialog = true },
+                        )
                     }
 
-                    SettingsField(
-                        label = stringResource(Res.string.settings_host_label),
-                        value = host, onValueChange = { viewModel.setHost(it) },
-                        placeholder = stringResource(Res.string.settings_host_placeholder),
-                        mono = true,
-                        keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next,
-                        error = hostError,
-                    )
-                    SettingsField(
-                        label = stringResource(Res.string.settings_port_label),
-                        value = port, onValueChange = { viewModel.setPort(it) },
-                        placeholder = stringResource(Res.string.settings_port_placeholder),
-                        mono = true,
-                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next,
-                        error = portError,
-                    )
-                    SettingsField(
-                        label = stringResource(Res.string.settings_api_key_label),
-                        value = apiKey, onValueChange = { viewModel.setApiKey(it) },
-                        placeholder = stringResource(Res.string.settings_api_key_placeholder),
-                        password = true, passwordVisible = apiKeyVisible,
-                        onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
-                        keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
-                    )
-                    SettingsField(
-                        label = stringResource(Res.string.settings_display_name_label),
-                        value = displayName, onValueChange = { viewModel.setDisplayName(it) },
-                        placeholder = stringResource(Res.string.settings_display_name_placeholder),
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
-                    )
-
-                    // QR scanner (platform button)
-                    QrScanButton(onScanned = { url -> DeepLinkHandler.handle(url, appSettings) },
-                        modifier = Modifier.fillMaxWidth())
-
-                    // Check Server Status → opens full-screen dialog
-                    OutlineActionButton(
-                        label = stringResource(Res.string.settings_check_status),
-                        icon = Icons.Filled.Wifi,
-                        onClick = { statusViewModel.recheck(); showStatusDialog = true },
-                    )
-
                     // ── Appearance (segmented, drives theme live) ─────────────
-                    HorizontalDivider(color = colors.borderSubtle)
+                    // The mode block above already closes with a divider, so in
+                    // standalone — where the server block between them is absent —
+                    // this one would double it up.
+                    if (hasDesktop) HorizontalDivider(color = colors.borderSubtle)
                     Text(stringResource(Res.string.settings_appearance_section),
                         fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
                     val themeOptions = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
@@ -411,7 +423,7 @@ fun SettingsScreen(
                     }
 
                     // Draft URL preview
-                    if (urlChanged) {
+                    if (hasDesktop && urlChanged) {
                         HorizontalDivider(color = colors.borderSubtle)
                         Text(stringResource(Res.string.settings_draft_url_label),
                             fontSize = 9.sp, letterSpacing = 0.05.em, color = colors.muted)
