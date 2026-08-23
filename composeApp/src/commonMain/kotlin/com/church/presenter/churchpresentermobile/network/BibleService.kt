@@ -34,7 +34,7 @@ class BibleService(
     private val settings: AppSettings,
     private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
-) {
+) : BibleReader {
     init {
         Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
     }
@@ -42,7 +42,7 @@ class BibleService(
     /**
      * Fetches the list of available Bible books from the server.
      */
-    suspend fun getBooks(): Result<List<BibleBook>> {
+    override suspend fun getBooks(): Result<List<BibleBook>> {
         val url = "${settings.apiBaseUrl}/${ApiConstants.BIBLE_ENDPOINT}"
         Logger.d(TAG, "getBooks — requesting URL: $url")
         return apiRunCatching {
@@ -69,7 +69,7 @@ class BibleService(
      * @param bookNumber The 1-based book index in the books list.
      * @param chapter The 1-based chapter number.
      */
-    suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> {
+    override suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> {
         val baseUrl = "${settings.apiBaseUrl}/${ApiConstants.BIBLE_ENDPOINT}"
         val url = "$baseUrl?book=$bookNumber&chapter=$chapter"
         Logger.d(TAG, "getChapter — requesting URL: $url")

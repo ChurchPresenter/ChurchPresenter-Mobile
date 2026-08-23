@@ -10,6 +10,7 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.WsSender
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
@@ -56,21 +57,20 @@ class BibleViewModel(
     private val isDemoMode: Boolean = false,
     private val presenter: StandaloneEngine? = null,
     private val mode: StateFlow<AppMode> = AppModeHolder.mode,
+    private val catalog: BibleCatalog = BibleCatalog(mode, BibleService(appSettings, eventService)),
 ) : ViewModel() {
     private var bibleService = BibleService(appSettings, eventService)
 
     /**
-     * True when there is no Bible to browse: the text lives on a desktop, and
-     * standalone has none. There is no offline Bible on the device, so the
-     * screen shows an ordinary "nothing here" message rather than pretending a
-     * failed request to an absent computer is an error the operator can fix.
+     * True when there is no Bible to browse: standalone, with no translation copied onto this
+     * device. A stream rather than a snapshot, so finishing a download opens the tab without
+     * the app being restarted.
      */
-    val hasNoLocalBibles: StateFlow<Boolean> = mode
-        .map { it == AppMode.STANDALONE }
+    val hasNoLocalBibles: StateFlow<Boolean> = catalog.hasNoBible
         .stateIn(viewModelScope, SharingStarted.Eagerly, mode.value == AppMode.STANDALONE)
 
-    /** Standalone has no Bible source, so every loader is a no-op there. */
-    private val cannotLoad: Boolean get() = mode.value == AppMode.STANDALONE
+    /** Nothing to read from: standalone with no downloaded translation. */
+    private val cannotLoad: Boolean get() = hasNoLocalBibles.value
 
     // ── Books ─────────────────────────────────────────────────────────────────
 
@@ -201,7 +201,7 @@ class BibleViewModel(
         _error.value = null
         viewModelScope.launch {
             try {
-                bibleService.getBooks()
+                catalog.books()
                     .onSuccess {
                         _allBooks.value = it
                         tryProcessPendingNav()
@@ -318,7 +318,7 @@ class BibleViewModel(
         _error.value = null
         viewModelScope.launch {
             try {
-                bibleService.getChapter(bookNumber, chapter)
+                catalog.chapter(bookNumber, chapter)
                     .onSuccess { verses ->
                         _verses.value = verses
                         presenter?.setDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
@@ -505,8 +505,6 @@ class BibleViewModel(
      */
     fun selectVerse(index: Int) {
         if (!_isProjecting.value) return
-        _projectedVerseIndex.value = index
-        presenter?.showSlide(index)
         // ensure it is in the selection set
         _selectedVerseIndices.value = _selectedVerseIndices.value + index
         projectVerseAtIndex(index)
@@ -517,6 +515,10 @@ class BibleViewModel(
         val chapter = _selectedChapter.value ?: return
         val verse   = _verses.value.getOrNull(index) ?: return
         _projectedVerseIndex.value = index
+        // The audience screen this device drives, moved before the desktop is told anything:
+        // in standalone there is no desktop, and without this the deck sits on whichever verse
+        // loadChapter left it at while the operator taps their way down the chapter.
+        presenter?.showSlide(index)
         if (isDemoMode) {
             Logger.d(TAG, "projectVerseAtIndex — DEMO MODE, skipping API call")
             return
