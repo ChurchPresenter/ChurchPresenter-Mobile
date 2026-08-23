@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.standalone_look
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_black
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_gradient
@@ -60,6 +61,7 @@ import churchpresentermobile.composeapp.generated.resources.standalone_size_smal
 import churchpresentermobile.composeapp.generated.resources.standalone_slide_position
 import churchpresentermobile.composeapp.generated.resources.standalone_text_size
 import com.church.presenter.churchpresentermobile.model.Slide
+import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.present.SinkStatus
@@ -88,10 +90,11 @@ import org.jetbrains.compose.resources.stringResource
 fun StandaloneControllerScreen(
     engine: StandaloneEngine,
     registry: SinkRegistry,
+    settings: AppSettings,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: StandaloneViewModel = viewModel(key = "standalone") {
-        StandaloneViewModel(engine, registry)
+        StandaloneViewModel(engine, registry, settings)
     }
     val colors = LocalAppColors.current
 
@@ -103,10 +106,20 @@ fun StandaloneControllerScreen(
     val textSize by viewModel.textSize.collectAsState()
     val backdrop by viewModel.backdrop.collectAsState()
     val sinks by viewModel.sinks.collectAsState()
+    val theme by viewModel.theme.collectAsState()
     var showOutputs by remember { mutableStateOf(false) }
+    var showLook by remember { mutableStateOf(false) }
 
     if (showOutputs) {
         OutputTargetsSheet(sinks = sinks, onDismiss = { showOutputs = false })
+    }
+
+    if (showLook) {
+        LookSheet(
+            theme = theme,
+            onThemeChange = viewModel::updateTheme,
+            onDismiss = { showLook = false },
+        )
     }
 
     Column(
@@ -131,7 +144,21 @@ fun StandaloneControllerScreen(
             )
         }
 
-        OverlineRow(stringResource(Res.string.standalone_backdrop))
+        // The gradient's colours live behind here, with the rest of the look — off the live
+        // surface, so nothing pushes Next and Blank further down the screen.
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            OverlineRow(stringResource(Res.string.standalone_backdrop), modifier = Modifier.weight(1f))
+            Text(
+                text = stringResource(Res.string.standalone_look),
+                color = colors.accent,
+                fontSize = 12.sp,
+                modifier = Modifier.clickable { showLook = true },
+            )
+        }
         SegmentedControl(
             options = listOf(
                 stringResource(Res.string.standalone_backdrop_gradient),

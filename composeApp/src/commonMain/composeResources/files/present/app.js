@@ -49,16 +49,31 @@
     node.classList.toggle('hidden', text.length === 0);
   }
 
+  // Only #RGB / #RRGGBB reaches a style property. The colours arrive over the
+  // wire, and 'url(...)' in a background is a fetch the audience screen would make.
+  function safeColor(value) {
+    return (typeof value === 'string' && /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(value.trim()))
+      ? value.trim() : null;
+  }
+
   function applyBackdrop(slide) {
     var kind = slide.backdrop || 'GRADIENT';
     var url = slide.backdropUrl;
     if (kind === 'IMAGE' && url) {
       el.backdrop.className = '';
+      el.backdrop.style.background = '';
       el.backdrop.style.backgroundImage = 'url("' + encodeURI(url) + '")';
       el.scrim.classList.remove('hidden');
     } else {
       el.backdrop.style.backgroundImage = '';
       el.backdrop.className = kind === 'BLACK' ? 'bd-black' : 'bd-gradient';
+      var theme = slide.theme || {};
+      var top = safeColor(theme.gradientTop);
+      var bottom = safeColor(theme.gradientBottom);
+      // The operator's own wash when they chose one; the stylesheet's otherwise.
+      el.backdrop.style.background = (kind !== 'BLACK' && top && bottom)
+        ? 'linear-gradient(160deg, ' + top + ' 0%, ' + bottom + ' 100%)'
+        : '';
       el.scrim.classList.add('hidden');
     }
   }

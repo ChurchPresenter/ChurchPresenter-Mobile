@@ -597,6 +597,20 @@
     <!-- Desktop sync -->
     <!-- Copying content from a computer, and where that computer is. New strings are
          English-only; the other locales fall back until translated. -->
+    <!-- The look of the audience screen, set from the Present tab. English-only for now. -->
+    <string name="standalone_look">Look</string>
+    <string name="standalone_gradient_top">Gradient top</string>
+    <string name="standalone_gradient_bottom">Gradient bottom</string>
+    <string name="standalone_text_colour">Text colour</string>
+    <string name="standalone_accent_colour">Reference colour</string>
+    <string name="standalone_font">Font</string>
+    <string name="standalone_font_serif">Serif</string>
+    <string name="standalone_font_sans">Sans</string>
+    <string name="standalone_brand_line">Church name (top corner)</string>
+    <string name="standalone_brand_line_hint">Leave blank for none</string>
+    <string name="standalone_show_clock">Show a clock</string>
+    <string name="standalone_look_reset">Reset the look</string>
+
     <string name="sync_address_section">Your computer</string>
     <string name="sync_address_hint">Both devices must be on the same Wi-Fi. The address is shown on your computer under Settings &#8594; Companion.</string>
     <string name="sync_address_needs_key">Needs a key?</string>

@@ -156,7 +156,12 @@ private fun Backdrop(slide: Slide) {
 
         SlideBackdrop.GRADIENT -> Box(
             Modifier.fillMaxSize().background(
-                Brush.linearGradient(listOf(GRADIENT_TOP, GRADIENT_MID, GRADIENT_BOTTOM))
+                Brush.linearGradient(
+                    listOf(
+                        parseHexColor(slide.theme.gradientTop, GRADIENT_TOP),
+                        parseHexColor(slide.theme.gradientBottom, GRADIENT_BOTTOM),
+                    )
+                )
             )
         )
 
@@ -220,7 +225,7 @@ private const val REFERENCE_GAP = 0.045f
 private const val FOOTER_GAP = 0.02f
 private const val CORNER_PAD = 0.035f
 
+/** Only reached when a theme carries an unreadable colour — the defaults live in SlideTheme. */
 private val GRADIENT_TOP = Color(0xFF2A1D5E)
-private val GRADIENT_MID = Color(0xFF0B0D1A)
 private val GRADIENT_BOTTOM = Color(0xFF05060D)
 private val IMAGE_SCRIM = Color(0x99000000)

@@ -26,6 +26,7 @@ private const val KEY_APP_MODE         = "app_mode"
 private const val KEY_MODE_CHOSEN      = "mode_chosen"
 private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
+private const val KEY_SLIDE_THEME       = "slide_theme"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -107,6 +108,17 @@ class AppSettings(
             }
             return id
         }
+
+    /**
+     * JSON of the operator's chosen look for the audience screen — gradient, text and accent
+     * colours, font, corner line, clock. Defaults to "{}", which decodes to the built-in look.
+     *
+     * Persisted because a church sets its colours once and would otherwise find them reset every
+     * Sunday morning. Same blob pattern as [savedAnnouncementsJson].
+     */
+    var slideThemeJson: String
+        get() = storage.getString(KEY_SLIDE_THEME, "{}")
+        set(value) { storage.putString(KEY_SLIDE_THEME, value) }
 
     /** JSON array of the user's saved announcements (composer presets). Defaults to "[]". */
     var savedAnnouncementsJson: String

@@ -977,6 +977,7 @@ fun App() {
                         AppTab.PRESENT -> StandaloneControllerScreen(
                             engine = standaloneEngine,
                             registry = sinkRegistry,
+                            settings = appSettings,
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.SONGS -> SongsTable(

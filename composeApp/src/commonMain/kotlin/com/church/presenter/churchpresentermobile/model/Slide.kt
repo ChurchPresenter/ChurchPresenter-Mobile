@@ -59,7 +59,13 @@ data class SlideTheme(
     val accentColor: String = "#7C5CFF",
     val brandLine: String? = null,
     val showClock: Boolean = true,
+    val gradientTop: String = DEFAULT_GRADIENT_TOP,
+    val gradientBottom: String = DEFAULT_GRADIENT_BOTTOM,
 )
+
+/** The wash every renderer falls back to, and what the pickers start on. */
+const val DEFAULT_GRADIENT_TOP: String = "#2A1D5E"
+const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
 
 /**
  * One projected screen of content — everything a renderer needs, with no
@@ -82,6 +88,8 @@ data class SlideTheme(
  * @property isLive False while output is held back from the audience screen.
  * @property sourceId Identifier of the originating item (song number, `John:3:16`, announcement id).
  * @property index Zero-based position within the owning [SlideDeck].
+ * @property gradientTop Top colour of the gradient backdrop as `#RRGGBB`.
+ * @property gradientBottom Bottom colour of the gradient backdrop as `#RRGGBB`.
  * @property total Number of slides in the owning [SlideDeck].
  */
 @Serializable

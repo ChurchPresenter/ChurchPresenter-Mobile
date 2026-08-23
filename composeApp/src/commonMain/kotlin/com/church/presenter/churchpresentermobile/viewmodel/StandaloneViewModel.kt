@@ -5,6 +5,9 @@ import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
+import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.SlideTheme
+import kotlinx.serialization.json.Json
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 class StandaloneViewModel(
     private val engine: StandaloneEngine,
     private val registry: SinkRegistry,
+    private val settings: AppSettings? = null,
 ) : ViewModel() {
 
     val deck: StateFlow<SlideDeck> = engine.deck
@@ -34,6 +38,17 @@ class StandaloneViewModel(
     val isLive: StateFlow<Boolean> = engine.isLive
     val textSize: StateFlow<SlideTextSize> = engine.textSize
     val backdrop: StateFlow<SlideBackdrop> = engine.backdrop
+    val theme: StateFlow<SlideTheme> = engine.theme
+
+    init {
+        // A church sets its colours once. Without this they would be back to the built-in
+        // purple every Sunday morning.
+        settings?.let { stored ->
+            runCatching { themeJson.decodeFromString<SlideTheme>(stored.slideThemeJson) }
+                .getOrNull()
+                ?.let { engine.setTheme(it) }
+        }
+    }
 
     /** Status of every registered sink, for the outputs chip and sheet. */
     val sinks: StateFlow<List<SinkStatus>> = registry.statuses
@@ -52,6 +67,24 @@ class StandaloneViewModel(
 
     fun setBackdrop(backdrop: SlideBackdrop) = engine.setBackdrop(backdrop)
 
+    /**
+     * Changes one part of the look, leaving the rest as it was.
+     *
+     * The theme travels inside every slide, so a change here reaches the phone's own output,
+     * an attached screen and any browser watching the hosted page, without any of them being
+     * told separately.
+     */
+    fun updateTheme(block: (SlideTheme) -> SlideTheme) {
+        val updated = block(engine.theme.value)
+        engine.setTheme(updated)
+        settings?.let { store ->
+            runCatching { store.slideThemeJson = themeJson.encodeToString(SlideTheme.serializer(), updated) }
+        }
+    }
+
     /** Unloads the current deck and blanks the screen. */
     fun clear() = engine.clear()
 }
+
+/** Lenient so a theme written by a newer build still opens on an older one. */
+private val themeJson = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefaults = true }

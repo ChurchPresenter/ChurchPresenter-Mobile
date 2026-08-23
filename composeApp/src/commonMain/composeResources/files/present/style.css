@@ -34,8 +34,10 @@ html, body {
   background-position: center;
 }
 
+/* Fallback only — app.js paints the operator's chosen wash over this. Kept in
+   step with SlideTheme's defaults so the two agree before any choice is made. */
 .bd-gradient {
-  background: radial-gradient(120% 90% at 20% 0%, #2a1d5e 0%, #0b0d1a 60%, #05060d 100%);
+  background: linear-gradient(160deg, #2a1d5e 0%, #05060d 100%);
 }
 
 .bd-black { background: #000; }
