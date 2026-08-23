@@ -4,6 +4,7 @@ import com.church.presenter.churchpresentermobile.model.SlideEnvelope
 import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.present.LocalWebServer
 import com.church.presenter.churchpresentermobile.present.OutputSink
+import com.church.presenter.churchpresentermobile.present.PhotoSource
 import com.church.presenter.churchpresentermobile.present.PresentationKeepAlive
 import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.present.SinkStatus
@@ -37,10 +38,17 @@ const val WEB_PAGE_SINK_ID = "web_page"
  *
  * @param onPortBound Called with the port actually bound, so the caller can
  *   remember it and hand the operator a stable URL between services.
+ * @param photos The operator's picked photos, which this server also serves so
+ *   that both displays load an image from the same address.
+ * @param onBaseUrl Called with the address the server is reachable at, and with
+ *   null when it stops — what tells the photo library whether it has anywhere to
+ *   serve from.
  */
 class WebPageSink(
     private val preferredPort: Int,
     private val onPortBound: (Int) -> Unit = {},
+    private val photos: PhotoSource = PhotoSource.NONE,
+    private val onBaseUrl: (String?) -> Unit = {},
 ) : OutputSink {
 
     override val id: String = WEB_PAGE_SINK_ID
@@ -79,7 +87,7 @@ class WebPageSink(
             return
         }
 
-        val instance = LocalWebServer(assets)
+        val instance = LocalWebServer(assets, photos)
         val started = runCatching {
             instance.start(preferredPort, ApiConstants.STANDALONE_PORT_CANDIDATES.toList())
         }
@@ -88,6 +96,7 @@ class WebPageSink(
             server = instance
             onPortBound(port)
             val url = "http://$address:$port"
+            onBaseUrl(url)
             _status.value = _status.value.copy(
                 state = SinkState.ATTACHED,
                 detail = url,
@@ -111,6 +120,7 @@ class WebPageSink(
     }
 
     override suspend fun detach() {
+        onBaseUrl(null)
         PresentationKeepAlive.stop()
         clientWatcher?.cancel()
         clientWatcher = null

@@ -161,10 +161,15 @@ class StandaloneEngine(
     /** Builds the current slide, stamps a revision, and pushes it everywhere. */
     private fun emit(type: SlideMessageType = SlideMessageType.SLIDE) {
         val base = _deck.value.slideAt(_index.value) ?: Slide.BLANK
+        // The operator's backdrop choice is what sits *behind text*. A photo
+        // slide is not text on a background — the image is the slide — so a slide
+        // carrying its own image keeps it, and stepping through a set of photos
+        // changes the picture rather than repainting the same one.
+        val carriesOwnImage = base.backdrop == SlideBackdrop.IMAGE && !base.backdropUrl.isNullOrBlank()
         val slide = base.copy(
             textSize = _textSize.value,
-            backdrop = _backdrop.value,
-            backdropUrl = _backdropUrl.value,
+            backdrop = if (carriesOwnImage) base.backdrop else _backdrop.value,
+            backdropUrl = if (carriesOwnImage) base.backdropUrl else _backdropUrl.value,
             isBlank = _isBlank.value,
             isLive = _isLive.value,
             theme = _theme.value,

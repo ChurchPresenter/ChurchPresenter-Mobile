@@ -313,4 +313,56 @@ class StandaloneEngineTest {
         assertEquals(before, f.published.size, "desktop-only actions must not emit a slide")
         assertEquals("slide 0", f.engine.currentSlide.value.body)
     }
+
+    // ── Slides that carry their own image ────────────────────────────────
+
+    @Test
+    fun `a photo slide keeps its own image rather than the operator's backdrop`() {
+        // The backdrop control chooses what sits behind *text*. A photo slide is
+        // the picture itself, so applying the global backdrop would repaint every
+        // photo in the set with the same one.
+        val f = Fixture()
+        f.engine.setBackdrop(SlideBackdrop.GRADIENT)
+        f.engine.setDeck(
+            SlideDeck(
+                kind = SlideKind.IMAGE,
+                slides = listOf(
+                    Slide(kind = SlideKind.IMAGE, backdrop = SlideBackdrop.IMAGE, backdropUrl = "http://phone/photo/a"),
+                    Slide(kind = SlideKind.IMAGE, backdrop = SlideBackdrop.IMAGE, backdropUrl = "http://phone/photo/b"),
+                ),
+            )
+        )
+
+        assertEquals(SlideBackdrop.IMAGE, f.engine.currentSlide.value.backdrop)
+        assertEquals("http://phone/photo/a", f.engine.currentSlide.value.backdropUrl)
+
+        f.engine.next()
+
+        assertEquals("http://phone/photo/b", f.engine.currentSlide.value.backdropUrl)
+    }
+
+    @Test
+    fun `a text slide still takes the operator's backdrop`() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+
+        f.engine.setBackdrop(SlideBackdrop.BLACK)
+
+        assertEquals(SlideBackdrop.BLACK, f.engine.currentSlide.value.backdrop)
+    }
+
+    @Test
+    fun `an image backdrop with no url falls back to the operator's choice`() {
+        val f = Fixture()
+        f.engine.setBackdrop(SlideBackdrop.BLACK)
+
+        f.engine.setDeck(
+            SlideDeck(
+                kind = SlideKind.IMAGE,
+                slides = listOf(Slide(kind = SlideKind.IMAGE, backdrop = SlideBackdrop.IMAGE, backdropUrl = null)),
+            )
+        )
+
+        assertEquals(SlideBackdrop.BLACK, f.engine.currentSlide.value.backdrop)
+    }
 }

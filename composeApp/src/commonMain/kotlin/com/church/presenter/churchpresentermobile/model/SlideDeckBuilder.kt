@@ -152,6 +152,34 @@ object SlideDeckBuilder {
     }
 
     /**
+     * Builds a deck of photographs, one per slide.
+     *
+     * The image is the slide: no body text, and the backdrop carries it, so the
+     * same renderer that puts a photo behind lyrics shows it full-bleed here.
+     * The operator steps through them exactly as through a song's sections.
+     *
+     * @param urls Where each photo can be fetched — for standalone, the phone's
+     *   own server. Callers drop photos with no URL rather than passing null.
+     */
+    fun fromPhotos(urls: List<String>, title: String = ""): SlideDeck {
+        val usable = urls.filter { it.isNotBlank() }
+        return SlideDeck(
+            kind = SlideKind.IMAGE,
+            title = title,
+            slides = usable.mapIndexed { index, url ->
+                Slide(
+                    kind = SlideKind.IMAGE,
+                    backdrop = SlideBackdrop.IMAGE,
+                    backdropUrl = url,
+                    sourceId = url,
+                    index = index,
+                    total = usable.size,
+                )
+            },
+        )
+    }
+
+    /**
      * Builds a deck where each entry is its own slide — used for a list of
      * announcements the operator steps through.
      */

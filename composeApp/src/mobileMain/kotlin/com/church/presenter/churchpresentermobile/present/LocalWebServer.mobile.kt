@@ -41,7 +41,10 @@ private const val TAG = "LocalWebServer"
  * coalesces rather than backing up, and there is no per-session bookkeeping to
  * leak when a TV is switched off mid-service.
  */
-actual class LocalWebServer actual constructor(private val assets: WebAssets) {
+actual class LocalWebServer actual constructor(
+    private val assets: WebAssets,
+    private val photos: PhotoSource,
+) {
 
     private val _clientCount = MutableStateFlow(0)
     actual val clientCount: StateFlow<Int> = _clientCount.asStateFlow()
@@ -159,6 +162,25 @@ actual class LocalWebServer actual constructor(private val assets: WebAssets) {
             timeoutMillis = PING_TIMEOUT_MS
         }
         routing {
+            // Declared before the catch-all so the operator's photos are not
+            // answered with the bundled page's 404. Ktor prefers the more
+            // specific route, but the order also says which is which.
+            get("/$PHOTO_ROUTE/{id}") {
+                val photo = call.parameters["id"]?.let(photos::photo)
+                if (photo == null) {
+                    call.respondText(
+                        text = "Not found",
+                        contentType = ContentType.Text.Plain,
+                        status = HttpStatusCode.NotFound,
+                    )
+                } else {
+                    call.respondBytes(
+                        bytes = photo.bytes,
+                        contentType = ContentType.parse(photo.contentType),
+                    )
+                }
+            }
+
             get("/{path...}") {
                 val requested = call.request.local.uri
                 val asset = assets.forPath(requested)

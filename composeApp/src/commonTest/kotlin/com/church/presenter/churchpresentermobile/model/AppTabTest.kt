@@ -70,17 +70,16 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone has no More destinations at all`() {
-        // Every entry reads from or writes to a desktop — announcements included:
-        // that screen adds to the desktop's schedule or shows on the desktop's
-        // screen, both of which standalone swallows while reporting success. The
-        // local way to project one is the Library tab.
-        assertEquals(emptyList(), MoreDestination.forMode(AppMode.STANDALONE))
+    fun `standalone keeps only the More destination it can serve itself`() {
+        // Photos is local — picked from this device, projected by it. The rest
+        // need the desktop's data, and the announcements composer writes to the
+        // desktop's schedule and screen.
+        assertEquals(listOf(MoreDestination.PICTURES), MoreDestination.forMode(AppMode.STANDALONE))
     }
 
     @Test
-    fun `standalone drops the More tab, since nothing is left in it`() {
-        assertFalse(AppTab.MORE in AppTab.forMode(AppMode.STANDALONE))
+    fun `the More tab exists in both modes`() {
+        assertTrue(AppTab.MORE in AppTab.forMode(AppMode.STANDALONE))
         assertTrue(AppTab.MORE in AppTab.forMode(AppMode.REMOTE))
     }
 }

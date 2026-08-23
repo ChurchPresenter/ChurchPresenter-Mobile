@@ -10,11 +10,15 @@ import kotlinx.coroutines.flow.StateFlow
  * receives is bundled in the app, so the whole thing works on a hall network
  * with no internet at all.
  *
+ * Besides the bundled page it serves the photos the operator picked this
+ * session, so the browser display and the in-process one load an image from the
+ * identical address — see [PhotoSource].
+ *
  * Implemented once for Android and iOS on Ktor's CIO engine (see mobileMain).
  * The web target has an actual that reports "unsupported" — a browser tab
  * cannot listen on a socket.
  */
-expect class LocalWebServer(assets: WebAssets) {
+expect class LocalWebServer(assets: WebAssets, photos: PhotoSource) {
 
     /** How many display pages are currently connected. */
     val clientCount: StateFlow<Int>

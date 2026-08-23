@@ -55,6 +55,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
+import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
@@ -91,6 +92,7 @@ import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
 import com.church.presenter.churchpresentermobile.ui.library.AnnouncementEditorScreen
 import com.church.presenter.churchpresentermobile.ui.library.LibraryScreen
@@ -199,6 +201,10 @@ fun App() {
     val libraryRepository = remember {
         LibraryRepository(now = { Clock.System.now().toEpochMilliseconds() })
     }
+    // Photos the operator picks for this service. Held here because two things
+    // need the same set: the screen that picks and projects them, and the
+    // presentation server that serves the bytes to whatever is displaying.
+    val photoLibrary = remember { PhotoLibrary(newId = { generateUUID() }) }
     val standaloneEngine = remember(sinkRegistry) {
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
@@ -220,6 +226,11 @@ fun App() {
                     // Remember whatever port was actually bound so the URL the
                     // operator gave the TV stays the same next service.
                     onPortBound = { appSettings.standalonePort = it },
+                    // The same server that serves the display page serves the
+                    // operator's photos, so the browser screen and the in-process
+                    // one fetch an image from the identical address.
+                    photos = photoLibrary.source,
+                    onBaseUrl = { photoLibrary.serveFrom(it) },
                 )
             )
         }
@@ -1007,6 +1018,14 @@ fun App() {
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.MORE -> when (moreDestination) {
+                            // Standalone has no desktop folders to browse, so
+                            // Photos means this device's own pictures.
+                            MoreDestination.PICTURES if appMode == AppMode.STANDALONE ->
+                                LocalPhotosScreen(
+                                    library = photoLibrary,
+                                    presenter = standaloneEngine,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
                             MoreDestination.PICTURES -> PicturesScreen(
                                 appSettings = appSettings,
                                 isDemoMode = isDemoMode,
