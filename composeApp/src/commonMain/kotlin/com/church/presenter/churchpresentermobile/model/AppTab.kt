@@ -22,13 +22,15 @@ enum class AppTab {
          * The tabs shown in [mode], in strip order.
          *
          * Remote keeps exactly the tabs it has always had. Standalone drops the
-         * ones that only mean something with a desktop attached (Media casting
-         * and the desktop's presentation decks) and adds the local controller
-         * and library.
+         * ones that only mean something with a desktop attached (Media casting,
+         * the desktop's presentation decks, and More — see [MoreDestination.forMode],
+         * every entry of which reads from or writes to a desktop) and adds the
+         * local controller and library. Settings is a header gear on every tab,
+         * so nothing is stranded by dropping More.
          */
         fun forMode(mode: AppMode): List<AppTab> = when (mode) {
             AppMode.REMOTE -> listOf(SONGS, BIBLE, MEDIA, PRESENTATION, MORE)
-            AppMode.STANDALONE -> listOf(PRESENT, SONGS, BIBLE, LIBRARY, MORE)
+            AppMode.STANDALONE -> listOf(PRESENT, SONGS, BIBLE, LIBRARY)
         }
     }
 }
@@ -45,12 +47,17 @@ enum class MoreDestination {
         /**
          * The "More" entries available in [mode].
          *
-         * Q&A, the dictionary, pictures and the web viewer all read from the
-         * desktop, so standalone shows only what it can actually serve.
+         * Standalone has none. Q&A, the dictionary, pictures and the web viewer
+         * all read from the desktop; announcements looked local but are not —
+         * this screen composes an announcement and either adds it to the
+         * *desktop's* schedule or shows it on the *desktop's* screen, and
+         * StandaloneEngine.handleRemoteAction swallows both while reporting
+         * success. The on-device equivalent is the Library tab, which projects an
+         * announcement through SlideDeckBuilder.fromAnnouncement.
          */
         fun forMode(mode: AppMode): List<MoreDestination> = when (mode) {
             AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB)
-            AppMode.STANDALONE -> listOf(ANNOUNCEMENTS)
+            AppMode.STANDALONE -> emptyList()
         }
     }
 }

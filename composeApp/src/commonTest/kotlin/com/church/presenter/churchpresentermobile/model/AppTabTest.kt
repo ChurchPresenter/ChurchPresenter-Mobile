@@ -70,11 +70,17 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone hides the More destinations that read from a desktop`() {
-        val destinations = MoreDestination.forMode(AppMode.STANDALONE)
-        assertFalse(MoreDestination.QA in destinations)
-        assertFalse(MoreDestination.DICTIONARY in destinations)
-        assertFalse(MoreDestination.PICTURES in destinations)
-        assertTrue(MoreDestination.ANNOUNCEMENTS in destinations)
+    fun `standalone has no More destinations at all`() {
+        // Every entry reads from or writes to a desktop — announcements included:
+        // that screen adds to the desktop's schedule or shows on the desktop's
+        // screen, both of which standalone swallows while reporting success. The
+        // local way to project one is the Library tab.
+        assertEquals(emptyList(), MoreDestination.forMode(AppMode.STANDALONE))
+    }
+
+    @Test
+    fun `standalone drops the More tab, since nothing is left in it`() {
+        assertFalse(AppTab.MORE in AppTab.forMode(AppMode.STANDALONE))
+        assertTrue(AppTab.MORE in AppTab.forMode(AppMode.REMOTE))
     }
 }

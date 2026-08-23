@@ -449,6 +449,10 @@ fun App() {
     // written to survive a -1, and this effect settles it on the next frame.
     LaunchedEffect(appMode) {
         if (selectedTab !in tabs) selectedTab = tabs.first()
+        // Same for a More destination opened before the switch: standalone cannot
+        // fill the desktop-backed screens, so leaving one open would strand the
+        // operator on a screen the launcher no longer offers a way back to.
+        moreDestination?.let { if (it !in MoreDestination.forMode(appMode)) moreDestination = null }
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -991,6 +995,7 @@ fun App() {
                                 modifier = Modifier.fillMaxSize()
                             )
                             null -> MoreScreen(
+                                mode = appMode,
                                 onSelect = { moreDestination = it },
                                 modifier = Modifier.fillMaxSize()
                             )

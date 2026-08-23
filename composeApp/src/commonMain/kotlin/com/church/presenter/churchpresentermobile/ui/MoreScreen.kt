@@ -42,6 +42,7 @@ import churchpresentermobile.composeapp.generated.resources.more_qa_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_qa_title
 import churchpresentermobile.composeapp.generated.resources.more_web_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_web_title
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
@@ -57,20 +58,26 @@ private data class MoreEntry(
  * Launcher grid/list for secondary destinations reached from the "More" tab.
  * Keeps the bottom bar at the Material-recommended 5 slots while leaving room
  * for future tools (Presentation Remote, Lower Thirds, …).
+ *
+ * Only what [mode] can serve is listed: photos, Q&A, the dictionary and the web
+ * viewer all read from a desktop, and in standalone they opened a screen that
+ * could never fill itself.
  */
 @Composable
 fun MoreScreen(
+    mode: AppMode,
     onSelect: (MoreDestination) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
+    val available = MoreDestination.forMode(mode)
     val entries = listOf(
         MoreEntry(MoreDestination.PICTURES, stringResource(Res.string.more_photos_title), stringResource(Res.string.more_photos_subtitle), Icons.Outlined.Image),
         MoreEntry(MoreDestination.QA, stringResource(Res.string.more_qa_title), stringResource(Res.string.more_qa_subtitle), Icons.Outlined.ChatBubbleOutline),
         MoreEntry(MoreDestination.DICTIONARY, stringResource(Res.string.more_dictionary_title), stringResource(Res.string.more_dictionary_subtitle), Icons.AutoMirrored.Outlined.MenuBook),
         MoreEntry(MoreDestination.ANNOUNCEMENTS, stringResource(Res.string.more_announcements_title), stringResource(Res.string.more_announcements_subtitle), Icons.Outlined.Campaign),
         MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
-    )
+    ).filter { it.destination in available }
     LazyColumn(
         modifier = modifier.fillMaxSize().background(colors.background),
         contentPadding = PaddingValues(16.dp),
