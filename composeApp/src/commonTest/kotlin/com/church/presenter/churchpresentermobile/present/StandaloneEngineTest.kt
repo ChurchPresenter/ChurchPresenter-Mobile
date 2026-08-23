@@ -365,4 +365,101 @@ class StandaloneEngineTest {
 
         assertEquals(SlideBackdrop.BLACK, f.engine.currentSlide.value.backdrop)
     }
+    // ── Browsing versus projecting ───────────────────────────────────────
+
+    @Test
+    fun loadingADeckPutsNothingOnTheAudienceScreen() {
+        // Tapping a song in the list used to project it. Opening something to look at it is not
+        // the same as showing it to a congregation.
+        val f = Fixture()
+
+        f.engine.loadDeck(deckOf(3))
+
+        assertTrue(f.published.isEmpty())
+        assertTrue(f.sink.rendered.isEmpty())
+    }
+
+    @Test
+    fun loadingADeckStillFillsTheSectionList() {
+        // The operator has to see what they are about to show, so the deck itself is loaded —
+        // it is only the projecting that waits.
+        val f = Fixture()
+
+        f.engine.loadDeck(deckOf(3))
+
+        assertEquals(3, f.engine.deck.value.slides.size)
+        assertEquals(0, f.engine.index.value)
+    }
+
+    @Test
+    fun goingLiveProjectsWhatWasLoaded() {
+        val f = Fixture()
+        f.engine.loadDeck(deckOf(3))
+
+        f.engine.goLive()
+
+        assertEquals(1, f.published.size)
+        assertEquals("slide 0", f.published.single().slide?.body)
+    }
+
+    @Test
+    fun goingLiveKeepsTheSlideTheOperatorHadMovedTo() {
+        val f = Fixture()
+        f.engine.loadDeck(deckOf(3))
+        f.engine.showSlide(2)
+        f.published.clear()
+
+        f.engine.goLive()
+
+        assertEquals("slide 2", f.published.single().slide?.body)
+    }
+
+    @Test
+    fun presentingSomethingOutrightStillProjectsAtOnce() {
+        // setDeck is what "present this now" uses — the library, a web page, a set of photos.
+        // Splitting browsing off must not have made those wait for a second press.
+        val f = Fixture()
+
+        f.engine.setDeck(deckOf(2))
+
+        assertEquals(1, f.published.size)
+        assertEquals("slide 0", f.published.single().slide?.body)
+    }
+
+    @Test
+    fun loadingADeckClearsABlackedOutScreenOnlyWhenItGoesLive() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+        f.engine.setBlank(true)
+        f.published.clear()
+
+        f.engine.loadDeck(deckOf(2))
+
+        // Nothing was published, so the audience is still looking at the blank.
+        assertTrue(f.published.isEmpty())
+    }
+
+    // ── The reference line ───────────────────────────────────────────────
+
+    @Test
+    fun theReferenceLineIsShownUnlessTheOperatorTurnsItOff() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(1))
+
+        assertTrue(f.published.single().slide!!.theme.showReference)
+    }
+
+    @Test
+    fun turningTheReferenceOffReachesTheProjectedSlide() {
+        // Some churches want the words and nothing else on screen.
+        val f = Fixture()
+        f.engine.setDeck(deckOf(1))
+
+        f.engine.setTheme(f.engine.theme.value.copy(showReference = false))
+
+        assertFalse(f.published.last().slide!!.theme.showReference)
+        // The reference itself is still carried — it is the renderers that stop drawing it, so
+        // turning it back on needs no reload.
+        assertEquals("ref 0", f.published.last().slide?.reference)
+    }
 }

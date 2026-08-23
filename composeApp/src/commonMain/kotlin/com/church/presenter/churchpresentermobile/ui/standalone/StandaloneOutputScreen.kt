@@ -104,7 +104,7 @@ fun StandaloneOutputScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            slide.reference?.takeIf { it.isNotBlank() }?.let { reference ->
+            slide.reference?.takeIf { it.isNotBlank() && slide.theme.showReference }?.let { reference ->
                 Text(
                     text = reference.uppercase(),
                     style = TextStyle(

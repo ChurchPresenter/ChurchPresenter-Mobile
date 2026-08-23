@@ -33,6 +33,8 @@ import churchpresentermobile.composeapp.generated.resources.standalone_gradient_
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_top
 import churchpresentermobile.composeapp.generated.resources.standalone_look
 import churchpresentermobile.composeapp.generated.resources.standalone_look_reset
+import churchpresentermobile.composeapp.generated.resources.standalone_show_reference
+import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_hint
 import churchpresentermobile.composeapp.generated.resources.standalone_show_clock
 import churchpresentermobile.composeapp.generated.resources.standalone_text_colour
 import com.church.presenter.churchpresentermobile.model.SlideFont
@@ -136,21 +138,18 @@ internal fun LookSheet(
                 imeAction = ImeAction.Done,
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = stringResource(Res.string.standalone_show_clock),
-                    color = colors.text,
-                    fontSize = 14.sp,
-                )
-                Switch(
-                    checked = theme.showClock,
-                    onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
-                )
-            }
+            ToggleRow(
+                label = stringResource(Res.string.standalone_show_reference),
+                hint = stringResource(Res.string.standalone_show_reference_hint),
+                checked = theme.showReference,
+                onCheckedChange = { on -> onThemeChange { it.copy(showReference = on) } },
+            )
+
+            ToggleRow(
+                label = stringResource(Res.string.standalone_show_clock),
+                checked = theme.showClock,
+                onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
+            )
 
             Text(
                 text = stringResource(Res.string.standalone_look_reset),
@@ -163,6 +162,28 @@ internal fun LookSheet(
 
             Box(Modifier.padding(bottom = AppDimens.space16))
         }
+    }
+}
+
+/** A label, an optional line saying what it does, and the switch. */
+@Composable
+private fun ToggleRow(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    hint: String? = null,
+) {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(text = label, color = colors.text, fontSize = 14.sp)
+            hint?.let { Text(text = it, color = colors.muted, fontSize = 11.sp, lineHeight = 15.sp) }
+        }
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 

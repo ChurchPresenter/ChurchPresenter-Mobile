@@ -72,13 +72,38 @@ class StandaloneEngine(
 
     private val isActive: Boolean get() = mode.value == AppMode.STANDALONE
 
-    /** Loads a deck and projects its first slide. Resets blank; leaves live as the operator set it. */
+    /**
+     * Loads a deck and projects its first slide immediately.
+     *
+     * For the actions that mean "put this on the screen now" — presenting from the library,
+     * a web page, a set of photos. Browsing is [loadDeck].
+     */
     fun setDeck(deck: SlideDeck) {
+        if (!isActive) return
+        loadDeck(deck)
+        emit()
+    }
+
+    /**
+     * Loads a deck without putting it on the audience screen.
+     *
+     * Opening a song or a Bible chapter is browsing, not projecting: it fills the section list
+     * so the operator can see what they are about to show, and leaves the screen on whatever is
+     * already there until they say otherwise. Loading used to project, so tapping a song in the
+     * list put it in front of the congregation before anyone pressed anything.
+     */
+    fun loadDeck(deck: SlideDeck) {
         if (!isActive) return
         _deck.value = deck
         _index.value = 0
         _isBlank.value = false
-        Logger.d(TAG, "setDeck — kind=${deck.kind} slides=${deck.slides.size} title=${deck.title}")
+        Logger.d(TAG, "loadDeck — kind=${deck.kind} slides=${deck.slides.size} title=${deck.title}")
+    }
+
+    /** Projects whatever is loaded, at the slide it is sitting on. The operator's "go live". */
+    fun goLive() {
+        if (!isActive) return
+        _isBlank.value = false
         emit()
     }
 

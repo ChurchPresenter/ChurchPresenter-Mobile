@@ -303,7 +303,7 @@ class BibleViewModel(
             Logger.d(TAG, "selectChapter — DEMO MODE, serving demo verses")
             val verses = DemoData.getVerses(book.displayName, chapter)
             _verses.value = verses
-            presenter?.setDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
+            presenter?.loadDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
             val targets = pendingInitialVerseNumbers
             if (targets.isNotEmpty()) {
                 pendingInitialVerseNumbers = emptySet()
@@ -321,7 +321,7 @@ class BibleViewModel(
                 catalog.chapter(bookNumber, chapter)
                     .onSuccess { verses ->
                         _verses.value = verses
-                        presenter?.setDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
+                        presenter?.loadDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
                         // Auto-select verses requested by schedule navigation, if any
                         val targets = pendingInitialVerseNumbers
                         if (targets.isNotEmpty()) {
@@ -400,6 +400,10 @@ class BibleViewModel(
             _toastEvent.value = ToastEvent.FailedToProjectBible("Select at least one verse first")
             return
         }
+        // The local audience screen, if this device is the presenter. Opening the chapter only
+        // loaded it; this is the press that puts the verse in front of anyone.
+        val firstSelected = _selectedVerseIndices.value.minOrNull() ?: 0
+        presenter?.showSlide(firstSelected)
         if (isDemoMode) {
             Logger.d(TAG, "toggleProjecting — DEMO MODE, simulating success")
             _isProjecting.value        = true

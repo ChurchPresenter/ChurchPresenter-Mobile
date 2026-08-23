@@ -289,7 +289,7 @@ class SongsViewModel(
             Logger.d(TAG, "openSongDetail — DEMO MODE for ${song.number}")
             val demoDetail = DemoData.getSongDetail(song.number)
             _songDetail.value = demoDetail
-            presenter?.setDeck(SlideDeckBuilder.fromSong(song, demoDetail))
+            presenter?.loadDeck(SlideDeckBuilder.fromSong(song, demoDetail))
             return
         }
         viewModelScope.launch {
@@ -297,7 +297,7 @@ class SongsViewModel(
             catalog.detail(song)
                 .onSuccess { loaded ->
                     _songDetail.value = loaded.detail
-                    presenter?.setDeck(loaded.deck)
+                    presenter?.loadDeck(loaded.deck)
                     Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")
                 }
                 .onFailure { e ->
@@ -369,6 +369,9 @@ class SongsViewModel(
             _isProjecting.value = false
             return
         }
+        // The local audience screen, if this device is the presenter. Loading the song only
+        // filled the deck; this is the press that puts it in front of anyone.
+        presenter?.goLive()
         if (isDemoMode) {
             Logger.d(TAG, "toggleProjecting — DEMO MODE, simulating success for ${song.number}")
             _toastEvent.value = ToastEvent.SongLive

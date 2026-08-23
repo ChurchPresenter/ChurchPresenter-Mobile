@@ -136,7 +136,10 @@
     el.content.className = 'content size-' + String(slide.textSize || 'MEDIUM').toLowerCase();
 
     setText(el.body, slide.body);
-    setText(el.reference, slide.reference ? String(slide.reference).toUpperCase() : '');
+    // The operator can turn the reference line off entirely — some churches want the words
+    // and nothing else on screen.
+    var wantsReference = theme.showReference !== false;
+    setText(el.reference, (wantsReference && slide.reference) ? String(slide.reference).toUpperCase() : '');
     setText(el.footer, slide.footer);
 
     if (theme.textColor) { el.screen.style.color = theme.textColor; }

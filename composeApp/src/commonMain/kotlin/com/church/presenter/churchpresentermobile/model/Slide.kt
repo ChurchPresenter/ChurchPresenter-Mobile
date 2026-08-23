@@ -59,6 +59,7 @@ data class SlideTheme(
     val accentColor: String = "#7C5CFF",
     val brandLine: String? = null,
     val showClock: Boolean = true,
+    val showReference: Boolean = true,
     val gradientTop: String = DEFAULT_GRADIENT_TOP,
     val gradientBottom: String = DEFAULT_GRADIENT_BOTTOM,
 )
@@ -88,6 +89,7 @@ const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
  * @property isLive False while output is held back from the audience screen.
  * @property sourceId Identifier of the originating item (song number, `John:3:16`, announcement id).
  * @property index Zero-based position within the owning [SlideDeck].
+ * @property showReference Whether the line naming the song section or Bible verse is shown.
  * @property gradientTop Top colour of the gradient backdrop as `#RRGGBB`.
  * @property gradientBottom Bottom colour of the gradient backdrop as `#RRGGBB`.
  * @property total Number of slides in the owning [SlideDeck].
