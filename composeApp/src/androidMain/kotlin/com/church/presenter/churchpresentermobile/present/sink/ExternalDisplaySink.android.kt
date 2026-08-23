@@ -100,11 +100,7 @@ private class AndroidExternalDisplaySink : OutputSink {
                 // but stay "attached" so re-plugging mid-service just works.
                 if (presentation?.display?.displayId == displayId) {
                     dismissPresentation()
-                    _status.value = _status.value.copy(
-                        state = SinkState.ATTACHING,
-                        detail = null,
-                        clientCount = 0,
-                    )
+                    _status.value = _status.value.searching(DEFAULT_NAME)
                 }
             }
         }
@@ -127,7 +123,7 @@ private class AndroidExternalDisplaySink : OutputSink {
 
         if (display == null) {
             dismissPresentation()
-            _status.value = _status.value.copy(state = SinkState.ATTACHING, clientCount = 0)
+            _status.value = _status.value.searching(DEFAULT_NAME)
             return
         }
         if (presentation?.display?.displayId == display.displayId && presentation?.isShowing == true) return

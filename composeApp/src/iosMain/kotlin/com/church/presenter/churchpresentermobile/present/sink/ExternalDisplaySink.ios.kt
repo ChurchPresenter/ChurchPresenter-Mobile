@@ -104,7 +104,7 @@ private class IosExternalDisplaySink : OutputSink {
             // reconnecting mid-service just works.
             dismissWindow()
             if (wantAttached) {
-                _status.value = _status.value.copy(state = SinkState.ATTACHING, clientCount = 0)
+                _status.value = _status.value.searching(DEFAULT_NAME)
             }
         }
     }
@@ -126,7 +126,7 @@ private class IosExternalDisplaySink : OutputSink {
         val screen = externalScreen()
         if (screen == null) {
             dismissWindow()
-            _status.value = _status.value.copy(state = SinkState.ATTACHING, clientCount = 0)
+            _status.value = _status.value.searching(DEFAULT_NAME)
             return
         }
         if (externalWindow?.screen == screen) return

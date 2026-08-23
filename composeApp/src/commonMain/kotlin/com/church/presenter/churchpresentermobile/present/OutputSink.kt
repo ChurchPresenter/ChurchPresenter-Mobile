@@ -34,6 +34,26 @@ data class SinkStatus(
     val clientCount: Int = 0,
 ) {
     val isAttached: Boolean get() = state == SinkState.ATTACHED
+
+    /**
+     * The same sink, with every trace of a screen that is no longer there removed.
+     *
+     * Unplugging a TV used to clear the state and the client count but leave its name and
+     * resolution behind, so the Screens row went on advertising "Overlay #1 · 1920×1080" for a
+     * display that was in someone's bag. The name in particular reads as still-connected.
+     *
+     * Shared rather than repeated: both platforms lose a display in two places each — the
+     * removal callback and the "no display found" path — and all four have to forget the same
+     * things.
+     *
+     * @param fallbackName What this sink is called when nothing is attached to it.
+     */
+    fun searching(fallbackName: String): SinkStatus = copy(
+        displayName = fallbackName,
+        state = SinkState.ATTACHING,
+        detail = null,
+        clientCount = 0,
+    )
 }
 
 /**

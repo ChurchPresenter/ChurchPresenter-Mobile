@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.present
 
 import com.church.presenter.churchpresentermobile.model.Slide
+import com.church.presenter.churchpresentermobile.present.sink.EXTERNAL_DISPLAY_SINK_ID
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
 import com.church.presenter.churchpresentermobile.testutil.FakeOutputSink
 import kotlinx.coroutines.test.runTest
@@ -120,5 +121,47 @@ class SinkRegistryTest {
         val sink = FakeOutputSink(id = "web")
         registry.register(sink)
         assertEquals(sink, registry.sink("web"))
+    }
+    @Test
+    fun losingAScreenForgetsItsNameAndResolution() {
+        // Unplugging a TV cleared the state and the client count but left "Overlay #1 ·
+        // 1920x1080" sitting in the Screens row, which reads as still-connected. Both platforms
+        // lose a display in two places each, so the forgetting lives here rather than in four.
+        val attached = SinkStatus(
+            id = EXTERNAL_DISPLAY_SINK_ID,
+            displayName = "Overlay #1",
+            state = SinkState.ATTACHED,
+            detail = "1920x1080",
+            clientCount = 1,
+        )
+
+        val searching = attached.searching("External display")
+
+        assertEquals("External display", searching.displayName)
+        assertEquals(SinkState.ATTACHING, searching.state)
+        assertNull(searching.detail)
+        assertEquals(0, searching.clientCount)
+    }
+
+    @Test
+    fun aSinkLookingForAScreenIsNotReportedAsAttached() {
+        val searching = SinkStatus(
+            id = EXTERNAL_DISPLAY_SINK_ID,
+            displayName = "Overlay #1",
+            state = SinkState.ATTACHED,
+        ).searching("External display")
+
+        assertFalse(searching.isAttached)
+    }
+
+    @Test
+    fun theSinksIdentitySurvivesLosingItsScreen() {
+        // Only what described the screen is dropped — the row itself must stay put in the list.
+        val searching = SinkStatus(
+            id = EXTERNAL_DISPLAY_SINK_ID,
+            displayName = "Overlay #1",
+        ).searching("External display")
+
+        assertEquals(EXTERNAL_DISPLAY_SINK_ID, searching.id)
     }
 }
