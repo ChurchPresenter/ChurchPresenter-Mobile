@@ -87,6 +87,8 @@ import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_
 import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_title
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_title
+import churchpresentermobile.composeapp.generated.resources.settings_computer_section
+import churchpresentermobile.composeapp.generated.resources.settings_computer_explain
 import churchpresentermobile.composeapp.generated.resources.settings_appearance_section
 import churchpresentermobile.composeapp.generated.resources.settings_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_check_status
@@ -407,11 +409,30 @@ fun SettingsScreen(
                         )
                     }
 
+                    // ── Computer (standalone only) ────────────────────────────
+                    // Commit e8e35ae removed the whole server block from standalone, correctly:
+                    // an address that names a machine doing the presenting means nothing when
+                    // this phone is the presenter. But content still has to come from somewhere,
+                    // and the Library tab's "copy from computer" was silently aiming at the
+                    // default host with no way to correct it. So the address comes back — and
+                    // only the address, framed as where content is copied from rather than as a
+                    // server. No status check, no active-server card: neither has anything to
+                    // report in a mode that never connects.
+                    if (!hasDesktop) {
+                        Text(stringResource(Res.string.settings_computer_section),
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                        Text(
+                            text = stringResource(Res.string.settings_computer_explain),
+                            fontSize = 11.sp,
+                            color = colors.muted,
+                        )
+                        DesktopAddressFields(settings = appSettings, showHint = false)
+                    }
+
                     // ── Appearance (segmented, drives theme live) ─────────────
-                    // The mode block above already closes with a divider, so in
-                    // standalone — where the server block between them is absent —
-                    // this one would double it up.
-                    if (hasDesktop) HorizontalDivider(color = colors.borderSubtle)
+                    // The mode block above already closes with a divider, so this one would
+                    // double it up when nothing sits between them.
+                    HorizontalDivider(color = colors.borderSubtle)
                     Text(stringResource(Res.string.settings_appearance_section),
                         fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
                     val themeOptions = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)

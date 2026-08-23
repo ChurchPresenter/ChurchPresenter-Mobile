@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +67,9 @@ import churchpresentermobile.composeapp.generated.resources.sync_just_now
 import churchpresentermobile.composeapp.generated.resources.sync_minutes_ago
 import churchpresentermobile.composeapp.generated.resources.sync_never
 import churchpresentermobile.composeapp.generated.resources.share_title
+import com.church.presenter.churchpresentermobile.SyncRequestHandler
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
+import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.LibrarySyncState
 import com.church.presenter.churchpresentermobile.network.WsSender
@@ -80,6 +83,10 @@ import com.church.presenter.churchpresentermobile.ui.OverlineRow
 import com.church.presenter.churchpresentermobile.ui.SearchField
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
+import com.church.presenter.churchpresentermobile.ui.EmptyState
+import churchpresentermobile.composeapp.generated.resources.empty_action_get_content
+import churchpresentermobile.composeapp.generated.resources.empty_action_write_song
+import churchpresentermobile.composeapp.generated.resources.library_empty_body_standalone
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryFilter
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryViewModel
@@ -96,6 +103,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun LibraryScreen(
     repository: LibraryRepository,
+    bibles: LocalBibleRepository,
     engine: StandaloneEngine,
     settings: AppSettings,
     sender: WsSender,
@@ -119,6 +127,7 @@ fun LibraryScreen(
     var pendingDelete by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     var showAddChoices by remember { mutableStateOf(false) }
     var showSync by remember { mutableStateOf(false) }
+    var syncSection by remember { mutableStateOf(SyncSection.SONGS) }
     var showShare by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
 
@@ -130,11 +139,23 @@ fun LibraryScreen(
         )
     }
 
+    // An empty state on another tab asked for this — open on the half it asked for.
+    val requestedSection by SyncRequestHandler.requested.collectAsState()
+    LaunchedEffect(requestedSection) {
+        requestedSection?.let {
+            syncSection = it
+            showSync = true
+            SyncRequestHandler.consume()
+        }
+    }
+
     if (showSync) {
         SyncSheet(
             repository = repository,
+            bibles = bibles,
             settings = settings,
             sender = sender,
+            initialSection = syncSection,
             onDismiss = { showSync = false },
         )
     }
@@ -179,7 +200,10 @@ fun LibraryScreen(
             )
 
             when {
-                library.isEmpty -> EmptyLibraryHint()
+                library.isEmpty -> EmptyLibraryHint(
+                    onCopyFromComputer = { syncSection = SyncSection.SONGS; showSync = true },
+                    onWriteSong = { onEditSong(null) },
+                )
                 songs.isEmpty() && announcements.isEmpty() -> NoResultsHint()
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -369,10 +393,17 @@ private fun OriginBadge(origin: ContentOrigin) {
 }
 
 @Composable
-private fun EmptyLibraryHint() {
-    HintCard(
+private fun EmptyLibraryHint(onCopyFromComputer: () -> Unit, onWriteSong: () -> Unit) {
+    // Sync and Share sit in a chip row above this card, which an operator looking at an empty
+    // list has no reason to read as "how do I get songs onto this phone". Say it here.
+    EmptyState(
         title = stringResource(Res.string.library_empty_title),
-        body = stringResource(Res.string.library_empty_body),
+        body = stringResource(Res.string.library_empty_body_standalone),
+        actionLabel = stringResource(Res.string.empty_action_get_content),
+        actionIcon = Icons.Filled.CloudDownload,
+        onAction = onCopyFromComputer,
+        secondaryLabel = stringResource(Res.string.empty_action_write_song),
+        onSecondary = onWriteSong,
     )
 }
 

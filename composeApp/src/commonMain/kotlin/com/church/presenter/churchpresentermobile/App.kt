@@ -54,6 +54,7 @@ import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
+import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
@@ -111,6 +112,8 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.BibleCatalog
+import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
@@ -202,6 +205,12 @@ fun App() {
     val libraryRepository = remember {
         LibraryRepository(now = { Clock.System.now().toEpochMilliseconds() })
     }
+    // Translations copied onto this device. Separate from the song library because a Bible is
+    // megabytes and that document is rewritten whole on every song edit.
+    val bibleRepository = remember {
+        LocalBibleRepository(now = { Clock.System.now().toEpochMilliseconds() })
+            .also { it.load() }
+    }
     // Photos the operator picks for this service. Held here because two things
     // need the same set: the screen that picks and projects them, and the
     // presentation server that serves the bytes to whatever is displaying.
@@ -282,8 +291,21 @@ fun App() {
     // Created ONCE here in App() which is never removed from the composition.
     // This guarantees the loaded book/song lists survive tab switches forever —
     // no data is ever discarded just because the user navigated to another tab.
+    // Where Bible text is read from, decided per call by the current mode: the desktop in
+    // remote, a downloaded translation in standalone — and, when the desktop cannot be
+    // reached mid-service, the downloaded one rather than an empty tab.
+    val bibleCatalog = remember(appSettings, bibleRepository) {
+        BibleCatalog(
+            mode = AppModeHolder.mode,
+            remote = BibleService(appSettings, projectionRouter),
+            bibles = bibleRepository,
+        )
+    }
     val bibleViewModel: BibleViewModel = viewModel(key = "bible_$isDemoMode") {
-        BibleViewModel(appSettings, projectionRouter, isDemoMode, standaloneEngine)
+        BibleViewModel(
+            appSettings, projectionRouter, isDemoMode, standaloneEngine,
+            catalog = bibleCatalog,
+        )
     }
     // Where song content is read from, decided per call by the current mode —
     // the desktop in remote, this device's library in standalone. The same idea
@@ -1090,6 +1112,7 @@ fun App() {
                             )
                             else -> LibraryScreen(
                                 repository = libraryRepository,
+                                bibles = bibleRepository,
                                 engine = standaloneEngine,
                                 settings = appSettings,
                                 sender = projectionRouter,

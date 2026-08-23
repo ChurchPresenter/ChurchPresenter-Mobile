@@ -49,6 +49,13 @@ import churchpresentermobile.composeapp.generated.resources.songs_table_no_songs
 import churchpresentermobile.composeapp.generated.resources.songs_table_retry
 import churchpresentermobile.composeapp.generated.resources.songs_table_search_placeholder
 import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.SyncRequestHandler
+import com.church.presenter.churchpresentermobile.TabNavigationHandler
+import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.ui.library.SyncSection
+import androidx.compose.material.icons.filled.CloudDownload
+import churchpresentermobile.composeapp.generated.resources.empty_action_get_songs
+import churchpresentermobile.composeapp.generated.resources.empty_action_write_song
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -157,35 +164,30 @@ fun SongsListScreen(
                         }
                     }
                 }
+                // A local library with nothing in it is not an error — it is a phone that
+                // has not been given any songs yet, and the tab says how to fix that.
+                showsLocalLibrary && !hasActiveFilter -> EmptyState(
+                    title = stringResource(Res.string.songs_empty_local_library),
+                    body = stringResource(Res.string.songs_empty_local_library_body),
+                    actionLabel = stringResource(Res.string.empty_action_get_songs),
+                    actionIcon = Icons.Filled.CloudDownload,
+                    onAction = {
+                        SyncRequestHandler.request(SyncSection.SONGS)
+                        TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+                    },
+                    secondaryLabel = stringResource(Res.string.empty_action_write_song),
+                    onSecondary = { TabNavigationHandler.navigateTo(AppTab.LIBRARY) },
+                )
                 !isLoading -> Box(
                     modifier = Modifier.fillMaxSize().padding(32.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            text = when {
-                                hasActiveFilter -> stringResource(Res.string.songs_table_no_match)
-                                // "No songs available" is a statement about the
-                                // desktop's songbook; on device the operator can
-                                // do something about it, so say what.
-                                showsLocalLibrary -> stringResource(Res.string.songs_empty_local_library)
-                                else -> stringResource(Res.string.songs_table_no_songs)
-                            },
-                            color = colors.muted,
-                            fontSize = 15.sp
-                        )
-                        if (showsLocalLibrary && !hasActiveFilter) {
-                            Text(
-                                text = stringResource(Res.string.songs_empty_local_library_body),
-                                color = colors.muted,
-                                fontSize = 13.sp,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                    }
+                    Text(
+                        text = if (hasActiveFilter) stringResource(Res.string.songs_table_no_match)
+                               else stringResource(Res.string.songs_table_no_songs),
+                        color = colors.muted,
+                        fontSize = 15.sp,
+                    )
                 }
             }
         }

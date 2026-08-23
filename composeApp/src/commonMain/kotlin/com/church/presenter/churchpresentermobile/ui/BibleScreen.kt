@@ -39,6 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.SyncRequestHandler
+import com.church.presenter.churchpresentermobile.TabNavigationHandler
+import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.ui.library.SyncSection
+import androidx.compose.material.icons.filled.CloudDownload
+import churchpresentermobile.composeapp.generated.resources.empty_action_get_bible
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -169,32 +175,22 @@ fun BibleScreen(
 
     val colors = LocalAppColors.current
 
-    // Standalone has no Bible on the device and no computer to ask, so there is
-    // nothing to browse, retry or refresh — say so plainly instead of showing a
-    // failed request as an error the operator is expected to fix.
+    // Standalone reads a translation copied onto this device. With none copied yet the tab
+    // offers the one thing that fixes that, rather than naming a mode the operator would have
+    // to switch to.
     if (hasNoLocalBibles) {
-        Box(
-            modifier = modifier.fillMaxSize().background(colors.background),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 32.dp),
-            ) {
-                Text(
-                    text = stringResource(Res.string.bible_standalone_empty_title),
-                    color = colors.muted,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = stringResource(Res.string.bible_standalone_empty_body),
-                    color = colors.muted,
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
+        Box(modifier = modifier.fillMaxSize().background(colors.background)) {
+            EmptyState(
+                title = stringResource(Res.string.bible_standalone_empty_title),
+                body = stringResource(Res.string.bible_standalone_empty_body),
+                actionLabel = stringResource(Res.string.empty_action_get_bible),
+                actionIcon = Icons.Filled.CloudDownload,
+                onAction = {
+                    // The Library tab owns the sheet; ask it to open on the Bible half.
+                    SyncRequestHandler.request(SyncSection.BIBLE)
+                    TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+                },
+            )
         }
         return
     }

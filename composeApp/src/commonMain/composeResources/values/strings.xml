@@ -7,8 +7,8 @@
     <string name="songs_table_search_placeholder">Search by # or title…</string>
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">No songs available</string>
-    <string name="songs_empty_local_library">Your library is empty</string>
-    <string name="songs_empty_local_library_body">Add songs in the Library tab, or copy them from your computer. They then work with no computer and no internet.</string>
+    <string name="songs_empty_local_library">No songs on this phone yet</string>
+    <string name="songs_empty_local_library_body">Copy your computer&#8217;s songbook over Wi-Fi, or write your own. Either way they work with no computer and no internet.</string>
     <string name="songs_table_no_match">No songs match your filter</string>
     <string name="songs_table_retry">Retry</string>
 
@@ -112,8 +112,8 @@
     <string name="bible_no_verses">No verses available</string>
     <string name="bible_back">← Back</string>
     <string name="bible_loading_error">Failed to load</string>
-    <string name="bible_standalone_empty_title">No Bibles in your library</string>
-    <string name="bible_standalone_empty_body">Bible text comes from a connected computer. Switch to Remote control in Settings to browse it.</string>
+    <string name="bible_standalone_empty_title">No Bible on this phone yet</string>
+    <string name="bible_standalone_empty_body">Copy a translation from your computer over Wi-Fi. Once it is here you can read and project it with no computer and no internet.</string>
     <string name="bible_retry">Retry</string>
 
     <!-- Schedule Drawer -->
@@ -595,6 +595,41 @@
     <string name="section_ending">Ending</string>
 
     <!-- Desktop sync -->
+    <!-- Copying content from a computer, and where that computer is. New strings are
+         English-only; the other locales fall back until translated. -->
+    <string name="sync_address_section">Your computer</string>
+    <string name="sync_address_hint">Both devices must be on the same Wi-Fi. The address is shown on your computer under Settings &#8594; Companion.</string>
+    <string name="sync_address_needs_key">Needs a key?</string>
+    <string name="settings_computer_section">Computer</string>
+    <string name="settings_computer_explain">Only used to copy songs and Bibles onto this phone. Nothing is projected through it.</string>
+
+    <string name="sync_section_songs">Songs</string>
+    <string name="sync_section_bible">Bible</string>
+    <string name="bible_sync_explain">Copies whole translations onto this phone. Each is around 5 MB.</string>
+    <string name="bible_sync_find">See what your computer has</string>
+    <string name="bible_sync_finding">Asking your computer&#8230;</string>
+    <string name="bible_sync_none_offered">Your computer has no Bible loaded. Open a translation there, then look again.</string>
+    <string name="bible_sync_download">Copy %1$s</string>
+    <string name="bible_sync_downloading">Copying %1$s (%2$s of %3$s)&#8230;</string>
+    <string name="bible_sync_stop">Stop after this one</string>
+    <string name="bible_sync_installed">On this phone</string>
+    <string name="bible_sync_verses">%1$s verses</string>
+    <string name="bible_sync_done">Copied %1$s.</string>
+    <string name="bible_sync_done_with_failures">Copied %1$s. %2$s would not come.</string>
+    <string name="bible_sync_nothing_copied">Nothing was copied. %1$s would not come.</string>
+    <string name="bible_sync_failed">Could not reach your computer: %1$s</string>
+    <string name="bible_sync_cancelled">Stopped. %1$s already copied are kept.</string>
+    <string name="bible_sync_cancelled_none">Stopped before anything was copied.</string>
+    <string name="bible_sync_remove">Remove</string>
+    <string name="bible_sync_remove_confirm_title">Remove this translation?</string>
+    <string name="bible_sync_remove_confirm_body">You can copy it again from your computer later.</string>
+
+    <string name="empty_action_get_songs">Copy songs from your computer</string>
+    <string name="empty_action_get_bible">Copy a Bible from your computer</string>
+    <string name="empty_action_get_content">Copy from your computer</string>
+    <string name="empty_action_write_song">Write one myself</string>
+    <string name="library_empty_body_standalone">Copy your computer&#8217;s songs and Bibles over, or write your own. Either way they work with no computer and no internet.</string>
+
     <string name="sync_title">Get songs from your computer</string>
     <string name="sync_action">Sync from computer</string>
     <string name="sync_never">Never synced</string>
