@@ -44,6 +44,15 @@ object ApiConstants {
     const val SCHEDULE_ADD_BATCH_ENDPOINT = "schedule/add-batch"
     const val BIBLE_ENDPOINT = "bible"
     const val BIBLE_SELECT_ENDPOINT = "bible/select"
+
+    /**
+     * The desktop's Bible modules, and one of them by position in that same list.
+     *
+     * Documented on the desktop as serving Instance Link followers, but gated only by the API
+     * key — a phone may ask for them, which is what lets standalone carry a Bible at all.
+     */
+    const val BIBLE_TRANSLATIONS_ENDPOINT = "bible/file/translations"
+    const val BIBLE_TRANSLATION_ENDPOINT = "bible/file/translation"
     const val PRESENTATIONS_ENDPOINT = "presentations"
     const val PRESENTATION_SELECT_ENDPOINT = "select"
     const val PRESENTATIONS_UPLOAD_ENDPOINT = "presentations/upload"
