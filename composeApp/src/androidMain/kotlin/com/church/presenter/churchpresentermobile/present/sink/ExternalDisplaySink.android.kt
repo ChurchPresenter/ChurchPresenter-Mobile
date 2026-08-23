@@ -145,7 +145,7 @@ private class AndroidExternalDisplaySink : OutputSink {
         }.onFailure { e ->
             // Most likely a BadTokenException from a stale Activity. Report it
             // rather than crashing a live service.
-            _status.value = _status.value.copy(state = SinkState.ERROR, detail = e.message)
+            _status.value = _status.value.failed(e.message, DEFAULT_NAME)
             Logger.e(TAG, "failed to show presentation: ${e.message}", e)
         }
     }

@@ -164,4 +164,46 @@ class SinkRegistryTest {
 
         assertEquals(EXTERNAL_DISPLAY_SINK_ID, searching.id)
     }
+    @Test
+    fun failingToReachAScreenForgetsWhatItWasDriving() {
+        // The same leak as losing a screen, on the other exit. By the time an error is set the
+        // window has already been dismissed, so a name and a client count from the last success
+        // describe something no longer on screen. Five sites across three sinks had it.
+        val attached = SinkStatus(
+            id = EXTERNAL_DISPLAY_SINK_ID,
+            displayName = "Overlay #1",
+            state = SinkState.ATTACHED,
+            detail = "1920x1080",
+            clientCount = 1,
+        )
+
+        val failed = attached.failed("Unable to add window", "External display")
+
+        assertEquals("External display", failed.displayName)
+        assertEquals(SinkState.ERROR, failed.state)
+        assertEquals(0, failed.clientCount)
+        assertFalse(failed.isAttached)
+    }
+
+    @Test
+    fun aFailureSaysWhyItFailed() {
+        // detail is the one field an error row must keep — it is what turns a red line into
+        // something the operator can act on.
+        val failed = SinkStatus(id = EXTERNAL_DISPLAY_SINK_ID, displayName = "x")
+            .failed("No Wi-Fi", "Browser screen")
+
+        assertEquals("No Wi-Fi", failed.detail)
+    }
+
+    @Test
+    fun aFailureWithNoReasonStillClearsTheRest() {
+        val failed = SinkStatus(
+            id = EXTERNAL_DISPLAY_SINK_ID,
+            displayName = "Overlay #1",
+            clientCount = 3,
+        ).failed(null, "External display")
+
+        assertNull(failed.detail)
+        assertEquals(0, failed.clientCount)
+    }
 }

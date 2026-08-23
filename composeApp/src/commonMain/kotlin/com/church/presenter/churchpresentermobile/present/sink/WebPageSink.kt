@@ -75,14 +75,14 @@ class WebPageSink(
         if (address == null) {
             // No LAN address means no device could reach us anyway. Say so
             // plainly rather than starting a server nobody can find.
-            _status.value = _status.value.copy(state = SinkState.ERROR, detail = NO_NETWORK)
+            _status.value = _status.value.failed(NO_NETWORK, DISPLAY_NAME)
             Logger.e(TAG, "no local network address — not starting the server")
             return
         }
 
         val assets = WebAssets.load()
         if (assets.isEmpty) {
-            _status.value = _status.value.copy(state = SinkState.ERROR, detail = NO_ASSETS)
+            _status.value = _status.value.failed(NO_ASSETS, DISPLAY_NAME)
             Logger.e(TAG, "display assets missing from the bundle — not starting the server")
             return
         }
@@ -114,7 +114,7 @@ class WebPageSink(
             }
             Logger.d(TAG, "serving on http://$address:$port")
         }.onFailure { e ->
-            _status.value = _status.value.copy(state = SinkState.ERROR, detail = e.message)
+            _status.value = _status.value.failed(e.message, DISPLAY_NAME)
             Logger.e(TAG, "failed to start the presentation server: ${e.message}", e)
         }
     }

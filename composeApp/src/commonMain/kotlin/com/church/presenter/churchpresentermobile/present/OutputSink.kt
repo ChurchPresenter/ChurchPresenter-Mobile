@@ -54,6 +54,21 @@ data class SinkStatus(
         detail = null,
         clientCount = 0,
     )
+
+    /**
+     * The same sink, having failed to reach a screen.
+     *
+     * Forgets what it was driving for the same reason [searching] does: by the time this is set
+     * the window has already been dismissed, so a name and a client count left over from the
+     * last success describe something that is no longer on screen. [detail] carries the reason
+     * instead, which is what the row has to say when it is red.
+     */
+    fun failed(reason: String?, fallbackName: String): SinkStatus = copy(
+        displayName = fallbackName,
+        state = SinkState.ERROR,
+        detail = reason,
+        clientCount = 0,
+    )
 }
 
 /**

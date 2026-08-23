@@ -148,7 +148,7 @@ private class IosExternalDisplaySink : OutputSink {
             )
             Logger.d(TAG, "attached to external screen $resolution")
         }.onFailure { e ->
-            _status.value = _status.value.copy(state = SinkState.ERROR, detail = e.message)
+            _status.value = _status.value.failed(e.message, DEFAULT_NAME)
             Logger.e(TAG, "failed to open external window: ${e.message}", e)
         }
     }
