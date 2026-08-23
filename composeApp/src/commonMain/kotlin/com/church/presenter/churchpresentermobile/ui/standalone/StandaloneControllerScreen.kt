@@ -3,6 +3,10 @@ package com.church.presenter.churchpresentermobile.ui.standalone
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -122,77 +127,95 @@ fun StandaloneControllerScreen(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .padding(horizontal = AppDimens.space16),
-        verticalArrangement = Arrangement.spacedBy(AppDimens.space14),
-    ) {
-        OutputChip(sinks, onClick = { showOutputs = true })
-
-        SlidePreview(slide, deck.slides.size, index)
-
-        if (deck.isEmpty) {
-            EmptyDeckHint()
-        } else {
-            SectionList(
-                title = deck.title,
-                slides = deck.slides,
-                selectedIndex = index,
-                onSelect = viewModel::showSlide,
-            )
-        }
-
-        // The gradient's colours live behind here, with the rest of the look — off the live
-        // surface, so nothing pushes Next and Blank further down the screen.
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+    // Two parts: everything that can scroll, and the handful of controls that must never
+    // scroll away. The preview, the section list and the two pickers together overflow a phone
+    // screen, which used to squash Prev/Next and Blank/Live into the bottom edge — the controls
+    // an operator reaches for without looking, mid-service.
+    Column(modifier = modifier.fillMaxSize().background(colors.background)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = AppDimens.space16),
+            verticalArrangement = Arrangement.spacedBy(AppDimens.space14),
         ) {
-            OverlineRow(stringResource(Res.string.standalone_backdrop), modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(Res.string.standalone_look),
-                color = colors.accent,
-                fontSize = 12.sp,
-                modifier = Modifier.clickable { showLook = true },
+            OutputChip(sinks, onClick = { showOutputs = true })
+
+            SlidePreview(slide, deck.slides.size, index)
+
+            if (deck.isEmpty) {
+                EmptyDeckHint()
+            } else {
+                SectionList(
+                    title = deck.title,
+                    slides = deck.slides,
+                    selectedIndex = index,
+                    onSelect = viewModel::showSlide,
+                )
+            }
+
+            // The gradient's colours live behind here, with the rest of the look — off the live
+            // surface, so nothing pushes Next and Blank further down the screen.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                OverlineRow(stringResource(Res.string.standalone_backdrop), modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(Res.string.standalone_look),
+                    color = colors.accent,
+                    fontSize = 12.sp,
+                    modifier = Modifier.clickable { showLook = true },
+                )
+            }
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.standalone_backdrop_gradient),
+                    stringResource(Res.string.standalone_backdrop_image),
+                    stringResource(Res.string.standalone_backdrop_black),
+                ),
+                selectedIndex = BACKDROPS.indexOf(backdrop).coerceAtLeast(0),
+                onSelect = { viewModel.setBackdrop(BACKDROPS[it]) },
+            )
+
+            OverlineRow(stringResource(Res.string.standalone_text_size))
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.standalone_size_small),
+                    stringResource(Res.string.standalone_size_medium),
+                    stringResource(Res.string.standalone_size_large),
+                ),
+                selectedIndex = TEXT_SIZES.indexOf(textSize).coerceAtLeast(0),
+                onSelect = { viewModel.setTextSize(TEXT_SIZES[it]) },
+            )
+
+            Spacer(Modifier.height(AppDimens.space8))
+        }
+
+        HorizontalDivider(color = colors.borderSubtle)
+
+        Column(
+            modifier = Modifier.padding(
+                horizontal = AppDimens.space16,
+                vertical = AppDimens.space12,
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppDimens.space14),
+        ) {
+            TransportRow(
+                canStepBack = index > 0,
+                canStepForward = index < deck.slides.lastIndex,
+                onPrevious = viewModel::previous,
+                onNext = viewModel::next,
+            )
+
+            StateRow(
+                isBlank = isBlank,
+                isLive = isLive,
+                onToggleBlank = viewModel::toggleBlank,
+                onToggleLive = { viewModel.setLive(!isLive) },
             )
         }
-        SegmentedControl(
-            options = listOf(
-                stringResource(Res.string.standalone_backdrop_gradient),
-                stringResource(Res.string.standalone_backdrop_image),
-                stringResource(Res.string.standalone_backdrop_black),
-            ),
-            selectedIndex = BACKDROPS.indexOf(backdrop).coerceAtLeast(0),
-            onSelect = { viewModel.setBackdrop(BACKDROPS[it]) },
-        )
-
-        OverlineRow(stringResource(Res.string.standalone_text_size))
-        SegmentedControl(
-            options = listOf(
-                stringResource(Res.string.standalone_size_small),
-                stringResource(Res.string.standalone_size_medium),
-                stringResource(Res.string.standalone_size_large),
-            ),
-            selectedIndex = TEXT_SIZES.indexOf(textSize).coerceAtLeast(0),
-            onSelect = { viewModel.setTextSize(TEXT_SIZES[it]) },
-        )
-
-        TransportRow(
-            canStepBack = index > 0,
-            canStepForward = index < deck.slides.lastIndex,
-            onPrevious = viewModel::previous,
-            onNext = viewModel::next,
-        )
-
-        StateRow(
-            isBlank = isBlank,
-            isLive = isLive,
-            onToggleBlank = viewModel::toggleBlank,
-            onToggleLive = { viewModel.setLive(!isLive) },
-        )
     }
 }
 
