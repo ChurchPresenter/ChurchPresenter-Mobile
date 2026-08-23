@@ -152,6 +152,55 @@ object SlideDeckBuilder {
     }
 
     /**
+     * True for a link the output is allowed to open.
+     *
+     * Only http and https: the URL reaches an embedded browser view and the
+     * display page's iframe, where a `javascript:` or `file:` link would be
+     * running code or reading disk on the audience screen. Operator-typed, but
+     * typed in a hurry and sometimes pasted from somewhere else.
+     */
+    fun isProjectableLink(url: String): Boolean {
+        val trimmed = url.trim().lowercase()
+        return trimmed.startsWith("http://") || trimmed.startsWith("https://")
+    }
+
+    /** Extensions the output can play as video rather than show as a page. */
+    private val VIDEO_EXTENSIONS = setOf("mp4", "m4v", "mov", "webm", "ogv")
+
+    /** True when [url] points at something to play rather than a page to show. */
+    fun looksLikeVideo(url: String): Boolean {
+        val path = url.trim().substringBefore('?').substringBefore('#')
+        return path.substringAfterLast('.', "").lowercase() in VIDEO_EXTENSIONS
+    }
+
+    /**
+     * A single-slide deck showing a web page live on the output.
+     *
+     * Returns an empty deck for anything [isProjectableLink] rejects, so a
+     * mistyped address cannot become a slide.
+     */
+    fun fromWebPage(url: String, title: String = ""): SlideDeck {
+        val link = url.trim()
+        if (!isProjectableLink(link)) return SlideDeck(kind = SlideKind.WEB, title = title)
+        return SlideDeck(
+            kind = SlideKind.WEB,
+            title = title.ifBlank { link },
+            slides = listOf(Slide(kind = SlideKind.WEB, mediaUrl = link, sourceId = link, index = 0, total = 1)),
+        )
+    }
+
+    /** A single-slide deck playing a video on the output. Same link rules as [fromWebPage]. */
+    fun fromVideo(url: String, title: String = ""): SlideDeck {
+        val link = url.trim()
+        if (!isProjectableLink(link)) return SlideDeck(kind = SlideKind.VIDEO, title = title)
+        return SlideDeck(
+            kind = SlideKind.VIDEO,
+            title = title.ifBlank { link },
+            slides = listOf(Slide(kind = SlideKind.VIDEO, mediaUrl = link, sourceId = link, index = 0, total = 1)),
+        )
+    }
+
+    /**
      * Builds a deck of photographs, one per slide.
      *
      * The image is the slide: no body text, and the backdrop carries it, so the

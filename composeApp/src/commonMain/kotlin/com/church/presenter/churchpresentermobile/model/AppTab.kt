@@ -46,21 +46,21 @@ enum class MoreDestination {
         /**
          * The "More" entries available in [mode].
          *
-         * Standalone keeps only Photos, and even that is a different screen: the
-         * remote one browses the desktop's picture folders, the local one picks
-         * from this device and projects from here.
+         * Standalone keeps Photos and Web, and both are different screens from
+         * the remote ones: the remote pair asks a desktop to browse its picture
+         * folders and open a page, the local pair picks from this device and puts
+         * the page on this device's own outputs.
          *
-         * The rest read from or write to a desktop. Q&A, the dictionary and the
-         * web viewer need its data; announcements look local but are not — that
-         * screen adds to the *desktop's* schedule or shows on the *desktop's*
-         * screen, both swallowed by StandaloneEngine.handleRemoteAction while
-         * reporting success, and its timer and countdown types have no local
-         * renderer at all. Writing and projecting an announcement on the device
-         * is what the Library tab is for.
+         * Q&A and the dictionary need the desktop's data. Announcements look
+         * local but are not — that screen adds to the *desktop's* schedule or
+         * shows on the *desktop's* screen, both swallowed by
+         * StandaloneEngine.handleRemoteAction while reporting success, and its
+         * timer and countdown types have no local renderer at all. Writing and
+         * projecting an announcement on the device is what the Library tab is for.
          */
         fun forMode(mode: AppMode): List<MoreDestination> = when (mode) {
             AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB)
-            AppMode.STANDALONE -> listOf(PICTURES)
+            AppMode.STANDALONE -> listOf(PICTURES, WEB)
         }
     }
 }

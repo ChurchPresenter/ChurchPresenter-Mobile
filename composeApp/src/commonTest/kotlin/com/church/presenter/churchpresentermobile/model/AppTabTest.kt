@@ -70,11 +70,14 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone keeps only the More destination it can serve itself`() {
-        // Photos is local — picked from this device, projected by it. The rest
-        // need the desktop's data, and the announcements composer writes to the
-        // desktop's schedule and screen.
-        assertEquals(listOf(MoreDestination.PICTURES), MoreDestination.forMode(AppMode.STANDALONE))
+    fun `standalone keeps only the More destinations it can serve itself`() {
+        // Photos and Web are local — picked or typed on this device, projected by
+        // it. The rest need the desktop's data, and the announcements composer
+        // writes to the desktop's schedule and screen.
+        assertEquals(
+            listOf(MoreDestination.PICTURES, MoreDestination.WEB),
+            MoreDestination.forMode(AppMode.STANDALONE),
+        )
     }
 
     @Test

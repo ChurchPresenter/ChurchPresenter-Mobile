@@ -160,3 +160,16 @@ html, body {
 }
 
 .hidden { display: none !important; }
+
+/* ── Page / video layers ─────────────────────────────────────────────────
+   A web page or a video is the slide, not a backdrop for one: full-bleed,
+   above the backdrop, no border and nothing of ours drawn over it. */
+.media {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  object-fit: contain;
+}

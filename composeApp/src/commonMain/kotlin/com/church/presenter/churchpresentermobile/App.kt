@@ -93,6 +93,7 @@ import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
 import com.church.presenter.churchpresentermobile.ui.library.AnnouncementEditorScreen
 import com.church.presenter.churchpresentermobile.ui.library.LibraryScreen
@@ -1056,6 +1057,14 @@ fun App() {
                                 viewModel = announcementsViewModel,
                                 modifier = Modifier.fillMaxSize()
                             )
+                            // Standalone has no desktop to hand a link to, so the
+                            // page goes on this device's own outputs.
+                            MoreDestination.WEB if appMode == AppMode.STANDALONE ->
+                                LocalWebScreen(
+                                    presenter = standaloneEngine,
+                                    hasOutput = sinkRegistry.hasAttachedSink,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
                             MoreDestination.WEB -> WebScreen(
                                 viewModel = webViewModel,
                                 modifier = Modifier.fillMaxSize()

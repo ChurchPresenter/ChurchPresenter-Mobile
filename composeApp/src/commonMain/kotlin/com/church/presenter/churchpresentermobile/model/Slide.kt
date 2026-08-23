@@ -12,6 +12,10 @@ enum class SlideKind {
     BIBLE,
     ANNOUNCEMENT,
     IMAGE,
+    /** A web page, shown live on the output rather than captured. */
+    WEB,
+    /** A video played on the output. */
+    VIDEO,
     LOGO,
     BLANK,
 }
@@ -70,6 +74,10 @@ data class SlideTheme(
  * @property reference Attribution line, e.g. `JOHN 3:16` or `AMAZING GRACE · VERSE 2`.
  * @property footer Optional secondary line, e.g. a copyright or CCLI number.
  * @property backdropUrl Image URL — only meaningful when [backdrop] is [SlideBackdrop.IMAGE].
+ * @property mediaUrl The page or video this slide *is*, for [SlideKind.WEB] and
+ *   [SlideKind.VIDEO]. Separate from [backdropUrl] because a backdrop sits
+ *   behind text, while this replaces it: the renderer hands the URL to a browser
+ *   view or a player instead of drawing a slide.
  * @property isBlank True while the operator has blacked the screen out.
  * @property isLive False while output is held back from the audience screen.
  * @property sourceId Identifier of the originating item (song number, `John:3:16`, announcement id).
@@ -85,6 +93,7 @@ data class Slide(
     val textSize: SlideTextSize = SlideTextSize.MEDIUM,
     val backdrop: SlideBackdrop = SlideBackdrop.GRADIENT,
     val backdropUrl: String? = null,
+    val mediaUrl: String? = null,
     val isBlank: Boolean = false,
     val isLive: Boolean = true,
     val theme: SlideTheme = SlideTheme(),

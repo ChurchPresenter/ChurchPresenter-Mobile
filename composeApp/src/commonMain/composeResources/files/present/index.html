@@ -18,6 +18,16 @@
   <div id="backdrop" class="bd-gradient"></div>
   <div id="scrim" class="hidden"></div>
 
+  <!--
+    A page or a video *replaces* the slide rather than sitting behind it, so both
+    live above the backdrop and below the corner furniture. The iframe is
+    sandboxed: the operator typed the address, but the audience screen is not a
+    place to run someone else's scripts with access to this page.
+  -->
+  <iframe id="web" class="media hidden" sandbox="allow-scripts allow-same-origin allow-forms"
+          referrerpolicy="no-referrer" title=""></iframe>
+  <video id="video" class="media hidden" playsinline></video>
+
   <main id="screen" class="serif">
     <div id="content" class="content">
       <p id="body" class="body"></p>

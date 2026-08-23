@@ -27,7 +27,9 @@
     brand: document.getElementById('brand'),
     clock: document.getElementById('clock'),
     standby: document.getElementById('standby'),
-    standbyText: document.getElementById('standby-text')
+    standbyText: document.getElementById('standby-text'),
+    web: document.getElementById('web'),
+    video: document.getElementById('video')
   };
 
   // Envelopes may arrive out of order across a reconnect; anything not newer
@@ -61,6 +63,57 @@
     }
   }
 
+  // Only http(s) reaches the iframe or the player. The address was typed by the
+  // operator, but 'javascript:' or 'file:' on an audience screen is code
+  // execution and disk access, not a slide.
+  function projectableLink(url) {
+    if (typeof url !== 'string') { return null; }
+    var trimmed = url.trim();
+    var lower = trimmed.toLowerCase();
+    if (lower.indexOf('http://') === 0 || lower.indexOf('https://') === 0) { return trimmed; }
+    return null;
+  }
+
+  // A page or a video replaces the slide. Anything not currently showing is
+  // torn down rather than hidden: a video left with its src set keeps
+  // downloading, and an iframe keeps running scripts, behind whatever is on
+  // screen next.
+  function applyMedia(slide) {
+    var kind = slide.kind;
+    var url = projectableLink(slide.mediaUrl);
+    var hidden = slide.isBlank === true || slide.isLive === false;
+
+    if (kind === 'WEB' && url && !hidden) {
+      if (el.web.getAttribute('src') !== url) { el.web.setAttribute('src', url); }
+      el.web.classList.remove('hidden');
+    } else {
+      if (el.web.getAttribute('src')) { el.web.removeAttribute('src'); }
+      el.web.classList.add('hidden');
+    }
+
+    if (kind === 'VIDEO' && url && !hidden) {
+      if (el.video.getAttribute('src') !== url) {
+        el.video.setAttribute('src', url);
+        // Muted, because a display that autoplays with sound is a display the
+        // browser blocks — and the hall's sound comes from the desk, not the TV.
+        el.video.muted = true;
+        el.video.autoplay = true;
+        var playing = el.video.play();
+        if (playing && typeof playing.catch === 'function') { playing.catch(function () {}); }
+      }
+      el.video.classList.remove('hidden');
+    } else {
+      if (el.video.getAttribute('src')) {
+        el.video.pause();
+        el.video.removeAttribute('src');
+        el.video.load();
+      }
+      el.video.classList.add('hidden');
+    }
+
+    return (kind === 'WEB' || kind === 'VIDEO') && url != null;
+  }
+
   function applySlide(slide) {
     var theme = slide.theme || {};
 
@@ -84,12 +137,17 @@
 
     // isBlank or not isLive — either way the audience should see backdrop only.
     var hidden = slide.isBlank === true || slide.isLive === false;
-    el.content.classList.toggle('hidden', hidden);
+    // A page or a video is the slide, so the text layer stands down for it.
+    var showingMedia = applyMedia(slide);
+    el.content.classList.toggle('hidden', hidden || showingMedia);
 
     el.standby.classList.add('hidden');
   }
 
   function showStandby(message) {
+    // Tear the page or video down first: standby over a still-playing video is
+    // a screen that looks connected when it isn't.
+    applyMedia({ kind: 'BLANK' });
     el.standbyText.textContent = message;
     el.standby.classList.remove('hidden');
   }
@@ -112,6 +170,7 @@
     if (envelope.slide) {
       applySlide(envelope.slide);
     } else if (envelope.type === 'CLEAR') {
+      applyMedia({ kind: 'BLANK' });
       el.content.classList.add('hidden');
     }
   }

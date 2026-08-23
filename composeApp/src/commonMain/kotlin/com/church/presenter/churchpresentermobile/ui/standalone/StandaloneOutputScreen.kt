@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
+import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 
@@ -66,13 +67,26 @@ fun StandaloneOutputScreen(
 
         Backdrop(slide)
 
+        // A page or a video *is* the slide, so it replaces the text layer rather
+        // than sitting behind it — and stands down while blanked, like everything
+        // else the audience should not be seeing.
+        val mediaUrl = slide.mediaUrl?.takeIf { it.isNotBlank() && !slide.isHidden }
+        if (mediaUrl != null) {
+            when (slide.kind) {
+                SlideKind.WEB -> OutputWebView(mediaUrl, Modifier.fillMaxSize())
+                SlideKind.VIDEO -> OutputVideoView(mediaUrl, Modifier.fillMaxSize())
+                else -> Unit
+            }
+        }
+        val showsText = mediaUrl == null || slide.kind !in setOf(SlideKind.WEB, SlideKind.VIDEO)
+
         val textColor = parseHexColor(slide.theme.textColor, Color.White)
         val accentColor = parseHexColor(slide.theme.accentColor, Color.White)
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .alpha(contentAlpha)
+                .alpha(if (showsText) contentAlpha else 0f)
                 .padding(horizontal = boxWidth * HORIZONTAL_PAD, vertical = boxHeight * VERTICAL_PAD),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,

@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -355,5 +356,53 @@ class SlideDeckBuilderTest {
         assertEquals(listOf("Welcome", "Prayer meeting", "Offering"), deck.slides.map { it.body })
         assertTrue(deck.slides.all { it.theme.font == SlideFont.SANS })
         assertTrue(deck.slides.all { it.total == 3 })
+    }
+
+    // ── Links ────────────────────────────────────────────────────────────
+
+    @Test
+    fun `only http links can be projected`() {
+        assertTrue(SlideDeckBuilder.isProjectableLink("http://example.org"))
+        assertTrue(SlideDeckBuilder.isProjectableLink("HTTPS://Example.org"))
+        assertFalse(SlideDeckBuilder.isProjectableLink("javascript:alert(1)"))
+        assertFalse(SlideDeckBuilder.isProjectableLink("file:///etc/passwd"))
+        assertFalse(SlideDeckBuilder.isProjectableLink("example.org"))
+        assertFalse(SlideDeckBuilder.isProjectableLink("  "))
+    }
+
+    @Test
+    fun `a rejected link never becomes a slide`() {
+        assertTrue(SlideDeckBuilder.fromWebPage("javascript:alert(1)").slides.isEmpty())
+        assertTrue(SlideDeckBuilder.fromVideo("file:///movie.mp4").slides.isEmpty())
+    }
+
+    @Test
+    fun `a web slide carries the page and nothing else`() {
+        val deck = SlideDeckBuilder.fromWebPage("https://example.org/notices")
+
+        val slide = deck.slides.single()
+        assertEquals(SlideKind.WEB, slide.kind)
+        assertEquals("https://example.org/notices", slide.mediaUrl)
+        assertEquals("", slide.body)
+    }
+
+    @Test
+    fun `video extensions are recognised past a query string`() {
+        assertTrue(SlideDeckBuilder.looksLikeVideo("https://x.org/a.mp4"))
+        assertTrue(SlideDeckBuilder.looksLikeVideo("https://x.org/a.MP4?t=1#s"))
+        assertTrue(SlideDeckBuilder.looksLikeVideo("https://x.org/a.webm"))
+        assertFalse(SlideDeckBuilder.looksLikeVideo("https://x.org/notices"))
+        assertFalse(SlideDeckBuilder.looksLikeVideo("https://x.org/a.png"))
+    }
+
+    @Test
+    fun `photos become one full-bleed slide each`() {
+        val deck = SlideDeckBuilder.fromPhotos(listOf("http://phone/photo/a", "http://phone/photo/b"))
+
+        assertEquals(2, deck.slides.size)
+        assertEquals(SlideKind.IMAGE, deck.slides.first().kind)
+        assertEquals(SlideBackdrop.IMAGE, deck.slides.first().backdrop)
+        assertEquals("http://phone/photo/b", deck.slides.last().backdropUrl)
+        assertEquals(listOf(0, 1), deck.slides.map { it.index })
     }
 }
