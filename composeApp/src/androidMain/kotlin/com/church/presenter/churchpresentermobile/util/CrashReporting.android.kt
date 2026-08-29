@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.util
 
 import android.content.Context
 import com.church.presenter.churchpresentermobile.model.getAppContext
+import com.church.presenter.churchpresentermobile.network.isExpectedConnectivityError
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
@@ -33,6 +34,21 @@ actual object CrashReporting {
             // events — off in production to avoid burning it on auto-instrumented
             // activity/app-start transactions we don't otherwise use.
             options.tracesSampleRate = if (isDebugBuild) 1.0 else 0.0
+            // Last line of defence against connectivity noise.
+            //
+            // Call sites already ask shouldReportAsNonFatal() before reporting,
+            // but that cannot cover what the SDK captures on its own: an
+            // exception escaping an OkHttp dispatcher thread reaches the
+            // uncaught-exception integration without passing through any of our
+            // code. That is how "No route to host" and connect timeouts to a LAN
+            // address kept arriving from builds whose call-site checks already
+            // excluded them.
+            //
+            // An unreachable companion server is this client's normal state, not
+            // a defect, so it is dropped wherever it is raised.
+            options.setBeforeSend { event, _ ->
+                if (event.throwable?.isExpectedConnectivityError() == true) null else event
+            }
         }
     }
 

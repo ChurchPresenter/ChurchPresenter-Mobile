@@ -242,9 +242,9 @@ class NetworkErrorMapperTest {
     @Test
     fun genuineServerFaultsAreReported() {
         // Silencing these would hide real desktop bugs behind an empty screen.
+        // 504 is deliberately absent — see aGatewayTimeoutIsNotTheDesktopsFault.
         assertTrue(ApiException(500).shouldReportAsNonFatal())
         assertTrue(ApiException(502).shouldReportAsNonFatal())
-        assertTrue(ApiException(504).shouldReportAsNonFatal())
     }
 
     @Test
@@ -266,5 +266,50 @@ class NetworkErrorMapperTest {
         assertFalse(ApiException(500).isServerNotReady())
         assertFalse(ApiException(404).isServerNotReady())
         assertFalse(Exception("HTTP 503 — No picture folder loaded").isServerNotReady())
+    }
+
+    // ── Regressions from production Sentry issues ────────────────────────────
+
+    @Test
+    fun iosCannotFindHostIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-H: 766 events, 33 users. Ktor's Darwin engine
+        // raises this for any server address iOS cannot resolve — including the
+        // address "1-96/2" one user had typed. toFriendlyNetworkMessage already
+        // answered Code=-1003 with "Invalid server address", but the reporter
+        // filed it anyway, so the app told the user it was their address while
+        // telling us it was a bug.
+        val raw = "Exception in http request: Error Domain=NSURLErrorDomain Code=-1003 " +
+            "\"A server with the specified hostname could not be found.\""
+        assertTrue(Exception(raw).isExpectedConnectivityError())
+        assertFalse(Exception(raw).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun aGatewayTimeoutIsNotTheDesktopsFault() {
+        // CHURCH-PRESENTER-MOBILE-A/B/9/14/15: 189 events across five services.
+        // Every one came from a phone on cellular with a 192.168.x.x server
+        // address — a carrier gateway answering for a desktop it never reached.
+        // The companion server has no 504 anywhere in its source; it fails with
+        // 500 or 502.
+        assertFalse(ApiException(504).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun noRouteToHostIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-1A. Matched here, but it kept arriving anyway
+        // because it escaped an OkHttp dispatcher thread and was captured by the
+        // SDK's uncaught-exception integration rather than by our call sites —
+        // which is what the beforeSend filter in CrashReporting.initSentry is for.
+        assertTrue(SocketException("No route to host").isExpectedConnectivityError())
+        assertFalse(SocketException("No route to host").shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun aConnectTimeoutToALanAddressIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-K/T: 941 events between them, the phone on
+        // cellular and the desktop on a private address it can never route to.
+        val raw = "failed to connect to /192.168.1.100 (port 8765) from /10.63.202.15 (port 41372) after 10000ms"
+        assertTrue(SocketTimeoutException(raw).isExpectedConnectivityError())
+        assertFalse(SocketTimeoutException(raw).shouldReportAsNonFatal())
     }
 }

@@ -50,7 +50,7 @@ fun Throwable.recordNetworkError(tag: String, operation: String): String {
  *    rejections (denied, blocked, missing) and 503, which the desktop uses to
  *    mean "nothing loaded yet" rather than "I am broken".
  *
- * Reported: everything else, including 500/502/504 — those indicate the desktop
+ * Reported: everything else, including 500 and 502 — those indicate the desktop
  * itself failed, and silencing them would hide real server bugs.
  */
 fun Throwable.shouldReportAsNonFatal(): Boolean {
@@ -71,13 +71,22 @@ fun Throwable.isServerNotReady(): Boolean =
     this is ApiException && httpStatus == 503
 
 /**
- * Server-fault statuses that still warrant a non-fatal report. Deliberately
- * excludes 503, which the desktop returns for ordinary "not loaded" states.
+ * Server-fault statuses that still warrant a non-fatal report.
+ *
+ * Deliberately excludes 503, which the desktop returns for ordinary "not loaded"
+ * states, and 504, which the desktop cannot produce at all: it answers with
+ * 500 or 502 when it fails, and never with a gateway timeout. A 504 therefore
+ * always comes from something *between* the phone and a desktop it never
+ * reached — a carrier gateway or captive portal answering for a private LAN
+ * address the phone cannot route to, which is what the field reports showed
+ * (cellular connection, server_host 192.168.x.x). That is the same condition
+ * [CONNECTIVITY_MESSAGE_MARKERS] already treats as expected for the WebSocket
+ * upgrade ("Expected HTTP 101 response but was 504"); reporting it for HTTP
+ * calls while ignoring it for the socket was simply inconsistent.
  */
 private val REPORTABLE_SERVER_FAULT_STATUSES = setOf(
     500,   // Internal Server Error
     502,   // Bad Gateway
-    504,   // Gateway Timeout
 )
 
 /**
@@ -147,6 +156,13 @@ private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
     "Unable to resolve host",
     "Could not connect",
     "Code=-1001",   // NSURLError timed out
+    // NSURLError cannot find host. Reached here as a DarwinHttpRequestException
+    // whenever the typed server address is not resolvable — including addresses
+    // that are not hostnames at all. toFriendlyNetworkMessage already answered
+    // this one ("Invalid server address"), so the UI treated it as expected
+    // while the reporter still filed it: the single largest source of noise.
+    "Code=-1003",   // NSURLError cannot find host
+    "could not be found",
     "Code=-1004",   // NSURLError could not connect to host
     "Code=-1009",   // NSURLError not connected to internet
     "offline",
