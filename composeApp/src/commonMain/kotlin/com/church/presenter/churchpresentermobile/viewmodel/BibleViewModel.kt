@@ -13,6 +13,7 @@ import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
@@ -60,6 +61,16 @@ class BibleViewModel(
     private val catalog: BibleCatalog = BibleCatalog(mode, BibleService(appSettings, eventService)),
 ) : ViewModel() {
     private var bibleService = BibleService(appSettings, eventService)
+
+    /**
+     * The deck built for the open chapter, kept so projecting can re-supply it.
+     *
+     * Clearing the display unloads the engine's deck, so a later `showSlide`
+     * clamped into an empty deck and put nothing on the screen. Holding the
+     * deck here makes projecting work from any prior state. Same fix as
+     * [SongsViewModel.projectLocally].
+     */
+    private var loadedDeck: SlideDeck? = null
 
     /**
      * True when there is no Bible to browse: standalone, with no translation copied onto this
@@ -303,7 +314,9 @@ class BibleViewModel(
             Logger.d(TAG, "selectChapter — DEMO MODE, serving demo verses")
             val verses = DemoData.getVerses(book.displayName, chapter)
             _verses.value = verses
-            presenter?.loadDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
+            val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses)
+            loadedDeck = deck
+            presenter?.loadDeck(deck)
             val targets = pendingInitialVerseNumbers
             if (targets.isNotEmpty()) {
                 pendingInitialVerseNumbers = emptySet()
@@ -321,7 +334,9 @@ class BibleViewModel(
                 catalog.chapter(bookNumber, chapter)
                     .onSuccess { verses ->
                         _verses.value = verses
-                        presenter?.loadDeck(SlideDeckBuilder.fromBibleChapter(book, chapter, verses))
+                        val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses)
+                        loadedDeck = deck
+                        presenter?.loadDeck(deck)
                         // Auto-select verses requested by schedule navigation, if any
                         val targets = pendingInitialVerseNumbers
                         if (targets.isNotEmpty()) {
@@ -373,6 +388,14 @@ class BibleViewModel(
     fun toggleProjecting() {
         val book    = _selectedBook.value    ?: return
         val chapter = _selectedChapter.value ?: return
+        // Standalone: this device is the screen, so cast always means "show the
+        // selected verses" — stopping is the Clear Display button. See
+        // [SongsViewModel.toggleProjecting] for why a toggle desynchronised here.
+        val presenter = presenter
+        if (mode.value == AppMode.STANDALONE && presenter != null) {
+            projectLocally(presenter)
+            return
+        }
         if (_isProjecting.value) {
             _isProjecting.value        = false
             _projectedVerseIndex.value = null
@@ -432,6 +455,32 @@ class BibleViewModel(
                 _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse"))
             }
         }
+    }
+
+    /**
+     * Puts the selected verses on this device's audience screen.
+     *
+     * Supplies the deck rather than assuming the engine still holds one, so
+     * projecting works after a clear, which unloads it.
+     */
+    private fun projectLocally(presenter: StandaloneEngine) {
+        val firstSelected = _selectedVerseIndices.value.minOrNull()
+        if (firstSelected == null) {
+            _toastEvent.value = ToastEvent.FailedToProjectBible("Select at least one verse first")
+            return
+        }
+        val deck = loadedDeck
+        if (deck == null) {
+            Logger.d(TAG, "projectLocally — no chapter loaded yet, ignoring")
+            return
+        }
+        presenter.setDeck(deck)
+        presenter.showSlide(firstSelected)
+        _isProjecting.value        = true
+        _projectedVerseIndex.value = firstSelected
+        _toastEvent.value          = ToastEvent.BibleLive
+        Analytics.logEvent(AnalyticsEvent.BIBLE_PROJECTED)
+        Logger.d(TAG, "projectLocally — projected verse index $firstSelected")
     }
 
     /**

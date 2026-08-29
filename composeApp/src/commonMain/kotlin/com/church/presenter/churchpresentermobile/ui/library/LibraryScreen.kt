@@ -104,7 +104,6 @@ import org.jetbrains.compose.resources.stringResource
 fun LibraryScreen(
     repository: LibraryRepository,
     bibles: LocalBibleRepository,
-    engine: StandaloneEngine,
     settings: AppSettings,
     sender: WsSender,
     onEditSong: (String?) -> Unit,
@@ -112,7 +111,7 @@ fun LibraryScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LibraryViewModel = viewModel(key = "library") {
-        LibraryViewModel(repository, engine)
+        LibraryViewModel(repository)
     }
     val colors = LocalAppColors.current
 
@@ -214,7 +213,6 @@ fun LibraryScreen(
                         items(songs, key = { it.id }) { song ->
                             SongRow(
                                 song = song,
-                                onPresent = { viewModel.present(song) },
                                 onEdit = { onEditSong(song.id) },
                                 onDelete = { pendingDelete = song.id to true },
                             )
@@ -225,7 +223,6 @@ fun LibraryScreen(
                         items(announcements, key = { it.id }) { item ->
                             AnnouncementRow(
                                 announcement = item,
-                                onPresent = { viewModel.present(item) },
                                 onEdit = { onEditAnnouncement(item.id) },
                                 onDelete = { pendingDelete = item.id to false },
                             )
@@ -267,7 +264,6 @@ fun LibraryScreen(
 @Composable
 private fun SongRow(
     song: LocalSong,
-    onPresent: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -280,7 +276,6 @@ private fun SongRow(
             "${song.sections.size} sections",
         ).joinToString(" · "),
         origin = song.origin,
-        onPresent = onPresent,
         onEdit = onEdit,
         onDelete = onDelete,
     )
@@ -289,7 +284,6 @@ private fun SongRow(
 @Composable
 private fun AnnouncementRow(
     announcement: LocalAnnouncement,
-    onPresent: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -298,7 +292,6 @@ private fun AnnouncementRow(
         title = announcement.title.ifBlank { announcement.body.lineSequence().first() },
         subtitle = announcement.body.lineSequence().firstOrNull().orEmpty(),
         origin = announcement.origin,
-        onPresent = onPresent,
         onEdit = onEdit,
         onDelete = onDelete,
     )
@@ -310,7 +303,6 @@ private fun LibraryRow(
     title: String,
     subtitle: String,
     origin: ContentOrigin,
-    onPresent: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -320,7 +312,11 @@ private fun LibraryRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
-            .clickable(onClick = onPresent)
+            // Deliberately not clickable. The Library is for writing and keeping
+            // content; a tap here used to put the item straight on the audience
+            // screen, which meant browsing your own library projected it. Going
+            // live belongs to the presenting surfaces — the Songs tab for songs,
+            // the Notices screen for notices.
             .padding(AppDimens.space14),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppDimens.space12),

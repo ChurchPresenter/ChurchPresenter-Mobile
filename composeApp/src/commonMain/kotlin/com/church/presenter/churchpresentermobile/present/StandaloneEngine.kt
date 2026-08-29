@@ -103,6 +103,11 @@ class StandaloneEngine(
     /** Projects whatever is loaded, at the slide it is sitting on. The operator's "go live". */
     fun goLive() {
         if (!isActive) return
+        // Both ways of being off-air have to give way, or "go live" is a button
+        // that does not go live: the audience page hides everything while either
+        // isBlank or !isLive, so leaving isLive alone here meant an output taken
+        // off-air with the Live toggle could only be recovered from that toggle.
+        _isLive.value = true
         _isBlank.value = false
         emit()
     }

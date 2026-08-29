@@ -352,6 +352,9 @@
     <string name="more_dictionary_subtitle">Strong's Hebrew &amp; Greek lexicon</string>
     <string name="more_announcements_title">Announcements</string>
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
+    <string name="more_notices_title">Notices</string>
+    <string name="more_notices_subtitle">Put a notice from your library on the screen</string>
+    <string name="notices_empty">No notices yet. Write one in the Library tab.</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Project a web page on screen</string>
     <!-- Section detail header titles -->

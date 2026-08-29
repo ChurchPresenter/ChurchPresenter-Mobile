@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.more_announcements_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_announcements_title
+import churchpresentermobile.composeapp.generated.resources.more_notices_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_notices_title
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.more_photos_subtitle
@@ -75,7 +77,15 @@ fun MoreScreen(
         MoreEntry(MoreDestination.PICTURES, stringResource(Res.string.more_photos_title), stringResource(Res.string.more_photos_subtitle), Icons.Outlined.Image),
         MoreEntry(MoreDestination.QA, stringResource(Res.string.more_qa_title), stringResource(Res.string.more_qa_subtitle), Icons.Outlined.ChatBubbleOutline),
         MoreEntry(MoreDestination.DICTIONARY, stringResource(Res.string.more_dictionary_title), stringResource(Res.string.more_dictionary_subtitle), Icons.AutoMirrored.Outlined.MenuBook),
-        MoreEntry(MoreDestination.ANNOUNCEMENTS, stringResource(Res.string.more_announcements_title), stringResource(Res.string.more_announcements_subtitle), Icons.Outlined.Campaign),
+        // Same slot, two screens: the desktop's announcements, or this device's
+        // own notices. The labels follow, so the subtitle does not promise
+        // clocks and countdowns that only the remote screen has.
+        MoreEntry(
+            MoreDestination.ANNOUNCEMENTS,
+            stringResource(if (mode == AppMode.STANDALONE) Res.string.more_notices_title else Res.string.more_announcements_title),
+            stringResource(if (mode == AppMode.STANDALONE) Res.string.more_notices_subtitle else Res.string.more_announcements_subtitle),
+            Icons.Outlined.Campaign,
+        ),
         MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
     ).filter { it.destination in available }
     LazyColumn(

@@ -12,6 +12,11 @@ import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongReader
+import com.church.presenter.churchpresentermobile.model.SlideEnvelope
+import com.church.presenter.churchpresentermobile.present.ProjectionRouter
+import com.church.presenter.churchpresentermobile.present.SinkRegistry
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.testutil.FakeOutputSink
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -58,6 +63,34 @@ class SongsViewModelStandaloneTest {
         title = title,
         sections = listOf(LocalSongSection(SectionType.VERSE, "words")),
     )
+
+    /** A ViewModel wired to a real presenter, so what reaches the screen is observable. */
+    private class Projecting(repository: LibraryRepository) {
+        val published = mutableListOf<SlideEnvelope>()
+        val engine: StandaloneEngine
+        val vm: SongsViewModel
+
+        init {
+            val registry = SinkRegistry()
+            registry.register(FakeOutputSink())
+            engine = StandaloneEngine(MutableStateFlow(AppMode.STANDALONE), registry) { published += it }
+            val settings = AppSettings(InMemorySettingsStorage())
+            // The sender the app actually wires in standalone: actions are routed
+            // to the engine, so a clear really does unload its deck.
+            val router = ProjectionRouter(MutableStateFlow(AppMode.STANDALONE), FakeWsSender(), engine)
+            vm = SongsViewModel(
+                appSettings = settings,
+                eventService = ServerEventService(settings, MutableStateFlow(AppMode.STANDALONE)),
+                isDemoMode = false,
+                sender = router,
+                presenter = engine,
+                service = ServiceOrder(repository),
+                catalog = SongCatalog(MutableStateFlow(AppMode.STANDALONE), ForbiddenReader(), repository),
+            )
+        }
+
+        val lastBody: String? get() = published.lastOrNull()?.slide?.body
+    }
 
     private fun vm(
         repository: LibraryRepository,
@@ -262,5 +295,60 @@ class SongsViewModelStandaloneTest {
         assertNull(vm.error.value, "a server error must not survive into a mode with no server")
         assertEquals(listOf("Amazing Grace"), vm.songs.value.map { it.title })
         assertTrue(vm.showsLocalLibrary.value)
+    }
+
+    @Test
+    fun castingPutsTheSongOnTheScreen() = runVmTest {
+        val p = Projecting(library(localSong("a", "42", "Amazing Grace")))
+        advanceUntilIdle()
+        p.vm.openSongDetail(p.vm.songs.value.single())
+        advanceUntilIdle()
+
+        // Opening is browsing, not projecting.
+        assertTrue(p.published.isEmpty(), "opening a song must not project it")
+
+        p.vm.toggleProjecting()
+        advanceUntilIdle()
+
+        assertEquals("words", p.lastBody)
+    }
+
+    @Test
+    fun castingAgainAfterClearingStillProjects() = runVmTest {
+        // The reported bug. Clearing unloads the engine's deck, so a cast that
+        // only called goLive() had nothing left to show — and no press after it
+        // ever recovered, because only reopening the song reloaded the deck.
+        val p = Projecting(library(localSong("a", "42", "Amazing Grace")))
+        advanceUntilIdle()
+        p.vm.openSongDetail(p.vm.songs.value.single())
+        advanceUntilIdle()
+        p.vm.toggleProjecting()
+        advanceUntilIdle()
+
+        p.vm.clearDisplay()
+        advanceUntilIdle()
+        assertEquals("", p.lastBody, "clearing empties the screen")
+
+        p.vm.toggleProjecting()
+        advanceUntilIdle()
+
+        assertEquals("words", p.lastBody, "casting after a clear must project again")
+    }
+
+    @Test
+    fun castingIsNeverAToggleThatClearsTheScreen() = runVmTest {
+        // _isProjecting survives a tab switch, so a cast press could land on
+        // "stop" and blank the screen the operator had just asked to fill.
+        val p = Projecting(library(localSong("a", "42", "Amazing Grace")))
+        advanceUntilIdle()
+        p.vm.openSongDetail(p.vm.songs.value.single())
+        advanceUntilIdle()
+
+        repeat(3) {
+            p.vm.toggleProjecting()
+            advanceUntilIdle()
+            assertEquals("words", p.lastBody, "press ${it + 1} must project, never clear")
+        }
+        assertTrue(p.vm.isProjecting.value)
     }
 }

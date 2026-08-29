@@ -27,12 +27,14 @@ enum class LibraryFilter {
  * tab already takes against the desktop catalogue, and fuzzier than the token
  * matching a database index would give.
  *
- * @param presenter The local presenter, so an item can be loaded straight from
- *   the library onto the screen. No-ops in remote mode.
+ * The Library keeps content; it does not project it. Tapping a row here used to
+ * put the item straight on the audience screen, so browsing your own library
+ * projected it. Going live belongs to the presenting surfaces — the Songs tab
+ * for songs, [com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen]
+ * for notices — which is why this holds no presenter.
  */
 class LibraryViewModel(
     private val repository: LibraryRepository,
-    private val presenter: StandaloneEngine? = null,
 ) : ViewModel() {
 
     val library: StateFlow<LibraryData> = repository.library
@@ -66,22 +68,6 @@ class LibraryViewModel(
         } else {
             emptyList()
         }
-
-    /** Loads [song] into the presenter and shows its first slide. */
-    fun present(song: LocalSong) {
-        presenter?.setDeck(SlideDeckBuilder.fromLocalSong(song))
-    }
-
-    /** Loads [announcement] into the presenter. */
-    fun present(announcement: LocalAnnouncement) {
-        presenter?.setDeck(
-            SlideDeckBuilder.fromAnnouncement(
-                text = announcement.body,
-                title = announcement.title.takeIf { it.isNotBlank() },
-                id = announcement.id,
-            )
-        )
-    }
 
     fun deleteSong(id: String) = repository.deleteSong(id)
 

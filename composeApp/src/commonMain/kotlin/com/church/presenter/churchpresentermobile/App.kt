@@ -40,6 +40,7 @@ import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
 import churchpresentermobile.composeapp.generated.resources.deep_link_connected
 import churchpresentermobile.composeapp.generated.resources.media_title
+import churchpresentermobile.composeapp.generated.resources.more_notices_title
 import churchpresentermobile.composeapp.generated.resources.more_photos_title
 import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
@@ -94,6 +95,7 @@ import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
 import com.church.presenter.churchpresentermobile.ui.library.AnnouncementEditorScreen
@@ -911,7 +913,9 @@ fun App() {
                                 MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)
                                 MoreDestination.QA -> qaTitle
                                 MoreDestination.DICTIONARY -> stringResource(Res.string.strongs_dictionary_title)
-                                MoreDestination.ANNOUNCEMENTS -> stringResource(Res.string.announcements_title)
+                                MoreDestination.ANNOUNCEMENTS ->
+                                    if (appMode == AppMode.STANDALONE) stringResource(Res.string.more_notices_title)
+                                    else stringResource(Res.string.announcements_title)
                                 MoreDestination.WEB -> stringResource(Res.string.web_title)
                                 null -> ""
                             },
@@ -1079,6 +1083,16 @@ fun App() {
                                 settingsSaveToken = settingsSaveToken,
                                 modifier = Modifier.fillMaxSize()
                             )
+                            // Standalone has no desktop schedule to add to, so this
+                            // is the local notices list: a notice written in the
+                            // Library, put on this device's own outputs.
+                            MoreDestination.ANNOUNCEMENTS if appMode == AppMode.STANDALONE ->
+                                LocalNoticesScreen(
+                                    repository = libraryRepository,
+                                    presenter = standaloneEngine,
+                                    hasOutput = sinkStatuses.any { it.isAttached },
+                                    modifier = Modifier.fillMaxSize(),
+                                )
                             MoreDestination.ANNOUNCEMENTS -> AnnouncementsScreen(
                                 viewModel = announcementsViewModel,
                                 modifier = Modifier.fillMaxSize()
@@ -1119,7 +1133,6 @@ fun App() {
                             else -> LibraryScreen(
                                 repository = libraryRepository,
                                 bibles = bibleRepository,
-                                engine = standaloneEngine,
                                 settings = appSettings,
                                 sender = projectionRouter,
                                 onEditSong = { id ->

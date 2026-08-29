@@ -71,11 +71,16 @@ class AppTabTest {
 
     @Test
     fun `standalone keeps only the More destinations it can serve itself`() {
-        // Photos and Web are local — picked or typed on this device, projected by
-        // it. The rest need the desktop's data, and the announcements composer
-        // writes to the desktop's schedule and screen.
+        // Photos, Notices and Web are local — picked, written or typed on this
+        // device and projected by it. Q&A and the dictionary need the desktop's
+        // data, so they stay out.
+        //
+        // ANNOUNCEMENTS is the same slot serving two different screens: the
+        // remote composer writes to the desktop's schedule, while standalone
+        // gets the local notices list. It is here because the Library stopped
+        // projecting — going live needs a surface of its own.
         assertEquals(
-            listOf(MoreDestination.PICTURES, MoreDestination.WEB),
+            listOf(MoreDestination.PICTURES, MoreDestination.ANNOUNCEMENTS, MoreDestination.WEB),
             MoreDestination.forMode(AppMode.STANDALONE),
         )
     }

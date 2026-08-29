@@ -11,6 +11,7 @@ import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
@@ -111,6 +112,17 @@ class SongsViewModel(
 
     private val _selectedVerseIndex = MutableStateFlow<Int?>(null)
     val selectedVerseIndex = _selectedVerseIndex.asStateFlow()
+
+    /**
+     * The deck built for the open song, kept so projecting can re-supply it.
+     *
+     * Clearing the display unloads the engine's deck ([StandaloneEngine.clear]
+     * resets it to EMPTY), so a later `goLive()` had nothing to show and the
+     * song could only be recovered by closing and reopening it. Holding the deck
+     * here makes projecting self-sufficient, the way the Library tab's
+     * `setDeck` already is.
+     */
+    private var loadedDeck: SlideDeck? = null
 
     private val _isProjecting = MutableStateFlow(false)
     val isProjecting = _isProjecting.asStateFlow()
@@ -289,7 +301,9 @@ class SongsViewModel(
             Logger.d(TAG, "openSongDetail — DEMO MODE for ${song.number}")
             val demoDetail = DemoData.getSongDetail(song.number)
             _songDetail.value = demoDetail
-            presenter?.loadDeck(SlideDeckBuilder.fromSong(song, demoDetail))
+            val deck = SlideDeckBuilder.fromSong(song, demoDetail)
+            loadedDeck = deck
+            presenter?.loadDeck(deck)
             return
         }
         viewModelScope.launch {
@@ -297,6 +311,7 @@ class SongsViewModel(
             catalog.detail(song)
                 .onSuccess { loaded ->
                     _songDetail.value = loaded.detail
+                    loadedDeck = loaded.deck
                     presenter?.loadDeck(loaded.deck)
                     Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")
                 }
@@ -324,6 +339,7 @@ class SongsViewModel(
         _isLoadingDetail.value = false
         _selectedVerseIndex.value = null
         _selectedSong.value = null
+        loadedDeck = null
         _isProjecting.value = false
         _toastEvent.value = null
         _scheduleAdded.value = false
@@ -343,6 +359,18 @@ class SongsViewModel(
      *  Turning ON fires POST /api/project to push the song live immediately.
      *  Turning OFF fires POST /api/clear to blank the display. */
     fun toggleProjecting() {
+        // Standalone: this device is the screen, and the cast button always means
+        // "show this song" — stopping is the red Clear Display button beside it.
+        // It used to toggle a ViewModel-local flag that the engine knew nothing
+        // about. _isProjecting survives a tab switch (only dismissSongDetail
+        // resets it), so coming back to an open song and pressing cast *cleared*
+        // the screen instead of projecting — and because clearing unloads the
+        // engine's deck, every press after that showed nothing at all.
+        val presenter = presenter
+        if (catalog.isLocal && presenter != null) {
+            projectLocally(presenter)
+            return
+        }
         val nowProjecting = !_isProjecting.value
         _isProjecting.value = nowProjecting
         if (!nowProjecting) {
@@ -369,9 +397,6 @@ class SongsViewModel(
             _isProjecting.value = false
             return
         }
-        // The local audience screen, if this device is the presenter. Loading the song only
-        // filled the deck; this is the press that puts it in front of anyone.
-        presenter?.goLive()
         if (isDemoMode) {
             Logger.d(TAG, "toggleProjecting — DEMO MODE, simulating success for ${song.number}")
             _toastEvent.value = ToastEvent.SongLive
@@ -391,6 +416,27 @@ class SongsViewModel(
                     _toastEvent.value = e.toToastEvent { ToastEvent.FailedToProject(e.recordNetworkError(TAG, "toggleProjecting/projectSong")) }
                 }
         }
+    }
+
+    /**
+     * Puts the open song on this device's audience screen.
+     *
+     * Supplies the deck rather than assuming the engine still holds one, and
+     * restores the operator's place in it, so projecting works from any prior
+     * state — including after a clear, which unloads the engine's deck.
+     */
+    private fun projectLocally(presenter: StandaloneEngine) {
+        val deck = loadedDeck
+        if (deck == null) {
+            Logger.d(TAG, "projectLocally — nothing loaded yet, ignoring")
+            return
+        }
+        presenter.setDeck(deck)
+        _selectedVerseIndex.value?.let(presenter::showSlide)
+        _isProjecting.value = true
+        Analytics.logEvent(AnalyticsEvent.SONG_PROJECTED)
+        _toastEvent.value = ToastEvent.SongLive
+        Logger.d(TAG, "projectLocally — projected ${deck.slides.size} slides")
     }
 
     /** Clears the desktop display without toggling projection mode off. */

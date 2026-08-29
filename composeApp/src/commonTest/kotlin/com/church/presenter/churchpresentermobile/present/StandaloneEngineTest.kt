@@ -403,6 +403,23 @@ class StandaloneEngineTest {
     }
 
     @Test
+    fun goingLiveTakesTheScreenBackOnAir() {
+        // Both ways of being off-air have to give way. The audience page hides
+        // everything while isBlank or !isLive, so an output the operator had
+        // taken off-air used to ignore "go live" entirely.
+        val f = Fixture()
+        f.engine.loadDeck(deckOf(3))
+        f.engine.setLive(false)
+        f.published.clear()
+
+        f.engine.goLive()
+
+        assertTrue(f.engine.isLive.value, "go live must put the output back on air")
+        assertEquals("slide 0", f.published.last().slide?.body)
+        assertFalse(f.published.last().slide?.isLive == false)
+    }
+
+    @Test
     fun goingLiveKeepsTheSlideTheOperatorHadMovedTo() {
         val f = Fixture()
         f.engine.loadDeck(deckOf(3))
