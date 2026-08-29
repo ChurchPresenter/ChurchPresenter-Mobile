@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.network.QAService
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
+import com.church.presenter.churchpresentermobile.testutil.tearDown
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -62,51 +63,74 @@ class QAAuthorNameTest {
     private fun authorIn(body: String): String =
         Regex(""""name"\s*:\s*"([^"]*)"""").find(body)?.groupValues?.get(1) ?: ""
 
+    /**
+     * Runs [block] against a fresh [Harness] and tears the ViewModel down afterwards.
+     * `addQuestion` resolves as soon as the POST body is captured, but the ViewModel
+     * then chains a silent reload — without the teardown that launch outlives the
+     * test and fails the *next* one. See `tearDown`.
+     */
+    private suspend fun withHarness(block: suspend (Harness) -> Unit) {
+        val h = Harness()
+        try {
+            block(h)
+        } finally {
+            tearDown(h.viewModel)
+        }
+    }
+
     @Test
     fun aNameTypedInTheDialogIsTheAuthor() = runVmTestUnconfined {
-        val h = Harness().ready()
+        withHarness { h ->
+            h.ready()
 
-        assertEquals("Ada", authorIn(h.add("Why?", " Ada ")))
+            assertEquals("Ada", authorIn(h.add("Why?", " Ada ")))
+        }
     }
 
     @Test
     fun aNameTypedOnceIsRememberedAndNotAskedAgain() = runVmTestUnconfined {
-        val h = Harness().ready()
-        assertTrue(h.viewModel.needsAuthorName.value)
+        withHarness { h ->
+            h.ready()
+            assertTrue(h.viewModel.needsAuthorName.value)
 
-        h.add("Why?", "Ada")
+            h.add("Why?", "Ada")
 
-        assertFalse(h.viewModel.needsAuthorName.value)
-        assertEquals("Ada", h.settings.displayName)
+            assertFalse(h.viewModel.needsAuthorName.value)
+            assertEquals("Ada", h.settings.displayName)
+        }
     }
 
     @Test
     fun aSavedNameIsUsedWhenTheDialogAsksForNothing() = runVmTestUnconfined {
-        val h = Harness()
-        h.settings.displayName = "Ada"
-        h.ready()
+        withHarness { h ->
+            h.settings.displayName = "Ada"
+            h.ready()
 
-        assertFalse(h.viewModel.needsAuthorName.value)
-        assertEquals("Ada", authorIn(h.add("Why?")))
+            assertFalse(h.viewModel.needsAuthorName.value)
+            assertEquals("Ada", authorIn(h.add("Why?")))
+        }
     }
 
     @Test
     fun withNoNameAtAllTheDeviceIsCredited() = runVmTestUnconfined {
         // Better a device the operator already approved by name than a raw UUID.
-        val h = Harness()
-        h.settings.customDeviceName = "Sound desk"
-        h.ready()
+        withHarness { h ->
+            h.settings.customDeviceName = "Sound desk"
+            h.ready()
 
-        assertEquals("Sound desk", authorIn(h.add("Why?")))
+            assertEquals("Sound desk", authorIn(h.add("Why?")))
+        }
     }
 
     @Test
     fun theIdIsTheLastResortNotABlankAuthor() = runVmTestUnconfined {
-        val h = Harness().ready()
+        withHarness { h ->
+            h.ready()
 
-        val author = authorIn(h.add("Why?"))
-        // deviceName() is blank only on web; elsewhere the OS name stands in.
-        assertEquals(deviceName().trim().ifBlank { h.settings.deviceId }, author)
-        assertTrue(author.isNotBlank())
+            val author = authorIn(h.add("Why?"))
+            // deviceName() is blank only on web; elsewhere the OS name stands in.
+            assertEquals(deviceName().trim().ifBlank { h.settings.deviceId }, author)
+            assertTrue(author.isNotBlank())
+        }
     }
 }
