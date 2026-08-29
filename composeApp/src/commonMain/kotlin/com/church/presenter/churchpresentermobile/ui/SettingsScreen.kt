@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
@@ -108,6 +109,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_reset_to_de
 import churchpresentermobile.composeapp.generated.resources.settings_save
 import churchpresentermobile.composeapp.generated.resources.settings_server_section
 import churchpresentermobile.composeapp.generated.resources.settings_status_bibles
+import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.settings_status_mobile_version
 import churchpresentermobile.composeapp.generated.resources.settings_status_none
 import churchpresentermobile.composeapp.generated.resources.settings_status_recheck
@@ -158,6 +160,8 @@ fun SettingsScreen(
     appSettings: AppSettings,
     onDismiss: () -> Unit,
     onSaved: () -> Unit,
+    /** Opens the contact form. Settings is where people look for a way to reach support. */
+    onContact: () -> Unit,
 ) {
     val viewModel: SettingsViewModel = viewModel { SettingsViewModel(appSettings) }
     val host         by viewModel.host.collectAsState()
@@ -483,6 +487,15 @@ fun SettingsScreen(
                                 .padding(horizontal = 10.dp, vertical = 6.dp),
                         )
                     }
+
+                    // Contact — in every build and both modes: the endpoint is a
+                    // public one on the internet, so it needs no desktop.
+                    HorizontalDivider(color = colors.borderSubtle)
+                    OutlineActionButton(
+                        label = stringResource(Res.string.contact_us_title),
+                        icon = Icons.Filled.MailOutline,
+                        onClick = onContact,
+                    )
 
                     // Developer — debug builds only
                     if (isDebugBuild) {

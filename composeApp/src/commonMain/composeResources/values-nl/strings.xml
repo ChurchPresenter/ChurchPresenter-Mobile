@@ -454,4 +454,20 @@
     <string name="dictionary_appears_in">Komt voor in</string>
     <string name="dictionary_appears_in_count">%1$s van %2$s</string>
     <string name="settings_active_server">Actieve server</string>
+    <string name="contact_us_title">Contact</string>
+    <string name="contact_type_label">Type</string>
+    <string name="contact_type_feature">Functieverzoek</string>
+    <string name="contact_type_feedback">Feedback</string>
+    <string name="contact_type_testimonial">Getuigenis</string>
+    <string name="contact_type_bug">Foutrapport</string>
+    <string name="contact_name_label">Naam</string>
+    <string name="contact_email_label">E-mail (optioneel)</string>
+    <string name="contact_message_label">Bericht</string>
+    <string name="contact_send">Verzenden</string>
+    <string name="contact_sending">Verzenden…</string>
+    <string name="contact_sent">Bericht verzonden. Bedankt!</string>
+    <string name="contact_error">Verzenden mislukt. Probeer het opnieuw.</string>
+    <string name="contact_rate_limited_browser">Voltooi het verzenden voor de veiligheid in uw browser.</string>
+    <string name="contact_network_error">Kan de server niet bereiken. Controleer je internetverbinding en probeer het opnieuw.</string>
+    <string name="contact_open_browser">Openen in browser</string>
 </resources>

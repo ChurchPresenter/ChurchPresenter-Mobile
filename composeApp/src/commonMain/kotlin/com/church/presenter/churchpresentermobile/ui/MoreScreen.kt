@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.more_announcements_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_announcements_title
+import churchpresentermobile.composeapp.generated.resources.more_contact_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_contact_title
 import churchpresentermobile.composeapp.generated.resources.more_notices_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_notices_title
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_subtitle
@@ -87,6 +90,7 @@ fun MoreScreen(
             Icons.Outlined.Campaign,
         ),
         MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
+        MoreEntry(MoreDestination.CONTACT, stringResource(Res.string.more_contact_title), stringResource(Res.string.more_contact_subtitle), Icons.Outlined.MailOutline),
     ).filter { it.destination in available }
     LazyColumn(
         modifier = modifier.fillMaxSize().background(colors.background),

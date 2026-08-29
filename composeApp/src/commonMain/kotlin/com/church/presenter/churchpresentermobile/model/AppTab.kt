@@ -40,7 +40,8 @@ enum class MoreDestination {
     QA,
     DICTIONARY,
     ANNOUNCEMENTS,
-    WEB;
+    WEB,
+    CONTACT;
 
     companion object {
         /**
@@ -62,8 +63,11 @@ enum class MoreDestination {
          * accident.
          */
         fun forMode(mode: AppMode): List<MoreDestination> = when (mode) {
-            AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB)
-            AppMode.STANDALONE -> listOf(PICTURES, ANNOUNCEMENTS, WEB)
+            // CONTACT is in both: it posts to a public endpoint on the
+            // internet, so it needs no desktop, and a user who hits a problem in
+            // standalone is exactly the one with something to report.
+            AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
+            AppMode.STANDALONE -> listOf(PICTURES, ANNOUNCEMENTS, WEB, CONTACT)
         }
     }
 }

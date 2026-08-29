@@ -80,9 +80,22 @@ class AppTabTest {
         // gets the local notices list. It is here because the Library stopped
         // projecting — going live needs a surface of its own.
         assertEquals(
-            listOf(MoreDestination.PICTURES, MoreDestination.ANNOUNCEMENTS, MoreDestination.WEB),
+            listOf(
+                MoreDestination.PICTURES,
+                MoreDestination.ANNOUNCEMENTS,
+                MoreDestination.WEB,
+                MoreDestination.CONTACT,
+            ),
             MoreDestination.forMode(AppMode.STANDALONE),
         )
+    }
+
+    @Test
+    fun `contact is reachable in both modes`() {
+        // It posts to a public endpoint on the internet, so it needs no desktop —
+        // and a user stuck in standalone is exactly the one with something to report.
+        assertTrue(MoreDestination.CONTACT in MoreDestination.forMode(AppMode.STANDALONE))
+        assertTrue(MoreDestination.CONTACT in MoreDestination.forMode(AppMode.REMOTE))
     }
 
     @Test

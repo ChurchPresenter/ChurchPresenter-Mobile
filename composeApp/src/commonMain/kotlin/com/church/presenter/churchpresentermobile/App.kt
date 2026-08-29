@@ -40,6 +40,7 @@ import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
 import churchpresentermobile.composeapp.generated.resources.deep_link_connected
 import churchpresentermobile.composeapp.generated.resources.media_title
+import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.more_notices_title
 import churchpresentermobile.composeapp.generated.resources.more_photos_title
 import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
@@ -95,6 +96,7 @@ import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
+import com.church.presenter.churchpresentermobile.ui.ContactScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
@@ -609,6 +611,7 @@ fun App() {
             MoreDestination.DICTIONARY -> Analytics.logScreenView(AnalyticsScreen.DICTIONARY)
             MoreDestination.ANNOUNCEMENTS -> Analytics.logScreenView(AnalyticsScreen.ANNOUNCEMENTS)
             MoreDestination.WEB -> Analytics.logScreenView(AnalyticsScreen.WEB)
+            MoreDestination.CONTACT -> Unit
             null -> {}
         }
     }
@@ -917,6 +920,7 @@ fun App() {
                                     if (appMode == AppMode.STANDALONE) stringResource(Res.string.more_notices_title)
                                     else stringResource(Res.string.announcements_title)
                                 MoreDestination.WEB -> stringResource(Res.string.web_title)
+                                MoreDestination.CONTACT -> stringResource(Res.string.contact_us_title)
                                 null -> ""
                             },
                             onBack = { moreDestination = null },
@@ -1107,6 +1111,9 @@ fun App() {
                                     hasOutput = sinkStatuses.any { it.isAttached },
                                     modifier = Modifier.fillMaxSize(),
                                 )
+                            MoreDestination.CONTACT -> ContactScreen(
+                                modifier = Modifier.fillMaxSize()
+                            )
                             MoreDestination.WEB -> WebScreen(
                                 viewModel = webViewModel,
                                 modifier = Modifier.fillMaxSize()
@@ -1153,6 +1160,11 @@ fun App() {
             if (showSettings) {
                 SettingsScreen(
                     appSettings = appSettings,
+                    onContact = {
+                        showSettings = false
+                        selectedTab = AppTab.MORE
+                        moreDestination = MoreDestination.CONTACT
+                    },
                     onDismiss = {
                         appSettings.isSetupComplete = true
                         showSettings = false

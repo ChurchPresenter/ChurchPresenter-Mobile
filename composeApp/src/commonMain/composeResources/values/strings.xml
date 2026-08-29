@@ -354,6 +354,8 @@
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
     <string name="more_notices_title">Notices</string>
     <string name="more_notices_subtitle">Put a notice from your library on the screen</string>
+    <string name="more_contact_title">Contact us</string>
+    <string name="more_contact_subtitle">Send a request, report a problem or say hello</string>
     <string name="notices_empty">No notices yet. Write one in the Library tab.</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Project a web page on screen</string>
@@ -691,4 +693,20 @@
     <string name="import_error_wrong_format">That is not a ChurchPresenter file.</string>
     <string name="import_error_too_new">That file was made with a newer version of the app. Update to open it.</string>
     <string name="import_error_empty">That file has nothing in it.</string>
+    <string name="contact_us_title">Contact Us</string>
+    <string name="contact_type_label">Type</string>
+    <string name="contact_type_feature">Feature Request</string>
+    <string name="contact_type_feedback">Feedback</string>
+    <string name="contact_type_testimonial">Testimonial</string>
+    <string name="contact_type_bug">Bug Report</string>
+    <string name="contact_name_label">Name</string>
+    <string name="contact_email_label">Email (optional)</string>
+    <string name="contact_message_label">Message</string>
+    <string name="contact_send">Send</string>
+    <string name="contact_sending">Sending…</string>
+    <string name="contact_sent">Message sent. Thank you!</string>
+    <string name="contact_error">Could not send. Please try again.</string>
+    <string name="contact_rate_limited_browser">For security, please finish sending in your browser.</string>
+    <string name="contact_network_error">Couldn't reach the server. Check your internet connection and try again.</string>
+    <string name="contact_open_browser">Open in Browser</string>
 </resources>
