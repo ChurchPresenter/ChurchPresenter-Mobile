@@ -989,6 +989,9 @@ fun App() {
                             engine = standaloneEngine,
                             registry = sinkRegistry,
                             settings = appSettings,
+                            // The same library the Photos screen fills, so a photo
+                            // added there can be chosen as the backdrop here.
+                            photos = photoLibrary,
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.SONGS -> SongsTable(

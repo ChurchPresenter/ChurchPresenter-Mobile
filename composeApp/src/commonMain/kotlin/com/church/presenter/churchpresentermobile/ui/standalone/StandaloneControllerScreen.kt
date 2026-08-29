@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.ui.standalone
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,6 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +55,9 @@ import churchpresentermobile.composeapp.generated.resources.standalone_backdrop
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_black
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_gradient
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_image
+import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_needs_server
+import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_no_photos
+import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_pick
 import churchpresentermobile.composeapp.generated.resources.standalone_blank
 import churchpresentermobile.composeapp.generated.resources.standalone_empty_body
 import churchpresentermobile.composeapp.generated.resources.standalone_empty_title
@@ -72,6 +79,8 @@ import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
+import com.church.presenter.churchpresentermobile.present.PhotoLibrary
+import com.church.presenter.churchpresentermobile.present.StoredPhoto
 import com.church.presenter.churchpresentermobile.ui.OverlineRow
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
@@ -96,10 +105,11 @@ fun StandaloneControllerScreen(
     engine: StandaloneEngine,
     registry: SinkRegistry,
     settings: AppSettings,
+    photos: PhotoLibrary? = null,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: StandaloneViewModel = viewModel(key = "standalone") {
-        StandaloneViewModel(engine, registry, settings)
+        StandaloneViewModel(engine, registry, settings, photos)
     }
     val colors = LocalAppColors.current
 
@@ -112,6 +122,9 @@ fun StandaloneControllerScreen(
     val backdrop by viewModel.backdrop.collectAsState()
     val sinks by viewModel.sinks.collectAsState()
     val theme by viewModel.theme.collectAsState()
+    val backdropUrl by viewModel.backdropUrl.collectAsState()
+    val backdropPhotos by viewModel.backdropPhotos.collectAsState()
+    val canUsePhotoBackdrop by viewModel.canUsePhotoBackdrop.collectAsState()
     var showOutputs by remember { mutableStateOf(false) }
     var showLook by remember { mutableStateOf(false) }
 
@@ -178,6 +191,20 @@ fun StandaloneControllerScreen(
                 selectedIndex = BACKDROPS.indexOf(backdrop).coerceAtLeast(0),
                 onSelect = { viewModel.setBackdrop(BACKDROPS[it]) },
             )
+
+            // Choosing IMAGE is only half the instruction — it needs a photo, and
+            // without one the audience page falls back to the gradient, so the
+            // option looked broken. The strip appears only for IMAGE so the
+            // controls stay as short as they were for the other two.
+            if (backdrop == SlideBackdrop.IMAGE) {
+                BackdropPhotoStrip(
+                    photos = backdropPhotos,
+                    selectedUrl = backdropUrl,
+                    canUse = canUsePhotoBackdrop,
+                    urlFor = { photos?.urlFor(it) },
+                    onPick = { viewModel.setImageBackdrop(it) },
+                )
+            }
 
             OverlineRow(stringResource(Res.string.standalone_text_size))
             SegmentedControl(
@@ -454,5 +481,70 @@ private fun ControlButton(
 }
 
 /** Declaration order must match the segmented-control label order above. */
+/**
+ * The photos on this device, offered as a backdrop.
+ *
+ * A backdrop travels to every output as a URL, and photos are served by the
+ * embedded web server, so there is nothing to send until that server is on.
+ * Rather than let a tap do nothing, the strip says which of the two things is
+ * missing — a photo, or the server.
+ */
+@Composable
+private fun BackdropPhotoStrip(
+    photos: List<StoredPhoto>,
+    selectedUrl: String?,
+    canUse: Boolean,
+    urlFor: (String) -> String?,
+    onPick: (StoredPhoto) -> Unit,
+) {
+    val colors = LocalAppColors.current
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        when {
+            photos.isEmpty() -> Text(
+                text = stringResource(Res.string.standalone_backdrop_no_photos),
+                color = colors.muted,
+                fontSize = 12.sp,
+            )
+            !canUse -> Text(
+                text = stringResource(Res.string.standalone_backdrop_needs_server),
+                color = colors.muted,
+                fontSize = 12.sp,
+            )
+            else -> {
+                Text(
+                    text = stringResource(Res.string.standalone_backdrop_pick),
+                    color = colors.muted,
+                    fontSize = 12.sp,
+                )
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(photos, key = { it.id }) { photo ->
+                        val url = urlFor(photo.id)
+                        val isSelected = url != null && url == selectedUrl
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(colors.surface)
+                                .border(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) colors.accent else colors.borderSubtle,
+                                    shape = RoundedCornerShape(10.dp),
+                                )
+                                .clickable { onPick(photo) },
+                        ) {
+                            AsyncImage(
+                                model = url,
+                                contentDescription = photo.fileName,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 private val BACKDROPS = listOf(SlideBackdrop.GRADIENT, SlideBackdrop.IMAGE, SlideBackdrop.BLACK)
 private val TEXT_SIZES = listOf(SlideTextSize.SMALL, SlideTextSize.MEDIUM, SlideTextSize.LARGE)

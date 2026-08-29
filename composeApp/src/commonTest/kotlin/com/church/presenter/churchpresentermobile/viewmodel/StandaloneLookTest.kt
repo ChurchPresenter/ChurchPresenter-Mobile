@@ -4,6 +4,8 @@ import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTheme
+import com.church.presenter.churchpresentermobile.model.SlideBackdrop
+import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -13,6 +15,7 @@ import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrN
 import com.church.presenter.churchpresentermobile.ui.standalone.rgbToHex
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -162,5 +165,78 @@ class StandaloneLookTest {
         assertEquals("#AABBCC", normaliseHex("abc"))
         assertEquals("#AABBCC", normaliseHex("#AABBCC"))
         assertEquals("#2A1D5E", normaliseHex(" 2a1d5e "))
+    }
+
+    // ── Image backdrop ───────────────────────────────────────────────────────
+
+    private fun photoLibrary(vararg names: String): PhotoLibrary {
+        var n = 0
+        val library = PhotoLibrary(newId = { "id-${n++}" })
+        names.forEach { library.add(it, byteArrayOf(1, 2, 3)) }
+        return library
+    }
+
+    @Test
+    fun pickingAPhotoPutsItBehindTheWords() = runVmTest {
+        // The Image option used to set the kind and nothing else: no call site
+        // ever passed a URL, so the audience page fell back to the gradient and
+        // the button looked dead.
+        val library = photoLibrary("banner.jpg")
+        library.serveFrom("http://192.168.1.50:8080")
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), null, library)
+
+        viewModel.setImageBackdrop(library.photos.value.single())
+
+        assertEquals(SlideBackdrop.IMAGE, engine.backdrop.value)
+        assertEquals("http://192.168.1.50:8080/photo/id-0", engine.backdropUrl.value)
+    }
+
+    @Test
+    fun aPhotoWithNoAddressYetIsNotProjected() = runVmTest {
+        // Photos are served by the embedded web server, so until it is running
+        // there is no address to send. Setting IMAGE with a null URL is exactly
+        // the state that made this look broken, so it must not be entered.
+        val library = photoLibrary("banner.jpg")
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), null, library)
+
+        viewModel.setImageBackdrop(library.photos.value.single())
+
+        assertEquals(SlideBackdrop.GRADIENT, engine.backdrop.value, "the backdrop must not change")
+        assertNull(engine.backdropUrl.value)
+    }
+
+    @Test
+    fun theChosenPhotoSurvivesASwitchToGradientAndBack() = runVmTest {
+        val library = photoLibrary("banner.jpg")
+        library.serveFrom("http://192.168.1.50:8080")
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), null, library)
+        viewModel.setImageBackdrop(library.photos.value.single())
+
+        viewModel.setBackdrop(SlideBackdrop.GRADIENT)
+        viewModel.setBackdrop(SlideBackdrop.IMAGE)
+
+        assertEquals("http://192.168.1.50:8080/photo/id-0", engine.backdropUrl.value,
+            "switching away and back must not lose the photo")
+    }
+
+    @Test
+    fun aPhotoBackdropIsOfferedOnlyOnceTheServerIsUp() = runVmTest {
+        val library = photoLibrary("banner.jpg")
+        val viewModel = StandaloneViewModel(engine(), SinkRegistry(), null, library)
+        assertEquals(false, viewModel.canUsePhotoBackdrop.value)
+
+        library.serveFrom("http://192.168.1.50:8080")
+        assertEquals(true, viewModel.canUsePhotoBackdrop.first { it })
+    }
+
+    @Test
+    fun withNoPhotoLibraryTheChoiceIsSimplyAbsent() = runVmTest {
+        val viewModel = StandaloneViewModel(engine(), SinkRegistry(), null, null)
+
+        assertEquals(emptyList(), viewModel.backdropPhotos.value)
+        assertEquals(false, viewModel.canUsePhotoBackdrop.value)
     }
 }
