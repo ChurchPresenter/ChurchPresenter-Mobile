@@ -164,6 +164,20 @@ class SongsViewModel(
     private var pendingOpenTitle: String? = null
     private var pendingOpenBook: String? = null
 
+    /**
+     * Which load is the current one. Anything an older load says is discarded.
+     *
+     * The app starts in remote — that is the holder's default until settings are
+     * read — so a first launch fires a request at the default desktop address
+     * before the operator has picked standalone at the mode picker. That request
+     * sits on a ten-second connect timeout. Choosing standalone reloads from the
+     * on-device library, which succeeds at once; then the abandoned request times
+     * out and writes "make sure the server is running" over the top of it. The
+     * result was a tab showing the standalone empty state and a server error
+     * together, on a phone that has no server to reach.
+     */
+    private var loadGeneration = 0
+
     init {
         loadSongs()
         // A mode switch moves the songs to a different source, so the list has to
@@ -226,21 +240,27 @@ class SongsViewModel(
         }
         Logger.d(TAG, "loadSongs — url=${appSettings.apiBaseUrl}")
         // Set loading state synchronously so no frame can see empty data + isLoading=false
+        val generation = ++loadGeneration
         _isLoading.value = true
         _error.value = null
         viewModelScope.launch {
             try {
                 catalog.list()
                     .onSuccess {
+                        if (generation != loadGeneration) return@onSuccess
                         _allSongs.value = it
                         tryOpenPendingSong()
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "loadSongs — FAILED: ${e.message}", e)
+                        if (generation != loadGeneration) {
+                            Logger.d(TAG, "loadSongs — ignoring a superseded load's failure")
+                            return@onFailure
+                        }
                         _error.value = "Failed to load songs: ${e.recordNetworkError(TAG, "loadSongs")}"
                     }
             } finally {
-                _isLoading.value = false
+                if (generation == loadGeneration) _isLoading.value = false
             }
         }
     }

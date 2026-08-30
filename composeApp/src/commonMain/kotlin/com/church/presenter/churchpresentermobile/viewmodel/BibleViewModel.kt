@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -162,8 +164,45 @@ class BibleViewModel(
     private var pendingNavChapter: Int? = null
     private var pendingNavVerseNumbers: Set<Int> = emptySet()
 
+    /**
+     * Which load is the current one. Anything an older load says is discarded.
+     *
+     * The app starts in remote — the holder's default until settings are read —
+     * so a first launch asks the default desktop address before the operator has
+     * picked standalone, and that request sits on a ten-second connect timeout.
+     * By the time it fails the tab may already be reading the device perfectly
+     * well, and the abandoned request would write "make sure the server is
+     * running" over the top of it.
+     */
+    private var loadGeneration = 0
+
     init {
         loadBooks()
+        // Where the books come from can change under this tab, and nothing else
+        // re-ran the load. Two things move it:
+        //
+        //  - the mode: the source changes, and an error from the old source has
+        //    to go with it.
+        //  - installing a translation: standalone with nothing downloaded is an
+        //    empty tab by definition, so finishing a download is exactly the
+        //    moment it has something to show.
+        //
+        // Without these the tab kept its "no Bible books available" and whatever
+        // error it had until the operator switched tabs and came back, which is
+        // how this was reported.
+        viewModelScope.launch {
+            catalog.isLocalSource
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadBooks(forceReload = true) }
+        }
+        viewModelScope.launch {
+            // Already a StateFlow, so it dedupes itself; drop(1) skips the
+            // value loadBooks() above has just acted on.
+            hasNoLocalBibles
+                .drop(1)
+                .collect { loadBooks(forceReload = true) }
+        }
     }
 
     // ── Public actions ────────────────────────────────────────────────────────
@@ -210,19 +249,25 @@ class BibleViewModel(
         // Set loading state synchronously so no frame can see empty data + isLoading=false
         _isLoading.value = true
         _error.value = null
+        val generation = ++loadGeneration
         viewModelScope.launch {
             try {
                 catalog.books()
                     .onSuccess {
+                        if (generation != loadGeneration) return@onSuccess
                         _allBooks.value = it
                         tryProcessPendingNav()
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "loadBooks — FAILED: ${e.message}", e)
+                        if (generation != loadGeneration) {
+                            Logger.d(TAG, "loadBooks — ignoring a superseded load's failure")
+                            return@onFailure
+                        }
                         _error.value = "Failed to load Bible books: ${e.recordNetworkError(TAG, "loadBooks")}"
                     }
             } finally {
-                _isLoading.value = false
+                if (generation == loadGeneration) _isLoading.value = false
             }
         }
     }

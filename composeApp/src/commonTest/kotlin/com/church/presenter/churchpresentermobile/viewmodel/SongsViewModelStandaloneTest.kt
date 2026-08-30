@@ -22,6 +22,8 @@ import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -258,6 +260,24 @@ class SongsViewModelStandaloneTest {
     // ── Switching into standalone ────────────────────────────────────────
 
     /** A desktop that isn't there — what remote mode meets with no server. */
+    /** Fails only after [delayMs], the way a real connect timeout does. */
+    private class SlowlyTimingOutReader(private val delayMs: Long = 10_000) : SongReader {
+        override suspend fun getSongs(): Result<List<Song>> {
+            delay(delayMs)
+            return Result.failure(Exception("Connect timeout has expired [url=http://192.168.1.100:8765/api/songs]"))
+        }
+
+        override suspend fun getSongDetail(
+            number: String,
+            bookName: String?,
+            songId: Int,
+            title: String?,
+        ): Result<SongDetail> {
+            delay(delayMs)
+            return Result.failure(Exception("Connect timeout has expired"))
+        }
+    }
+
     private class TimingOutReader : SongReader {
         override suspend fun getSongs(): Result<List<Song>> =
             Result.failure(Exception("Connect timeout has expired [url=http://192.168.1.100:8765/api/songs]"))
@@ -350,5 +370,40 @@ class SongsViewModelStandaloneTest {
             assertEquals("words", p.lastBody, "press ${it + 1} must project, never clear")
         }
         assertTrue(p.vm.isProjecting.value)
+    }
+
+    @Test
+    fun aTimeoutThatLandsAfterTheModeSwitchIsIgnored() = runVmTest {
+        // The banner seen on a real phone: standalone, showing the on-device
+        // empty state, with "make sure the server is running" above it.
+        //
+        // The tab is built before the mode picker is answered, so the first load
+        // goes to the default desktop address and sits on a ten-second connect
+        // timeout. Picking Standalone reloads from the library and succeeds at
+        // once — and then the abandoned request finally fails and writes its
+        // error over the top. A load that has been superseded must stay quiet.
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val settings = AppSettings(InMemorySettingsStorage())
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings, mode),
+            isDemoMode = false,
+            sender = FakeWsSender(),
+            presenter = null,
+            catalog = SongCatalog(
+                mode,
+                SlowlyTimingOutReader(),
+                library(localSong("a", "42", "Amazing Grace")),
+            ),
+        )
+
+        // The remote request is still in flight when the operator picks Standalone.
+        advanceTimeBy(1_000)
+        mode.value = AppMode.STANDALONE
+        advanceUntilIdle()
+
+        assertEquals(listOf("Amazing Grace"), vm.songs.value.map { it.title })
+        assertNull(vm.error.value, "a superseded load must not report its failure")
+        assertFalse(vm.isLoading.value, "nor leave the tab spinning")
     }
 }
