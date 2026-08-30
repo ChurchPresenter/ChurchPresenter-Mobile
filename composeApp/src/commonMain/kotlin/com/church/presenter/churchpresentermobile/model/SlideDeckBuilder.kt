@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.library.Chords
+
 /**
  * Turns the app's existing content models into projectable [SlideDeck]s.
  *
@@ -39,7 +41,10 @@ object SlideDeckBuilder {
         val slides = bodies.mapIndexed { index, (text, label) ->
             Slide(
                 kind = SlideKind.SONG,
-                body = text.trim(),
+                // Chords belong to whoever is playing, never to the audience. A
+                // song copied from the computer still carries its markup, because
+                // the companion API sends lyric lines verbatim.
+                body = Chords.stripChords(text).trim(),
                 reference = buildReference(title, sectionLabel(label, index)),
                 sourceId = listOfNotNull(book, number).joinToString(":").ifBlank { null },
                 index = index,
@@ -72,7 +77,7 @@ object SlideDeckBuilder {
             val label = labels[index]
             Slide(
                 kind = SlideKind.SONG,
-                body = section.text.trim(),
+                body = Chords.stripChords(section.text).trim(),
                 reference = buildReference(song.title, label),
                 footer = song.copyright?.takeIf { it.isNotBlank() },
                 sourceId = song.id,
