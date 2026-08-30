@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.present
 
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -123,5 +124,29 @@ class PhotoLibraryTest {
     @Test
     fun servingNothingIsWhatRemoteModeUses() {
         assertNull(PhotoSource.NONE.photo("anything"))
+    }
+
+    // ── What gets kept ───────────────────────────────────────────────────────
+
+    @Test
+    fun aPickedPhotoIsShrunkBeforeItIsKept() {
+        // A camera original is held in memory for the whole session and sent to
+        // every screen watching, so it is paid for twice over. The real shrink is
+        // platform code; this pins that the library actually asks for it.
+        var asked = 0
+        val library = PhotoLibrary(newId = { "id" }, downscale = { asked++; ByteArray(10) })
+
+        val photo = library.add("holiday.jpg", ByteArray(5_000_000))
+
+        assertEquals(1, asked)
+        assertEquals(10, library.bytes(photo.id)?.size)
+    }
+
+    @Test
+    fun theShrunkBytesAreWhatIsServed() {
+        val library = PhotoLibrary(newId = { "id" }, downscale = { byteArrayOf(7, 7, 7) })
+        val photo = library.add("holiday.jpg", ByteArray(900_000))
+
+        assertContentEquals(byteArrayOf(7, 7, 7), library.source.photo(photo.id)?.bytes)
     }
 }

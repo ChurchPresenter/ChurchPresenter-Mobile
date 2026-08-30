@@ -49,7 +49,14 @@ fun interface PhotoSource {
  * that service's; keeping picked copies of someone's camera roll on disk is a
  * privacy cost with no matching benefit, and the picker is two taps away.
  */
-class PhotoLibrary(private val newId: () -> String) {
+class PhotoLibrary(
+    private val newId: () -> String,
+    /**
+     * Shrinks a picked photo before it is kept. Injected so the library stays
+     * testable without an image pipeline.
+     */
+    private val downscale: (ByteArray) -> ByteArray = { downscaleImage(it) },
+) {
 
     private val bytesById = mutableMapOf<String, ByteArray>()
 
@@ -78,10 +85,15 @@ class PhotoLibrary(private val newId: () -> String) {
 
     /** Stores [bytes] and returns the photo, ready to be listed and projected. */
     fun add(fileName: String, bytes: ByteArray): StoredPhoto {
+        // Shrunk on the way in, not on the way out: these bytes are held in
+        // memory for the life of the session and sent to every screen watching,
+        // so a camera-sized original would be paid for twice over. A phone photo
+        // is several times larger than any output this app drives can show.
+        val stored = downscale(bytes)
         val photo = StoredPhoto(id = newId(), fileName = fileName)
-        bytesById[photo.id] = bytes
+        bytesById[photo.id] = stored
         _photos.value = _photos.value + photo
-        Logger.d(TAG, "add — ${photo.fileName} (${bytes.size} bytes)")
+        Logger.d(TAG, "add — ${photo.fileName} (${bytes.size} bytes in, ${stored.size} kept)")
         return photo
     }
 

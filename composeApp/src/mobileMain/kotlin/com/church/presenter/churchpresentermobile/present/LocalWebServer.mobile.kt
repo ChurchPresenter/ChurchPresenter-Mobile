@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.present
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.HttpHeaders
 import io.ktor.server.application.install
 import io.ktor.server.application.serverConfig
 import io.ktor.server.cio.CIO
@@ -11,6 +12,7 @@ import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.response.respondBytes
+import io.ktor.server.response.header
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
@@ -174,6 +176,11 @@ actual class LocalWebServer actual constructor(
                         status = HttpStatusCode.NotFound,
                     )
                 } else {
+                    // A photo's URL carries a UUID minted when it was picked, so the
+                    // bytes behind it can never change: the answer is safely
+                    // immutable. Without saying so a TV browser is free to
+                    // revalidate — or refetch — on every reconnect mid-service.
+                    call.response.header(HttpHeaders.CacheControl, PHOTO_CACHE_CONTROL)
                     call.respondBytes(
                         bytes = photo.bytes,
                         contentType = ContentType.parse(photo.contentType),
@@ -221,6 +228,9 @@ actual class LocalWebServer actual constructor(
     private var boundPort: Int = 0
 
     private companion object {
+        /** A year, and immutable: the id in the URL is unique to these bytes. */
+        const val PHOTO_CACHE_CONTROL = "public, max-age=31536000, immutable"
+
         const val EPHEMERAL_PORT = 0
 
         /** Longest a single bind attempt may take before the next port is tried. */
