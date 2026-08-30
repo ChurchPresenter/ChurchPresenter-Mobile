@@ -54,6 +54,10 @@ import churchpresentermobile.composeapp.generated.resources.standalone_font_seri
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_bottom
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_top
 import churchpresentermobile.composeapp.generated.resources.standalone_look
+import churchpresentermobile.composeapp.generated.resources.standalone_size_large
+import churchpresentermobile.composeapp.generated.resources.standalone_size_medium
+import churchpresentermobile.composeapp.generated.resources.standalone_size_small
+import churchpresentermobile.composeapp.generated.resources.standalone_text_size
 import churchpresentermobile.composeapp.generated.resources.standalone_margin
 import churchpresentermobile.composeapp.generated.resources.standalone_margin_medium
 import churchpresentermobile.composeapp.generated.resources.standalone_margin_thick
@@ -77,6 +81,7 @@ import churchpresentermobile.composeapp.generated.resources.standalone_text_colo
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideMargin
 import com.church.presenter.churchpresentermobile.model.NamedTheme
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
@@ -105,6 +110,8 @@ internal fun LookSheet(
     onThemeChange: ((SlideTheme) -> SlideTheme) -> Unit,
     showChords: Boolean,
     onShowChordsChange: (Boolean) -> Unit,
+    textSize: SlideTextSize,
+    onTextSizeChange: (SlideTextSize) -> Unit,
     presets: List<NamedTheme>,
     savedThemes: List<NamedTheme>,
     onApplyTheme: (NamedTheme) -> Unit,
@@ -215,6 +222,17 @@ internal fun LookSheet(
                     modifier = Modifier.weight(1f),
                 )
             }
+
+            OverlineRow(stringResource(Res.string.standalone_text_size))
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.standalone_size_small),
+                    stringResource(Res.string.standalone_size_medium),
+                    stringResource(Res.string.standalone_size_large),
+                ),
+                selectedIndex = TEXT_SIZES.indexOf(textSize).coerceAtLeast(0),
+                onSelect = { index -> onTextSizeChange(TEXT_SIZES[index]) },
+            )
 
             OverlineRow(stringResource(Res.string.standalone_font))
             SegmentedControl(
@@ -379,3 +397,7 @@ private val VERTICAL_ALIGNS =
 
 /** Option order for the margin control — must match its labels. */
 private val MARGINS = listOf(SlideMargin.THIN, SlideMargin.MEDIUM, SlideMargin.THICK)
+
+/** Option order for the text-size control — must match its labels. */
+private val TEXT_SIZES =
+    listOf(SlideTextSize.SMALL, SlideTextSize.MEDIUM, SlideTextSize.LARGE)

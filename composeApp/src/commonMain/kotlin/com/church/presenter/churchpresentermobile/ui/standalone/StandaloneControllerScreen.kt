@@ -69,15 +69,10 @@ import churchpresentermobile.composeapp.generated.resources.standalone_no_output
 import churchpresentermobile.composeapp.generated.resources.standalone_output_count
 import churchpresentermobile.composeapp.generated.resources.standalone_prev
 import churchpresentermobile.composeapp.generated.resources.standalone_preview
-import churchpresentermobile.composeapp.generated.resources.standalone_size_large
-import churchpresentermobile.composeapp.generated.resources.standalone_size_medium
-import churchpresentermobile.composeapp.generated.resources.standalone_size_small
 import churchpresentermobile.composeapp.generated.resources.standalone_slide_position
-import churchpresentermobile.composeapp.generated.resources.standalone_text_size
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
-import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
@@ -142,6 +137,8 @@ fun StandaloneControllerScreen(
             onThemeChange = viewModel::updateTheme,
             showChords = showChords,
             onShowChordsChange = viewModel::setShowChords,
+            textSize = textSize,
+            onTextSizeChange = viewModel::setTextSize,
             presets = viewModel.presets,
             savedThemes = savedThemes,
             onApplyTheme = viewModel::applyTheme,
@@ -216,17 +213,6 @@ fun StandaloneControllerScreen(
                     onPick = { viewModel.setImageBackdrop(it) },
                 )
             }
-
-            OverlineRow(stringResource(Res.string.standalone_text_size))
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.standalone_size_small),
-                    stringResource(Res.string.standalone_size_medium),
-                    stringResource(Res.string.standalone_size_large),
-                ),
-                selectedIndex = TEXT_SIZES.indexOf(textSize).coerceAtLeast(0),
-                onSelect = { viewModel.setTextSize(TEXT_SIZES[it]) },
-            )
 
             Spacer(Modifier.height(AppDimens.space8))
         }
@@ -574,4 +560,3 @@ private fun BackdropPhotoStrip(
 }
 
 private val BACKDROPS = listOf(SlideBackdrop.GRADIENT, SlideBackdrop.IMAGE, SlideBackdrop.BLACK)
-private val TEXT_SIZES = listOf(SlideTextSize.SMALL, SlideTextSize.MEDIUM, SlideTextSize.LARGE)
