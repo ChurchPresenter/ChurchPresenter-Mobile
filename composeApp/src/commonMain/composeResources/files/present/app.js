@@ -271,14 +271,24 @@
     // floor. Bounded on purpose — a measuring loop with no limit is a frozen
     // screen if an assumption about layout ever stops holding.
     for (var i = 0; i < 24; i++) {
-      if (el.content.scrollHeight <= el.content.clientHeight &&
-          el.body.scrollWidth <= el.body.clientWidth) {
-        return;
-      }
+      if (fits()) { return; }
       size = size * 0.94;
       if (size < floor) { size = floor; el.body.style.fontSize = size + 'px'; return; }
       el.body.style.fontSize = size + 'px';
     }
+  }
+
+  /**
+   * Whether the slide is inside the screen.
+   *
+   * Measured against #screen, which is the element that actually has the
+   * viewport's height. .content is a flex child that sizes to its own words, so
+   * its scrollHeight and clientHeight are always equal and comparing those two —
+   * as this first did — reports "it fits" for a verse hanging off the bottom.
+   */
+  function fits() {
+    return el.content.getBoundingClientRect().height <= el.screen.clientHeight &&
+      el.body.scrollWidth <= el.body.clientWidth;
   }
 
   function applySlide(slide) {
