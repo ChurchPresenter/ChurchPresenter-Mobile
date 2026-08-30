@@ -636,6 +636,10 @@
     <string name="standalone_margin_thin">Thin</string>
     <string name="standalone_margin_medium">Medium</string>
     <string name="standalone_margin_thick">Thick</string>
+    <string name="standalone_autofit">Shrink text to fit</string>
+    <string name="standalone_autofit_hint">A long verse is made smaller instead of running off the screen.</string>
+    <string name="standalone_ignore_breaks">Ignore line breaks</string>
+    <string name="standalone_ignore_breaks_hint">Let the words wrap to the screen instead of breaking where the songbook did.</string>
     <string name="standalone_show_chords">Show chords</string>
     <string name="standalone_show_chords_hint">On this phone and on every screen.</string>
     <string name="standalone_themes">Themes</string>

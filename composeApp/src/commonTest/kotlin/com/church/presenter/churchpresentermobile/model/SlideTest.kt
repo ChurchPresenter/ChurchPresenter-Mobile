@@ -168,4 +168,55 @@ class SlideTest {
         title = "deck",
         slides = List(count) { Slide(kind = SlideKind.SONG, body = "s$it", index = it, total = count) },
     )
+
+    // ── Line breaks ──────────────────────────────────────────────────────────
+
+    @Test
+    fun aVerseKeepsThePoetsLineBreaksByDefault() {
+        val slide = Slide(body = "Amazing grace\nhow sweet the sound")
+
+        assertEquals("Amazing grace\nhow sweet the sound", slide.displayBody())
+    }
+
+    @Test
+    fun ignoringBreaksLetsTheWordsWrapToTheScreen() {
+        // A hymnbook line is set for a narrow page; on a wide screen it either
+        // runs off the edge or wraps into a stub.
+        val slide = Slide(
+            body = "Amazing grace\nhow sweet the sound",
+            theme = SlideTheme(ignoreLineBreaks = true),
+        )
+
+        assertEquals("Amazing grace how sweet the sound", slide.displayBody())
+    }
+
+    @Test
+    fun joiningLinesDoesNotLeaveDoubleSpacesOrRaggedEnds() {
+        val slide = Slide(
+            body = "  Amazing grace \n   how sweet  \n",
+            theme = SlideTheme(ignoreLineBreaks = true),
+        )
+
+        assertEquals("Amazing grace how sweet", slide.displayBody())
+    }
+
+    @Test
+    fun blankLinesBetweenStanzasDoNotBecomeGaps() {
+        val slide = Slide(
+            body = "First line\n\nSecond line",
+            theme = SlideTheme(ignoreLineBreaks = true),
+        )
+
+        assertEquals("First line Second line", slide.displayBody())
+    }
+
+    @Test
+    fun theTwoFittingSettingsStartOff() {
+        // Both change what the congregation sees, so neither may arrive switched
+        // on for a church that has not asked for it.
+        val theme = SlideTheme()
+
+        assertEquals(false, theme.autoFitText)
+        assertEquals(false, theme.ignoreLineBreaks)
+    }
 }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,7 @@ import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.library.Chords
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
 import com.church.presenter.churchpresentermobile.model.showsReference
+import com.church.presenter.churchpresentermobile.model.displayBody
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
@@ -113,17 +116,35 @@ fun StandaloneOutputScreen(
                     horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
                 )
             } else if (slide.body.isNotBlank()) {
-                Text(
-                    text = slide.body,
-                    style = TextStyle(
-                        fontSize = bodySize,
-                        lineHeight = bodySize * BODY_LINE_HEIGHT,
-                        fontFamily = slide.theme.font.toFontFamily(),
-                        color = textColor,
-                        textAlign = bodyAlign,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
+                val bodyText = slide.displayBody()
+                val bodyStyle = TextStyle(
+                    fontSize = bodySize,
+                    lineHeight = bodySize * BODY_LINE_HEIGHT,
+                    fontFamily = slide.theme.font.toFontFamily(),
+                    color = textColor,
+                    textAlign = bodyAlign,
                 )
+                if (slide.theme.autoFitText) {
+                    // weight(fill = false) hands the text the height that is left
+                    // as a limit without making it fill that height, so the words
+                    // shrink to fit while the chosen vertical alignment still
+                    // decides where the block sits.
+                    BasicText(
+                        text = bodyText,
+                        style = bodyStyle,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = bodySize * AUTO_FIT_FLOOR,
+                            maxFontSize = bodySize,
+                        ),
+                        modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
+                    )
+                } else {
+                    Text(
+                        text = bodyText,
+                        style = bodyStyle,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
             slide.reference?.takeIf { it.isNotBlank() && slide.showsReference() }?.let { reference ->
                 Text(
@@ -304,6 +325,14 @@ internal fun parseHexColor(hex: String, fallback: Color): Color {
 }
 
 private const val HIDE_FADE_MS = 450
+/**
+ * How far auto-fit may shrink the words before it stops.
+ *
+ * A floor rather than no limit: text small enough to fit anything is text nobody
+ * at the back can read, and a verse that will not fit at this size is better
+ * clipped than shown illegibly — the operator can split it or choose Small.
+ */
+private const val AUTO_FIT_FLOOR = 0.45f
 private const val BODY_LINE_HEIGHT = 1.32f
 private const val REFERENCE_RATIO = 0.46f
 private const val REFERENCE_TRACKING = 0.14f

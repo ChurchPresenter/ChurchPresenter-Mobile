@@ -94,6 +94,11 @@ enum class SlideVerticalAlign {
  * @property showChords Whether chords are drawn with the words, on every output
  *   as well as the phone.
  * @property margin How much room is left around the words.
+ * @property autoFitText Shrink the words until the whole slide fits, rather than
+ *   letting a long verse run off the bottom of the screen.
+ * @property ignoreLineBreaks Treat the line breaks in a verse as spaces and let
+ *   the words wrap to the screen instead. A hymnbook's lines are set for a narrow
+ *   page and are often far too long for a projector.
  * @property textAlign Where the words sit across the screen.
  * @property verticalAlign Where the words sit down the screen.
  *
@@ -117,6 +122,8 @@ data class SlideTheme(
     val textAlign: SlideTextAlign = SlideTextAlign.CENTER,
     val verticalAlign: SlideVerticalAlign = SlideVerticalAlign.MIDDLE,
     val margin: SlideMargin = SlideMargin.MEDIUM,
+    val autoFitText: Boolean = false,
+    val ignoreLineBreaks: Boolean = false,
 )
 
 /**

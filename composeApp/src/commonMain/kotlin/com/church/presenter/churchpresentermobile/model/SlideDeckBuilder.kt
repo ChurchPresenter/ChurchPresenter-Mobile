@@ -309,3 +309,14 @@ object SlideDeckBuilder {
             ?.filter { it.isNotEmpty() }
             ?: emptyList()
 }
+
+/**
+ * The body as this theme wants it drawn.
+ *
+ * Line breaks in a verse are the poet's, and normally kept — but they were set
+ * for a narrow hymnbook page, and on a wide screen a long line either runs off
+ * the edge or wraps into an awkward stub. Turning them into spaces lets the
+ * words fill the screen the way it is actually shaped.
+ */
+fun Slide.displayBody(): String =
+    if (theme.ignoreLineBreaks) body.replace(Regex("\\s*\\n\\s*"), " ").trim() else body

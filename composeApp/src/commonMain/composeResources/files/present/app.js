@@ -247,6 +247,40 @@
     THICK: { h: 14, v: 10 },
   };
 
+  /**
+   * Shrinks the words until the slide fits, when the operator asks for it.
+   *
+   * The stylesheet sizes text as a fraction of the screen, which is right for a
+   * verse of ordinary length and wrong for a long one: it runs off the bottom,
+   * where nobody sees it. This walks the size down until the content fits the
+   * space it has.
+   *
+   * A floor, matching the app's own renderer: text small enough to fit anything
+   * is text nobody at the back can read, so a verse that still will not fit is
+   * left clipped rather than shrunk into illegibility.
+   */
+  function fitTextToScreen(enabled) {
+    el.body.style.fontSize = '';
+    if (!enabled || !el.body.textContent) { return; }
+
+    var start = parseFloat(window.getComputedStyle(el.body).fontSize);
+    if (!start || !isFinite(start)) { return; }
+    var floor = start * 0.45;
+    var size = start;
+    // A bounded walk: each step is 6% smaller, and 24 of them cannot outlast the
+    // floor. Bounded on purpose — a measuring loop with no limit is a frozen
+    // screen if an assumption about layout ever stops holding.
+    for (var i = 0; i < 24; i++) {
+      if (el.content.scrollHeight <= el.content.clientHeight &&
+          el.body.scrollWidth <= el.body.clientWidth) {
+        return;
+      }
+      size = size * 0.94;
+      if (size < floor) { size = floor; el.body.style.fontSize = size + 'px'; return; }
+      el.body.style.fontSize = size + 'px';
+    }
+  }
+
   function applySlide(slide) {
     var theme = slide.theme || {};
 
@@ -265,6 +299,10 @@
     // Chords ride alongside the clean words rather than replacing them, so an
     // output that is not asked for them shows exactly what it always did.
     var chordText = (theme.showChords === true) ? slide.chordBody : null;
+    // The poet's line breaks are kept unless the operator turns them off, in
+    // which case the words wrap to the screen's own shape instead — a hymnbook
+    // line is set for a narrow page and is often far too long for a projector.
+    el.body.style.whiteSpace = (theme.ignoreLineBreaks === true) ? 'normal' : 'pre-line';
     if (chordText) {
       renderChords(el.body, chordText, theme.accentColor);
     } else {
@@ -278,6 +316,11 @@
 
     if (theme.textColor) { el.screen.style.color = theme.textColor; }
     if (theme.accentColor) { el.reference.style.color = theme.accentColor; }
+
+    // Shrink to fit after the text and every size that affects it are set, and
+    // only then: it measures the laid-out page, so anything decided afterwards
+    // would be measured against the wrong thing.
+    fitTextToScreen(theme.autoFitText === true);
 
     applyBackdrop(slide);
 

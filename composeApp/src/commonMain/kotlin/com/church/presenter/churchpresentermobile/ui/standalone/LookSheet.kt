@@ -54,6 +54,10 @@ import churchpresentermobile.composeapp.generated.resources.standalone_font_seri
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_bottom
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_top
 import churchpresentermobile.composeapp.generated.resources.standalone_look
+import churchpresentermobile.composeapp.generated.resources.standalone_autofit
+import churchpresentermobile.composeapp.generated.resources.standalone_autofit_hint
+import churchpresentermobile.composeapp.generated.resources.standalone_ignore_breaks
+import churchpresentermobile.composeapp.generated.resources.standalone_ignore_breaks_hint
 import churchpresentermobile.composeapp.generated.resources.standalone_size_large
 import churchpresentermobile.composeapp.generated.resources.standalone_size_medium
 import churchpresentermobile.composeapp.generated.resources.standalone_size_small
@@ -319,6 +323,20 @@ internal fun LookSheet(
             // Part of the theme, so one switch reaches the phone, an attached
             // screen and any browser watching — the theme rides inside every
             // slide, so none of them has to be told separately.
+            ToggleRow(
+                label = stringResource(Res.string.standalone_autofit),
+                hint = stringResource(Res.string.standalone_autofit_hint),
+                checked = theme.autoFitText,
+                onCheckedChange = { on -> onThemeChange { it.copy(autoFitText = on) } },
+            )
+
+            ToggleRow(
+                label = stringResource(Res.string.standalone_ignore_breaks),
+                hint = stringResource(Res.string.standalone_ignore_breaks_hint),
+                checked = theme.ignoreLineBreaks,
+                onCheckedChange = { on -> onThemeChange { it.copy(ignoreLineBreaks = on) } },
+            )
+
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_chords),
                 hint = stringResource(Res.string.standalone_show_chords_hint),
