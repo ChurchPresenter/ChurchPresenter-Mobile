@@ -53,11 +53,61 @@ class LibrarySyncViewModel(
 
     private var job: Job? = null
 
+    private val _books = MutableStateFlow<List<String>>(emptyList())
+
+    /** The songbooks the computer offers, once [loadBooks] has asked it. */
+    val books: StateFlow<List<String>> = _books.asStateFlow()
+
+    private val _selectedBooks = MutableStateFlow<Set<String>>(emptySet())
+
+    /** Which of [books] will be copied. Every book starts ticked. */
+    val selectedBooks: StateFlow<Set<String>> = _selectedBooks.asStateFlow()
+
+    private val _isLoadingBooks = MutableStateFlow(false)
+    val isLoadingBooks: StateFlow<Boolean> = _isLoadingBooks.asStateFlow()
+
+    /**
+     * Asks the computer which songbooks it has.
+     *
+     * Reads them off the song catalogue, which already names each song's book,
+     * rather than adding a second endpoint. Everything arrives ticked, so a user
+     * who ignores this list and presses Sync gets what they got before.
+     */
+    fun loadBooks() {
+        if (_isLoadingBooks.value) return
+        _isLoadingBooks.value = true
+        viewModelScope.launch {
+            songService.getSongs()
+                .onSuccess { songs ->
+                    val names = songs.mapNotNull { it.bookName?.takeIf(String::isNotBlank) }
+                        .distinct()
+                        .sorted()
+                    _books.value = names
+                    _selectedBooks.value = names.toSet()
+                    Logger.d(TAG, "loadBooks — ${names.size} songbooks offered")
+                }
+                .onFailure { Logger.e(TAG, "loadBooks — FAILED: ${it.message}") }
+            _isLoadingBooks.value = false
+        }
+    }
+
+    fun toggleBook(name: String) {
+        val current = _selectedBooks.value
+        _selectedBooks.value = if (name in current) current - name else current + name
+    }
+
+    /** True when there is something to copy — every book unticked is not a sync. */
+    val canSync: Boolean
+        get() = _books.value.isEmpty() || _selectedBooks.value.isNotEmpty()
+
     fun sync() {
         if (job?.isActive == true) return
         _outcome.value = null
+        // Null while the books are unknown, which keeps the old whole-catalogue
+        // behaviour for anyone who never opens the picker.
+        val books = _selectedBooks.value.takeIf { _books.value.isNotEmpty() }
         job = viewModelScope.launch {
-            val result = service.sync()
+            val result = service.sync(books)
             _outcome.value = result
             if (result is SyncOutcome.Success) {
                 writeState(

@@ -23,8 +23,8 @@ class LibrarySyncServiceTest {
 
     private fun repository() = LibraryRepository(InMemoryFileStorage()) { 1_000L }
 
-    private fun catalogueSong(number: String, title: String = "Song $number") =
-        Song(number = number, title = title, bookName = "Hymns")
+    private fun catalogueSong(number: String, title: String = "Song $number", book: String = "Hymns") =
+        Song(number = number, title = title, bookName = book)
 
     private fun detail(number: String, vararg verses: String) = SongDetail(
         number = number,
@@ -325,5 +325,53 @@ class LibrarySyncServiceTest {
         // A bare number is a verse — the common case.
         assertEquals(SectionType.VERSE, sync.sectionTypeFor("3"))
         assertEquals(SectionType.VERSE, sync.sectionTypeFor(null))
+    }
+
+    // ── Choosing songbooks ───────────────────────────────────────────────────
+
+    @Test
+    fun onlyTheChosenSongbooksAreCopied() = runTest {
+        // A church that uses one of several books on the computer should not
+        // have to carry the rest on a phone.
+        val repository = repository()
+        val catalogue = listOf(
+            catalogueSong("1", book = "Hymns"),
+            catalogueSong("2", book = "Chorus Book"),
+            catalogueSong("3", book = "Hymns"),
+        )
+
+        val outcome = service(repository, Result.success(catalogue)).sync(setOf("Hymns"))
+
+        assertIs<SyncOutcome.Success>(outcome)
+        assertEquals(2, outcome.songCount)
+        assertEquals(setOf("Hymns"), repository.library.value.songs.map { it.bookName }.toSet())
+    }
+
+    @Test
+    fun noChoiceStillCopiesEverything() = runTest {
+        // The default path, and what every caller did before books could be
+        // chosen: null must not be read as "nothing selected".
+        val repository = repository()
+        val catalogue = listOf(
+            catalogueSong("1", book = "Hymns"),
+            catalogueSong("2", book = "Chorus Book"),
+        )
+
+        val outcome = service(repository, Result.success(catalogue)).sync(null)
+
+        assertIs<SyncOutcome.Success>(outcome)
+        assertEquals(2, outcome.songCount)
+    }
+
+    @Test
+    fun choosingABookTheComputerDoesNotHaveCopiesNothing() = runTest {
+        val repository = repository()
+        val catalogue = listOf(catalogueSong("1", book = "Hymns"))
+
+        val outcome = service(repository, Result.success(catalogue)).sync(setOf("Nothing Here"))
+
+        assertIs<SyncOutcome.Success>(outcome)
+        assertEquals(0, outcome.songCount)
+        assertTrue(repository.library.value.songs.isEmpty())
     }
 }

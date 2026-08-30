@@ -1,20 +1,29 @@
 package com.church.presenter.churchpresentermobile.ui.library
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.sync_action
+import churchpresentermobile.composeapp.generated.resources.sync_books_all
+import churchpresentermobile.composeapp.generated.resources.sync_books_choose
+import churchpresentermobile.composeapp.generated.resources.sync_books_finding
+import churchpresentermobile.composeapp.generated.resources.sync_books_none
+import churchpresentermobile.composeapp.generated.resources.sync_books_some
 import churchpresentermobile.composeapp.generated.resources.sync_cancel
 import churchpresentermobile.composeapp.generated.resources.sync_cancelled
 import churchpresentermobile.composeapp.generated.resources.sync_done
@@ -52,6 +61,9 @@ internal fun SongSyncSection(
     val colors = LocalAppColors.current
     val progress by viewModel.progress.collectAsState()
     val outcome by viewModel.outcome.collectAsState()
+    val books by viewModel.books.collectAsState()
+    val selectedBooks by viewModel.selectedBooks.collectAsState()
+    val isLoadingBooks by viewModel.isLoadingBooks.collectAsState()
 
     Column(verticalArrangement = Arrangement.spacedBy(AppDimens.space12)) {
         Text(
@@ -124,10 +136,69 @@ internal fun SongSyncSection(
             OutcomeCard(message, tint)
         }
 
+        // Which books to take. Absent until asked for, so the common case — copy
+        // everything — stays one press, and nobody waits on a list they don't want.
+        if (!progress.isRunning) {
+            when {
+                isLoadingBooks -> Text(
+                    text = stringResource(Res.string.sync_books_finding),
+                    color = colors.muted,
+                    fontSize = 12.sp,
+                )
+                books.isEmpty() -> Text(
+                    text = stringResource(Res.string.sync_books_choose),
+                    color = colors.accent,
+                    fontSize = 12.sp,
+                    modifier = Modifier.clickable { viewModel.loadBooks() },
+                )
+                else -> {
+                    Text(
+                        text = if (selectedBooks.size == books.size) {
+                            stringResource(Res.string.sync_books_all, books.size)
+                        } else {
+                            stringResource(Res.string.sync_books_some, selectedBooks.size, books.size)
+                        },
+                        color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
+                        fontSize = 12.sp,
+                    )
+                    books.forEach { book ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.toggleBook(book) },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = book in selectedBooks,
+                                onCheckedChange = { viewModel.toggleBook(book) },
+                            )
+                            Text(
+                                text = book,
+                                color = colors.text,
+                                fontSize = 13.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    if (selectedBooks.isEmpty()) {
+                        Text(
+                            text = stringResource(Res.string.sync_books_none),
+                            color = colors.danger,
+                            fontSize = 11.sp,
+                        )
+                    }
+                }
+            }
+        }
+
         SheetButton(
             label = if (progress.isRunning) stringResource(Res.string.sync_cancel)
                     else stringResource(Res.string.sync_action),
             isDestructive = progress.isRunning,
+            // Every book unticked is not a sync — copying nothing and reporting
+            // success would read as the feature being broken.
+            enabled = progress.isRunning || viewModel.canSync,
             onClick = { if (progress.isRunning) viewModel.cancel() else viewModel.sync() },
         )
     }

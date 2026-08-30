@@ -81,14 +81,25 @@ class LibrarySyncService(
      * the caller's main dispatcher every batch blocked the UI thread — the app
      * appeared to freeze for the duration of a sync.
      */
-    suspend fun sync(): SyncOutcome = withContext(Dispatchers.Default) {
+    /**
+     * @param books Which songbooks to copy, by [Song.bookName]. Null takes the
+     *   whole catalogue — a church that uses one of five books on the computer
+     *   should not have to carry the other four on a phone. Filtered here rather
+     *   than at the source because the catalogue already names each song's book,
+     *   so choosing costs no extra request.
+     */
+    suspend fun sync(books: Set<String>? = null): SyncOutcome = withContext(Dispatchers.Default) {
         cancelRequested = false
         _progress.value = SyncProgress(isRunning = true)
 
         try {
-            val catalogue = fetchCatalogue().getOrElse { error ->
+            val fetched = fetchCatalogue().getOrElse { error ->
                 Logger.e(TAG, "catalogue fetch failed: ${error.message}")
                 return@withContext SyncOutcome.Failed(error.message ?: "Could not reach the computer")
+            }
+            val catalogue = if (books == null) fetched else fetched.filter { it.bookName in books }
+            if (books != null) {
+                Logger.d(TAG, "sync — ${catalogue.size} of ${fetched.size} songs in ${books.size} chosen book(s)")
             }
 
             if (catalogue.isEmpty()) {
