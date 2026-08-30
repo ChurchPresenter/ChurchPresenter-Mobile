@@ -353,7 +353,14 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        browser()
+        browser {
+            // Same headless Chrome as the js target above. Without it this target
+            // opens a real browser window on the developer's desktop whenever a
+            // task reaches its tests — `check` and `allTests` both do.
+            testTask {
+                useKarma { useChromeHeadless() }
+            }
+        }
         binaries.executable()
     }
 

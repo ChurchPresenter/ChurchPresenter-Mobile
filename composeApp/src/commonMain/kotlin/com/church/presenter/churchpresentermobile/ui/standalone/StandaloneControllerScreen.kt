@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.CastConnected
 import androidx.compose.material.icons.filled.HideSource
+import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -59,6 +60,7 @@ import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_no_photos
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_pick
 import churchpresentermobile.composeapp.generated.resources.standalone_blank
+import churchpresentermobile.composeapp.generated.resources.standalone_clear
 import churchpresentermobile.composeapp.generated.resources.standalone_empty_body
 import churchpresentermobile.composeapp.generated.resources.standalone_empty_title
 import churchpresentermobile.composeapp.generated.resources.standalone_live
@@ -248,7 +250,9 @@ fun StandaloneControllerScreen(
             StateRow(
                 isBlank = isBlank,
                 isLive = isLive,
+                hasContent = deck.slides.isNotEmpty(),
                 onToggleBlank = viewModel::toggleBlank,
+                onClear = viewModel::clear,
                 onToggleLive = { viewModel.setLive(!isLive) },
             )
         }
@@ -422,7 +426,9 @@ private fun TransportRow(
 private fun StateRow(
     isBlank: Boolean,
     isLive: Boolean,
+    hasContent: Boolean,
     onToggleBlank: () -> Unit,
+    onClear: () -> Unit,
     onToggleLive: () -> Unit,
 ) {
     val colors = LocalAppColors.current
@@ -437,6 +443,18 @@ private fun StateRow(
             modifier = Modifier.weight(1f),
             background = if (isBlank) Color.Black else colors.surface,
             contentColor = if (isBlank) Color.White else colors.text,
+        )
+        // Blank and Clear are not the same act, and the difference matters
+        // mid-service: Blank hides the words and keeps the song, so the next
+        // press brings it straight back. Clear puts the deck down — the screen
+        // is empty and the song has to be opened again. Disabled with nothing
+        // loaded, where it would only look like a button that does nothing.
+        ControlButton(
+            label = stringResource(Res.string.standalone_clear),
+            icon = Icons.Filled.DesktopAccessDisabled,
+            enabled = hasContent,
+            onClick = onClear,
+            modifier = Modifier.weight(1f),
         )
         ControlButton(
             label = stringResource(Res.string.standalone_live),

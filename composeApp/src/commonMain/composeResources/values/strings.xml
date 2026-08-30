@@ -529,6 +529,7 @@
     <string name="standalone_next">Next</string>
     <string name="standalone_blank">Blank</string>
     <string name="standalone_live">Live</string>
+    <string name="standalone_clear">Clear</string>
     <string name="standalone_preview">Preview</string>
     <string name="standalone_no_output">No screen connected</string>
     <string name="standalone_output_count">%1$s screen(s)</string>
@@ -631,7 +632,7 @@
     <string name="standalone_valign_middle">Middle</string>
     <string name="standalone_valign_bottom">Bottom</string>
     <string name="standalone_show_chords">Show chords</string>
-    <string name="standalone_show_chords_hint">On this phone only — never on the screen.</string>
+    <string name="standalone_show_chords_hint">On this phone and on every screen.</string>
     <string name="standalone_themes">Themes</string>
     <string name="standalone_themes_saved">Your saved looks</string>
     <string name="standalone_theme_save">Save current look…</string>

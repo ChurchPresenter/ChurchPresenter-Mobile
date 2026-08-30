@@ -479,4 +479,45 @@ class StandaloneEngineTest {
         // turning it back on needs no reload.
         assertEquals("ref 0", f.published.last().slide?.reference)
     }
+
+    // ── Blank and Clear are different acts ───────────────────────────────────
+
+    @Test
+    fun blankingHidesTheWordsButKeepsTheSong() {
+        // The operator wants the screen dark for a moment; the next press has to
+        // bring the same verse straight back, so the deck must survive.
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+        f.engine.showSlide(1)
+
+        f.engine.toggleBlank()
+
+        assertTrue(f.published.last().slide!!.isBlank)
+        assertEquals(3, f.engine.deck.value.slides.size, "blanking must not put the song down")
+        assertEquals(1, f.engine.index.value, "nor lose the operator's place in it")
+    }
+
+    @Test
+    fun clearingPutsTheSongDown() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(3))
+        f.engine.showSlide(1)
+
+        f.engine.clear()
+
+        assertEquals(0, f.engine.deck.value.slides.size)
+        assertEquals(0, f.engine.index.value)
+        assertFalse(f.published.last().slide!!.isBlank, "an empty screen is not a blanked one")
+    }
+
+    @Test
+    fun blankingAfterAClearStillLeavesNothingLoaded() {
+        val f = Fixture()
+        f.engine.setDeck(deckOf(2))
+        f.engine.clear()
+
+        f.engine.toggleBlank()
+
+        assertEquals(0, f.engine.deck.value.slides.size)
+    }
 }

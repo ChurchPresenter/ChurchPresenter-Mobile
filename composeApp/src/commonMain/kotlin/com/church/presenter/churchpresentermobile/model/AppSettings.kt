@@ -27,7 +27,6 @@ private const val KEY_MODE_CHOSEN      = "mode_chosen"
 private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
-private const val KEY_SHOW_CHORDS = "show_chords"
 private const val KEY_SAVED_THEMES = "saved_themes"
 
 /**
@@ -121,18 +120,6 @@ class AppSettings(
     var slideThemeJson: String
         get() = storage.getString(KEY_SLIDE_THEME, "{}")
         set(value) { storage.putString(KEY_SLIDE_THEME, value) }
-
-    /**
-     * Whether this phone shows chords with a song's words.
-     *
-     * Deliberately not part of [slideThemeJson]: the theme is serialised into
-     * every slide and reaches the browser screen and any attached display, and
-     * chords belong to whoever is playing rather than to the congregation. This
-     * is a preference of this device, so it is stored as one.
-     */
-    var showChords: Boolean
-        get() = storage.getInt(KEY_SHOW_CHORDS, 0) == 1
-        set(value) { storage.putInt(KEY_SHOW_CHORDS, if (value) 1 else 0) }
 
     /** JSON array of the user's saved looks, as {name, theme} entries. Defaults to "[]". */
     var savedThemesJson: String

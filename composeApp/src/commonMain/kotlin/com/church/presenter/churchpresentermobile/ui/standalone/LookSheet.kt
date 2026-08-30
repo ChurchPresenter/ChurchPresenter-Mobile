@@ -282,8 +282,9 @@ internal fun LookSheet(
                 onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
             )
 
-            // Not part of the theme: the theme is serialised into every slide and
-            // reaches the screen, and chords are for whoever is playing.
+            // Part of the theme, so one switch reaches the phone, an attached
+            // screen and any browser watching — the theme rides inside every
+            // slide, so none of them has to be told separately.
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_chords),
                 hint = stringResource(Res.string.standalone_show_chords_hint),
