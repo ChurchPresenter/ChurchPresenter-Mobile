@@ -51,6 +51,24 @@ enum class SlideTextAlign {
     RIGHT,
 }
 
+/**
+ * How much room is left around the words.
+ *
+ * One set of fractions for every renderer. The phone's preview, a screen plugged
+ * into it and a browser watching the hosted page all read these same numbers, so
+ * the preview predicts the screen instead of merely resembling it.
+ *
+ * [horizontal] is a fraction of the output's width and [vertical] of its height.
+ * MEDIUM is what every output used before this was a setting, so nothing moves
+ * for anyone who does not go looking for it.
+ */
+@Serializable
+enum class SlideMargin(val horizontal: Float, val vertical: Float) {
+    THIN(0.04f, 0.03f),
+    MEDIUM(0.08f, 0.06f),
+    THICK(0.14f, 0.10f),
+}
+
 /** Where the words sit down the screen. Mirrors the desktop's verticalAlignment. */
 @Serializable
 enum class SlideVerticalAlign {
@@ -75,6 +93,7 @@ enum class SlideVerticalAlign {
  *   its line.
  * @property showChords Whether chords are drawn with the words, on every output
  *   as well as the phone.
+ * @property margin How much room is left around the words.
  * @property textAlign Where the words sit across the screen.
  * @property verticalAlign Where the words sit down the screen.
  *
@@ -97,6 +116,7 @@ data class SlideTheme(
     val gradientBottom: String = DEFAULT_GRADIENT_BOTTOM,
     val textAlign: SlideTextAlign = SlideTextAlign.CENTER,
     val verticalAlign: SlideVerticalAlign = SlideVerticalAlign.MIDDLE,
+    val margin: SlideMargin = SlideMargin.MEDIUM,
 )
 
 /**

@@ -95,7 +95,10 @@ fun StandaloneOutputScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .alpha(if (showsText) contentAlpha else 0f)
-                .padding(horizontal = boxWidth * HORIZONTAL_PAD, vertical = boxHeight * VERTICAL_PAD),
+                .padding(
+                    horizontal = boxWidth * slide.theme.margin.horizontal,
+                    vertical = boxHeight * slide.theme.margin.vertical,
+                ),
             horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
             verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
         ) {
@@ -309,8 +312,6 @@ private const val CORNER_RATIO = 0.30f
 private const val CORNER_ALPHA = 0.45f
 private const val BRAND_TRACKING = 0.22f
 private const val FOOTER_ALPHA = 0.55f
-private const val HORIZONTAL_PAD = 0.08f
-private const val VERTICAL_PAD = 0.06f
 private const val REFERENCE_GAP = 0.045f
 private const val FOOTER_GAP = 0.02f
 private const val CORNER_PAD = 0.035f

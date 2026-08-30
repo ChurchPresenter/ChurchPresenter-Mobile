@@ -240,6 +240,13 @@
     return segments;
   }
 
+  // Must match SlideMargin in the app: one set of numbers for every renderer.
+  var MARGINS = {
+    THIN: { h: 4, v: 3 },
+    MEDIUM: { h: 8, v: 6 },
+    THICK: { h: 14, v: 10 },
+  };
+
   function applySlide(slide) {
     var theme = slide.theme || {};
 
@@ -248,6 +255,12 @@
     el.content.className = 'content'
       + ' size-' + String(slide.textSize || 'MEDIUM').toLowerCase()
       + ' h-' + alignClass(theme.textAlign, ['LEFT', 'CENTER', 'RIGHT'], 'center');
+
+    // vh/vw, so these are fractions of the output's height and width — the same
+    // thing the phone's renderer means by them. An app that sends no margin gets
+    // the medium one, which is what every output used before it was a setting.
+    var margin = MARGINS[String(theme.margin)] || MARGINS.MEDIUM;
+    el.content.style.padding = margin.v + 'vh ' + margin.h + 'vw';
 
     // Chords ride alongside the clean words rather than replacing them, so an
     // output that is not asked for them shows exactly what it always did.

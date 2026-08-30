@@ -47,4 +47,40 @@ if matches=$(grep -REn "$PATTERN" "$ASSET_DIR" \
   exit 1
 fi
 
-echo "ok: display assets are fully self-contained ($(find "$ASSET_DIR" -type f | wc -l | tr -d ' ') files)"
+# ── The page and the phone must agree on geometry ──────────────────────────
+#
+# The hosted page and the app's own renderer are two implementations of one
+# design, and they drift silently: the page once sized body text at 4.4vw where
+# the phone used 0.066 of the width, and its top and bottom margin was nearly
+# double, because CSS resolves a percentage padding against the container's
+# *width* on all four sides. The operator judges a slide by the phone's preview,
+# so a preview that does not predict the screen is worse than none.
+#
+# These are the numbers that have to match. Kotlin's side lives in
+# StandaloneOutputScreen.scaledSp and model/Slide.kt's SlideMargin.
+CSS="$ASSET_DIR/style.css"
+JS="$ASSET_DIR/app.js"
+
+geometry_error() {
+  echo "error: the projected page has drifted from the app's own renderer:" >&2
+  echo "  $1" >&2
+  echo >&2
+  echo "Keep style.css and app.js in step with scaledSp and SlideMargin." >&2
+  exit 1
+}
+
+for ratio in 5.2vw 6.6vw 8.4vw; do
+  grep -q "$ratio" "$CSS" || geometry_error "body text $ratio missing (scaledSp uses .052/.066/.084)"
+done
+
+grep -qE 'padding:[^;]*vh[^;]*vw' "$CSS" ||
+  geometry_error "margins must be vh/vw — a percentage means width on every side"
+
+for pair in "THIN:4:3" "MEDIUM:8:6" "THICK:14:10"; do
+  name="${pair%%:*}"; rest="${pair#*:}"; h="${rest%%:*}"; v="${rest##*:}"
+  grep -q "$name" "$JS" || geometry_error "margin $name unknown to the page"
+  grep -qE "$name:[[:space:]]*\{[[:space:]]*h:[[:space:]]*$h,[[:space:]]*v:[[:space:]]*$v" "$JS" ||
+    geometry_error "margin $name should be h: $h, v: $v (see SlideMargin)"
+done
+
+echo "ok: display assets are self-contained and match the app's renderer ($(find "$ASSET_DIR" -type f | wc -l | tr -d ' ') files)"

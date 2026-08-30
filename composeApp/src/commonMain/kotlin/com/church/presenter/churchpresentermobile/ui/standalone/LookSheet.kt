@@ -54,6 +54,10 @@ import churchpresentermobile.composeapp.generated.resources.standalone_font_seri
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_bottom
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_top
 import churchpresentermobile.composeapp.generated.resources.standalone_look
+import churchpresentermobile.composeapp.generated.resources.standalone_margin
+import churchpresentermobile.composeapp.generated.resources.standalone_margin_medium
+import churchpresentermobile.composeapp.generated.resources.standalone_margin_thick
+import churchpresentermobile.composeapp.generated.resources.standalone_margin_thin
 import churchpresentermobile.composeapp.generated.resources.standalone_look_reset
 import churchpresentermobile.composeapp.generated.resources.standalone_show_reference
 import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_bible
@@ -73,6 +77,7 @@ import churchpresentermobile.composeapp.generated.resources.standalone_text_colo
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.SlideMargin
 import com.church.presenter.churchpresentermobile.model.NamedTheme
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.ui.OverlineRow
@@ -232,6 +237,17 @@ internal fun LookSheet(
                 onSelect = { index -> onThemeChange { it.copy(textAlign = TEXT_ALIGNS[index]) } },
             )
 
+            OverlineRow(stringResource(Res.string.standalone_margin))
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.standalone_margin_thin),
+                    stringResource(Res.string.standalone_margin_medium),
+                    stringResource(Res.string.standalone_margin_thick),
+                ),
+                selectedIndex = MARGINS.indexOf(theme.margin).coerceAtLeast(0),
+                onSelect = { index -> onThemeChange { it.copy(margin = MARGINS[index]) } },
+            )
+
             OverlineRow(stringResource(Res.string.standalone_valign))
             SegmentedControl(
                 options = listOf(
@@ -360,3 +376,6 @@ private val FONTS = listOf(SlideFont.SERIF, SlideFont.SANS)
 private val TEXT_ALIGNS = listOf(SlideTextAlign.LEFT, SlideTextAlign.CENTER, SlideTextAlign.RIGHT)
 private val VERTICAL_ALIGNS =
     listOf(SlideVerticalAlign.TOP, SlideVerticalAlign.MIDDLE, SlideVerticalAlign.BOTTOM)
+
+/** Option order for the margin control — must match its labels. */
+private val MARGINS = listOf(SlideMargin.THIN, SlideMargin.MEDIUM, SlideMargin.THICK)

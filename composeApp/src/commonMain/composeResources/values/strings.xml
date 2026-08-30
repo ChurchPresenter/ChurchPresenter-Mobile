@@ -632,6 +632,10 @@
     <string name="standalone_valign_top">Top</string>
     <string name="standalone_valign_middle">Middle</string>
     <string name="standalone_valign_bottom">Bottom</string>
+    <string name="standalone_margin">Margin</string>
+    <string name="standalone_margin_thin">Thin</string>
+    <string name="standalone_margin_medium">Medium</string>
+    <string name="standalone_margin_thick">Thick</string>
     <string name="standalone_show_chords">Show chords</string>
     <string name="standalone_show_chords_hint">On this phone and on every screen.</string>
     <string name="standalone_themes">Themes</string>

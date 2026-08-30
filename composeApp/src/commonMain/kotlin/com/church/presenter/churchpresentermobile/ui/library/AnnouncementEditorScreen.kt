@@ -45,9 +45,9 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Creates and edits a notice.
  *
- * Simpler than the song editor — one block of text — but it shares the same
- * live preview so the author can see straight away whether their four lines of
- * service times will actually fit on the screen.
+ * Simpler than the song editor — one block of text, and no preview. A notice is
+ * a line or two, and how it looks is set in the Look rather than here, so the
+ * preview only took room away from the writing.
  */
 @Composable
 fun AnnouncementEditorScreen(
@@ -76,12 +76,6 @@ fun AnnouncementEditorScreen(
             onKeepEditing = { showDiscardPrompt = false },
         )
     }
-
-    // Rendered through the real deck builder, so the preview cannot drift from
-    // what the screen will actually show.
-    val preview: Slide = SlideDeckBuilder
-        .fromAnnouncement(announcement.body, announcement.title.takeIf { it.isNotBlank() })
-        .slideAt(0) ?: Slide.BLANK
 
     Column(modifier = modifier.fillMaxSize().background(colors.background).imePadding()) {
         ScreenHeader(
@@ -114,20 +108,6 @@ fun AnnouncementEditorScreen(
                 minLines = 5,
             )
 
-            Text(
-                text = stringResource(Res.string.editor_preview),
-                color = colors.muted,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(AppDimens.radiusChip)),
-            ) {
-                StandaloneOutputScreen(preview)
-            }
         }
 
         EditorActions(

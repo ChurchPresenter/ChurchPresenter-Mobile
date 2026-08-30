@@ -73,7 +73,14 @@ html, body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 6% 8%;
+  /*
+   * Set by app.js from the theme's margin, in vh/vw so the numbers mean the same
+   * thing they do in the phone's renderer: a fraction of the output's height and
+   * width. A percentage would not — CSS resolves percentage padding against the
+   * container's *width* on all four sides, which made the top and bottom margin
+   * here nearly double the phone's on a 16:9 screen.
+   */
+  padding: 6vh 8vw;
   width: 100%;
   opacity: 1;
   transition: opacity .45s ease;
@@ -89,12 +96,18 @@ html, body {
   white-space: pre-line;
   line-height: 1.32;
   text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
-  font-size: clamp(15px, 4.4vw, 84px);
+  font-size: clamp(15px, 6.6vw, 128px);
 }
 
-.size-small  .body { font-size: clamp(12px, 3.5vw, 66px); }
-.size-medium .body { font-size: clamp(15px, 4.4vw, 84px); }
-.size-large  .body { font-size: clamp(18px, 5.6vw, 108px); }
+/*
+ * The same fractions of width the phone's renderer uses (see scaledSp), so the
+ * preview shows the size the screen will show. They had drifted: this page was
+ * on 4.4vw where the phone was on 6.6, making every word about a third smaller
+ * here than in the preview the operator was judging it by.
+ */
+.size-small  .body { font-size: clamp(12px, 5.2vw, 100px); }
+.size-medium .body { font-size: clamp(15px, 6.6vw, 128px); }
+.size-large  .body { font-size: clamp(18px, 8.4vw, 164px); }
 
 .reference {
   margin: .7em 0 0;
