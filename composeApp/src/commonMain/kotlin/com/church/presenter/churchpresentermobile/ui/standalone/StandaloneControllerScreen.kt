@@ -125,6 +125,8 @@ fun StandaloneControllerScreen(
     val backdropUrl by viewModel.backdropUrl.collectAsState()
     val backdropPhotos by viewModel.backdropPhotos.collectAsState()
     val canUsePhotoBackdrop by viewModel.canUsePhotoBackdrop.collectAsState()
+    val showChords by viewModel.showChords.collectAsState()
+    val savedThemes by viewModel.savedThemes.collectAsState()
     var showOutputs by remember { mutableStateOf(false) }
     var showLook by remember { mutableStateOf(false) }
 
@@ -136,6 +138,13 @@ fun StandaloneControllerScreen(
         LookSheet(
             theme = theme,
             onThemeChange = viewModel::updateTheme,
+            showChords = showChords,
+            onShowChordsChange = viewModel::setShowChords,
+            presets = viewModel.presets,
+            savedThemes = savedThemes,
+            onApplyTheme = viewModel::applyTheme,
+            onSaveTheme = viewModel::saveCurrentTheme,
+            onDeleteTheme = viewModel::deleteSavedTheme,
             onDismiss = { showLook = false },
         )
     }

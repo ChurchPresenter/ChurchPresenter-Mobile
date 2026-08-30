@@ -53,6 +53,7 @@ import churchpresentermobile.composeapp.generated.resources.web_title
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
+import com.church.presenter.churchpresentermobile.model.ChordsPreference
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
@@ -148,6 +149,7 @@ fun App() {
     // reads it. AppSettings coerces to REMOTE on platforms without an output
     // sink, so the web build is unaffected by any of this.
     remember(appSettings) { AppModeHolder.init(appSettings) }
+    remember(appSettings) { ChordsPreference.init(appSettings) }
     val appMode by AppModeHolder.mode.collectAsState()
 
     // Anonymous, city-level ping to the live user map — fires once per app launch.

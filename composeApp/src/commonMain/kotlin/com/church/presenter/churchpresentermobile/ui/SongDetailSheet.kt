@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +31,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -37,6 +40,7 @@ import churchpresentermobile.composeapp.generated.resources.label_live
 import churchpresentermobile.composeapp.generated.resources.song_detail_no_lyrics
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongVerse
+import com.church.presenter.churchpresentermobile.library.Chords
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -65,6 +69,8 @@ fun SongDetailScreen(
     /** Null hides the schedule button — standalone has no desktop schedule. */
     onAddToSchedule: (() -> Unit)? = null,
     onClearDisplay: (() -> Unit)? = null,
+    /** Draw the words as a chord chart. Off shows them cleaned of markup. */
+    showChords: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColors.current
@@ -140,6 +146,7 @@ fun SongDetailScreen(
                                     label = sectionLabels.getOrElse(index) { (index + 1).toString() },
                                     isSelected = isProjecting && selectedVerseIndex == index,
                                     isProjecting = isProjecting,
+                                    showChords = showChords,
                                     onClick = { onVerseSelected(index) }
                                 )
                             }
@@ -197,6 +204,7 @@ private fun VerseCard(
     label: String = (index + 1).toString(),
     isSelected: Boolean,
     isProjecting: Boolean,
+    showChords: Boolean,
     onClick: () -> Unit
 ) {
     val colors = LocalAppColors.current
@@ -229,12 +237,55 @@ private fun VerseCard(
             if (isSelected) LivePill()
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = verse.displayText,
-            color = colors.secondary,
-            fontSize = 14.sp,
-            lineHeight = (14 * 1.75).sp,
-        )
+        // Songs copied from the computer still carry their chord markup, so the
+        // words are either cleaned or drawn as a chart — never shown as a literal
+        // "[G]", which is what this card used to do.
+        if (showChords && Chords.hasChords(verse.displayText)) {
+            ChordChart(verse.displayText)
+        } else {
+            Text(
+                text = Chords.stripChords(verse.displayText),
+                color = colors.secondary,
+                fontSize = 14.sp,
+                lineHeight = (14 * 1.75).sp,
+            )
+        }
+    }
+}
+
+/**
+ * A verse drawn as a chord chart: each chord sits above the words it belongs to.
+ *
+ * Built from [Chords.parseLine], the same splitter the desktop uses, so a chord
+ * lands over the syllable the author wrote it against rather than at the start
+ * of the line.
+ */
+@Composable
+private fun ChordChart(text: String) {
+    val colors = LocalAppColors.current
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        text.lines().forEach { line ->
+            val segments = Chords.parseLine(line)
+            FlowRow {
+                segments.forEach { segment ->
+                    Column {
+                        Text(
+                            text = segment.chord,
+                            color = colors.accent,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = FontFamily.Monospace,
+                        )
+                        Text(
+                            text = segment.text,
+                            color = colors.secondary,
+                            fontSize = 14.sp,
+                            lineHeight = (14 * 1.4).sp,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

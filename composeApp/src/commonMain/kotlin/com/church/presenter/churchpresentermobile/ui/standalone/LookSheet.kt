@@ -1,7 +1,11 @@
 package com.church.presenter.churchpresentermobile.ui.standalone
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,14 +17,24 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.standalone_accent_colour
@@ -43,11 +57,20 @@ import churchpresentermobile.composeapp.generated.resources.standalone_look
 import churchpresentermobile.composeapp.generated.resources.standalone_look_reset
 import churchpresentermobile.composeapp.generated.resources.standalone_show_reference
 import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_hint
+import churchpresentermobile.composeapp.generated.resources.standalone_show_chords
+import churchpresentermobile.composeapp.generated.resources.standalone_show_chords_hint
 import churchpresentermobile.composeapp.generated.resources.standalone_show_clock
+import churchpresentermobile.composeapp.generated.resources.standalone_themes
+import churchpresentermobile.composeapp.generated.resources.standalone_themes_saved
+import churchpresentermobile.composeapp.generated.resources.standalone_theme_save
+import churchpresentermobile.composeapp.generated.resources.standalone_theme_save_action
+import churchpresentermobile.composeapp.generated.resources.standalone_theme_name
+import churchpresentermobile.composeapp.generated.resources.standalone_theme_delete
 import churchpresentermobile.composeapp.generated.resources.standalone_text_colour
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.NamedTheme
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.ui.OverlineRow
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
@@ -67,13 +90,22 @@ import org.jetbrains.compose.resources.stringResource
  * output, an attached screen and any browser on the hosted page all follow the same edit without
  * being told separately. There is no Apply, and no preview to keep in step with.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun LookSheet(
     theme: SlideTheme,
     onThemeChange: ((SlideTheme) -> SlideTheme) -> Unit,
+    showChords: Boolean,
+    onShowChordsChange: (Boolean) -> Unit,
+    presets: List<NamedTheme>,
+    savedThemes: List<NamedTheme>,
+    onApplyTheme: (NamedTheme) -> Unit,
+    onSaveTheme: (String) -> Unit,
+    onDeleteTheme: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    var namingTheme by remember { mutableStateOf(false) }
+    var themeName by remember { mutableStateOf("") }
     val colors = LocalAppColors.current
 
     ModalBottomSheet(
@@ -95,6 +127,56 @@ internal fun LookSheet(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
             )
+
+            // A whole look in one tap. Setting up on a Sunday morning should not
+            // mean assembling a readable screen out of six colour fields.
+            OverlineRow(stringResource(Res.string.standalone_themes))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
+                presets.forEach { preset ->
+                    ThemeChip(name = preset.name, onClick = { onApplyTheme(preset) })
+                }
+            }
+
+            if (savedThemes.isNotEmpty()) {
+                OverlineRow(stringResource(Res.string.standalone_themes_saved))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
+                    savedThemes.forEach { saved ->
+                        ThemeChip(
+                            name = saved.name,
+                            onClick = { onApplyTheme(saved) },
+                            onDelete = { onDeleteTheme(saved.name) },
+                        )
+                    }
+                }
+            }
+
+            if (namingTheme) {
+                SettingsField(
+                    label = stringResource(Res.string.standalone_theme_name),
+                    value = themeName,
+                    onValueChange = { themeName = it },
+                    placeholder = "",
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                )
+                Text(
+                    text = stringResource(Res.string.standalone_theme_save_action),
+                    color = colors.accent,
+                    fontSize = 13.sp,
+                    modifier = Modifier.clickable {
+                        onSaveTheme(themeName)
+                        themeName = ""
+                        namingTheme = false
+                    },
+                )
+            } else {
+                Text(
+                    text = stringResource(Res.string.standalone_theme_save),
+                    color = colors.accent,
+                    fontSize = 13.sp,
+                    modifier = Modifier.clickable { namingTheme = true },
+                )
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 ColorField(
@@ -183,6 +265,15 @@ internal fun LookSheet(
                 onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
             )
 
+            // Not part of the theme: the theme is serialised into every slide and
+            // reaches the screen, and chords are for whoever is playing.
+            ToggleRow(
+                label = stringResource(Res.string.standalone_show_chords),
+                hint = stringResource(Res.string.standalone_show_chords_hint),
+                checked = showChords,
+                onCheckedChange = onShowChordsChange,
+            )
+
             Text(
                 text = stringResource(Res.string.standalone_look_reset),
                 color = colors.accent,
@@ -193,6 +284,32 @@ internal fun LookSheet(
             )
 
             Box(Modifier.padding(bottom = AppDimens.space16))
+        }
+    }
+}
+
+/** A named look. Tapping adopts it; the cross removes a saved one. */
+@Composable
+private fun ThemeChip(name: String, onClick: () -> Unit, onDelete: (() -> Unit)? = null) {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier
+            .padding(bottom = AppDimens.space8)
+            .clip(RoundedCornerShape(12.dp))
+            .background(colors.surface)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(text = name, color = colors.text, fontSize = 13.sp)
+        if (onDelete != null) {
+            Icon(
+                imageVector = Icons.Outlined.Close,
+                contentDescription = stringResource(Res.string.standalone_theme_delete),
+                tint = colors.muted,
+                modifier = Modifier.size(14.dp).clickable(onClick = onDelete),
+            )
         }
     }
 }

@@ -630,6 +630,14 @@
     <string name="standalone_valign_top">Top</string>
     <string name="standalone_valign_middle">Middle</string>
     <string name="standalone_valign_bottom">Bottom</string>
+    <string name="standalone_show_chords">Show chords</string>
+    <string name="standalone_show_chords_hint">On this phone only — never on the screen.</string>
+    <string name="standalone_themes">Themes</string>
+    <string name="standalone_themes_saved">Your saved looks</string>
+    <string name="standalone_theme_save">Save current look…</string>
+    <string name="standalone_theme_name">Name this look</string>
+    <string name="standalone_theme_save_action">Save</string>
+    <string name="standalone_theme_delete">Delete</string>
     <string name="standalone_brand_line">Church name (top corner)</string>
     <string name="standalone_brand_line_hint">Leave blank for none</string>
     <string name="standalone_show_clock">Show a clock</string>

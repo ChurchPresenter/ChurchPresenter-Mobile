@@ -6,7 +6,12 @@ import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.ChordsPreference
+import com.church.presenter.churchpresentermobile.model.NamedTheme
+import com.church.presenter.churchpresentermobile.model.SlideThemePresets
+import com.church.presenter.churchpresentermobile.util.Logger
 import com.church.presenter.churchpresentermobile.model.SlideTheme
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
@@ -15,6 +20,7 @@ import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -77,6 +83,19 @@ class StandaloneViewModel(
         }
     }
 
+    /**
+     * Whether this phone shows chords with a song's words.
+     *
+     * Held process-wide because the switch is here and the words are on the Songs
+     * tab. Kept out of the theme on purpose: the theme travels inside every
+     * slide, and chords are for whoever is playing, not the congregation.
+     */
+    val showChords: StateFlow<Boolean> = ChordsPreference.showChords
+
+    fun setShowChords(show: Boolean) {
+        settings?.let { ChordsPreference.set(it, show) }
+    }
+
     /** Status of every registered sink, for the outputs chip and sheet. */
     val sinks: StateFlow<List<SinkStatus>> = registry.statuses
 
@@ -126,6 +145,49 @@ class StandaloneViewModel(
         engine.setBackdrop(SlideBackdrop.IMAGE, url)
     }
 
+    private val _savedThemes = MutableStateFlow(readSavedThemes())
+
+    /** Looks this church has saved, newest last. */
+    val savedThemes: StateFlow<List<NamedTheme>> = _savedThemes.asStateFlow()
+
+    /** Built-in looks to start from. */
+    val presets: List<NamedTheme> = SlideThemePresets.all
+
+    /**
+     * Adopts [named]'s look.
+     *
+     * Copies the values in rather than remembering which entry they came from,
+     * so deleting a saved look never changes what is on the screen.
+     */
+    fun applyTheme(named: NamedTheme) = updateTheme { named.theme }
+
+    /** Saves the current look under [name], replacing any saved look of that name. */
+    fun saveCurrentTheme(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isBlank()) return
+        val entry = NamedTheme(trimmed, engine.theme.value)
+        writeSavedThemes(_savedThemes.value.filterNot { it.name == trimmed } + entry)
+    }
+
+    fun deleteSavedTheme(name: String) {
+        writeSavedThemes(_savedThemes.value.filterNot { it.name == name })
+    }
+
+    private fun readSavedThemes(): List<NamedTheme> {
+        val stored = settings?.savedThemesJson ?: return emptyList()
+        return runCatching { themeJson.decodeFromString(ListSerializer(NamedTheme.serializer()), stored) }
+            .onFailure { Logger.e(TAG, "could not read saved looks: ${it.message}") }
+            .getOrDefault(emptyList())
+    }
+
+    private fun writeSavedThemes(themes: List<NamedTheme>) {
+        _savedThemes.value = themes
+        val store = settings ?: return
+        runCatching {
+            store.savedThemesJson = themeJson.encodeToString(ListSerializer(NamedTheme.serializer()), themes)
+        }.onFailure { Logger.e(TAG, "could not save looks: ${it.message}") }
+    }
+
     /**
      * Changes one part of the look, leaving the rest as it was.
      *
@@ -146,4 +208,6 @@ class StandaloneViewModel(
 }
 
 /** Lenient so a theme written by a newer build still opens on an older one. */
+private const val TAG = "StandaloneViewModel"
+
 private val themeJson = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefaults = true }

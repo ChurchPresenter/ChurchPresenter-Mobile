@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.ChordsPreference
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
@@ -22,6 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * The look of the audience screen: what the operator can change, and what survives a restart.
@@ -290,5 +292,99 @@ class StandaloneLookTest {
         assertEquals(SlideFont.SANS, viewModel.theme.value.font, "the old fields must survive")
         assertEquals(SlideTextAlign.CENTER, viewModel.theme.value.textAlign)
         assertEquals(SlideVerticalAlign.MIDDLE, viewModel.theme.value.verticalAlign)
+    }
+
+    // ── Themes and the chord toggle ──────────────────────────────────────────
+
+    @Test
+    fun applyingAPresetReplacesTheWholeLook() = runVmTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), settings)
+        viewModel.updateTheme { it.copy(textColor = "#123456", font = SlideFont.SANS) }
+
+        val black = viewModel.presets.first { it.name == "Black" }
+        viewModel.applyTheme(black)
+
+        assertEquals(black.theme, engine.theme.value, "a preset is the whole look, not a patch")
+    }
+
+    @Test
+    fun theDefaultsAreAPresetSoPuttingItBackIsATap() = runVmTest {
+        val (viewModel, _) = vm()
+        assertEquals(SlideTheme(), viewModel.presets.first().theme)
+    }
+
+    @Test
+    fun aSavedLookComesBackAfterARestart() = runVmTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val first = StandaloneViewModel(engine(), SinkRegistry(), settings)
+        first.updateTheme { it.copy(textColor = "#ABCDEF") }
+        first.saveCurrentTheme("Evening")
+
+        val second = StandaloneViewModel(engine(), SinkRegistry(), settings)
+
+        assertEquals(listOf("Evening"), second.savedThemes.value.map { it.name })
+        assertEquals("#ABCDEF", second.savedThemes.value.single().theme.textColor)
+    }
+
+    @Test
+    fun deletingASavedLookLeavesTheScreenAlone() = runVmTest {
+        // Applying copies the values in, so the live look does not reference the
+        // saved entry — deleting one mid-service must not repaint the screen.
+        val settings = AppSettings(InMemorySettingsStorage())
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), settings)
+        viewModel.updateTheme { it.copy(textColor = "#ABCDEF") }
+        viewModel.saveCurrentTheme("Evening")
+        viewModel.applyTheme(viewModel.savedThemes.value.single())
+
+        viewModel.deleteSavedTheme("Evening")
+
+        assertEquals("#ABCDEF", engine.theme.value.textColor)
+        assertTrue(viewModel.savedThemes.value.isEmpty())
+    }
+
+    @Test
+    fun savingUnderAnExistingNameReplacesIt() = runVmTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val viewModel = StandaloneViewModel(engine(), SinkRegistry(), settings)
+        viewModel.updateTheme { it.copy(textColor = "#111111") }
+        viewModel.saveCurrentTheme("Evening")
+        viewModel.updateTheme { it.copy(textColor = "#222222") }
+        viewModel.saveCurrentTheme("Evening")
+
+        assertEquals(1, viewModel.savedThemes.value.size)
+        assertEquals("#222222", viewModel.savedThemes.value.single().theme.textColor)
+    }
+
+    @Test
+    fun aSavedListFromAnOlderBuildStillReads() = runVmTest {
+        // Written before alignment existed. Defaults must fill the gaps rather
+        // than the whole list failing to parse and a church losing its looks.
+        val settings = AppSettings(InMemorySettingsStorage())
+        settings.savedThemesJson =
+            """[{"name":"Old","theme":{"font":"SANS","textColor":"#ABCDEF"}}]"""
+
+        val viewModel = StandaloneViewModel(engine(), SinkRegistry(), settings)
+
+        val saved = viewModel.savedThemes.value.single()
+        assertEquals("Old", saved.name)
+        assertEquals(SlideFont.SANS, saved.theme.font)
+        assertEquals(SlideTextAlign.CENTER, saved.theme.textAlign)
+    }
+
+    @Test
+    fun theChordToggleIsOffUntilAskedForAndThenRemembered() = runVmTest {
+        ChordsPreference.resetForTest()
+        val settings = AppSettings(InMemorySettingsStorage())
+        val viewModel = StandaloneViewModel(engine(), SinkRegistry(), settings)
+        assertEquals(false, viewModel.showChords.value, "the audience's words come first")
+
+        viewModel.setShowChords(true)
+
+        assertEquals(true, viewModel.showChords.value)
+        assertEquals(true, settings.showChords, "and it survives a restart")
+        ChordsPreference.resetForTest()
     }
 }

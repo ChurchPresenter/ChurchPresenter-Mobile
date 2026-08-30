@@ -14,6 +14,9 @@ package com.church.presenter.churchpresentermobile.library
  * stripping every bracketed token would also eat `[Repeat]` and `[Verse 1]`,
  * silently deleting words the author wrote.
  */
+/** A chord and the words it sits over. An empty [chord] is plain text. */
+data class ChordSegment(val chord: String, val text: String)
+
 object Chords {
 
     /**
@@ -57,5 +60,37 @@ object Chords {
                 }.replace(Regex(" {2,}"), " ").trim()
             }
             .joinToString("\n")
+    }
+
+    /**
+     * Splits [line] into chord-and-words runs, for drawing a chord above the
+     * word it belongs to.
+     *
+     * With [showChords] off the whole line comes back as a single chord-free
+     * segment, so one renderer draws both views instead of two code paths —
+     * the same shape the desktop uses.
+     */
+    fun parseLine(line: String, showChords: Boolean = true): List<ChordSegment> {
+        if (!showChords || !hasChords(line)) {
+            return listOf(ChordSegment("", if (showChords) line else stripChords(line)))
+        }
+        val segments = mutableListOf<ChordSegment>()
+        var cursor = 0
+        for (match in BRACKETED.findAll(line)) {
+            val inner = match.value.trim('[', ']')
+            if (!isChord(inner)) continue
+            if (match.range.first > cursor) {
+                segments.add(ChordSegment("", line.substring(cursor, match.range.first)))
+            }
+            cursor = match.range.last + 1
+            // The chord owns the words up to the next chord, or the line's end.
+            val next = BRACKETED.findAll(line)
+                .firstOrNull { it.range.first >= cursor && isChord(it.value.trim('[', ']')) }
+            val end = next?.range?.first ?: line.length
+            segments.add(ChordSegment(inner, line.substring(cursor, end)))
+            cursor = end
+        }
+        if (cursor < line.length) segments.add(ChordSegment("", line.substring(cursor)))
+        return segments
     }
 }

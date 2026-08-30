@@ -187,6 +187,12 @@ html, body {
 .content.h-right  { align-items: flex-end;   text-align: right; }
 .content.h-center { align-items: center;     text-align: center; }
 
-.content.v-top    { justify-content: flex-start; }
-.content.v-bottom { justify-content: flex-end; }
-.content.v-middle { justify-content: center; }
+/*
+ * Vertical sits on #screen, not on .content. #screen is the flex container that
+ * fills the viewport; .content is only as tall as its words, so justify-content
+ * there has nothing to distribute and "Top" did nothing at all on this page
+ * while working perfectly in the phone's own preview.
+ */
+#screen.v-top    { align-items: flex-start; }
+#screen.v-bottom { align-items: flex-end; }
+#screen.v-middle { align-items: center; }

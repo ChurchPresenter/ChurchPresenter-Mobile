@@ -163,11 +163,11 @@
   function applySlide(slide) {
     var theme = slide.theme || {};
 
-    el.screen.className = (theme.font === 'SANS' ? 'sans' : 'serif');
+    el.screen.className = (theme.font === 'SANS' ? 'sans' : 'serif')
+      + ' v-' + alignClass(theme.verticalAlign, ['TOP', 'MIDDLE', 'BOTTOM'], 'middle');
     el.content.className = 'content'
       + ' size-' + String(slide.textSize || 'MEDIUM').toLowerCase()
-      + ' h-' + alignClass(theme.textAlign, ['LEFT', 'CENTER', 'RIGHT'], 'center')
-      + ' v-' + alignClass(theme.verticalAlign, ['TOP', 'MIDDLE', 'BOTTOM'], 'middle');
+      + ' h-' + alignClass(theme.textAlign, ['LEFT', 'CENTER', 'RIGHT'], 'center');
 
     setText(el.body, slide.body);
     // The operator can turn the reference line off entirely — some churches want the words

@@ -73,4 +73,50 @@ class ChordsTest {
         assertFalse(Chords.hasChords("[Chorus]"))
         assertFalse(Chords.hasChords("No brackets at all"))
     }
+
+    // ── Drawing a chart ──────────────────────────────────────────────────────
+
+    @Test
+    fun aChordOwnsTheWordsUntilTheNextOne() {
+        val segments = Chords.parseLine("[G]Amazing grace how [C]sweet the sound")
+
+        assertEquals(listOf("G", "C"), segments.map { it.chord })
+        assertEquals("Amazing grace how ", segments[0].text)
+        assertEquals("sweet the sound", segments[1].text)
+    }
+
+    @Test
+    fun wordsBeforeTheFirstChordKeepTheirPlace() {
+        val segments = Chords.parseLine("Amazing [C]grace")
+
+        assertEquals(listOf("", "C"), segments.map { it.chord })
+        assertEquals("Amazing ", segments[0].text)
+    }
+
+    @Test
+    fun aLineWithNoChordsIsOneSegment() {
+        val segments = Chords.parseLine("Amazing grace how sweet the sound")
+
+        assertEquals(1, segments.size)
+        assertEquals("", segments.single().chord)
+        assertEquals("Amazing grace how sweet the sound", segments.single().text)
+    }
+
+    @Test
+    fun withChordsOffTheLineComesBackClean() {
+        // One renderer draws both views; this is the "off" half of that.
+        val segments = Chords.parseLine("[G]Amazing grace", showChords = false)
+
+        assertEquals(1, segments.size)
+        assertEquals("", segments.single().chord)
+        assertEquals("Amazing grace", segments.single().text)
+    }
+
+    @Test
+    fun bracketedWordsAreNotTreatedAsChordsWhenSplitting() {
+        val segments = Chords.parseLine("[D]Praise him [Repeat]")
+
+        assertEquals(listOf("D"), segments.map { it.chord })
+        assertEquals("Praise him [Repeat]", segments.single().text)
+    }
 }
