@@ -160,6 +160,86 @@
     return allowed.indexOf(String(value)) >= 0 ? String(value).toLowerCase() : fallback;
   }
 
+  // Which reference toggle governs this slide. An older app that sends the single
+  // showReference flag is still honoured, so a mixed pair keeps working.
+  function referenceWanted(theme, kind) {
+    if (kind === 'SONG') { return firstDefined(theme.showSongReference, theme.showReference, true); }
+    if (kind === 'BIBLE') { return firstDefined(theme.showBibleReference, theme.showReference, true); }
+    return firstDefined(theme.showOtherReference, theme.showReference, true);
+  }
+
+  function firstDefined(a, b, fallback) {
+    if (a === true || a === false) { return a; }
+    if (b === true || b === false) { return b; }
+    return fallback;
+  }
+
+  /**
+   * Draws the words with a chord above each run they belong to.
+   *
+   * Built from DOM nodes with textContent for the same reason setText uses it:
+   * slide text is operator-authored and arrives over an unauthenticated LAN
+   * socket, so it is content and never markup.
+   */
+  function renderChords(node, text, accent) {
+    node.textContent = '';
+    node.classList.remove('hidden');
+    String(text).split('\n').forEach(function (line) {
+      var row = document.createElement('div');
+      row.className = 'chord-line';
+      parseChordLine(line).forEach(function (segment) {
+        var run = document.createElement('span');
+        run.className = 'chord-run';
+        var chord = document.createElement('span');
+        chord.className = 'chord';
+        chord.textContent = segment.chord;
+        if (accent) { chord.style.color = accent; }
+        var words = document.createElement('span');
+        words.className = 'chord-words';
+        words.textContent = segment.text;
+        run.appendChild(chord);
+        run.appendChild(words);
+        row.appendChild(run);
+      });
+      node.appendChild(row);
+    });
+  }
+
+  // The same rule the app and the desktop use: a bracketed token is a chord only
+  // if it parses as one, so [Repeat] stays a word.
+  var CHORD_RE = /^[A-G][#b]?(maj|min|dim|aug|sus|add|m|M)?[0-9]*(sus[24]|add[0-9]+|dim|aug)?(\/[A-G][#b]?)?$/;
+  var BRACKETED_RE = /\[[^\]\n]*\]/g;
+
+  function parseChordLine(line) {
+    var segments = [];
+    var cursor = 0;
+    var match;
+    BRACKETED_RE.lastIndex = 0;
+    while ((match = BRACKETED_RE.exec(line)) !== null) {
+      var inner = match[0].slice(1, -1);
+      if (!CHORD_RE.test(inner.trim())) { continue; }
+      if (match.index > cursor) {
+        segments.push({ chord: '', text: line.slice(cursor, match.index) });
+      }
+      var afterChord = match.index + match[0].length;
+      // The chord owns the words up to the next chord, or the line's end.
+      var rest = line.slice(afterChord);
+      var nextAt = -1;
+      var scan = /\[[^\]\n]*\]/g;
+      var candidate;
+      while ((candidate = scan.exec(rest)) !== null) {
+        if (CHORD_RE.test(candidate[0].slice(1, -1).trim())) { nextAt = candidate.index; break; }
+      }
+      var end = nextAt >= 0 ? afterChord + nextAt : line.length;
+      segments.push({ chord: inner, text: line.slice(afterChord, end) });
+      cursor = end;
+      BRACKETED_RE.lastIndex = end;
+    }
+    if (cursor < line.length) { segments.push({ chord: '', text: line.slice(cursor) }); }
+    if (segments.length === 0) { segments.push({ chord: '', text: line }); }
+    return segments;
+  }
+
   function applySlide(slide) {
     var theme = slide.theme || {};
 
@@ -169,10 +249,17 @@
       + ' size-' + String(slide.textSize || 'MEDIUM').toLowerCase()
       + ' h-' + alignClass(theme.textAlign, ['LEFT', 'CENTER', 'RIGHT'], 'center');
 
-    setText(el.body, slide.body);
-    // The operator can turn the reference line off entirely — some churches want the words
-    // and nothing else on screen.
-    var wantsReference = theme.showReference !== false;
+    // Chords ride alongside the clean words rather than replacing them, so an
+    // output that is not asked for them shows exactly what it always did.
+    var chordText = (theme.showChords === true) ? slide.chordBody : null;
+    if (chordText) {
+      renderChords(el.body, chordText, theme.accentColor);
+    } else {
+      setText(el.body, slide.body);
+    }
+    // The reference line is asked for by kind: a church that wants no heading over
+    // a hymn usually still wants the chapter and verse over scripture.
+    var wantsReference = referenceWanted(theme, slide.kind);
     setText(el.reference, (wantsReference && slide.reference) ? String(slide.reference).toUpperCase() : '');
     setText(el.footer, slide.footer);
 

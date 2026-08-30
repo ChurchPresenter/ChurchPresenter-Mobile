@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -123,6 +124,19 @@ class SongsViewModel(
      * `setDeck` already is.
      */
     private var loadedDeck: SlideDeck? = null
+
+    /**
+     * Whether the lyric sheet draws chords with the words.
+     *
+     * Read from the presenter's theme, which is the same switch the outputs
+     * follow — one setting, not a phone copy that can disagree with the screen.
+     * False with no presenter: that is remote mode, where the desktop owns the
+     * look and its own stage monitor shows the chords.
+     */
+    val showChords: StateFlow<Boolean> = presenter?.theme
+        ?.map { it.showChords }
+        ?.stateIn(viewModelScope, SharingStarted.Eagerly, presenter.theme.value.showChords)
+        ?: MutableStateFlow(false)
 
     private val _isProjecting = MutableStateFlow(false)
     val isProjecting = _isProjecting.asStateFlow()

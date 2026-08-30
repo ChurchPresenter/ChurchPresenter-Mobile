@@ -67,6 +67,14 @@ enum class SlideVerticalAlign {
  * @property accentColor Colour used for the reference/footer line.
  * @property brandLine Optional church name rendered in the top-left corner.
  * @property showClock Whether the output shows a wall clock in the top-right corner.
+ * @property showSongReference Whether a song's title and section line is shown.
+ * @property showBibleReference Whether a Bible reference is shown. Kept separate
+ *   from the song one because most churches always want "John 3:16" on screen
+ *   while wanting nothing above a hymn's words.
+ * @property showOtherReference Whether anything else — a notice, a photo — shows
+ *   its line.
+ * @property showChords Whether chords are drawn with the words, on every output
+ *   as well as the phone.
  * @property textAlign Where the words sit across the screen.
  * @property verticalAlign Where the words sit down the screen.
  *
@@ -81,12 +89,27 @@ data class SlideTheme(
     val accentColor: String = "#7C5CFF",
     val brandLine: String? = null,
     val showClock: Boolean = true,
-    val showReference: Boolean = true,
+    val showSongReference: Boolean = true,
+    val showBibleReference: Boolean = true,
+    val showOtherReference: Boolean = true,
+    val showChords: Boolean = false,
     val gradientTop: String = DEFAULT_GRADIENT_TOP,
     val gradientBottom: String = DEFAULT_GRADIENT_BOTTOM,
     val textAlign: SlideTextAlign = SlideTextAlign.CENTER,
     val verticalAlign: SlideVerticalAlign = SlideVerticalAlign.MIDDLE,
 )
+
+/**
+ * Whether this slide's reference line should be drawn, by what kind of thing it is.
+ *
+ * Songs, Bible and everything else are asked separately: a church that wants no
+ * heading over a hymn usually still wants the chapter and verse over scripture.
+ */
+fun Slide.showsReference(): Boolean = when (kind) {
+    SlideKind.SONG -> theme.showSongReference
+    SlideKind.BIBLE -> theme.showBibleReference
+    else -> theme.showOtherReference
+}
 
 /** The wash every renderer falls back to, and what the pickers start on. */
 const val DEFAULT_GRADIENT_TOP: String = "#2A1D5E"
@@ -122,6 +145,12 @@ const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
 data class Slide(
     val kind: SlideKind = SlideKind.BLANK,
     val body: String = "",
+    /**
+     * The same words with their chord markup still in them, when the source had
+     * any. [body] is always the clean words, so anything that has no chord
+     * rendering keeps working untouched.
+     */
+    val chordBody: String? = null,
     val reference: String? = null,
     val footer: String? = null,
     val textSize: SlideTextSize = SlideTextSize.MEDIUM,

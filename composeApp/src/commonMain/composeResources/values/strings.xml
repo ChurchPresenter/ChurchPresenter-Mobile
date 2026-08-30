@@ -638,6 +638,9 @@
     <string name="standalone_theme_name">Name this look</string>
     <string name="standalone_theme_save_action">Save</string>
     <string name="standalone_theme_delete">Delete</string>
+    <string name="standalone_show_reference_songs">Song heading</string>
+    <string name="standalone_show_reference_bible">Bible reference</string>
+    <string name="standalone_show_reference_other">Other headings</string>
     <string name="standalone_brand_line">Church name (top corner)</string>
     <string name="standalone_brand_line_hint">Leave blank for none</string>
     <string name="standalone_show_clock">Show a clock</string>

@@ -463,7 +463,7 @@ class StandaloneEngineTest {
         val f = Fixture()
         f.engine.setDeck(deckOf(1))
 
-        assertTrue(f.published.single().slide!!.theme.showReference)
+        assertTrue(f.published.single().slide!!.theme.showSongReference)
     }
 
     @Test
@@ -472,9 +472,9 @@ class StandaloneEngineTest {
         val f = Fixture()
         f.engine.setDeck(deckOf(1))
 
-        f.engine.setTheme(f.engine.theme.value.copy(showReference = false))
+        f.engine.setTheme(f.engine.theme.value.copy(showSongReference = false))
 
-        assertFalse(f.published.last().slide!!.theme.showReference)
+        assertFalse(f.published.last().slide!!.theme.showSongReference)
         // The reference itself is still carried — it is the renderers that stop drawing it, so
         // turning it back on needs no reload.
         assertEquals("ref 0", f.published.last().slide?.reference)

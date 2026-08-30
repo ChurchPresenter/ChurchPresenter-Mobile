@@ -196,3 +196,10 @@ html, body {
 #screen.v-top    { align-items: flex-start; }
 #screen.v-bottom { align-items: flex-end; }
 #screen.v-middle { align-items: center; }
+
+/* ── Chords, when the operator asks for them ─────────────────────────── */
+
+.chord-line { display: flex; flex-wrap: wrap; align-items: flex-end; }
+.chord-run  { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.chord      { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .55em; line-height: 1.1; }
+.chord-words { white-space: pre-wrap; }

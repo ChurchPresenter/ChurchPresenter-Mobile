@@ -25,7 +25,6 @@ import churchpresentermobile.composeapp.generated.resources.toast_session_blocke
 import churchpresentermobile.composeapp.generated.resources.toast_song_added_to_schedule
 import churchpresentermobile.composeapp.generated.resources.toast_song_live
 import com.church.presenter.churchpresentermobile.model.AppSettings
-import com.church.presenter.churchpresentermobile.model.ChordsPreference
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
@@ -127,9 +126,8 @@ fun SongsTable(
         }
     }
 
-    // Set in the Look sheet on the Present tab, so it has to come from the
-    // process-wide holder rather than this screen's own ViewModel.
-    val showChords by ChordsPreference.showChords.collectAsState()
+    // The same switch the outputs follow, read from the presenter's theme.
+    val showChords by vm.showChords.collectAsState()
 
     Box(modifier = modifier) {
         if (showDetail) {

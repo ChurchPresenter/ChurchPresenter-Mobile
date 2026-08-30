@@ -56,7 +56,10 @@ import churchpresentermobile.composeapp.generated.resources.standalone_gradient_
 import churchpresentermobile.composeapp.generated.resources.standalone_look
 import churchpresentermobile.composeapp.generated.resources.standalone_look_reset
 import churchpresentermobile.composeapp.generated.resources.standalone_show_reference
+import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_bible
 import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_hint
+import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_other
+import churchpresentermobile.composeapp.generated.resources.standalone_show_reference_songs
 import churchpresentermobile.composeapp.generated.resources.standalone_show_chords
 import churchpresentermobile.composeapp.generated.resources.standalone_show_chords_hint
 import churchpresentermobile.composeapp.generated.resources.standalone_show_clock
@@ -252,11 +255,25 @@ internal fun LookSheet(
                 imeAction = ImeAction.Done,
             )
 
+            // Asked separately: a church that wants no heading over a hymn
+            // usually still wants the chapter and verse over scripture.
             ToggleRow(
-                label = stringResource(Res.string.standalone_show_reference),
+                label = stringResource(Res.string.standalone_show_reference_songs),
                 hint = stringResource(Res.string.standalone_show_reference_hint),
-                checked = theme.showReference,
-                onCheckedChange = { on -> onThemeChange { it.copy(showReference = on) } },
+                checked = theme.showSongReference,
+                onCheckedChange = { on -> onThemeChange { it.copy(showSongReference = on) } },
+            )
+
+            ToggleRow(
+                label = stringResource(Res.string.standalone_show_reference_bible),
+                checked = theme.showBibleReference,
+                onCheckedChange = { on -> onThemeChange { it.copy(showBibleReference = on) } },
+            )
+
+            ToggleRow(
+                label = stringResource(Res.string.standalone_show_reference_other),
+                checked = theme.showOtherReference,
+                onCheckedChange = { on -> onThemeChange { it.copy(showOtherReference = on) } },
             )
 
             ToggleRow(

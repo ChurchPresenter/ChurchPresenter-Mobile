@@ -6,13 +6,15 @@ import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.AppSettings
-import com.church.presenter.churchpresentermobile.model.ChordsPreference
 import com.church.presenter.churchpresentermobile.model.NamedTheme
 import com.church.presenter.churchpresentermobile.model.SlideThemePresets
 import com.church.presenter.churchpresentermobile.util.Logger
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.StoredPhoto
@@ -79,22 +81,22 @@ class StandaloneViewModel(
         settings?.let { stored ->
             runCatching { themeJson.decodeFromString<SlideTheme>(stored.slideThemeJson) }
                 .getOrNull()
-                ?.let { engine.setTheme(it) }
+                ?.let { engine.setTheme(carryOldReferenceSetting(it, stored.slideThemeJson)) }
         }
     }
 
     /**
-     * Whether this phone shows chords with a song's words.
+     * Whether the words are drawn with their chords.
      *
-     * Held process-wide because the switch is here and the words are on the Songs
-     * tab. Kept out of the theme on purpose: the theme travels inside every
-     * slide, and chords are for whoever is playing, not the congregation.
+     * Part of the theme, so one switch reaches the phone, an attached screen and
+     * any browser watching the hosted page — the theme rides inside every slide,
+     * so none of them has to be told separately.
      */
-    val showChords: StateFlow<Boolean> = ChordsPreference.showChords
+    val showChords: StateFlow<Boolean> = engine.theme
+        .map { it.showChords }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, engine.theme.value.showChords)
 
-    fun setShowChords(show: Boolean) {
-        settings?.let { ChordsPreference.set(it, show) }
-    }
+    fun setShowChords(show: Boolean) = updateTheme { it.copy(showChords = show) }
 
     /** Status of every registered sink, for the outputs chip and sheet. */
     val sinks: StateFlow<List<SinkStatus>> = registry.statuses
@@ -208,6 +210,26 @@ class StandaloneViewModel(
 }
 
 /** Lenient so a theme written by a newer build still opens on an older one. */
+/**
+ * Honours a `showReference` saved before the setting was split by kind.
+ *
+ * The three new flags default to on, so a church that had turned the single one
+ * off would find every heading back the next Sunday. Read the old value straight
+ * out of the stored JSON — it is no longer a field, so decoding simply drops it —
+ * and apply it to all three.
+ */
+private fun carryOldReferenceSetting(theme: SlideTheme, storedJson: String): SlideTheme {
+    val legacy = runCatching {
+        themeJson.parseToJsonElement(storedJson).jsonObject["showReference"]?.jsonPrimitive?.boolean
+    }.getOrNull() ?: return theme
+    if (legacy) return theme
+    return theme.copy(
+        showSongReference = false,
+        showBibleReference = false,
+        showOtherReference = false,
+    )
+}
+
 private const val TAG = "StandaloneViewModel"
 
 private val themeJson = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefaults = true }

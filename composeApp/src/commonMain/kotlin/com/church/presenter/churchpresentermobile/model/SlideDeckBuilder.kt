@@ -41,10 +41,10 @@ object SlideDeckBuilder {
         val slides = bodies.mapIndexed { index, (text, label) ->
             Slide(
                 kind = SlideKind.SONG,
-                // Chords belong to whoever is playing, never to the audience. A
-                // song copied from the computer still carries its markup, because
-                // the companion API sends lyric lines verbatim.
+                // body is always the clean words; the marked-up copy rides
+                // alongside so an output can draw a chart when asked to.
                 body = Chords.stripChords(text).trim(),
+                chordBody = text.trim().takeIf { Chords.hasChords(it) },
                 reference = buildReference(title, sectionLabel(label, index)),
                 sourceId = listOfNotNull(book, number).joinToString(":").ifBlank { null },
                 index = index,
@@ -78,6 +78,7 @@ object SlideDeckBuilder {
             Slide(
                 kind = SlideKind.SONG,
                 body = Chords.stripChords(section.text).trim(),
+                chordBody = section.text.trim().takeIf { Chords.hasChords(it) },
                 reference = buildReference(song.title, label),
                 footer = song.copyright?.takeIf { it.isNotBlank() },
                 sourceId = song.id,

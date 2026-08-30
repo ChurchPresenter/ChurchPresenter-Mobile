@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,7 +29,9 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
+import com.church.presenter.churchpresentermobile.library.Chords
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.showsReference
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
@@ -96,7 +99,17 @@ fun StandaloneOutputScreen(
             horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
             verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
         ) {
-            if (slide.body.isNotBlank()) {
+            val chordText = slide.chordBody?.takeIf { slide.theme.showChords }
+            if (chordText != null) {
+                OutputChordChart(
+                    text = chordText,
+                    bodySize = bodySize,
+                    textColor = textColor,
+                    chordColor = accentColor,
+                    fontFamily = slide.theme.font.toFontFamily(),
+                    horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
+                )
+            } else if (slide.body.isNotBlank()) {
                 Text(
                     text = slide.body,
                     style = TextStyle(
@@ -109,7 +122,7 @@ fun StandaloneOutputScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            slide.reference?.takeIf { it.isNotBlank() && slide.theme.showReference }?.let { reference ->
+            slide.reference?.takeIf { it.isNotBlank() && slide.showsReference() }?.let { reference ->
                 Text(
                     text = reference.uppercase(),
                     style = TextStyle(
@@ -186,6 +199,59 @@ private fun Backdrop(slide: Slide) {
         }
     }
 }
+
+/**
+ * The words with their chords, for an output.
+ *
+ * Each chord sits above the words it was written against, using the same
+ * splitter the phone and the desktop use, so the three agree on where a chord
+ * belongs. Falls back to nothing special when a line has no chords: that line is
+ * a single segment with an empty chord, which draws as ordinary words.
+ */
+@Composable
+private fun OutputChordChart(
+    text: String,
+    bodySize: TextUnit,
+    textColor: Color,
+    chordColor: Color,
+    fontFamily: FontFamily,
+    horizontalAlignment: Alignment.Horizontal,
+) {
+    val chordSize = (bodySize.value * CHORD_RATIO).sp
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = horizontalAlignment,
+    ) {
+        text.lines().forEach { line ->
+            Row(verticalAlignment = Alignment.Bottom) {
+                Chords.parseLine(line).forEach { segment ->
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Text(
+                            text = segment.chord,
+                            style = TextStyle(
+                                fontSize = chordSize,
+                                fontFamily = FontFamily.Monospace,
+                                color = chordColor,
+                            ),
+                        )
+                        Text(
+                            text = segment.text,
+                            style = TextStyle(
+                                fontSize = bodySize,
+                                lineHeight = bodySize * BODY_LINE_HEIGHT,
+                                fontFamily = fontFamily,
+                                color = textColor,
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Chords are drawn smaller than the words they sit over. */
+private const val CHORD_RATIO = 0.55f
 
 /** The desktop resolves the same three names to the same three alignments. */
 private fun SlideTextAlign.toTextAlign(): TextAlign = when (this) {

@@ -2,8 +2,10 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
-import com.church.presenter.churchpresentermobile.model.ChordsPreference
+import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideFont
+import com.church.presenter.churchpresentermobile.model.SlideKind
+import com.church.presenter.churchpresentermobile.model.showsReference
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideTheme
@@ -18,6 +20,7 @@ import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrN
 import com.church.presenter.churchpresentermobile.ui.standalone.rgbToHex
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -376,15 +379,58 @@ class StandaloneLookTest {
 
     @Test
     fun theChordToggleIsOffUntilAskedForAndThenRemembered() = runVmTest {
-        ChordsPreference.resetForTest()
         val settings = AppSettings(InMemorySettingsStorage())
-        val viewModel = StandaloneViewModel(engine(), SinkRegistry(), settings)
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), settings)
         assertEquals(false, viewModel.showChords.value, "the audience's words come first")
 
         viewModel.setShowChords(true)
 
+        advanceUntilIdle()
         assertEquals(true, viewModel.showChords.value)
-        assertEquals(true, settings.showChords, "and it survives a restart")
-        ChordsPreference.resetForTest()
+        // Part of the theme, so it reaches every output rather than the phone alone.
+        assertEquals(true, engine.theme.value.showChords)
+
+        // A second ViewModel over the same storage is what a restart looks like.
+        val restarted = StandaloneViewModel(engine(), SinkRegistry(), settings)
+        advanceUntilIdle()
+        assertEquals(true, restarted.showChords.value, "and it survives a restart")
+    }
+
+    @Test
+    fun aReferenceTurnedOffBeforeTheSplitStaysOff() = runVmTest {
+        // The single showReference flag became three. Without carrying the old
+        // value across, a church that had turned headings off would find every
+        // one of them back the next Sunday.
+        val settings = AppSettings(InMemorySettingsStorage())
+        settings.slideThemeJson = """{"textColor":"#FFFFFF","showReference":false}"""
+
+        val (viewModel, _) = vm(settings)
+
+        assertEquals(false, viewModel.theme.value.showSongReference)
+        assertEquals(false, viewModel.theme.value.showBibleReference)
+        assertEquals(false, viewModel.theme.value.showOtherReference)
+    }
+
+    @Test
+    fun aReferenceLeftOnBeforeTheSplitStaysOn() = runVmTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        settings.slideThemeJson = """{"showReference":true}"""
+
+        val (viewModel, _) = vm(settings)
+
+        assertEquals(true, viewModel.theme.value.showSongReference)
+        assertEquals(true, viewModel.theme.value.showBibleReference)
+    }
+
+    @Test
+    fun songsAndScriptureAreAskedSeparately() = runVmTest {
+        // The point of the split: no heading over a hymn, chapter and verse over
+        // scripture.
+        val theme = SlideTheme(showSongReference = false, showBibleReference = true)
+
+        assertEquals(false, Slide(kind = SlideKind.SONG, theme = theme).showsReference())
+        assertEquals(true, Slide(kind = SlideKind.BIBLE, theme = theme).showsReference())
+        assertEquals(true, Slide(kind = SlideKind.ANNOUNCEMENT, theme = theme).showsReference())
     }
 }
