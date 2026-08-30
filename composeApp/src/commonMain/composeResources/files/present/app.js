@@ -56,13 +56,37 @@
       ? value.trim() : null;
   }
 
+  // Photos are served by the very server that served this page, but the URL is
+  // minted from the address the phone answers on its Wi-Fi. A viewer who reached
+  // this page by any other route — a second interface, a VPN, localhost on the
+  // phone itself — cannot fetch that host, and the slide silently renders as
+  // nothing. Re-point our own photo URLs at whatever origin this page came from,
+  // which is by definition reachable: it is how you are reading this.
+  function ownPhoto(url) {
+    if (typeof url !== 'string') { return null; }
+    try {
+      var parsed = new URL(url, window.location.href); // offline-ok: parsing, not fetching
+      if (parsed.pathname.indexOf('/photo/') === 0) { return parsed.pathname + parsed.search; }
+    } catch (e) { /* not a URL we can reason about — send it on unchanged */ }
+    return url;
+  }
+
   function applyBackdrop(slide) {
     var kind = slide.backdrop || 'GRADIENT';
-    var url = slide.backdropUrl;
+    var url = ownPhoto(slide.backdropUrl);
     if (kind === 'IMAGE' && url) {
+      var imageTheme = slide.theme || {};
+      var imageTop = safeColor(imageTheme.gradientTop);
+      var imageBottom = safeColor(imageTheme.gradientBottom);
+      // Keep the wash *underneath* the photo as a second background layer. If the
+      // photo cannot be fetched the audience sees the gradient rather than a bare
+      // screen, which is indistinguishable from the app having failed.
+      var wash = (imageTop && imageBottom)
+        ? 'linear-gradient(160deg, ' + imageTop + ' 0%, ' + imageBottom + ' 100%)'
+        : 'linear-gradient(160deg, #2a1d5e 0%, #05060d 100%)';
       el.backdrop.className = '';
       el.backdrop.style.background = '';
-      el.backdrop.style.backgroundImage = 'url("' + encodeURI(url) + '")';
+      el.backdrop.style.backgroundImage = 'url("' + encodeURI(url) + '"), ' + wash;
       el.scrim.classList.remove('hidden');
     } else {
       el.backdrop.style.backgroundImage = '';
