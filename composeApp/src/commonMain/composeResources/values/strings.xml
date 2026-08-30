@@ -530,6 +530,7 @@
     <string name="standalone_blank">Blank</string>
     <string name="standalone_live">Live</string>
     <string name="standalone_clear">Clear</string>
+    <string name="web_refuses_framing">%1$s will not allow itself to be shown inside another page, so the browser screen shows an error instead. A screen plugged into this phone still shows it.</string>
     <string name="standalone_preview">Preview</string>
     <string name="standalone_no_output">No screen connected</string>
     <string name="standalone_output_count">%1$s screen(s)</string>

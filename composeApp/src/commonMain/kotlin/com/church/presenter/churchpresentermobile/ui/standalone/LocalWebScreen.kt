@@ -28,6 +28,7 @@ import churchpresentermobile.composeapp.generated.resources.action_clear_display
 import churchpresentermobile.composeapp.generated.resources.action_go_live
 import churchpresentermobile.composeapp.generated.resources.standalone_no_output
 import churchpresentermobile.composeapp.generated.resources.web_not_a_link
+import churchpresentermobile.composeapp.generated.resources.web_refuses_framing
 import churchpresentermobile.composeapp.generated.resources.web_url_placeholder
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.ui.OutlineActionButton
@@ -53,6 +54,7 @@ fun LocalWebScreen(
     val url by vm.url.collectAsState()
     val canProject by vm.canProject.collectAsState()
     val projecting by vm.projecting.collectAsState()
+    val refusedByFraming by vm.refusedByFraming.collectAsState()
 
     Column(
         modifier = modifier.fillMaxSize().background(colors.background).padding(16.dp),
@@ -96,6 +98,18 @@ fun LocalWebScreen(
 
         if (!hasOutput) {
             Text(stringResource(Res.string.standalone_no_output), color = colors.muted, fontSize = 12.sp)
+        }
+
+        // The browser screen frames the page, and a great many sites forbid that.
+        // Nothing here can override it — the browser enforces it on the site's
+        // behalf — so the operator is told which output is affected and which
+        // still works, rather than being left with a browser error on the wall.
+        refusedByFraming?.let { host ->
+            Text(
+                text = stringResource(Res.string.web_refuses_framing, host),
+                color = colors.amber,
+                fontSize = 12.sp,
+            )
         }
 
         projecting?.let { live ->

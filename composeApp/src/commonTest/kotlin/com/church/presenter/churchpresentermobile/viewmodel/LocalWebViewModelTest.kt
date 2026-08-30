@@ -6,7 +6,9 @@ import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -100,5 +102,64 @@ class LocalWebViewModelTest {
 
         assertNull(vm.projecting.value)
         assertTrue(engine.deck.value.slides.isEmpty())
+    }
+
+    // ── Sites that will not be framed ────────────────────────────────────────
+
+    @Test
+    fun aSiteThatRefusesFramingIsNamedAfterItIsProjected() = runVmTest {
+        val engine = engine()
+        val vm = LocalWebViewModel(engine, refusesFraming = { true })
+
+        vm.setUrl("google.com")
+        vm.project()
+        advanceUntilIdle()
+
+        // Projected anyway: a screen attached to this phone shows the page, so
+        // the warning is about one output rather than a refusal to try.
+        assertEquals(SlideKind.WEB, engine.deck.value.kind)
+        assertEquals("google.com", vm.refusedByFraming.value)
+    }
+
+    @Test
+    fun anOrdinarySiteIsNotWarnedAbout() = runVmTest {
+        val vm = LocalWebViewModel(engine(), refusesFraming = { false })
+
+        vm.setUrl("example.org")
+        vm.project()
+        advanceUntilIdle()
+
+        assertNull(vm.refusedByFraming.value)
+    }
+
+    @Test
+    fun typingAgainDropsTheWarning() = runVmTest {
+        val vm = LocalWebViewModel(engine(), refusesFraming = { true })
+        vm.setUrl("google.com")
+        vm.project()
+        advanceUntilIdle()
+
+        vm.setUrl("example.org")
+
+        assertNull(vm.refusedByFraming.value, "the warning belonged to the old address")
+    }
+
+    @Test
+    fun aLateAnswerAboutAnAddressAlreadyReplacedIsIgnored() = runVmTest {
+        // The check is a network round trip. If the operator has moved on by the
+        // time it lands, naming the old site would be worse than saying nothing.
+        val vm = LocalWebViewModel(engine(), refusesFraming = { url ->
+            if (url.contains("slow")) { delay(5_000) }
+            true
+        })
+        vm.setUrl("slow.example")
+        vm.project()
+
+        advanceTimeBy(100)
+        vm.setUrl("example.org")
+        vm.project()
+        advanceUntilIdle()
+
+        assertEquals("example.org", vm.refusedByFraming.value)
     }
 }

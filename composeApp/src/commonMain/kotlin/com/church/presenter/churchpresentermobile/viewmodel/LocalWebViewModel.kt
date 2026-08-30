@@ -3,6 +3,9 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
+import com.church.presenter.churchpresentermobile.model.SlideKind
+import com.church.presenter.churchpresentermobile.network.FramingCheck
+import com.church.presenter.churchpresentermobile.network.createHttpClient
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 private const val TAG = "LocalWebViewModel"
 
@@ -25,7 +29,16 @@ private const val TAG = "LocalWebViewModel"
  * paste both kinds into the same box, and asking them to classify their own
  * link before pasting it is a question the app can answer itself.
  */
-class LocalWebViewModel(private val presenter: StandaloneEngine?) : ViewModel() {
+class LocalWebViewModel(
+    private val presenter: StandaloneEngine?,
+    /**
+     * Asks a site whether it allows being shown inside another page. Injected so
+     * the ViewModel is testable without a socket.
+     */
+    private val refusesFraming: suspend (String) -> Boolean = { url ->
+        FramingCheck.refusesFraming(url, framingClient)
+    },
+) : ViewModel() {
 
     private val _url = MutableStateFlow("")
     val url: StateFlow<String> = _url.asStateFlow()
@@ -40,8 +53,22 @@ class LocalWebViewModel(private val presenter: StandaloneEngine?) : ViewModel() 
         .map { SlideDeckBuilder.isProjectableLink(it) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    private val _refusedByFraming = MutableStateFlow<String?>(null)
+
+    /**
+     * The host of a site that will not appear on the browser screen, once one has
+     * been projected.
+     *
+     * A screen attached to this phone still shows it — that output loads the
+     * address as a page in its own right, so the site's rule about being framed
+     * does not apply to it. Saying which output is affected is the difference
+     * between a useful warning and a scare.
+     */
+    val refusedByFraming: StateFlow<String?> = _refusedByFraming.asStateFlow()
+
     fun setUrl(value: String) {
         _url.value = value
+        _refusedByFraming.value = null
     }
 
     /**
@@ -66,12 +93,32 @@ class LocalWebViewModel(private val presenter: StandaloneEngine?) : ViewModel() 
         }
         engine.setDeck(deck)
         _projecting.value = link
+        _refusedByFraming.value = null
         Logger.d(TAG, "project — ${deck.kind} $link")
+
+        // Asked after projecting, not before: a screen attached to this phone
+        // shows the page regardless, so the answer must never hold it up. A video
+        // is played rather than framed, so the question does not arise.
+        if (deck.kind == SlideKind.WEB) {
+            viewModelScope.launch {
+                if (refusesFraming(link) && _projecting.value == link) {
+                    _refusedByFraming.value = hostOf(link)
+                }
+            }
+        }
     }
+
+    /** The bare host, for a warning that reads like something a person would say. */
+    private fun hostOf(link: String): String =
+        link.substringAfter("://").substringBefore('/').removePrefix("www.")
 
     /** Takes the page or video off the screen. */
     fun clearDisplay() {
         presenter?.clear()
         _projecting.value = null
+        _refusedByFraming.value = null
     }
 }
+
+/** One client for the framing question, shared by every instance. */
+private val framingClient by lazy { createHttpClient() }
