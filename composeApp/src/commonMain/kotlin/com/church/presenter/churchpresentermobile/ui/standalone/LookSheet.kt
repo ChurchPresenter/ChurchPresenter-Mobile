@@ -28,6 +28,14 @@ import churchpresentermobile.composeapp.generated.resources.standalone_brand_lin
 import churchpresentermobile.composeapp.generated.resources.standalone_brand_line_hint
 import churchpresentermobile.composeapp.generated.resources.standalone_font
 import churchpresentermobile.composeapp.generated.resources.standalone_font_sans
+import churchpresentermobile.composeapp.generated.resources.standalone_align
+import churchpresentermobile.composeapp.generated.resources.standalone_align_center
+import churchpresentermobile.composeapp.generated.resources.standalone_align_left
+import churchpresentermobile.composeapp.generated.resources.standalone_align_right
+import churchpresentermobile.composeapp.generated.resources.standalone_valign
+import churchpresentermobile.composeapp.generated.resources.standalone_valign_bottom
+import churchpresentermobile.composeapp.generated.resources.standalone_valign_middle
+import churchpresentermobile.composeapp.generated.resources.standalone_valign_top
 import churchpresentermobile.composeapp.generated.resources.standalone_font_serif
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_bottom
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_top
@@ -39,6 +47,8 @@ import churchpresentermobile.composeapp.generated.resources.standalone_show_cloc
 import churchpresentermobile.composeapp.generated.resources.standalone_text_colour
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTheme
+import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.ui.OverlineRow
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.SettingsField
@@ -126,6 +136,28 @@ internal fun LookSheet(
                 onSelect = { index -> onThemeChange { it.copy(font = FONTS[index]) } },
             )
 
+            OverlineRow(stringResource(Res.string.standalone_align))
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.standalone_align_left),
+                    stringResource(Res.string.standalone_align_center),
+                    stringResource(Res.string.standalone_align_right),
+                ),
+                selectedIndex = TEXT_ALIGNS.indexOf(theme.textAlign).coerceAtLeast(0),
+                onSelect = { index -> onThemeChange { it.copy(textAlign = TEXT_ALIGNS[index]) } },
+            )
+
+            OverlineRow(stringResource(Res.string.standalone_valign))
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.standalone_valign_top),
+                    stringResource(Res.string.standalone_valign_middle),
+                    stringResource(Res.string.standalone_valign_bottom),
+                ),
+                selectedIndex = VERTICAL_ALIGNS.indexOf(theme.verticalAlign).coerceAtLeast(0),
+                onSelect = { index -> onThemeChange { it.copy(verticalAlign = VERTICAL_ALIGNS[index]) } },
+            )
+
             SettingsField(
                 label = stringResource(Res.string.standalone_brand_line),
                 value = theme.brandLine.orEmpty(),
@@ -188,3 +220,8 @@ private fun ToggleRow(
 }
 
 private val FONTS = listOf(SlideFont.SERIF, SlideFont.SANS)
+
+/** Option order for the alignment controls — must match their labels. */
+private val TEXT_ALIGNS = listOf(SlideTextAlign.LEFT, SlideTextAlign.CENTER, SlideTextAlign.RIGHT)
+private val VERTICAL_ALIGNS =
+    listOf(SlideVerticalAlign.TOP, SlideVerticalAlign.MIDDLE, SlideVerticalAlign.BOTTOM)

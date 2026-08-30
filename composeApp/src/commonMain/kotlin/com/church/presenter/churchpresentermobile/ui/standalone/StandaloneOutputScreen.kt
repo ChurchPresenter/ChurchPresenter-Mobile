@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
+import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
@@ -83,13 +85,16 @@ fun StandaloneOutputScreen(
         val textColor = parseHexColor(slide.theme.textColor, Color.White)
         val accentColor = parseHexColor(slide.theme.accentColor, Color.White)
 
+        // Both axes come from the theme so the phone, an attached screen and a
+        // watching browser lay the words out the same way.
+        val bodyAlign = slide.theme.textAlign.toTextAlign()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .alpha(if (showsText) contentAlpha else 0f)
                 .padding(horizontal = boxWidth * HORIZONTAL_PAD, vertical = boxHeight * VERTICAL_PAD),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
+            verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
         ) {
             if (slide.body.isNotBlank()) {
                 Text(
@@ -99,7 +104,7 @@ fun StandaloneOutputScreen(
                         lineHeight = bodySize * BODY_LINE_HEIGHT,
                         fontFamily = slide.theme.font.toFontFamily(),
                         color = textColor,
-                        textAlign = TextAlign.Center,
+                        textAlign = bodyAlign,
                     ),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -112,7 +117,7 @@ fun StandaloneOutputScreen(
                         letterSpacing = referenceSize * REFERENCE_TRACKING,
                         fontFamily = FontFamily.SansSerif,
                         color = accentColor.copy(alpha = REFERENCE_ALPHA),
-                        textAlign = TextAlign.Center,
+                        textAlign = bodyAlign,
                     ),
                     modifier = Modifier.padding(top = boxHeight * REFERENCE_GAP),
                 )
@@ -180,6 +185,25 @@ private fun Backdrop(slide: Slide) {
             }
         }
     }
+}
+
+/** The desktop resolves the same three names to the same three alignments. */
+private fun SlideTextAlign.toTextAlign(): TextAlign = when (this) {
+    SlideTextAlign.LEFT -> TextAlign.Start
+    SlideTextAlign.RIGHT -> TextAlign.End
+    SlideTextAlign.CENTER -> TextAlign.Center
+}
+
+private fun SlideTextAlign.toHorizontalAlignment(): Alignment.Horizontal = when (this) {
+    SlideTextAlign.LEFT -> Alignment.Start
+    SlideTextAlign.RIGHT -> Alignment.End
+    SlideTextAlign.CENTER -> Alignment.CenterHorizontally
+}
+
+private fun SlideVerticalAlign.toVerticalArrangement(): Arrangement.Vertical = when (this) {
+    SlideVerticalAlign.TOP -> Arrangement.Top
+    SlideVerticalAlign.BOTTOM -> Arrangement.Bottom
+    SlideVerticalAlign.MIDDLE -> Arrangement.Center
 }
 
 private fun SlideFont.toFontFamily(): FontFamily = when (this) {

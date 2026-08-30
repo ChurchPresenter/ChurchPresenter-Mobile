@@ -43,6 +43,22 @@ enum class SlideFont {
     SANS,
 }
 
+/** Where the words sit across the screen. Mirrors the desktop's horizontalAlignment. */
+@Serializable
+enum class SlideTextAlign {
+    LEFT,
+    CENTER,
+    RIGHT,
+}
+
+/** Where the words sit down the screen. Mirrors the desktop's verticalAlignment. */
+@Serializable
+enum class SlideVerticalAlign {
+    TOP,
+    MIDDLE,
+    BOTTOM,
+}
+
 /**
  * Presentation styling shared by every slide in a service.
  *
@@ -51,6 +67,12 @@ enum class SlideFont {
  * @property accentColor Colour used for the reference/footer line.
  * @property brandLine Optional church name rendered in the top-left corner.
  * @property showClock Whether the output shows a wall clock in the top-right corner.
+ * @property textAlign Where the words sit across the screen.
+ * @property verticalAlign Where the words sit down the screen.
+ *
+ * New properties must carry a default: the theme travels inside every slide and
+ * is persisted as JSON, so a defaulted field keeps an older payload — and an
+ * older saved theme — readable without touching [SLIDE_PROTOCOL_VERSION].
  */
 @Serializable
 data class SlideTheme(
@@ -62,6 +84,8 @@ data class SlideTheme(
     val showReference: Boolean = true,
     val gradientTop: String = DEFAULT_GRADIENT_TOP,
     val gradientBottom: String = DEFAULT_GRADIENT_BOTTOM,
+    val textAlign: SlideTextAlign = SlideTextAlign.CENTER,
+    val verticalAlign: SlideVerticalAlign = SlideVerticalAlign.MIDDLE,
 )
 
 /** The wash every renderer falls back to, and what the pickers start on. */

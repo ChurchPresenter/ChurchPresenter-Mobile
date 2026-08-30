@@ -3,6 +3,8 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideFont
+import com.church.presenter.churchpresentermobile.model.SlideTextAlign
+import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
@@ -238,5 +240,55 @@ class StandaloneLookTest {
 
         assertEquals(emptyList(), viewModel.backdropPhotos.value)
         assertEquals(false, viewModel.canUsePhotoBackdrop.value)
+    }
+
+    // ── Alignment ────────────────────────────────────────────────────────────
+
+    @Test
+    fun theWordsStartCentredOnBothAxes() = runVmTest {
+        val (viewModel, _) = vm()
+
+        assertEquals(SlideTextAlign.CENTER, viewModel.theme.value.textAlign)
+        assertEquals(SlideVerticalAlign.MIDDLE, viewModel.theme.value.verticalAlign)
+    }
+
+    @Test
+    fun analignmentChangeReachesTheSlideEveryOutputSees() = runVmTest {
+        // The theme travels inside each slide, so this is the one check that
+        // covers the phone, an attached screen and a watching browser at once.
+        val engine = engine()
+        val viewModel = StandaloneViewModel(engine, SinkRegistry(), null)
+
+        viewModel.updateTheme { it.copy(textAlign = SlideTextAlign.LEFT, verticalAlign = SlideVerticalAlign.TOP) }
+
+        assertEquals(SlideTextAlign.LEFT, engine.currentSlide.value.theme.textAlign)
+        assertEquals(SlideVerticalAlign.TOP, engine.currentSlide.value.theme.verticalAlign)
+    }
+
+    @Test
+    fun theChosenAlignmentSurvivesARestart() = runVmTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val (first, _) = vm(settings)
+        first.updateTheme { it.copy(textAlign = SlideTextAlign.RIGHT, verticalAlign = SlideVerticalAlign.BOTTOM) }
+
+        // A second ViewModel over the same storage is what a restart looks like.
+        val (second, _) = vm(settings)
+
+        assertEquals(SlideTextAlign.RIGHT, second.theme.value.textAlign)
+        assertEquals(SlideVerticalAlign.BOTTOM, second.theme.value.verticalAlign)
+    }
+
+    @Test
+    fun aThemeSavedBeforeAlignmentExistedStillReads() = runVmTest {
+        // The stored JSON predates these fields. Defaults must fill them in
+        // rather than the whole theme failing to parse and reverting to stock.
+        val settings = AppSettings(InMemorySettingsStorage())
+        settings.slideThemeJson = """{"font":"SANS","textColor":"#ABCDEF"}"""
+
+        val (viewModel, _) = vm(settings)
+
+        assertEquals(SlideFont.SANS, viewModel.theme.value.font, "the old fields must survive")
+        assertEquals(SlideTextAlign.CENTER, viewModel.theme.value.textAlign)
+        assertEquals(SlideVerticalAlign.MIDDLE, viewModel.theme.value.verticalAlign)
     }
 }

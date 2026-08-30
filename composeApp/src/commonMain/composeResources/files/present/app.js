@@ -153,11 +153,21 @@
     return (kind === 'WEB' || kind === 'VIDEO') && url != null;
   }
 
+  // An alignment this page does not know — an older or newer app, or a value
+  // that never arrived — falls back to centred rather than dropping the class
+  // and leaving the words wherever the stylesheet last put them.
+  function alignClass(value, allowed, fallback) {
+    return allowed.indexOf(String(value)) >= 0 ? String(value).toLowerCase() : fallback;
+  }
+
   function applySlide(slide) {
     var theme = slide.theme || {};
 
     el.screen.className = (theme.font === 'SANS' ? 'sans' : 'serif');
-    el.content.className = 'content size-' + String(slide.textSize || 'MEDIUM').toLowerCase();
+    el.content.className = 'content'
+      + ' size-' + String(slide.textSize || 'MEDIUM').toLowerCase()
+      + ' h-' + alignClass(theme.textAlign, ['LEFT', 'CENTER', 'RIGHT'], 'center')
+      + ' v-' + alignClass(theme.verticalAlign, ['TOP', 'MIDDLE', 'BOTTOM'], 'middle');
 
     setText(el.body, slide.body);
     // The operator can turn the reference line off entirely — some churches want the words
