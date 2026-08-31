@@ -60,6 +60,7 @@ import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.BibleSyncViewModel
 import org.jetbrains.compose.resources.stringResource
 
@@ -77,12 +78,17 @@ internal fun BibleSyncSection(
     val viewModel: BibleSyncViewModel = viewModel(key = "bible_sync") {
         BibleSyncViewModel(bibles, settings)
     }
+    // Choosing is not downloading — the Library tab offers the same choice, so
+    // the state behind it lives apart from this sheet.
+    val choice: BibleChoiceViewModel = viewModel(key = "bible_choice") {
+        BibleChoiceViewModel(bibles)
+    }
     val colors = LocalAppColors.current
 
     val choices by viewModel.choices.collectAsState()
     val selection by viewModel.selection.collectAsState()
     val installed by viewModel.installed.collectAsState()
-    val activeId by viewModel.activeId.collectAsState()
+    val activeId by choice.activeId.collectAsState()
     val isLoading by viewModel.isLoadingChoices.collectAsState()
     val loadError by viewModel.loadError.collectAsState()
     val progress by viewModel.progress.collectAsState()
@@ -119,12 +125,12 @@ internal fun BibleSyncSection(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { viewModel.setActive(bible.id) },
+                        .clickable { choice.setActive(bible.id) },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RadioButton(
                         selected = isActive,
-                        onClick = { viewModel.setActive(bible.id) },
+                        onClick = { choice.setActive(bible.id) },
                     )
                     Column(Modifier.weight(1f)) {
                         Text(bible.title, color = colors.text, fontSize = 13.sp, maxLines = 1,

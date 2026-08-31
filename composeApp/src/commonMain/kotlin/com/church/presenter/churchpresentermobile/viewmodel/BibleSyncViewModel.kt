@@ -51,23 +51,6 @@ class BibleSyncViewModel(
         .map { it.bibles }
         .stateIn(viewModelScope, SharingStarted.Eagerly, repository.index.value.bibles)
 
-    /**
-     * Which translation the Bible tab reads.
-     *
-     * There is no other way to choose: the first translation copied became the one presented
-     * and stayed that way, so a second download was visible in the list and unreachable
-     * everywhere else.
-     */
-    val activeId: StateFlow<String> = repository.index
-        .map { it.active?.id.orEmpty() }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, repository.index.value.active?.id.orEmpty())
-
-    /** Chooses the translation to read and present. */
-    fun setActive(id: String) {
-        repository.setActive(id)
-        Logger.d(TAG, "setActive — reading '$id'")
-    }
-
     private val _choices = MutableStateFlow<List<TranslationChoice>>(emptyList())
     val choices = _choices.asStateFlow()
 

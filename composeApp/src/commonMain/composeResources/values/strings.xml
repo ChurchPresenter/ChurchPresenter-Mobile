@@ -686,6 +686,8 @@
     <string name="bible_sync_verses">%1$s verses</string>
     <string name="bible_sync_choose_hint">Tap a translation to read and present it</string>
     <string name="bible_sync_active">Presenting</string>
+    <string name="library_bible_none">No Bible</string>
+    <string name="library_bible_menu_title">Bible to present</string>
     <string name="bible_sync_done">Copied %1$s.</string>
     <string name="bible_sync_done_with_failures">Copied %1$s. %2$s would not come.</string>
     <string name="bible_sync_nothing_copied">Nothing was copied. %1$s would not come.</string>

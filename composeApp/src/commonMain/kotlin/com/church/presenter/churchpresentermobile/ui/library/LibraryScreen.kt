@@ -10,17 +10,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.IosShare
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.library_add
+import churchpresentermobile.composeapp.generated.resources.library_bible_menu_title
+import churchpresentermobile.composeapp.generated.resources.library_bible_none
 import churchpresentermobile.composeapp.generated.resources.library_delete
 import churchpresentermobile.composeapp.generated.resources.library_delete_confirm_body
 import churchpresentermobile.composeapp.generated.resources.library_delete_confirm_title
@@ -62,6 +72,7 @@ import churchpresentermobile.composeapp.generated.resources.editor_cancel
 import churchpresentermobile.composeapp.generated.resources.editor_song_edit_label
 import churchpresentermobile.composeapp.generated.resources.sync_action
 import churchpresentermobile.composeapp.generated.resources.sync_days_ago
+import churchpresentermobile.composeapp.generated.resources.sync_section_bible
 import churchpresentermobile.composeapp.generated.resources.sync_hours_ago
 import churchpresentermobile.composeapp.generated.resources.sync_just_now
 import churchpresentermobile.composeapp.generated.resources.sync_minutes_ago
@@ -70,6 +81,7 @@ import churchpresentermobile.composeapp.generated.resources.share_title
 import com.church.presenter.churchpresentermobile.SyncRequestHandler
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.LibrarySyncState
 import com.church.presenter.churchpresentermobile.network.WsSender
@@ -180,8 +192,17 @@ fun LibraryScreen(
                 placeholder = stringResource(Res.string.library_search_placeholder),
             )
 
-            Row(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
+            Row(
+                // Three chips overflow a narrow phone, and the Bible one carries
+                // a translation's full name.
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(AppDimens.space8),
+            ) {
                 SyncChip(settings = settings, onClick = { showSync = true })
+                BibleChip(
+                    bibles = bibles,
+                    onCopyBible = { syncSection = SyncSection.BIBLE; showSync = true },
+                )
                 ShareChip(onClick = { showShare = true })
             }
             message?.let { text ->
@@ -450,6 +471,124 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(Res.string.library_delete)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.editor_cancel)) } },
     )
+}
+
+/**
+ * Which translation is presented, and the switch between the ones downloaded.
+ *
+ * Here because the Library is where this device's own content is kept, and because the choice
+ * was previously reachable only from inside the copy sheet — an operator with two translations
+ * had to open "copy from a computer" to change which one their congregation sees.
+ *
+ * Absent when nothing is downloaded: an empty picker is not a feature, and the Bible tab
+ * already says how to get one.
+ */
+@Composable
+private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
+    val colors = LocalAppColors.current
+    val viewModel: BibleChoiceViewModel = viewModel(key = "library_bible_choice") {
+        BibleChoiceViewModel(bibles)
+    }
+    val installed by viewModel.installed.collectAsState()
+    val active by viewModel.active.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+
+    if (installed.isEmpty()) return
+
+    Box {
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(AppDimens.radiusPill))
+                .background(colors.surface)
+                .clickable { expanded = true }
+                .padding(horizontal = AppDimens.space12, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.MenuBook,
+                contentDescription = null,
+                tint = colors.muted,
+                modifier = Modifier.size(14.dp),
+            )
+            Text(
+                text = active?.title ?: stringResource(Res.string.library_bible_none),
+                color = colors.text,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Icon(
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = null,
+                tint = colors.muted,
+                modifier = Modifier.size(14.dp),
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            containerColor = colors.sheetBackground,
+        ) {
+            Text(
+                text = stringResource(Res.string.library_bible_menu_title),
+                color = colors.muted,
+                fontSize = 11.sp,
+                modifier = Modifier.padding(horizontal = AppDimens.space12, vertical = 6.dp),
+            )
+            installed.forEach { bible ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = bible.title,
+                            color = colors.text,
+                            fontSize = 13.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    leadingIcon = {
+                        // A tick on the live one rather than a radio: this is a
+                        // menu, and the row itself is the press.
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            tint = if (bible.id == active?.id) colors.accent else Color.Transparent,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    },
+                    onClick = {
+                        viewModel.setActive(bible.id)
+                        expanded = false
+                    },
+                )
+            }
+            HorizontalDivider(color = colors.borderSubtle)
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(Res.string.sync_section_bible),
+                        color = colors.accent,
+                        fontSize = 13.sp,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.CloudDownload,
+                        contentDescription = null,
+                        tint = colors.accent,
+                        modifier = Modifier.size(16.dp),
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onCopyBible()
+                },
+            )
+        }
+    }
 }
 
 /**
