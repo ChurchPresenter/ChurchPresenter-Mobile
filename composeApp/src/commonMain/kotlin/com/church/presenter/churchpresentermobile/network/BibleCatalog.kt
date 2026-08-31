@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 private const val TAG = "BibleCatalog"
@@ -47,6 +48,17 @@ class BibleCatalog(
     /** [isLocal] as a stream, for UI that must follow a mode switch made in Settings. */
     val isLocalSource: Flow<Boolean> =
         mode.map { it == AppMode.STANDALONE && bibles != null }
+
+    /**
+     * Which translation this device is reading, as a stream. Empty when the text comes from a
+     * desktop, which has its own notion of a current translation.
+     *
+     * The Bible tab holds a book list drawn from whichever translation was active when it
+     * loaded, so switching translations has to reload it — otherwise the operator picks a
+     * second translation and keeps reading the first.
+     */
+    val activeLocalBibleId: Flow<String> =
+        bibles?.index?.map { it.active?.id.orEmpty() } ?: flowOf("")
 
     /**
      * Standalone with nothing installed — the Bible tab's empty state, as a stream so that

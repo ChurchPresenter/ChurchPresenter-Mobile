@@ -352,8 +352,8 @@
     <string name="more_dictionary_subtitle">Strong's Hebrew &amp; Greek lexicon</string>
     <string name="more_announcements_title">Announcements</string>
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
-    <string name="more_notices_title">Notices</string>
-    <string name="more_notices_subtitle">Put a notice from your library on the screen</string>
+    <string name="more_notices_title">Announcements</string>
+    <string name="more_notices_subtitle">Put an announcement from your library on the screen</string>
     <string name="more_contact_title">Contact us</string>
     <string name="more_contact_subtitle">Send a request, report a problem or say hello</string>
     <string name="standalone_backdrop_pick">Pick a photo for the backdrop</string>
@@ -364,7 +364,12 @@
     <string name="sync_books_all">All %1$d songbooks will be copied</string>
     <string name="sync_books_some">%1$d of %2$d songbooks will be copied</string>
     <string name="sync_books_none">Tick at least one songbook</string>
-    <string name="notices_empty">No notices yet. Write one in the Library tab.</string>
+    <string name="sync_scope_all">All songbooks</string>
+    <string name="sync_books_missing">Your computer did not list any songbooks.</string>
+    <string name="sync_books_select_all">Select all</string>
+    <string name="sync_books_select_none">Select none</string>
+    <string name="sync_done_close">Done</string>
+    <string name="notices_empty">No announcements yet. Write one in the Library tab.</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Project a web page on screen</string>
     <!-- Section detail header titles -->
@@ -516,7 +521,7 @@
     <string name="standalone_source">Source</string>
     <string name="standalone_source_song">Song</string>
     <string name="standalone_source_bible">Bible</string>
-    <string name="standalone_source_notice">Notice</string>
+    <string name="standalone_source_notice">Announcement</string>
     <string name="standalone_backdrop">Backdrop</string>
     <string name="standalone_backdrop_gradient">Gradient</string>
     <string name="standalone_backdrop_image">Image</string>
@@ -560,12 +565,12 @@
     <string name="library_search_placeholder">Search your library…</string>
     <string name="library_filter_all">All</string>
     <string name="library_filter_songs">Songs</string>
-    <string name="library_filter_notices">Notices</string>
+    <string name="library_filter_notices">Announcements</string>
     <string name="library_empty_title">Your library is empty</string>
-    <string name="library_empty_body">Songs and notices you create here work with no computer and no internet.</string>
+    <string name="library_empty_body">Songs and announcements you create here work with no computer and no internet.</string>
     <string name="library_no_results">Nothing matches your search</string>
     <string name="library_new_song">New song</string>
-    <string name="library_new_notice">New notice</string>
+    <string name="library_new_notice">New announcement</string>
     <string name="library_add">Add</string>
     <string name="library_origin_desktop">From computer</string>
     <string name="library_origin_edited">Edited</string>
@@ -573,7 +578,7 @@
     <string name="library_delete_confirm_title">Delete this item?</string>
     <string name="library_delete_confirm_body">This cannot be undone.</string>
     <string name="library_section_songs">Songs</string>
-    <string name="library_section_notices">Notices</string>
+    <string name="library_section_notices">Announcements</string>
 
     <!-- Song editor -->
     <string name="editor_song_new_title">New song</string>
@@ -600,8 +605,8 @@
     <string name="editor_preview">Slide preview</string>
 
     <!-- Notice editor -->
-    <string name="editor_notice_new_title">New notice</string>
-    <string name="editor_notice_edit_title">Edit notice</string>
+    <string name="editor_notice_new_title">New announcement</string>
+    <string name="editor_notice_edit_title">Edit announcement</string>
     <string name="editor_field_body">Text to show</string>
     <string name="editor_body_placeholder">Welcome!\nService begins at 10:30</string>
 
@@ -679,6 +684,8 @@
     <string name="bible_sync_stop">Stop after this one</string>
     <string name="bible_sync_installed">On this phone</string>
     <string name="bible_sync_verses">%1$s verses</string>
+    <string name="bible_sync_choose_hint">Tap a translation to read and present it</string>
+    <string name="bible_sync_active">Presenting</string>
     <string name="bible_sync_done">Copied %1$s.</string>
     <string name="bible_sync_done_with_failures">Copied %1$s. %2$s would not come.</string>
     <string name="bible_sync_nothing_copied">Nothing was copied. %1$s would not come.</string>

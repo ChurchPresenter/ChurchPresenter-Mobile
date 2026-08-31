@@ -99,7 +99,7 @@ fun SyncSheet(
             )
 
             when (section) {
-                SyncSection.SONGS -> SongSyncSection(repository, settings, sender)
+                SyncSection.SONGS -> SongSyncSection(repository, settings, sender, onDone = onDismiss)
                 SyncSection.BIBLE -> BibleSyncSection(bibles, settings)
             }
 

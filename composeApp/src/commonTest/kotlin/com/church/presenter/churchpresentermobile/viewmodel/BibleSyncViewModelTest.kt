@@ -131,4 +131,22 @@ class BibleSyncViewModelTest {
         assertTrue(repository.index.value.isEmpty)
         assertFalse(viewModel.choices.value.first { it.fileName == "en_KJV.spb" }.isInstalled)
     }
+
+    @Test
+    fun theSecondTranslationCanBeTheOnePresented() = runVmTestUnconfined {
+        // Reported: two downloaded, only the first readable anywhere else.
+        val (viewModel, repository) = vm()
+        viewModel.loadChoices()
+        viewModel.choices.first { it.isNotEmpty() }
+        viewModel.toggle("en_KJV.spb")
+        viewModel.toggle("ru_RST77.spb")
+        viewModel.sync()
+        viewModel.outcome.first { it != null }
+        assertEquals("en_KJV", viewModel.activeId.value)
+
+        viewModel.setActive("ru_RST77")
+
+        assertEquals("ru_RST77", viewModel.activeId.value)
+        assertEquals("ru_RST77", repository.index.value.active?.id)
+    }
 }

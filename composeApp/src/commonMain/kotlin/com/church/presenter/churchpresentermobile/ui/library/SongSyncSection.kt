@@ -24,8 +24,12 @@ import churchpresentermobile.composeapp.generated.resources.sync_books_choose
 import churchpresentermobile.composeapp.generated.resources.sync_books_finding
 import churchpresentermobile.composeapp.generated.resources.sync_books_none
 import churchpresentermobile.composeapp.generated.resources.sync_books_some
+import churchpresentermobile.composeapp.generated.resources.sync_books_missing
+import churchpresentermobile.composeapp.generated.resources.sync_books_select_all
+import churchpresentermobile.composeapp.generated.resources.sync_books_select_none
 import churchpresentermobile.composeapp.generated.resources.sync_cancel
 import churchpresentermobile.composeapp.generated.resources.sync_cancelled
+import churchpresentermobile.composeapp.generated.resources.sync_done_close
 import churchpresentermobile.composeapp.generated.resources.sync_done
 import churchpresentermobile.composeapp.generated.resources.sync_done_with_failures
 import churchpresentermobile.composeapp.generated.resources.sync_explain
@@ -33,11 +37,13 @@ import churchpresentermobile.composeapp.generated.resources.sync_failed
 import churchpresentermobile.composeapp.generated.resources.sync_kept_local
 import churchpresentermobile.composeapp.generated.resources.sync_preparing
 import churchpresentermobile.composeapp.generated.resources.sync_running
+import churchpresentermobile.composeapp.generated.resources.sync_scope_all
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SyncOutcome
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.LibrarySyncViewModel
@@ -48,12 +54,17 @@ import org.jetbrains.compose.resources.stringResource
  *
  * The results line names how many of the operator's own edits were preserved. That number is the
  * whole reason the merge rules exist, so it is stated rather than left to be discovered.
+ *
+ * @param onDone Closes the sheet. A finished copy turns the button into "Done" rather than
+ *   leaving "Copy songs" sitting under a result — an operator read that as nothing having
+ *   happened and copied a whole songbook a second time.
  */
 @Composable
 internal fun SongSyncSection(
     repository: LibraryRepository,
     settings: AppSettings,
     sender: WsSender,
+    onDone: () -> Unit,
 ) {
     val viewModel: LibrarySyncViewModel = viewModel(key = "library_sync") {
         LibrarySyncViewModel(repository, settings, SongService(settings, sender))
@@ -64,6 +75,7 @@ internal fun SongSyncSection(
     val books by viewModel.books.collectAsState()
     val selectedBooks by viewModel.selectedBooks.collectAsState()
     val isLoadingBooks by viewModel.isLoadingBooks.collectAsState()
+    val chooseBooks by viewModel.chooseBooks.collectAsState()
 
     Column(verticalArrangement = Arrangement.spacedBy(AppDimens.space12)) {
         Text(
@@ -136,9 +148,26 @@ internal fun SongSyncSection(
             OutcomeCard(message, tint)
         }
 
-        // Which books to take. Absent until asked for, so the common case — copy
-        // everything — stays one press, and nobody waits on a list they don't want.
-        if (!progress.isRunning) {
+        // A finished copy offers the way out, not the way back in: leaving
+        // "Copy songs" under a result read as nothing having happened, and a
+        // whole songbook was copied a second time.
+        val isFinished = !progress.isRunning && outcome is SyncOutcome.Success
+
+        // Which books to take. Everything, unless the operator says otherwise —
+        // stated as a choice rather than hidden behind a link, because a church
+        // that wants one of five books had no way to see this was possible.
+        if (!progress.isRunning && !isFinished) {
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.sync_scope_all),
+                    stringResource(Res.string.sync_books_choose),
+                ),
+                selectedIndex = if (chooseBooks) 1 else 0,
+                onSelect = { viewModel.setChooseBooks(it == 1) },
+            )
+        }
+
+        if (!progress.isRunning && !isFinished && chooseBooks) {
             when {
                 isLoadingBooks -> Text(
                     text = stringResource(Res.string.sync_books_finding),
@@ -146,21 +175,41 @@ internal fun SongSyncSection(
                     fontSize = 12.sp,
                 )
                 books.isEmpty() -> Text(
-                    text = stringResource(Res.string.sync_books_choose),
-                    color = colors.accent,
+                    text = stringResource(Res.string.sync_books_missing),
+                    color = colors.muted,
                     fontSize = 12.sp,
-                    modifier = Modifier.clickable { viewModel.loadBooks() },
                 )
                 else -> {
-                    Text(
-                        text = if (selectedBooks.size == books.size) {
-                            stringResource(Res.string.sync_books_all, books.size)
-                        } else {
-                            stringResource(Res.string.sync_books_some, selectedBooks.size, books.size)
-                        },
-                        color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
-                        fontSize = 12.sp,
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = if (selectedBooks.size == books.size) {
+                                stringResource(Res.string.sync_books_all, books.size)
+                            } else {
+                                stringResource(Res.string.sync_books_some, selectedBooks.size, books.size)
+                            },
+                            color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
+                            fontSize = 12.sp,
+                        )
+                        // A long book list is tedious to untick one at a time,
+                        // and picking one of forty starts from "none".
+                        Text(
+                            text = if (selectedBooks.size == books.size) {
+                                stringResource(Res.string.sync_books_select_none)
+                            } else {
+                                stringResource(Res.string.sync_books_select_all)
+                            },
+                            color = colors.accent,
+                            fontSize = 12.sp,
+                            modifier = Modifier.clickable {
+                                if (selectedBooks.size == books.size) viewModel.clearBooks()
+                                else viewModel.selectAllBooks()
+                            },
+                        )
+                    }
                     books.forEach { book ->
                         Row(
                             modifier = Modifier
@@ -193,13 +242,22 @@ internal fun SongSyncSection(
         }
 
         SheetButton(
-            label = if (progress.isRunning) stringResource(Res.string.sync_cancel)
-                    else stringResource(Res.string.sync_action),
+            label = when {
+                progress.isRunning -> stringResource(Res.string.sync_cancel)
+                isFinished -> stringResource(Res.string.sync_done_close)
+                else -> stringResource(Res.string.sync_action)
+            },
             isDestructive = progress.isRunning,
             // Every book unticked is not a sync — copying nothing and reporting
             // success would read as the feature being broken.
-            enabled = progress.isRunning || viewModel.canSync,
-            onClick = { if (progress.isRunning) viewModel.cancel() else viewModel.sync() },
+            enabled = progress.isRunning || isFinished || viewModel.canSync,
+            onClick = {
+                when {
+                    progress.isRunning -> viewModel.cancel()
+                    isFinished -> onDone()
+                    else -> viewModel.sync()
+                }
+            },
         )
     }
 }

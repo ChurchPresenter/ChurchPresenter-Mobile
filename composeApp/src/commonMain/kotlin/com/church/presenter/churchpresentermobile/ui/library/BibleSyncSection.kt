@@ -17,6 +17,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ import churchpresentermobile.composeapp.generated.resources.bible_sync_explain
 import churchpresentermobile.composeapp.generated.resources.bible_sync_failed
 import churchpresentermobile.composeapp.generated.resources.bible_sync_find
 import churchpresentermobile.composeapp.generated.resources.bible_sync_finding
+import churchpresentermobile.composeapp.generated.resources.bible_sync_active
+import churchpresentermobile.composeapp.generated.resources.bible_sync_choose_hint
 import churchpresentermobile.composeapp.generated.resources.bible_sync_installed
 import churchpresentermobile.composeapp.generated.resources.bible_sync_none_offered
 import churchpresentermobile.composeapp.generated.resources.bible_sync_nothing_copied
@@ -79,6 +82,7 @@ internal fun BibleSyncSection(
     val choices by viewModel.choices.collectAsState()
     val selection by viewModel.selection.collectAsState()
     val installed by viewModel.installed.collectAsState()
+    val activeId by viewModel.activeId.collectAsState()
     val isLoading by viewModel.isLoadingChoices.collectAsState()
     val loadError by viewModel.loadError.collectAsState()
     val progress by viewModel.progress.collectAsState()
@@ -101,17 +105,38 @@ internal fun BibleSyncSection(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
             )
+            // Which one is read and presented is a choice, not the order they
+            // happened to be downloaded in — so the list picks as well as lists.
+            if (installed.size > 1) {
+                Text(
+                    text = stringResource(Res.string.bible_sync_choose_hint),
+                    color = colors.muted,
+                    fontSize = 11.sp,
+                )
+            }
             installed.forEach { bible ->
+                val isActive = bible.id == activeId
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.setActive(bible.id) },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    RadioButton(
+                        selected = isActive,
+                        onClick = { viewModel.setActive(bible.id) },
+                    )
                     Column(Modifier.weight(1f)) {
                         Text(bible.title, color = colors.text, fontSize = 13.sp, maxLines = 1,
                             overflow = TextOverflow.Ellipsis)
                         Text(
-                            text = stringResource(Res.string.bible_sync_verses, bible.verseCount.toString()),
-                            color = colors.muted,
+                            text = if (isActive) {
+                                stringResource(Res.string.bible_sync_active) + " · " +
+                                    stringResource(Res.string.bible_sync_verses, bible.verseCount.toString())
+                            } else {
+                                stringResource(Res.string.bible_sync_verses, bible.verseCount.toString())
+                            },
+                            color = if (isActive) colors.accent else colors.muted,
                             fontSize = 11.sp,
                         )
                     }

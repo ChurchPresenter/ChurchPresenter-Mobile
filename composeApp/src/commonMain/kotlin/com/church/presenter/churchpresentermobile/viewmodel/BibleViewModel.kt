@@ -203,6 +203,15 @@ class BibleViewModel(
                 .drop(1)
                 .collect { loadBooks(forceReload = true) }
         }
+        viewModelScope.launch {
+            // Choosing a different downloaded translation is the third way the
+            // source changes. The book list and any open chapter belong to the
+            // old translation and have to be fetched again.
+            catalog.activeLocalBibleId
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadBooks(forceReload = true) }
+        }
     }
 
     // ── Public actions ────────────────────────────────────────────────────────
