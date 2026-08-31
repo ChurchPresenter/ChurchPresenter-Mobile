@@ -11,3 +11,10 @@ actual val supportsEmbeddedServer: Boolean = false
 actual val supportsExternalDisplay: Boolean = false
 
 actual val isForegroundOnlyServer: Boolean = false
+
+// Standalone is off here, so nothing ever reaches a sink to mirror.
+actual val mirroringRoute: MirroringRoute = MirroringRoute.NONE
+
+actual val canOpenMirroringSettings: Boolean = false
+
+actual fun openMirroringSettings() = Unit

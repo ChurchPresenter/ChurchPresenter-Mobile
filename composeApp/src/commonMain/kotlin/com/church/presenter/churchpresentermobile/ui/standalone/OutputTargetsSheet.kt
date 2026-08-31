@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.CastConnected
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -31,6 +32,9 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.outputs_empty
 import churchpresentermobile.composeapp.generated.resources.outputs_hint
+import churchpresentermobile.composeapp.generated.resources.outputs_hint_airplay
+import churchpresentermobile.composeapp.generated.resources.outputs_hint_cast
+import churchpresentermobile.composeapp.generated.resources.outputs_open_cast_settings
 import churchpresentermobile.composeapp.generated.resources.outputs_ios_foreground_warning
 import churchpresentermobile.composeapp.generated.resources.outputs_scan_hint
 import churchpresentermobile.composeapp.generated.resources.outputs_url_label
@@ -39,9 +43,14 @@ import churchpresentermobile.composeapp.generated.resources.outputs_state_error
 import churchpresentermobile.composeapp.generated.resources.outputs_state_off
 import churchpresentermobile.composeapp.generated.resources.outputs_state_waiting
 import churchpresentermobile.composeapp.generated.resources.outputs_title
+import com.church.presenter.churchpresentermobile.model.MirroringRoute
+import com.church.presenter.churchpresentermobile.model.canOpenMirroringSettings
+import com.church.presenter.churchpresentermobile.model.isForegroundOnlyServer
+import com.church.presenter.churchpresentermobile.model.mirroringRoute
+import com.church.presenter.churchpresentermobile.model.openMirroringSettings
 import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.present.SinkStatus
-import com.church.presenter.churchpresentermobile.model.isForegroundOnlyServer
+import com.church.presenter.churchpresentermobile.present.sink.EXTERNAL_DISPLAY_SINK_ID
 import com.church.presenter.churchpresentermobile.ui.QrCodeImage
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -53,6 +62,11 @@ import org.jetbrains.compose.resources.stringResource
  * Sinks appear even when nothing is connected — an "External display — waiting
  * for a screen" row tells the operator the feature exists and what to do next,
  * where an empty list would read as "not supported".
+ *
+ * That row is also where AirPlay and Cast surface. Neither can be started from
+ * inside the app — the operator has to go out to Control Centre or quick
+ * settings — so while the external display is unattached its row carries the
+ * platform's own instructions for getting there.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +84,8 @@ fun OutputTargetsSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8),
+                .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8)
+                .padding(bottom = AppDimens.space16),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {
             Text(
@@ -86,22 +101,86 @@ fun OutputTargetsSheet(
                     color = colors.muted,
                     fontSize = 13.sp,
                 )
+                Text(
+                    text = stringResource(Res.string.outputs_hint),
+                    color = colors.muted,
+                    fontSize = 12.sp,
+                    lineHeight = 17.sp,
+                )
             } else {
                 sinks.forEach { status ->
                     SinkRow(status)
                     // Only the browser sink has an address worth showing; the
                     // external display has nothing for the user to type.
                     status.webUrl()?.let { url -> DisplayUrlCard(url) }
+                    // Guidance belongs under the row it explains, and only while
+                    // that row has nothing connected — once the TV is showing the
+                    // slide, instructions for connecting it are just noise.
+                    if (status.needsMirroringGuidance()) {
+                        MirroringGuidanceCard()
+                    }
                 }
             }
+        }
+    }
+}
 
-            Text(
-                text = stringResource(Res.string.outputs_hint),
-                color = colors.muted,
-                fontSize = 12.sp,
-                lineHeight = 17.sp,
-                modifier = Modifier.padding(bottom = AppDimens.space16),
-            )
+/**
+ * True when this row is the external display and it has no screen yet.
+ *
+ * [MirroringRoute.NONE] platforms are excluded: with nothing to point the
+ * operator at, a card would only say "connect a screen" twice.
+ */
+private fun SinkStatus.needsMirroringGuidance(): Boolean =
+    id == EXTERNAL_DISPLAY_SINK_ID &&
+        !isAttached &&
+        mirroringRoute != MirroringRoute.NONE
+
+/**
+ * How to get a TV attached, in the platform's own words.
+ *
+ * AirPlay and Cast both arrive as an ordinary secondary display, so the sink
+ * code does not care which one is in use — but the operator does, because the
+ * two live behind completely different system gestures.
+ */
+@Composable
+private fun MirroringGuidanceCard() {
+    val colors = LocalAppColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(AppDimens.radiusCard))
+            .background(colors.surface)
+            .padding(AppDimens.space16),
+        verticalArrangement = Arrangement.spacedBy(AppDimens.space8),
+    ) {
+        Text(
+            text = stringResource(
+                when (mirroringRoute) {
+                    MirroringRoute.AIRPLAY -> Res.string.outputs_hint_airplay
+                    MirroringRoute.CAST -> Res.string.outputs_hint_cast
+                    MirroringRoute.NONE -> Res.string.outputs_hint
+                }
+            ),
+            color = colors.muted,
+            fontSize = 12.sp,
+            lineHeight = 17.sp,
+        )
+        if (canOpenMirroringSettings) {
+            TextButton(onClick = { openMirroringSettings() }) {
+                Icon(
+                    imageVector = Icons.Filled.Cast,
+                    contentDescription = null,
+                    tint = colors.accent,
+                    modifier = Modifier.size(18.dp),
+                )
+                Text(
+                    text = stringResource(Res.string.outputs_open_cast_settings),
+                    color = colors.accent,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(start = AppDimens.space8),
+                )
+            }
         }
     }
 }

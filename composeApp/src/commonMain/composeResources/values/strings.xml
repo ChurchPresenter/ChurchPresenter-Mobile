@@ -542,7 +542,10 @@
     <!-- Output targets -->
     <string name="outputs_title">Screens</string>
     <string name="outputs_empty">No output available on this device.</string>
-    <string name="outputs_hint">Connect an HDMI adapter, or start screen mirroring (AirPlay or Cast) — this app will show the slide on the TV and keep the controller on your phone.</string>
+    <string name="outputs_hint">Connect an HDMI adapter or start screen mirroring — this app will show the slide on the TV and keep the controller on your phone.</string>
+    <string name="outputs_hint_airplay">Open Control Centre, tap Screen Mirroring, then pick your Apple TV. The slide moves to the TV and the controller stays on your phone. A USB-C or Lightning adapter works too.</string>
+    <string name="outputs_hint_cast">Swipe down from the top of the screen, tap Cast (or Screen cast), then pick your Chromecast. The slide moves to the TV and the controller stays on your phone. An HDMI or USB-C adapter works too.</string>
+    <string name="outputs_open_cast_settings">Open cast settings</string>
     <string name="outputs_state_attached">Connected</string>
     <string name="outputs_state_waiting">Waiting for a screen</string>
     <string name="outputs_state_off">Off</string>

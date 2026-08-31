@@ -27,3 +27,35 @@ expect val supportsExternalDisplay: Boolean
  * Android can genuinely serve from the background via a foreground service.
  */
 expect val isForegroundOnlyServer: Boolean
+
+/**
+ * How the operator starts system screen mirroring on this platform.
+ *
+ * Both AirPlay and Chromecast reach [present.sink.ExternalDisplaySink] the same
+ * way — the OS mirrors, then hands the app a second display — but the operator
+ * gets there through completely different system UI, and neither can be started
+ * from inside the app. So the Screens sheet has to name the right one.
+ */
+enum class MirroringRoute {
+    /** Control Centre → Screen Mirroring → Apple TV. */
+    AIRPLAY,
+
+    /** Quick settings → Cast / Screen cast → Chromecast. */
+    CAST,
+
+    /** No system mirroring worth pointing the operator at. */
+    NONE,
+}
+
+expect val mirroringRoute: MirroringRoute
+
+/**
+ * True where the app can deep-link the operator to the OS mirroring picker.
+ *
+ * Android has a public settings intent for this; iOS has no supported way to
+ * open Control Centre, so it gets the instructions without the shortcut.
+ */
+expect val canOpenMirroringSettings: Boolean
+
+/** Opens the OS mirroring picker. No-op where [canOpenMirroringSettings] is false. */
+expect fun openMirroringSettings()
