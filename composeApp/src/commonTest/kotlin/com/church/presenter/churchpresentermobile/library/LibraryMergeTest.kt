@@ -236,4 +236,74 @@ class LibraryMergeTest {
         assertEquals(0, result.added + result.updated + result.kept + result.removed)
         assertNull(result.songs.firstOrNull())
     }
+
+    // ── Partial catalogues ───────────────────────────────────────────────
+
+    @Test
+    fun `a batch is not evidence that the songs it omits were deleted`() {
+        val existing = listOf(song("d1", number = "1"))
+        val batch = listOf(song("d2", number = "2"))
+
+        val result = LibraryMerge.mergeSongs(existing, batch, removeMissing = false)
+
+        assertEquals(listOf("1", "2"), result.songs.map { it.number })
+        assertEquals(0, result.removed)
+    }
+
+    @Test
+    fun `a whole catalogue still drops what it omits`() {
+        val existing = listOf(song("d1", number = "1"))
+        val catalogue = listOf(song("d2", number = "2"))
+
+        val result = LibraryMerge.mergeSongs(existing, catalogue, removeMissing = true)
+
+        assertEquals(listOf("2"), result.songs.map { it.number })
+        assertEquals(1, result.removed)
+    }
+
+    // ── Pruning ──────────────────────────────────────────────────────────
+
+    @Test
+    fun `pruning drops desktop songs the catalogue no longer lists`() {
+        val existing = listOf(song("d1", number = "1"), song("d2", number = "2"))
+        val keys = setOf(LibraryMerge.matchKey("Hymns", "1", "Amazing Grace"))
+
+        val result = LibraryMerge.pruneMissing(existing, keys)
+
+        assertEquals(listOf("1"), result.songs.map { it.number })
+        assertEquals(1, result.removed)
+    }
+
+    @Test
+    fun `pruning leaves the user's own songs alone`() {
+        val existing = listOf(song("local", number = "2", origin = ContentOrigin.LOCAL))
+
+        val result = LibraryMerge.pruneMissing(existing, emptySet())
+
+        assertEquals(1, result.songs.size)
+        assertEquals(0, result.removed)
+    }
+
+    @Test
+    fun `pruning keeps a song a saved service still points at`() {
+        val existing = listOf(song("d1", number = "1"))
+
+        val result = LibraryMerge.pruneMissing(existing, emptySet(), referencedIds = setOf("d1"))
+
+        assertEquals(1, result.songs.size)
+        assertEquals(0, result.removed)
+    }
+
+    @Test
+    fun `pruning only touches the songbooks that were copied`() {
+        val existing = listOf(
+            song("d1", number = "1", book = "Hymns"),
+            song("d2", number = "1", book = "Chorus Book"),
+        )
+
+        val result = LibraryMerge.pruneMissing(existing, emptySet(), books = setOf("Hymns"))
+
+        assertEquals(listOf("Chorus Book"), result.songs.mapNotNull { it.bookName })
+        assertEquals(1, result.removed)
+    }
 }

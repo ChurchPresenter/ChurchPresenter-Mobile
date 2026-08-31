@@ -28,8 +28,15 @@ private const val TAG = "LibrarySyncService"
 /** How many song-detail requests are in flight at once. */
 private const val DETAIL_CONCURRENCY = 4
 
-/** Songs written per batch, so an interrupted sync leaves valid partial data. */
-private const val BATCH_SIZE = 50
+/**
+ * Songs written per batch, so an interrupted sync leaves valid partial data.
+ *
+ * Every batch rewrites the whole library document, so this is a straight trade:
+ * smaller batches lose less to an interruption, larger ones cost far less I/O.
+ * A large songbook — several thousand songs — is what settles it, since there
+ * the document is megabytes and the rewrites dominate the sync.
+ */
+private const val BATCH_SIZE = 250
 
 /**
  * Pulls a desktop's song catalogue onto the phone for offline use.
@@ -113,6 +120,13 @@ class LibrarySyncService(
             var keptLocal = 0
             var written = 0
 
+            // Every song the computer offered, whether or not its lyrics arrived.
+            // The prune below deletes what is *not* in here, so a song whose
+            // download failed must still count as one the computer has.
+            val catalogueKeys = catalogue.map {
+                LibraryMerge.matchKey(it.bookName, it.number, it.title)
+            }.toSet()
+
             val gate = Semaphore(DETAIL_CONCURRENCY)
             for (batch in catalogue.chunked(BATCH_SIZE)) {
                 if (cancelRequested) break
@@ -150,13 +164,21 @@ class LibrarySyncService(
                 // 50 + 100 + … + 500 songs — which is what made a large sync crawl.
                 val batchSongs = fetched.filterNotNull()
                 written += batchSongs.size
-                keptLocal = applyMerge(batchSongs)
+                // Batches carry disjoint songs, so the counts add up.
+                keptLocal += applyMerge(batchSongs)
             }
 
             if (cancelRequested) {
                 Logger.d(TAG, "sync cancelled after $completed of ${catalogue.size}")
                 return@withContext SyncOutcome.Cancelled(songCount = written)
             }
+
+            // Deletions are settled only now. A batch cannot say what the
+            // computer no longer has — it only knows its own 250 songs — so
+            // asking it to would delete every batch before it, which is how a
+            // seven-thousand-song copy ended up as the last batch alone.
+            val removed = applyPrune(catalogueKeys, books)
+            if (removed > 0) Logger.d(TAG, "sync — removed $removed songs the computer no longer has")
 
             Logger.d(TAG, "sync complete — $written songs, $failed failed, $keptLocal kept local")
             SyncOutcome.Success(
@@ -171,21 +193,38 @@ class LibrarySyncService(
         }
     }
 
-    /** Merges everything fetched so far, returning how many local edits were preserved. */
+    /** Merges one batch, returning how many local edits it preserved. */
     private fun applyMerge(fetched: List<LocalSong>): Int {
-        val referenced = repository.setlists
-            .flatMap { it.entries }
-            .map { it.reference }
-            .toSet()
-
         val result = LibraryMerge.mergeSongs(
             existing = repository.library.value.songs,
             incoming = fetched,
-            referencedIds = referenced,
+            referencedIds = referencedIds(),
+            // One batch is not a catalogue — see the call site of [applyPrune].
+            removeMissing = false,
         )
         repository.replaceAll(repository.library.value.copy(songs = result.songs))
         return result.kept
     }
+
+    /** Drops desktop songs the catalogue no longer lists, returning how many went. */
+    private fun applyPrune(catalogueKeys: Set<String>, books: Set<String>?): Int {
+        val result = LibraryMerge.pruneMissing(
+            existing = repository.library.value.songs,
+            catalogueKeys = catalogueKeys,
+            referencedIds = referencedIds(),
+            books = books,
+        )
+        if (result.removed > 0) {
+            repository.replaceAll(repository.library.value.copy(songs = result.songs))
+        }
+        return result.removed
+    }
+
+    /** Song ids a saved service still points at, which no sync may delete. */
+    private fun referencedIds(): Set<String> = repository.setlists
+        .flatMap { it.entries }
+        .map { it.reference }
+        .toSet()
 
     /**
      * Converts a fetched song into the local model.

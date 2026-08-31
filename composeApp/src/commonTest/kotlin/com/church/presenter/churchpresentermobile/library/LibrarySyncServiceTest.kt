@@ -374,4 +374,141 @@ class LibrarySyncServiceTest {
         assertEquals(0, outcome.songCount)
         assertTrue(repository.library.value.songs.isEmpty())
     }
+
+    // ── Catalogues larger than one batch ─────────────────────────────────
+
+    @Test
+    fun aCatalogueSpanningManyBatchesKeepsEveryBatch() = runTest {
+        // The reported failure: copying several thousand songs left only the
+        // last batch behind, because each batch's merge treated the songs of
+        // every batch before it as songs the computer had deleted.
+        val repository = repository()
+        val catalogue = (1..601).map { catalogueSong(it.toString()) }
+
+        val outcome = service(repository, Result.success(catalogue)).sync()
+
+        assertIs<SyncOutcome.Success>(outcome)
+        assertEquals(601, outcome.songCount)
+        assertEquals(601, repository.songs.size)
+    }
+
+    @Test
+    fun aBatchedSyncSurvivesBeingLoadedAgain() = runTest {
+        // In memory is not the claim being made — the user restarted the app.
+        val storage = InMemoryFileStorage()
+        val repository = LibraryRepository(storage) { 1_000L }
+        val catalogue = (1..601).map { catalogueSong(it.toString()) }
+
+        service(repository, Result.success(catalogue)).sync()
+
+        assertEquals(601, LibraryRepository(storage) { 1_000L }.load().songs.size)
+    }
+
+    @Test
+    fun aSongWhoseLyricsFailedIsNotTreatedAsDeleted() = runTest {
+        // It failed to download, which says nothing about whether the computer
+        // still has it — and pruning it would lose an earlier good copy.
+        val repository = repository()
+        repository.upsertSong(
+            LocalSong(
+                id = "kept",
+                number = "2",
+                title = "Song 2",
+                bookName = "Hymns",
+                sections = listOf(LocalSongSection(type = SectionType.VERSE, text = "old words")),
+                origin = ContentOrigin.DESKTOP,
+            )
+        )
+
+        service(
+            repository,
+            Result.success(listOf(catalogueSong("1"), catalogueSong("2"))),
+            details = { song ->
+                if (song.number == "2") Result.failure(RuntimeException("no lyrics"))
+                else Result.success(detail(song.number, "words"))
+            },
+        ).sync()
+
+        assertEquals(setOf("1", "2"), repository.songs.map { it.number }.toSet())
+    }
+
+    @Test
+    fun copyingOneBookLeavesTheOtherBooksAlone() = runTest {
+        // Choosing a book is a narrower request, not an instruction to throw
+        // away everything else already on the phone.
+        val repository = repository()
+        repository.upsertSong(
+            LocalSong(
+                id = "chorus-1",
+                number = "1",
+                title = "Chorus 1",
+                bookName = "Chorus Book",
+                sections = listOf(LocalSongSection(type = SectionType.VERSE, text = "words")),
+                origin = ContentOrigin.DESKTOP,
+            )
+        )
+
+        service(
+            repository,
+            Result.success(listOf(catalogueSong("1", book = "Hymns"))),
+        ).sync(setOf("Hymns"))
+
+        assertEquals(
+            setOf("Chorus Book", "Hymns"),
+            repository.songs.mapNotNull { it.bookName }.toSet(),
+        )
+    }
+
+    @Test
+    fun aSongTheComputerNoLongerHasIsStillDropped() = runTest {
+        // The prune still has to happen — a full sync is how a deleted song
+        // leaves the phone.
+        val repository = repository()
+        repository.upsertSong(
+            LocalSong(
+                id = "gone",
+                number = "99",
+                title = "Withdrawn",
+                bookName = "Hymns",
+                sections = listOf(LocalSongSection(type = SectionType.VERSE, text = "words")),
+                origin = ContentOrigin.DESKTOP,
+            )
+        )
+
+        service(repository, Result.success(listOf(catalogueSong("1")))).sync()
+
+        assertEquals(listOf("1"), repository.songs.map { it.number })
+    }
+
+    @Test
+    fun aCancelledSyncDeletesNothing() = runTest {
+        // Half a catalogue is not evidence of a deletion.
+        val repository = repository()
+        repository.upsertSong(
+            LocalSong(
+                id = "existing",
+                number = "99",
+                title = "Song 99",
+                bookName = "Hymns",
+                sections = listOf(LocalSongSection(type = SectionType.VERSE, text = "words")),
+                origin = ContentOrigin.DESKTOP,
+            )
+        )
+        // Cancelled from inside the run — sync() clears the flag on entry, so
+        // asking beforehand is not a cancellation.
+        var syncService: LibrarySyncService? = null
+        syncService = service(
+            repository,
+            Result.success(listOf(catalogueSong("1"), catalogueSong("2"))),
+            details = { song ->
+                syncService?.requestCancel()
+                Result.success(detail(song.number, "words"))
+            },
+        )
+
+        val outcome = syncService.sync()
+
+        assertIs<SyncOutcome.Cancelled>(outcome)
+        assertTrue(repository.songs.any { it.number == "99" })
+    }
 }
