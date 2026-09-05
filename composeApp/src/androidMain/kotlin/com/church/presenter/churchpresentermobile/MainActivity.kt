@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.initSettingsContext
+import com.church.presenter.churchpresentermobile.util.ActivityHolder
 import com.church.presenter.churchpresentermobile.util.AppReview
 import com.church.presenter.churchpresentermobile.util.AppUpdate
 import com.church.presenter.churchpresentermobile.util.CrashReporting
@@ -39,6 +40,9 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         initSettingsContext(this)
+        // A Presentation window on a second display is a Dialog and needs a real
+        // Activity context, which the output sink has no other way to reach.
+        ActivityHolder.attach(this)
         super.onCreate(savedInstanceState)
 
         val settings = AppSettings()
@@ -86,6 +90,11 @@ class MainActivity : ComponentActivity() {
     // Called when a churchpresenter:// URI arrives while the app is already running.
     // We store the new intent so onResume (which always fires when the app comes
     // to foreground) can process it once Compose is definitely active.
+    override fun onDestroy() {
+        ActivityHolder.detach(this)
+        super.onDestroy()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)

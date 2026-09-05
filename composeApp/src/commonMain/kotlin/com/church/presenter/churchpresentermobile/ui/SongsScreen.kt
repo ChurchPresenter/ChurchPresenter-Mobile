@@ -82,6 +82,8 @@ fun SongsTable(
     val toastEvent         by vm.toastEvent.collectAsState()
     val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val scheduleAdded      by vm.scheduleAdded.collectAsState()
+    val showsLocalLibrary  by vm.showsLocalLibrary.collectAsState()
+    val canAddToSchedule   by vm.canAddToSchedule.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -124,6 +126,9 @@ fun SongsTable(
         }
     }
 
+    // The same switch the outputs follow, read from the presenter's theme.
+    val showChords by vm.showChords.collectAsState()
+
     Box(modifier = modifier) {
         if (showDetail) {
             SongDetailScreen(
@@ -135,8 +140,11 @@ fun SongsTable(
                 scheduleAdded = scheduleAdded,
                 onVerseSelected = { vm.selectVerse(it) },
                 onToggleProjecting = { vm.toggleProjecting() },
-                onAddToSchedule = { vm.addSongToSchedule() },
+                // Null in standalone: there is no desktop schedule to add to,
+                // and the swallowed action would report cheerful success.
+                onAddToSchedule = if (canAddToSchedule) ({ vm.addSongToSchedule() }) else null,
                 onClearDisplay = { vm.clearDisplay() },
+                showChords = showChords,
                 modifier = Modifier.fillMaxSize()
             )
         } else {
@@ -153,6 +161,7 @@ fun SongsTable(
                 onBookSelected = { vm.setSelectedBook(it) },
                 onSongClick = { vm.openSongDetail(it) },
                 onRefresh = { vm.refresh() },
+                showsLocalLibrary = showsLocalLibrary,
                 modifier = Modifier.fillMaxSize()
             )
         }

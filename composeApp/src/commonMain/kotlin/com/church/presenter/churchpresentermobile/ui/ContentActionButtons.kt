@@ -35,7 +35,8 @@ fun ContentActionButtons(
     isProjecting: Boolean,
     scheduleAdded: Boolean,
     onToggleProjecting: () -> Unit,
-    onAddToSchedule: () -> Unit,
+    /** Null hides the schedule button — standalone has no desktop schedule. */
+    onAddToSchedule: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     castBadgeCount: Int = 0,
     isHolding: Boolean = false,

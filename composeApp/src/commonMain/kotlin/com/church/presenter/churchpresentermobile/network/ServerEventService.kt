@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.ApiException
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.MediaPlaybackState
 import com.church.presenter.churchpresentermobile.util.CrashReporting
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -112,7 +115,17 @@ interface WsSender {
     suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean = false): Result<Unit>
 }
 
-class ServerEventService(private val settings: AppSettings) : WsSender {
+/**
+ * @param mode The app's operating mode. In [AppMode.STANDALONE] there is no
+ *   desktop to talk to — the phone is the presenter — so the socket must not be
+ *   opened at all. Without this gate the listen loop retries a host that will
+ *   never answer, backing off to one attempt every 30 seconds for the life of
+ *   the app, each with a stack trace. Defaulted so no call site or test changes.
+ */
+class ServerEventService(
+    private val settings: AppSettings,
+    private val mode: StateFlow<AppMode> = AppModeHolder.mode,
+) : WsSender {
     private val client: HttpClient = createWebSocketClient()
 
     /** The currently active WebSocket session, or null when disconnected. */
@@ -188,6 +201,15 @@ class ServerEventService(private val settings: AppSettings) : WsSender {
      *                       required for approval-gated commands.
      */
     override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result<Unit> {
+        // In standalone every action is served locally by ProjectionRouter, so
+        // nothing should arrive here. Fail immediately rather than spending
+        // WS_CONNECTION_TIMEOUT_MS waiting for a socket that is deliberately
+        // never opened — a stalled caller would look like a frozen UI.
+        if (mode.value != AppMode.REMOTE) {
+            Logger.d(TAG, "sendAction — ignored in ${mode.value} mode  type=$type")
+            return Result.failure(IllegalStateException("No desktop connection in ${mode.value} mode"))
+        }
+
         Logger.d(TAG, "sendAction ▶ type=$type  url=${settings.wsBaseUrl}")
 
         var lastException: Throwable? = null
@@ -308,10 +330,14 @@ class ServerEventService(private val settings: AppSettings) : WsSender {
         var everConnected = false
         var reconnectDelay = INITIAL_RECONNECT_DELAY_MS
         while (true) {
-            // Park here while paused (app backgrounded) — resumes when active flips true.
-            if (!active.value) {
-                Logger.d(TAG, "listen — paused, waiting to resume")
-                active.first { it }
+            // Park here while paused (app backgrounded) or while standalone (no
+            // desktop exists to connect to). Both resume automatically — the
+            // operator can switch modes in Settings without restarting the app.
+            if (!active.value || mode.value != AppMode.REMOTE) {
+                Logger.d(TAG, "listen — parked (active=${active.value}, mode=${mode.value})")
+                combine(active, mode) { isActive, currentMode ->
+                    isActive && currentMode == AppMode.REMOTE
+                }.first { it }
             }
             try {
                 Logger.d(TAG, "listen — connecting to ${settings.wsBaseUrl}")
@@ -321,6 +347,22 @@ class ServerEventService(private val settings: AppSettings) : WsSender {
                         val key = settings.apiKey
                         if (key.isNotBlank()) headers.append(ApiConstants.API_KEY_HEADER, key)
                         headers.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+                        // Encoded for the same reason every other request encodes it — see
+                        // encodeDeviceName. A non-ASCII name here would throw before the socket
+                        // was ever opened, so the app would sit in its reconnect loop for ever.
+                        val name = settings.reportedDeviceName.takeIf { it.isNotBlank() }
+                            ?.let { encodeDeviceName(it) }.orEmpty()
+                        if (name.isNotBlank()) headers.append(ApiConstants.DEVICE_NAME_HEADER, name)
+                        // The same values again as query parameters, which is how
+                        // the desktop reads them when the handshake carries no
+                        // headers (WebSocketRoute falls back to a parameter of the
+                        // same name). Ktor's mobile engines do send the headers;
+                        // this app's own web build cannot, and pays nothing for the
+                        // duplication either way.
+                        url {
+                            parameters.append(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+                            if (name.isNotBlank()) parameters.append(ApiConstants.DEVICE_NAME_HEADER, name)
+                        }
                     }
                 ) {
                     Logger.d(TAG, "listen — connected")

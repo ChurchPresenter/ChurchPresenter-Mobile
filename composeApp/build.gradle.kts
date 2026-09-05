@@ -17,6 +17,55 @@ plugins {
 }
 
 // ---------------------------------------------------------------------------
+// Firebase placeholder for developers without the signing repo.
+//
+// The Google Services plugin fails the Android build outright when
+// google-services.json is absent, so a fresh clone could not build at all
+// without credentials most contributors have no reason to hold. This writes a
+// stand-in when the file is missing, and leaves a real one (setup_signing.sh
+// symlinks it from the signing repo) untouched.
+//
+// The shape matters as much as the presence: FirebaseInitProvider runs on every
+// launch regardless of build type, and rejects a malformed key with "Please set
+// a valid API key" *before any of our code runs* — an app that compiles and then
+// dies on the splash screen. So the key here is the real 39-character format.
+// Firebase then initialises against a project that does not exist and its calls
+// fail quietly, which is what a developer build wants.
+// ---------------------------------------------------------------------------
+run {
+    val googleServices = layout.projectDirectory.file("google-services.json").asFile
+    if (!googleServices.exists()) {
+        googleServices.writeText(
+            """
+            {
+              "project_info": {
+                "project_number": "000000000000",
+                "project_id": "churchpresenter-placeholder",
+                "storage_bucket": "churchpresenter-placeholder.appspot.com"
+              },
+              "client": [
+                {
+                  "client_info": {
+                    "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                    "android_client_info": { "package_name": "com.church.presenter.churchpresentermobile" }
+                  },
+                  "oauth_client": [],
+                  "api_key": [ { "current_key": "AIzaSy${"A".repeat(33)}" } ],
+                  "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+                }
+              ],
+              "configuration_version": "1"
+            }
+            """.trimIndent()
+        )
+        logger.warn(
+            "[ChurchPresenter] No google-services.json — wrote a placeholder so the build can " +
+            "run. Analytics, Crashlytics and push are inert. Run scripts/setup_signing.sh for the real one."
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Build provenance — mirrors the desktop app's helpers in ChurchPresenter's
 // composeApp/build.gradle.kts.
 //
@@ -118,7 +167,10 @@ val generateProvenanceConfig by tasks.registering {
 
 // ---------------------------------------------------------------------------
 // Code-coverage (Kover) — measured on the Android unit-test JVM (where commonTest
-// runs). Scoped to the reliably-JVM-measurable logic: `model` + `network`.
+// runs). Scoped to the reliably-JVM-measurable logic: `model`, `network` and
+// `present` (the standalone presenter's routing/slide logic — pure by design;
+// the platform-specific output sinks live behind expect/actual leaves that are
+// named in the `classes` exclusion list below).
 //
 // The `viewmodel` package is EXCLUDED from the measured number, not because it's
 // untested — it's fully covered and gated by the `jsBrowserTest` CI job — but
@@ -157,6 +209,26 @@ kover {
                     "*MainActivity*",
                     "*ChurchPresenterApp*",
                     "*FirebasePushService*",
+                    // Platform capability flags — three constants per target, no logic.
+                    "*PlatformCapabilities*",
+                    // Output sinks are platform windows/servers, not unit-test targets;
+                    // the routing and slide logic they serve is tested in `present`.
+                    "*ExternalDisplaySink*",
+                    "*SlidePresentation*",
+                    "*PresentationOwners*",
+                    "*ActivityHolder*",
+                    // Embedded server, socket/interface probing, and the OS
+                    // keep-alive hooks — all platform I/O behind narrow seams.
+                    // The pure parts (PortAllocator, WebAssets) ARE measured.
+                    "*LocalWebServer*",
+                    "*WebPageSink*",
+                    "*NetworkInfo*",
+                    "*PresentationKeepAlive*",
+                    "*PresentationForegroundService*",
+                    // Platform file I/O. The repository logic that sits on top of
+                    // it IS measured, via InMemoryFileStorage.
+                    "*FileStore*",
+                    "*DocumentIO*",
                 )
             }
         }
@@ -240,6 +312,14 @@ kotlin {
                 withJs()
                 withWasmJs()
             }
+            // Android + iOS share everything that needs real device APIs the
+            // browser has no analogue for — chiefly the standalone presenter's
+            // embedded HTTP/WebSocket server. One Ktor CIO implementation
+            // serves both (JVM artifact on Android, Kotlin/Native on iOS).
+            group("mobile") {
+                withAndroidTarget()
+                withIos()
+            }
         }
     }
 
@@ -273,7 +353,14 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        browser()
+        browser {
+            // Same headless Chrome as the js target above. Without it this target
+            // opens a real browser window on the developer's desktop whenever a
+            // task reaches its tests — `check` and `allTests` both do.
+            testTask {
+                useKarma { useChromeHeadless() }
+            }
+        }
         binaries.executable()
     }
 
@@ -295,6 +382,13 @@ kotlin {
         // commonMain and every target compiles the same generated file.
         commonMain {
             kotlin.srcDir(generateProvenanceConfig.map { layout.buildDirectory.dir("generated/provenance") })
+        }
+
+        getByName("mobileMain").dependencies {
+            // Embedded presentation server — standalone mode only.
+            implementation(libs.ktor.server.core)
+            implementation(libs.ktor.server.cio)
+            implementation(libs.ktor.server.websockets)
         }
 
         jsMain.dependencies {
@@ -338,6 +432,8 @@ kotlin {
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.websockets)
+            // QR generation for the standalone display URL (QrScanButton only scans).
+            implementation(libs.qrose)
             implementation(libs.kotlinx.serialization)
         }
         commonTest.dependencies {

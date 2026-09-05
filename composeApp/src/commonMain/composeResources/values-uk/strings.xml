@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Немає доступних пісень</string>
     <string name="songs_table_no_match">Жодна пісня не відповідає фільтру</string>
-    <string name="songs_table_loading_error">Не вдалося завантажити пісні</string>
     <string name="songs_table_retry">Повторити</string>
 
     <!-- Book Filter -->
@@ -424,5 +423,21 @@
     <string name="dictionary_appears_in">Зустрічається в</string>
     <string name="dictionary_appears_in_count">%1$s з %2$s</string>
     <string name="settings_active_server">Активний сервер</string>
+    <string name="contact_us_title">Зв'язатися з нами</string>
+    <string name="contact_type_label">Тип</string>
+    <string name="contact_type_feature">Запит функції</string>
+    <string name="contact_type_feedback">Відгук</string>
+    <string name="contact_type_testimonial">Свідчення</string>
+    <string name="contact_type_bug">Звіт про помилку</string>
+    <string name="contact_name_label">Ім'я</string>
+    <string name="contact_email_label">Ел. пошта (необов'язково)</string>
+    <string name="contact_message_label">Повідомлення</string>
+    <string name="contact_send">Надіслати</string>
+    <string name="contact_sending">Надсилання…</string>
+    <string name="contact_sent">Повідомлення надіслано. Дякуємо!</string>
+    <string name="contact_error">Не вдалося надіслати. Спробуйте ще раз.</string>
+    <string name="contact_rate_limited_browser">З міркувань безпеки завершіть надсилання у браузері.</string>
+    <string name="contact_network_error">Не вдалося зв’язатися із сервером. Перевірте підключення до інтернету та повторіть спробу.</string>
+    <string name="contact_open_browser">Відкрити у браузері</string>
 </resources>
 

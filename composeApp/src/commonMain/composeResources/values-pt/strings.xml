@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Nenhuma música disponível</string>
     <string name="songs_table_no_match">Nenhuma música corresponde ao filtro</string>
-    <string name="songs_table_loading_error">Falha ao carregar as músicas</string>
     <string name="songs_table_retry">Tentar novamente</string>
 
     <!-- Book Filter -->
@@ -455,4 +454,20 @@
     <string name="dictionary_appears_in">Aparece em</string>
     <string name="dictionary_appears_in_count">%1$s de %2$s</string>
     <string name="settings_active_server">Servidor ativo</string>
+    <string name="contact_us_title">Fale conosco</string>
+    <string name="contact_type_label">Tipo</string>
+    <string name="contact_type_feature">Solicitação de recurso</string>
+    <string name="contact_type_feedback">Comentários</string>
+    <string name="contact_type_testimonial">Depoimento</string>
+    <string name="contact_type_bug">Relatório de erro</string>
+    <string name="contact_name_label">Nome</string>
+    <string name="contact_email_label">E-mail (opcional)</string>
+    <string name="contact_message_label">Mensagem</string>
+    <string name="contact_send">Enviar</string>
+    <string name="contact_sending">Enviando…</string>
+    <string name="contact_sent">Mensagem enviada. Obrigado!</string>
+    <string name="contact_error">Não foi possível enviar. Tente novamente.</string>
+    <string name="contact_rate_limited_browser">Por segurança, conclua o envio no seu navegador.</string>
+    <string name="contact_network_error">Não foi possível contactar o servidor. Verifique a sua ligação à internet e tente novamente.</string>
+    <string name="contact_open_browser">Abrir no Navegador</string>
 </resources>

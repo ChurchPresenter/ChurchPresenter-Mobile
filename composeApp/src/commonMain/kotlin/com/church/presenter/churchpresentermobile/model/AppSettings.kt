@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.deviceName
 import com.church.presenter.churchpresentermobile.generateUUID
 import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.util.Logger
@@ -13,6 +14,7 @@ private const val KEY_THEME_MODE = "theme_mode"
 private const val KEY_SETTINGS_VERSION = "settings_version"
 private const val KEY_DEVICE_ID = "device_id"
 private const val KEY_DISPLAY_NAME     = "display_name"
+private const val KEY_DEVICE_NAME      = "device_name"
 private const val KEY_SAVED_ANNOUNCEMENTS = "saved_announcements"
 private const val KEY_SAVED_BOOKMARKS = "saved_bookmarks"
 private const val KEY_FCM_TOKEN        = "fcm_token"
@@ -20,6 +22,12 @@ private const val KEY_APP_OPEN_COUNT   = "app_open_count"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
 private const val KEY_CONNECT_SETUP    = "connect_setup_done"
 private const val KEY_TELEMETRY_ENABLED = "telemetry_enabled"
+private const val KEY_APP_MODE         = "app_mode"
+private const val KEY_MODE_CHOSEN      = "mode_chosen"
+private const val KEY_STANDALONE_PORT  = "standalone_port"
+private const val KEY_LIBRARY_SYNC      = "library_sync_state"
+private const val KEY_SLIDE_THEME       = "slide_theme"
+private const val KEY_SAVED_THEMES = "saved_themes"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -102,6 +110,22 @@ class AppSettings(
             return id
         }
 
+    /**
+     * JSON of the operator's chosen look for the audience screen — gradient, text and accent
+     * colours, font, corner line, clock. Defaults to "{}", which decodes to the built-in look.
+     *
+     * Persisted because a church sets its colours once and would otherwise find them reset every
+     * Sunday morning. Same blob pattern as [savedAnnouncementsJson].
+     */
+    var slideThemeJson: String
+        get() = storage.getString(KEY_SLIDE_THEME, "{}")
+        set(value) { storage.putString(KEY_SLIDE_THEME, value) }
+
+    /** JSON array of the user's saved looks, as {name, theme} entries. Defaults to "[]". */
+    var savedThemesJson: String
+        get() = storage.getString(KEY_SAVED_THEMES, "[]")
+        set(value) { storage.putString(KEY_SAVED_THEMES, value) }
+
     /** JSON array of the user's saved announcements (composer presets). Defaults to "[]". */
     var savedAnnouncementsJson: String
         get() = storage.getString(KEY_SAVED_ANNOUNCEMENTS, "[]")
@@ -118,12 +142,39 @@ class AppSettings(
         set(value) { storage.putString(KEY_THEME_MODE, value.name) }
 
     /**
-     * User-chosen display name sent as the author when submitting Q&A questions.
-     * Falls back to [deviceId] when blank so there is always some identifier.
+     * The person's name, sent as the author when submitting Q&A questions.
+     *
+     * Not the same thing as [customDeviceName]: the desktop shows a question's
+     * author and the device it came from on separate lines, so "Sound desk" is
+     * the right answer to one and the wrong answer to the other. Blank until
+     * asked for; the caller then falls back down [reportedDeviceName] to
+     * [deviceId] so a question is never unattributed.
      */
     var displayName: String
         get() = storage.getString(KEY_DISPLAY_NAME, "")
         set(value) { storage.putString(KEY_DISPLAY_NAME, value) }
+
+    /**
+     * The operator's own name for this device, overriding the one the OS gives.
+     *
+     * Typed precisely because the OS name was blank, unhelpful ("iPhone"), or
+     * the wrong thing to call this device in this building.
+     */
+    var customDeviceName: String
+        get() = storage.getString(KEY_DEVICE_NAME, "")
+        set(value) { storage.putString(KEY_DEVICE_NAME, value) }
+
+    /**
+     * The name this device reports to a desktop, sent as
+     * [ApiConstants.DEVICE_NAME_HEADER] so an operator approving a connection
+     * reads "Pixel 7 Pro" or "Sound desk" rather than a UUID.
+     *
+     * [customDeviceName] wins when set. Blank when neither exists — a browser
+     * with no custom name — and the caller then sends nothing at all rather
+     * than an empty header.
+     */
+    val reportedDeviceName: String
+        get() = customDeviceName.trim().ifBlank { deviceName().trim() }
 
     /**
      * FCM (Firebase Cloud Messaging) registration token for this device.
@@ -170,6 +221,52 @@ class AppSettings(
     var isTelemetryEnabled: Boolean
         get() = storage.getInt(KEY_TELEMETRY_ENABLED, 1) == 1
         set(value) { storage.putInt(KEY_TELEMETRY_ENABLED, if (value) 1 else 0) }
+
+    /**
+     * How the app projects — remote control of a desktop, or standalone presenter.
+     *
+     * Reads coerce to [AppMode.REMOTE] on platforms that cannot present
+     * ([supportsStandalone] is false), so a settings blob written on a phone can
+     * never leave the web build in a mode it has no sink for. Writes are
+     * coerced the same way, so the stored value never disagrees with what the
+     * app is actually doing.
+     */
+    var appMode: AppMode
+        get() {
+            if (!supportsStandalone) return AppMode.REMOTE
+            val stored = storage.getString(KEY_APP_MODE, AppMode.REMOTE.name)
+            return AppMode.entries.firstOrNull { it.name == stored } ?: AppMode.REMOTE
+        }
+        set(value) {
+            val effective = if (supportsStandalone) value else AppMode.REMOTE
+            storage.putString(KEY_APP_MODE, effective.name)
+        }
+
+    /**
+     * True once the user has picked a mode on the setup screen. Existing
+     * installs default to false and are shown the picker on next launch —
+     * harmless, since [appMode] already defaults to their current behaviour.
+     */
+    var isModeChosen: Boolean
+        get() = storage.getInt(KEY_MODE_CHOSEN, 0) == 1
+        set(value) { storage.putInt(KEY_MODE_CHOSEN, if (value) 1 else 0) }
+
+    /**
+     * Port the standalone presentation web server last bound successfully.
+     * Remembered so the URL handed to a TV stays stable between services.
+     */
+    var standalonePort: Int
+        get() = storage.getInt(KEY_STANDALONE_PORT, ApiConstants.STANDALONE_HTTP_PORT_DEFAULT)
+        set(value) { storage.putInt(KEY_STANDALONE_PORT, value) }
+
+    /**
+     * JSON blob describing the last desktop→library sync, so the Library screen
+     * can answer "is this current?" without touching the network. Same
+     * persistence pattern as [savedAnnouncementsJson]. Defaults to "{}".
+     */
+    var librarySyncStateJson: String
+        get() = storage.getString(KEY_LIBRARY_SYNC, "{}")
+        set(value) { storage.putString(KEY_LIBRARY_SYNC, value) }
 
     /** Builds the full HTTP API base URL from the current host and port. */
     val apiBaseUrl: String

@@ -257,6 +257,37 @@ jobs:
           path: ${{ runner.temp }}/output/*.ipa
           retention-days: 14
 
+      # Sentry cannot symbolicate a native iOS crash without the dSYMs — every
+      # app frame arrives as a bare address, and the "culprit" it shows is just
+      # the nearest exported symbol, which is usually misleading. Uploading here
+      # is what makes an EXC_BAD_ACCESS report actionable.
+      #
+      # Skips (does not fail) when SENTRY_AUTH_TOKEN is unset, so the build keeps
+      # working until the secret is added. The dSYMs are also saved as an
+      # artifact, so they can be uploaded by hand from any past run.
+      - name: Upload dSYMs to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: church-projector
+          SENTRY_PROJECT: church-presenter-mobile
+        run: |
+          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+            echo "⚠️  SENTRY_AUTH_TOKEN is not set — skipping dSYM upload."
+            echo "   iOS crashes will stay unsymbolicated in Sentry until it is."
+            echo "   Create a token with project:releases scope at"
+            echo "   https://church-projector.sentry.io/settings/auth-tokens/"
+            exit 0
+          fi
+          curl -sL https://sentry.io/get-cli/ | bash
+          sentry-cli debug-files upload "$RUNNER_TEMP/iosApp.xcarchive/dSYMs"
+
+      - name: Save dSYMs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: testflight-dsyms-${{ github.run_number }}
+          path: ${{ runner.temp }}/iosApp.xcarchive/dSYMs
+          retention-days: 14
+
       - name: Remove temporary keychain
         if: always()
         run: security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" || true

@@ -7,8 +7,9 @@
     <string name="songs_table_search_placeholder">Search by # or title…</string>
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">No songs available</string>
+    <string name="songs_empty_local_library">No songs on this phone yet</string>
+    <string name="songs_empty_local_library_body">Copy your computer&#8217;s songbook over Wi-Fi, or write your own. Either way they work with no computer and no internet.</string>
     <string name="songs_table_no_match">No songs match your filter</string>
-    <string name="songs_table_loading_error">Failed to load songs</string>
     <string name="songs_table_retry">Retry</string>
 
     <!-- Book Filter -->
@@ -31,6 +32,12 @@
     <string name="settings_api_key_placeholder">Leave blank if not required</string>
     <string name="settings_display_name_label">Your Name (for Q&amp;A)</string>
     <string name="settings_display_name_placeholder">Leave blank to use device ID</string>
+    <!-- Names this device in the desktop's approval prompt and its allowed/blocked
+         lists — a separate thing from the Q&amp;A name above. English-only for now;
+         other locales fall back to this until translated. -->
+    <string name="settings_device_name_label">Device name</string>
+    <string name="settings_device_name_placeholder">Leave blank to send no name</string>
+    <string name="settings_device_name_hint">Shown on the computer when it asks whether to allow this device.</string>
     <string name="settings_save">Save</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_invalid_port">Port must be a number between 1 and 65535</string>
@@ -70,6 +77,10 @@
     <string name="qa_admin_edit_hint">Edit question text…</string>
     <string name="qa_admin_add_question">Add Question</string>
     <string name="qa_admin_add_question_hint">Type your question…</string>
+    <!-- Asked once, on the first question from this device, then remembered.
+         English-only for now; other locales fall back to this until translated. -->
+    <string name="qa_admin_add_question_name">Your name</string>
+    <string name="qa_admin_add_question_name_hint">Leave blank to use the device name</string>
     <string name="qa_admin_save">Save</string>
     <string name="qa_admin_cancel">Cancel</string>
     <string name="qa_admin_error_retry">Retry</string>
@@ -101,6 +112,8 @@
     <string name="bible_no_verses">No verses available</string>
     <string name="bible_back">← Back</string>
     <string name="bible_loading_error">Failed to load</string>
+    <string name="bible_standalone_empty_title">No Bible on this phone yet</string>
+    <string name="bible_standalone_empty_body">Copy a translation from your computer over Wi-Fi. Once it is here you can read and project it with no computer and no internet.</string>
     <string name="bible_retry">Retry</string>
 
     <!-- Schedule Drawer -->
@@ -266,7 +279,7 @@
     <string name="status_unauthorized_title">Server rejected the API key</string>
     <string name="status_unauthorized_body">The server is reachable but refused the request. Check the API key in Settings.</string>
     <string name="status_not_churchpresenter_title">Not a ChurchPresenter server</string>
-    <string name="status_not_churchpresenter_body">Reached a device at this address, but it isn\'t running ChurchPresenter. Check the IP address and port.</string>
+    <string name="status_not_churchpresenter_body">Reached a device at this address, but it isn't running ChurchPresenter. Check the IP address and port.</string>
     <string name="status_permissions_title">This device's permissions</string>
     <string name="status_permission_present">Control presentation</string>
     <string name="status_permission_schedule">Add to schedule</string>
@@ -339,6 +352,24 @@
     <string name="more_dictionary_subtitle">Strong's Hebrew &amp; Greek lexicon</string>
     <string name="more_announcements_title">Announcements</string>
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
+    <string name="more_notices_title">Announcements</string>
+    <string name="more_notices_subtitle">Put an announcement from your library on the screen</string>
+    <string name="more_contact_title">Contact us</string>
+    <string name="more_contact_subtitle">Send a request, report a problem or say hello</string>
+    <string name="standalone_backdrop_pick">Pick a photo for the backdrop</string>
+    <string name="standalone_backdrop_no_photos">No photos on this device yet. Add some in More → Photos.</string>
+    <string name="standalone_backdrop_needs_server">Turn on the Browser screen first — photos are served from it.</string>
+    <string name="sync_books_choose">Choose songbooks</string>
+    <string name="sync_books_finding">Asking your computer which songbooks it has…</string>
+    <string name="sync_books_all">All %1$d songbooks will be copied</string>
+    <string name="sync_books_some">%1$d of %2$d songbooks will be copied</string>
+    <string name="sync_books_none">Tick at least one songbook</string>
+    <string name="sync_scope_all">All songbooks</string>
+    <string name="sync_books_missing">Your computer did not list any songbooks.</string>
+    <string name="sync_books_select_all">Select all</string>
+    <string name="sync_books_select_none">Select none</string>
+    <string name="sync_done_close">Done</string>
+    <string name="notices_empty">No announcements yet. Write one in the Library tab.</string>
     <string name="more_web_title">Web</string>
     <string name="more_web_subtitle">Project a web page on screen</string>
     <!-- Section detail header titles -->
@@ -353,6 +384,10 @@
     <string name="label_add_to_schedule">Add to schedule</string>
     <string name="label_live">Live</string>
     <string name="cd_delete">Delete</string>
+    <!-- Standalone running order: reordering an entry. English-only for now;
+         other locales fall back to this until translated. -->
+    <string name="service_order_move_up">Move up</string>
+    <string name="service_order_move_down">Move down</string>
     <string name="cd_close">Close</string>
     <string name="cd_select">Select</string>
     <string name="cd_cast">Cast</string>
@@ -461,4 +496,266 @@
     <string name="announce_anim_slide_left">Slide from left</string>
     <string name="announce_anim_slide_right">Slide from right</string>
     <string name="announce_duration_seconds">%1$s s</string>
+
+    <!-- ── Standalone presenter mode ─────────────────────────────────── -->
+    <string name="tab_library">Library</string>
+
+    <!-- Mode picker -->
+    <string name="mode_picker_title">How will you present?</string>
+    <string name="mode_picker_subtitle">You can change this later in Settings.</string>
+    <string name="mode_remote_title">Remote control</string>
+    <string name="mode_remote_body">Drive ChurchPresenter running on a computer. The computer shows the slides.</string>
+    <string name="mode_standalone_title">Standalone</string>
+    <string name="mode_standalone_body">This phone is the presenter. Project straight to a TV or screen — no computer needed.</string>
+    <string name="mode_continue">Continue</string>
+    <string name="mode_section_title">Mode</string>
+    <string name="mode_switch_confirm_title">Switch to standalone?</string>
+    <string name="mode_switch_confirm_body">Projection will go to your own screens instead of the computer.</string>
+    <string name="mode_switch_to_remote_title">Switch to remote control?</string>
+    <string name="mode_switch_to_remote_body">Projection will go back to ChurchPresenter on your computer.</string>
+    <string name="mode_switch_confirm_action">Switch</string>
+    <string name="mode_switch_cancel">Cancel</string>
+
+    <!-- Standalone controller -->
+    <string name="standalone_title">Present</string>
+    <string name="standalone_source">Source</string>
+    <string name="standalone_source_song">Song</string>
+    <string name="standalone_source_bible">Bible</string>
+    <string name="standalone_source_notice">Announcement</string>
+    <string name="standalone_backdrop">Backdrop</string>
+    <string name="standalone_backdrop_gradient">Gradient</string>
+    <string name="standalone_backdrop_image">Image</string>
+    <string name="standalone_backdrop_black">Black</string>
+    <string name="standalone_text_size">Text size</string>
+    <string name="standalone_size_small">Small</string>
+    <string name="standalone_size_medium">Medium</string>
+    <string name="standalone_size_large">Large</string>
+    <string name="standalone_prev">Prev</string>
+    <string name="standalone_next">Next</string>
+    <string name="standalone_blank">Blank</string>
+    <string name="standalone_live">Live</string>
+    <string name="standalone_clear">Clear</string>
+    <string name="web_refuses_framing">%1$s will not allow itself to be shown inside another page, so the browser screen shows an error instead. A screen plugged into this phone still shows it.</string>
+    <string name="standalone_preview">Preview</string>
+    <string name="standalone_no_output">No screen connected</string>
+    <string name="standalone_output_count">%1$s screen(s)</string>
+    <string name="standalone_empty_title">Nothing loaded</string>
+    <string name="standalone_empty_body">Open a song or a Bible chapter and tap Present to load it here.</string>
+    <string name="standalone_slide_position">%1$s of %2$s</string>
+    <string name="standalone_present_action">Present</string>
+
+    <!-- Output targets -->
+    <string name="outputs_title">Screens</string>
+    <string name="outputs_empty">No output available on this device.</string>
+    <string name="outputs_hint">Connect an HDMI adapter or start screen mirroring — this app will show the slide on the TV and keep the controller on your phone.</string>
+    <string name="outputs_hint_airplay">Open Control Centre, tap Screen Mirroring, then pick your Apple TV. The slide moves to the TV and the controller stays on your phone. A USB-C or Lightning adapter works too.</string>
+    <string name="outputs_hint_cast">Swipe down from the top of the screen, tap Cast (or Screen cast), then pick your Chromecast. The slide moves to the TV and the controller stays on your phone. An HDMI or USB-C adapter works too.</string>
+    <string name="outputs_open_cast_settings">Open cast settings</string>
+    <string name="outputs_state_attached">Connected</string>
+    <string name="outputs_state_waiting">Waiting for a screen</string>
+    <string name="outputs_state_off">Off</string>
+    <string name="outputs_state_error">Error</string>
+    <string name="outputs_close">Close</string>
+    <string name="outputs_url_label">Open this on your TV or laptop</string>
+    <string name="outputs_scan_hint">Or scan to open it on another phone.</string>
+    <string name="outputs_ios_foreground_warning">Keep this app open and the screen on while presenting.</string>
+
+    <!-- ── On-device library ─────────────────────────────────────────── -->
+    <string name="library_title">Library</string>
+    <string name="library_search_placeholder">Search your library…</string>
+    <string name="library_filter_all">All</string>
+    <string name="library_filter_songs">Songs</string>
+    <string name="library_filter_notices">Announcements</string>
+    <string name="library_empty_title">Your library is empty</string>
+    <string name="library_empty_body">Songs and announcements you create here work with no computer and no internet.</string>
+    <string name="library_no_results">Nothing matches your search</string>
+    <string name="library_new_song">New song</string>
+    <string name="library_new_notice">New announcement</string>
+    <string name="library_add">Add</string>
+    <string name="library_origin_desktop">From computer</string>
+    <string name="library_origin_edited">Edited</string>
+    <string name="library_delete">Delete</string>
+    <string name="library_delete_confirm_title">Delete this item?</string>
+    <string name="library_delete_confirm_body">This cannot be undone.</string>
+    <string name="library_section_songs">Songs</string>
+    <string name="library_section_notices">Announcements</string>
+
+    <!-- Song editor -->
+    <string name="editor_song_new_title">New song</string>
+    <string name="editor_song_edit_title">Edit song</string>
+    <string name="editor_song_edit_label">Edit</string>
+    <string name="editor_field_title">Title</string>
+    <string name="editor_field_number">Number</string>
+    <string name="editor_field_author">Author</string>
+    <string name="editor_field_book">Songbook</string>
+    <string name="editor_field_copyright">Copyright</string>
+    <string name="editor_sections">Sections</string>
+    <string name="editor_add_section">Add section</string>
+    <string name="editor_section_text_placeholder">Type the words for this slide…</string>
+    <string name="editor_move_up">Move up</string>
+    <string name="editor_move_down">Move down</string>
+    <string name="editor_remove_section">Remove section</string>
+    <string name="editor_split_section">Split on blank lines</string>
+    <string name="editor_save">Save</string>
+    <string name="editor_cancel">Cancel</string>
+    <string name="editor_discard_title">Discard changes?</string>
+    <string name="editor_discard_body">Your edits will be lost.</string>
+    <string name="editor_discard_confirm">Discard</string>
+    <string name="editor_keep_editing">Keep editing</string>
+    <string name="editor_preview">Slide preview</string>
+
+    <!-- Notice editor -->
+    <string name="editor_notice_new_title">New announcement</string>
+    <string name="editor_notice_edit_title">Edit announcement</string>
+    <string name="editor_field_body">Text to show</string>
+    <string name="editor_body_placeholder">Welcome!\nService begins at 10:30</string>
+
+    <!-- Section types -->
+    <string name="section_verse">Verse</string>
+    <string name="section_chorus">Chorus</string>
+    <string name="section_bridge">Bridge</string>
+    <string name="section_tag">Tag</string>
+    <string name="section_ending">Ending</string>
+
+    <!-- Desktop sync -->
+    <!-- Copying content from a computer, and where that computer is. New strings are
+         English-only; the other locales fall back until translated. -->
+    <!-- The look of the audience screen, set from the Present tab. English-only for now. -->
+    <string name="color_red">Red</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
+    <string name="standalone_look">Look</string>
+    <string name="standalone_gradient_top">Gradient top</string>
+    <string name="standalone_gradient_bottom">Gradient bottom</string>
+    <string name="standalone_text_colour">Text colour</string>
+    <string name="standalone_accent_colour">Reference colour</string>
+    <string name="standalone_font">Font</string>
+    <string name="standalone_font_serif">Serif</string>
+    <string name="standalone_font_sans">Sans</string>
+    <string name="standalone_align">Words across</string>
+    <string name="standalone_align_left">Left</string>
+    <string name="standalone_align_center">Centre</string>
+    <string name="standalone_align_right">Right</string>
+    <string name="standalone_valign">Words down</string>
+    <string name="standalone_valign_top">Top</string>
+    <string name="standalone_valign_middle">Middle</string>
+    <string name="standalone_valign_bottom">Bottom</string>
+    <string name="standalone_margin">Margin</string>
+    <string name="standalone_margin_thin">Thin</string>
+    <string name="standalone_margin_medium">Medium</string>
+    <string name="standalone_margin_thick">Thick</string>
+    <string name="standalone_autofit">Shrink text to fit</string>
+    <string name="standalone_autofit_hint">A long verse is made smaller instead of running off the screen.</string>
+    <string name="standalone_ignore_breaks">Ignore line breaks</string>
+    <string name="standalone_ignore_breaks_hint">Let the words wrap to the screen instead of breaking where the songbook did.</string>
+    <string name="standalone_show_chords">Show chords</string>
+    <string name="standalone_show_chords_hint">On this phone and on every screen.</string>
+    <string name="standalone_themes">Themes</string>
+    <string name="standalone_themes_saved">Your saved looks</string>
+    <string name="standalone_theme_save">Save current look…</string>
+    <string name="standalone_theme_name">Name this look</string>
+    <string name="standalone_theme_save_action">Save</string>
+    <string name="standalone_theme_delete">Delete</string>
+    <string name="standalone_show_reference_songs">Song heading</string>
+    <string name="standalone_show_reference_bible">Bible reference</string>
+    <string name="standalone_show_reference_other">Other headings</string>
+    <string name="standalone_brand_line">Church name (top corner)</string>
+    <string name="standalone_brand_line_hint">Leave blank for none</string>
+    <string name="standalone_show_clock">Show a clock</string>
+    <string name="web_not_a_link">Type a web address, like example.com</string>
+    <string name="standalone_show_reference">Show the reference line</string>
+    <string name="standalone_show_reference_hint">The song section or verse shown under the words.</string>
+    <string name="standalone_look_reset">Reset the look</string>
+
+    <string name="sync_address_section">Your computer</string>
+    <string name="sync_address_hint">Both devices must be on the same Wi-Fi. The address is shown on your computer under Settings &#8594; Companion.</string>
+    <string name="sync_address_needs_key">Needs a key?</string>
+    <string name="settings_computer_section">Computer</string>
+    <string name="settings_computer_explain">Only used to copy songs and Bibles onto this phone. Nothing is projected through it.</string>
+
+    <string name="sync_section_songs">Songs</string>
+    <string name="sync_section_bible">Bible</string>
+    <string name="bible_sync_explain">Copies whole translations onto this phone. Each is around 5 MB.</string>
+    <string name="bible_sync_find">See what your computer has</string>
+    <string name="bible_sync_finding">Asking your computer&#8230;</string>
+    <string name="bible_sync_none_offered">Your computer has no Bible loaded. Open a translation there, then look again.</string>
+    <string name="bible_sync_download">Copy %1$s</string>
+    <string name="bible_sync_downloading">Copying %1$s (%2$s of %3$s)&#8230;</string>
+    <string name="bible_sync_stop">Stop after this one</string>
+    <string name="bible_sync_installed">On this phone</string>
+    <string name="bible_sync_verses">%1$s verses</string>
+    <string name="bible_sync_choose_hint">Tap a translation to read and present it</string>
+    <string name="bible_sync_active">Presenting</string>
+    <string name="library_bible_none">No Bible</string>
+    <string name="library_bible_menu_title">Bible to present</string>
+    <string name="bible_sync_done">Copied %1$s.</string>
+    <string name="bible_sync_done_with_failures">Copied %1$s. %2$s would not come.</string>
+    <string name="bible_sync_nothing_copied">Nothing was copied. %1$s would not come.</string>
+    <string name="bible_sync_failed">Could not reach your computer: %1$s</string>
+    <string name="bible_sync_cancelled">Stopped. %1$s already copied are kept.</string>
+    <string name="bible_sync_cancelled_none">Stopped before anything was copied.</string>
+    <string name="bible_sync_remove">Remove</string>
+    <string name="bible_sync_remove_confirm_title">Remove this translation?</string>
+    <string name="bible_sync_remove_confirm_body">You can copy it again from your computer later.</string>
+
+    <string name="empty_action_get_songs">Copy songs from your computer</string>
+    <string name="empty_action_get_bible">Copy a Bible from your computer</string>
+    <string name="empty_action_get_content">Copy from your computer</string>
+    <string name="empty_action_write_song">Write one myself</string>
+    <string name="library_empty_body_standalone">Copy your computer&#8217;s songs and Bibles over, or write your own. Either way they work with no computer and no internet.</string>
+
+    <string name="sync_title">Get songs from your computer</string>
+    <string name="sync_action">Sync from computer</string>
+    <string name="sync_never">Never synced</string>
+    <string name="sync_just_now">Synced just now</string>
+    <string name="sync_minutes_ago">Synced %1$s min ago</string>
+    <string name="sync_hours_ago">Synced %1$s h ago</string>
+    <string name="sync_days_ago">Synced %1$s days ago</string>
+    <string name="sync_running">Copying %1$s of %2$s…</string>
+    <string name="sync_preparing">Looking on your computer…</string>
+    <string name="sync_cancel">Stop</string>
+    <string name="sync_done">Copied %1$s songs</string>
+    <string name="sync_done_with_failures">Copied %1$s songs · %2$s could not be read</string>
+    <string name="sync_kept_local">%1$s of your edits were kept</string>
+    <string name="sync_failed">Could not reach your computer: %1$s</string>
+    <string name="sync_cancelled">Stopped — %1$s songs were kept</string>
+    <string name="sync_explain">Copies your computer's songs onto this phone so they work with no computer and no internet. Your own songs and edits are never overwritten.</string>
+    <string name="sync_close">Close</string>
+
+    <!-- Import / export -->
+    <string name="share_title">Share &amp; import</string>
+    <string name="share_export">Export my library</string>
+    <string name="share_import">Import a file</string>
+    <string name="share_explain">Send your library to another phone, or bring in songs from a file. ChordPro (.cho, .chordpro) and ChurchPresenter (.cpset) files are supported.</string>
+    <string name="import_preview_title">Import</string>
+    <string name="import_new_count">%1$s new</string>
+    <string name="import_conflict_count">%1$s already in your library</string>
+    <string name="import_conflict_question">What should happen to the ones you already have?</string>
+    <string name="import_keep_mine">Keep mine</string>
+    <string name="import_replace">Use the file's</string>
+    <string name="import_confirm">Import</string>
+    <string name="import_cancel">Cancel</string>
+    <string name="import_nothing">There is nothing new in that file.</string>
+    <string name="import_done">Imported %1$s items</string>
+    <string name="import_song_added">Added \"%1$s\"</string>
+    <string name="import_error_unreadable">That file could not be read.</string>
+    <string name="import_error_wrong_format">That is not a ChurchPresenter file.</string>
+    <string name="import_error_too_new">That file was made with a newer version of the app. Update to open it.</string>
+    <string name="import_error_empty">That file has nothing in it.</string>
+    <string name="contact_us_title">Contact Us</string>
+    <string name="contact_type_label">Type</string>
+    <string name="contact_type_feature">Feature Request</string>
+    <string name="contact_type_feedback">Feedback</string>
+    <string name="contact_type_testimonial">Testimonial</string>
+    <string name="contact_type_bug">Bug Report</string>
+    <string name="contact_name_label">Name</string>
+    <string name="contact_email_label">Email (optional)</string>
+    <string name="contact_message_label">Message</string>
+    <string name="contact_send">Send</string>
+    <string name="contact_sending">Sending…</string>
+    <string name="contact_sent">Message sent. Thank you!</string>
+    <string name="contact_error">Could not send. Please try again.</string>
+    <string name="contact_rate_limited_browser">For security, please finish sending in your browser.</string>
+    <string name="contact_network_error">Couldn't reach the server. Check your internet connection and try again.</string>
+    <string name="contact_open_browser">Open in Browser</string>
 </resources>

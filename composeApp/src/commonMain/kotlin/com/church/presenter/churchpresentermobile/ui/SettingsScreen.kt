@@ -25,12 +25,15 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,8 +72,24 @@ import churchpresentermobile.composeapp.generated.resources.cd_close
 import churchpresentermobile.composeapp.generated.resources.settings_active_url_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_label
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_device_name_hint
+import churchpresentermobile.composeapp.generated.resources.settings_device_name_label
+import churchpresentermobile.composeapp.generated.resources.settings_device_name_placeholder
 import churchpresentermobile.composeapp.generated.resources.settings_display_name_label
 import churchpresentermobile.composeapp.generated.resources.settings_display_name_placeholder
+import churchpresentermobile.composeapp.generated.resources.mode_remote_body
+import churchpresentermobile.composeapp.generated.resources.mode_remote_title
+import churchpresentermobile.composeapp.generated.resources.mode_section_title
+import churchpresentermobile.composeapp.generated.resources.mode_standalone_body
+import churchpresentermobile.composeapp.generated.resources.mode_standalone_title
+import churchpresentermobile.composeapp.generated.resources.mode_switch_cancel
+import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_action
+import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_body
+import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_title
+import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_body
+import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_title
+import churchpresentermobile.composeapp.generated.resources.settings_computer_section
+import churchpresentermobile.composeapp.generated.resources.settings_computer_explain
 import churchpresentermobile.composeapp.generated.resources.settings_appearance_section
 import churchpresentermobile.composeapp.generated.resources.settings_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_check_status
@@ -90,6 +109,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_reset_to_de
 import churchpresentermobile.composeapp.generated.resources.settings_save
 import churchpresentermobile.composeapp.generated.resources.settings_server_section
 import churchpresentermobile.composeapp.generated.resources.settings_status_bibles
+import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.settings_status_mobile_version
 import churchpresentermobile.composeapp.generated.resources.settings_status_none
 import churchpresentermobile.composeapp.generated.resources.settings_status_recheck
@@ -116,6 +136,10 @@ import churchpresentermobile.composeapp.generated.resources.status_permission_up
 import churchpresentermobile.composeapp.generated.resources.status_permissions_title
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.deviceName
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
+import com.church.presenter.churchpresentermobile.model.supportsStandalone
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.util.CrashReporting
@@ -136,12 +160,15 @@ fun SettingsScreen(
     appSettings: AppSettings,
     onDismiss: () -> Unit,
     onSaved: () -> Unit,
+    /** Opens the contact form. Settings is where people look for a way to reach support. */
+    onContact: () -> Unit,
 ) {
     val viewModel: SettingsViewModel = viewModel { SettingsViewModel(appSettings) }
     val host         by viewModel.host.collectAsState()
     val port         by viewModel.port.collectAsState()
     val apiKey       by viewModel.apiKey.collectAsState()
     val displayName  by viewModel.displayName.collectAsState()
+    val customDeviceName by viewModel.customDeviceName.collectAsState()
     val hostError    by viewModel.hostError.collectAsState()
     val portError    by viewModel.portError.collectAsState()
     val activeUrl    by viewModel.activeUrl.collectAsState()
@@ -153,6 +180,9 @@ fun SettingsScreen(
     // Show/hide state for the API key field
     var apiKeyVisible    by remember { mutableStateOf(false) }
     var showStatusDialog by remember { mutableStateOf(false) }
+    // Mode the user has tapped but not yet confirmed. Switching mode redirects
+    // where everything projects, so it asks first.
+    var pendingMode      by remember { mutableStateOf<AppMode?>(null) }
     var testErrorSent    by remember { mutableStateOf(false) }
 
     // Inline server-status check
@@ -166,6 +196,20 @@ fun SettingsScreen(
 
     val emptyHostError   = stringResource(Res.string.settings_host_empty)
     val invalidPortError = stringResource(Res.string.settings_invalid_port)
+
+    val appMode by AppModeHolder.mode.collectAsState()
+    // Everything about a server — its address, its key, its status, the QR
+    // code that configures it — belongs to a mode that has one. Standalone
+    // presents from this device, so the whole block is absent rather than
+    // greyed out: the mode selector above brings it straight back.
+    val hasDesktop = appMode == AppMode.REMOTE
+    pendingMode?.let { target ->
+        ModeSwitchDialog(
+            target = target,
+            onConfirm = { AppModeHolder.set(appSettings, target); pendingMode = null },
+            onDismiss = { pendingMode = null },
+        )
+    }
 
     if (showStatusDialog) {
         ServerStatusDialog(
@@ -234,87 +278,164 @@ fun SettingsScreen(
                         .padding(horizontal = 20.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    // ── Active-server card ────────────────────────────────────
-                    // Shows which server the app is configured to use (the saved
-                    // host/port). This is NOT a live connection check — use
-                    // "Check status" for that. Labelled + iconed accordingly so it
-                    // doesn't read as a live "Connected" indicator.
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(colors.surface)
-                            .border(1.dp, colors.borderSubtle, RoundedCornerShape(12.dp))
-                            .padding(horizontal = 14.dp, vertical = 11.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Dns,
-                            contentDescription = null,
-                            tint = colors.muted,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Column {
-                            Text(stringResource(Res.string.settings_active_server),
-                                color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                            Text(activeUrl, color = colors.muted, fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace)
+                    if (hasDesktop) {
+                        // ── Active-server card ────────────────────────────────────
+                        // Shows which server the app is configured to use (the saved
+                        // host/port). This is NOT a live connection check — use
+                        // "Check status" for that. Labelled + iconed accordingly so it
+                        // doesn't read as a live "Connected" indicator.
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(colors.surface)
+                                .border(1.dp, colors.borderSubtle, RoundedCornerShape(12.dp))
+                                .padding(horizontal = 14.dp, vertical = 11.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Dns,
+                                contentDescription = null,
+                                tint = colors.muted,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Column {
+                                Text(stringResource(Res.string.settings_active_server),
+                                    color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                Text(activeUrl, color = colors.muted, fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace)
+                            }
                         }
                     }
 
-                    // ── Server section header ─────────────────────────────────
-                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                        Text(stringResource(Res.string.settings_server_section),
+                    // ── Mode ──────────────────────────────────────────────────
+                    // Only offered where a standalone output sink can exist; the
+                    // web build has none, so it never sees a choice it can't honour.
+                    if (supportsStandalone) {
+                        Text(stringResource(Res.string.mode_section_title),
                             fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
-                        Text(stringResource(Res.string.settings_reset_to_default),
-                            fontSize = 12.sp, color = colors.muted,
-                            modifier = Modifier.clickable { viewModel.resetToDefaults() })
+                        val modeOptions = listOf(AppMode.REMOTE, AppMode.STANDALONE)
+                        SegmentedControl(
+                            options = listOf(
+                                stringResource(Res.string.mode_remote_title),
+                                stringResource(Res.string.mode_standalone_title),
+                            ),
+                            selectedIndex = modeOptions.indexOf(appMode).coerceAtLeast(0),
+                            onSelect = { index ->
+                                val target = modeOptions[index]
+                                if (target != appMode) pendingMode = target
+                            },
+                        )
+                        Text(
+                            text = if (appMode == AppMode.STANDALONE) {
+                                stringResource(Res.string.mode_standalone_body)
+                            } else {
+                                stringResource(Res.string.mode_remote_body)
+                            },
+                            fontSize = 12.sp,
+                            color = colors.muted,
+                        )
+                        HorizontalDivider(color = colors.borderSubtle)
                     }
 
-                    SettingsField(
-                        label = stringResource(Res.string.settings_host_label),
-                        value = host, onValueChange = { viewModel.setHost(it) },
-                        placeholder = stringResource(Res.string.settings_host_placeholder),
-                        mono = true,
-                        keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next,
-                        error = hostError,
-                    )
-                    SettingsField(
-                        label = stringResource(Res.string.settings_port_label),
-                        value = port, onValueChange = { viewModel.setPort(it) },
-                        placeholder = stringResource(Res.string.settings_port_placeholder),
-                        mono = true,
-                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next,
-                        error = portError,
-                    )
-                    SettingsField(
-                        label = stringResource(Res.string.settings_api_key_label),
-                        value = apiKey, onValueChange = { viewModel.setApiKey(it) },
-                        placeholder = stringResource(Res.string.settings_api_key_placeholder),
-                        password = true, passwordVisible = apiKeyVisible,
-                        onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
-                        keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
-                    )
-                    SettingsField(
-                        label = stringResource(Res.string.settings_display_name_label),
-                        value = displayName, onValueChange = { viewModel.setDisplayName(it) },
-                        placeholder = stringResource(Res.string.settings_display_name_placeholder),
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
-                    )
+                    if (hasDesktop) {
+                        // ── Server section header ─────────────────────────────────
+                        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                            Text(stringResource(Res.string.settings_server_section),
+                                fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                            Text(stringResource(Res.string.settings_reset_to_default),
+                                fontSize = 12.sp, color = colors.muted,
+                                modifier = Modifier.clickable { viewModel.resetToDefaults() })
+                        }
 
-                    // QR scanner (platform button)
-                    QrScanButton(onScanned = { url -> DeepLinkHandler.handle(url, appSettings) },
-                        modifier = Modifier.fillMaxWidth())
+                        SettingsField(
+                            label = stringResource(Res.string.settings_host_label),
+                            value = host, onValueChange = { viewModel.setHost(it) },
+                            placeholder = stringResource(Res.string.settings_host_placeholder),
+                            mono = true,
+                            keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next,
+                            error = hostError,
+                        )
+                        SettingsField(
+                            label = stringResource(Res.string.settings_port_label),
+                            value = port, onValueChange = { viewModel.setPort(it) },
+                            placeholder = stringResource(Res.string.settings_port_placeholder),
+                            mono = true,
+                            keyboardType = KeyboardType.Number, imeAction = ImeAction.Next,
+                            error = portError,
+                        )
+                        SettingsField(
+                            label = stringResource(Res.string.settings_api_key_label),
+                            value = apiKey, onValueChange = { viewModel.setApiKey(it) },
+                            placeholder = stringResource(Res.string.settings_api_key_placeholder),
+                            password = true, passwordVisible = apiKeyVisible,
+                            onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
+                            keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
+                        )
+                        // The placeholder is what the desktop will be told if this
+                        // is left blank, so the operator can see the OS name and
+                        // decide whether it is good enough — "iPhone" usually isn't
+                        // when there are three in the building.
+                        SettingsField(
+                            label = stringResource(Res.string.settings_device_name_label),
+                            value = customDeviceName,
+                            onValueChange = { viewModel.setCustomDeviceName(it) },
+                            placeholder = deviceName().ifBlank {
+                                stringResource(Res.string.settings_device_name_placeholder)
+                            },
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Next,
+                        )
+                        Text(
+                            text = stringResource(Res.string.settings_device_name_hint),
+                            fontSize = 11.sp,
+                            color = colors.muted,
+                        )
+                        // A separate field because the desktop shows a question's
+                        // author and the device it came from on separate lines:
+                        // "Sound desk" answers one of those and not the other.
+                        SettingsField(
+                            label = stringResource(Res.string.settings_display_name_label),
+                            value = displayName, onValueChange = { viewModel.setDisplayName(it) },
+                            placeholder = stringResource(Res.string.settings_display_name_placeholder),
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
+                        )
 
-                    // Check Server Status → opens full-screen dialog
-                    OutlineActionButton(
-                        label = stringResource(Res.string.settings_check_status),
-                        icon = Icons.Filled.Wifi,
-                        onClick = { statusViewModel.recheck(); showStatusDialog = true },
-                    )
+                        // QR scanner (platform button)
+                        QrScanButton(onScanned = { url -> DeepLinkHandler.handle(url, appSettings) },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // Check Server Status → opens full-screen dialog
+                        OutlineActionButton(
+                            label = stringResource(Res.string.settings_check_status),
+                            icon = Icons.Filled.Wifi,
+                            onClick = { statusViewModel.recheck(); showStatusDialog = true },
+                        )
+                    }
+
+                    // ── Computer (standalone only) ────────────────────────────
+                    // Commit e8e35ae removed the whole server block from standalone, correctly:
+                    // an address that names a machine doing the presenting means nothing when
+                    // this phone is the presenter. But content still has to come from somewhere,
+                    // and the Library tab's "copy from computer" was silently aiming at the
+                    // default host with no way to correct it. So the address comes back — and
+                    // only the address, framed as where content is copied from rather than as a
+                    // server. No status check, no active-server card: neither has anything to
+                    // report in a mode that never connects.
+                    if (!hasDesktop) {
+                        Text(stringResource(Res.string.settings_computer_section),
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                        Text(
+                            text = stringResource(Res.string.settings_computer_explain),
+                            fontSize = 11.sp,
+                            color = colors.muted,
+                        )
+                        DesktopAddressFields(settings = appSettings, showHint = false)
+                    }
 
                     // ── Appearance (segmented, drives theme live) ─────────────
+                    // The mode block above already closes with a divider, so this one would
+                    // double it up when nothing sits between them.
                     HorizontalDivider(color = colors.borderSubtle)
                     Text(stringResource(Res.string.settings_appearance_section),
                         fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
@@ -353,7 +474,7 @@ fun SettingsScreen(
                     }
 
                     // Draft URL preview
-                    if (urlChanged) {
+                    if (hasDesktop && urlChanged) {
                         HorizontalDivider(color = colors.borderSubtle)
                         Text(stringResource(Res.string.settings_draft_url_label),
                             fontSize = 9.sp, letterSpacing = 0.05.em, color = colors.muted)
@@ -366,6 +487,15 @@ fun SettingsScreen(
                                 .padding(horizontal = 10.dp, vertical = 6.dp),
                         )
                     }
+
+                    // Contact — in every build and both modes: the endpoint is a
+                    // public one on the internet, so it needs no desktop.
+                    HorizontalDivider(color = colors.borderSubtle)
+                    OutlineActionButton(
+                        label = stringResource(Res.string.contact_us_title),
+                        icon = Icons.Filled.MailOutline,
+                        onClick = onContact,
+                    )
 
                     // Developer — debug builds only
                     if (isDebugBuild) {
@@ -711,3 +841,44 @@ private fun StatusRecheckButton(onClick: () -> Unit) {
     }
 }
 
+
+/**
+ * Confirms a mode switch before it takes effect.
+ *
+ * Switching mode redirects where every projection action goes, which is not
+ * something to discover mid-service — so the dialog names the consequence
+ * rather than asking a generic "are you sure?".
+ */
+@Composable
+private fun ModeSwitchDialog(
+    target: AppMode,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val toStandalone = target == AppMode.STANDALONE
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                if (toStandalone) stringResource(Res.string.mode_switch_confirm_title)
+                else stringResource(Res.string.mode_switch_to_remote_title)
+            )
+        },
+        text = {
+            Text(
+                if (toStandalone) stringResource(Res.string.mode_switch_confirm_body)
+                else stringResource(Res.string.mode_switch_to_remote_body)
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(Res.string.mode_switch_confirm_action))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.mode_switch_cancel))
+            }
+        },
+    )
+}

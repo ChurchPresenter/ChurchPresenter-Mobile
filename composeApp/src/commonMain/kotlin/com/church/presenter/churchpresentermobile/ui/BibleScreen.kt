@@ -36,13 +36,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.SyncRequestHandler
+import com.church.presenter.churchpresentermobile.TabNavigationHandler
+import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.ui.library.SyncSection
+import androidx.compose.material.icons.filled.CloudDownload
+import churchpresentermobile.composeapp.generated.resources.empty_action_get_bible
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_count
 import churchpresentermobile.composeapp.generated.resources.bible_loading_error
+import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_body
+import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_title
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
 import churchpresentermobile.composeapp.generated.resources.bible_retry
@@ -112,6 +121,7 @@ fun BibleScreen(
     val selectedVerseIndices by vm.selectedVerseIndices.collectAsState()
     val projectedVerseIndex  by vm.projectedVerseIndex.collectAsState()
     val isMultiSelectMode   by vm.isMultiSelectMode.collectAsState()
+    val hasNoLocalBibles    by vm.hasNoLocalBibles.collectAsState()
     val scheduleAdded       by vm.scheduleAdded.collectAsState()
     val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val toastEvent          by vm.toastEvent.collectAsState()
@@ -163,8 +173,29 @@ fun BibleScreen(
         }
     }
 
-    // ── Error banner ──────────────────────────────────────────────────────
     val colors = LocalAppColors.current
+
+    // Standalone reads a translation copied onto this device. With none copied yet the tab
+    // offers the one thing that fixes that, rather than naming a mode the operator would have
+    // to switch to.
+    if (hasNoLocalBibles) {
+        Box(modifier = modifier.fillMaxSize().background(colors.background)) {
+            EmptyState(
+                title = stringResource(Res.string.bible_standalone_empty_title),
+                body = stringResource(Res.string.bible_standalone_empty_body),
+                actionLabel = stringResource(Res.string.empty_action_get_bible),
+                actionIcon = Icons.Filled.CloudDownload,
+                onAction = {
+                    // The Library tab owns the sheet; ask it to open on the Bible half.
+                    SyncRequestHandler.request(SyncSection.BIBLE)
+                    TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+                },
+            )
+        }
+        return
+    }
+
+    // ── Error banner ──────────────────────────────────────────────────────
     Box(modifier = modifier.fillMaxSize().background(colors.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (error != null) {

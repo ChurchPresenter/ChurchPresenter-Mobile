@@ -11,7 +11,16 @@ data class Song(
     val tune: String? = null,
     val author: String? = null,
     // bookName is not in the JSON — populated in code after parsing
-    val bookName: String? = null
+    val bookName: String? = null,
+    /**
+     * Identifies the [LocalSong] this came from, for songs served by the
+     * on-device library in standalone mode; null for songs from a desktop.
+     *
+     * The desktop's numeric [id] cannot carry it — library ids are UUIDs — and
+     * number+title is not unique enough to reopen the right song after an edit.
+     * Not in any JSON payload; like [bookName] it is populated in code.
+     */
+    val localId: String? = null,
 )
 
 // ── Project / schedule-add request models ─────────────────────────────────────

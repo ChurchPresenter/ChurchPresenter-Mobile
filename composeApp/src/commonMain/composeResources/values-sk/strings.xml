@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Žiadne piesne nie sú k dispozícii</string>
     <string name="songs_table_no_match">Žiadne piesne nezodpovedajú filtru</string>
-    <string name="songs_table_loading_error">Načítanie piesní zlyhalo</string>
     <string name="songs_table_retry">Skúsiť znova</string>
 
     <!-- Book Filter -->
@@ -455,4 +454,20 @@
     <string name="dictionary_appears_in">Vyskytuje sa v</string>
     <string name="dictionary_appears_in_count">%1$s z %2$s</string>
     <string name="settings_active_server">Aktívny server</string>
+    <string name="contact_us_title">Kontaktujte nás</string>
+    <string name="contact_type_label">Typ</string>
+    <string name="contact_type_feature">Požiadavka na funkciu</string>
+    <string name="contact_type_feedback">Spätná väzba</string>
+    <string name="contact_type_testimonial">Referencia</string>
+    <string name="contact_type_bug">Hlásenie chyby</string>
+    <string name="contact_name_label">Meno</string>
+    <string name="contact_email_label">E-mail (nepovinné)</string>
+    <string name="contact_message_label">Správa</string>
+    <string name="contact_send">Odoslať</string>
+    <string name="contact_sending">Odosielanie…</string>
+    <string name="contact_sent">Správa odoslaná. Ďakujeme!</string>
+    <string name="contact_error">Odoslanie zlyhalo. Skúste to znova.</string>
+    <string name="contact_rate_limited_browser">Z bezpečnostných dôvodov dokončite odoslanie v prehliadači.</string>
+    <string name="contact_network_error">Server sa nepodarilo kontaktovať. Skontrolujte pripojenie na internet a skúste to znova.</string>
+    <string name="contact_open_browser">Otvoriť v prehliadači</string>
 </resources>

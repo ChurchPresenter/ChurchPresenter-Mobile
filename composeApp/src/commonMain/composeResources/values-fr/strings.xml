@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Aucun cantique disponible</string>
     <string name="songs_table_no_match">Aucun cantique ne correspond au filtre</string>
-    <string name="songs_table_loading_error">Échec du chargement des cantiques</string>
     <string name="songs_table_retry">Réessayer</string>
 
     <!-- Book Filter -->
@@ -424,5 +423,21 @@
     <string name="dictionary_appears_in">Apparaît dans</string>
     <string name="dictionary_appears_in_count">%1$s sur %2$s</string>
     <string name="settings_active_server">Serveur actif</string>
+    <string name="contact_us_title">Nous contacter</string>
+    <string name="contact_type_label">Type</string>
+    <string name="contact_type_feature">Demande de fonctionnalité</string>
+    <string name="contact_type_feedback">Commentaires</string>
+    <string name="contact_type_testimonial">Témoignage</string>
+    <string name="contact_type_bug">Rapport de bug</string>
+    <string name="contact_name_label">Nom</string>
+    <string name="contact_email_label">E-mail (facultatif)</string>
+    <string name="contact_message_label">Message</string>
+    <string name="contact_send">Envoyer</string>
+    <string name="contact_sending">Envoi…</string>
+    <string name="contact_sent">Message envoyé. Merci !</string>
+    <string name="contact_error">Échec de l'envoi. Veuillez réessayer.</string>
+    <string name="contact_rate_limited_browser">Pour des raisons de sécurité, veuillez terminer l'envoi dans votre navigateur.</string>
+    <string name="contact_network_error">Impossible de joindre le serveur. Vérifiez votre connexion internet et réessayez.</string>
+    <string name="contact_open_browser">Ouvrir dans le navigateur</string>
 </resources>
 

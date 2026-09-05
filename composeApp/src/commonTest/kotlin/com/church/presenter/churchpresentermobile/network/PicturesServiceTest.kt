@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.mockClient
@@ -8,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -40,5 +42,16 @@ class PicturesServiceTest {
     @Test
     fun getPicturesNonSuccessIsFailure() = runTest {
         assertTrue(service("no", HttpStatusCode.NotFound).getPictures().isFailure)
+    }
+
+    @Test
+    fun getPicturesNonSuccessThrowsApiExceptionCarryingStatusAndReason() = runTest {
+        // Must be an ApiException, not a plain one: recordNetworkError decides what
+        // reaches crash reporting by type, and a bare exception is treated as a bug.
+        val error = service("No picture folder loaded", HttpStatusCode.ServiceUnavailable)
+            .getPictures().exceptionOrNull()
+        assertIs<ApiException>(error)
+        assertEquals(503, error.httpStatus)
+        assertEquals("No picture folder loaded", error.reason)
     }
 }

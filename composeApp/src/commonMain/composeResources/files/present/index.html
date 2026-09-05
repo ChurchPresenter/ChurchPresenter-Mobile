@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ChurchPresenter</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<!--
+  The projected display.
+
+  A fixed DOM: every region exists at load time and is revealed or hidden by
+  class, so a slide change is a couple of property writes rather than a re-render.
+  Nothing here is fetched from the internet — see WebAssets.kt for why that is
+  a hard requirement rather than a preference.
+-->
+<body>
+  <div id="backdrop" class="bd-gradient"></div>
+  <div id="scrim" class="hidden"></div>
+
+  <!--
+    A page or a video *replaces* the slide rather than sitting behind it, so both
+    live above the backdrop and below the corner furniture. The iframe is
+    sandboxed: the operator typed the address, but the audience screen is not a
+    place to run someone else's scripts with access to this page.
+  -->
+  <iframe id="web" class="media hidden" sandbox="allow-scripts allow-same-origin allow-forms"
+          referrerpolicy="no-referrer" title=""></iframe>
+  <video id="video" class="media hidden" playsinline></video>
+
+  <main id="screen" class="serif">
+    <div id="content" class="content">
+      <p id="body" class="body"></p>
+      <p id="reference" class="reference"></p>
+      <p id="footer" class="footer"></p>
+    </div>
+  </main>
+
+  <div id="brand" class="corner corner-start hidden"></div>
+  <div id="clock" class="corner corner-end hidden"></div>
+
+  <!-- Shown until the first slide arrives, and again if the phone goes away. -->
+  <div id="standby" class="standby">
+    <div class="standby-mark"></div>
+    <p id="standby-text" class="standby-text">Waiting for ChurchPresenter…</p>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

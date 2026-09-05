@@ -9,6 +9,21 @@ object ApiConstants {
     const val EMULATOR_HOST = "10.0.2.2"
     const val DEFAULT_PORT = 8765
 
+    /**
+     * Port the phone's own presentation web server listens on in standalone
+     * mode. Deliberately not [DEFAULT_PORT] — a phone and a desktop are often
+     * on the same network, and reusing 8765 would make a mistyped address point
+     * at the wrong machine's presenter.
+     */
+    const val STANDALONE_HTTP_PORT_DEFAULT = 8766
+
+    /**
+     * Ports tried in order when [STANDALONE_HTTP_PORT_DEFAULT] is already taken
+     * (a second instance, or another app). If every candidate is busy the
+     * server falls back to an ephemeral port and reports whatever it got.
+     */
+    val STANDALONE_PORT_CANDIDATES: IntRange = 8766..8775
+
     // ── Network timeouts (milliseconds) ───────────────────────────────────
     // Kept short so an unreachable server fails fast instead of leaving
     // coroutines/threads blocked on socket connect — a long connect timeout
@@ -29,6 +44,15 @@ object ApiConstants {
     const val SCHEDULE_ADD_BATCH_ENDPOINT = "schedule/add-batch"
     const val BIBLE_ENDPOINT = "bible"
     const val BIBLE_SELECT_ENDPOINT = "bible/select"
+
+    /**
+     * The desktop's Bible modules, and one of them by position in that same list.
+     *
+     * Documented on the desktop as serving Instance Link followers, but gated only by the API
+     * key — a phone may ask for them, which is what lets standalone carry a Bible at all.
+     */
+    const val BIBLE_TRANSLATIONS_ENDPOINT = "bible/file/translations"
+    const val BIBLE_TRANSLATION_ENDPOINT = "bible/file/translation"
     const val PRESENTATIONS_ENDPOINT = "presentations"
     const val PRESENTATION_SELECT_ENDPOINT = "select"
     const val PRESENTATIONS_UPLOAD_ENDPOINT = "presentations/upload"
@@ -52,6 +76,22 @@ object ApiConstants {
      */
     const val QA_ADMIN_PASSWORD_HEADER = "X-QA-Password"
     const val DEVICE_ID_HEADER      = "X-Device-Id"
+
+    /**
+     * What this device calls itself, so the desktop can name it in an approval
+     * prompt instead of showing a UUID. Omitted when there is no name to send —
+     * the desktop falls back to the id, as it does for older clients.
+     *
+     * The value is percent-encoded UTF-8 for anything outside printable ASCII — see
+     * `encodeDeviceName`, and note that Android's engine refuses to send an unencoded
+     * one at all. The desktop decodes it, and reads a value with no `%` as plain text.
+     *
+     * The desktop reads the header, then a query parameter of the *same name*
+     * (WebSocketRoute.kt), because a browser cannot set headers on a WebSocket
+     * handshake. Mobile sends both: the header for HTTP and the parameter for
+     * the handshake, which costs nothing and covers this app's own web build.
+     */
+    const val DEVICE_NAME_HEADER    = "X-Device-Name"
     const val APP_VERSION_HEADER    = "X-App-Version"
     const val SERVER_VERSION_HEADER = "X-Server-Version"
 }

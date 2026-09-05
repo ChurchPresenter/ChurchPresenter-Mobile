@@ -3,20 +3,30 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.ApiException
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
-import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.model.SlideDeck
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -39,9 +49,41 @@ internal fun verseRangeString(numbers: List<Int>): String? = when {
  *
  * @param appSettings The shared [AppSettings] instance used to configure the API service.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
+ * @param presenter The local presenter, when the app can present standalone. The
+ *   desktop protocol carries only book/chapter/verse ids, so the materialised
+ *   verse text has to be handed over separately — this is that handoff. Every
+ *   call on it is a no-op in remote mode, so there is no mode branching here.
  */
-class BibleViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
+class BibleViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: WsSender,
+    private val isDemoMode: Boolean = false,
+    private val presenter: StandaloneEngine? = null,
+    private val mode: StateFlow<AppMode> = AppModeHolder.mode,
+    private val catalog: BibleCatalog = BibleCatalog(mode, BibleService(appSettings, eventService)),
+) : ViewModel() {
     private var bibleService = BibleService(appSettings, eventService)
+
+    /**
+     * The deck built for the open chapter, kept so projecting can re-supply it.
+     *
+     * Clearing the display unloads the engine's deck, so a later `showSlide`
+     * clamped into an empty deck and put nothing on the screen. Holding the
+     * deck here makes projecting work from any prior state. Same fix as
+     * [SongsViewModel.projectLocally].
+     */
+    private var loadedDeck: SlideDeck? = null
+
+    /**
+     * True when there is no Bible to browse: standalone, with no translation copied onto this
+     * device. A stream rather than a snapshot, so finishing a download opens the tab without
+     * the app being restarted.
+     */
+    val hasNoLocalBibles: StateFlow<Boolean> = catalog.hasNoBible
+        .stateIn(viewModelScope, SharingStarted.Eagerly, mode.value == AppMode.STANDALONE)
+
+    /** Nothing to read from: standalone with no downloaded translation. */
+    private val cannotLoad: Boolean get() = hasNoLocalBibles.value
 
     // ── Books ─────────────────────────────────────────────────────────────────
 
@@ -122,8 +164,54 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
     private var pendingNavChapter: Int? = null
     private var pendingNavVerseNumbers: Set<Int> = emptySet()
 
+    /**
+     * Which load is the current one. Anything an older load says is discarded.
+     *
+     * The app starts in remote — the holder's default until settings are read —
+     * so a first launch asks the default desktop address before the operator has
+     * picked standalone, and that request sits on a ten-second connect timeout.
+     * By the time it fails the tab may already be reading the device perfectly
+     * well, and the abandoned request would write "make sure the server is
+     * running" over the top of it.
+     */
+    private var loadGeneration = 0
+
     init {
         loadBooks()
+        // Where the books come from can change under this tab, and nothing else
+        // re-ran the load. Two things move it:
+        //
+        //  - the mode: the source changes, and an error from the old source has
+        //    to go with it.
+        //  - installing a translation: standalone with nothing downloaded is an
+        //    empty tab by definition, so finishing a download is exactly the
+        //    moment it has something to show.
+        //
+        // Without these the tab kept its "no Bible books available" and whatever
+        // error it had until the operator switched tabs and came back, which is
+        // how this was reported.
+        viewModelScope.launch {
+            catalog.isLocalSource
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadBooks(forceReload = true) }
+        }
+        viewModelScope.launch {
+            // Already a StateFlow, so it dedupes itself; drop(1) skips the
+            // value loadBooks() above has just acted on.
+            hasNoLocalBibles
+                .drop(1)
+                .collect { loadBooks(forceReload = true) }
+        }
+        viewModelScope.launch {
+            // Choosing a different downloaded translation is the third way the
+            // source changes. The book list and any open chapter belong to the
+            // old translation and have to be fetched again.
+            catalog.activeLocalBibleId
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadBooks(forceReload = true) }
+        }
     }
 
     // ── Public actions ────────────────────────────────────────────────────────
@@ -143,6 +231,15 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
      *                    pull-to-refresh and settings-save reload).
      */
     fun loadBooks(forceReload: Boolean = false) {
+        if (cannotLoad) {
+            // One guard covers every caller: init, pull-to-refresh, settings-save
+            // and the server's bible_updated push.
+            Logger.d(TAG, "loadBooks — standalone, no Bible source on this device")
+            _allBooks.value = emptyList()
+            _error.value = null
+            _isLoading.value = false
+            return
+        }
         if (isDemoMode) {
             Logger.d(TAG, "loadBooks — DEMO MODE")
             _allBooks.value = DemoData.books
@@ -161,19 +258,25 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         // Set loading state synchronously so no frame can see empty data + isLoading=false
         _isLoading.value = true
         _error.value = null
+        val generation = ++loadGeneration
         viewModelScope.launch {
             try {
-                bibleService.getBooks()
+                catalog.books()
                     .onSuccess {
+                        if (generation != loadGeneration) return@onSuccess
                         _allBooks.value = it
                         tryProcessPendingNav()
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "loadBooks — FAILED: ${e.message}", e)
+                        if (generation != loadGeneration) {
+                            Logger.d(TAG, "loadBooks — ignoring a superseded load's failure")
+                            return@onFailure
+                        }
                         _error.value = "Failed to load Bible books: ${e.recordNetworkError(TAG, "loadBooks")}"
                     }
             } finally {
-                _isLoading.value = false
+                if (generation == loadGeneration) _isLoading.value = false
             }
         }
     }
@@ -265,6 +368,9 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
             Logger.d(TAG, "selectChapter — DEMO MODE, serving demo verses")
             val verses = DemoData.getVerses(book.displayName, chapter)
             _verses.value = verses
+            val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses)
+            loadedDeck = deck
+            presenter?.loadDeck(deck)
             val targets = pendingInitialVerseNumbers
             if (targets.isNotEmpty()) {
                 pendingInitialVerseNumbers = emptySet()
@@ -279,9 +385,12 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         _error.value = null
         viewModelScope.launch {
             try {
-                bibleService.getChapter(bookNumber, chapter)
+                catalog.chapter(bookNumber, chapter)
                     .onSuccess { verses ->
                         _verses.value = verses
+                        val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses)
+                        loadedDeck = deck
+                        presenter?.loadDeck(deck)
                         // Auto-select verses requested by schedule navigation, if any
                         val targets = pendingInitialVerseNumbers
                         if (targets.isNotEmpty()) {
@@ -333,6 +442,14 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
     fun toggleProjecting() {
         val book    = _selectedBook.value    ?: return
         val chapter = _selectedChapter.value ?: return
+        // Standalone: this device is the screen, so cast always means "show the
+        // selected verses" — stopping is the Clear Display button. See
+        // [SongsViewModel.toggleProjecting] for why a toggle desynchronised here.
+        val presenter = presenter
+        if (mode.value == AppMode.STANDALONE && presenter != null) {
+            projectLocally(presenter)
+            return
+        }
         if (_isProjecting.value) {
             _isProjecting.value        = false
             _projectedVerseIndex.value = null
@@ -360,6 +477,10 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
             _toastEvent.value = ToastEvent.FailedToProjectBible("Select at least one verse first")
             return
         }
+        // The local audience screen, if this device is the presenter. Opening the chapter only
+        // loaded it; this is the press that puts the verse in front of anyone.
+        val firstSelected = _selectedVerseIndices.value.minOrNull() ?: 0
+        presenter?.showSlide(firstSelected)
         if (isDemoMode) {
             Logger.d(TAG, "toggleProjecting — DEMO MODE, simulating success")
             _isProjecting.value        = true
@@ -388,6 +509,32 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
                 _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse"))
             }
         }
+    }
+
+    /**
+     * Puts the selected verses on this device's audience screen.
+     *
+     * Supplies the deck rather than assuming the engine still holds one, so
+     * projecting works after a clear, which unloads it.
+     */
+    private fun projectLocally(presenter: StandaloneEngine) {
+        val firstSelected = _selectedVerseIndices.value.minOrNull()
+        if (firstSelected == null) {
+            _toastEvent.value = ToastEvent.FailedToProjectBible("Select at least one verse first")
+            return
+        }
+        val deck = loadedDeck
+        if (deck == null) {
+            Logger.d(TAG, "projectLocally — no chapter loaded yet, ignoring")
+            return
+        }
+        presenter.setDeck(deck)
+        presenter.showSlide(firstSelected)
+        _isProjecting.value        = true
+        _projectedVerseIndex.value = firstSelected
+        _toastEvent.value          = ToastEvent.BibleLive
+        Analytics.logEvent(AnalyticsEvent.BIBLE_PROJECTED)
+        Logger.d(TAG, "projectLocally — projected verse index $firstSelected")
     }
 
     /**
@@ -465,7 +612,6 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
      */
     fun selectVerse(index: Int) {
         if (!_isProjecting.value) return
-        _projectedVerseIndex.value = index
         // ensure it is in the selection set
         _selectedVerseIndices.value = _selectedVerseIndices.value + index
         projectVerseAtIndex(index)
@@ -476,6 +622,10 @@ class BibleViewModel(private val appSettings: AppSettings, private val eventServ
         val chapter = _selectedChapter.value ?: return
         val verse   = _verses.value.getOrNull(index) ?: return
         _projectedVerseIndex.value = index
+        // The audience screen this device drives, moved before the desktop is told anything:
+        // in standalone there is no desktop, and without this the deck sits on whichever verse
+        // loadChapter left it at while the operator taps their way down the chapter.
+        presenter?.showSlide(index)
         if (isDemoMode) {
             Logger.d(TAG, "projectVerseAtIndex — DEMO MODE, skipping API call")
             return

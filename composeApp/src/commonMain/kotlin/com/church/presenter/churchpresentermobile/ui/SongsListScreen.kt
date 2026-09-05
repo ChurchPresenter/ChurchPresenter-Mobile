@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -42,10 +43,19 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.songs_count
 import churchpresentermobile.composeapp.generated.resources.book_filter_all_books
 import churchpresentermobile.composeapp.generated.resources.songs_table_no_match
+import churchpresentermobile.composeapp.generated.resources.songs_empty_local_library
+import churchpresentermobile.composeapp.generated.resources.songs_empty_local_library_body
 import churchpresentermobile.composeapp.generated.resources.songs_table_no_songs
 import churchpresentermobile.composeapp.generated.resources.songs_table_retry
 import churchpresentermobile.composeapp.generated.resources.songs_table_search_placeholder
 import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.SyncRequestHandler
+import com.church.presenter.churchpresentermobile.TabNavigationHandler
+import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.ui.library.SyncSection
+import androidx.compose.material.icons.filled.CloudDownload
+import churchpresentermobile.composeapp.generated.resources.empty_action_get_songs
+import churchpresentermobile.composeapp.generated.resources.empty_action_write_song
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -71,6 +81,8 @@ fun SongsListScreen(
     onBookSelected: (String?) -> Unit,
     onSongClick: (Song) -> Unit,
     onRefresh: () -> Unit,
+    /** True when the list comes from this device's library rather than a desktop. */
+    showsLocalLibrary: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColors.current
@@ -152,17 +164,29 @@ fun SongsListScreen(
                         }
                     }
                 }
+                // A local library with nothing in it is not an error — it is a phone that
+                // has not been given any songs yet, and the tab says how to fix that.
+                showsLocalLibrary && !hasActiveFilter -> EmptyState(
+                    title = stringResource(Res.string.songs_empty_local_library),
+                    body = stringResource(Res.string.songs_empty_local_library_body),
+                    actionLabel = stringResource(Res.string.empty_action_get_songs),
+                    actionIcon = Icons.Filled.CloudDownload,
+                    onAction = {
+                        SyncRequestHandler.request(SyncSection.SONGS)
+                        TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+                    },
+                    secondaryLabel = stringResource(Res.string.empty_action_write_song),
+                    onSecondary = { TabNavigationHandler.navigateTo(AppTab.LIBRARY) },
+                )
                 !isLoading -> Box(
                     modifier = Modifier.fillMaxSize().padding(32.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = if (hasActiveFilter)
-                            stringResource(Res.string.songs_table_no_match)
-                        else
-                            stringResource(Res.string.songs_table_no_songs),
+                        text = if (hasActiveFilter) stringResource(Res.string.songs_table_no_match)
+                               else stringResource(Res.string.songs_table_no_songs),
                         color = colors.muted,
-                        fontSize = 15.sp
+                        fontSize = 15.sp,
                     )
                 }
             }

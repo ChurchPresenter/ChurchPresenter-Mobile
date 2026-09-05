@@ -12,7 +12,20 @@ cp local.properties.example local.properties
 
 Edit `local.properties` and set `sdk.dir` to your Android SDK path (Android Studio sets this automatically on first open).
 
-### 2. Release signing (Android + iOS)
+### 2. Firebase (Android)
+
+Nothing to do — debug builds work without credentials. If `composeApp/google-services.json`
+is missing, the build writes a placeholder so a fresh clone compiles and runs; Analytics,
+Crashlytics and push are simply inert. The build logs a warning when it does this.
+
+Running `scripts/setup_signing.sh` (below) symlinks the real file from the signing repo,
+which the build then leaves alone.
+
+> **Note:** if you hand-write your own placeholder, the API key must be in Google's real
+> 39-character format (`AIzaSy` + 33 chars). Firebase validates it at startup and kills the
+> app on the splash screen before any of our code runs.
+
+### 3. Release signing (Android + iOS)
 
 Release builds are signed using credentials stored in a private signing repo.
 Request access from a team member, clone it alongside this repo, then run the one-time setup script:

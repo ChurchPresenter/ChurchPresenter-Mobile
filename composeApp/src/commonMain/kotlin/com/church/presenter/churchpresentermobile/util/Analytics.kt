@@ -94,6 +94,9 @@ object AnalyticsScreen {
     const val DICTIONARY         = "Dictionary"
     const val ANNOUNCEMENTS      = "Announcements"
     const val WEB                = "Web"
+    const val STANDALONE         = "Standalone Present"
+    const val MODE_PICKER        = "Mode Picker"
+    const val LIBRARY            = "Library"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

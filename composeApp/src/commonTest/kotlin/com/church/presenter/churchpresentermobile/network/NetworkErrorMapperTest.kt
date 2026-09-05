@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.model.ApiException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -15,6 +16,10 @@ class NetworkErrorMapperTest {
     // Exceptions whose simpleName matches an entry in EXPECTED_CONNECTIVITY_EXCEPTIONS.
     private class ConnectException(message: String) : Exception(message)
     private class SocketTimeoutException(message: String) : Exception(message)
+
+    // Classified by message, not by name — SocketException also covers failures
+    // that are genuine defects, so the name deliberately isn't an allowed one.
+    private class SocketException(message: String) : Exception(message)
 
     // ── isExpectedConnectivityError ──────────────────────────────────────────
 
@@ -43,6 +48,37 @@ class NetworkErrorMapperTest {
     fun connectionRefusedIsExpected() {
         assertTrue(Exception("Connection refused").isExpectedConnectivityError())
         assertTrue(Exception("ECONNREFUSED (Connection refused)").isExpectedConnectivityError())
+    }
+
+    @Test
+    fun connectionResetIsExpected() {
+        // Exact shape from Sentry 1.0.15: the phone was on mobile data with a VPN
+        // active while pointed at a LAN address (192.168.1.100) it cannot reach.
+        assertTrue(SocketException("Connection reset").isExpectedConnectivityError())
+        assertTrue(Exception("ECONNRESET (Connection reset by peer)").isExpectedConnectivityError())
+    }
+
+    @Test
+    fun severedSocketMessagesAreExpected() {
+        assertTrue(Exception("Software caused connection abort").isExpectedConnectivityError())
+        assertTrue(Exception("Broken pipe").isExpectedConnectivityError())
+        assertTrue(Exception("Network is unreachable").isExpectedConnectivityError())
+        assertTrue(Exception("EHOSTUNREACH (No route to host)").isExpectedConnectivityError())
+        assertTrue(
+            Exception("unexpected end of stream on http://192.168.1.100:8765/...")
+                .isExpectedConnectivityError()
+        )
+    }
+
+    @Test
+    fun connectionResetInCauseIsExpected() {
+        val top = Exception("nothing useful here", SocketException("Connection reset"))
+        assertTrue(top.isExpectedConnectivityError())
+    }
+
+    @Test
+    fun connectionResetIsNotReportedAsNonFatal() {
+        assertFalse(SocketException("Connection reset").shouldReportAsNonFatal())
     }
 
     @Test
@@ -103,6 +139,18 @@ class NetworkErrorMapperTest {
     }
 
     @Test
+    fun friendlyAndroidConnectionReset() {
+        assertEquals(
+            "Server not reachable. Check the IP address and port.",
+            SocketException("Connection reset").toFriendlyNetworkMessage(),
+        )
+        assertEquals(
+            "Server not reachable. Check the IP address and port.",
+            Exception("Network is unreachable").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
     fun friendlyAndroidUnresolvedHost() {
         assertEquals(
             "Invalid server address. Check the IP address.",
@@ -152,5 +200,116 @@ class NetworkErrorMapperTest {
     @Test
     fun friendlyNullMessage() {
         assertEquals("Connection error", Exception().toFriendlyNetworkMessage())
+    }
+
+    // ── ApiException: friendly copy ──────────────────────────────────────────
+
+    @Test
+    fun friendlyApiExceptionPrefersServerReason() {
+        // The desktop writes its reasons for humans, so they must survive intact
+        // rather than being replaced by a generic per-status sentence.
+        assertEquals(
+            "No picture folder loaded",
+            ApiException(503, "No picture folder loaded").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun friendlyApiExceptionFallsBackToStatusWording() {
+        assertEquals(
+            "Server refused the request. Check the API key in Settings.",
+            ApiException(403).toFriendlyNetworkMessage(),
+        )
+        assertEquals("Not found on the server.", ApiException(404).toFriendlyNetworkMessage())
+        assertEquals("The desktop isn't ready yet.", ApiException(503).toFriendlyNetworkMessage())
+        assertEquals("The desktop app reported an error.", ApiException(500).toFriendlyNetworkMessage())
+        assertEquals("Server error (418).", ApiException(418).toFriendlyNetworkMessage())
+    }
+
+    // ── shouldReportAsNonFatal ───────────────────────────────────────────────
+
+    @Test
+    fun serverRejectionsAreNotReported() {
+        // 4xx are business-logic responses, and 503 is the desktop saying
+        // "nothing loaded yet" — neither is a defect in this app.
+        assertFalse(ApiException(400).shouldReportAsNonFatal())
+        assertFalse(ApiException(401).shouldReportAsNonFatal())
+        assertFalse(ApiException(403, "denied").shouldReportAsNonFatal())
+        assertFalse(ApiException(404).shouldReportAsNonFatal())
+        assertFalse(ApiException(503, "No picture folder loaded").shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun genuineServerFaultsAreReported() {
+        // Silencing these would hide real desktop bugs behind an empty screen.
+        // 504 is deliberately absent — see aGatewayTimeoutIsNotTheDesktopsFault.
+        assertTrue(ApiException(500).shouldReportAsNonFatal())
+        assertTrue(ApiException(502).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun connectivityFailuresAreNotReported() {
+        assertFalse(Exception("Connection refused").shouldReportAsNonFatal())
+        assertFalse(ConnectException("boom").shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun unexpectedFailuresAreReported() {
+        assertTrue(IllegalStateException("index 5 out of bounds").shouldReportAsNonFatal())
+    }
+
+    // ── isServerNotReady ─────────────────────────────────────────────────────
+
+    @Test
+    fun onlyA503IsServerNotReady() {
+        assertTrue(ApiException(503, "No picture folder loaded").isServerNotReady())
+        assertFalse(ApiException(500).isServerNotReady())
+        assertFalse(ApiException(404).isServerNotReady())
+        assertFalse(Exception("HTTP 503 — No picture folder loaded").isServerNotReady())
+    }
+
+    // ── Regressions from production Sentry issues ────────────────────────────
+
+    @Test
+    fun iosCannotFindHostIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-H: 766 events, 33 users. Ktor's Darwin engine
+        // raises this for any server address iOS cannot resolve — including the
+        // address "1-96/2" one user had typed. toFriendlyNetworkMessage already
+        // answered Code=-1003 with "Invalid server address", but the reporter
+        // filed it anyway, so the app told the user it was their address while
+        // telling us it was a bug.
+        val raw = "Exception in http request: Error Domain=NSURLErrorDomain Code=-1003 " +
+            "\"A server with the specified hostname could not be found.\""
+        assertTrue(Exception(raw).isExpectedConnectivityError())
+        assertFalse(Exception(raw).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun aGatewayTimeoutIsNotTheDesktopsFault() {
+        // CHURCH-PRESENTER-MOBILE-A/B/9/14/15: 189 events across five services.
+        // Every one came from a phone on cellular with a 192.168.x.x server
+        // address — a carrier gateway answering for a desktop it never reached.
+        // The companion server has no 504 anywhere in its source; it fails with
+        // 500 or 502.
+        assertFalse(ApiException(504).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun noRouteToHostIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-1A. Matched here, but it kept arriving anyway
+        // because it escaped an OkHttp dispatcher thread and was captured by the
+        // SDK's uncaught-exception integration rather than by our call sites —
+        // which is what the beforeSend filter in CrashReporting.initSentry is for.
+        assertTrue(SocketException("No route to host").isExpectedConnectivityError())
+        assertFalse(SocketException("No route to host").shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun aConnectTimeoutToALanAddressIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-K/T: 941 events between them, the phone on
+        // cellular and the desktop on a private address it can never route to.
+        val raw = "failed to connect to /192.168.1.100 (port 8765) from /10.63.202.15 (port 41372) after 10000ms"
+        assertTrue(SocketTimeoutException(raw).isExpectedConnectivityError())
+        assertFalse(SocketTimeoutException(raw).shouldReportAsNonFatal())
     }
 }

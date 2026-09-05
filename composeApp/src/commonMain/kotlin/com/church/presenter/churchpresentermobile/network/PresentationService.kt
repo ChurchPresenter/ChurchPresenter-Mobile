@@ -1,6 +1,5 @@
 package com.church.presenter.churchpresentermobile.network
 
-import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Presentation
 import com.church.presenter.churchpresentermobile.model.PresentationScheduleAddRequest
@@ -17,7 +16,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.serialization.encodeToString
@@ -60,13 +58,10 @@ class PresentationService(
         Logger.d(TAG, "getPresentationById — requesting URL: $url")
         return apiRunCatching {
             val httpResponse = client.get(url) { applyApiKey() }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getPresentationById — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getPresentationById — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val imageBase = "http://${settings.host}:${settings.port}"
             val presentation = json.decodeFromString<Presentation>(raw)
             presentation.copy(
@@ -90,13 +85,10 @@ class PresentationService(
         Logger.d(TAG, "getPresentations — requesting URL: $url")
         return apiRunCatching {
             val httpResponse = client.get(url) { applyApiKey() }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getPresentations — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getPresentations — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             // Thumbnail URLs are root-relative (e.g. /api/presentations/…/slides/0),
             // so prefix with scheme+host+port only — NOT apiBaseUrl which already appends /api.
             val imageBase = "http://${settings.host}:${settings.port}"
@@ -139,7 +131,7 @@ class PresentationService(
         if (key.isNotBlank()) {
             header(ApiConstants.API_KEY_HEADER, key)
         }
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     /** Tells the presenter to clear the display (show nothing) via WebSocket clear. */
@@ -207,12 +199,7 @@ class PresentationService(
             }
             val raw = response.bodyAsText()
             Logger.d(TAG, "uploadPresentation ◀ status=${response.status}  body=${raw.take(300)}")
-            if (!response.status.isSuccess()) {
-                throw ApiException(
-                    httpStatus = response.status.value,
-                    reason     = raw.take(200),
-                )
-            }
+            response.ensureSuccess(raw)
             // Parse leniently: accept {"ok":true} with no id/name (both are nullable)
             runCatching { json.decodeFromString<UploadPresentationResponse>(raw) }
                 .getOrDefault(UploadPresentationResponse(ok = true))

@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Laule pole saadaval</string>
     <string name="songs_table_no_match">Ükski laul ei vasta filtrile</string>
-    <string name="songs_table_loading_error">Laulude laadimine ebaõnnestus</string>
     <string name="songs_table_retry">Proovi uuesti</string>
 
     <!-- Book Filter -->
@@ -455,4 +454,20 @@
     <string name="dictionary_appears_in">Esineb</string>
     <string name="dictionary_appears_in_count">%1$s / %2$s</string>
     <string name="settings_active_server">Aktiivne server</string>
+    <string name="contact_us_title">Võta ühendust</string>
+    <string name="contact_type_label">Tüüp</string>
+    <string name="contact_type_feature">Funktsioonisoov</string>
+    <string name="contact_type_feedback">Tagasiside</string>
+    <string name="contact_type_testimonial">Kogemuslugu</string>
+    <string name="contact_type_bug">Veateade</string>
+    <string name="contact_name_label">Nimi</string>
+    <string name="contact_email_label">E-post (valikuline)</string>
+    <string name="contact_message_label">Sõnum</string>
+    <string name="contact_send">Saada</string>
+    <string name="contact_sending">Saatmine…</string>
+    <string name="contact_sent">Sõnum saadetud. Aitäh!</string>
+    <string name="contact_error">Saatmine ebaõnnestus. Palun proovi uuesti.</string>
+    <string name="contact_rate_limited_browser">Turvalisuse huvides palun lõpeta saatmine oma brauseris.</string>
+    <string name="contact_network_error">Serverit ei õnnestunud saavutada. Kontrolli oma internetiühendust ja proovi uuesti.</string>
+    <string name="contact_open_browser">Ava brauseris</string>
 </resources>

@@ -14,7 +14,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -35,7 +34,7 @@ class BibleService(
     private val settings: AppSettings,
     private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
-) {
+) : BibleReader {
     init {
         Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
     }
@@ -43,19 +42,16 @@ class BibleService(
     /**
      * Fetches the list of available Bible books from the server.
      */
-    suspend fun getBooks(): Result<List<BibleBook>> {
+    override suspend fun getBooks(): Result<List<BibleBook>> {
         val url = "${settings.apiBaseUrl}/${ApiConstants.BIBLE_ENDPOINT}"
         Logger.d(TAG, "getBooks — requesting URL: $url")
         return apiRunCatching {
             val httpResponse = client.get(url) { applyApiKey() }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getBooks — HTTP status: ${httpResponse.status}")
             // Read body once as text — avoids double-read and works regardless of Content-Type
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getBooks — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<BibleBooksResponse>(raw)
             val books = response.allBooks
             Logger.d(TAG, "getBooks — parsed ${books.size} books")
@@ -73,7 +69,7 @@ class BibleService(
      * @param bookNumber The 1-based book index in the books list.
      * @param chapter The 1-based chapter number.
      */
-    suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> {
+    override suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> {
         val baseUrl = "${settings.apiBaseUrl}/${ApiConstants.BIBLE_ENDPOINT}"
         val url = "$baseUrl?book=$bookNumber&chapter=$chapter"
         Logger.d(TAG, "getChapter — requesting URL: $url")
@@ -83,13 +79,10 @@ class BibleService(
                 parameter("chapter", chapter)
                 applyApiKey()
             }
-            val statusCode = httpResponse.status.value
             Logger.d(TAG, "getChapter — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getChapter — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP $statusCode for $url — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<BibleChapterResponse>(raw)
             val verses = response.allVerses
             Logger.d(TAG, "getChapter — parsed ${verses.size} verses")
@@ -105,7 +98,7 @@ class BibleService(
             Logger.d(TAG, "applyApiKey — adding ${ApiConstants.API_KEY_HEADER} header")
             header(ApiConstants.API_KEY_HEADER, key)
         }
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     /**

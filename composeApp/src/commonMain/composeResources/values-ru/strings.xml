@@ -8,7 +8,6 @@
     <string name="songs_table_clear_search">✕</string>
     <string name="songs_table_no_songs">Нет доступных песен</string>
     <string name="songs_table_no_match">Ни одна песня не соответствует фильтру</string>
-    <string name="songs_table_loading_error">Не удалось загрузить песни</string>
     <string name="songs_table_retry">Повторить</string>
 
     <!-- Book Filter -->
@@ -424,5 +423,21 @@
     <string name="dictionary_appears_in">Встречается в</string>
     <string name="dictionary_appears_in_count">%1$s из %2$s</string>
     <string name="settings_active_server">Активный сервер</string>
+    <string name="contact_us_title">Связаться с нами</string>
+    <string name="contact_type_label">Тип</string>
+    <string name="contact_type_feature">Запрос функции</string>
+    <string name="contact_type_feedback">Отзыв</string>
+    <string name="contact_type_testimonial">Свидетельство</string>
+    <string name="contact_type_bug">Сообщение об ошибке</string>
+    <string name="contact_name_label">Имя</string>
+    <string name="contact_email_label">Эл. почта (необязательно)</string>
+    <string name="contact_message_label">Сообщение</string>
+    <string name="contact_send">Отправить</string>
+    <string name="contact_sending">Отправка…</string>
+    <string name="contact_sent">Сообщение отправлено. Спасибо!</string>
+    <string name="contact_error">Не удалось отправить. Попробуйте ещё раз.</string>
+    <string name="contact_rate_limited_browser">В целях безопасности завершите отправку в браузере.</string>
+    <string name="contact_network_error">Не удалось связаться с сервером. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="contact_open_browser">Открыть в браузере</string>
 </resources>
 

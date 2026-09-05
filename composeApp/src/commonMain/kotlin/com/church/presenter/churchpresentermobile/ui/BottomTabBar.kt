@@ -16,7 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.DesktopWindows
+import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material3.Icon
@@ -31,10 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.tab_bible
+import churchpresentermobile.composeapp.generated.resources.tab_library
 import churchpresentermobile.composeapp.generated.resources.tab_media
 import churchpresentermobile.composeapp.generated.resources.tab_more
 import churchpresentermobile.composeapp.generated.resources.tab_present
 import churchpresentermobile.composeapp.generated.resources.tab_songs
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -44,10 +48,12 @@ import org.jetbrains.compose.resources.stringResource
 private data class TabSpec(val tab: AppTab, val label: StringResource, val icon: ImageVector)
 
 private val tabSpecs = listOf(
+    TabSpec(AppTab.PRESENT, Res.string.tab_present, Icons.Outlined.Cast),
     TabSpec(AppTab.SONGS, Res.string.tab_songs, Icons.Outlined.MusicNote),
     TabSpec(AppTab.BIBLE, Res.string.tab_bible, Icons.AutoMirrored.Outlined.MenuBook),
     TabSpec(AppTab.MEDIA, Res.string.tab_media, Icons.Outlined.PlayCircleOutline),
     TabSpec(AppTab.PRESENTATION, Res.string.tab_present, Icons.Outlined.DesktopWindows),
+    TabSpec(AppTab.LIBRARY, Res.string.tab_library, Icons.Outlined.LibraryMusic),
     TabSpec(AppTab.MORE, Res.string.tab_more, Icons.Filled.MoreHoriz),
 )
 
@@ -63,9 +69,13 @@ fun BottomTabBar(
     selectedTab: AppTab,
     onTabSelected: (AppTab) -> Unit,
     modifier: Modifier = Modifier,
+    tabs: List<AppTab> = AppTab.forMode(AppMode.REMOTE),
 ) {
     val colors = LocalAppColors.current
     val barBg = if (colors.isDark) colors.background else colors.surface
+    // Preserve the caller's order rather than the declaration order of tabSpecs,
+    // so the strip reads the way AppTab.forMode arranged it.
+    val visibleSpecs = tabs.mapNotNull { tab -> tabSpecs.firstOrNull { it.tab == tab } }
 
     Column(modifier = modifier.fillMaxWidth().background(barBg)) {
         // Top hairline
@@ -79,7 +89,7 @@ fun BottomTabBar(
                 .height(AppDimens.tabBarHeight),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            tabSpecs.forEach { spec ->
+            visibleSpecs.forEach { spec ->
                 val active = spec.tab == selectedTab
                 val contentColor = if (active) colors.accent else colors.dim
                 val label = stringResource(spec.label)

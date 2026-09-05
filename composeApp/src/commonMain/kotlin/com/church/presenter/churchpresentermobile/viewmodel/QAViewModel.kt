@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Question
 import com.church.presenter.churchpresentermobile.network.QAService
@@ -38,6 +39,14 @@ class QAViewModel(
     private val _actionError = MutableStateFlow<String?>(null)
     val actionError = _actionError.asStateFlow()
 
+    private val _needsAuthorName = MutableStateFlow(appSettings.displayName.isBlank())
+    /**
+     * True while nobody has said who they are, so the add-question dialog should
+     * ask. It asks once: the first name given is remembered in Settings, where it
+     * can be changed later.
+     */
+    val needsAuthorName = _needsAuthorName.asStateFlow()
+
     init {
         loadQuestions()
         viewModelScope.launch {
@@ -60,6 +69,10 @@ class QAViewModel(
     }
 
     fun loadQuestions(silent: Boolean = false) {
+        // Standalone has no desktop to ask, and this screen is not reachable
+        // there — loading would only time out against an absent computer.
+        if (!AppModeHolder.hasDesktop) return
+
         if (!silent) _uiState.value = QAUiState.Loading
         viewModelScope.launch {
             val statusResult = service.fetchStatus()
@@ -85,9 +98,26 @@ class QAViewModel(
     fun markDone(id: String) = runAdminAction { service.markDone(id) }
     fun displayQuestion(id: String) = runAdminAction { service.displayQuestion(id) }
     fun deleteQuestion(id: String) = runAdminAction { service.deleteQuestion(id) }
-    fun addQuestion(text: String) = runAdminAction {
-        val name = appSettings.displayName.ifBlank { appSettings.deviceId }
-        service.addQuestion(text, name).map { }
+    /**
+     * Submits a question, attributed to whoever is asking.
+     *
+     * @param name A name typed into the dialog, asked for only while
+     *   [needsAuthorName]. Blank falls back to the saved Q&A name, then to the
+     *   device the operator already recognises, then to the id — a question is
+     *   never unattributed.
+     */
+    fun addQuestion(text: String, name: String = "") = runAdminAction {
+        val typed = name.trim()
+        // Remembered on the way past, so the dialog asks once rather than every time.
+        if (typed.isNotBlank() && appSettings.displayName.isBlank()) {
+            appSettings.displayName = typed
+            _needsAuthorName.value = false
+        }
+        val author = typed
+            .ifBlank { appSettings.displayName.trim() }
+            .ifBlank { appSettings.reportedDeviceName }
+            .ifBlank { appSettings.deviceId }
+        service.addQuestion(text, author).map { }
     }
     fun clearDisplay() = runAdminAction { service.clearDisplay() }
 

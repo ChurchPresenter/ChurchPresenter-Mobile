@@ -8,7 +8,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -44,9 +43,7 @@ class ScheduleService(
             Logger.d(TAG, "getSchedule — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
             Logger.d(TAG, "getSchedule — raw body (first 500 chars): ${raw.take(500)}")
-            if (!httpResponse.status.isSuccess()) {
-                throw Exception("HTTP ${httpResponse.status.value} — ${raw.take(200)}")
-            }
+            httpResponse.ensureSuccess(raw)
 
             // Parse flexibly: the endpoint may return a bare array or a wrapper object
             val element = lenientJson.parseToJsonElement(raw)
@@ -68,7 +65,7 @@ class ScheduleService(
         if (key.isNotBlank()) {
             header(ApiConstants.API_KEY_HEADER, key)
         }
-        header(ApiConstants.DEVICE_ID_HEADER, settings.deviceId)
+        identifyDevice(settings)
     }
 
     /** Releases the underlying HTTP client. Call when the owning ViewModel is cleared. */

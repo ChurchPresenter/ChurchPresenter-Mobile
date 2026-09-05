@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Paths the FileProvider may share from. Only the export folder inside the
+    app's own cache — nothing the user did not ask us to hand out.
+-->
+<paths>
+    <cache-path name="exports" path="exports/"/>
+</paths>

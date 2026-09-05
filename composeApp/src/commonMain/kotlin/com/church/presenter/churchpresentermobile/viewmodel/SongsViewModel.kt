@@ -4,11 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.ToastEvent
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.model.SlideDeck
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
+import com.church.presenter.churchpresentermobile.library.ServiceOrder
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
@@ -19,13 +26,63 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val TAG = "SongsViewModel"
 
-class SongsViewModel(private val appSettings: AppSettings, private val eventService: ServerEventService, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var songService = SongService(appSettings, eventService)
+/**
+ * @param eventService The persistent WebSocket, used here for the inbound
+ *   `song_section_selected` push event.
+ * @param sender Where outbound projection actions go. Defaults to [eventService]
+ *   so existing callers and tests are unaffected; [com.church.presenter.churchpresentermobile.App]
+ *   passes a [com.church.presenter.churchpresentermobile.present.ProjectionRouter]
+ *   so the same actions can be served locally in standalone mode.
+ * @param service The on-device running order. Present in standalone, where
+ *   "add to schedule" means this list rather than a desktop's; null in remote,
+ *   where the desktop owns the schedule.
+ * @param presenter The local presenter, when the app can present standalone.
+ *   The desktop protocol only carries indices, so the materialised lyrics have
+ *   to be handed over separately — this is that handoff. Every call on it is a
+ *   no-op in remote mode, so there is no mode branching here.
+ */
+class SongsViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: ServerEventService,
+    private val isDemoMode: Boolean = false,
+    private val sender: WsSender = eventService,
+    private val presenter: StandaloneEngine? = null,
+    private val service: ServiceOrder? = null,
+    private val catalog: SongCatalog = SongCatalog(
+        mode = MutableStateFlow(AppMode.REMOTE),
+        remote = SongService(appSettings, sender),
+    ),
+) : ViewModel() {
+    private var songService = SongService(appSettings, sender)
+
+    /**
+     * True when the list is coming from this device's library rather than a
+     * desktop, so the UI can offer the right empty state instead of an error.
+     */
+    val showsLocalLibrary = catalog.isLocalSource
+        .stateIn(viewModelScope, SharingStarted.Eagerly, catalog.isLocal)
+
+    /**
+     * Whether the song can be added to a running order at all.
+     *
+     * Remote adds to the desktop's schedule. Standalone adds to [service], the
+     * on-device order — offered only when there is one, because without it the
+     * action would be swallowed by the router, which returns success, and the
+     * operator would get a cheerful "Added to schedule" for something that never
+     * happened.
+     */
+    val canAddToSchedule = catalog.isLocalSource
+        .map { local -> if (local) service != null else true }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, if (catalog.isLocal) service != null else true)
 
     private val _allSongs = MutableStateFlow<List<Song>>(emptyList())
 
@@ -56,6 +113,30 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
 
     private val _selectedVerseIndex = MutableStateFlow<Int?>(null)
     val selectedVerseIndex = _selectedVerseIndex.asStateFlow()
+
+    /**
+     * The deck built for the open song, kept so projecting can re-supply it.
+     *
+     * Clearing the display unloads the engine's deck ([StandaloneEngine.clear]
+     * resets it to EMPTY), so a later `goLive()` had nothing to show and the
+     * song could only be recovered by closing and reopening it. Holding the deck
+     * here makes projecting self-sufficient, the way the Library tab's
+     * `setDeck` already is.
+     */
+    private var loadedDeck: SlideDeck? = null
+
+    /**
+     * Whether the lyric sheet draws chords with the words.
+     *
+     * Read from the presenter's theme, which is the same switch the outputs
+     * follow — one setting, not a phone copy that can disagree with the screen.
+     * False with no presenter: that is remote mode, where the desktop owns the
+     * look and its own stage monitor shows the chords.
+     */
+    val showChords: StateFlow<Boolean> = presenter?.theme
+        ?.map { it.showChords }
+        ?.stateIn(viewModelScope, SharingStarted.Eagerly, presenter.theme.value.showChords)
+        ?: MutableStateFlow(false)
 
     private val _isProjecting = MutableStateFlow(false)
     val isProjecting = _isProjecting.asStateFlow()
@@ -97,8 +178,49 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
     private var pendingOpenTitle: String? = null
     private var pendingOpenBook: String? = null
 
+    /**
+     * Which load is the current one. Anything an older load says is discarded.
+     *
+     * The app starts in remote — that is the holder's default until settings are
+     * read — so a first launch fires a request at the default desktop address
+     * before the operator has picked standalone at the mode picker. That request
+     * sits on a ten-second connect timeout. Choosing standalone reloads from the
+     * on-device library, which succeeds at once; then the abandoned request times
+     * out and writes "make sure the server is running" over the top of it. The
+     * result was a tab showing the standalone empty state and a server error
+     * together, on a phone that has no server to reach.
+     */
+    private var loadGeneration = 0
+
     init {
         loadSongs()
+        // A mode switch moves the songs to a different source, so the list has to
+        // be rebuilt — and, just as importantly, any error the previous source
+        // left behind has to go with it. A first launch that starts in remote and
+        // is switched to standalone at the mode picker would otherwise keep
+        // showing "make sure the server is running" on a tab that no longer talks
+        // to one. drop(1) skips the current value, which loadSongs() above covers.
+        viewModelScope.launch {
+            catalog.isLocalSource
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadSongs(forceReload = true) }
+        }
+        // In standalone the Songs tab is a view of the library, so a song added
+        // or edited in the Library tab has to appear here without a reload —
+        // loadSongs() caches, and nothing else re-ran it short of a restart.
+        // Demo mode serves a fixed catalogue and must not be overwritten.
+        if (!isDemoMode) {
+            viewModelScope.launch {
+                catalog.localSongs.collect { songs ->
+                    _allSongs.value = songs
+                    // A local read cannot fail the way a desktop can; if an error
+                    // from an earlier remote load is still on screen, it is stale.
+                    _error.value = null
+                    tryOpenPendingSong()
+                }
+            }
+        }
         viewModelScope.launch {
             eventService.songSectionSelected.collect { index ->
                 if (_isProjecting.value) {
@@ -132,21 +254,27 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
         }
         Logger.d(TAG, "loadSongs — url=${appSettings.apiBaseUrl}")
         // Set loading state synchronously so no frame can see empty data + isLoading=false
+        val generation = ++loadGeneration
         _isLoading.value = true
         _error.value = null
         viewModelScope.launch {
             try {
-                songService.getSongs()
+                catalog.list()
                     .onSuccess {
+                        if (generation != loadGeneration) return@onSuccess
                         _allSongs.value = it
                         tryOpenPendingSong()
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "loadSongs — FAILED: ${e.message}", e)
+                        if (generation != loadGeneration) {
+                            Logger.d(TAG, "loadSongs — ignoring a superseded load's failure")
+                            return@onFailure
+                        }
                         _error.value = "Failed to load songs: ${e.recordNetworkError(TAG, "loadSongs")}"
                     }
             } finally {
-                _isLoading.value = false
+                if (generation == loadGeneration) _isLoading.value = false
             }
         }
     }
@@ -205,15 +333,21 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
         Analytics.logEvent(AnalyticsEvent.SONG_OPENED)
         if (isDemoMode) {
             Logger.d(TAG, "openSongDetail — DEMO MODE for ${song.number}")
-            _songDetail.value = DemoData.getSongDetail(song.number)
+            val demoDetail = DemoData.getSongDetail(song.number)
+            _songDetail.value = demoDetail
+            val deck = SlideDeckBuilder.fromSong(song, demoDetail)
+            loadedDeck = deck
+            presenter?.loadDeck(deck)
             return
         }
         viewModelScope.launch {
             _isLoadingDetail.value = true
-            songService.getSongDetail(song.number, song.bookName, song.id, song.title)
-                .onSuccess { detail ->
-                    _songDetail.value = detail
-                    Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${detail.allVerses.size}")
+            catalog.detail(song)
+                .onSuccess { loaded ->
+                    _songDetail.value = loaded.detail
+                    loadedDeck = loaded.deck
+                    presenter?.loadDeck(loaded.deck)
+                    Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")
                 }
                 .onFailure { e ->
                     _detailError.value = "Failed to load song details: ${e.recordNetworkError(TAG, "openSongDetail")}"
@@ -239,6 +373,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
         _isLoadingDetail.value = false
         _selectedVerseIndex.value = null
         _selectedSong.value = null
+        loadedDeck = null
         _isProjecting.value = false
         _toastEvent.value = null
         _scheduleAdded.value = false
@@ -258,6 +393,18 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
      *  Turning ON fires POST /api/project to push the song live immediately.
      *  Turning OFF fires POST /api/clear to blank the display. */
     fun toggleProjecting() {
+        // Standalone: this device is the screen, and the cast button always means
+        // "show this song" — stopping is the red Clear Display button beside it.
+        // It used to toggle a ViewModel-local flag that the engine knew nothing
+        // about. _isProjecting survives a tab switch (only dismissSongDetail
+        // resets it), so coming back to an open song and pressing cast *cleared*
+        // the screen instead of projecting — and because clearing unloads the
+        // engine's deck, every press after that showed nothing at all.
+        val presenter = presenter
+        if (catalog.isLocal && presenter != null) {
+            projectLocally(presenter)
+            return
+        }
         val nowProjecting = !_isProjecting.value
         _isProjecting.value = nowProjecting
         if (!nowProjecting) {
@@ -305,6 +452,27 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
         }
     }
 
+    /**
+     * Puts the open song on this device's audience screen.
+     *
+     * Supplies the deck rather than assuming the engine still holds one, and
+     * restores the operator's place in it, so projecting works from any prior
+     * state — including after a clear, which unloads the engine's deck.
+     */
+    private fun projectLocally(presenter: StandaloneEngine) {
+        val deck = loadedDeck
+        if (deck == null) {
+            Logger.d(TAG, "projectLocally — nothing loaded yet, ignoring")
+            return
+        }
+        presenter.setDeck(deck)
+        _selectedVerseIndex.value?.let(presenter::showSlide)
+        _isProjecting.value = true
+        Analytics.logEvent(AnalyticsEvent.SONG_PROJECTED)
+        _toastEvent.value = ToastEvent.SongLive
+        Logger.d(TAG, "projectLocally — projected ${deck.slides.size} slides")
+    }
+
     /** Clears the desktop display without toggling projection mode off. */
     fun clearDisplay() {
         _isProjecting.value = false
@@ -341,6 +509,18 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
             _scheduleRefreshTrigger.value++
             return
         }
+        // Standalone: the running order is on this device, so the add is a local
+        // write with nothing to fail and nothing to wait for.
+        val service = service
+        if (catalog.isLocal && service != null) {
+            service.add(song)
+            Logger.d(TAG, "addSongToSchedule — added to the on-device running order")
+            Analytics.logEvent(AnalyticsEvent.SONG_ADDED_TO_SCHEDULE)
+            _toastEvent.value = ToastEvent.SongAddedToSchedule(song.title)
+            _scheduleAdded.value = true
+            _scheduleRefreshTrigger.value++
+            return
+        }
         Logger.d(TAG, "addSongToSchedule — firing for ${song.number} / ${song.title}")
         viewModelScope.launch {
             songService.addSongToSchedule(song)
@@ -370,7 +550,11 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
         // the new server's songs load, preventing a "no songs" flash.
         _isLoading.value = true
         songService.closeClient()
-        songService = SongService(appSettings, eventService)
+        // `sender`, not `eventService`: in standalone the sender is the
+        // ProjectionRouter that serves actions locally. Rebuilding with the raw
+        // WebSocket here meant every song action after a settings save went back
+        // to dialling a desktop that isn't there.
+        songService = SongService(appSettings, sender)
         _selectedSong.value = null
         _selectedBook.value = null
         _searchQuery.value = ""
@@ -389,6 +573,7 @@ class SongsViewModel(private val appSettings: AppSettings, private val eventServ
     fun selectVerse(index: Int) {
         if (!_isProjecting.value) return
         _selectedVerseIndex.value = index
+        presenter?.showSlide(index)
         Analytics.logEvent(
             AnalyticsEvent.SONG_VERSE_SELECTED,
             mapOf(AnalyticsParam.VERSE_INDEX to index.toString())

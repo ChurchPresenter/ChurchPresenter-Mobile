@@ -1,0 +1,218 @@
+/*
+ * Display styling for the projected page.
+ *
+ * Self-contained by design — no @import, no webfont URL, no CDN. Type uses the
+ * platform's own serif/sans stacks so the page renders identically on a smart
+ * TV with no internet as it does on a laptop. Sizes are viewport-relative so
+ * one stylesheet serves a 1080p projector and a phone browser alike; the
+ * clamp() ratios mirror StandaloneOutputScreen.kt so the in-app preview and the
+ * real screen agree.
+ */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  /* A projector shows the pointer as a stuck black dot. */
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Backdrop layers ─────────────────────────────────────────────────── */
+
+#backdrop {
+  position: fixed;
+  inset: 0;
+  transition: background .6s ease, opacity .5s ease;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Fallback only — app.js paints the operator's chosen wash over this. Kept in
+   step with SlideTheme's defaults so the two agree before any choice is made. */
+.bd-gradient {
+  background: linear-gradient(160deg, #2a1d5e 0%, #05060d 100%);
+}
+
+.bd-black { background: #000; }
+
+/* Photographic backdrops almost never carry legible white text unaided. */
+#scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .6);
+}
+
+/* ── Slide content ───────────────────────────────────────────────────── */
+
+#screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#screen.serif { font-family: Georgia, 'Times New Roman', serif; }
+#screen.sans  { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+
+/*
+ * The default is centred on both axes; the modifiers below are added by app.js
+ * from the operator's chosen alignment, so the browser screen lays the words out
+ * exactly as the phone and any attached display do.
+ */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /*
+   * Set by app.js from the theme's margin, in vh/vw so the numbers mean the same
+   * thing they do in the phone's renderer: a fraction of the output's height and
+   * width. A percentage would not — CSS resolves percentage padding against the
+   * container's *width* on all four sides, which made the top and bottom margin
+   * here nearly double the phone's on a 16:9 screen.
+   */
+  padding: 6vh 8vw;
+  width: 100%;
+  opacity: 1;
+  transition: opacity .45s ease;
+}
+
+/* Blanked or held back: fade rather than cut — a hard cut to black on a
+   projector reads as a crash. */
+.content.hidden { opacity: 0; }
+
+.body {
+  margin: 0;
+  /* Newlines in the slide text are meaningful — they are the poet's line breaks. */
+  white-space: pre-line;
+  line-height: 1.32;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
+  font-size: clamp(15px, 6.6vw, 128px);
+}
+
+/*
+ * The same fractions of width the phone's renderer uses (see scaledSp), so the
+ * preview shows the size the screen will show. They had drifted: this page was
+ * on 4.4vw where the phone was on 6.6, making every word about a third smaller
+ * here than in the preview the operator was judging it by.
+ */
+.size-small  .body { font-size: clamp(12px, 5.2vw, 100px); }
+.size-medium .body { font-size: clamp(15px, 6.6vw, 128px); }
+.size-large  .body { font-size: clamp(18px, 8.4vw, 164px); }
+
+.reference {
+  margin: .7em 0 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(10px, 1.7vw, 30px);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+
+.footer {
+  margin: .5em 0 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(8px, 1.1vw, 18px);
+  opacity: .55;
+}
+
+/* ── Corner furniture ────────────────────────────────────────────────── */
+
+.corner {
+  position: fixed;
+  top: 3vh;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(9px, 1.2vw, 20px);
+  opacity: .45;
+  letter-spacing: .1em;
+}
+
+.corner-start { left: 3vw; text-transform: uppercase; letter-spacing: .22em; }
+.corner-end   { right: 3vw; }
+
+/* ── Standby ─────────────────────────────────────────────────────────── */
+
+.standby {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2vh;
+  background: #05060d;
+  transition: opacity .4s ease;
+}
+
+.standby-mark {
+  width: 4vw;
+  height: 4vw;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 999px;
+  border: .35vw solid rgba(255, 255, 255, .18);
+  border-top-color: rgba(255, 255, 255, .65);
+  animation: spin 1.1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.standby-text {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(11px, 1.4vw, 22px);
+  letter-spacing: .08em;
+  opacity: .55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .standby-mark { animation: none; }
+  .content, #backdrop, .standby { transition: none; }
+}
+
+.hidden { display: none !important; }
+
+/* ── Page / video layers ─────────────────────────────────────────────────
+   A web page or a video is the slide, not a backdrop for one: full-bleed,
+   above the backdrop, no border and nothing of ours drawn over it. */
+.media {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  object-fit: contain;
+}
+
+/* ── Where the words sit ─────────────────────────────────────────────── */
+
+.content.h-left   { align-items: flex-start; text-align: left; }
+.content.h-right  { align-items: flex-end;   text-align: right; }
+.content.h-center { align-items: center;     text-align: center; }
+
+/*
+ * Vertical sits on #screen, not on .content. #screen is the flex container that
+ * fills the viewport; .content is only as tall as its words, so justify-content
+ * there has nothing to distribute and "Top" did nothing at all on this page
+ * while working perfectly in the phone's own preview.
+ */
+#screen.v-top    { align-items: flex-start; }
+#screen.v-bottom { align-items: flex-end; }
+#screen.v-middle { align-items: center; }
+
+/* ── Chords, when the operator asks for them ─────────────────────────── */
+
+.chord-line { display: flex; flex-wrap: wrap; align-items: flex-end; }
+.chord-run  { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.chord      { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .55em; line-height: 1.1; }
+.chord-words { white-space: pre-wrap; }
