@@ -42,6 +42,9 @@ fun Throwable.recordNetworkError(tag: String, operation: String): String {
  * opposed to a condition this client should simply expect to meet in the field.
  *
  * Not reported:
+ *  - An address that cannot be a URL at all (see [isUnusableAddressError]). That is something
+ *    the operator typed, and the fields now refuse it; a build that predates that check must
+ *    still not file one report per retry for it.
  *  - Transient connectivity failures (timeouts, connection refused, offline —
  *    see [isExpectedConnectivityError]). An unreachable LAN server is the normal
  *    state for this client, not a defect.
@@ -54,6 +57,7 @@ fun Throwable.recordNetworkError(tag: String, operation: String): String {
  * itself failed, and silencing them would hide real server bugs.
  */
 fun Throwable.shouldReportAsNonFatal(): Boolean {
+    if (isUnusableAddressError()) return false
     if (isExpectedConnectivityError()) return false
     val status = (this as? ApiException)?.httpStatus ?: return true
     return status in REPORTABLE_SERVER_FAULT_STATUSES
@@ -87,6 +91,40 @@ fun Throwable.isServerNotReady(): Boolean =
 private val REPORTABLE_SERVER_FAULT_STATUSES = setOf(
     500,   // Internal Server Error
     502,   // Bad Gateway
+)
+
+/**
+ * True when the configured address is not a usable URL, so nothing was ever sent.
+ *
+ * Distinct from a connectivity failure: there is no network event here at all, just a string
+ * the URL builder refused. It reached crash reporting as an `IllegalArgumentException` and was
+ * therefore treated as a defect — one report per attempt, and the WebSocket retries forever, so
+ * a single mistyped address produced hundreds. The field that accepts the address now rejects
+ * this (see [com.church.presenter.churchpresentermobile.model.DesktopAddress.isUsableHost]);
+ * this keeps an address saved by an older build from filing reports until it is corrected.
+ */
+fun Throwable.isUnusableAddressError(): Boolean {
+    var current: Throwable? = this
+    var depth = 0
+    while (current != null && depth < 8) {
+        val raw = current.message
+        if (raw != null && UNUSABLE_ADDRESS_MARKERS.any { raw.contains(it, ignoreCase = true) }) {
+            return true
+        }
+        current = current.cause
+        depth++
+    }
+    return false
+}
+
+private val UNUSABLE_ADDRESS_MARKERS = listOf(
+    // OkHttp, when the host contains something a URL cannot carry — e.g. a dictated
+    // address that arrived as `Invalid URL host: "high dynamic range"`.
+    "Invalid URL host",
+    "Invalid URL port",
+    // Ktor's own parser, reached before any engine on some paths.
+    "URLParserException",
+    "Illegal character in hostname",
 )
 
 /**
@@ -201,6 +239,10 @@ fun Throwable.toFriendlyNetworkMessage(): String {
     }
 
     val raw = message ?: return "Connection error"
+
+    // Nothing was sent: the address itself is not a URL. Says so plainly, because
+    // "server not reachable" would send the operator looking at the wrong thing.
+    if (isUnusableAddressError()) return "That server address isn't valid. Check it in Settings."
 
     // ── iOS: Ktor Darwin engine wraps NSURLError like
     //    "Exception in http request: Error Domain=NSURLErrorDomain Code=-1200 ..."

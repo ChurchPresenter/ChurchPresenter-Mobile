@@ -41,6 +41,7 @@
     <string name="settings_save">Save</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_invalid_port">Port must be a number between 1 and 65535</string>
+    <string name="settings_invalid_host">That isn't a valid address. Use the computer's IP address, e.g. 192.168.1.5</string>
     <string name="settings_host_empty">Host cannot be empty</string>
 
     <!-- Theme -->

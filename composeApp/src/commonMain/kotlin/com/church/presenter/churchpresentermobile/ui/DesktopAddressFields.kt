@@ -21,6 +21,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_api_key_lab
 import churchpresentermobile.composeapp.generated.resources.settings_api_key_placeholder
 import churchpresentermobile.composeapp.generated.resources.settings_host_label
 import churchpresentermobile.composeapp.generated.resources.settings_host_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_invalid_host
 import churchpresentermobile.composeapp.generated.resources.settings_invalid_port
 import churchpresentermobile.composeapp.generated.resources.settings_port_label
 import churchpresentermobile.composeapp.generated.resources.settings_port_placeholder
@@ -66,6 +67,7 @@ fun DesktopAddressFields(
     val apiKey by viewModel.apiKey.collectAsState()
     val keyRequired by viewModel.keyRequired.collectAsState()
     val portError by viewModel.portError.collectAsState()
+    val hostError by viewModel.hostError.collectAsState()
 
     // An address changed anywhere else — a scanned code, or the other surface — must not leave
     // a stale draft on screen here.
@@ -83,6 +85,7 @@ fun DesktopAddressFields(
                 mono = true,
                 keyboardType = KeyboardType.Uri,
                 imeAction = ImeAction.Next,
+                error = if (hostError) stringResource(Res.string.settings_invalid_host) else null,
                 modifier = Modifier.weight(1f),
             )
             SettingsField(

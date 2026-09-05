@@ -312,4 +312,43 @@ class NetworkErrorMapperTest {
         assertTrue(SocketTimeoutException(raw).isExpectedConnectivityError())
         assertFalse(SocketTimeoutException(raw).shouldReportAsNonFatal())
     }
+
+    // ── An address that is not a URL ─────────────────────────────────────
+
+    private class IllegalArgumentException(message: String) : Exception(message)
+
+    @Test
+    fun anAddressThatIsNotAUrlIsNotADefect() {
+        // CHURCH-PRESENTER-MOBILE-1C: the host arrived as "high dynamic range",
+        // and the WebSocket's reconnect loop filed one report per attempt —
+        // 25 in 18 minutes from a single phone.
+        val raw = """Invalid URL host: "high dynamic range""""
+        assertTrue(IllegalArgumentException(raw).isUnusableAddressError())
+        assertFalse(IllegalArgumentException(raw).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun anAddressThatIsNotAUrlSaysSoRatherThanBlamingTheNetwork() {
+        // "Server not reachable" would send the operator to check cables and
+        // Wi-Fi for something only the address field can fix.
+        val message = IllegalArgumentException("""Invalid URL host: "high dynamic range"""")
+            .toFriendlyNetworkMessage()
+
+        assertTrue(message.contains("address", ignoreCase = true), message)
+        assertTrue(message.contains("Settings"), message)
+    }
+
+    @Test
+    fun aWrappedInvalidHostIsFoundThroughTheCauseChain() {
+        // Ktor wraps the engine's exception, and recordException reports the chain.
+        val cause = IllegalArgumentException("""Invalid URL host: "not a host"""")
+        assertFalse(Exception("Exception in http request", cause).shouldReportAsNonFatal())
+    }
+
+    @Test
+    fun anOrdinaryBugIsStillReported() {
+        // The suppression must stay narrow — this is the case it must not swallow.
+        assertFalse(Exception("Attempt to invoke method on a null object").isUnusableAddressError())
+        assertTrue(Exception("Attempt to invoke method on a null object").shouldReportAsNonFatal())
+    }
 }

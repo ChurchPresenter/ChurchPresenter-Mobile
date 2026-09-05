@@ -101,6 +101,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_test_error_
 import churchpresentermobile.composeapp.generated.resources.settings_host_empty
 import churchpresentermobile.composeapp.generated.resources.settings_host_label
 import churchpresentermobile.composeapp.generated.resources.settings_host_placeholder
+import churchpresentermobile.composeapp.generated.resources.settings_invalid_host
 import churchpresentermobile.composeapp.generated.resources.settings_invalid_port
 import churchpresentermobile.composeapp.generated.resources.settings_port_label
 import churchpresentermobile.composeapp.generated.resources.settings_port_placeholder
@@ -196,6 +197,7 @@ fun SettingsScreen(
 
     val emptyHostError   = stringResource(Res.string.settings_host_empty)
     val invalidPortError = stringResource(Res.string.settings_invalid_port)
+    val invalidHostError = stringResource(Res.string.settings_invalid_host)
 
     val appMode by AppModeHolder.mode.collectAsState()
     // Everything about a server — its address, its key, its status, the QR
@@ -264,6 +266,7 @@ fun SettingsScreen(
                                     onSuccess        = { onSaved(); onDismiss() },
                                     emptyHostError   = emptyHostError,
                                     invalidPortError = invalidPortError,
+                                    invalidHostError = invalidHostError,
                                 )
                             }
                             .padding(horizontal = 16.dp, vertical = 7.dp)

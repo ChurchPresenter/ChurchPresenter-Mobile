@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.DesktopAddress
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.util.Analytics
@@ -167,11 +168,13 @@ class SettingsViewModel(
      * @param onSuccess Called when settings are saved successfully.
      * @param emptyHostError Localised error string for an empty host.
      * @param invalidPortError Localised error string for an invalid port.
+     * @param invalidHostError Localised error string for a host that cannot be a host.
      */
     fun save(
         onSuccess: () -> Unit,
         emptyHostError: String,
-        invalidPortError: String
+        invalidPortError: String,
+        invalidHostError: String,
     ) {
         // Neither name is a server-reachability field, so neither is gated on the
         // port being valid or on there being a server at all — a device named in
@@ -183,7 +186,9 @@ class SettingsViewModel(
         // edited — and must not be able to veto the settings it does show. A host
         // left blank before the switch would otherwise lock the operator out of
         // saving a theme change, with no field on screen to fix it.
-        if (mode.value == AppMode.REMOTE && !persistServerFields(emptyHostError, invalidPortError)) return
+        if (mode.value == AppMode.REMOTE &&
+            !persistServerFields(emptyHostError, invalidPortError, invalidHostError)
+        ) return
 
         appSettings.themeMode = _themeMode.value
         _activeUrl.value = appSettings.apiBaseUrl
@@ -195,11 +200,21 @@ class SettingsViewModel(
      * Validates and persists the server fields, reporting whether the sheet is
      * fit to save. Errors are published to [hostError] / [portError] for the UI.
      */
-    private fun persistServerFields(emptyHostError: String, invalidPortError: String): Boolean {
+    private fun persistServerFields(
+        emptyHostError: String,
+        invalidPortError: String,
+        invalidHostError: String,
+    ): Boolean {
         var valid = true
 
-        if (_host.value.isBlank()) {
+        val cleanedHost = DesktopAddress.normalizeHost(_host.value)
+        if (cleanedHost.isBlank()) {
             _hostError.value = emptyHostError
+            valid = false
+        } else if (!DesktopAddress.isUsableHost(cleanedHost)) {
+            // Not merely unreachable — unusable. Left to the HTTP client it becomes an
+            // exception on every call, with nothing on screen to explain why.
+            _hostError.value = invalidHostError
             valid = false
         }
 
@@ -211,7 +226,7 @@ class SettingsViewModel(
 
         if (!valid) return false
 
-        appSettings.host = _host.value.trim()
+        appSettings.host = cleanedHost
         appSettings.port = portInt!!
         appSettings.apiKey = _apiKey.value.trim()
         return true

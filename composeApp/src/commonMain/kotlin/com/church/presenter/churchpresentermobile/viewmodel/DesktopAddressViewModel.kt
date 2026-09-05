@@ -41,9 +41,20 @@ class DesktopAddressViewModel(
     private val _portError = MutableStateFlow(false)
     val portError = _portError.asStateFlow()
 
+    private val _hostError = MutableStateFlow(false)
+
+    /** True when what is typed cannot be a host — the twin of [portError]. */
+    val hostError = _hostError.asStateFlow()
+
     fun setHost(value: String) {
         _host.value = value
-        if (value.isNotBlank()) settings.host = value.trim()
+        // Written through only when it could actually be a host. This surface has no Save
+        // button, so without the check every keystroke of an unusable address reached the
+        // HTTP client and the WebSocket's reconnect loop, which retried it forever.
+        val cleaned = DesktopAddress.normalizeHost(value)
+        val usable = DesktopAddress.isUsableHost(cleaned)
+        _hostError.value = cleaned.isNotBlank() && !usable
+        if (usable) settings.host = cleaned
     }
 
     fun setPort(value: String) {
@@ -75,6 +86,7 @@ class DesktopAddressViewModel(
         _port.value = settings.port.toString()
         _apiKey.value = settings.apiKey
         _portError.value = false
+        _hostError.value = false
         if (settings.apiKey.isNotBlank()) _keyRequired.value = true
     }
 
