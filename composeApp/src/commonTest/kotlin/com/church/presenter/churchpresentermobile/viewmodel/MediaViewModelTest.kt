@@ -9,6 +9,8 @@ import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
 import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -217,6 +219,123 @@ class MediaViewModelTest {
 
             assertTrue(ws.calls.isEmpty())
             assertEquals("Upload a file first", vm.message.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Transport controls ───────────────────────────────────────────────
+    //
+    // Each button forwards one message; the desktop echoes the new playback state
+    // back over the socket, so none of them waits for a reply.
+
+    @Test
+    fun `each transport button sends its own message`() = runVmTestUnconfined {
+        val (vm, ws) = vm()
+        try {
+            vm.playPause()
+            assertEquals(WsMessageType.MEDIA_PLAY_PAUSE, ws.lastType)
+
+            vm.stopPlayback()
+            assertEquals(WsMessageType.MEDIA_STOP, ws.lastType)
+
+            vm.seekForward()
+            assertEquals(WsMessageType.MEDIA_SEEK_FORWARD, ws.lastType)
+
+            vm.seekBackward()
+            assertEquals(WsMessageType.MEDIA_SEEK_BACKWARD, ws.lastType)
+
+            vm.muteToggle()
+            assertEquals(WsMessageType.MEDIA_MUTE_TOGGLE, ws.lastType)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `scrubbing carries the position in milliseconds`() = runVmTestUnconfined {
+        val (vm, ws) = vm()
+        try {
+            vm.seekTo(90_000L)
+
+            assertEquals(WsMessageType.MEDIA_SEEK_TO, ws.lastType)
+            assertEquals("90000", ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `the volume slider carries its level`() = runVmTestUnconfined {
+        val (vm, ws) = vm()
+        try {
+            vm.setVolume(0.25f)
+
+            assertEquals(WsMessageType.MEDIA_SET_VOLUME, ws.lastType)
+            assertEquals("0.25", ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `no transport control waits for an acknowledgement`() = runVmTestUnconfined {
+        val (vm, ws) = vm()
+        try {
+            vm.playPause()
+            vm.stopPlayback()
+            vm.seekTo(0L)
+            vm.setVolume(1f)
+            vm.muteToggle()
+
+            assertTrue(ws.calls.all { it.third }, "transport controls should be fire-and-forget")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Clearing and messages ────────────────────────────────────────────
+
+    @Test
+    fun `clearing the screen forgets what was live`() = runVmTestUnconfined {
+        val (vm, ws) = vm()
+        try {
+            vm.setUrl("https://example.org/clip.mp4")
+            vm.goLive()
+            assertNotNull(vm.liveUrl.value)
+
+            vm.clearScreen()
+
+            assertEquals(WsMessageType.CLEAR, ws.lastType)
+            assertNull(vm.liveUrl.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a message can be surfaced and consumed once`() = runVmTestUnconfined {
+        // Used for file-picker errors, which are known without asking the desktop.
+        val (vm, _) = vm()
+        try {
+            vm.showMessage("That file is too large")
+            assertEquals("That file is too large", vm.message.value)
+
+            vm.clearMessage()
+
+            assertNull(vm.message.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `nothing is uploading before a file is picked`() = runVmTestUnconfined {
+        val (vm, _) = vm()
+        try {
+            assertFalse(vm.uploading.value)
+            assertEquals(0f, vm.uploadProgress.value)
+            assertNull(vm.playback.value, "no desktop is pushing playback state here")
         } finally {
             tearDown(vm)
         }

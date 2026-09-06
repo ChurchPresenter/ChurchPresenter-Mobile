@@ -298,10 +298,14 @@ composeApp/src/
 
 ### Coverage: NEVER lower the bar to meet the code — **ASK FIRST**
 
-- 🚫 **NEVER** change the Kover floor (`minBound(...)` in `composeApp/build.gradle.kts`)
+Coverage is measured with **JaCoCo** (`./gradlew :composeApp:jacocoTestReport`),
+over the Android unit-test run. Report: `composeApp/build/reports/jacoco/jacocoTestReport/html/index.html`.
+
+- 🚫 **NEVER** change the coverage floor (the `LINE` `minimum` in
+  `jacocoTestCoverageVerification`, `composeApp/build.gradle.kts`)
   without explicit permission. Not to make a build green, not "temporarily".
-- 🚫 **NEVER** add an entry to the Kover `excludes { }` block without explicit
-  permission — no packages, no class patterns, no `annotatedBy(...)`.
+- 🚫 **NEVER** add an `exclude(...)` to `jacocoTestReport`'s `classDirectories`
+  without explicit permission — no packages, no class patterns.
 - ✅ **ALWAYS** raise the number by adding tests. If coverage is below the floor,
   the answer is more tests or a conversation — never a wider exclusion.
 - 📉 **Why**: the exclusion list once hid 64% of the source, and the reported figure
@@ -322,16 +326,16 @@ composeApp/src/
 |---|---|---|
 | Logic / ViewModel / service | `commonTest` | `:composeApp:jsBrowserTest` (the CI gate) |
 | Compose UI (`runComposeUiTest`) | `wasmJsTest` | `:composeApp:wasmJsBrowserTest` |
-| Coverage measurement | — | `:composeApp:koverXmlReport` (Android unit-test JVM) |
+| Coverage measurement | — | `:composeApp:jacocoTestReport` (Android unit-test JVM) |
 
 - **Compose UI tests must live in `wasmJsTest`, not `commonTest`.** They need a Skia
   surface; the js (legacy) Karma runtime has none and fails with
   `org_jetbrains_skia_Surface__1nMakeRasterN32Premul is not defined`. The wasmJs
   target ships skiko with its test bundle and runs them unchanged.
 - ❌ **NEVER** add Robolectric to run Compose tests. Compose Multiplatform does not
-  need it, and Robolectric's instrumenting classloader defeats Kover — the tests
+  need it, and Robolectric's instrumenting classloader defeats JaCoCo — the tests
   pass while the code they exercise still reports 0% covered.
-- ⚠️ Kover measures the **Android unit-test JVM**, so Compose UI tests on wasmJs
+- ⚠️ JaCoCo measures the **Android unit-test JVM**, so Compose UI tests on wasmJs
   prove behaviour but do not move the coverage figure. Don't expect them to.
 - ⚠️ A ViewModel test that creates a ViewModel inside `runVmTest` must
   `tearDown(vm)` in a `finally` (see `testutil/CoroutineTest.kt`). Without it a

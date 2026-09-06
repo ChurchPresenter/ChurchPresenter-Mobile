@@ -13,7 +13,7 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
-    alias(libs.plugins.kover)
+    jacoco
     alias(libs.plugins.detekt)
 }
 
@@ -211,58 +211,109 @@ tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configure
 }
 
 // ---------------------------------------------------------------------------
-// Code-coverage (Kover) — measured on the Android unit-test JVM (where commonTest
-// runs). Scoped to the reliably-JVM-measurable logic: `model`, `network` and
-// `present` (the standalone presenter's routing/slide logic — pure by design;
-// the platform-specific output sinks live behind expect/actual leaves that are
-// named in the `classes` exclusion list below).
+// Code coverage (JaCoCo) — measured on the Android unit-test JVM, where the
+// commonTest suite runs.
 //
-// The `viewmodel` package is EXCLUDED from the measured number, not because it's
-// untested — it's fully covered and gated by the `jsBrowserTest` CI job — but
-// because ViewModel tests install a test Main dispatcher (viewModelScope), and the
-// Android unit-test JVM has no Dispatchers.Main without Robolectric. So VM tests
-// are excluded from the Android run (see the Test filter below) and, to keep the %
-// honest, from the Kover scope too. UI/App.kt/platform/generated are excluded as
-// non-unit-testable. Report: composeApp/build/reports/kover/.
+// Run:  ./gradlew :composeApp:jacocoTestReport
+// HTML: composeApp/build/reports/jacoco/jacocoTestReport/html/index.html
+//
+// This is a Kotlin Multiplatform build, so there is no conventional test/main
+// pair for the plugin's default report to attach to — hence an explicit task
+// pointing at the Android debug compilation's own output.
 // ---------------------------------------------------------------------------
-kover {
-    reports {
-        filters {
-            excludes {
-                // Generated code only — there is no source behind it to cover.
-                //
-                // Nothing else is excluded: not the ui/viewmodel/util packages, not the
-                // platform expect/actual leaves, not @Composable functions. The figure
-                // this produces is coverage of the whole module, so it is low; that is
-                // the point. Raise it by adding tests, never by adding an exclusion.
-                classes(
-                    "*ComposableSingletons*",
-                    "churchpresentermobile.composeapp.generated.resources.*",
-                )
-            }
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    group = "verification"
+    description = "Coverage for the app's own code, from the Android unit-test run."
+    dependsOn("testDebugUnitTest")
+
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include(
+                "jacoco/testDebugUnitTest.exec",
+                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+            )
         }
-        // The project's coverage floor.
-        verify {
-            rule {
-                minBound(80)
+    )
+
+    // Generated code only — there is no source behind it to cover. Nothing else is
+    // excluded: not the ui/viewmodel/util packages, not the platform expect/actual
+    // leaves, not @Composable functions. The figure this produces is coverage of the
+    // whole module, so it is low; that is the point. Raise it by adding tests, never
+    // by adding an exclusion.
+    classDirectories.setFrom(
+        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
+            exclude("**/ComposableSingletons*")
+            exclude("**/churchpresentermobile/composeapp/generated/resources/**")
+        }
+    )
+    sourceDirectories.setFrom(
+        files("src/commonMain/kotlin", "src/androidMain/kotlin", "src/mobileMain/kotlin"),
+    )
+
+    // A filtered run measures only what it ran, so the number would be nonsense.
+    // Resolved at configuration time: reading `gradle` from inside onlyIf captures
+    // the Project, which the configuration cache refuses to serialize.
+    val isFilteredRun = gradle.startParameter.taskRequests.any { request ->
+        request.args.any { it == "--tests" }
+    }
+    onlyIf { !isFilteredRun }
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)   // for CI / coverage services
+        csv.required.set(false)
+    }
+
+    // JaCoCo writes the files it reports on and never removes the ones it doesn't, so
+    // a page for a class since renamed or excluded stays on disk at 0% for anyone who
+    // opens it directly. The XML is one file and is overwritten in place; only the
+    // HTML tree needs clearing.
+    // deleteRecursively() on the resolved File rather than Project.delete(): the
+    // latter is a Gradle script object reference, which the configuration cache
+    // cannot serialize.
+    val htmlReportDir = layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html")
+    doFirst { htmlReportDir.get().asFile.deleteRecursively() }
+
+    finalizedBy("printCoverageLink")
+}
+
+tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    group = "verification"
+    description = "Fails the build when line coverage drops below the floor."
+    dependsOn("jacocoTestReport")
+    executionData.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.executionData })
+    classDirectories.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.classDirectories })
+    sourceDirectories.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.sourceDirectories })
+
+    violationRules {
+        rule {
+            // The project's coverage floor.
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
             }
         }
     }
 }
 
 // Prints the headline numbers and a clickable file:// link so the report doesn't have to be hunted
-// for under build/. Ported from the desktop app's `printCoverageLink`; Kover's XML report follows
-// the JaCoCo schema whichever engine measures it, so the desktop's parsing works here unchanged.
+// for under build/. Ported from the desktop app's `printCoverageLink`, and reads the same
+// JaCoCo XML schema.
 //
-// Deliberately a SEPARATE task rather than a doLast on koverXmlReport: a doLast is skipped when the
+// Deliberately a SEPARATE task rather than a doLast on jacocoTestReport: a doLast is skipped when the
 // report is UP-TO-DATE, so re-running `check` would silently print nothing. This task declares no
 // outputs, so it never goes up-to-date and always prints.
 tasks.register("printCoverageLink") {
-    val reportDir = layout.buildDirectory.dir("reports/kover")
-    // The Android unit-test run is the one Kover measures, so it is the run whose test counts
-    // belong next to the coverage figure. The much larger jsBrowserTest suite covers the same code
-    // plus the viewmodel package, but produces no coverage data — quoting its total here would
-    // credit the percentage to tests that did not produce it.
+    val reportDir = layout.buildDirectory.dir("reports/jacoco/jacocoTestReport")
+    // The Android unit-test run is the one JaCoCo measures, so it is the run whose test counts
+    // belong next to the coverage figure. The jsBrowserTest and wasmJsBrowserTest suites cover
+    // the same code but produce no coverage data — quoting their totals here would credit the
+    // percentage to tests that did not produce it.
     val testResultsDir = layout.buildDirectory.dir("test-results/testDebugUnitTest")
     // Where to append the run's summary block, resolved at CONFIGURATION time from a property the
     // CI client passes in — not from this process's environment. `System.getenv` here reads the
@@ -305,7 +356,7 @@ tasks.register("printCoverageLink") {
         // <counter> of each type in the document (they appear per-package/-class first, then once
         // more on the closing </report> element), so the final match per type is the overall figure.
         val lines = runCatching {
-            val xml = dir.resolve("report.xml")
+            val xml = dir.resolve("jacocoTestReport.xml")
             if (!xml.exists()) return@runCatching null
             val text = xml.readText()
             // Order matches the JaCoCo HTML overview table's own column order.
@@ -366,10 +417,6 @@ tasks.register("printCoverageLink") {
         }
     }
 }
-
-// Print whenever the report is generated, so the number appears without having to ask for it.
-tasks.named("koverXmlReport") { finalizedBy("printCoverageLink") }
-tasks.named("koverHtmlReport") { finalizedBy("printCoverageLink") }
 
 // Every test runs on the Android unit-test JVM: kotlinx's Dispatchers.setMain()
 // supplies the main dispatcher Android itself does not. No test is filtered out.
@@ -624,7 +671,7 @@ android {
     }
     testOptions {
         // Let commonTest run on the Android unit-test JVM (used by the best-effort
-        // Kover coverage job): unmocked android.jar methods return defaults (e.g.
+        // JaCoCo coverage job): unmocked android.jar methods return defaults (e.g.
         // Log.* no-ops) instead of throwing.
         unitTests.isReturnDefaultValues = true
     }
@@ -666,6 +713,11 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            // Makes AGP run the unit tests under the JaCoCo agent, which is what
+            // writes the .exec file jacocoTestReport reads.
+            enableUnitTestCoverage = true
+        }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true

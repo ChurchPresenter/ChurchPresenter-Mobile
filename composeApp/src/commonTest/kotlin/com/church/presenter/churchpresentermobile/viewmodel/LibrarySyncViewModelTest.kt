@@ -13,8 +13,10 @@ import com.church.presenter.churchpresentermobile.testutil.tearDown
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.first
+import com.church.presenter.churchpresentermobile.model.SyncOutcome
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -324,6 +326,135 @@ class LibrarySyncViewModelTest {
 
             assertNull(f.viewModel.outcome.value)
             assertFalse(f.viewModel.progress.value.isRunning)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    // ── A sync from end to end ───────────────────────────────────────────
+    //
+    // Drives the real LibrarySyncService through a mocked catalogue + detail
+    // endpoint, so the outcome banner and the persisted state are exercised
+    // together — the state is what the Library screen reads on a Sunday morning
+    // to answer "is this current?" without touching the network.
+
+    private fun syncingFixture(): Fixture = Fixture(
+        body = "",   // per-path handler below supersedes this
+        status = HttpStatusCode.OK,
+        storedState = null,
+    )
+
+    @Test
+    fun `a successful sync writes the songs and remembers that it happened`() = runVmTestUnconfined {
+        val f = fixture()
+        try {
+            f.viewModel.sync()
+            val outcome = f.viewModel.outcome.first { it != null }
+
+            assertIs<SyncOutcome.Success>(outcome)
+            assertTrue(f.repository.songs.isNotEmpty(), "the catalogue should have been written in")
+            assertTrue(f.viewModel.state.value.hasEverSynced)
+            assertEquals(f.repository.songs.size, f.viewModel.state.value.songCount)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `the remembered state names the desktop it came from`() = runVmTestUnconfined {
+        // A different host means the staleness figure is about someone else's
+        // catalogue, so the screen has to be able to say which.
+        val f = fixture()
+        try {
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            assertEquals(f.settings.host, f.viewModel.state.value.sourceHost)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `the remembered state survives being read back by a new view model`() = runVmTestUnconfined {
+        // It is persisted as JSON in settings; the screen builds its own ViewModel.
+        val f = fixture()
+        try {
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+            val written = f.viewModel.state.value
+
+            val reopened = LibrarySyncViewModel(
+                f.repository,
+                f.settings,
+                SongService(f.settings, FakeWsSender(), mockClient { respond(catalogue) }),
+            )
+            try {
+                assertEquals(written, reopened.state.value)
+            } finally {
+                tearDown(reopened)
+            }
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `a second sync while one is running is ignored`() = runVmTestUnconfined {
+        // The button stays tappable while the sheet is open; a second press must
+        // not start a competing run that writes the same songs twice.
+        val f = fixture()
+        try {
+            f.viewModel.sync()
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            val ids = f.repository.songs.map { it.id }
+            assertEquals(ids.size, ids.toSet().size, "a song was written twice")
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `the outcome banner can be dismissed after a sync`() = runVmTestUnconfined {
+        val f = fixture()
+        try {
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            f.viewModel.dismissOutcome()
+
+            assertNull(f.viewModel.outcome.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `a sync that cannot reach the desktop reports failure and writes nothing`() = runVmTestUnconfined {
+        val f = fixture(body = "nope", status = HttpStatusCode.ServiceUnavailable)
+        try {
+            f.viewModel.sync()
+            val outcome = f.viewModel.outcome.first { it != null }
+
+            assertIs<SyncOutcome.Failed>(outcome)
+            assertTrue(f.repository.songs.isEmpty())
+            assertFalse(f.viewModel.state.value.hasEverSynced, "a failed sync is not a sync")
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `progress returns to idle once the run finishes`() = runVmTestUnconfined {
+        val f = fixture()
+        try {
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            assertFalse(f.viewModel.progress.value.isRunning)
+            assertFalse(f.viewModel.progress.value.isPreparing)
         } finally {
             tearDown(f.viewModel)
         }

@@ -4,7 +4,7 @@ name: Tests
 #  - offline-assets: guards the bundled display page against remote dependencies.
 #  - detekt:    static analysis on the desktop app's ruleset — seconds, no secrets.
 #  - js-tests:  fast, headless-browser run of all commonTest — no secrets needed.
-#  - coverage:  Kover coverage over the Android unit-test variant (logic layer),
+#  - coverage:  JaCoCo coverage over the Android unit-test variant,
 #               needs GOOGLE_SERVICES_JSON_BASE64 to configure the Android build.
 
 on:
@@ -76,7 +76,7 @@ jobs:
           if-no-files-found: ignore
 
   coverage:
-    name: Coverage (Kover, model+network)
+    name: Coverage (JaCoCo)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,8 +100,8 @@ jobs:
           test -s composeApp/google-services.json || { echo "ERROR: google-services.json empty after decode" >&2; exit 1; }
       - name: Generate + verify coverage (gates on the 80% floor)
         if: env.SKIP != '1'
-        # --continue so the HTML/XML report is still produced even when koverVerify
-        # fails the build, so the uploaded artifact shows what dropped below the floor.
+        # --continue so the HTML/XML report is still produced even when the
+        # verification fails, so the uploaded artifact shows what dropped below the floor.
         #
         # -PstepSummary rather than letting the task read GITHUB_STEP_SUMMARY itself: that
         # variable is a fresh per-step file, while the Gradle daemon's environment is frozen
@@ -109,12 +109,12 @@ jobs:
         # runner has already discarded. A -P property travels with this invocation, so the
         # coverage block lands on the summary page of the run a reviewer actually opens.
         run: >-
-          ./gradlew :composeApp:koverXmlReport :composeApp:koverHtmlReport :composeApp:koverVerify
+          ./gradlew :composeApp:jacocoTestReport :composeApp:jacocoTestCoverageVerification
           -PstepSummary="$GITHUB_STEP_SUMMARY" --continue
       - name: Upload coverage report
         if: always() && env.SKIP != '1'
         uses: actions/upload-artifact@v4
         with:
-          name: kover-coverage-report
-          path: composeApp/build/reports/kover/
+          name: jacoco-coverage-report
+          path: composeApp/build/reports/jacoco/
           if-no-files-found: ignore
