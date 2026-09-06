@@ -1258,4 +1258,76 @@ class BibleViewModelTest {
             tearDown(vm)
         }
     }
+
+    // ── Guards and housekeeping ──────────────────────────────────────────
+
+    @Test
+    fun `a consumed toast is cleared so it shows once`() = runVmTestUnconfined {
+        // A snackbar that is not cleared re-shows on the next recomposition, so
+        // the operator sees the same message again every time the verse list
+        // scrolls.
+        val vm = liveVm()
+        try {
+            vm.openFirstChapter()
+            vm.toggleProjecting()
+            assertNotNull(vm.toastEvent.first { it != null })
+
+            vm.toastShown()
+
+            assertNull(vm.toastEvent.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `projecting with no verse selected asks for one`() = runVmTestUnconfined {
+        // Opening a chapter clears the selection, so this is simply pressing
+        // Project before tapping a verse. Sending nothing would blank the
+        // audience screen instead.
+        val vm = liveVm()
+        try {
+            vm.openFirstChapter()
+
+            vm.toggleProjecting()
+
+            val toast = assertIs<ToastEvent.FailedToProjectBible>(vm.toastEvent.first { it != null })
+            assertEquals("Select at least one verse first", toast.reason)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `nothing is sent to the desktop when no verse is selected`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            val before = ws.calls.size
+
+            vm.toggleProjecting()
+
+            assertEquals(before, ws.calls.size)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a second load keeps the book list already on screen`() = runVmTestUnconfined {
+        // Switching tabs re-runs the load; refetching would blank the list every
+        // time the operator came back to the Bible tab.
+        val vm = liveVm()
+        try {
+            val loaded = vm.books.first { it.isNotEmpty() }
+
+            vm.loadBooks()
+
+            assertEquals(loaded, vm.books.value)
+            assertFalse(vm.isLoading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }

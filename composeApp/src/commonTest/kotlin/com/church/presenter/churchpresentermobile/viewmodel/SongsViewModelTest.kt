@@ -764,4 +764,229 @@ class SongsViewModelTest {
             tearDown(vm)
         }
     }
+
+    // ── Demo mode ────────────────────────────────────────────────────────
+    //
+    // The catalogue shown on a phone that has never been pointed at a desktop.
+    // Every action has to look like it worked without a request going anywhere:
+    // an app-store reviewer taps Project and gets a toast, not a timeout.
+
+    @Test
+    fun `projecting in demo mode confirms without a desktop`() = runVmTest {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            vm.openSongDetail(vm.songs.value.first())
+            advanceUntilIdle()
+
+            vm.toggleProjecting()
+            advanceUntilIdle()
+
+            assertTrue(vm.isProjecting.value)
+            assertIs<ToastEvent.SongLive>(vm.toastEvent.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `adding to the schedule in demo mode confirms without a desktop`() = runVmTest {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            val song = vm.songs.value.first()
+            vm.openSongDetail(song)
+            advanceUntilIdle()
+
+            vm.addSongToSchedule()
+            advanceUntilIdle()
+
+            assertEquals(ToastEvent.SongAddedToSchedule(song.title), vm.toastEvent.value)
+            assertTrue(vm.scheduleAdded.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a demo add still nudges the schedule tab to refresh`() = runVmTest {
+        // The Schedule tab watches this counter; leaving it alone would show an
+        // empty running order right after a confirmation that something was added.
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            vm.openSongDetail(vm.songs.value.first())
+            advanceUntilIdle()
+            val before = vm.scheduleRefreshTrigger.value
+
+            vm.addSongToSchedule()
+            advanceUntilIdle()
+
+            assertEquals(before + 1, vm.scheduleRefreshTrigger.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `clearing the display in demo mode just stops projecting`() = runVmTest {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            vm.openSongDetail(vm.songs.value.first())
+            advanceUntilIdle()
+            vm.toggleProjecting()
+            advanceUntilIdle()
+
+            vm.clearDisplay()
+            advanceUntilIdle()
+
+            assertFalse(vm.isProjecting.value)
+            assertNull(vm.selectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Guards ───────────────────────────────────────────────────────────
+
+    @Test
+    fun `projecting with no song open stops rather than sending nothing`() = runVmTest {
+        // Reachable by tapping Project on a detail sheet that has just been
+        // dismissed; without the guard this would send a null song.
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+
+            vm.toggleProjecting()
+            advanceUntilIdle()
+
+            assertFalse(vm.isProjecting.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a second load keeps the catalogue already on screen`() = runVmTestUnconfined {
+        // Switching tabs re-runs the load; throwing the list away and refetching
+        // would blank the screen on every return to the Songs tab.
+        val vm = liveVm()
+        try {
+            val loaded = vm.songs.first { it.isNotEmpty() }
+
+            vm.loadSongs()
+
+            assertEquals(loaded, vm.songs.value)
+            assertFalse(vm.isLoading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a forced reload does go back to the desktop`() = runVmTestUnconfined {
+        // The refresh gesture has to bypass the cache the tab switch relies on.
+        val requests = MutableStateFlow(0)
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = SongService(settings, ws, mockClient { path ->
+            if (path.contains("/songs/")) respond(detailJson) else {
+                requests.value += 1
+                respond(catalogueJson)
+            }
+        })
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            val before = requests.first { it > 0 }
+
+            vm.loadSongs(forceReload = true)
+
+            assertTrue(requests.first { it > before } > before)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Settings saves ───────────────────────────────────────────────────
+
+    /** A live ViewModel that counts how many times the catalogue is fetched. */
+    private fun countingVm(requests: MutableStateFlow<Int>): SongsViewModel {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = SongService(settings, ws, mockClient { path ->
+            if (path.contains("/songs/")) respond(detailJson) else {
+                requests.value += 1
+                respond(catalogueJson)
+            }
+        })
+        return SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+    }
+
+    @Test
+    fun `the same settings-save token is only acted on once`() = runVmTestUnconfined {
+        // The Songs tab reloads from a LaunchedEffect keyed on this token, which
+        // re-fires on every recomposition after a rotation. Without the guard the
+        // catalogue would be refetched each time the screen was rebuilt.
+        val requests = MutableStateFlow(0)
+        val vm = countingVm(requests)
+        try {
+            vm.songs.first { it.isNotEmpty() }
+
+            vm.onSettingsSaved(settingsSaveToken = 7)
+            val afterFirst = requests.first { it > 1 }
+            vm.onSettingsSaved(settingsSaveToken = 7)
+
+            assertEquals(afterFirst, requests.value, "the repeat should have been skipped")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a new settings-save token reloads again`() = runVmTestUnconfined {
+        val requests = MutableStateFlow(0)
+        val vm = countingVm(requests)
+        try {
+            vm.songs.first { it.isNotEmpty() }
+
+            vm.onSettingsSaved(settingsSaveToken = 7)
+            val afterFirst = requests.first { it > 1 }
+            vm.onSettingsSaved(settingsSaveToken = 8)
+
+            assertTrue(requests.first { it > afterFirst } > afterFirst)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a settings save with no token always reloads`() = runVmTestUnconfined {
+        // Token 0 is "no token given" — the Settings screen's own save path —
+        // and must never be swallowed by the repeat guard.
+        val requests = MutableStateFlow(0)
+        val vm = countingVm(requests)
+        try {
+            vm.songs.first { it.isNotEmpty() }
+            val before = requests.value
+
+            vm.onSettingsSaved()
+
+            assertTrue(requests.first { it > before } > before)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }

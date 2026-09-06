@@ -719,4 +719,118 @@ class PresentationsViewModelTest {
             tearDown(vm)
         }
     }
+
+    // ── When the server never lists the upload ───────────────────────────
+    //
+    // The poll gives up after thirty seconds. What happens then matters: the
+    // operator is standing in front of a congregation with a deck they believe
+    // they have uploaded, so the screen must end up showing whatever the server
+    // does have, and say so when it cannot even manage that.
+
+    /** Like [uploadVm], but the list endpoint can answer with a status of its own. */
+    private fun pollingVm(answer: () -> Pair<HttpStatusCode, String>): PresentationsViewModel {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        return PresentationsViewModel(settings, ws, isDemoMode = false) {
+            PresentationService(
+                it,
+                ws,
+                mockClient {
+                    val (status, body) = answer()
+                    respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
+                },
+                uploadClient = HttpClient(MockEngine {
+                    respond(
+                        """{"ok":true,"id":"p9","name":"Sermon.pptx"}""",
+                        HttpStatusCode.OK,
+                        headersOf(HttpHeaders.ContentType, "application/json"),
+                    )
+                }),
+            )
+        }
+    }
+
+    @Test
+    fun `a deck that never finishes rendering still leaves the spinner down`() = runVmTestUnconfined {
+        // A stuck spinner is worse than a missing deck: the operator cannot even
+        // pull to refresh.
+        val vm = pollingVm { HttpStatusCode.OK to withoutUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+
+            assertFalse(vm.isUploading.first { !it })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a deck that never appears is not scrolled to`() = runVmTestUnconfined {
+        val vm = pollingVm { HttpStatusCode.OK to withoutUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            vm.isUploading.first { !it }
+
+            assertNull(vm.pendingScrollToId.value)
+            assertNull(vm.selectedPresentation.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `giving up shows whatever the server does have`() = runVmTestUnconfined {
+        // The final reload after the timeout — without it the list stays empty
+        // from the clear that happened before polling started.
+        var polls = 0
+        val vm = pollingVm {
+            polls += 1
+            HttpStatusCode.OK to if (polls > POLL_ATTEMPTS) withUploaded else withoutUploaded
+        }
+        try {
+            vm.uploadPresentationFile(file())
+            vm.isUploading.first { !it }
+
+            assertEquals(1, vm.presentations.value.size)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a server that cannot even be re-listed is reported`() = runVmTestUnconfined {
+        val vm = pollingVm { HttpStatusCode.InternalServerError to "boom" }
+        try {
+            vm.uploadPresentationFile(file())
+
+            assertIs<ToastEvent.UploadReloadFailed>(vm.toastEvent.first { it != null })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a poll that fails is retried rather than ending the upload`() = runVmTestUnconfined {
+        // A single 500 mid-render is a blip; abandoning on it would lose a deck
+        // the server went on to finish a second later.
+        var polls = 0
+        val vm = pollingVm {
+            polls += 1
+            if (polls == 1) HttpStatusCode.InternalServerError to "boom"
+            else HttpStatusCode.OK to withUploaded
+        }
+        try {
+            vm.uploadPresentationFile(file())
+
+            assertEquals("p9", vm.pendingScrollToId.first { it != null })
+            assertTrue(polls >= 2, "gave up after $polls polls")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    private companion object {
+        /** Matches UPLOAD_POLL_MAX_RETRIES in PresentationsViewModel. */
+        const val POLL_ATTEMPTS = 30
+    }
 }

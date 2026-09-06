@@ -26,10 +26,12 @@ kotlinxSerialization = "1.6.2"
 kotlinxCoroutines = "1.10.2"
 detekt = "1.23.8"   # matches the desktop app, which shares config/detekt/detekt.yml
 jacoco = "0.8.15"   # 0.8.13+ reads Java 24 class files; matches the desktop app
+mockk = "1.14.2"    # android unit tests only — mocks the final framework classes android.jar stubs out
 sentry-android = "8.47.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }

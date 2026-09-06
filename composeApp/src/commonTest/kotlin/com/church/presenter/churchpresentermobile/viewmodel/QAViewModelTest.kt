@@ -359,4 +359,105 @@ class QAViewModelTest {
             tearDown(vm)
         }
     }
+
+    // ── The two admin actions that are not per-question edits ────────────
+
+    @Test
+    fun `deleting a question reaches the question's own address`() = runVmTestUnconfined {
+        // A DELETE on the question itself rather than a verb endpoint, so a
+        // wrong path here would silently delete nothing.
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths)
+        try {
+            vm.settled()
+
+            vm.deleteQuestion("q1")
+            val seen = paths.first { list -> list.any { it.endsWith("/qa/questions/q1") } }
+
+            assertTrue(seen.any { it.endsWith("/qa/questions/q1") }, seen.toString())
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `taking the question off the screen reaches the clear endpoint`() = runVmTestUnconfined {
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths)
+        try {
+            vm.settled()
+
+            vm.clearDisplay()
+            val seen = paths.first { list -> list.any { it.endsWith("/qa/clear-display") } }
+
+            assertTrue(seen.any { it.endsWith("/qa/clear-display") }, seen.toString())
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused delete is reported rather than looking like it worked`() = runVmTestUnconfined {
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths, failOn = "/qa/questions/q1")
+        try {
+            vm.settled()
+
+            vm.deleteQuestion("q1")
+
+            assertNotNull(vm.actionError.first { it != null })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused clear is reported`() = runVmTestUnconfined {
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths, failOn = "/qa/clear-display")
+        try {
+            vm.settled()
+
+            vm.clearDisplay()
+
+            assertNotNull(vm.actionError.first { it != null })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a question added with no name given still reaches the server`() = runVmTestUnconfined {
+        // The screen calls addQuestion(text) once a name is already known, so the
+        // default argument is the ordinary path rather than an edge case.
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths)
+        try {
+            vm.settled()
+
+            vm.addQuestion("Why do we sing this one?")
+            val seen = paths.first { list -> list.any { it.endsWith("/qa/add") } }
+
+            assertTrue(seen.any { it.endsWith("/qa/add") }, seen.toString())
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a successful delete reloads the list`() = runVmTestUnconfined {
+        // The row has to disappear without the operator pulling to refresh.
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths)
+        try {
+            vm.settled()
+            val before = paths.value.count { it.endsWith("/qa/questions") }
+
+            vm.deleteQuestion("q1")
+
+            assertTrue(paths.first { list -> list.count { it.endsWith("/qa/questions") } > before }.isNotEmpty())
+        } finally {
+            tearDown(vm)
+        }
+    }
 }

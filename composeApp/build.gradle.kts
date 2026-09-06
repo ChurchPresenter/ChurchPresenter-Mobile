@@ -617,6 +617,21 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
         }
+        // MockK, on the Android unit-test JVM only.
+        //
+        // Unit tests compile against the stub android.jar, where every method is
+        // replaced by one returning a default. That leaves the framework classes
+        // this app actually depends on — PowerManager, WifiManager, RemoteMessage
+        // — inert *and* final, so they cannot be faked by hand. MockK's inline
+        // mock maker can, which is what makes the wake-lock and push paths
+        // testable without an emulator.
+        //
+        // Unlike Robolectric (see AGENT.md — never add it) MockK instruments only
+        // the classes it is asked to mock, so the code under test is still seen by
+        // JaCoCo and still reports its real coverage.
+        androidUnitTest.dependencies {
+            implementation(libs.mockk)
+        }
         // Compose UI tests, on the wasmJs browser target only.
         //
         // They need a Skia surface. The js (legacy) Karma runtime does not load

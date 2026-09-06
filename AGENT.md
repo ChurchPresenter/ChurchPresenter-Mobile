@@ -320,6 +320,48 @@ over the Android unit-test run. Report: `composeApp/build/reports/jacoco/jacocoT
 - Use existing test framework setup
 - Mock `SongService` for ViewModel tests
 
+### Reach for a seam before declaring code untestable
+
+If something cannot be tested as written, **change the code so it can be** —
+widening visibility or extracting the logic is nearly always the right trade.
+
+- ✅ **PREFER** `internal` over `private` when a test needs to reach it. `internal`
+  is still invisible to the rest of the app, and the test source set already sees it.
+- ✅ **PREFER** pulling the decision out of the plumbing: move the part that can be
+  wrong into an `internal fun` that takes plain values and returns a plain value,
+  and leave the untestable framework call as a one-line caller of it.
+- ✅ **PREFER** injecting a collaborator with a default — the `serviceFactory` /
+  `uploadClient` / `WsSender` seams already in this codebase — over reaching for a
+  mocking framework.
+- 📈 **Why**: covering thirty lines of real logic and leaving one framework call
+  uncovered beats leaving all thirty-one uncovered because the last one needs an
+  emulator. The line you cannot reach is usually `manager.notify(...)` or
+  `Bitmap.createScaledBitmap(...)` — plumbing, not behaviour.
+- 💬 Say so in a KDoc when visibility was widened purely for a test
+  (see `FirebasePushService`), so the next reader does not "tidy" it back.
+- ✅ **MockK is available** in `androidUnitTest` (`libs.mockk`) for what no seam can
+  reach: the final, inert framework classes the stub `android.jar` leaves behind —
+  `PowerManager`, `WifiManager`, `BitmapFactory`, `RemoteMessage`,
+  `FirebaseRemoteConfig`, the Play Core `Task` API. `spyk(service,
+  recordPrivateCalls = true)` also lets a real method run with only its one
+  untestable call stubbed out. Unlike Robolectric it instruments **only** the
+  classes it is asked to mock, so the code under test still reports real JaCoCo
+  coverage. Not available in `commonTest` — it is JVM-only.
+- ❌ **STILL NEVER** reach for Robolectric to make a test run, and never widen the
+  coverage exclusions or lower the floor instead (see the section above).
+
+**Example** — `android.jar` is stubbed in unit tests, so a `Notification.Builder`
+chain cannot run. Extracting the choice it encodes still covers the behaviour:
+
+```kotlin
+// Untestable: needs a real Context and a real Builder.
+private fun buildNotification(url: String?): Notification = ...
+
+// Testable: the decision the notification actually encodes.
+internal fun notificationText(url: String?, fallback: String): String =
+    url?.takeIf { it.isNotBlank() } ?: fallback
+```
+
 ### Where each kind of test runs
 
 | Kind | Source set | Task |
