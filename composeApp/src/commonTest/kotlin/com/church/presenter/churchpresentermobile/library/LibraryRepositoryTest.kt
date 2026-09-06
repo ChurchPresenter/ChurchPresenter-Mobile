@@ -4,9 +4,11 @@ import com.church.presenter.churchpresentermobile.model.ContentOrigin
 import com.church.presenter.churchpresentermobile.model.LibraryData
 import com.church.presenter.churchpresentermobile.model.LocalAnnouncement
 import com.church.presenter.churchpresentermobile.model.LocalSetlist
+import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
 import com.church.presenter.churchpresentermobile.model.LocalSong
 import com.church.presenter.churchpresentermobile.model.LocalSongSection
 import com.church.presenter.churchpresentermobile.model.SectionType
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -233,6 +235,70 @@ class LibraryRepositoryTest {
 
         assertTrue(repository.library.value.isEmpty)
         assertTrue(LibraryRepository(storage) { clock }.load().isEmpty)
+    }
+
+    @Test
+    fun `clear deletes the backup as well as the library`() {
+        // Otherwise everything the user asked to delete is still on the device,
+        // in library.bak, taking the space it always did.
+        val storage = InMemoryFileStorage()
+        val (repository, _) = repo(storage)
+        repository.upsertSong(song())
+        repository.upsertSong(song(id = "s2", title = "Be Thou My Vision"))
+
+        repository.clear()
+
+        assertFalse(storage.contains(LIBRARY_BACKUP_FILE))
+    }
+
+    @Test
+    fun `clearing songs keeps notices`() {
+        val (repository, _) = repo()
+        repository.upsertSong(song())
+        repository.upsertAnnouncement(LocalAnnouncement(id = "a1", title = "Welcome"))
+
+        repository.clearSongs()
+
+        assertTrue(repository.songs.isEmpty())
+        assertEquals(listOf("a1"), repository.announcements.map { it.id })
+    }
+
+    @Test
+    fun `clearing songs drops the service entries that pointed at them`() {
+        // A running order full of rows that open nothing is worse than an empty one.
+        val (repository, _) = repo()
+        repository.upsertSong(song(id = "s1"))
+        repository.upsertSetlist(
+            LocalSetlist(
+                id = "current-service",
+                entries = listOf(
+                    LocalSetlistEntry(SetlistEntryType.SONG, "s1", "Amazing Grace"),
+                    LocalSetlistEntry(SetlistEntryType.BIBLE, "John:3:16", "John 3:16"),
+                    LocalSetlistEntry(SetlistEntryType.ANNOUNCEMENT, "a1", "Welcome"),
+                ),
+            )
+        )
+
+        repository.clearSongs()
+
+        val entries = repository.setlist("current-service")!!.entries
+        assertEquals(
+            listOf(SetlistEntryType.BIBLE, SetlistEntryType.ANNOUNCEMENT),
+            entries.map { it.type },
+        )
+    }
+
+    @Test
+    fun `clearing songs deletes the backup too`() {
+        val storage = InMemoryFileStorage()
+        val (repository, _) = repo(storage)
+        repository.upsertSong(song())
+        repository.upsertSong(song(id = "s2", title = "Be Thou My Vision"))
+
+        repository.clearSongs()
+
+        assertFalse(storage.contains(LIBRARY_BACKUP_FILE))
+        assertTrue(LibraryRepository(storage) { clock }.load().songs.isEmpty())
     }
 
     // ── Persistence behaviour ────────────────────────────────────────────

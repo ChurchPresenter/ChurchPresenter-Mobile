@@ -96,6 +96,37 @@ class LocalBibleRepositoryTest {
     }
 
     @Test
+    fun clearingRemovesEveryTranslationAndItsFile() {
+        val storage = InMemoryFileStorage()
+        val repository = repo(storage)
+        repository.install("en_KJV.spb", module("KJV"))
+        repository.install("ru_RST77.spb", module("Синодальный"))
+        repository.setActive("ru_RST77")
+
+        repository.clearAll()
+
+        assertTrue(repository.index.value.bibles.isEmpty())
+        assertEquals("", repository.index.value.activeId)
+        assertFalse(storage.contains("bible_en_KJV.spb"))
+        assertFalse(storage.contains("bible_ru_RST77.spb"))
+        assertTrue(repo(storage).load().bibles.isEmpty())
+    }
+
+    @Test
+    fun clearingAlsoSweepsAModuleTheIndexLostTrackOf() {
+        // The point of clearing is the space back. A module left behind by an index
+        // write that failed after the download is megabytes nothing else deletes.
+        val storage = InMemoryFileStorage(mapOf("bible_orphan.spb" to module("Orphan")))
+        val repository = repo(storage)
+        repository.install("en_KJV.spb", module("KJV"))
+
+        repository.clearAll()
+
+        assertFalse(storage.contains("bible_orphan.spb"))
+        assertFalse(storage.contains("bible_en_KJV.spb"))
+    }
+
+    @Test
     fun removingTheActiveTranslationPromotesAnother() {
         // Otherwise the tab reads nothing while a perfectly good translation sits installed.
         val repository = repo()
