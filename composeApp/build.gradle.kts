@@ -484,6 +484,9 @@ val viewModelBackedUiTests = listOf(
     "com.church.presenter.churchpresentermobile.ui.ScheduleDrawerTest",
     "com.church.presenter.churchpresentermobile.ui.ScheduleDrawerRowTest",
     "com.church.presenter.churchpresentermobile.ui.StatusScreenTest",
+    "com.church.presenter.churchpresentermobile.ui.SongsTableTest",
+    "com.church.presenter.churchpresentermobile.ui.DictionaryListTest",
+    "com.church.presenter.churchpresentermobile.ui.DictionaryReferenceFilterTest",
 )
 
 // configureEach on the supertype rather than tasks.named: the Android unit-test

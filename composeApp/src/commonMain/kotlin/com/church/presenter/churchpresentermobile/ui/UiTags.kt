@@ -151,10 +151,82 @@ internal object UiTags {
     const val STATUS_CONTINUE = "status:continue"
     const val STATUS_OPEN_SETTINGS = "status:openSettings"
 
+    // ── The announcement composer ────────────────────────────────────────
+    const val ANNOUNCE_TEXT = "announce:text"
+    const val ANNOUNCE_GO_LIVE = "announce:goLive"
+    const val ANNOUNCE_CLEAR = "announce:clear"
+    const val ANNOUNCE_ADD_TO_SCHEDULE = "announce:addToSchedule"
+    const val ANNOUNCE_SAVE = "announce:save"
+    const val ANNOUNCE_NO_SAVED = "announce:noSaved"
+    const val ANNOUNCE_COUNTDOWN_FIELDS = "announce:countdown"
+    const val ANNOUNCE_UNTIL_FIELDS = "announce:until"
+
+    /** One of the kinds of announcement (text, countdown, clock…). */
+    fun announceType(name: String) = "announce:type:$name"
+
+    /** One saved announcement, by its id. */
+    fun savedAnnouncement(id: String) = "announce:saved:$id"
+
+    fun savedAnnouncementDelete(id: String) = "announce:saved:$id:delete"
+
+    // ── The media player ─────────────────────────────────────────────────
+    const val MEDIA_URL = "media:url"
+    const val MEDIA_GO_LIVE = "media:goLive"
+    const val MEDIA_CLEAR = "media:clear"
+    const val MEDIA_ADD_TO_SCHEDULE = "media:addToSchedule"
+    const val MEDIA_PLAY_PAUSE = "media:playPause"
+    const val MEDIA_STOP = "media:stop"
+    const val MEDIA_BACK_10 = "media:back10"
+    const val MEDIA_FORWARD_10 = "media:forward10"
+    const val MEDIA_MUTE = "media:mute"
+    const val MEDIA_VOLUME = "media:volume"
+    const val MEDIA_UPLOAD = "media:upload"
+
     // ── The desktop's address ────────────────────────────────────────────
     const val ADDRESS_HOST = "address:host"
     const val ADDRESS_PORT = "address:port"
     const val ADDRESS_API_KEY = "address:apiKey"
     const val ADDRESS_REVEAL_KEY = "address:revealKey"
     const val ADDRESS_HINT = "address:hint"
+
+    // ── The Strong's dictionary ──────────────────────────────────────────
+    const val DICT_SEARCH = "dict:search"
+    const val DICT_LOADING = "dict:loading"
+    const val DICT_ERROR = "dict:error"
+    const val DICT_EMPTY = "dict:empty"
+
+    /** One segment of the All / Hebrew / Greek filter, by its position. */
+    fun dictFilter(index: Int) = "dict:filter:$index"
+
+    /** One entry row, by the Strong's number that identifies it. */
+    fun dictEntry(number: String) = "dict:entry:$number"
+
+    /** The occurrence count on an entry row — absent when the desktop sent none. */
+    fun dictEntryUses(number: String) = "dict:entry:$number:uses"
+
+    // ── The Book → Chapter → Verse reference filter ──────────────────────
+    const val DICT_REF_BOOK = "dict:ref:book"
+    const val DICT_REF_CHAPTER = "dict:ref:chapter"
+    const val DICT_REF_VERSE = "dict:ref:verse"
+    const val DICT_REF_CLEAR = "dict:ref:clear"
+
+    /** One entry of a reference dropdown's menu, by the dropdown's own tag. */
+    fun refOption(dropdown: String, index: Int) = "$dropdown:option:$index"
+
+    // ── The dictionary entry sheet ───────────────────────────────────────
+    const val DICT_SHEET = "dict:sheet"
+    const val DICT_SHEET_PROJECT = "dict:sheet:project"
+    const val DICT_SHEET_ADD_TO_SCHEDULE = "dict:sheet:addToSchedule"
+    const val DICT_SHEET_LANGUAGE = "dict:sheet:language"
+    const val DICT_SHEET_TRANSLITERATION = "dict:sheet:transliteration"
+    const val DICT_SHEET_PRONUNCIATION = "dict:sheet:pronunciation"
+    const val DICT_SHEET_OCCURRENCES = "dict:sheet:occurrences"
+    const val DICT_SHEET_DEFINITION = "dict:sheet:definition"
+    const val DICT_SHEET_KJV_USAGE = "dict:sheet:kjvUsage"
+    const val DICT_SHEET_APPEARS_IN = "dict:sheet:appearsIn"
+    const val DICT_SHEET_APPEARS_LOADING = "dict:sheet:appearsIn:loading"
+    const val DICT_SHEET_APPEARS_COUNT = "dict:sheet:appearsIn:count"
+
+    /** One verse of the sheet's "appears in" list, by the reference it names. */
+    fun dictAppearsVerse(reference: String) = "dict:appears:$reference"
 }

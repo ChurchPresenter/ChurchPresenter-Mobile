@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -143,7 +144,11 @@ fun AnnouncementsScreen(
             // ── Type (extra — not in the base design) ─────────────────────
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AnnouncementType.entries.forEach { t ->
-                    Chip(announcementTypeLabel(t), form.type == t) { viewModel.update { it.copy(type = t) } }
+                    Chip(
+                        label = announcementTypeLabel(t),
+                        selected = form.type == t,
+                        modifier = Modifier.testTag(UiTags.announceType(t.name)),
+                    ) { viewModel.update { it.copy(type = t) } }
                 }
             }
 
@@ -156,13 +161,17 @@ fun AnnouncementsScreen(
             // ── Text / timer inputs ───────────────────────────────────────
             when (form.type) {
                 AnnouncementType.TEXT -> TextArea(
+                    modifier = Modifier.testTag(UiTags.ANNOUNCE_TEXT),
                     value = form.text,
                     onValueChange = { v -> viewModel.update { it.copy(text = v) } },
                     placeholder = stringResource(Res.string.announcements_text_placeholder),
                 )
                 AnnouncementType.COUNTDOWN -> {
                     Overline(stringResource(Res.string.overline_duration))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.testTag(UiTags.ANNOUNCE_COUNTDOWN_FIELDS),
+                    ) {
                         Stepper(stringResource(Res.string.stepper_hrs), form.hours, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(hours = v) } }
                         Stepper(stringResource(Res.string.stepper_min), form.minutes, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(minutes = v) } }
                         Stepper(stringResource(Res.string.stepper_sec), form.seconds, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(seconds = v) } }
@@ -170,7 +179,10 @@ fun AnnouncementsScreen(
                 }
                 AnnouncementType.COUNTDOWN_TO_TIME -> {
                     Overline(stringResource(Res.string.overline_target_time))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.testTag(UiTags.ANNOUNCE_UNTIL_FIELDS),
+                    ) {
                         Stepper(stringResource(Res.string.stepper_hour), form.targetHour, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetHour = v) } }
                         Stepper(stringResource(Res.string.stepper_min), form.targetMinute, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetMinute = v) } }
                     }
@@ -229,6 +241,7 @@ fun AnnouncementsScreen(
                         .clip(RoundedCornerShape(13.dp))
                         .background(colors.surface)
                         .border(1.dp, colors.border, RoundedCornerShape(13.dp))
+                        .testTag(UiTags.ANNOUNCE_CLEAR)
                         .clickable { viewModel.clearScreen() },
                     contentAlignment = Alignment.Center,
                 ) {
@@ -240,6 +253,7 @@ fun AnnouncementsScreen(
                         .height(50.dp)
                         .clip(RoundedCornerShape(13.dp))
                         .background(colors.accent)
+                        .testTag(UiTags.ANNOUNCE_GO_LIVE)
                         .clickable { viewModel.showOnScreen() },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -257,6 +271,7 @@ fun AnnouncementsScreen(
                     .height(46.dp)
                     .clip(RoundedCornerShape(13.dp))
                     .background(colors.amber.copy(alpha = 0.16f))
+                    .testTag(UiTags.ANNOUNCE_ADD_TO_SCHEDULE)
                     .clickable { viewModel.addToSchedule() },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -270,17 +285,24 @@ fun AnnouncementsScreen(
             // ── Saved (matches design) ────────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.announcements_saved_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text(stringResource(Res.string.announcements_add_new), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.saveCurrent() })
+                Text(stringResource(Res.string.announcements_add_new), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.testTag(UiTags.ANNOUNCE_SAVE).clickable { viewModel.saveCurrent() })
             }
             Spacer(Modifier.height(10.dp))
             if (saved.isEmpty()) {
-                Text(stringResource(Res.string.announcements_no_saved), color = colors.muted, fontSize = 13.sp)
+                Text(
+                    stringResource(Res.string.announcements_no_saved),
+                    color = colors.muted,
+                    fontSize = 13.sp,
+                    modifier = Modifier.testTag(UiTags.ANNOUNCE_NO_SAVED),
+                )
             } else {
                 saved.forEach { item ->
                     SavedRow(
                         label = item.label,
                         onClick = { viewModel.loadSaved(item.id) },
                         onDelete = { viewModel.deleteSaved(item.id) },
+                        modifier = Modifier.testTag(UiTags.savedAnnouncement(item.id)),
+                        deleteModifier = Modifier.testTag(UiTags.savedAnnouncementDelete(item.id)),
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -313,10 +335,10 @@ private fun Overline(label: String) {
 }
 
 @Composable
-private fun Chip(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun Chip(label: String, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(if (selected) colors.accentTint else colors.surface)
             .border(1.dp, if (selected) colors.accent else colors.borderSubtle, RoundedCornerShape(20.dp))
@@ -445,11 +467,17 @@ private fun rgbToHsv(c: Color): FloatArray {
 }
 
 @Composable
-private fun SavedRow(label: String, onClick: () -> Unit, onDelete: () -> Unit) {
+private fun SavedRow(
+    label: String,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+    deleteModifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val shape = RoundedCornerShape(12.dp)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(shape)
             .background(colors.surface)
@@ -467,7 +495,7 @@ private fun SavedRow(label: String, onClick: () -> Unit, onDelete: () -> Unit) {
         }
         Text(label, color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f), maxLines = 1)
         Box(
-            modifier = Modifier.size(28.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onDelete),
+            modifier = deleteModifier.size(28.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onDelete),
             contentAlignment = Alignment.Center,
         ) {
             Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))
@@ -507,10 +535,15 @@ private fun PreviewCard(form: AnnouncementForm) {
 }
 
 @Composable
-private fun TextArea(value: String, onValueChange: (String) -> Unit, placeholder: String) {
+private fun TextArea(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 90.dp)
             .clip(RoundedCornerShape(12.dp))

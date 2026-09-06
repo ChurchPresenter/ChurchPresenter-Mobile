@@ -50,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -252,14 +253,15 @@ fun MediaScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CircleControl(Icons.Filled.Stop, stringResource(Res.string.media_cd_stop), 46.dp, enabled = loaded) { viewModel.stopPlayback() }
-                CircleControl(Icons.Filled.Replay10, stringResource(Res.string.media_cd_back10), 52.dp, enabled = loaded) { viewModel.seekBackward() }
+                CircleControl(Icons.Filled.Stop, stringResource(Res.string.media_cd_stop), 46.dp, enabled = loaded, modifier = Modifier.testTag(UiTags.MEDIA_STOP)) { viewModel.stopPlayback() }
+                CircleControl(Icons.Filled.Replay10, stringResource(Res.string.media_cd_back10), 52.dp, enabled = loaded, modifier = Modifier.testTag(UiTags.MEDIA_BACK_10)) { viewModel.seekBackward() }
                 // Big play/pause
                 Box(
                     modifier = Modifier
                         .size(70.dp)
                         .clip(CircleShape)
                         .background(if (loaded) colors.accent else colors.surfaceElevated)
+                        .testTag(UiTags.MEDIA_PLAY_PAUSE)
                         .clickable(enabled = loaded) { viewModel.playPause() },
                     contentAlignment = Alignment.Center,
                 ) {
@@ -270,10 +272,11 @@ fun MediaScreen(
                         modifier = Modifier.size(30.dp),
                     )
                 }
-                CircleControl(Icons.Filled.Forward10, stringResource(Res.string.media_cd_forward10), 52.dp, enabled = loaded) { viewModel.seekForward() }
+                CircleControl(Icons.Filled.Forward10, stringResource(Res.string.media_cd_forward10), 52.dp, enabled = loaded, modifier = Modifier.testTag(UiTags.MEDIA_FORWARD_10)) { viewModel.seekForward() }
                 CircleControl(
                     if (playback?.muted == true) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
                     stringResource(Res.string.media_cd_mute), 46.dp, enabled = loaded,
+                    modifier = Modifier.testTag(UiTags.MEDIA_MUTE),
                 ) { viewModel.muteToggle() }
             }
 
@@ -285,7 +288,7 @@ fun MediaScreen(
                     value = playback?.volume ?: 1f,
                     enabled = loaded,
                     onValueChange = { viewModel.setVolume(it) },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag(UiTags.MEDIA_VOLUME),
                     colors = SliderDefaults.colors(
                         thumbColor = colors.accent,
                         activeTrackColor = colors.accent,
@@ -325,6 +328,7 @@ fun MediaScreen(
                         .height(50.dp)
                         .clip(RoundedCornerShape(14.dp))
                         .background(colors.amber)
+                        .testTag(UiTags.MEDIA_ADD_TO_SCHEDULE)
                         .clickable { viewModel.addToSchedule() },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -339,6 +343,7 @@ fun MediaScreen(
                         .height(50.dp)
                         .clip(RoundedCornerShape(14.dp))
                         .background(colors.accent)
+                        .testTag(UiTags.MEDIA_GO_LIVE)
                         .clickable { viewModel.goLive() },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -356,6 +361,7 @@ fun MediaScreen(
                     .clip(RoundedCornerShape(14.dp))
                     .background(colors.surface)
                     .border(1.dp, colors.border, RoundedCornerShape(14.dp))
+                    .testTag(UiTags.MEDIA_CLEAR)
                     .clickable { viewModel.clearScreen() },
                 contentAlignment = Alignment.Center,
             ) {
@@ -373,7 +379,11 @@ fun MediaScreen(
             )
             Spacer(Modifier.height(12.dp))
             if (source == MediaSource.URL) {
-                UrlField(value = url, onValueChange = viewModel::setUrl)
+                UrlField(
+                    value = url,
+                    onValueChange = viewModel::setUrl,
+                    modifier = Modifier.testTag(UiTags.MEDIA_URL),
+                )
             } else if (!canUploadFiles) {
                 // Desktop has file uploads turned off — show a disabled state, no picker.
                 Row(
@@ -407,6 +417,7 @@ fun MediaScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(colors.surface)
                             .border(1.dp, if (uploaded != null) colors.accent else colors.border, RoundedCornerShape(12.dp))
+                            .testTag(UiTags.MEDIA_UPLOAD)
                             .clickable(enabled = !uploading) { launchPicker() },
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
@@ -442,10 +453,17 @@ fun MediaScreen(
 }
 
 @Composable
-private fun CircleControl(icon: ImageVector, label: String, diameter: androidx.compose.ui.unit.Dp, enabled: Boolean, onClick: () -> Unit) {
+private fun CircleControl(
+    icon: ImageVector,
+    label: String,
+    diameter: androidx.compose.ui.unit.Dp,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(diameter)
             .clip(CircleShape)
             .background(colors.surface)
@@ -458,10 +476,10 @@ private fun CircleControl(icon: ImageVector, label: String, diameter: androidx.c
 }
 
 @Composable
-private fun UrlField(value: String, onValueChange: (String) -> Unit) {
+private fun UrlField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(46.dp)
             .clip(RoundedCornerShape(12.dp))
