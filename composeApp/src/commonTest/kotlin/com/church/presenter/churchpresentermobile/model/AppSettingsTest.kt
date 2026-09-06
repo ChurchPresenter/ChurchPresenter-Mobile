@@ -168,4 +168,103 @@ class AppSettingsTest {
         assertTrue(ApiConstants.STANDALONE_HTTP_PORT_DEFAULT != ApiConstants.DEFAULT_PORT)
         assertTrue(ApiConstants.STANDALONE_HTTP_PORT_DEFAULT in ApiConstants.STANDALONE_PORT_CANDIDATES)
     }
+
+    // ── Persisted blobs and counters ─────────────────────────────────────
+
+    @Test
+    fun `json blobs default to an empty document of the right shape`() {
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        // Object for a single record, array for a list — so the first decode after
+        // a fresh install parses instead of throwing.
+        assertEquals("{}", settings.librarySyncStateJson)
+        assertEquals("[]", settings.savedAnnouncementsJson)
+        assertEquals("[]", settings.savedBookmarksJson)
+    }
+
+    @Test
+    fun `json blobs round-trip through storage`() {
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        settings.librarySyncStateJson = """{"songCount":240}"""
+        settings.savedAnnouncementsJson = """[{"id":"a1"}]"""
+        settings.savedBookmarksJson = """[{"ref":"John:3:16"}]"""
+
+        assertEquals("""{"songCount":240}""", settings.librarySyncStateJson)
+        assertEquals("""[{"id":"a1"}]""", settings.savedAnnouncementsJson)
+        assertEquals("""[{"ref":"John:3:16"}]""", settings.savedBookmarksJson)
+    }
+
+    @Test
+    fun `blobs are kept apart from each other`() {
+        // Same storage, different keys — writing one must not disturb another.
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        settings.savedAnnouncementsJson = """[{"id":"a1"}]"""
+
+        assertEquals("[]", settings.savedBookmarksJson)
+        assertEquals("{}", settings.librarySyncStateJson)
+    }
+
+    @Test
+    fun `the push token starts empty and round-trips`() {
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        assertEquals("", settings.fcmToken)
+
+        settings.fcmToken = "tok-123"
+        assertEquals("tok-123", settings.fcmToken)
+    }
+
+    @Test
+    fun `the launch counter starts at zero and counts up`() {
+        // Drives the review prompt on the 3rd, 10th and every 20th launch.
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        assertEquals(0, settings.appOpenCount)
+
+        settings.appOpenCount = settings.appOpenCount + 1
+        settings.appOpenCount = settings.appOpenCount + 1
+        assertEquals(2, settings.appOpenCount)
+    }
+
+    @Test
+    fun `setup is incomplete on a fresh install, so the settings screen opens first`() {
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        assertFalse(settings.isSetupComplete)
+        assertFalse(settings.isConnectSetupDone)
+    }
+
+    @Test
+    fun `the setup flags survive as booleans through an int-backed store`() {
+        // Stored as 0/1, so the round-trip is worth pinning in both directions.
+        val settings = AppSettings(InMemorySettingsStorage())
+
+        settings.isSetupComplete = true
+        settings.isConnectSetupDone = true
+        assertTrue(settings.isSetupComplete)
+        assertTrue(settings.isConnectSetupDone)
+
+        settings.isSetupComplete = false
+        assertFalse(settings.isSetupComplete)
+        assertTrue(settings.isConnectSetupDone, "the two flags are independent")
+    }
+
+    @Test
+    fun `settings read back from a second instance over the same storage`() {
+        // The screen builds its own AppSettings; what one writes another must see.
+        val storage = InMemorySettingsStorage()
+        AppSettings(storage).apply {
+            isSetupComplete = true
+            appOpenCount = 7
+            fcmToken = "tok"
+        }
+
+        val reopened = AppSettings(storage)
+
+        assertTrue(reopened.isSetupComplete)
+        assertEquals(7, reopened.appOpenCount)
+        assertEquals("tok", reopened.fcmToken)
+    }
 }

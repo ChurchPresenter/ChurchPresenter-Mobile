@@ -1,5 +1,9 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.testutil.mockClient
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.headersOf
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -56,5 +60,44 @@ class FramingCheckTest {
     fun aPolicyWithoutFrameAncestorsSaysNothingAboutFraming() {
         // Warning on this would be a false alarm about a site that works.
         assertFalse(FramingCheck.refusesFramingFrom(null, "default-src 'self'; script-src 'self'"))
+    }
+
+    // ── The wrapper that actually asks the site ──────────────────────────
+
+    private fun clientAnswering(vararg headers: Pair<String, String>) =
+        mockClient {
+            respond(
+                content = "",
+                headers = headersOf(*headers.map { (k, v) -> k to listOf(v) }.toTypedArray()),
+            )
+        }
+
+    @Test
+    fun refusesFramingReadsTheHeadersOffTheResponse() = runTest {
+        val client = clientAnswering("X-Frame-Options" to "SAMEORIGIN")
+
+        assertTrue(FramingCheck.refusesFraming("https://example.org", client))
+    }
+
+    @Test
+    fun refusesFramingReadsTheContentSecurityPolicyToo() = runTest {
+        val client = clientAnswering("Content-Security-Policy" to "frame-ancestors 'none'")
+
+        assertTrue(FramingCheck.refusesFraming("https://example.org", client))
+    }
+
+    @Test
+    fun aSiteThatSaysNothingIsAllowed() = runTest {
+        assertFalse(FramingCheck.refusesFraming("https://example.org", clientAnswering()))
+    }
+
+    @Test
+    fun anUnreachableSiteIsNotReportedAsRefusing() = runTest {
+        // Being unable to ask is a different problem, and one the operator will
+        // see for themselves the moment they project it — so it must not raise
+        // the "this site won't display" warning.
+        val client = mockClient { throw IllegalStateException("no route to host") }
+
+        assertFalse(FramingCheck.refusesFraming("https://example.org", client))
     }
 }

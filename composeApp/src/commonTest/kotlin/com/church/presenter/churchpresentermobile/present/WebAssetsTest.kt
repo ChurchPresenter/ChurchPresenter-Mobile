@@ -95,4 +95,37 @@ class WebAssetsTest {
             )
         }
     }
+
+    // ── Content types ────────────────────────────────────────────────────
+
+    @Test
+    fun eachBundledFileTypeGetsItsOwnContentType() {
+        // A browser told the wrong type for a script or stylesheet refuses to run
+        // it, and the display page comes up unstyled.
+        assertEquals("text/html; charset=utf-8", WebAssets.contentTypeFor("index.html"))
+        assertEquals("application/javascript; charset=utf-8", WebAssets.contentTypeFor("app.js"))
+        assertEquals("text/css; charset=utf-8", WebAssets.contentTypeFor("style.css"))
+        assertEquals("font/woff2", WebAssets.contentTypeFor("inter.woff2"))
+        assertEquals("font/woff", WebAssets.contentTypeFor("inter.woff"))
+        assertEquals("image/png", WebAssets.contentTypeFor("logo.png"))
+        assertEquals("image/svg+xml", WebAssets.contentTypeFor("icon.svg"))
+    }
+
+    @Test
+    fun bothJpegSpellingsAreRecognised() {
+        assertEquals("image/jpeg", WebAssets.contentTypeFor("photo.jpg"))
+        assertEquals("image/jpeg", WebAssets.contentTypeFor("photo.jpeg"))
+    }
+
+    @Test
+    fun anUnknownOrMissingExtensionFallsBackToBytes() {
+        assertEquals("application/octet-stream", WebAssets.contentTypeFor("data.bin"))
+        assertEquals("application/octet-stream", WebAssets.contentTypeFor("LICENSE"))
+        assertEquals("application/octet-stream", WebAssets.contentTypeFor(""))
+    }
+
+    @Test
+    fun onlyTheLastExtensionDecidesTheType() {
+        assertEquals("application/javascript; charset=utf-8", WebAssets.contentTypeFor("app.min.js"))
+    }
 }
