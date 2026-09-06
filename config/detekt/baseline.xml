@@ -1,0 +1,501 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:AnnouncementsViewModel.kt$AnnouncementsViewModel$fun preload(item: ScheduleItem)</ID>
+    <ID>CyclomaticComplexMethod:ChordProParser.kt$ChordProParser$fun parse(text: String, id: String, fallbackTitle: String = ""): LocalSong</ID>
+    <ID>CyclomaticComplexMethod:NetworkErrorMapper.kt$fun Throwable.toFriendlyNetworkMessage(): String</ID>
+    <ID>CyclomaticComplexMethod:ServerEventService.kt$ServerEventService$override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result&lt;Unit&gt;</ID>
+    <ID>CyclomaticComplexMethod:ServerEventService.kt$ServerEventService$suspend fun listen()</ID>
+    <ID>CyclomaticComplexMethod:SpbParser.kt$SpbParser$fun parse(text: String, fileName: String = ""): ParsedBible</ID>
+    <ID>EmptyElseBlock:App.kt$if (it.isNotBlank()) dictionaryViewModel.setSearchQuery(it)</ID>
+    <ID>EmptyFunctionBlock:Analytics.js.kt$Analytics${}</ID>
+    <ID>EmptyFunctionBlock:Analytics.wasmJs.kt$Analytics${}</ID>
+    <ID>EmptyFunctionBlock:CrashReporting.js.kt$CrashReporting${}</ID>
+    <ID>EmptyFunctionBlock:CrashReporting.wasmJs.kt$CrashReporting${}</ID>
+    <ID>FunctionNaming:ExternalDisplayViewController.kt$fun ExternalDisplayViewController(): UIViewController</ID>
+    <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
+    <ID>LongMethod:AnnouncementsScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun AnnouncementsScreen( viewModel: AnnouncementsViewModel, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:App.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable @Preview fun App()</ID>
+    <ID>LongMethod:BibleScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BibleScreen( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, onNavigationChanged: (book: BibleBook?, chapter: Int?) -&gt; Unit, onRegisterBackAction: (action: (() -&gt; Unit)?) -&gt; Unit, pendingNavBookName: String? = null, pendingNavChapter: Int? = null, pendingNavVerses: Set&lt;Int&gt; = emptySet(), onPendingNavHandled: () -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, providedViewModel: BibleViewModel? = null, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:BibleSyncSection.kt$@Composable internal fun BibleSyncSection( bibles: LocalBibleRepository, settings: AppSettings, )</ID>
+    <ID>LongMethod:CertSetupScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun CertSetupScreen( certFingerprint: String? = null, onDone: () -&gt; Unit, onSkip: () -&gt; Unit, )</ID>
+    <ID>LongMethod:ConnectSetupScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ConnectSetupScreen( appSettings: AppSettings, onDone: () -&gt; Unit, onSkip: () -&gt; Unit, )</ID>
+    <ID>LongMethod:DictionaryScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun DictionaryScreen( viewModel: DictionaryViewModel, modifier: Modifier = Modifier, settingsSaveToken: Int = 0, )</ID>
+    <ID>LongMethod:DictionaryScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun EntryDetailSheet( entry: StrongsEntry, isLive: Boolean, scheduleAdded: Boolean, appearsIn: DictionaryVersesResponse?, appearsInLoading: Boolean, onProject: () -&gt; Unit, onAddToSchedule: () -&gt; Unit, onOpenNumber: (String) -&gt; Unit, onDismiss: () -&gt; Unit, )</ID>
+    <ID>LongMethod:LibraryScreen.kt$@Composable fun LibraryScreen( repository: LibraryRepository, bibles: LocalBibleRepository, settings: AppSettings, sender: WsSender, onEditSong: (String?) -&gt; Unit, onEditAnnouncement: (String?) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:LibraryScreen.kt$@Composable private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -&gt; Unit)</ID>
+    <ID>LongMethod:LookSheet.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class) @Composable internal fun LookSheet( theme: SlideTheme, onThemeChange: ((SlideTheme) -&gt; SlideTheme) -&gt; Unit, showChords: Boolean, onShowChordsChange: (Boolean) -&gt; Unit, textSize: SlideTextSize, onTextSizeChange: (SlideTextSize) -&gt; Unit, presets: List&lt;NamedTheme&gt;, savedThemes: List&lt;NamedTheme&gt;, onApplyTheme: (NamedTheme) -&gt; Unit, onSaveTheme: (String) -&gt; Unit, onDeleteTheme: (String) -&gt; Unit, onDismiss: () -&gt; Unit, )</ID>
+    <ID>LongMethod:MediaScreen.kt$@Composable fun MediaScreen( viewModel: MediaViewModel, canUploadFiles: Boolean, maxUploadMb: Int, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PicturesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PicturesScreen( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, imageLoader: ImageLoader, pendingNavFolderId: String? = null, pendingNavImageIndex: Int? = null, onPendingNavHandled: () -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, canUploadFiles: Boolean = false, providedViewModel: PicturesViewModel? = null, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:PresentationScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PresentationScreen( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, imageLoader: ImageLoader, pendingNavPresentationId: String? = null, onPendingNavHandled: () -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, canUploadFiles: Boolean = false, providedViewModel: PresentationsViewModel? = null, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:ServerEventService.kt$ServerEventService$override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result&lt;Unit&gt;</ID>
+    <ID>LongMethod:ServerEventService.kt$ServerEventService$suspend fun listen()</ID>
+    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ServerStatusDialog( statusViewModel: StatusViewModel, onDismiss: () -&gt; Unit, )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( appSettings: AppSettings, onDismiss: () -&gt; Unit, onSaved: () -&gt; Unit, /** Opens the contact form. Settings is where people look for a way to reach support. */ onContact: () -&gt; Unit, )</ID>
+    <ID>LongMethod:SongDetailSheet.kt$@Composable fun SongDetailScreen( detail: SongDetail?, isLoading: Boolean, error: String?, selectedVerseIndex: Int?, isProjecting: Boolean, scheduleAdded: Boolean, onVerseSelected: (Int) -&gt; Unit, onToggleProjecting: () -&gt; Unit, /** Null hides the schedule button — standalone has no desktop schedule. */ onAddToSchedule: (() -&gt; Unit)? = null, onClearDisplay: (() -&gt; Unit)? = null, /** Draw the words as a chord chart. Off shows them cleaned of markup. */ showChords: Boolean = false, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:SongEditorScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SongEditorScreen( repository: LibraryRepository, songId: String?, onClose: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:SongSyncSection.kt$@Composable internal fun SongSyncSection( repository: LibraryRepository, settings: AppSettings, sender: WsSender, onDone: () -&gt; Unit, )</ID>
+    <ID>LongMethod:SongsScreen.kt$@Composable fun SongsTable( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, onDetailChanged: (title: String?, bookName: String?) -&gt; Unit = { _, _ -&gt; }, onRegisterBackAction: ((() -&gt; Unit)?) -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, pendingNavSongTitle: String? = null, pendingNavSongBook: String? = null, onPendingNavHandled: () -&gt; Unit = {}, providedViewModel: SongsViewModel? = null, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:StandaloneControllerScreen.kt$@Composable fun StandaloneControllerScreen( engine: StandaloneEngine, registry: SinkRegistry, settings: AppSettings, photos: PhotoLibrary? = null, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:StandaloneOutputScreen.kt$@Composable fun StandaloneOutputScreen( slide: Slide, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:StatusScreen.kt$@Composable private fun WarningsContent( appVersion: String?, warnings: List&lt;StatusWarning&gt;, permissions: DevicePermissions, bibles: List&lt;String&gt;, songbooks: List&lt;String&gt;, features: List&lt;String&gt;, onContinue: () -&gt; Unit, onOpenSettings: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:SpbParser.kt$SpbParser$( chapters: MutableMap&lt;Int, MutableList&lt;BibleVerse&gt;&gt;, chaptersSeen: MutableMap&lt;Int, MutableSet&lt;Int&gt;&gt;, book: Int, chapter: Int, number: Int, text: String, )</ID>
+    <ID>LoopWithTooManyJumpStatements:BibleSyncService.kt$BibleSyncService$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ServerEventService.kt$ServerEventService$for</ID>
+    <ID>LoopWithTooManyJumpStatements:SpbParser.kt$SpbParser$for</ID>
+    <ID>MagicNumber:Analytics.android.kt$Analytics$100</ID>
+    <ID>MagicNumber:Analytics.android.kt$Analytics$1800_000L</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$1.6f</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$14f</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$16</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$160</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$16f</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$23</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$30f</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$360f</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$44f</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$59</ID>
+    <ID>MagicNumber:AnnouncementsScreen.kt$9f</ID>
+    <ID>MagicNumber:ApiResponse.kt$200</ID>
+    <ID>MagicNumber:AppReview.kt$AppReview$10</ID>
+    <ID>MagicNumber:AppReview.kt$AppReview$20</ID>
+    <ID>MagicNumber:AppReview.kt$AppReview$3</ID>
+    <ID>MagicNumber:BibleDetailScreen.kt$4</ID>
+    <ID>MagicNumber:BibleService.kt$BibleService$500</ID>
+    <ID>MagicNumber:BibleSyncViewModel.kt$BibleSyncViewModel$401</ID>
+    <ID>MagicNumber:ColorField.kt$16</ID>
+    <ID>MagicNumber:ColorPickerDialog.kt$16</ID>
+    <ID>MagicNumber:CpsetSerializer.kt$CpsetSerializer$80</ID>
+    <ID>MagicNumber:CrashReporting.ios.kt$CrashReporting$4_000</ID>
+    <ID>MagicNumber:DictionaryScreen.kt$3</ID>
+    <ID>MagicNumber:HttpClientFactory.android.kt$12</ID>
+    <ID>MagicNumber:HttpClientFactory.android.kt$15_000</ID>
+    <ID>MagicNumber:HttpClientFactory.android.kt$30_000</ID>
+    <ID>MagicNumber:HttpClientFactory.android.kt$64</ID>
+    <ID>MagicNumber:HttpClientFactory.ios.kt$12</ID>
+    <ID>MagicNumber:HttpClientFactory.ios.kt$15_000</ID>
+    <ID>MagicNumber:HttpClientFactory.ios.kt$30_000</ID>
+    <ID>MagicNumber:MediaCastService.kt$MediaCastService$200</ID>
+    <ID>MagicNumber:MediaFilePicker.ios.kt$IosMediaPickerDelegate$1024</ID>
+    <ID>MagicNumber:MediaScreen.kt$0.42f</ID>
+    <ID>MagicNumber:MediaScreen.kt$16f</ID>
+    <ID>MagicNumber:MediaScreen.kt$9f</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$120</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$401</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$403</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$404</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$408</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$503</ID>
+    <ID>MagicNumber:NetworkErrorMapper.kt$8</ID>
+    <ID>MagicNumber:PicturesService.kt$PicturesService$200</ID>
+    <ID>MagicNumber:PicturesService.kt$PicturesService$300</ID>
+    <ID>MagicNumber:PresentationScreen.kt$16f</ID>
+    <ID>MagicNumber:PresentationScreen.kt$9f</ID>
+    <ID>MagicNumber:PresentationService.kt$PresentationService$300</ID>
+    <ID>MagicNumber:PresentationService.kt$PresentationService$500</ID>
+    <ID>MagicNumber:PresentationsViewModel.kt$PresentationsViewModel$404</ID>
+    <ID>MagicNumber:PresentationsViewModel.kt$PresentationsViewModel$413</ID>
+    <ID>MagicNumber:RemoteConfig.android.kt$RemoteConfig$200</ID>
+    <ID>MagicNumber:ScheduleService.kt$ScheduleService$500</ID>
+    <ID>MagicNumber:ServerEventService.kt$ServerEventService$200</ID>
+    <ID>MagicNumber:ServerEventService.kt$ServerEventService$408</ID>
+    <ID>MagicNumber:SlideDeckBuilder.kt$SlideDeckBuilder$40</ID>
+    <ID>MagicNumber:SongDetailSheet.kt$0.6f</ID>
+    <ID>MagicNumber:SongEditorScreen.kt$16f</ID>
+    <ID>MagicNumber:SongEditorScreen.kt$9f</ID>
+    <ID>MagicNumber:SongService.kt$SongService$500</ID>
+    <ID>MagicNumber:SongService.kt$SongService$80</ID>
+    <ID>MagicNumber:SpbParser.kt$SpbParser$3</ID>
+    <ID>MagicNumber:SplashScreen.kt$2100</ID>
+    <ID>MagicNumber:SplashScreen.kt$450</ID>
+    <ID>MagicNumber:SplashScreen.kt$650</ID>
+    <ID>MagicNumber:StandaloneControllerScreen.kt$16f</ID>
+    <ID>MagicNumber:StandaloneControllerScreen.kt$9f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$0.052f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$0.066f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$0.084f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$0xFF000000L</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$12f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$15f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$18f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$34f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$44f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$56f</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$6</ID>
+    <ID>MagicNumber:StandaloneOutputScreen.kt$8</ID>
+    <ID>MagicNumber:StatusScreen.kt$3000</ID>
+    <ID>MagicNumber:StatusScreen.kt$5000</ID>
+    <ID>MagicNumber:StatusService.kt$StatusService$200</ID>
+    <ID>MagicNumber:StatusService.kt$StatusService$300</ID>
+    <ID>MagicNumber:StatusService.kt$StatusService$401</ID>
+    <ID>MagicNumber:StatusService.kt$StatusService$403</ID>
+    <ID>MagicNumber:WebScreen.kt$0.60f</ID>
+    <ID>MagicNumber:WebScreen.kt$0.72f</ID>
+    <ID>MagicNumber:WebScreen.kt$0.85f</ID>
+    <ID>MagicNumber:WebScreen.kt$0xFF28C840</ID>
+    <ID>MagicNumber:WebScreen.kt$0xFFFEBC2E</ID>
+    <ID>MagicNumber:WebScreen.kt$0xFFFF5F57</ID>
+    <ID>MagicNumber:WebScreen.kt$16f</ID>
+    <ID>MagicNumber:WebScreen.kt$9f</ID>
+    <ID>MatchingDeclarationName:Analytics.wasmJs.kt$Analytics</ID>
+    <ID>MatchingDeclarationName:CrashReporting.wasmJs.kt$CrashReporting</ID>
+    <ID>MatchingDeclarationName:DocumentIO.kt$PickedTextFile</ID>
+    <ID>MatchingDeclarationName:FileStorage.js.kt$JsFileStore : FileStore</ID>
+    <ID>MatchingDeclarationName:FileStorage.kt$FileStore</ID>
+    <ID>MatchingDeclarationName:FileStorage.wasmJs.kt$WasmJsFileStore : FileStore</ID>
+    <ID>MatchingDeclarationName:LocalWebServer.web.kt$LocalWebServer</ID>
+    <ID>MatchingDeclarationName:Logger.wasmJs.kt$Logger</ID>
+    <ID>MatchingDeclarationName:PhotoPickerLauncher.kt$PickedPhoto</ID>
+    <ID>MatchingDeclarationName:Platform.android.kt$AndroidPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:Platform.ios.kt$IOSPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:Platform.js.kt$JsPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:Platform.wasmJs.kt$WasmPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:PresentationFilePicker.kt$PickedFile</ID>
+    <ID>MatchingDeclarationName:PresentationKeepAlive.web.kt$PresentationKeepAlive</ID>
+    <ID>MatchingDeclarationName:RemoteConfig.wasmJs.kt$RemoteConfig</ID>
+    <ID>MatchingDeclarationName:SyncSheet.kt$SyncSection</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$DropdownMenuItem(text = { Text(announcementAnimationLabel(a)) }, onClick = { onSelect(a); expanded = false })</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$FlowRow</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, tint = colors.muted, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Stepper(stringResource(Res.string.stepper_font_size), form.fontSize, 16, 160, step = 4) { v -&gt; viewModel.update { it.copy(fontSize = v) } }</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Stepper(stringResource(Res.string.stepper_hour), form.targetHour, 0, 23, Modifier.weight(1f)) { v -&gt; viewModel.update { it.copy(targetHour = v) } }</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Stepper(stringResource(Res.string.stepper_hrs), form.hours, 0, 23, Modifier.weight(1f)) { v -&gt; viewModel.update { it.copy(hours = v) } }</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Stepper(stringResource(Res.string.stepper_min), form.minutes, 0, 59, Modifier.weight(1f)) { v -&gt; viewModel.update { it.copy(minutes = v) } }</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Stepper(stringResource(Res.string.stepper_min), form.targetMinute, 0, 59, Modifier.weight(1f)) { v -&gt; viewModel.update { it.copy(targetMinute = v) } }</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Stepper(stringResource(Res.string.stepper_sec), form.seconds, 0, 59, Modifier.weight(1f)) { v -&gt; viewModel.update { it.copy(seconds = v) } }</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(announcementAnimationLabel(selected), color = colors.text, fontSize = 15.sp, modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(label, color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f), maxLines = 1)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(label, color = if (selected) colors.accent else colors.secondary, fontSize = 13.sp, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(label.uppercase(), color = colors.muted, fontSize = 9.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.announce_duration_seconds, secondsLabel), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.announcements_add_new), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.saveCurrent() })</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.announcements_animation_duration_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.announcements_saved_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.color_picker_title), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$Text(value.toString(), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$colors = SliderDefaults.colors(thumbColor = accent, activeTrackColor = accent, inactiveTrackColor = colors.inputBg)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$if (!isCustom) Icon(Icons.Outlined.Palette, contentDescription = stringResource(Res.string.cd_custom_color), tint = colors.muted, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(colors.surface).clickable(onClick = onClick)</ID>
+    <ID>MaxLineLength:AnnouncementsScreen.kt$private</ID>
+    <ID>MaxLineLength:AnnouncementsViewModelTest.kt$AnnouncementsViewModelTest$private</ID>
+    <ID>MaxLineLength:App.kt$// Schedule sends "word (translit): definition" — search by the word.</ID>
+    <ID>MaxLineLength:App.kt$if (bookName == null) bookName = beforeColon.substring(0, lastSpace).trim().ifBlank { null }</ID>
+    <ID>MaxLineLength:App.kt$if (chapter == null) chapter = beforeColon.substring(lastSpace + 1).toIntOrNull()</ID>
+    <ID>MaxLineLength:App.kt$pendingDictionaryQuery?.let { if (it.isNotBlank()) dictionaryViewModel.setSearchQuery(it); pendingDictionaryQuery = null }</ID>
+    <ID>MaxLineLength:App.kt$pendingMediaUrl?.let { mediaViewModel.setSource(MediaSource.URL); mediaViewModel.setUrl(it); pendingMediaUrl = null }</ID>
+    <ID>MaxLineLength:AppModeHolder.kt$AppModeHolder$/** Seeds the holder from persisted settings. Call once, early in [com.church.presenter.churchpresentermobile.App]. */</ID>
+    <ID>MaxLineLength:AppSettings.kt$AppSettings$Logger.d(TAG, "Migrating settings from version $storedVersion to $CURRENT_SETTINGS_VERSION — resetting host=$defaultHost port=${ApiConstants.DEFAULT_PORT}")</ID>
+    <ID>MaxLineLength:AppSettings.kt$AppSettings$Logger.d(TAG, "Settings version $storedVersion is current — host=${storage.getString(KEY_HOST, defaultHost)} port=${storage.getInt(KEY_PORT, ApiConstants.DEFAULT_PORT)}")</ID>
+    <ID>MaxLineLength:BibleService.kt$BibleService$Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")</ID>
+    <ID>MaxLineLength:BibleViewModel.kt$BibleViewModel$Logger.d(TAG, "projectVerseAtIndex — firing selectBibleVerse ${book.displayName} $chapter:${verse.number} index=$index")</ID>
+    <ID>MaxLineLength:BibleViewModel.kt$BibleViewModel$Logger.d(TAG, "toggleProjecting ON — firing selectBibleVerse ${book.displayName} $chapter:${firstVerse.number} range=$verseRange")</ID>
+    <ID>MaxLineLength:BibleViewModel.kt$BibleViewModel$_toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "projectVerseAtIndex/selectBibleVerse"))</ID>
+    <ID>MaxLineLength:BibleViewModel.kt$BibleViewModel$_toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse"))</ID>
+    <ID>MaxLineLength:BibleViewModel.kt$BibleViewModel$_toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddBibleSchedule(e.recordNetworkError(TAG, "addToSchedule/addBibleToSchedule")) }</ID>
+    <ID>MaxLineLength:BottomTabBar.kt$color = if (active) colors.accentTint else androidx.compose.ui.graphics.Color.Transparent</ID>
+    <ID>MaxLineLength:CertSetupScreen.kt$SetupStep</ID>
+    <ID>MaxLineLength:ConnectSetupScreen.kt$keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)</ID>
+    <ID>MaxLineLength:ConnectSetupScreen.kt$keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done)</ID>
+    <ID>MaxLineLength:ConnectSetupScreen.kt$supportingText = manualHostError?.let { msg -&gt; { Text(msg, color = MaterialTheme.colorScheme.error) } }</ID>
+    <ID>MaxLineLength:ConnectSetupScreen.kt$supportingText = manualPortError?.let { msg -&gt; { Text(msg, color = MaterialTheme.colorScheme.error) } }</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 1, text = "Now there was a Pharisee, a man named Nicodemus who was a member of the Jewish ruling council.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 10, text = "For we are God's handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 14, text = "Just as Moses lifted up the snake in the wilderness, so the Son of Man must be lifted up,")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 16, text = "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 17, text = "For God did not send his Son into the world to condemn the world, but to save the world through him.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 2, text = "He came to Jesus at night and said, \"Rabbi, we know that you are a teacher who has come from God, for no one could perform the signs you are doing if God were not with him.\"")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 2, text = "Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 28, text = "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 28, text = "Do you not know? Have you not heard? The Lord is the everlasting God, the Creator of the ends of the earth.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 3, text = "He restores my soul. He leads me in paths of righteousness for his name's sake.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 3, text = "Jesus replied, \"Very truly I tell you, no one can see the kingdom of God unless they are born again.\"")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 31, text = "but those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 38, text = "For I am convinced that neither death nor life, neither angels nor demons, neither the present nor the future, nor any powers,")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 39, text = "neither height nor depth, nor anything else in all creation, will be able to separate us from the love of God that is in Christ Jesus our Lord.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 4, text = "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me; your rod and your staff, they comfort me.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 4, text = "God saw that the light was good, and he separated the light from the darkness.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 5, text = "Demo — $bookDisplayName $chapter:5 — \"Blessed are all who trust in Him.\"")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 5, text = "God called the light \"day,\" and the darkness he called \"night.\" And there was evening, and there was morning—the first day.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 5, text = "Trust in the Lord with all your heart and lean not on your own understanding;")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 5, text = "You prepare a table before me in the presence of my enemies; you anoint my head with oil; my cup overflows.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 6, text = "Blessed are those who hunger and thirst for righteousness, for they will be filled.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 6, text = "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 6, text = "Surely goodness and mercy shall follow me all the days of my life, and I shall dwell in the house of the Lord forever.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 7, text = "And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$BibleVerse(verse = 8, text = "For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God—")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "1", title = "Amazing Grace", tune = "New Britain", author = "John Newton", bookName = "Hymnal")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "10", title = "Good Good Father", author = "Chris Tomlin", bookName = "Contemporary")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "2", title = "How Great Thou Art", tune = "O Store Gud", author = "Carl Boberg", bookName = "Hymnal")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "3", title = "Great Is Thy Faithfulness", tune = "Faithfulness", author = "Thomas Chisholm",bookName = "Hymnal")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "4", title = "Holy, Holy, Holy", tune = "Nicaea", author = "Reginald Heber", bookName = "Hymnal")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "5", title = "It Is Well With My Soul", tune = "Ville du Havre",author = "Horatio Spafford",bookName = "Hymnal")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "6", title = "Be Thou My Vision", tune = "Slane", author = "Dallan Forgaill",bookName = "Hymnal")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "7", title = "10,000 Reasons", author = "Matt Redman", bookName = "Contemporary")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "8", title = "Oceans (Where Feet May Fail)",author = "Hillsong United", bookName = "Contemporary")</ID>
+    <ID>MaxLineLength:DemoData.kt$DemoData$Song(number = "9", title = "Way Maker", author = "Sinach", bookName = "Contemporary")</ID>
+    <ID>MaxLineLength:DesignComponents.kt$fontFamily = if (mono) androidx.compose.ui.text.font.FontFamily.Monospace else androidx.compose.ui.text.font.FontFamily.Default</ID>
+    <ID>MaxLineLength:DesignComponents.kt$keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction)</ID>
+    <ID>MaxLineLength:DesktopAddress.kt$DesktopAddress$if (candidate.startsWith("[")) return candidate.endsWith("]") &amp;&amp; IPV6_BODY.matches(candidate.drop(1).dropLast(1))</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$Text(entry.occurrences.grouped(), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$Text(entry.transliteration, color = colors.secondary, fontSize = 15.sp, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$Text(label.uppercase(), color = colors.muted, fontSize = 9.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$Text(stringResource(Res.string.dictionary_uses), color = colors.dim, fontSize = 9.sp, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:DictionaryScreen.kt$text = if (entry.isHebrew) stringResource(Res.string.dictionary_filter_hebrew) else if (entry.isGreek) stringResource(Res.string.dictionary_filter_greek) else ""</ID>
+    <ID>MaxLineLength:FileStorage.wasmJs.kt$@JsFun("""(prefix) =&gt; Object.keys(localStorage).filter(k =&gt; k.startsWith(prefix)).map(k =&gt; k.slice(prefix.length)).join('\n')""")</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$item { OverlineRow(stringResource(Res.string.library_section_notices), "${announcements.size}") }</ID>
+    <ID>MaxLineLength:LibraryValidationTest.kt$LibraryValidationTest$song(sections = listOf(LocalSongSection(SectionType.VERSE, "x".repeat(LibraryValidation.MAX_SECTION_CHARS + 1))))</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$fetchIntervalSeconds</ID>
+    <ID>MaxLineLength:MediaFilePicker.ios.kt$IosMediaPickerDelegate$NSOperationQueue.mainQueue.addOperationWithBlock { onFilePicked(null); onError("Could not read the selected file") }</ID>
+    <ID>MaxLineLength:MediaFilePicker.ios.kt$IosMediaPickerDelegate$NSOperationQueue.mainQueue.addOperationWithBlock { onFilePicked(null); onError("Unsupported file type: .$ext") }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$.</ID>
+    <ID>MaxLineLength:MediaScreen.kt$CircleControl(Icons.Filled.Forward10, stringResource(Res.string.media_cd_forward10), 52.dp, enabled = loaded) { viewModel.seekForward() }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$CircleControl(Icons.Filled.Replay10, stringResource(Res.string.media_cd_back10), 52.dp, enabled = loaded) { viewModel.seekBackward() }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$CircleControl(Icons.Filled.Stop, stringResource(Res.string.media_cd_stop), 46.dp, enabled = loaded) { viewModel.stopPlayback() }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = ON_AMBER, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = null, tint = colors.muted, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Icon(Icons.Filled.UploadFile, contentDescription = null, tint = colors.accent, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Icon(Icons.Filled.UploadFile, contentDescription = null, tint = colors.dim, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Icon(icon, contentDescription = label, tint = if (enabled) colors.secondary else colors.dim, modifier = Modifier.size((diameter.value * 0.42f).dp))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(formatTime(shownPos), color = colors.secondary, fontSize = 11.sp, fontFamily = FontFamily.Monospace)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(stringResource(Res.string.media_add_to_schedule), color = ON_AMBER, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(stringResource(Res.string.media_clear_screen), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(stringResource(Res.string.media_go_live), color = colors.onAccent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(stringResource(Res.string.media_on_screen), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.04.em)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(stringResource(Res.string.media_source_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(stringResource(Res.string.media_url_placeholder), color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Text(title, color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$contentDescription = if (isPlaying) stringResource(Res.string.media_cd_pause) else stringResource(Res.string.media_cd_play)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$if (playback?.muted == true) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp</ID>
+    <ID>MaxLineLength:MediaScreen.kt$options = listOf(stringResource(Res.string.media_source_network_url), stringResource(Res.string.media_source_upload))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$private</ID>
+    <ID>MaxLineLength:MediaScreen.kt$source == MediaSource.URL &amp;&amp; composedUrl.isNotBlank() -&gt; stringResource(Res.string.media_subtitle_url, mediaKindFrom(composedUrl))</ID>
+    <ID>MaxLineLength:MediaScreen.kt$stringResource(Res.string.media_target_loaded, playback?.title?.ifBlank { genericMediaLabel } ?: genericMediaLabel)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$val uploadingLabel = stringResource(Res.string.media_uploading_percent, (uploadProgress * 100).toInt())</ID>
+    <ID>MaxLineLength:MediaViewModel.kt$MediaViewModel$_uploaded.value = UploadedMedia(path = resp.path, title = resp.name.ifBlank { mediaTitleFrom(picked.fileName) }, mediaType = resp.mediaType)</ID>
+    <ID>MaxLineLength:MediaViewModel.kt$MediaViewModel$return MediaItemPayload(id = "", mediaUrl = full, mediaTitle = mediaTitleFrom(full), mediaType = "url")</ID>
+    <ID>MaxLineLength:MoreScreen.kt$MoreEntry(MoreDestination.CONTACT, stringResource(Res.string.more_contact_title), stringResource(Res.string.more_contact_subtitle), Icons.Outlined.MailOutline)</ID>
+    <ID>MaxLineLength:MoreScreen.kt$MoreEntry(MoreDestination.DICTIONARY, stringResource(Res.string.more_dictionary_title), stringResource(Res.string.more_dictionary_subtitle), Icons.AutoMirrored.Outlined.MenuBook)</ID>
+    <ID>MaxLineLength:MoreScreen.kt$MoreEntry(MoreDestination.PICTURES, stringResource(Res.string.more_photos_title), stringResource(Res.string.more_photos_subtitle), Icons.Outlined.Image)</ID>
+    <ID>MaxLineLength:MoreScreen.kt$MoreEntry(MoreDestination.QA, stringResource(Res.string.more_qa_title), stringResource(Res.string.more_qa_subtitle), Icons.Outlined.ChatBubbleOutline)</ID>
+    <ID>MaxLineLength:MoreScreen.kt$MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public)</ID>
+    <ID>MaxLineLength:MoreScreen.kt$stringResource(if (mode == AppMode.STANDALONE) Res.string.more_notices_subtitle else Res.string.more_announcements_subtitle)</ID>
+    <ID>MaxLineLength:MoreScreen.kt$stringResource(if (mode == AppMode.STANDALONE) Res.string.more_notices_title else Res.string.more_announcements_title)</ID>
+    <ID>MaxLineLength:NetworkErrorMapperTest.kt$NetworkErrorMapperTest$val msg = "Exception in http request: Error Domain=NSURLErrorDomain Code=-1004 \"Could not connect to the server\""</ID>
+    <ID>MaxLineLength:PicturesScreen.kt$?:</ID>
+    <ID>MaxLineLength:PicturesScreen.kt$val</ID>
+    <ID>MaxLineLength:PicturesService.kt$PicturesService$Logger.d(TAG, "selectPicture ▶ WS select_picture folderId=$folderId index=$indexFallback payload=$payload")</ID>
+    <ID>MaxLineLength:PicturesService.kt$PicturesService$PictureScheduleAddRequest(PictureSchedulePayload(folderId = folderId, imageIndex = imageIndex, displayText = displayText))</ID>
+    <ID>MaxLineLength:PicturesViewModel.kt$PicturesViewModel$Logger.d(TAG, "uploadDevicePhotos — projecting folderId=${uploaded.folderId} fileName=${uploaded.fileName} index=${uploaded.imageIndex}")</ID>
+    <ID>MaxLineLength:PicturesViewModel.kt$PicturesViewModel$Logger.d(TAG, "uploadDevicePhotos — uploaded ${photo.fileName} folderId=${uploaded.folderId} index=${uploaded.imageIndex}")</ID>
+    <ID>MaxLineLength:PicturesViewModel.kt$PicturesViewModel$_error.value = "Failed to upload ${photo.fileName}: ${e.recordNetworkError(TAG, "uploadDevicePhotos")}"</ID>
+    <ID>MaxLineLength:PicturesViewModel.kt$PicturesViewModel$_error.value = "Uploaded but failed to load folder: ${e.recordNetworkError(TAG, "uploadDevicePhotos/reload")}"</ID>
+    <ID>MaxLineLength:PicturesViewModel.kt$PicturesViewModel$class</ID>
+    <ID>MaxLineLength:PingReporter.kt$PingReporter$*</ID>
+    <ID>MaxLineLength:PresentationScreen.kt$?:</ID>
+    <ID>MaxLineLength:PresentationScreen.kt$is ToastEvent.FailedToAddPresentationSchedule -&gt; stringResource(Res.string.toast_presentation_failed_to_add_schedule, reason)</ID>
+    <ID>MaxLineLength:PresentationScreen.kt$is ToastEvent.FailedToSelectPresentation -&gt; stringResource(Res.string.toast_failed_to_select_presentation, reason)</ID>
+    <ID>MaxLineLength:PresentationScreen.kt$val</ID>
+    <ID>MaxLineLength:PresentationService.kt$PresentationService$Logger.d(TAG, "uploadPresentation ▶ POST $url name=$fileName mime=$mimeType bytes=${fileBytes.size} encodedBytes=${encoded.length}")</ID>
+    <ID>MaxLineLength:PresentationsViewModel.kt$PresentationsViewModel$Logger.d(TAG, "uploadPresentationFile — poll attempt=${attempt + 1} list.size=${list.size} ids=${list.map { it.id }}")</ID>
+    <ID>MaxLineLength:PresentationsViewModel.kt$PresentationsViewModel$_toastEvent.value = ToastEvent.FailedToAddPresentationSchedule(e.recordNetworkError(TAG, "addToSchedule"))</ID>
+    <ID>MaxLineLength:PresentationsViewModel.kt$PresentationsViewModel$_toastEvent.value = ToastEvent.FailedToSelectPresentation(e.recordNetworkError(TAG, "selectPresentation"))</ID>
+    <ID>MaxLineLength:PresentationsViewModel.kt$PresentationsViewModel$_toastEvent.value = ToastEvent.UploadReloadFailed(e.recordNetworkError(TAG, "uploadPresentationFile/reload"))</ID>
+    <ID>MaxLineLength:PresentationsViewModel.kt$PresentationsViewModel$class</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$ActionPill(stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onApproveAndDisplay)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$Button</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$Icon(Icons.Outlined.Delete, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$IconSquareButton(Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger, onClick = onDeny)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$IconSquareButton(Icons.Outlined.Delete, stringResource(Res.string.cd_delete), colors.muted, onClick = onDelete)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$IconSquareButton(Icons.Outlined.Edit, stringResource(Res.string.cd_edit), colors.muted, onClick = onStartEdit)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$Text(stringResource(Res.string.qa_admin_save), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$Text(stringResource(Res.string.qa_delete_question), color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$Text(stringResource(Res.string.qa_upvotes_count, question.upvotes), fontSize = 12.sp, color = colors.muted)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$if (question.submitterName.isNotBlank()) stringResource(Res.string.qa_submitted_by, question.submitterName) else ""</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$isLive -&gt; Badge(text = stringResource(Res.string.qa_badge_live), fg = colors.accent, bg = colors.accentTint, dot = true)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$question.status == QuestionStatus.APPROVED -&gt; Badge(text = stringResource(Res.string.qa_badge_approved), fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true)</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$question.status == QuestionStatus.DENIED -&gt; Badge(text = stringResource(Res.string.qa_badge_denied), fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f))</ID>
+    <ID>MaxLineLength:QAAdminScreen.kt$question.status == QuestionStatus.DONE -&gt; Badge(text = stringResource(Res.string.qa_badge_answered), fg = colors.muted, bg = colors.inputBg)</ID>
+    <ID>MaxLineLength:QAViewModelTest.kt$QAViewModelTest$respond("""{"sessionActive":true,"displayedQuestionId":"q1","votingEnabled":true}""", HttpStatusCode.OK)</ID>
+    <ID>MaxLineLength:RemoteConfig.android.kt$RemoteConfig$CrashReporting.log("RemoteConfig fetchAndActivate failed (${e::class.simpleName}): ${e.message?.take(200)}")</ID>
+    <ID>MaxLineLength:RemoteConfig.android.kt$RemoteConfig$Logger.d(TAG, " feature_pictures = ${rc.getBoolean(RemoteConfigKeys.FEATURE_PICTURES_ENABLED)}")</ID>
+    <ID>MaxLineLength:RemoteConfig.android.kt$RemoteConfig$Logger.d(TAG, " feature_presentation = ${rc.getBoolean(RemoteConfigKeys.FEATURE_PRESENTATION_ENABLED)}")</ID>
+    <ID>MaxLineLength:ScheduleDrawer.kt$?:</ID>
+    <ID>MaxLineLength:ScheduleDrawer.kt$Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:ScheduleDrawer.kt$t.contains("bible") -&gt; ScheduleTypeStyle(Icons.AutoMirrored.Outlined.MenuBook, colors.scheduleBibleFg, colors.scheduleBibleBg)</ID>
+    <ID>MaxLineLength:ScheduleDrawer.kt$t.contains("picture") || t.contains("image") -&gt; ScheduleTypeStyle(Icons.Outlined.Image, colors.schedulePictureFg, colors.schedulePictureBg)</ID>
+    <ID>MaxLineLength:ScheduleDrawer.kt$t.contains("website") || t.contains("web") -&gt; ScheduleTypeStyle(Icons.Outlined.Public, colors.accent, colors.accentTint)</ID>
+    <ID>MaxLineLength:ServerEventService.kt$ServerEventService$CrashReporting.log("WS sendAction FAILED after $WS_MAX_ATTEMPTS attempts type=$type url=${settings.wsBaseUrl}")</ID>
+    <ID>MaxLineLength:ServerEventService.kt$ServerEventService$CrashReporting.log("[$TAG] listen — initial connect FAILED (${e::class.simpleName}): $errorMsg url=${settings.wsBaseUrl}")</ID>
+    <ID>MaxLineLength:ServerEventService.kt$ServerEventService$Logger.e(TAG, "sendAction — attempt ${attempt + 1} FAILED type=$type: ${lastException?.message}", lastException)</ID>
+    <ID>MaxLineLength:ServerEventService.kt$ServerEventService$throw ApiException(httpStatus = 408, reason = "No response from server — approval timed out")</ID>
+    <ID>MaxLineLength:ServiceOrder.kt$ServiceOrder$repository.library.map { data -&gt; data.setlists.firstOrNull { it.id == CURRENT_SERVICE_SETLIST_ID }?.entries.orEmpty() }</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(stringResource(Res.string.settings_telemetry_label), color = colors.text, fontSize = 14.sp)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$stringResource(Res.string.settings_status_server_version, status.appVersion)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$text</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt$SettingsViewModel$Logger.d(TAG, "SettingsViewModel init — loaded from storage: host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl}")</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt$SettingsViewModel$Logger.d(TAG, "save — persisted host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl} themeMode=${appSettings.themeMode}")</ID>
+    <ID>MaxLineLength:SettingsViewModelTest.kt$SettingsViewModelTest$vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT", invalidHostError = "HOST")</ID>
+    <ID>MaxLineLength:Song.kt$SongDetail$get</ID>
+    <ID>MaxLineLength:Song.kt$SongVerse$return</ID>
+    <ID>MaxLineLength:SongDetailSheet.kt$?.</ID>
+    <ID>MaxLineLength:SongDetailSheet.kt$pairs.forEach { p -&gt; if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1 }</ID>
+    <ID>MaxLineLength:SongService.kt$SongService$?.</ID>
+    <ID>MaxLineLength:SongService.kt$SongService$Logger.d(TAG, "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")</ID>
+    <ID>MaxLineLength:SongService.kt$SongService$override suspend</ID>
+    <ID>MaxLineLength:SongsListScreen.kt$text = { Text(allBooksLabel, fontWeight = if (selectedBook == null) FontWeight.Bold else FontWeight.Normal) }</ID>
+    <ID>MaxLineLength:SongsListScreen.kt$text = { Text(book, fontWeight = if (book == selectedBook) FontWeight.Bold else FontWeight.Normal) }</ID>
+    <ID>MaxLineLength:SongsViewModel.kt$SongsViewModel$Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")</ID>
+    <ID>MaxLineLength:SongsViewModel.kt$SongsViewModel$_toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddSchedule(e.recordNetworkError(TAG, "addSongToSchedule")) }</ID>
+    <ID>MaxLineLength:SongsViewModel.kt$SongsViewModel$_toastEvent.value = e.toToastEvent { ToastEvent.FailedToProject(e.recordNetworkError(TAG, "toggleProjecting/projectSong")) }</ID>
+    <ID>MaxLineLength:StatusScreen.kt$PermissionRow(label = stringResource(Res.string.status_permission_schedule), granted = permissions.canAddToSchedule)</ID>
+    <ID>MaxLineLength:StatusScreen.kt$PermissionRow(label = stringResource(Res.string.status_permission_upload), granted = permissions.canUploadFiles)</ID>
+    <ID>MaxLineLength:StatusScreen.kt$Text(stringResource(Res.string.status_info_bibles), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.text)</ID>
+    <ID>MaxLineLength:StatusScreen.kt$Text(stringResource(Res.string.status_info_songbooks), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.text)</ID>
+    <ID>MaxLineLength:StatusService.kt$StatusService$Logger.d(TAG, "fetchStatus — parsed: version=${status.appVersion} (header=$headerVersion) bibles=${status.bibles.size} songbooks=${status.songbooks.size} features=${status.features}")</ID>
+    <ID>MaxLineLength:StatusViewModelTest.kt$StatusViewModelTest$if</ID>
+    <ID>MaxLineLength:WebScreen.kt$FauxLine(0.60f)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:WebScreen.kt$Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:WebScreen.kt$Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:WebScreen.kt$Icon(Icons.Outlined.Public, contentDescription = null, tint = colors.accent, modifier = Modifier.size(17.dp))</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(bookmark.title, color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(domain, color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(domainOf(bookmark.url).ifBlank { bookmark.url }, color = colors.muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.web_add_bookmark), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.addBookmark() })</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.web_bookmarks_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.web_url_placeholder), color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)</ID>
+    <ID>NestedBlockDepth:ChordProParser.kt$ChordProParser$fun parse(text: String, id: String, fallbackTitle: String = ""): LocalSong</ID>
+    <ID>NewLineAtEndOfFile:Greeting.kt$com.church.presenter.churchpresentermobile.Greeting.kt</ID>
+    <ID>NewLineAtEndOfFile:MainActivity.kt$com.church.presenter.churchpresentermobile.MainActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:main.kt$com.church.presenter.churchpresentermobile.main.kt</ID>
+    <ID>ReturnCount:BibleViewModel.kt$BibleViewModel$fun toggleProjecting()</ID>
+    <ID>ReturnCount:DeepLinkHandler.kt$DeepLinkHandler$fun handle(url: String, settings: AppSettings): Boolean</ID>
+    <ID>ReturnCount:FramingCheck.kt$FramingCheck$internal fun refusesFramingFrom(xFrameOptions: String?, csp: String?): Boolean</ID>
+    <ID>ReturnCount:MediaViewModel.kt$MediaViewModel$private fun buildPayload(): MediaItemPayload?</ID>
+    <ID>ReturnCount:NetworkErrorMapper.kt$fun Throwable.toFriendlyNetworkMessage(): String</ID>
+    <ID>ReturnCount:SongsViewModel.kt$SongsViewModel$fun toggleProjecting()</ID>
+    <ID>SwallowedException:QrScanButton.android.kt$e: ActivityNotFoundException</ID>
+    <ID>TooGenericExceptionCaught:LocalWebServer.mobile.kt$LocalWebServer$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ServerEventService.kt$ServerEventService$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:ServerEventService.kt$ServerEventService$throw Exception("WebSocket not connected to ${settings.wsBaseUrl}")</ID>
+    <ID>TooGenericExceptionThrown:ServerEventService.kt$ServerEventService$throw Exception("WebSocket send timed out — connection may be broken")</ID>
+    <ID>TooGenericExceptionThrown:StatusServiceTest.kt$StatusServiceTest$throw RuntimeException("Connect timeout has expired")</ID>
+    <ID>TooGenericExceptionThrown:StatusViewModelTest.kt$StatusViewModelTest$throw RuntimeException("Connect timeout has expired")</ID>
+    <ID>TooManyFunctions:AnnouncementsScreen.kt$com.church.presenter.churchpresentermobile.ui.AnnouncementsScreen.kt</ID>
+    <ID>TooManyFunctions:AnnouncementsViewModel.kt$AnnouncementsViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:BibleViewModel.kt$BibleViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:DictionaryViewModel.kt$DictionaryViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:LibraryEditorViewModel.kt$LibraryEditorViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:LibraryRepository.kt$LibraryRepository</ID>
+    <ID>TooManyFunctions:LibraryScreen.kt$com.church.presenter.churchpresentermobile.ui.library.LibraryScreen.kt</ID>
+    <ID>TooManyFunctions:MediaCastService.kt$MediaCastService</ID>
+    <ID>TooManyFunctions:MediaViewModel.kt$MediaViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:QAService.kt$QAService</ID>
+    <ID>TooManyFunctions:QAViewModel.kt$QAViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:SettingsViewModel.kt$SettingsViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:SlideDeckBuilder.kt$SlideDeckBuilder</ID>
+    <ID>TooManyFunctions:SongsViewModel.kt$SongsViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:StandaloneEngine.kt$StandaloneEngine</ID>
+    <ID>TooManyFunctions:StandaloneViewModel.kt$StandaloneViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:StatusScreen.kt$com.church.presenter.churchpresentermobile.ui.StatusScreen.kt</ID>
+    <ID>TooManyFunctions:WebViewModel.kt$WebViewModel : ViewModel</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.foundation.layout.Box</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.foundation.layout.aspectRatio</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.foundation.layout.fillMaxWidth</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.foundation.shape.RoundedCornerShape</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.material3.Text</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.ui.draw.clip</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.ui.text.font.FontWeight</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import androidx.compose.ui.unit.sp</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import churchpresentermobile.composeapp.generated.resources.editor_preview</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import com.church.presenter.churchpresentermobile.model.Slide</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder</ID>
+    <ID>UnusedImports:AnnouncementEditorScreen.kt$import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneOutputScreen</ID>
+    <ID>UnusedImports:App.kt$import androidx.compose.foundation.layout.Column</ID>
+    <ID>UnusedImports:App.kt$import androidx.compose.material3.Text</ID>
+    <ID>UnusedImports:App.kt$import androidx.compose.ui.unit.dp</ID>
+    <ID>UnusedImports:BibleScreen.kt$import androidx.compose.ui.text.style.TextAlign</ID>
+    <ID>UnusedImports:BibleSyncSection.kt$import churchpresentermobile.composeapp.generated.resources.bible_sync_none_offered</ID>
+    <ID>UnusedImports:BibleViewModelStandaloneTest.kt$import kotlinx.coroutines.test.advanceTimeBy</ID>
+    <ID>UnusedImports:ColorField.kt$import androidx.compose.foundation.border</ID>
+    <ID>UnusedImports:ColorField.kt$import androidx.compose.foundation.layout.Box</ID>
+    <ID>UnusedImports:ColorField.kt$import androidx.compose.foundation.layout.size</ID>
+    <ID>UnusedImports:ColorPickerDialog.kt$import androidx.compose.foundation.layout.padding</ID>
+    <ID>UnusedImports:ColorPickerDialog.kt$import androidx.compose.foundation.layout.width</ID>
+    <ID>UnusedImports:ColorPickerDialog.kt$import androidx.compose.ui.text.font.FontWeight</ID>
+    <ID>UnusedImports:LibraryScreen.kt$import com.church.presenter.churchpresentermobile.present.StandaloneEngine</ID>
+    <ID>UnusedImports:LibraryViewModel.kt$import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder</ID>
+    <ID>UnusedImports:LibraryViewModel.kt$import com.church.presenter.churchpresentermobile.present.StandaloneEngine</ID>
+    <ID>UnusedImports:LookSheet.kt$import churchpresentermobile.composeapp.generated.resources.standalone_show_reference</ID>
+    <ID>UnusedImports:MediaScreen.kt$import churchpresentermobile.composeapp.generated.resources.media_load_label</ID>
+    <ID>UnusedImports:OutputTargetsSheet.kt$import androidx.compose.foundation.clickable</ID>
+    <ID>UnusedImports:OutputTargetsSheet.kt$import androidx.compose.foundation.layout.Box</ID>
+    <ID>UnusedImports:SettingsScreen.kt$import androidx.compose.foundation.layout.Box</ID>
+    <ID>UnusedImports:SettingsScreen.kt$import androidx.compose.material.icons.filled.Visibility</ID>
+    <ID>UnusedImports:SettingsScreen.kt$import androidx.compose.material.icons.filled.VisibilityOff</ID>
+    <ID>UnusedImports:SettingsScreen.kt$import churchpresentermobile.composeapp.generated.resources.settings_active_url_label</ID>
+    <ID>UnusedImports:SettingsScreen.kt$import churchpresentermobile.composeapp.generated.resources.settings_check_status_description</ID>
+    <ID>UnusedImports:SongDetailSheet.kt$import androidx.compose.foundation.layout.ExperimentalLayoutApi</ID>
+    <ID>UnusedImports:SongsListScreen.kt$import androidx.compose.ui.text.style.TextAlign</ID>
+    <ID>UnusedImports:StandaloneOutputScreen.kt$import androidx.compose.ui.text.font.FontWeight</ID>
+    <ID>UnusedImports:StandaloneOutputScreen.kt$import androidx.compose.ui.unit.dp</ID>
+    <ID>UnusedImports:SyncSheet.kt$import androidx.compose.runtime.collectAsState</ID>
+    <ID>UnusedImports:WebScreen.kt$import com.church.presenter.churchpresentermobile.viewmodel.normalizeUrl</ID>
+    <ID>UnusedParameter:ContentActionButtons.kt$isMultiSelectMode: Boolean = false</ID>
+    <ID>UnusedParameter:ContentActionButtons.kt$scheduleAdded: Boolean</ID>
+    <ID>UnusedParameter:DeviceIdentityTest.kt$DeviceIdentityTest$settings: AppSettings</ID>
+    <ID>UnusedParameter:DictionaryScreen.kt$isLive: Boolean</ID>
+    <ID>UnusedParameter:PicturesService.kt$PicturesService$fileName: String?</ID>
+    <ID>UnusedParameter:QAAdminScreen.kt$onMarkDone: () -&gt; Unit</ID>
+    <ID>UnusedParameter:SongService.kt$SongService$bookName: String?</ID>
+    <ID>UnusedParameter:StandaloneEngine.kt$StandaloneEngine$payloadJson: String</ID>
+    <ID>UnusedParameter:WebScreen.kt$onGo: () -&gt; Unit</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_background = Color(0xFF1A1C1E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_error = Color(0xFFFFB4AB)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onBackground = Color(0xFFE2E2E6)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onPrimary = Color(0xFF003259)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onPrimaryContainer = Color(0xFFD1E4FF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onSurface = Color(0xFFE2E2E6)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onSurfaceVariant = Color(0xFFC3C7CF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_outline = Color(0xFF8D9199)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_outlineVariant = Color(0xFF43474E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_primary = Color(0xFF9EC3F5)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_primaryContainer = Color(0xFF1E4976)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_surface = Color(0xFF1A1C1E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_surfaceVariant = Color(0xFF43474E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_background = Color(0xFFFAFBFF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_error = Color(0xFFBA1A1A)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onBackground = Color(0xFF1A1C1E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onPrimary = Color(0xFFFFFFFF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onPrimaryContainer = Color(0xFF001D36)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onSurface = Color(0xFF1A1C1E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onSurfaceVariant = Color(0xFF43474E)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_outline = Color(0xFF73777F)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_outlineVariant = Color(0xFFC3C7CF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_primary = Color(0xFF3D5A80)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_primaryContainer = Color(0xFFD1E4FF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_surface = Color(0xFFFAFBFF)</ID>
+    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_surfaceVariant = Color(0xFFDFE2EB)</ID>
+    <ID>UseCheckOrError:FakeOutputSink.kt$FakeOutputSink$throw IllegalStateException("sink $id is broken")</ID>
+    <ID>UseCheckOrError:LocalWebServer.mobile.kt$LocalWebServer$throw IllegalStateException("Could not bind any port for the presentation server")</ID>
+    <ID>UseCheckOrError:MediaFilePicker.android.kt$throw IllegalStateException("Could not open the selected file")</ID>
+    <ID>UseCheckOrError:PortAllocatorTest.kt$PortAllocatorTest$throw IllegalStateException("permission denied")</ID>
+  </CurrentIssues>
+</SmellBaseline>

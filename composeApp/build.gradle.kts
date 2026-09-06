@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
     alias(libs.plugins.kover)
+    alias(libs.plugins.detekt)
 }
 
 // ---------------------------------------------------------------------------
@@ -166,6 +167,50 @@ val generateProvenanceConfig by tasks.registering {
 }
 
 // ---------------------------------------------------------------------------
+// Static analysis (detekt) — same ruleset as the ChurchPresenter desktop app,
+// whose config/detekt/detekt.yml this file mirrors verbatim. Keeping the two in
+// step matters because the same people move between the repos: a rule that fails
+// here and passes there (or the reverse) turns the gate into noise.
+//
+// Two of those rules are this project's own house rules from CODING_STANDARDS.md,
+// now enforced rather than remembered: WildcardImport, and ForbiddenImport on
+// `androidx.compose.material.*` (Material 2), which the icons package is exempt
+// from because materialIconsExtended lives under it.
+//
+// Unlike the desktop's single jvmMain source set, `src` here covers every KMP
+// source set at once — common, android, ios, js, wasmJs, mobile, web and the
+// tests — so adding a target does not silently fall out of the analysis.
+//
+// Pre-existing findings are baselined in config/detekt/baseline.xml, so the gate
+// fails only on NEW findings. Regenerate with `./gradlew :composeApp:detektBaseline`
+// — but prefer fixing over re-baselining; the file exists to stop day one from
+// being a 900-issue refactor, not to absorb new debt.
+// ---------------------------------------------------------------------------
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    baseline = rootProject.file("config/detekt/baseline.xml")
+    source.setFrom("src")
+    parallel = true
+}
+
+// JVM_11 here, against the desktop's 21 — this module compiles to Android's
+// Java 11 target (see `compileOptions` below) and detekt has to agree with it.
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "11"
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        sarif.required.set(false)
+        txt.required.set(false)
+        md.required.set(false)
+    }
+}
+tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+    jvmTarget = "11"
+}
+
+// ---------------------------------------------------------------------------
 // Code-coverage (Kover) — measured on the Android unit-test JVM (where commonTest
 // runs). Scoped to the reliably-JVM-measurable logic: `model`, `network` and
 // `present` (the standalone presenter's routing/slide logic — pure by design;
@@ -243,6 +288,127 @@ kover {
         }
     }
 }
+
+// Prints the headline numbers and a clickable file:// link so the report doesn't have to be hunted
+// for under build/. Ported from the desktop app's `printCoverageLink`; Kover's XML report follows
+// the JaCoCo schema whichever engine measures it, so the desktop's parsing works here unchanged.
+//
+// Deliberately a SEPARATE task rather than a doLast on koverXmlReport: a doLast is skipped when the
+// report is UP-TO-DATE, so re-running `check` would silently print nothing. This task declares no
+// outputs, so it never goes up-to-date and always prints.
+tasks.register("printCoverageLink") {
+    val reportDir = layout.buildDirectory.dir("reports/kover")
+    // The Android unit-test run is the one Kover measures, so it is the run whose test counts
+    // belong next to the coverage figure. The much larger jsBrowserTest suite covers the same code
+    // plus the viewmodel package, but produces no coverage data — quoting its total here would
+    // credit the percentage to tests that did not produce it.
+    val testResultsDir = layout.buildDirectory.dir("test-results/testDebugUnitTest")
+    // Where to append the run's summary block, resolved at CONFIGURATION time from a property the
+    // CI client passes in — not from this process's environment. `System.getenv` here reads the
+    // Gradle DAEMON's environment, which is frozen when the daemon starts, while GITHUB_STEP_SUMMARY
+    // is a fresh temp file PER STEP that the runner reads and discards when that step ends. A daemon
+    // started by an earlier step would therefore append to a file belonging to a step that had
+    // already finished — written successfully, read by nobody. (This bit the desktop app on a real
+    // run; the fix is ported here before it can happen rather than after.)
+    //
+    // A `-P` property travels with each individual invocation, so it is the live path every time.
+    // The environment stays as the fallback for anyone running the task by hand.
+    val stepSummaryPath = providers.gradleProperty("stepSummary")
+        .orElse(providers.environmentVariable("GITHUB_STEP_SUMMARY"))
+        .orNull
+    doLast {
+        val dir = reportDir.get().asFile
+        val htmlIndex = dir.resolve("html/index.html")
+        if (!htmlIndex.exists()) return@doLast
+
+        // Each per-suite TEST-*.xml carries its own totals on the root <testsuite> tag; sum them
+        // for the whole-run figure, since Gradle writes no combined summary of its own.
+        val testSummary = runCatching {
+            val suiteAttrs = Regex("""tests="(\d+)" skipped="(\d+)" failures="(\d+)" errors="(\d+)"""")
+            val files = testResultsDir.get().asFile.listFiles { f -> f.name.endsWith(".xml") }
+            if (files.isNullOrEmpty()) return@runCatching null
+            var tests = 0; var skipped = 0; var failures = 0; var errors = 0
+            files.forEach { file ->
+                val match = suiteAttrs.find(file.readText().lineSequence().take(2).joinToString("\n"))
+                    ?: return@forEach
+                tests += match.groupValues[1].toInt()
+                skipped += match.groupValues[2].toInt()
+                failures += match.groupValues[3].toInt()
+                errors += match.groupValues[4].toInt()
+            }
+            "$tests run, ${failures + errors} failed, $skipped skipped"
+        }.getOrNull()
+
+        // Regex rather than a DOM parse: the JaCoCo XML declares an external DTD, which a
+        // DocumentBuilder tries to resolve over the network. The report-wide totals are the LAST
+        // <counter> of each type in the document (they appear per-package/-class first, then once
+        // more on the closing </report> element), so the final match per type is the overall figure.
+        val lines = runCatching {
+            val xml = dir.resolve("report.xml")
+            if (!xml.exists()) return@runCatching null
+            val text = xml.readText()
+            // Order matches the JaCoCo HTML overview table's own column order.
+            val labels = listOf(
+                "INSTRUCTION" to "instructions",
+                "BRANCH" to "branches",
+                "LINE" to "lines",
+                "COMPLEXITY" to "complexity",
+                "METHOD" to "methods",
+                "CLASS" to "classes",
+            )
+            labels.mapNotNull { (type, label) ->
+                val last = Regex("""<counter type="$type" missed="(\d+)" covered="(\d+)"/>""")
+                    .findAll(text).lastOrNull() ?: return@mapNotNull null
+                val missed = last.groupValues[1].toInt()
+                val covered = last.groupValues[2].toInt()
+                val total = covered + missed
+                if (total == 0) null
+                else "%.1f%% of %s (%d/%d)".format(100.0 * covered / total, label, covered, total)
+            }
+        }.getOrNull()
+
+        val summaryLines = buildList {
+            if (testSummary != null) add("Tests:    $testSummary")
+            if (lines != null) {
+                add("Coverage:")
+                lines.forEach { add("  $it") }
+            }
+        }
+
+        logger.lifecycle("")
+        summaryLines.forEach { logger.lifecycle(it) }
+        // The HTML tree only exists on the machine that produced it. On a CI runner it is deleted
+        // with the workspace when the job ends, so the line is noise there — a `file://` path
+        // pointing at a directory the reader has no way to open. Printed locally, skipped in CI.
+        //
+        // Three slashes: File.toURI() yields "file:/path", which many terminals refuse to linkify.
+        if (System.getenv("GITHUB_ACTIONS") != "true") {
+            logger.lifecycle("Report:   file://${htmlIndex.absolutePath}")
+        }
+
+        // Also put it on the run's summary page. The numbers otherwise land in the middle of the
+        // job log; the step summary is the page a reviewer actually opens from a pull request.
+        // Best-effort — a coverage print must never fail a build.
+        stepSummaryPath?.takeIf { it.isNotBlank() }?.let { path ->
+            runCatching {
+                File(path).appendText(
+                    buildString {
+                        appendLine("### Unit test coverage")
+                        appendLine()
+                        appendLine("```")
+                        summaryLines.forEach { appendLine(it) }
+                        appendLine("```")
+                        appendLine()
+                    }
+                )
+            }
+        }
+    }
+}
+
+// Print whenever the report is generated, so the number appears without having to ask for it.
+tasks.named("koverXmlReport") { finalizedBy("printCoverageLink") }
+tasks.named("koverHtmlReport") { finalizedBy("printCoverageLink") }
 
 // The Android unit-test JVM has no Dispatchers.Main (no Looper / Robolectric), so
 // ViewModel tests that install a test main dispatcher can't run there — they run on

@@ -24,6 +24,7 @@ ktor = "3.0.0"
 qrose = "1.1.2"
 kotlinxSerialization = "1.6.2"
 kotlinxCoroutines = "1.10.2"
+detekt = "1.23.8"   # matches the desktop app, which shares config/detekt/detekt.yml
 kover = "0.9.1"
 sentry-android = "8.47.0"
 
@@ -83,3 +84,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
 firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
