@@ -1,5 +1,6 @@
 import java.io.File
 import java.util.Properties
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -228,13 +229,17 @@ jacoco {
 tasks.register<JacocoReport>("jacocoTestReport") {
     group = "verification"
     description = "Coverage for the app's own code, from the Android unit-test run."
-    dependsOn("testDebugUnitTest")
+    dependsOn("testDebugUnitTest", "jvmTest")
 
+    // Both JVM test runs: the Android unit tests, and the desktop-JVM Compose UI
+    // tests. Adding the second WIDENS what is measured — it is the opposite of an
+    // exclusion, and the rule in AGENT.md about never narrowing the figure stands.
     executionData.setFrom(
         fileTree(layout.buildDirectory) {
             include(
                 "jacoco/testDebugUnitTest.exec",
                 "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+                "jacoco/jvmTest.exec",
             )
         }
     )
@@ -244,14 +249,44 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     // leaves, not @Composable functions. The figure this produces is coverage of the
     // whole module, so it is low; that is the point. Raise it by adding tests, never
     // by adding an exclusion.
+    // Every class must come from exactly ONE tree. commonMain is compiled twice —
+    // once for Android, once for the JVM — and the two produce different bytecode
+    // under the same class name, which JaCoCo refuses to merge ("Can't add
+    // different class with same name").
+    //
+    // Shared code is therefore attributed to the JVM tree, because the JVM run is
+    // the one that executes the Compose UI tests as well as every commonTest.
+    // The Android tree keeps only what is genuinely Android-only — androidMain's
+    // pickers, Firebase wrappers and platform actuals — which the Android unit
+    // tests are the only run to touch.
+    val jvmClassesDir = layout.buildDirectory.dir("classes/kotlin/jvm/main")
+    val androidClassesDir = layout.buildDirectory.dir("tmp/kotlin-classes/debug")
+    val generatedExcludes = listOf(
+        "**/ComposableSingletons*",
+        "**/churchpresentermobile/composeapp/generated/resources/**",
+    )
     classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-            exclude("**/ComposableSingletons*")
-            exclude("**/churchpresentermobile/composeapp/generated/resources/**")
+        jvmClassesDir.map { jvm ->
+            val sharedClasses = jvm.asFile.walkTopDown()
+                .filter { it.isFile && it.extension == "class" }
+                .map { it.relativeTo(jvm.asFile).invariantSeparatorsPath }
+                .toList()
+            files(
+                fileTree(jvm) { generatedExcludes.forEach { exclude(it) } },
+                fileTree(androidClassesDir) {
+                    generatedExcludes.forEach { exclude(it) }
+                    sharedClasses.forEach { exclude(it) }
+                },
+            )
         }
     )
     sourceDirectories.setFrom(
-        files("src/commonMain/kotlin", "src/androidMain/kotlin", "src/mobileMain/kotlin"),
+        files(
+            "src/commonMain/kotlin",
+            "src/androidMain/kotlin",
+            "src/mobileMain/kotlin",
+            "src/jvmMain/kotlin",
+        ),
     )
 
     // A filtered run measures only what it ran, so the number would be nonsense.
@@ -432,6 +467,23 @@ tasks.withType<Test>().configureEach {
     }
 }
 
+// The Compose UI tests in the ui package need a Skia surface, and two of the
+// runtimes commonTest compiles for cannot provide one — the Android unit-test JVM
+// has no Activity to host a composition, and the legacy js Karma runtime ships no
+// skiko. Excluding them from those two runs is NOT a coverage exclusion: they run
+// in full on jvmTest, which is a run JaCoCo measures, and again on
+// wasmJsBrowserTest.
+val composeUiTestPackage = "com.church.presenter.churchpresentermobile.ui.*"
+
+// configureEach on the supertype rather than tasks.named: the Android unit-test
+// tasks are not registered yet at this point in configuration, so naming
+// testDebugUnitTest directly fails with "Task with name ... not found".
+tasks.withType<AbstractTestTask>().configureEach {
+    if (name == "testDebugUnitTest" || name == "jsBrowserTest") {
+        filter.excludeTestsMatching(composeUiTestPackage)
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Generates the actual isDebugBuild for the JS/WasmJs targets (webMain), since
 // neither has a runtime debug flag analogous to Android's BuildConfig.DEBUG.
@@ -515,6 +567,16 @@ kotlin {
             freeCompilerArgs += listOf("-Xbinary=bundleId=com.church.presenter.churchpresentermobile")
         }
     }
+
+    // A desktop JVM target that ships no app.
+    //
+    // It exists so the Compose UI tests can run on a JVM that JaCoCo can see.
+    // The wasmJs suite proves the same behaviour but compiles to WebAssembly and
+    // runs in headless Chrome, so it produces no coverage data at all — the ui
+    // package read 0% across 2,107 lines while 300+ UI tests passed against it.
+    // Its actuals in jvmMain are the same deliberate stubs the web target
+    // carries; nothing here is reachable by a user.
+    jvm()
 
     js {
         browser {
@@ -616,6 +678,8 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
         }
         // MockK, on the Android unit-test JVM only.
         //
@@ -640,9 +704,21 @@ kotlin {
         // the wasmJs target ships skiko with the test bundle and runs them as-is.
         // Kept out of commonTest for exactly that reason — jsBrowserTest, the main
         // gate, must not pick them up. Run with :composeApp:wasmJsBrowserTest.
-        wasmJsTest.dependencies {
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        // Compose UI tests live in commonTest with the rest of the suite, and need
+        // a Skia surface to run on.
+        //
+        // Two of the runtimes commonTest compiles for cannot give them one, and are
+        // filtered out below rather than left to fail:
+        //   - the legacy js Karma runtime loads no skiko, and fails with
+        //     "org_jetbrains_skia_Surface__1nMakeRasterN32Premul is not defined";
+        //   - the Android unit-test JVM has no Activity to host a composition.
+        // They run in full on jvmTest — the run JaCoCo measures — and on
+        // wasmJsBrowserTest, which ships skiko with its test bundle.
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }

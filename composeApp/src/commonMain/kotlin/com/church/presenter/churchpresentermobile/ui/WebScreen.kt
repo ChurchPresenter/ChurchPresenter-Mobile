@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -100,6 +101,7 @@ fun WebScreen(
                 value = url,
                 onValueChange = viewModel::setUrl,
                 onGo = { viewModel.projectPage() },
+                modifier = Modifier.testTag(UiTags.WEB_URL),
             )
 
             Spacer(Modifier.height(18.dp))
@@ -109,60 +111,34 @@ fun WebScreen(
 
             Spacer(Modifier.height(14.dp))
             // ── Actions (Clear + Project page — matches design) ───────────
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(colors.surface)
-                        .border(1.dp, colors.border, RoundedCornerShape(14.dp))
-                        .clickable { viewModel.clearScreen() },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                }
-                Row(
-                    modifier = Modifier
-                        .weight(2f)
-                        .height(50.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(colors.accent)
-                        .clickable { viewModel.projectPage() },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.size(8.dp))
-                    Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-            // Secondary: add to schedule (queue without going live)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(46.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(colors.amber.copy(alpha = 0.16f))
-                    .clickable { viewModel.addToSchedule() },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.size(8.dp))
-                Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-            }
+            WebActions(
+                onClear = { viewModel.clearScreen() },
+                onGoLive = { viewModel.projectPage() },
+                onAddToSchedule = { viewModel.addToSchedule() },
+            )
 
             Spacer(Modifier.height(24.dp))
             // ── Bookmarks (matches design) ────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.web_bookmarks_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text(stringResource(Res.string.web_add_bookmark), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable { viewModel.addBookmark() })
+                Text(
+                    text = stringResource(Res.string.web_add_bookmark),
+                    color = colors.accent,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .testTag(UiTags.WEB_ADD_BOOKMARK)
+                        .clickable { viewModel.addBookmark() },
+                )
             }
             Spacer(Modifier.height(10.dp))
             if (bookmarks.isEmpty()) {
-                Text(stringResource(Res.string.web_no_bookmarks), color = colors.muted, fontSize = 13.sp)
+                Text(
+                    stringResource(Res.string.web_no_bookmarks),
+                    color = colors.muted,
+                    fontSize = 13.sp,
+                    modifier = Modifier.testTag(UiTags.WEB_NO_BOOKMARKS),
+                )
             } else {
                 bookmarks.forEach { bm ->
                     BookmarkRow(
@@ -181,6 +157,61 @@ fun WebScreen(
     }
 }
 
+/** Clear, Go live, and the quieter "add to the running order". */
+@Composable
+private fun WebActions(onClear: () -> Unit, onGoLive: () -> Unit, onAddToSchedule: () -> Unit) {
+    val colors = LocalAppColors.current
+    // ── Actions (Clear + Project page — matches design) ───────────
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Box(
+            modifier = Modifier
+        .weight(1f)
+        .height(50.dp)
+        .testTag(UiTags.WEB_CLEAR)
+        .clip(RoundedCornerShape(14.dp))
+        .background(colors.surface)
+        .border(1.dp, colors.border, RoundedCornerShape(14.dp))
+        .clickable { onClear() },
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        }
+        Row(
+            modifier = Modifier
+        .weight(2f)
+        .height(50.dp)
+        .testTag(UiTags.WEB_GO_LIVE)
+        .clip(RoundedCornerShape(14.dp))
+        .background(colors.accent)
+        .clickable { onGoLive() },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.size(8.dp))
+            Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+    Spacer(Modifier.height(12.dp))
+    // Secondary: add to schedule (queue without going live)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(46.dp)
+            .testTag(UiTags.WEB_ADD_TO_SCHEDULE)
+            .clip(RoundedCornerShape(14.dp))
+            .background(colors.amber.copy(alpha = 0.16f))
+            .clickable { onAddToSchedule() },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.size(8.dp))
+        Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+    }
+
+}
+
 @Composable
 private fun Overline(label: String) {
     val colors = LocalAppColors.current
@@ -189,10 +220,15 @@ private fun Overline(label: String) {
 }
 
 @Composable
-private fun UrlBar(value: String, onValueChange: (String) -> Unit, onGo: () -> Unit) {
+private fun UrlBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onGo: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
             .clip(RoundedCornerShape(12.dp))
@@ -270,6 +306,7 @@ private fun BookmarkRow(bookmark: Bookmark, isLive: Boolean, onClick: () -> Unit
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.bookmark(bookmark.id))
             .clip(shape)
             .background(if (isLive) colors.accentTint else colors.surface)
             .border(1.dp, if (isLive) colors.accent else colors.borderSubtle, shape)
@@ -290,13 +327,21 @@ private fun BookmarkRow(bookmark: Bookmark, isLive: Boolean, onClick: () -> Unit
             Text(domainOf(bookmark.url).ifBlank { bookmark.url }, color = colors.muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         if (isLive) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Row(
+                modifier = Modifier.testTag(UiTags.bookmarkLive(bookmark.id)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
                 Box(Modifier.size(6.dp).clip(RoundedCornerShape(3.dp)).background(colors.accent))
                 Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
             }
         } else {
             Box(
-                modifier = Modifier.size(28.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onDelete),
+                modifier = Modifier
+                    .size(28.dp)
+                    .testTag(UiTags.bookmarkDelete(bookmark.id))
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onDelete),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))

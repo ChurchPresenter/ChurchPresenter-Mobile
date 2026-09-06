@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -86,7 +87,7 @@ fun DesktopAddressFields(
                 keyboardType = KeyboardType.Uri,
                 imeAction = ImeAction.Next,
                 error = if (hostError) stringResource(Res.string.settings_invalid_host) else null,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag(UiTags.ADDRESS_HOST),
             )
             SettingsField(
                 label = stringResource(Res.string.settings_port_label),
@@ -97,7 +98,7 @@ fun DesktopAddressFields(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done,
                 error = if (portError) stringResource(Res.string.settings_invalid_port) else null,
-                modifier = Modifier.width(112.dp),
+                modifier = Modifier.width(112.dp).testTag(UiTags.ADDRESS_PORT),
             )
         }
 
@@ -109,13 +110,16 @@ fun DesktopAddressFields(
                 placeholder = stringResource(Res.string.settings_api_key_placeholder),
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done,
+                modifier = Modifier.testTag(UiTags.ADDRESS_API_KEY),
             )
         } else {
             Text(
                 text = stringResource(Res.string.sync_address_needs_key),
                 color = colors.accent,
                 fontSize = 12.sp,
-                modifier = Modifier.clickable { viewModel.revealKeyField() },
+                modifier = Modifier
+                    .testTag(UiTags.ADDRESS_REVEAL_KEY)
+                    .clickable { viewModel.revealKeyField() },
             )
         }
 
@@ -130,6 +134,7 @@ fun DesktopAddressFields(
                 color = colors.muted,
                 fontSize = 11.sp,
                 lineHeight = 16.sp,
+                modifier = Modifier.testTag(UiTags.ADDRESS_HINT),
             )
         }
     }

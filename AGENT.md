@@ -392,6 +392,31 @@ Paparazzi for JVM-rendered previews); neither is set up here yet, and a
 hand-written assertion about a `dp` value is a test that fails on every design
 tweak while catching nothing.
 
+### Sample Compose UI test
+
+```kotlin
+class MyComposeTest {
+
+    @get:Rule val composeTestRule = createComposeRule()
+    // use createAndroidComposeRule<YourActivity>() if you need access to
+    // an activity
+
+    @Test
+    fun myTest() {
+        // Start the app
+        composeTestRule.setContent {
+            MyAppTheme {
+                MainScreen(uiState = fakeUiState, /*...*/)
+            }
+        }
+
+        composeTestRule.onNodeWithText("Continue").performClick()
+
+        composeTestRule.onNodeWithText("Welcome").assertIsDisplayed()
+    }
+}
+```
+
 ### Selecting nodes in a Compose test — tag it, don't count it
 
 - ✅ **PREFER a test tag.** Add `Modifier.testTag(...)` to the production
@@ -418,6 +443,21 @@ tweak while catching nothing.
   resolve in that test runtime, and its bundle loads on a real dispatcher that
   the test clock cannot advance, so waiting does not help. That is *why* labels
   are unusable as selectors here, and why tags are not optional.
+- 💥 **…which also means such a control has *zero width*.** A text-only button
+  whose label is a `stringResource` lays out empty, so `performClick()` — which
+  taps the centre of the node's bounds — lands outside it and silently does
+  nothing. That looks exactly like a handler which was never wired up, and cost
+  an hour to diagnose. Press with the semantics action instead:
+
+  ```kotlin
+  internal fun ComposeUiTest.click(tag: String) =
+      tagged(tag).performSemanticsAction(SemanticsActions.OnClick)
+  ```
+
+- ⚠️ **The semantics action ignores `enabled`.** It invokes the handler
+  directly, so it will "press" a disabled button. To assert something is *not*
+  pressable, read the state — `assertIsNotEnabled()` — never try to press it and
+  check nothing happened.
 
 ### A slow or flaky test is a broken test — fix it when you see it
 

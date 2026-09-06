@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,6 +104,7 @@ fun ServiceOrderDrawerContent(
                     text = stringResource(Res.string.schedule_drawer_item_count, entries.size),
                     fontSize = 11.sp,
                     color = colors.muted,
+                    modifier = Modifier.testTag(UiTags.DRAWER_COUNT),
                 )
             }
             if (entries.isNotEmpty()) {
@@ -111,6 +113,7 @@ fun ServiceOrderDrawerContent(
                     fontSize = 12.sp,
                     color = colors.muted,
                     modifier = Modifier
+                        .testTag(UiTags.DRAWER_CLEAR)
                         .clickable(onClick = onClear)
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                 )
@@ -120,7 +123,7 @@ fun ServiceOrderDrawerContent(
                 contentDescription = stringResource(Res.string.cd_close),
                 tint = colors.muted,
                 onClick = onClose,
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(32.dp).testTag(UiTags.DRAWER_CLOSE),
             )
         }
 
@@ -135,6 +138,7 @@ fun ServiceOrderDrawerContent(
                     text = stringResource(Res.string.schedule_drawer_empty),
                     color = colors.muted,
                     fontSize = 14.sp,
+                    modifier = Modifier.testTag(UiTags.DRAWER_EMPTY),
                 )
             }
             return@Column
@@ -149,6 +153,7 @@ fun ServiceOrderDrawerContent(
             items(entries.size) { index ->
                 ServiceOrderRow(
                     entry = entries[index],
+                    index = index,
                     isFirst = index == 0,
                     isLast = index == entries.lastIndex,
                     onClick = { onItemClick(entries[index]) },
@@ -164,6 +169,7 @@ fun ServiceOrderDrawerContent(
 @Composable
 private fun ServiceOrderRow(
     entry: LocalSetlistEntry,
+    index: Int,
     isFirst: Boolean,
     isLast: Boolean,
     onClick: () -> Unit,
@@ -176,6 +182,7 @@ private fun ServiceOrderRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.orderRow(index))
             .background(colors.background)
             .clickable(onClick = onClick)
             .padding(start = 20.dp, end = 8.dp, top = 9.dp, bottom = 9.dp),
@@ -216,7 +223,7 @@ private fun ServiceOrderRow(
                 contentDescription = stringResource(Res.string.service_order_move_up),
                 tint = colors.muted,
                 onClick = onMoveUp,
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(28.dp).testTag(UiTags.orderMoveUp(index)),
             )
         }
         if (!isLast) {
@@ -225,7 +232,7 @@ private fun ServiceOrderRow(
                 contentDescription = stringResource(Res.string.service_order_move_down),
                 tint = colors.muted,
                 onClick = onMoveDown,
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(28.dp).testTag(UiTags.orderMoveDown(index)),
             )
         }
         IconTileButton(
@@ -233,7 +240,7 @@ private fun ServiceOrderRow(
             contentDescription = stringResource(Res.string.cd_delete),
             tint = colors.muted,
             onClick = onRemove,
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.size(28.dp).testTag(UiTags.orderRemove(index)),
         )
     }
 }

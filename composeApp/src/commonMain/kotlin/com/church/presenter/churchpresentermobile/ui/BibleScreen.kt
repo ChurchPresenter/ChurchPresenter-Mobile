@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -305,12 +306,14 @@ fun BibleBooksScreen(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
             placeholder = stringResource(Res.string.bible_search_placeholder),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier
+                .testTag(UiTags.BIBLE_SEARCH)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
         when {
             books.isEmpty() && searchQuery.isNotEmpty() -> Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().testTag(UiTags.BIBLE_NO_MATCH),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -320,7 +323,7 @@ fun BibleBooksScreen(
                 )
             }
             books.isEmpty() && !isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().testTag(UiTags.BIBLE_NO_BOOKS),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -351,6 +354,7 @@ private fun BibleBookRow(book: BibleBook, onSelect: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.bibleBook(book.displayName))
             .background(if (colors.isDark) androidx.compose.ui.graphics.Color.Transparent else colors.surface)
             .clickable { onSelect() }
             .height(60.dp)

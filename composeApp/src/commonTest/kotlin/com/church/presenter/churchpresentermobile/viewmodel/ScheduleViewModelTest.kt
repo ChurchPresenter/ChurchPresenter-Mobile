@@ -160,7 +160,9 @@ class ScheduleViewModelTest {
 
             assertEquals(2, items.size)
             assertEquals("1 - Amazing Grace", items.first().displayTitle)
-            assertFalse(vm.isLoading.value)
+            // Awaited, not read: the list is published before the spinner is
+            // lowered, so reading the flag the instant the items arrive races.
+            assertFalse(vm.isLoading.first { !it })
             assertNull(vm.error.value)
         } finally {
             tearDown(vm)
@@ -189,7 +191,10 @@ class ScheduleViewModelTest {
             val error = vm.error.first { it != null }
 
             assertNotNull(error)
-            assertFalse(vm.isLoading.value)
+            // Awaited rather than read: the error is published from inside the
+            // load, and the spinner is lowered in the `finally` after it — so
+            // reading the flag the instant the error arrives is a race.
+            assertFalse(vm.isLoading.first { !it })
         } finally {
             tearDown(vm)
         }
