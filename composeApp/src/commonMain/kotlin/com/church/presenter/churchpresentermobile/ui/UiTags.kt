@@ -112,6 +112,45 @@ internal object UiTags {
     /** The "live" marker on the schedule item the desktop is showing. */
     fun scheduleRowLive(index: Int) = "schedule:row:$index:live"
 
+    // ── Certificate setup ────────────────────────────────────────────────
+    const val CERT_DONE = "cert:done"
+    const val CERT_SKIP = "cert:skip"
+    const val CERT_SKIP_TOP = "cert:skipTop"
+    const val CERT_FINGERPRINT = "cert:fingerprint"
+    const val CERT_NO_FINGERPRINT = "cert:noFingerprint"
+
+    // ── First-run connection setup ───────────────────────────────────────
+    const val CONNECT_HOST = "connect:host"
+    const val CONNECT_PORT = "connect:port"
+    const val CONNECT_API_KEY = "connect:apiKey"
+    const val CONNECT_APPLY = "connect:apply"
+    const val CONNECT_DONE = "connect:done"
+    const val CONNECT_SKIP = "connect:skip"
+    const val CONNECT_SKIP_TOP = "connect:skipTop"
+    const val CONNECT_NO_CAMERA = "connect:noCamera"
+    const val CONNECT_CONNECTED = "connect:connected"
+
+    // ── The contact form ─────────────────────────────────────────────────
+    const val CONTACT_NAME = "contact:name"
+    const val CONTACT_EMAIL = "contact:email"
+    const val CONTACT_MESSAGE = "contact:message"
+    const val CONTACT_SEND = "contact:send"
+    const val CONTACT_OPEN_BROWSER = "contact:openBrowser"
+    const val CONTACT_SENT = "contact:sent"
+    const val CONTACT_ERROR = "contact:error"
+
+    /** One of the four kinds of message the server accepts. */
+    fun contactType(key: String) = "contact:type:$key"
+
+    // ── The startup status check ─────────────────────────────────────────
+    const val STATUS_LOADING = "status:loading"
+    const val STATUS_ERROR = "status:error"
+    const val STATUS_ALL_GOOD = "status:allGood"
+    const val STATUS_WARNINGS = "status:warnings"
+    const val STATUS_RETRY = "status:retry"
+    const val STATUS_CONTINUE = "status:continue"
+    const val STATUS_OPEN_SETTINGS = "status:openSettings"
+
     // ── The desktop's address ────────────────────────────────────────────
     const val ADDRESS_HOST = "address:host"
     const val ADDRESS_PORT = "address:port"

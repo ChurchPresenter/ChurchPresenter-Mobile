@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -121,6 +122,7 @@ fun CertSetupScreen(
                 actions = {
                     TextButton(
                         onClick = onSkip,
+                        modifier = Modifier.testTag(UiTags.CERT_SKIP_TOP),
                         colors = ButtonDefaults.textButtonColors(
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -258,6 +260,7 @@ fun CertSetupScreen(
                             softWrap = true,
                             overflow = TextOverflow.Visible,
                             modifier = Modifier
+                                .testTag(UiTags.CERT_FINGERPRINT)
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                                 .fillMaxWidth()
                         )
@@ -266,7 +269,8 @@ fun CertSetupScreen(
                     Text(
                         text = stringResource(Res.string.cert_setup_fingerprint_unavailable),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.testTag(UiTags.CERT_NO_FINGERPRINT),
                     )
                 }
             }
@@ -276,7 +280,7 @@ fun CertSetupScreen(
             // ── Done / Skip buttons ────────────────────────────────────────────
             Button(
                 onClick = onDone,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(UiTags.CERT_DONE),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Icon(
@@ -291,7 +295,10 @@ fun CertSetupScreen(
                 )
             }
 
-            OutlinedButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = onSkip,
+                modifier = Modifier.fillMaxWidth().testTag(UiTags.CERT_SKIP),
+            ) {
                 Text(stringResource(Res.string.cert_setup_skip_button))
             }
 

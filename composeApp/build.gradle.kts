@@ -475,12 +475,26 @@ tasks.withType<Test>().configureEach {
 // wasmJsBrowserTest.
 val composeUiTestPackage = "com.church.presenter.churchpresentermobile.ui.*"
 
+// UI tests that drive a real ViewModel through a mocked HTTP round-trip. On a JVM
+// the request completes on real threads; the wasm runtime is single-threaded, so
+// the coroutine cannot finish inside the Compose test clock's virtual time and
+// every await times out. They run in full on jvmTest — the run JaCoCo measures —
+// so this costs no coverage and no assertion, only a duplicate run.
+val viewModelBackedUiTests = listOf(
+    "com.church.presenter.churchpresentermobile.ui.ScheduleDrawerTest",
+    "com.church.presenter.churchpresentermobile.ui.ScheduleDrawerRowTest",
+    "com.church.presenter.churchpresentermobile.ui.StatusScreenTest",
+)
+
 // configureEach on the supertype rather than tasks.named: the Android unit-test
 // tasks are not registered yet at this point in configuration, so naming
 // testDebugUnitTest directly fails with "Task with name ... not found".
 tasks.withType<AbstractTestTask>().configureEach {
     if (name == "testDebugUnitTest" || name == "jsBrowserTest") {
         filter.excludeTestsMatching(composeUiTestPackage)
+    }
+    if (name == "wasmJsBrowserTest") {
+        viewModelBackedUiTests.forEach { filter.excludeTestsMatching(it) }
     }
 }
 
