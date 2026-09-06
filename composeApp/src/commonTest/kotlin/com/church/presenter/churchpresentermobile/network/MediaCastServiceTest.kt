@@ -4,9 +4,19 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.MediaItemPayload
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
+import com.church.presenter.churchpresentermobile.model.ApiException
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import io.ktor.http.content.OutgoingContent
+import io.ktor.utils.io.ByteChannel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -174,5 +184,105 @@ class MediaCastServiceTest {
 
         assertTrue(service(ws).playPause().isFailure)
         assertTrue(service(ws).seekTo(1L).isFailure)
+    }
+
+    // ── Uploading a media file ───────────────────────────────────────────
+    //
+    // The file streams rather than being buffered — a 100 MB video will not fit
+    // in Android's heap — so the progress callback is the only signal the caller
+    // has, and Content-Length has to come from the picked file's own size.
+
+    private fun uploadService(
+        status: HttpStatusCode = HttpStatusCode.OK,
+        body: String = """{"ok":true,"path":"/Users/av/Movies/clip.mp4","name":"clip.mp4","mediaType":"local"}""",
+        capture: (String) -> Unit = {},
+    ): MediaCastService = MediaCastService(
+        AppSettings(InMemorySettingsStorage()),
+        FakeWsSender(),
+        uploadClient = HttpClient(MockEngine { request ->
+            capture(request.url.toString())
+            // MockEngine does not drain a WriteChannelContent on its own, so the
+            // streaming body — and with it the progress callback — would never run.
+            (request.body as? OutgoingContent.WriteChannelContent)?.writeTo(ByteChannel())
+            respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
+        }),
+    )
+
+    private fun picked(name: String = "clip.mp4", size: Long = 300L) =
+        PickedMediaFile(name, size) { _, onProgress ->
+            onProgress(100L)
+            onProgress(200L)
+            onProgress(300L)
+        }
+
+    @Test
+    fun uploadingReturnsTheDesktopsOwnFilePath() = runTest {
+        val response = uploadService().uploadMedia(picked()) { }.getOrThrow()
+
+        assertTrue(response.ok)
+        assertEquals("/Users/av/Movies/clip.mp4", response.path)
+        assertEquals("local", response.mediaType)
+    }
+
+    @Test
+    fun theFileNameTravelsAsAQueryParameter() = runTest {
+        var url = ""
+
+        uploadService(capture = { url = it }).uploadMedia(picked("sermon clip.mp4")) { }.getOrThrow()
+
+        assertTrue(url.contains("name="), url)
+        assertTrue(url.contains("clip"), url)
+    }
+
+    @Test
+    fun aNameNeedingEncodingDoesNotBreakTheUrl() = runTest {
+        // Picked file names carry spaces and ampersands routinely.
+        var url = ""
+
+        uploadService(capture = { url = it }).uploadMedia(picked("a&b c.mp4")) { }.getOrThrow()
+
+        assertFalse(url.contains(" "), url)
+    }
+
+    @Test
+    fun progressIsReportedAsAFractionOfTheWhole() = runTest {
+        val fractions = mutableListOf<Float>()
+
+        uploadService().uploadMedia(picked(size = 300L)) { fractions += it }.getOrThrow()
+
+        assertEquals(listOf(1f / 3f, 2f / 3f, 1f), fractions)
+    }
+
+    @Test
+    fun progressStaysWithinZeroToOneEvenIfMoreIsSentThanExpected() = runTest {
+        // A file whose reported size is short of what it streams must not drive a
+        // progress bar past full.
+        val fractions = mutableListOf<Float>()
+        val overrun = PickedMediaFile("clip.mp4", 100L) { _, onProgress -> onProgress(500L) }
+
+        uploadService().uploadMedia(overrun) { fractions += it }.getOrThrow()
+
+        assertEquals(listOf(1f), fractions)
+    }
+
+    @Test
+    fun aFileOfUnknownSizeReportsNoProgressRatherThanDividingByZero() = runTest {
+        val fractions = mutableListOf<Float>()
+        val unknown = PickedMediaFile("clip.mp4", 0L) { _, onProgress -> onProgress(10L) }
+
+        uploadService().uploadMedia(unknown) { fractions += it }.getOrThrow()
+
+        assertTrue(fractions.isEmpty())
+    }
+
+    @Test
+    fun aRejectedUploadIsAFailureCarryingTheServersReason() = runTest {
+        val error = uploadService(status = HttpStatusCode.PayloadTooLarge, body = "Too large")
+            .uploadMedia(picked()) { }
+            .exceptionOrNull()
+
+        assertIs<ApiException>(error)
+        assertEquals(413, error.httpStatus)
+        assertEquals("Too large", error.reason)
     }
 }

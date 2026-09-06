@@ -39,9 +39,9 @@ class PresentationService(
     private val settings: AppSettings,
     private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
-) {
     /** Separate client with no timeout — needed only for large file uploads. */
-    private val uploadClient: HttpClient = createActionHttpClient()
+    private val uploadClient: HttpClient = createActionHttpClient(),
+) {
 
     init {
         Logger.d(TAG, "PresentationService created — baseUrl=${settings.apiBaseUrl}")

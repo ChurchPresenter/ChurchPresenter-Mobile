@@ -6,6 +6,10 @@ import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.mockClient
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headersOf
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -170,5 +174,108 @@ class PicturesServiceTest {
         ws.failWith(IllegalStateException("denied"))
 
         assertTrue(wsService(ws).addToSchedule("f1", 0, "a.jpg").isFailure)
+    }
+
+    // ── Uploading a device photo ─────────────────────────────────────────
+    //
+    // The photo is sent as a base64 data-URI whose MIME type comes from the file
+    // extension. A wrong type is not rejected — the desktop saves the bytes under
+    // a name it cannot then display.
+
+    private fun uploadService(
+        capture: (String) -> Unit = {},
+        status: HttpStatusCode = HttpStatusCode.OK,
+        body: String = """{"ok":true,"folder-id":"device_uploads","image-index":3,"file-name":"a.jpg"}""",
+    ): PicturesService {
+        val settings = AppSettings(InMemorySettingsStorage())
+        return PicturesService(
+            settings,
+            FakeWsSender(),
+            mockClient { respond("{}") },
+            uploadClient = HttpClient(MockEngine { request ->
+                capture((request.body as io.ktor.http.content.TextContent).text)
+                respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
+            }),
+        )
+    }
+
+    @Test
+    fun uploadingReturnsWhereTheServerPutThePhoto() = runTest {
+        val response = uploadService().uploadPhoto(byteArrayOf(1, 2, 3), "a.jpg").getOrThrow()
+
+        assertTrue(response.ok)
+        assertEquals("device_uploads", response.folderId)
+        assertEquals(3, response.imageIndex)
+    }
+
+    @Test
+    fun uploadingSendsTheNameAndABase64DataUri() = runTest {
+        var body = ""
+
+        uploadService(capture = { body = it }).uploadPhoto(byteArrayOf(1, 2, 3), "a.jpg").getOrThrow()
+
+        assertTrue(body.contains("\"name\":\"a.jpg\""), body)
+        assertTrue(body.contains("data:image/jpeg;base64,"), body)
+    }
+
+    @Test
+    fun eachExtensionGetsItsOwnMimeType() = runTest {
+        val expected = mapOf(
+            "a.png" to "image/png",
+            "a.gif" to "image/gif",
+            "a.bmp" to "image/bmp",
+            "a.webp" to "image/webp",
+            "a.heic" to "image/heic",
+            "a.heif" to "image/heif",
+            "a.jpg" to "image/jpeg",
+            "a.jpeg" to "image/jpeg",
+        )
+        for ((name, mime) in expected) {
+            var body = ""
+            uploadService(capture = { body = it }).uploadPhoto(byteArrayOf(1), name).getOrThrow()
+
+            assertTrue(body.contains("data:$mime;base64,"), "$name → $body")
+        }
+    }
+
+    @Test
+    fun anUnknownOrMissingExtensionIsSentAsJpeg() = runTest {
+        // The desktop needs *a* type; JPEG is the safe default for a camera roll.
+        for (name in listOf("a.raw", "photo")) {
+            var body = ""
+            uploadService(capture = { body = it }).uploadPhoto(byteArrayOf(1), name).getOrThrow()
+
+            assertTrue(body.contains("data:image/jpeg;base64,"), "$name → $body")
+        }
+    }
+
+    @Test
+    fun theExtensionIsReadCaseInsensitively() = runTest {
+        var body = ""
+
+        uploadService(capture = { body = it }).uploadPhoto(byteArrayOf(1), "A.PNG").getOrThrow()
+
+        assertTrue(body.contains("data:image/png;base64,"), body)
+    }
+
+    @Test
+    fun aNameWithSpacesOrQuotesIsEscapedRatherThanBreakingTheJson() = runTest {
+        // The body is assembled by hand, so the name has to be encoded properly.
+        var body = ""
+
+        uploadService(capture = { body = it }).uploadPhoto(byteArrayOf(1), """my "best" shot.jpg""").getOrThrow()
+
+        assertTrue(body.contains("\\\"best\\\""), body)
+    }
+
+    @Test
+    fun aRejectedUploadIsAFailureCarryingTheServersReason() = runTest {
+        val error = uploadService(status = HttpStatusCode.PayloadTooLarge, body = "File too large")
+            .uploadPhoto(byteArrayOf(1), "a.jpg")
+            .exceptionOrNull()
+
+        assertIs<ApiException>(error)
+        assertEquals(413, error.httpStatus)
+        assertEquals("File too large", error.reason)
     }
 }

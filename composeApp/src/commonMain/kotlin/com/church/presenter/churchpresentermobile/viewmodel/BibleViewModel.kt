@@ -61,8 +61,13 @@ class BibleViewModel(
     private val presenter: StandaloneEngine? = null,
     private val mode: StateFlow<AppMode> = AppModeHolder.mode,
     private val catalog: BibleCatalog = BibleCatalog(mode, BibleService(appSettings, eventService)),
+    /**
+     * Builds the REST service used for the projection actions. Injectable so
+     * tests can drive them without a desktop; [catalog] already covers reading.
+     */
+    private val serviceFactory: (AppSettings) -> BibleService = { BibleService(it, eventService) },
 ) : ViewModel() {
-    private var bibleService = BibleService(appSettings, eventService)
+    private var bibleService = serviceFactory(appSettings)
 
     /**
      * The deck built for the open chapter, kept so projecting can re-supply it.
@@ -741,7 +746,7 @@ class BibleViewModel(
         // the new server's books load, preventing a "no books" flash.
         _isLoading.value = true
         bibleService.closeClient()
-        bibleService = BibleService(appSettings, eventService)
+        bibleService = serviceFactory(appSettings)
         _selectedBook.value = null
         _selectedBookNumber.value = null
         _selectedChapter.value = null

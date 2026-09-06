@@ -6,10 +6,16 @@ import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.mockClient
 import io.ktor.client.engine.mock.respond
+import com.church.presenter.churchpresentermobile.model.ApiException
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headersOf
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -168,5 +174,85 @@ class PresentationServiceTest {
         ws.failWith(IllegalStateException("denied"))
 
         assertTrue(wsService(ws).addToSchedule(Presentation(id = "p1")).isFailure)
+    }
+
+    // ── Uploading a deck ─────────────────────────────────────────────────
+
+    private fun uploadService(
+        status: HttpStatusCode = HttpStatusCode.OK,
+        body: String = """{"ok":true,"id":"p9","name":"Sermon.pptx"}""",
+        capture: (String) -> Unit = {},
+    ): PresentationService = PresentationService(
+        AppSettings(InMemorySettingsStorage()),
+        FakeWsSender(),
+        mockClient { respond("{}") },
+        uploadClient = HttpClient(MockEngine { request ->
+            capture((request.body as io.ktor.http.content.TextContent).text)
+            respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
+        }),
+    )
+
+    @Test
+    fun uploadingReturnsTheIdTheServerAssigned() = runTest {
+        val response = uploadService().uploadPresentation(byteArrayOf(1, 2), "Sermon.pptx").getOrThrow()
+
+        assertTrue(response.ok)
+        assertEquals("p9", response.id)
+        assertEquals("Sermon.pptx", response.name)
+    }
+
+    @Test
+    fun uploadingSendsTheNameAndABase64DataUri() = runTest {
+        var body = ""
+
+        uploadService(capture = { body = it }).uploadPresentation(byteArrayOf(1, 2), "Sermon.pptx").getOrThrow()
+
+        assertTrue(body.contains("\"name\":\"Sermon.pptx\""), body)
+        assertTrue(body.contains(";base64,"), body)
+    }
+
+    @Test
+    fun eachDeckFormatGetsItsOwnMimeType() = runTest {
+        // The desktop dispatches on the type; the wrong one is a file it saves and
+        // then cannot render.
+        for (name in listOf("a.pdf", "a.pptx", "a.ppt", "a.key")) {
+            var body = ""
+            uploadService(capture = { body = it }).uploadPresentation(byteArrayOf(1), name).getOrThrow()
+
+            val mime = body.substringAfter("data:").substringBefore(";base64")
+            assertTrue(mime.isNotBlank(), "$name produced no mime type")
+        }
+    }
+
+    @Test
+    fun aMinimalOkResponseIsAccepted() = runTest {
+        // Older desktops answer with just {"ok":true}; the deck still uploaded, and
+        // the caller polls the list for it rather than needing an id here.
+        val response = uploadService(body = """{"ok":true}""")
+            .uploadPresentation(byteArrayOf(1), "a.pptx").getOrThrow()
+
+        assertTrue(response.ok)
+        assertEquals(null, response.id)
+    }
+
+    @Test
+    fun anUnparseableSuccessBodyStillCountsAsUploaded() = runTest {
+        // The parse is deliberately lenient: a 200 means the file is on the desktop,
+        // whatever shape the body took.
+        val response = uploadService(body = "not json at all")
+            .uploadPresentation(byteArrayOf(1), "a.pptx").getOrThrow()
+
+        assertTrue(response.ok)
+    }
+
+    @Test
+    fun aRejectedUploadIsAFailureCarryingTheServersReason() = runTest {
+        val error = uploadService(status = HttpStatusCode.PayloadTooLarge, body = "File too large")
+            .uploadPresentation(byteArrayOf(1), "a.pptx")
+            .exceptionOrNull()
+
+        assertIs<ApiException>(error)
+        assertEquals(413, error.httpStatus)
+        assertEquals("File too large", error.reason)
     }
 }

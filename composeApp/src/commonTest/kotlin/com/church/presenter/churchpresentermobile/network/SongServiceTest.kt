@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.mockClient
@@ -211,5 +212,57 @@ class SongServiceTest {
             detail.allVerses.none { it.displayText.contains("Should not win") },
             detail.allVerses.toString(),
         )
+    }
+
+    // ── WebSocket actions ────────────────────────────────────────────────
+
+    private fun wsService(ws: FakeWsSender): SongService =
+        SongService(AppSettings(InMemorySettingsStorage()), ws, mockClient { respond("{}") })
+
+    @Test
+    fun selectSongSendsTheSongTheDesktopWillOpen() = runTest {
+        val ws = FakeWsSender()
+        val song = Song(id = 1, number = "42", title = "Amazing Grace", bookName = "Hymns")
+
+        wsService(ws).selectSong(song).getOrThrow()
+
+        assertEquals(WsMessageType.SELECT_SONG, ws.lastType)
+        assertTrue(ws.lastPayload.contains("\"songNumber\":42"), ws.lastPayload)
+        assertTrue(ws.lastPayload.contains("\"songbook\":\"Hymns\""), ws.lastPayload)
+        assertTrue(ws.calls.last().third, "opening a song should not wait for an ack")
+    }
+
+    @Test
+    fun aNonNumericSongNumberIsSentAsZero() = runTest {
+        // Hymnals use "10b"; the desktop's numeric field cannot carry that, so the
+        // string id is what identifies it and the number degrades to 0.
+        val ws = FakeWsSender()
+        val song = Song(id = 1, number = "10b", title = "Be Thou My Vision")
+
+        wsService(ws).selectSong(song).getOrThrow()
+
+        assertTrue(ws.lastPayload.contains("\"songNumber\":0"), ws.lastPayload)
+        assertTrue(ws.lastPayload.contains("\"id\":\"10b\""), ws.lastPayload)
+    }
+
+    @Test
+    fun selectVerseSendsTheSectionIndex() = runTest {
+        val ws = FakeWsSender()
+
+        wsService(ws).selectVerse("42", "Hymns", verseIndex = 3).getOrThrow()
+
+        assertEquals(WsMessageType.SELECT_SONG_SECTION, ws.lastType)
+        assertTrue(ws.lastPayload.contains("\"section\":3"), ws.lastPayload)
+        assertTrue(ws.lastPayload.contains("\"number\":\"42\""), ws.lastPayload)
+        assertTrue(ws.calls.last().third)
+    }
+
+    @Test
+    fun aSocketFailureIsReportedByBoth() = runTest {
+        val ws = FakeWsSender()
+        ws.failWith(IllegalStateException("socket closed"))
+
+        assertTrue(wsService(ws).selectSong(Song(id = 1, number = "1", title = "T")).isFailure)
+        assertTrue(wsService(ws).selectVerse("1", null, 0).isFailure)
     }
 }

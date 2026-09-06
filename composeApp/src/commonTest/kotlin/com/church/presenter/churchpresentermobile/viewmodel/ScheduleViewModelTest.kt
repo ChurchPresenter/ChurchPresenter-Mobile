@@ -10,9 +10,19 @@ import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import com.church.presenter.churchpresentermobile.network.ScheduleService
+import com.church.presenter.churchpresentermobile.testutil.mockClient
+import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpResponseData
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -118,6 +128,122 @@ class ScheduleViewModelTest {
             assertSame(eventService.songsUpdated, vm.songsUpdated)
             assertSame(eventService.presentationUpdated, vm.presentationUpdated)
             assertSame(eventService.picturesUpdated, vm.picturesUpdated)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── The live path ────────────────────────────────────────────────────
+    //
+    // The demo tests above never reach the network. These drive the real load
+    // through a mocked ScheduleService.
+
+    private fun liveVm(
+        handler: MockRequestHandleScope.(path: String) -> HttpResponseData,
+    ): ScheduleViewModel {
+        val settings = settings()
+        return ScheduleViewModel(settings, events(settings), isDemoMode = false) {
+            ScheduleService(it, mockClient(handler))
+        }
+    }
+
+    private val scheduleJson = """
+        [{"id":"a","type":"song","displayText":"1 - Amazing Grace"},
+         {"id":"b","type":"bible","displayText":"John 3:16"}]
+    """.trimIndent()
+
+    @Test
+    fun `the schedule loads from the desktop`() = runVmTestUnconfined {
+        val vm = liveVm { respond(scheduleJson) }
+        try {
+            val items = vm.items.first { it.isNotEmpty() }
+
+            assertEquals(2, items.size)
+            assertEquals("1 - Amazing Grace", items.first().displayTitle)
+            assertFalse(vm.isLoading.value)
+            assertNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `an empty schedule is not an error`() = runVmTestUnconfined {
+        // A service with nothing scheduled yet is the ordinary Sunday-morning
+        // state, not a failure to report.
+        val vm = liveVm { respond("[]") }
+        try {
+            vm.isLoading.first { !it }
+
+            assertTrue(vm.items.value.isEmpty())
+            assertNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed load is reported and stops the spinner`() = runVmTestUnconfined {
+        val vm = liveVm { respond("boom", HttpStatusCode.InternalServerError) }
+        try {
+            val error = vm.error.first { it != null }
+
+            assertNotNull(error)
+            assertFalse(vm.isLoading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `an explicit reload asks again`() = runVmTestUnconfined {
+        val asked = MutableStateFlow(0)
+        val vm = liveVm { asked.value += 1; respond(scheduleJson) }
+        try {
+            vm.items.first { it.isNotEmpty() }
+            val before = asked.value
+
+            vm.loadSchedule()
+
+            asked.first { it > before }
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a reload clears a previous error before asking`() = runVmTestUnconfined {
+        // Otherwise the banner from a failed attempt outlives the retry that fixed it.
+        var fail = true
+        val vm = liveVm { if (fail) respond("boom", HttpStatusCode.InternalServerError) else respond(scheduleJson) }
+        try {
+            vm.error.first { it != null }
+
+            fail = false
+            vm.loadSchedule()
+            vm.items.first { it.isNotEmpty() }
+
+            assertNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `saving settings rebuilds the service through the same factory`() = runVmTestUnconfined {
+        var built = 0
+        val settings = settings()
+        val vm = ScheduleViewModel(settings, events(settings), isDemoMode = false) {
+            built++
+            ScheduleService(it, mockClient { respond(scheduleJson) })
+        }
+        try {
+            vm.items.first { it.isNotEmpty() }
+            assertEquals(1, built)
+
+            vm.onSettingsSaved()
+
+            assertEquals(2, built, "a new server needs a new client")
         } finally {
             tearDown(vm)
         }

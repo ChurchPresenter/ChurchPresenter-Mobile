@@ -7,6 +7,7 @@ import com.church.presenter.churchpresentermobile.network.WsMessageType
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
 import com.church.presenter.churchpresentermobile.testutil.tearDown
+import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertNotNull
@@ -213,6 +214,86 @@ class WebViewModelTest {
             vm.clearMessage()
 
             assertNull(vm.message.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── When the desktop refuses ─────────────────────────────────────────
+    //
+    // Each action has a success and a failure half; only the success half was
+    // exercised. A silent failure here leaves the operator believing a page is
+    // on the wall when it is not.
+
+    private fun failingVm(error: Throwable): Pair<WebViewModel, FakeWsSender> {
+        val ws = FakeWsSender()
+        ws.failWith(error)
+        return WebViewModel(AppSettings(InMemorySettingsStorage()), ws) to ws
+    }
+
+    @Test
+    fun `a failed projection is reported and nothing is recorded live`() = runVmTestUnconfined {
+        val (vm, _) = failingVm(IllegalStateException("Connection refused"))
+        try {
+            vm.setUrl("https://notes.example.org")
+
+            vm.projectPage()
+            val message = vm.message.first { it != null }
+
+            assertEquals("Connection refused", message)
+            assertNull(vm.liveUrl.value, "nothing went live, so nothing may be shown as live")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failure with no message still says something`() = runVmTestUnconfined {
+        val (vm, _) = failingVm(IllegalStateException())
+        try {
+            vm.setUrl("https://notes.example.org")
+
+            vm.projectPage()
+            val message = vm.message.first { it != null }
+
+            assertNotNull(message)
+            assertTrue(message!!.isNotBlank())
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed add to schedule is reported`() = runVmTestUnconfined {
+        val (vm, _) = failingVm(IllegalStateException("denied"))
+        try {
+            vm.setUrl("https://notes.example.org")
+
+            vm.addToSchedule()
+            val message = vm.message.first { it != null }
+
+            assertEquals("denied", message)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed clear leaves the live url alone`() = runVmTestUnconfined {
+        // The page is still up on the desktop, so forgetting it here would leave
+        // the operator with no way to try clearing it again.
+        val ws = FakeWsSender()
+        val vm = WebViewModel(AppSettings(InMemorySettingsStorage()), ws)
+        try {
+            vm.setUrl("https://notes.example.org")
+            vm.projectPage()
+            vm.liveUrl.first { it != null }
+
+            ws.failWith(IllegalStateException("socket closed"))
+            vm.clearScreen()
+            vm.message.first { it == "socket closed" }
+
+            assertNotNull(vm.liveUrl.value, "the page is still on the desktop")
         } finally {
             tearDown(vm)
         }

@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import com.church.presenter.churchpresentermobile.model.MediaPlaybackState
+import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -51,6 +53,12 @@ class MediaViewModel(
     private val appSettings: AppSettings,
     private val eventService: ServerEventService,
     sender: WsSender = eventService,
+    /**
+     * What the desktop reports it is playing. Defaults to the socket's own feed;
+     * injectable so tests can drive the fallback in [buildPayload], where an
+     * empty composer sends whatever is already loaded over there.
+     */
+    playbackState: StateFlow<MediaPlaybackState?> = eventService.mediaState,
 ) : ViewModel() {
 
     private val service = MediaCastService(appSettings, sender)
@@ -78,7 +86,7 @@ class MediaViewModel(
     val message = _message.asStateFlow()
 
     /** Live desktop media-player state (title, position, playing…) — null until first reported. */
-    val playback = eventService.mediaState
+    val playback = playbackState
 
     /** Full URL of whatever was last sent live — drives the "ON SCREEN" badge. */
     private val _liveUrl = MutableStateFlow<String?>(null)

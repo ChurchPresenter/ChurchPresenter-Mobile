@@ -8,6 +8,22 @@ import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStora
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlinx.coroutines.test.advanceUntilIdle
+import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.model.ApiException
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.BibleBook
+import com.church.presenter.churchpresentermobile.model.BibleVerse
+import com.church.presenter.churchpresentermobile.network.BibleCatalog
+import com.church.presenter.churchpresentermobile.network.BibleReader
+import com.church.presenter.churchpresentermobile.network.BibleService
+import com.church.presenter.churchpresentermobile.network.WsMessageType
+import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
+import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
+import com.church.presenter.churchpresentermobile.testutil.mockClient
+import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
+import io.ktor.client.engine.mock.respond
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -490,6 +506,754 @@ class BibleViewModelTest {
 
             assertFalse(vm.isProjecting.value)
             assertNull(vm.projectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Hold ─────────────────────────────────────────────────────────────
+
+    @Test
+    fun `hold toggles on and off`() = runVmTest {
+        // Held, the desktop freezes on the current verse so the operator can read
+        // ahead without the congregation following along.
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+            assertFalse(vm.isHolding.value)
+
+            vm.toggleHold()
+            assertTrue(vm.isHolding.value)
+
+            vm.toggleHold()
+            assertFalse(vm.isHolding.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Clearing the display ─────────────────────────────────────────────
+
+    @Test
+    fun `clearing the display stops projecting and releases the hold`() = runVmTest {
+        // A held display that survived a clear would freeze the next verse too.
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            vm.toggleHold()
+            advanceUntilIdle()
+
+            vm.clearDisplay()
+            advanceUntilIdle()
+
+            assertFalse(vm.isProjecting.value)
+            assertNull(vm.projectedVerseIndex.value)
+            assertFalse(vm.isHolding.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `clearing when nothing is live is harmless`() = runVmTest {
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+
+            vm.clearDisplay()
+            advanceUntilIdle()
+
+            assertFalse(vm.isProjecting.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Moving between verses while live ─────────────────────────────────
+
+    @Test
+    fun `a verse is only selectable while projecting`() = runVmTest {
+        // Tapping a verse on a screen that is not live must not put it up.
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+
+            vm.selectVerse(1)
+            advanceUntilIdle()
+
+            assertNull(vm.projectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `selecting a verse while live projects it and adds it to the selection`() = runVmTest {
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            advanceUntilIdle()
+
+            vm.selectVerse(2)
+            advanceUntilIdle()
+
+            assertEquals(2, vm.projectedVerseIndex.value)
+            assertTrue(2 in vm.selectedVerseIndices.value, "the tapped verse should join the selection")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `an out-of-range verse index is ignored rather than projecting nothing`() = runVmTest {
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            advanceUntilIdle()
+            val before = vm.projectedVerseIndex.value
+
+            vm.selectVerse(999)
+            advanceUntilIdle()
+
+            assertEquals(before, vm.projectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `moving between verses keeps the latest live`() = runVmTest {
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            advanceUntilIdle()
+
+            vm.selectVerse(1)
+            vm.selectVerse(2)
+            advanceUntilIdle()
+
+            assertEquals(2, vm.projectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── The live paths ───────────────────────────────────────────────────
+    //
+    // Everything above runs in demo mode, which short-circuits before any
+    // request. These drive the real ones: reading comes from an injected
+    // catalog, the projection actions from an injected service.
+
+    private fun liveVm(ws: FakeWsSender = FakeWsSender()): BibleViewModel {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val reader = object : BibleReader {
+            override suspend fun getBooks(): Result<List<BibleBook>> =
+                Result.success(listOf(BibleBook(name = "Genesis", chapterTotal = 50, bookId = 1)))
+
+            override suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> =
+                Result.success(
+                    listOf(
+                        BibleVerse(verse = 1, text = "In the beginning"),
+                        BibleVerse(verse = 2, text = "And the earth was without form"),
+                        BibleVerse(verse = 3, text = "And God said, Let there be light"),
+                    ),
+                )
+        }
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        return BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+    }
+
+    private suspend fun BibleViewModel.openFirstChapter() {
+        val book = books.first { it.isNotEmpty() }.first()
+        selectBook(book)
+        selectChapter(1)
+        verses.first { it.isNotEmpty() }
+    }
+
+    @Test
+    fun `the book list loads from the desktop`() = runVmTestUnconfined {
+        val vm = liveVm()
+        try {
+            val books = vm.books.first { it.isNotEmpty() }
+
+            assertEquals(listOf("Genesis"), books.map { it.displayName })
+            assertNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `opening a chapter loads its verses`() = runVmTestUnconfined {
+        val vm = liveVm()
+        try {
+            vm.openFirstChapter()
+
+            assertEquals(3, vm.verses.value.size)
+            assertEquals(1, vm.selectedChapter.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `projecting sends the selected verse to the desktop`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            assertEquals(WsMessageType.SELECT_BIBLE_VERSE, ws.lastType)
+            assertTrue(ws.lastPayload.contains("Genesis"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `moving to another verse while live sends that one`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            vm.selectVerse(2)
+            vm.projectedVerseIndex.first { it == 2 }
+
+            assertTrue(ws.lastPayload.contains("Let there be light"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `turning projection off clears the desktop`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            vm.toggleProjecting()
+            vm.isProjecting.first { !it }
+
+            assertEquals(WsMessageType.CLEAR, ws.lastType)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `hold is sent to the desktop with the flag`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+
+            vm.toggleHold()
+            vm.isHolding.first { it }
+
+            assertEquals(WsMessageType.BIBLE_HOLD, ws.lastType)
+            assertTrue(ws.lastPayload.contains("true"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `clearing the display tells the desktop and releases the hold`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            vm.toggleHold()
+            vm.isHolding.first { it }
+
+            vm.clearDisplay()
+            vm.isProjecting.first { !it }
+
+            assertEquals(WsMessageType.CLEAR, ws.lastType)
+            assertFalse(vm.isHolding.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `adding a range to the schedule sends it and confirms`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleMultiSelectMode()
+            vm.toggleVerseSelection(0)
+            vm.toggleVerseSelection(1)
+
+            vm.addToSchedule()
+            vm.scheduleAdded.first { it }
+
+            assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
+            assertTrue(ws.lastPayload.contains("\"verseRange\":\"1-2\""), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused add is reported rather than confirmed`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        ws.failWith(IllegalStateException("denied"))
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+
+            vm.addToSchedule()
+            val toast = vm.toastEvent.first { it is ToastEvent.FailedToAddBibleSchedule }
+
+            assertIs<ToastEvent.FailedToAddBibleSchedule>(toast)
+            assertFalse(vm.scheduleAdded.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `saving settings rebuilds the service and clears the open chapter`() = runVmTestUnconfined {
+        var built = 0
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val reader = object : BibleReader {
+            override suspend fun getBooks(): Result<List<BibleBook>> =
+                Result.success(listOf(BibleBook(name = "Genesis", chapterTotal = 50, bookId = 1)))
+            override suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> =
+                Result.success(listOf(BibleVerse(verse = 1, text = "In the beginning")))
+        }
+        val vm = BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { built++; BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            vm.openFirstChapter()
+            assertEquals(1, built)
+
+            vm.onSettingsSaved(settingsSaveToken = 1)
+
+            assertEquals(2, built, "a new server needs a new client")
+            assertNull(vm.selectedChapter.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Branches the happy path does not reach ───────────────────────────
+
+    @Test
+    fun `back is offered only once a book is open`() = runVmTest {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            assertFalse(vm.canNavigateBack, "the book list is the top of this tab")
+
+            vm.selectBook(DemoData.books.first())
+
+            assertTrue(vm.canNavigateBack)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `back stops being offered once the book is closed`() = runVmTest {
+        val vm = bookAndChapterVm()
+        try {
+            advanceUntilIdle()
+
+            vm.navigateBack()
+            vm.navigateBack()
+
+            assertFalse(vm.canNavigateBack)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a queued navigation waits for the book list and then runs`() = runVmTestUnconfined {
+        // The schedule drawer can ask before the books have arrived; the request
+        // is held rather than dropped, which is what makes tapping a bible row
+        // from a cold start land on the passage.
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val gate = MutableStateFlow(false)
+        val reader = object : BibleReader {
+            override suspend fun getBooks(): Result<List<BibleBook>> {
+                gate.first { it }
+                return Result.success(listOf(BibleBook(name = "Genesis", chapterTotal = 50, bookId = 1)))
+            }
+            override suspend fun getChapter(bookNumber: Int, chapter: Int) =
+                Result.success(listOf(BibleVerse(verse = 1, text = "In the beginning")))
+        }
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val vm = BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            // Asked while the book list is still in flight.
+            vm.navigateToBookAndChapter("Genesis", 1)
+            assertNull(vm.selectedBook.value, "nothing to match against yet")
+
+            gate.value = true
+            vm.verses.first { it.isNotEmpty() }
+
+            assertEquals("Genesis", vm.selectedBook.value?.displayName)
+            assertEquals(1, vm.selectedChapter.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a book is matched on its raw name when the display name does not fit`() = runVmTestUnconfined {
+        // Schedule rows carry the desktop's own spelling, which need not match the
+        // display name this app builds.
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = object : BibleReader {
+            override suspend fun getBooks() =
+                Result.success(listOf(BibleBook(name = "Song of Solomon", bookName = "Canticles", bookId = 22)))
+            override suspend fun getChapter(bookNumber: Int, chapter: Int) =
+                Result.success(listOf(BibleVerse(verse = 1, text = "The song of songs")))
+        }
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val vm = BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            vm.books.first { it.isNotEmpty() }
+
+            vm.navigateToBookAndChapter("Canticles", 1)
+            vm.verses.first { it.isNotEmpty() }
+
+            assertNotNull(vm.selectedBook.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `searching filters the book list`() = runVmTest {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            val all = vm.books.value.size
+
+            vm.setBookSearchQuery(DemoData.books.first().displayName)
+            advanceUntilIdle()
+
+            assertTrue(vm.books.value.size <= all)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `clearing the search restores every book`() = runVmTest {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+            val all = vm.books.value.size
+            vm.setBookSearchQuery("zzzz")
+            advanceUntilIdle()
+
+            vm.setBookSearchQuery("")
+            advanceUntilIdle()
+
+            assertEquals(all, vm.books.value.size)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── How a refusal is worded ──────────────────────────────────────────
+    //
+    // Same mapping as the songs tab, on the bible tab's own actions.
+
+    private suspend fun BibleViewModel.toastAfterFailedAdd(ws: FakeWsSender, error: Throwable): ToastEvent? {
+        openFirstChapter()
+        toggleVerseSelection(0)
+        ws.failWith(error)
+        addToSchedule()
+        return toastEvent.first { it != null && it !is ToastEvent.BibleAddedToSchedule }
+    }
+
+    @Test
+    fun `an operator pressing deny is reported as denied`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            assertIs<ToastEvent.RequestDenied>(vm.toastAfterFailedAdd(ws, ApiException(403, "denied")))
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a blocked session is its own message`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            assertIs<ToastEvent.SessionBlocked>(vm.toastAfterFailedAdd(ws, ApiException(403, "blocked")))
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refusal with no reason shows the status code`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(503, null))
+
+            assertIs<ToastEvent.RequestRejected>(toast)
+            assertEquals(503, toast.httpStatus)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `any other reason is quoted back to the operator`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(503, "No bible loaded"))
+
+            assertIs<ToastEvent.RequestRejectedWithReason>(toast)
+            assertEquals("No bible loaded", toast.reason)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failure that is not the desktop answering falls back`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            assertIs<ToastEvent.FailedToAddBibleSchedule>(
+                vm.toastAfterFailedAdd(ws, IllegalStateException("Connection refused")),
+            )
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── When an action fails mid-service ─────────────────────────────────
+
+    @Test
+    fun `a failed clear still stops this screen showing as live`() = runVmTestUnconfined {
+        // The desktop may or may not have cleared; what matters is that the phone
+        // does not keep claiming a verse is up when the request errored.
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            ws.failWith(IllegalStateException("socket closed"))
+            vm.clearDisplay()
+
+            assertFalse(vm.isProjecting.value)
+            assertNull(vm.projectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed hold leaves the flag where the operator put it`() = runVmTestUnconfined {
+        // The toggle is optimistic; the request failing does not un-press it.
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            ws.failWith(IllegalStateException("socket closed"))
+
+            vm.toggleHold()
+
+            assertTrue(vm.isHolding.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed verse move is reported`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstChapter()
+            vm.toggleVerseSelection(0)
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+            ws.failWith(IllegalStateException("socket closed"))
+
+            vm.selectVerse(2)
+
+            // The screen still tracks where the operator moved to.
+            assertEquals(2, vm.projectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a chapter that will not load is reported and leaves no verses`() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = object : BibleReader {
+            override suspend fun getBooks() =
+                Result.success(listOf(BibleBook(name = "Genesis", chapterTotal = 50, bookId = 1)))
+            override suspend fun getChapter(bookNumber: Int, chapter: Int): Result<List<BibleVerse>> =
+                Result.failure(Exception("Connect timeout has expired"))
+        }
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val vm = BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            val book = vm.books.first { it.isNotEmpty() }.first()
+            vm.selectBook(book)
+
+            vm.selectChapter(1)
+            vm.isLoading.first { !it }
+
+            assertTrue(vm.verses.value.isEmpty())
+            assertNotNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a book list that will not load is reported`() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = object : BibleReader {
+            override suspend fun getBooks(): Result<List<BibleBook>> =
+                Result.failure(Exception("Connect timeout has expired"))
+            override suspend fun getChapter(bookNumber: Int, chapter: Int) =
+                Result.success(emptyList<BibleVerse>())
+        }
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val vm = BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            val error = vm.error.first { it != null }
+
+            assertNotNull(error)
+            assertTrue(vm.books.value.isEmpty())
+            assertFalse(vm.isLoading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `refreshing after a failure asks again`() = runVmTestUnconfined {
+        var attempt = 0
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val asked = MutableStateFlow(0)
+        val reader = object : BibleReader {
+            override suspend fun getBooks(): Result<List<BibleBook>> {
+                asked.value = ++attempt
+                return if (attempt == 1) Result.failure(Exception("Connect timeout has expired"))
+                else Result.success(listOf(BibleBook(name = "Genesis", chapterTotal = 50, bookId = 1)))
+            }
+            override suspend fun getChapter(bookNumber: Int, chapter: Int) =
+                Result.success(emptyList<BibleVerse>())
+        }
+        val mode = MutableStateFlow(AppMode.REMOTE)
+        val vm = BibleViewModel(
+            appSettings = settings,
+            eventService = ws,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, reader, LocalBibleRepository(InMemoryFileStorage()) { 1L }),
+            serviceFactory = { BibleService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            vm.error.first { it != null }
+
+            vm.refresh()
+            val books = vm.books.first { it.isNotEmpty() }
+
+            assertEquals(listOf("Genesis"), books.map { it.displayName })
+            assertNull(vm.error.value, "the banner outlived the thing it described")
         } finally {
             tearDown(vm)
         }

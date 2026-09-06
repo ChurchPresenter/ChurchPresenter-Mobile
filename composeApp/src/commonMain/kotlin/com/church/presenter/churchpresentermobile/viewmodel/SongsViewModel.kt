@@ -61,8 +61,13 @@ class SongsViewModel(
         mode = MutableStateFlow(AppMode.REMOTE),
         remote = SongService(appSettings, sender),
     ),
+    /**
+     * Builds the REST service used for the projection actions. Injectable so
+     * tests can drive them without a desktop; [catalog] already covers reading.
+     */
+    private val serviceFactory: (AppSettings) -> SongService = { SongService(it, sender) },
 ) : ViewModel() {
-    private var songService = SongService(appSettings, sender)
+    private var songService = serviceFactory(appSettings)
 
     /**
      * True when the list is coming from this device's library rather than a
@@ -554,7 +559,7 @@ class SongsViewModel(
         // ProjectionRouter that serves actions locally. Rebuilding with the raw
         // WebSocket here meant every song action after a settings save went back
         // to dialling a desktop that isn't there.
-        songService = SongService(appSettings, sender)
+        songService = serviceFactory(appSettings)
         _selectedSong.value = null
         _selectedBook.value = null
         _searchQuery.value = ""

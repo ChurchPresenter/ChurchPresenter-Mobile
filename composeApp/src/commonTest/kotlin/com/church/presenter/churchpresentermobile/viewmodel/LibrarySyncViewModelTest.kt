@@ -338,15 +338,43 @@ class LibrarySyncViewModelTest {
     // together — the state is what the Library screen reads on a Sunday morning
     // to answer "is this current?" without touching the network.
 
-    private fun syncingFixture(): Fixture = Fixture(
-        body = "",   // per-path handler below supersedes this
-        status = HttpStatusCode.OK,
-        storedState = null,
-    )
+    /**
+     * A ViewModel whose desktop answers both halves of a sync: the catalogue on
+     * `/songs`, and real lyrics on `/songs/{number}`. The shared [fixture] above
+     * returns one body for every path, which is fine for the book picker but
+     * gives the sync nothing to write.
+     */
+    private class SyncFixture(private val detailFails: Boolean = false) {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val repository = LibraryRepository(InMemoryFileStorage()) { 1_000L }
+        val viewModel: LibrarySyncViewModel
+
+        init {
+            val client = mockClient { path ->
+                when {
+                    detailFails && path.contains("/songs/") -> respond("no", HttpStatusCode.ServiceUnavailable)
+                    path.contains("/songs/") -> respond(
+                        """{"number":"1","title":"Amazing Grace",
+                           "verses":[{"label":"Verse 1","lines":["Amazing grace"]}]}""".trimIndent(),
+                    )
+                    else -> respond(CATALOGUE)
+                }
+            }
+            viewModel = LibrarySyncViewModel(repository, settings, SongService(settings, FakeWsSender(), client))
+        }
+
+        companion object {
+            val CATALOGUE = """
+                {"song-book":[{"book-name":"Hymns","song-total":1,"songs":[
+                  {"id":1,"number":"1","title":"Amazing Grace"}
+                ]}]}
+            """.trimIndent()
+        }
+    }
 
     @Test
     fun `a successful sync writes the songs and remembers that it happened`() = runVmTestUnconfined {
-        val f = fixture()
+        val f = SyncFixture()
         try {
             f.viewModel.sync()
             val outcome = f.viewModel.outcome.first { it != null }
@@ -387,7 +415,7 @@ class LibrarySyncViewModelTest {
             val reopened = LibrarySyncViewModel(
                 f.repository,
                 f.settings,
-                SongService(f.settings, FakeWsSender(), mockClient { respond(catalogue) }),
+                SongService(f.settings, FakeWsSender(), mockClient { respond(SyncFixture.CATALOGUE) }),
             )
             try {
                 assertEquals(written, reopened.state.value)
@@ -418,7 +446,7 @@ class LibrarySyncViewModelTest {
 
     @Test
     fun `the outcome banner can be dismissed after a sync`() = runVmTestUnconfined {
-        val f = fixture()
+        val f = SyncFixture()
         try {
             f.viewModel.sync()
             f.viewModel.outcome.first { it != null }
@@ -433,7 +461,7 @@ class LibrarySyncViewModelTest {
 
     @Test
     fun `a sync that cannot reach the desktop reports failure and writes nothing`() = runVmTestUnconfined {
-        val f = fixture(body = "nope", status = HttpStatusCode.ServiceUnavailable)
+        val f = Fixture(body = "nope", status = HttpStatusCode.ServiceUnavailable)
         try {
             f.viewModel.sync()
             val outcome = f.viewModel.outcome.first { it != null }
@@ -448,13 +476,123 @@ class LibrarySyncViewModelTest {
 
     @Test
     fun `progress returns to idle once the run finishes`() = runVmTestUnconfined {
-        val f = fixture()
+        val f = SyncFixture()
         try {
             f.viewModel.sync()
             f.viewModel.outcome.first { it != null }
 
             assertFalse(f.viewModel.progress.value.isRunning)
             assertFalse(f.viewModel.progress.value.isPreparing)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    // ── Which books a sync actually copies ───────────────────────────────
+    //
+    // `null` means the whole catalogue. The selection is only honoured when the
+    // operator opened the picker *and* the list arrived — the two conditions that
+    // together stop a stale or empty tick-list silently narrowing a sync.
+
+    /** Records the book filter each sync was started with. */
+    private class RecordingSync {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val repository = LibraryRepository(InMemoryFileStorage()) { 1_000L }
+        val viewModel: LibrarySyncViewModel
+
+        init {
+            val client = mockClient { path ->
+                if (path.contains("/songs/")) respond(
+                    """{"number":"1","title":"Amazing Grace","verses":[{"lines":["Amazing grace"]}]}""",
+                )
+                else respond(SyncFixture.CATALOGUE)
+            }
+            viewModel = LibrarySyncViewModel(repository, settings, SongService(settings, FakeWsSender(), client))
+        }
+    }
+
+    @Test
+    fun `by default a sync copies the whole catalogue`() = runVmTestUnconfined {
+        val f = RecordingSync()
+        try {
+            assertFalse(f.viewModel.chooseBooks.value)
+
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            assertTrue(f.repository.songs.isNotEmpty())
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `picking books with a loaded list narrows the sync to them`() = runVmTestUnconfined {
+        val f = RecordingSync()
+        try {
+            f.viewModel.setChooseBooks(true)
+            f.viewModel.books.first { it.isNotEmpty() }
+
+            f.viewModel.sync()
+            val outcome = f.viewModel.outcome.first { it != null }
+
+            assertIs<SyncOutcome.Success>(outcome)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `picking books before the list arrives still copies everything`() = runVmTestUnconfined {
+        // With no book list there is nothing to narrow by, so the selection is
+        // ignored rather than producing an empty sync.
+        val f = RecordingSync()
+        try {
+            f.viewModel.setChooseBooks(true)
+            // Deliberately not awaiting the book list.
+
+            f.viewModel.sync()
+            val outcome = f.viewModel.outcome.first { it != null }
+
+            assertIs<SyncOutcome.Success>(outcome)
+            assertTrue(f.repository.songs.isNotEmpty())
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `switching back to all songbooks copies everything again`() = runVmTestUnconfined {
+        // The stale-selection bug the chooseBooks flag exists to prevent.
+        val f = RecordingSync()
+        try {
+            f.viewModel.setChooseBooks(true)
+            f.viewModel.books.first { it.isNotEmpty() }
+            f.viewModel.clearBooks()
+            f.viewModel.setChooseBooks(false)
+
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            assertTrue(f.repository.songs.isNotEmpty(), "an empty tick-list must not narrow an 'all books' sync")
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun `a new sync clears the previous outcome before starting`() = runVmTestUnconfined {
+        // Otherwise the banner from the last run is still on screen while the next
+        // one is in flight, describing a sync that already finished.
+        val f = RecordingSync()
+        try {
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            f.viewModel.sync()
+            f.viewModel.outcome.first { it != null }
+
+            assertIs<SyncOutcome.Success>(f.viewModel.outcome.value)
         } finally {
             tearDown(f.viewModel)
         }

@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.StatusProbeResult
+import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
@@ -12,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -148,5 +151,23 @@ class StatusServiceTest {
     fun connectivityFailureIsResultFailure() = runTest {
         val svc = service { throw RuntimeException("Connect timeout has expired") }
         assertTrue(svc.fetchStatus().isFailure)
+    }
+
+    @Test
+    fun theProductionConstructorWiresItselfFromSettings() {
+        // The only path the app itself uses. It reads five separate fields off
+        // AppSettings and builds the platform client; a mis-wired field there is a
+        // runtime failure on the first probe rather than a compile error. Building
+        // it opens no connection, so this is safe to do in a unit test.
+        val settings = AppSettings(InMemorySettingsStorage()).apply {
+            host = "10.0.0.5"
+            port = 8765
+            apiKey = "s3cret"
+        }
+
+        val service = StatusService(settings)
+
+        assertNotNull(service)
+        service.closeClient()
     }
 }

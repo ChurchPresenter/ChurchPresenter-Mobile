@@ -8,9 +8,26 @@ import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStora
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlinx.coroutines.test.advanceUntilIdle
+import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.PresentationService
+import com.church.presenter.churchpresentermobile.network.WsMessageType
+import com.church.presenter.churchpresentermobile.testutil.mockClient
+import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpResponseData
+import com.church.presenter.churchpresentermobile.ui.PickedFile
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headersOf
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -284,6 +301,420 @@ class PresentationsViewModelTest {
             assertNull(vm.toastEvent.value)
             // …and the list is loaded again from the (demo) source.
             assertEquals(DemoData.presentations, vm.presentations.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── The live paths ───────────────────────────────────────────────────
+
+    private fun liveVm(
+        ws: FakeWsSender = FakeWsSender(),
+        handler: MockRequestHandleScope.(path: String) -> HttpResponseData,
+    ): PresentationsViewModel {
+        val settings = AppSettings(InMemorySettingsStorage())
+        return PresentationsViewModel(settings, ws, isDemoMode = false) {
+            PresentationService(it, ws, mockClient(handler))
+        }
+    }
+
+    private val listJson = """
+        {"presentations":[
+          {"id":"p1","file-name":"Sermon.pptx","slide-total":3,
+           "slides":[{"slide-index":0},{"slide-index":1},{"slide-index":2}]}
+        ]}
+    """.trimIndent()
+
+    @Test
+    fun `loading fetches the list and lowers the spinner`() = runVmTestUnconfined {
+        val vm = liveVm { respond(listJson) }
+        try {
+            val list = vm.presentations.first { it.isNotEmpty() }
+
+            assertEquals(1, list.size)
+            assertEquals("Sermon.pptx", list.first().displayName)
+            assertFalse(vm.isLoading.value)
+            assertNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed load is reported and stops the spinner`() = runVmTestUnconfined {
+        val vm = liveVm { respond("boom", HttpStatusCode.InternalServerError) }
+        try {
+            val error = vm.error.first { it != null }
+
+            assertNotNull(error)
+            assertFalse(vm.isLoading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `selecting a slide sends its index over the socket`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws) { respond(listJson) }
+        try {
+            val list = vm.presentations.first { it.isNotEmpty() }
+
+            vm.selectPresentation(list.first(), slideIndex = 2)
+            vm.isProjecting.first { it }
+
+            assertEquals(WsMessageType.SELECT_SLIDE, ws.lastType)
+            assertTrue(ws.lastPayload.contains("\"index\":2"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed slide selection raises a toast`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        ws.failWith(IllegalStateException("socket closed"))
+        val vm = liveVm(ws) { respond(listJson) }
+        try {
+            val list = vm.presentations.first { it.isNotEmpty() }
+
+            vm.selectPresentation(list.first(), slideIndex = 0)
+            val toast = vm.toastEvent.first { it != null }
+
+            assertIs<ToastEvent.FailedToSelectPresentation>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `clearing the display sends clear`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws) { respond(listJson) }
+        try {
+            vm.presentations.first { it.isNotEmpty() }
+
+            vm.clearDisplay()
+            vm.isProjecting.first { !it }
+
+            assertEquals(WsMessageType.CLEAR, ws.lastType)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `adding to schedule sends the item and confirms`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws) { respond(listJson) }
+        try {
+            val list = vm.presentations.first { it.isNotEmpty() }
+            vm.selectPresentation(list.first(), slideIndex = 0)
+
+            vm.addToSchedule()
+            vm.scheduleAdded.first { it }
+
+            assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
+            assertTrue(ws.lastPayload.contains("Sermon.pptx"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused add raises a toast rather than confirming`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        ws.failWith(IllegalStateException("denied"))
+        val vm = liveVm(ws) { respond(listJson) }
+        try {
+            val list = vm.presentations.first { it.isNotEmpty() }
+            vm.selectPresentation(list.first(), slideIndex = 0)
+
+            vm.addToSchedule()
+            val toast = vm.toastEvent.first { it is ToastEvent.FailedToAddPresentationSchedule }
+
+            assertIs<ToastEvent.FailedToAddPresentationSchedule>(toast)
+            assertFalse(vm.scheduleAdded.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `navigating fetches just the presentation that was tapped`() = runVmTestUnconfined {
+        val vm = liveVm { path ->
+            if (path.endsWith("/p1")) respond("""{"id":"p1","file-name":"Sermon.pptx"}""")
+            else respond(listJson)
+        }
+        try {
+            vm.presentations.first { it.isNotEmpty() }
+
+            vm.navigateTo("p1")
+            val id = vm.pendingScrollToId.first { it != null }
+
+            assertEquals("p1", id)
+            assertEquals(1, vm.presentations.value.size, "the list narrows to the tapped deck")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed navigation is reported`() = runVmTestUnconfined {
+        val vm = liveVm { path ->
+            if (path.endsWith("/p9")) respond("gone", HttpStatusCode.NotFound)
+            else respond(listJson)
+        }
+        try {
+            vm.presentations.first { it.isNotEmpty() }
+
+            vm.navigateTo("p9")
+            val error = vm.error.first { it != null }
+
+            assertNotNull(error)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `saving settings rebuilds the service through the same factory`() = runVmTestUnconfined {
+        var built = 0
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val vm = PresentationsViewModel(settings, ws, isDemoMode = false) {
+            built++
+            PresentationService(it, ws, mockClient { respond(listJson) })
+        }
+        try {
+            vm.presentations.first { it.isNotEmpty() }
+            assertEquals(1, built)
+
+            vm.onSettingsSaved()
+            vm.presentations.first { it.isNotEmpty() }
+
+            assertEquals(2, built, "a new server needs a new client")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Uploading a deck ─────────────────────────────────────────────────
+    //
+    // The server renders slides asynchronously, so the upload reply is not the
+    // end: the ViewModel polls the list until the new deck appears, then scrolls
+    // to it. The polling is what makes a freshly uploaded deck usable rather than
+    // absent until the operator pulls to refresh.
+
+    private fun uploadVm(
+        uploadStatus: HttpStatusCode = HttpStatusCode.OK,
+        uploadBody: String = """{"ok":true,"id":"p9","name":"Sermon.pptx"}""",
+        listBody: () -> String,
+    ): PresentationsViewModel {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        return PresentationsViewModel(settings, ws, isDemoMode = false) {
+            PresentationService(
+                it,
+                ws,
+                mockClient { respond(listBody()) },
+                uploadClient = HttpClient(MockEngine {
+                    respond(uploadBody, uploadStatus, headersOf(HttpHeaders.ContentType, "application/json"))
+                }),
+            )
+        }
+    }
+
+    private val withUploaded = """{"presentations":[{"id":"p9","file-name":"Sermon.pptx","slide-total":1}]}"""
+    private val withoutUploaded = """{"presentations":[]}"""
+
+    private fun file(name: String = "Sermon.pptx") = PickedFile(byteArrayOf(1, 2, 3), name)
+
+    @Test
+    fun `an uploaded deck appears and is scrolled to`() = runVmTestUnconfined {
+        val vm = uploadVm { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            val id = vm.pendingScrollToId.first { it != null }
+
+            assertEquals("p9", id)
+            assertEquals("p9", vm.selectedPresentation.value?.displayId)
+            assertEquals(1, vm.presentations.value.size)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a finished upload leaves no spinner behind`() = runVmTestUnconfined {
+        val vm = uploadVm { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            vm.pendingScrollToId.first { it != null }
+
+            assertFalse(vm.isUploading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `the list is emptied while the server renders slides`() = runVmTestUnconfined {
+        // Leaving the old list up would show entries that no longer match what the
+        // server has, and the new deck would appear to be missing.
+        val vm = uploadVm { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            vm.pendingScrollToId.first { it != null }
+
+            assertTrue(vm.presentations.value.none { it.displayId == "old" })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `polling keeps asking until the deck has finished rendering`() = runVmTestUnconfined {
+        // The first look does not have it yet — exactly what the poll is for.
+        var attempt = 0
+        val vm = uploadVm { if (++attempt < 3) withoutUploaded else withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            val id = vm.pendingScrollToId.first { it != null }
+
+            assertEquals("p9", id)
+            assertTrue(attempt >= 3, "gave up after $attempt attempts")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a reply with no id still refreshes the list`() = runVmTestUnconfined {
+        // Older desktops answer {"ok":true}; there is nothing to scroll to, but the
+        // deck did upload and the list must show it.
+        val vm = uploadVm(uploadBody = """{"ok":true}""") { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            // Await the flag that marks the whole flow finished, not the list:
+            // the list fills mid-flight, and asserting on isUploading then raced
+            // (green on JS, red on the JVM).
+            vm.isUploading.first { !it }
+
+            assertNull(vm.pendingScrollToId.value, "nothing to scroll to without an id")
+            assertTrue(vm.presentations.value.isNotEmpty())
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a rejected upload raises a toast and stops the spinner`() = runVmTestUnconfined {
+        val vm = uploadVm(uploadStatus = HttpStatusCode.PayloadTooLarge, uploadBody = "Too large") { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            val toast = vm.toastEvent.first { it != null }
+
+            assertNotNull(toast)
+            assertFalse(vm.isUploading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `demo mode uploads nothing`() = runVmTestUnconfined {
+        val vm = demoVm()
+        try {
+            advanceUntilIdle()
+
+            vm.uploadPresentationFile(file())
+
+            assertFalse(vm.isUploading.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Why an upload was refused ────────────────────────────────────────
+    //
+    // Four different answers, because four different things are wrong and each
+    // needs the operator to do something different — or nothing at all.
+
+    @Test
+    fun `a desktop too old to accept uploads says so`() = runVmTestUnconfined {
+        // 404: the endpoint does not exist on that build. Retrying will never work;
+        // the operator needs to update the desktop.
+        val vm = uploadVm(uploadStatus = HttpStatusCode.NotFound, uploadBody = "no such route") { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            val toast = vm.toastEvent.first { it != null }
+
+            assertIs<ToastEvent.UploadUnsupported>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a file the server will not take says it is too large`() = runVmTestUnconfined {
+        // 413: a smaller file would work, which is worth telling them.
+        val vm = uploadVm(uploadStatus = HttpStatusCode.PayloadTooLarge, uploadBody = "too big") { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            val toast = vm.toastEvent.first { it != null }
+
+            assertIs<ToastEvent.UploadFileTooLarge>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `any other server refusal is quoted`() = runVmTestUnconfined {
+        // 500: the desktop itself broke. Nothing for the operator to fix, but the
+        // reason is worth showing so it can be reported.
+        val vm = uploadVm(uploadStatus = HttpStatusCode.InternalServerError, uploadBody = "boom") { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            val toast = vm.toastEvent.first { it != null }
+
+            assertIs<ToastEvent.UploadServerError>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `each refusal is a distinguishable outcome`() = runVmTestUnconfined {
+        // Collapsing these into one message is what this mapping replaced.
+        val seen = mutableListOf<ToastEvent>()
+        for (status in listOf(
+            HttpStatusCode.NotFound,
+            HttpStatusCode.PayloadTooLarge,
+            HttpStatusCode.InternalServerError,
+        )) {
+            val vm = uploadVm(uploadStatus = status, uploadBody = "x") { withUploaded }
+            try {
+                vm.uploadPresentationFile(file())
+                seen += vm.toastEvent.first { it != null }!!
+            } finally {
+                tearDown(vm)
+            }
+        }
+
+        assertEquals(seen.size, seen.map { it::class }.toSet().size, "two refusals share a message: $seen")
+    }
+
+    @Test
+    fun `a failed upload leaves no spinner behind`() = runVmTestUnconfined {
+        val vm = uploadVm(uploadStatus = HttpStatusCode.InternalServerError, uploadBody = "boom") { withUploaded }
+        try {
+            vm.uploadPresentationFile(file())
+            vm.toastEvent.first { it != null }
+
+            assertFalse(vm.isUploading.value)
+            assertNull(vm.uploadProgress.value)
         } finally {
             tearDown(vm)
         }

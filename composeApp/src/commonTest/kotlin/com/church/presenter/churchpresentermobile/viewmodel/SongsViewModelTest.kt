@@ -6,8 +6,23 @@ import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStora
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlinx.coroutines.test.advanceUntilIdle
+import com.church.presenter.churchpresentermobile.model.ApiException
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.network.SongCatalog
+import com.church.presenter.churchpresentermobile.network.SongService
+import com.church.presenter.churchpresentermobile.network.WsMessageType
+import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
+import com.church.presenter.churchpresentermobile.testutil.mockClient
+import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -278,6 +293,473 @@ class SongsViewModelTest {
             advanceUntilIdle()
 
             assertEquals(3, vm.selectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── The live paths ───────────────────────────────────────────────────
+    //
+    // Everything above runs in demo mode, which short-circuits before any
+    // request. These drive the real ones: reading through an injected catalog,
+    // the projection actions through an injected service.
+
+    private val catalogueJson = """
+        {"song-book":[{"book-name":"Hymns","song-total":1,"songs":[
+          {"id":1,"number":"42","title":"Amazing Grace"}
+        ]}]}
+    """.trimIndent()
+
+    private val detailJson = """
+        {"number":"42","title":"Amazing Grace",
+         "verses":[{"label":"Verse 1","lines":["Amazing grace"]},
+                   {"label":"Chorus","lines":["How sweet the sound"]}]}
+    """.trimIndent()
+
+    private fun liveVm(ws: FakeWsSender = FakeWsSender()): SongsViewModel {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val reader = SongService(settings, ws, mockClient { path ->
+            if (path.contains("/songs/")) respond(detailJson) else respond(catalogueJson)
+        })
+        return SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            isDemoMode = false,
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+    }
+
+    private suspend fun SongsViewModel.openFirstSong() {
+        val song = songs.first { it.isNotEmpty() }.first()
+        openSongDetail(song)
+        songDetail.first { it != null }
+    }
+
+    @Test
+    fun `the catalogue loads from the desktop`() = runVmTestUnconfined {
+        val vm = liveVm()
+        try {
+            val songs = vm.songs.first { it.isNotEmpty() }
+
+            assertEquals("Amazing Grace", songs.first().title)
+            assertNull(vm.error.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `opening a song fetches its lyrics`() = runVmTestUnconfined {
+        val vm = liveVm()
+        try {
+            vm.openFirstSong()
+
+            assertTrue(vm.songDetail.value?.hasLyrics == true)
+            assertFalse(vm.isLoadingDetail.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `projecting sends the song to the desktop`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            // Casting a song goes live through `project`, which the desktop gates
+            // behind an approval dialog — unlike `select_song`, which only moves
+            // the desktop's own selection.
+            assertEquals(WsMessageType.PROJECT, ws.lastType)
+            assertTrue(ws.lastPayload.contains("Amazing Grace"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `turning projection off clears the desktop`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            vm.toggleProjecting()
+            vm.isProjecting.first { !it }
+
+            assertEquals(WsMessageType.CLEAR, ws.lastType)
+            assertNull(vm.selectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `selecting a verse while live sends that section`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            vm.selectVerse(1)
+            vm.selectedVerseIndex.first { it == 1 }
+
+            assertEquals(WsMessageType.SELECT_SONG_SECTION, ws.lastType)
+            assertTrue(ws.lastPayload.contains("\"section\":1"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `clearing the display tells the desktop`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            vm.clearDisplay()
+            vm.isProjecting.first { !it }
+
+            assertEquals(WsMessageType.CLEAR, ws.lastType)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `adding to the schedule sends the song and confirms`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+
+            vm.addSongToSchedule()
+            vm.scheduleAdded.first { it }
+
+            assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
+            assertTrue(ws.lastPayload.contains("Amazing Grace"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `adding with no song open says so rather than sending nothing`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.songs.first { it.isNotEmpty() }
+
+            vm.addSongToSchedule()
+
+            assertIs<ToastEvent.NoSongSelected>(vm.toastEvent.value)
+            assertTrue(ws.calls.isEmpty())
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused add raises a toast rather than confirming`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            ws.failWith(IllegalStateException("denied"))
+
+            vm.addSongToSchedule()
+            val toast = vm.toastEvent.first { it != null && it !is ToastEvent.SongAddedToSchedule }
+
+            assertNotNull(toast)
+            assertFalse(vm.scheduleAdded.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a desktop clear resets what this screen thinks is live`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            vm.onDisplayCleared()
+
+            assertFalse(vm.isProjecting.value)
+            assertNull(vm.selectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `refreshing asks the desktop again`() = runVmTestUnconfined {
+        val asked = MutableStateFlow(0)
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = SongService(settings, ws, mockClient { asked.value += 1; respond(catalogueJson) })
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            isDemoMode = false,
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            vm.songs.first { it.isNotEmpty() }
+            val before = asked.value
+
+            vm.refresh()
+
+            asked.first { it > before }
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a consumed toast is cleared so it shows once`() = runVmTestUnconfined {
+        val vm = liveVm()
+        try {
+            vm.songs.first { it.isNotEmpty() }
+            vm.addSongToSchedule()
+            vm.toastEvent.first { it != null }
+
+            vm.toastShown()
+
+            assertNull(vm.toastEvent.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── How a refusal is worded ──────────────────────────────────────────
+    //
+    // The desktop can refuse in several ways, and each needs different words in
+    // front of the operator: an operator who pressed Deny, a blocked session, a
+    // reason worth quoting, or a bare status with nothing to say. Collapsing
+    // these into one "request failed" is what this mapping replaced.
+
+    private suspend fun SongsViewModel.toastAfterFailedAdd(ws: FakeWsSender, error: Throwable): ToastEvent? {
+        openFirstSong()
+        ws.failWith(error)
+        addSongToSchedule()
+        return toastEvent.first { it != null && it !is ToastEvent.SongAddedToSchedule }
+    }
+
+    @Test
+    fun `an operator pressing deny is reported as denied`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(403, "denied"))
+
+            assertIs<ToastEvent.RequestDenied>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `the reason is matched whatever case the desktop sends`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(403, "DENIED"))
+
+            assertIs<ToastEvent.RequestDenied>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a blocked session is its own message`() = runVmTestUnconfined {
+        // Distinct from denied: nothing the operator does on the phone will help
+        // until the session is unblocked on the desktop.
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(403, "blocked"))
+
+            assertIs<ToastEvent.SessionBlocked>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refusal with no reason shows the status code`() = runVmTestUnconfined {
+        // Nothing useful to quote, so the number is all there is to show.
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(503, null))
+
+            assertIs<ToastEvent.RequestRejected>(toast)
+            assertEquals(503, toast.httpStatus)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `any other reason is quoted back to the operator`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, ApiException(503, "No song folder loaded"))
+
+            assertIs<ToastEvent.RequestRejectedWithReason>(toast)
+            assertEquals("No song folder loaded", toast.reason)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failure that is not the desktop answering falls back`() = runVmTestUnconfined {
+        // A dropped socket is not a refusal; it gets the ordinary failure message
+        // with the network reason attached.
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            val toast = vm.toastAfterFailedAdd(ws, IllegalStateException("Connection refused"))
+
+            assertIs<ToastEvent.FailedToAddSchedule>(toast)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── When an action fails mid-service ─────────────────────────────────
+
+    @Test
+    fun `a failed clear still stops this screen showing as live`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            ws.failWith(IllegalStateException("socket closed"))
+            vm.clearDisplay()
+
+            assertFalse(vm.isProjecting.value)
+            assertNull(vm.selectedVerseIndex.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed stop still leaves the screen not projecting`() = runVmTestUnconfined {
+        // toggleProjecting off fires a clear; the flag flips first so the button
+        // never sticks in "stop" when the request errors.
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+
+            ws.failWith(IllegalStateException("socket closed"))
+            vm.toggleProjecting()
+
+            assertFalse(vm.isProjecting.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed verse move keeps the operator's position`() = runVmTestUnconfined {
+        val ws = FakeWsSender()
+        val vm = liveVm(ws)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.isProjecting.first { it }
+            ws.failWith(IllegalStateException("socket closed"))
+
+            vm.selectVerse(1)
+
+            assertEquals(1, vm.selectedVerseIndex.value)
+            assertNotNull(vm.error.first { it != null })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a song whose lyrics will not load reports it on the detail screen`() = runVmTestUnconfined {
+        // The list still works; only this song failed, so the error belongs to the
+        // sheet rather than to the whole tab.
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = SongService(settings, ws, mockClient { path ->
+            if (path.contains("/songs/")) respond("boom", HttpStatusCode.InternalServerError)
+            else respond(catalogueJson)
+        })
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            isDemoMode = false,
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            val song = vm.songs.first { it.isNotEmpty() }.first()
+
+            vm.openSongDetail(song)
+            val error = vm.detailError.first { it != null }
+
+            assertNotNull(error)
+            assertFalse(vm.isLoadingDetail.value)
+            assertNull(vm.error.value, "one song failing is not a catalogue failure")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a catalogue that will not load is reported`() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val reader = SongService(settings, ws, mockClient { respond("boom", HttpStatusCode.InternalServerError) })
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            isDemoMode = false,
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            val error = vm.error.first { it != null }
+
+            assertNotNull(error)
+            assertTrue(vm.songs.value.isEmpty())
+            assertFalse(vm.isLoading.value)
         } finally {
             tearDown(vm)
         }

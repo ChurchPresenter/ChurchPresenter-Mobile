@@ -205,4 +205,158 @@ class QAViewModelTest {
             tearDown(vm)
         }
     }
+
+    @Test
+    fun `a question approved but not displayed is reported`() = runVmTestUnconfined {
+        // The approve landed, so the question is now public on the desktop; only
+        // the display step failed, and the operator needs to know which half.
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths, failOn = "/display")
+        try {
+            vm.settled()
+
+            vm.approveAndDisplay("q1")
+            val error = vm.actionError.first { it != null }
+
+            assertNotNull(error)
+            assertTrue(paths.value.any { it.endsWith("/approve") }, "${paths.value}")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a failed display still reloads the list`() = runVmTestUnconfined {
+        // The approve changed the question's state, so the list is stale either way.
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths, failOn = "/display")
+        try {
+            vm.settled()
+            val before = paths.value.count { it.endsWith("/questions") }
+
+            vm.approveAndDisplay("q1")
+            val seen = paths.first { list -> list.count { it.endsWith("/questions") } > before }
+
+            assertTrue(seen.count { it.endsWith("/questions") } > before)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `saving settings rebuilds the service and reloads`() = runVmTestUnconfined {
+        val paths = MutableStateFlow(emptyList<String>())
+        val vm = recordingVm(paths)
+        try {
+            vm.settled()
+            val before = paths.value.size
+
+            vm.onSettingsSaved()
+
+            paths.first { it.size > before }
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── The two halves of a load ─────────────────────────────────────────
+    //
+    // Status and questions are fetched together and reduced into one state. Both
+    // must succeed; either failing is an error rather than a half-populated
+    // screen, because a question list with no session state cannot say whether
+    // voting is on or which question is live.
+
+    @Test
+    fun anEmptyQuestionListIsStillAnAdminScreen() = runVmTestUnconfined {
+        // No questions yet is the ordinary state at the start of a service.
+        val vm = vm { path ->
+            if (path.endsWith("/status")) respond("""{"sessionActive":true}""", HttpStatusCode.OK)
+            else respond("[]", HttpStatusCode.OK)
+        }
+        try {
+            val admin = assertIs<QAUiState.Admin>(vm.settled())
+
+            assertTrue(admin.questions.isEmpty())
+            assertTrue(admin.sessionActive)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun aClosedSessionIsStillAnAdminScreen() = runVmTestUnconfined {
+        // The operator needs to see the screen in order to open the session.
+        val vm = vm { path ->
+            if (path.endsWith("/status")) respond("""{"sessionActive":false}""", HttpStatusCode.OK)
+            else respond("[]", HttpStatusCode.OK)
+        }
+        try {
+            val admin = assertIs<QAUiState.Admin>(vm.settled())
+
+            assertFalse(admin.sessionActive)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun votingOffAndNoQuestionDisplayedAreTheSafeDefaults() = runVmTestUnconfined {
+        // A minimal status reply must not read as "voting is on" — that would put
+        // an unvetted control in front of the congregation.
+        val vm = vm { path ->
+            if (path.endsWith("/status")) respond("""{"sessionActive":true}""", HttpStatusCode.OK)
+            else respond("""[{"id":"q1","text":"Why?","timestamp":1,"status":"PENDING"}]""", HttpStatusCode.OK)
+        }
+        try {
+            val admin = assertIs<QAUiState.Admin>(vm.settled())
+
+            assertFalse(admin.votingEnabled)
+            assertEquals("", admin.displayedQuestionId)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun aQuestionWithAnUnknownStatusIsTreatedAsPending() = runVmTestUnconfined {
+        // A newer desktop can name a state this build has never heard of; the safe
+        // reading is "not yet approved".
+        val vm = vm { path ->
+            if (path.endsWith("/status")) respond("""{"sessionActive":true}""", HttpStatusCode.OK)
+            else respond("""[{"id":"q1","text":"Why?","timestamp":1,"status":"ESCALATED"}]""", HttpStatusCode.OK)
+        }
+        try {
+            val admin = assertIs<QAUiState.Admin>(vm.settled())
+
+            assertEquals(1, admin.questions.size)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun aRefreshAfterAFailureRecovers() = runVmTestUnconfined {
+        // The screen offers a retry; it has to actually re-ask rather than replay
+        // the failure it already has.
+        var probes = 0
+        val vm = vm { path ->
+            if (path.endsWith("/status")) {
+                probes += 1
+                if (probes <= 1) respond("", HttpStatusCode.InternalServerError)
+                else respond("""{"sessionActive":true}""", HttpStatusCode.OK)
+            } else {
+                respond("[]", HttpStatusCode.OK)
+            }
+        }
+        try {
+            assertIs<QAUiState.Error>(vm.settled())
+
+            vm.loadQuestions()
+            val recovered = vm.uiState.first { it is QAUiState.Admin }
+
+            assertIs<QAUiState.Admin>(recovered)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }
