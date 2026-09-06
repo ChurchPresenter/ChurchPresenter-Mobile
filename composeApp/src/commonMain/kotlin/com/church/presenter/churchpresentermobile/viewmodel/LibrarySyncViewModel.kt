@@ -63,8 +63,27 @@ class LibrarySyncViewModel(
     /** Which of [books] will be copied. Every book starts ticked. */
     val selectedBooks: StateFlow<Set<String>> = _selectedBooks.asStateFlow()
 
+    private val _bookCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
+
+    /**
+     * How many songs each of [books] holds, so the size of a choice is visible
+     * before it is made. Read off the same catalogue [loadBooks] already fetches.
+     */
+    val bookCounts: StateFlow<Map<String, Int>> = _bookCounts.asStateFlow()
+
     private val _isLoadingBooks = MutableStateFlow(false)
     val isLoadingBooks: StateFlow<Boolean> = _isLoadingBooks.asStateFlow()
+
+    private val _booksError = MutableStateFlow<String?>(null)
+
+    /**
+     * Why the songbook list is missing, when it is.
+     *
+     * An unreachable computer and a computer with no songbooks are different
+     * problems, and only one of them is worth retrying — the sheet said
+     * "your computer did not list any songbooks" for both.
+     */
+    val booksError: StateFlow<String?> = _booksError.asStateFlow()
 
     private val _chooseBooks = MutableStateFlow(false)
 
@@ -103,17 +122,23 @@ class LibrarySyncViewModel(
     fun loadBooks() {
         if (_isLoadingBooks.value) return
         _isLoadingBooks.value = true
+        _booksError.value = null
         viewModelScope.launch {
             songService.getSongs()
                 .onSuccess { songs ->
-                    val names = songs.mapNotNull { it.bookName?.takeIf(String::isNotBlank) }
-                        .distinct()
-                        .sorted()
+                    val counts = songs.mapNotNull { it.bookName?.takeIf(String::isNotBlank) }
+                        .groupingBy { it }
+                        .eachCount()
+                    val names = counts.keys.sorted()
                     _books.value = names
+                    _bookCounts.value = counts
                     _selectedBooks.value = names.toSet()
                     Logger.d(TAG, "loadBooks — ${names.size} songbooks offered")
                 }
-                .onFailure { Logger.e(TAG, "loadBooks — FAILED: ${it.message}") }
+                .onFailure {
+                    Logger.e(TAG, "loadBooks — FAILED: ${it.message}")
+                    _booksError.value = it.message ?: "Could not reach your computer"
+                }
             _isLoadingBooks.value = false
         }
     }
@@ -163,6 +188,19 @@ class LibrarySyncViewModel(
     }
 
     fun dismissOutcome() { _outcome.value = null }
+
+    /**
+     * Re-reads the saved sync state and drops the last result.
+     *
+     * The view model is keyed to the Library tab, not to the sheet, so it
+     * outlives every open: without this the sheet reopened still showing
+     * "copied 240 songs" from an hour ago — and went on saying it after the
+     * library had been cleared underneath it.
+     */
+    fun refreshState() {
+        _state.value = readState()
+        _outcome.value = null
+    }
 
     private fun readState(): LibrarySyncState =
         runCatching { json.decodeFromString<LibrarySyncState>(settings.librarySyncStateJson) }
