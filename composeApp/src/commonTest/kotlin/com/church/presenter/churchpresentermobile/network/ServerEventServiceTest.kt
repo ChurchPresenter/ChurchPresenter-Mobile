@@ -4,6 +4,7 @@ import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -150,6 +151,123 @@ class ServerEventServiceTest {
         val svc = service(AppMode.REMOTE)
 
         svc.closeClient()
+        svc.closeClient()
+
+        assertFalse(svc.connected.value)
+    }
+
+    // ── Sending with no desktop on the other end ─────────────────────────
+    //
+    // The state the app is in whenever the desktop is off, asleep, or on another
+    // network — which is most of the week. Nothing here opens a socket: the send
+    // path waits for a connection that never becomes ready, so what is under test
+    // is how long it waits, how often it tries, and what it tells the caller.
+    //
+    // Run on virtual time, so the ten-second waits cost nothing.
+
+    @Test
+    fun `an action sent with no connection fails rather than hanging for ever`() = runTest {
+        val result = service(AppMode.REMOTE).sendAction(WsMessageType.PROJECT, "{}")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `the failure says the connection timed out`() = runTest {
+        // The operator sees this text; "Timed out waiting for WebSocket connection"
+        // points at the desktop, which is where the problem actually is.
+        val result = service(AppMode.REMOTE).sendAction(WsMessageType.PROJECT, "{}")
+
+        assertTrue(
+            result.exceptionOrNull()?.message?.contains("Timed out") == true,
+            "unexpected reason: ${result.exceptionOrNull()?.message}",
+        )
+    }
+
+    @Test
+    fun `the failure names the address it could not reach`() = runTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val svc = ServerEventService(settings, MutableStateFlow(AppMode.REMOTE))
+
+        val result = svc.sendAction(WsMessageType.PROJECT, "{}")
+
+        assertTrue(
+            result.exceptionOrNull()?.message?.contains(settings.wsBaseUrl) == true,
+            "the address should be in the message: ${result.exceptionOrNull()?.message}",
+        )
+    }
+
+    @Test
+    fun `it tries three times, ten seconds apart, then gives up`() = runTest {
+        // Pinned because both halves matter and pull opposite ways: too few or too
+        // short and a desktop that is merely slow to answer is declared unreachable
+        // mid-service; too many or too long and the button stays dead in the
+        // operator's hand with no explanation.
+        val started = currentTime
+
+        service(AppMode.REMOTE).sendAction(WsMessageType.PROJECT, "{}")
+
+        assertEquals(30_000L, currentTime - started)
+    }
+
+    @Test
+    fun `a fire-and-forget action with no connection fails the same way`() = runTest {
+        // It waits for the connection like any other; only the response is skipped.
+        val result = service(AppMode.REMOTE)
+            .sendAction(WsMessageType.CLEAR, "", fireAndForget = true)
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `an instant action with no connection fails the same way`() = runTest {
+        val result = service(AppMode.REMOTE).sendAction(WsMessageType.SELECT_SONG, "{}")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `a failed send leaves the service disconnected, not half-open`() = runTest {
+        // A stale "connected" flag would make the next action skip the wait and
+        // fail instantly on a session that is not there.
+        val svc = service(AppMode.REMOTE)
+
+        svc.sendAction(WsMessageType.PROJECT, "{}")
+
+        assertFalse(svc.connected.value)
+    }
+
+    @Test
+    fun `a second action after a failure waits again rather than failing instantly`() = runTest {
+        // The desktop coming back is the normal recovery; the send path must not
+        // remember the earlier failure.
+        val svc = service(AppMode.REMOTE)
+        svc.sendAction(WsMessageType.PROJECT, "{}")
+        val started = currentTime
+
+        svc.sendAction(WsMessageType.PROJECT, "{}")
+
+        assertEquals(30_000L, currentTime - started)
+    }
+
+    @Test
+    fun `pausing during a wait stops the next action from waiting at all`() = runTest {
+        // Backgrounding the app while an action is queued: the mode gate is what
+        // stops the retry loop, so a paused service still reports the timeout
+        // rather than parking the caller for ever.
+        val svc = service(AppMode.REMOTE)
+        svc.pause()
+
+        val result = svc.sendAction(WsMessageType.PROJECT, "{}")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `closing the client after a failed send is harmless`() = runTest {
+        val svc = service(AppMode.REMOTE)
+        svc.sendAction(WsMessageType.PROJECT, "{}")
+
         svc.closeClient()
 
         assertFalse(svc.connected.value)

@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.present
 
+import kotlinx.coroutines.test.runTest
+import kotlin.test.assertNotNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -127,5 +129,45 @@ class WebAssetsTest {
     @Test
     fun onlyTheLastExtensionDecidesTheType() {
         assertEquals("application/javascript; charset=utf-8", WebAssets.contentTypeFor("app.min.js"))
+    }
+
+    // ── Loading the bundled files ────────────────────────────────────────
+    //
+    // `load()` reads every bundled file into memory. It is deliberately tolerant:
+    // a file that fails to load is skipped rather than fatal, because a missing
+    // font should degrade the display page's typography and not stop the service.
+    //
+    // In a unit test there is no Android asset context, so every read fails —
+    // which is exactly the degraded path worth pinning, and it exercises the
+    // whole loop.
+
+    @Test
+    fun loadingReturnsAnAssetSetEvenWhenNothingCanBeRead() = runTest {
+        val assets = WebAssets.load()
+
+        assertNotNull(assets)
+    }
+
+    @Test
+    fun aFileThatCannotBeReadIsSkippedRatherThanFatal() = runTest {
+        // The whole point of the runCatching around each read.
+        val assets = WebAssets.load()
+
+        assertTrue(assets.isEmpty, "nothing is readable here, so nothing is held")
+    }
+
+    @Test
+    fun loadingIsRepeatableAndConsistent() = runTest {
+        val first = WebAssets.load()
+        val second = WebAssets.load()
+
+        assertEquals(first.isEmpty, second.isEmpty)
+    }
+
+    @Test
+    fun anAssetThatWasNotBundledIsSimplyAbsent() = runTest {
+        val assets = WebAssets.load()
+
+        assertNull(assets.forPath("/not-a-bundled-file.txt"))
     }
 }

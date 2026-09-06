@@ -511,4 +511,193 @@ class LibrarySyncServiceTest {
         assertIs<SyncOutcome.Cancelled>(outcome)
         assertTrue(repository.songs.any { it.number == "99" })
     }
+
+    // ── What a synced song looks like once it lands ──────────────────────
+    //
+    // The catalogue row and the detail fetch can disagree, and older desktops
+    // send lyrics as one blob rather than as verses. Both have to arrive as a
+    // song the editor and the projector can use.
+
+    /** Any instance will do — sectionTypeFor is pure. */
+    private val labeller get() = service(repository(), Result.success(emptyList()))
+
+    private suspend fun syncedSong(
+        catalogue: Song,
+        detail: SongDetail,
+    ): LocalSong {
+        val repository = repository()
+        service(repository, Result.success(listOf(catalogue))) { Result.success(detail) }.sync()
+        return repository.songs.single()
+    }
+
+    @Test
+    fun `a detail that agrees with the catalogue lands as itself`() = runTest {
+        val song = syncedSong(
+            catalogueSong("42", title = "Amazing Grace"),
+            SongDetail(number = "42", title = "Amazing Grace", verses = listOf(SongVerse(text = "words"))),
+        )
+
+        assertEquals("42", song.number)
+        assertEquals("Amazing Grace", song.title)
+    }
+
+    @Test
+    fun `a detail that renames a song drops it from the sync`() = runTest {
+        // Documents an interaction rather than an intent: toLocalSong takes the
+        // detail's number and title, but the prune keys off the *catalogue's*
+        // (book, number, title). When the two disagree the written song matches no
+        // catalogue key and is pruned, so the song silently does not arrive.
+        // Harmless while both come from the same desktop; worth knowing if the
+        // detail endpoint ever starts normalising titles.
+        val repository = repository()
+        service(
+            repository,
+            Result.success(listOf(catalogueSong("1", title = "Old title"))),
+        ) { Result.success(SongDetail(number = "42", title = "Renamed", verses = listOf(SongVerse(text = "w")))) }
+            .sync()
+
+        assertTrue(repository.songs.isEmpty(), "a renamed song is pruned: ${repository.songs}")
+    }
+
+    @Test
+    fun `blank detail fields fall back to the catalogue row`() = runTest {
+        val song = syncedSong(
+            catalogueSong("1", title = "From the catalogue"),
+            SongDetail(number = "  ", title = "", verses = listOf(SongVerse(text = "words"))),
+        )
+
+        assertEquals("1", song.number)
+        assertEquals("From the catalogue", song.title)
+    }
+
+    @Test
+    fun `the author and songbook fall back to the catalogue row`() = runTest {
+        val song = syncedSong(
+            Song(number = "1", title = "T", author = "John Newton", bookName = "Hymns"),
+            SongDetail(number = "1", title = "T", verses = listOf(SongVerse(text = "words"))),
+        )
+
+        assertEquals("John Newton", song.author)
+        assertEquals("Hymns", song.bookName)
+    }
+
+    @Test
+    fun `a synced song is marked as coming from the desktop`() = runTest {
+        // So a later re-sync knows it may replace this one, unlike the user's own.
+        val song = syncedSong(
+            catalogueSong("1"),
+            SongDetail(number = "1", title = "T", verses = listOf(SongVerse(text = "words"))),
+        )
+
+        assertEquals(ContentOrigin.DESKTOP, song.origin)
+        assertEquals(2_000L, song.updatedAt)
+    }
+
+    @Test
+    fun `each verse label becomes a typed section`() = runTest {
+        val song = syncedSong(
+            catalogueSong("1"),
+            SongDetail(
+                number = "1",
+                title = "T",
+                verses = listOf(
+                    SongVerse(label = "Verse 1", text = "one"),
+                    SongVerse(label = "Chorus", text = "two"),
+                    SongVerse(label = "Bridge", text = "three"),
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf(SectionType.VERSE, SectionType.CHORUS, SectionType.BRIDGE),
+            song.sections.map { it.type },
+        )
+    }
+
+    @Test
+    fun `every label spelling maps to its section type`() {
+        assertEquals(SectionType.CHORUS, labeller.sectionTypeFor("Chorus 2"))
+        assertEquals(SectionType.CHORUS, labeller.sectionTypeFor("Refrain"))
+        assertEquals(SectionType.BRIDGE, labeller.sectionTypeFor("Bridge"))
+        assertEquals(SectionType.TAG, labeller.sectionTypeFor("Tag"))
+        assertEquals(SectionType.ENDING, labeller.sectionTypeFor("Ending"))
+        assertEquals(SectionType.ENDING, labeller.sectionTypeFor("Outro"))
+    }
+
+    @Test
+    fun `a bare number is a verse`() {
+        // Desktops label verses "1", "2" rather than "Verse 1".
+        assertEquals(SectionType.VERSE, labeller.sectionTypeFor("1"))
+        assertEquals(SectionType.VERSE, labeller.sectionTypeFor("Verse 3"))
+    }
+
+    @Test
+    fun `an absent or unrecognised label is a verse`() {
+        assertEquals(SectionType.VERSE, labeller.sectionTypeFor(null))
+        assertEquals(SectionType.VERSE, labeller.sectionTypeFor(""))
+        assertEquals(SectionType.VERSE, labeller.sectionTypeFor("Interlude"))
+    }
+
+    @Test
+    fun `a label is matched whatever case or padding it arrives in`() {
+        assertEquals(SectionType.CHORUS, labeller.sectionTypeFor("  CHORUS  "))
+    }
+
+    @Test
+    fun `an older desktop's single lyrics blob is split into verses`() = runTest {
+        // No verse array at all — the text arrives as one field with blank lines.
+        val song = syncedSong(
+            catalogueSong("1"),
+            SongDetail(number = "1", title = "T", text = "one\n\ntwo\n\nthree"),
+        )
+
+        assertEquals(3, song.sections.size)
+        assertEquals(listOf("one", "two", "three"), song.sections.map { it.text })
+        assertTrue(song.sections.all { it.type == SectionType.VERSE })
+    }
+
+    @Test
+    fun `runs of blank lines do not become empty sections`() = runTest {
+        val song = syncedSong(
+            catalogueSong("1"),
+            SongDetail(number = "1", title = "T", text = "one\n\n\n   \n\ntwo"),
+        )
+
+        assertEquals(2, song.sections.size)
+        assertTrue(song.sections.none { it.text.isBlank() })
+    }
+
+    @Test
+    fun `verses that say nothing fall through to the lyrics blob`() = runTest {
+        val song = syncedSong(
+            catalogueSong("1"),
+            SongDetail(
+                number = "1",
+                title = "T",
+                verses = listOf(SongVerse(label = "Verse 1", text = "   ")),
+                text = "the real words",
+            ),
+        )
+
+        assertEquals(listOf("the real words"), song.sections.map { it.text })
+    }
+
+    @Test
+    fun `a song with nothing at all arrives with no sections`() = runTest {
+        val song = syncedSong(catalogueSong("1"), SongDetail(number = "1", title = "T"))
+
+        assertTrue(song.sections.isEmpty())
+    }
+
+    @Test
+    fun `each synced song gets its own id`() = runTest {
+        val repository = repository()
+        service(
+            repository,
+            Result.success(listOf(catalogueSong("1"), catalogueSong("2"))),
+        ) { Result.success(detail(it.number, "words")) }.sync()
+
+        val ids = repository.songs.map { it.id }
+        assertEquals(ids.size, ids.toSet().size, "two synced songs share an id")
+    }
 }

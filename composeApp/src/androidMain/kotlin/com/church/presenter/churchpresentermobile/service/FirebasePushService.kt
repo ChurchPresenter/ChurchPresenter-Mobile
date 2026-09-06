@@ -11,7 +11,14 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-class FirebasePushService : FirebaseMessagingService() {
+/**
+ * Receives FCM tokens and pushed notices.
+ *
+ * `open` only so a test can supply an application context: an unattached
+ * service has none, and the token-persisting path is worth covering without an
+ * emulator. Nothing in the app subclasses it.
+ */
+open class FirebasePushService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Logger.d(TAG, "FCM token refreshed: $token")

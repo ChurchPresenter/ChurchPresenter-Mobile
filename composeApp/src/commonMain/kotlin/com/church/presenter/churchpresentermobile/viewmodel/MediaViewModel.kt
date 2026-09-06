@@ -59,9 +59,17 @@ class MediaViewModel(
      * empty composer sends whatever is already loaded over there.
      */
     playbackState: StateFlow<MediaPlaybackState?> = eventService.mediaState,
+    /**
+     * Builds the service this screen talks to. Injectable for the same reason
+     * [playbackState] is: an upload is an HTTP request with a progress callback,
+     * and everything this ViewModel does with the result — the title it falls
+     * back to, the message it shows, the flags it lowers again — is worth
+     * checking without a desktop on the other end.
+     */
+    serviceFactory: (AppSettings, WsSender) -> MediaCastService = { s, w -> MediaCastService(s, w) },
 ) : ViewModel() {
 
-    private val service = MediaCastService(appSettings, sender)
+    private val service = serviceFactory(appSettings, sender)
 
     /** Whether Go Live / Add to Schedule will send a URL or an uploaded local file. */
     private val _source = MutableStateFlow(MediaSource.URL)

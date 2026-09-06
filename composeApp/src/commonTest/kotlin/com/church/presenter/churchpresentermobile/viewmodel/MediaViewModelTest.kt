@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.network.MediaCastService
+import com.church.presenter.churchpresentermobile.network.PickedMediaFile
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.WsMessageType
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
@@ -8,6 +10,15 @@ import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStora
 import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
 import com.church.presenter.churchpresentermobile.testutil.tearDown
 import com.church.presenter.churchpresentermobile.model.MediaPlaybackState
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
+import io.ktor.client.request.HttpResponseData
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.OutgoingContent
+import io.ktor.utils.io.ByteChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlin.test.Test
@@ -562,6 +573,206 @@ class MediaViewModelTest {
             vm.message.first { it == "socket closed" }
 
             assertNotNull(vm.liveUrl.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── Uploading a picked file ──────────────────────────────────────────
+    //
+    // The path an operator takes with a clip on their phone and no copy on the
+    // desktop. The upload itself is MediaCastService's job; what is checked here
+    // is what the screen is left holding afterwards — because a half-composed
+    // state (uploaded set but source still URL, or the spinner never lowered)
+    // strands them mid-service with no way back.
+
+    private fun uploadVm(
+        answer: MockRequestHandleScope.() -> HttpResponseData,
+    ): Pair<MediaViewModel, FakeWsSender> {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val client = HttpClient(MockEngine { request ->
+            // MockEngine never reads a streamed body on its own, so drain it here
+            // or the progress callback never fires.
+            (request.body as? OutgoingContent.WriteChannelContent)?.writeTo(ByteChannel())
+            answer()
+        })
+        val vm = MediaViewModel(
+            settings,
+            ServerEventService(settings),
+            ws,
+            serviceFactory = { s, w -> MediaCastService(s, w, client) },
+        )
+        return vm to ws
+    }
+
+    /** A picked file that reports its bytes going out in two halves. */
+    private fun picked(name: String = "holiday_clip.mp4", size: Long = 100L) =
+        PickedMediaFile(name, size) { _, onProgress ->
+            onProgress(size / 2)
+            onProgress(size)
+        }
+
+    @Test
+    fun `an uploaded file becomes what the screen will send`() = runVmTestUnconfined {
+        val (vm, _) = uploadVm {
+            respond("""{"ok":true,"path":"/media/clip.mp4","name":"Holiday clip","mediaType":"local"}""")
+        }
+        try {
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            val uploaded = assertNotNull(vm.uploaded.value)
+            assertEquals("/media/clip.mp4", uploaded.path)
+            assertEquals("Holiday clip", uploaded.title)
+            assertEquals("local", uploaded.mediaType)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `an upload switches the screen to the upload source`() = runVmTestUnconfined {
+        // Without this the operator uploads a file and Go Live still sends the
+        // (empty) URL field, which reads as the button doing nothing.
+        val (vm, _) = uploadVm { respond("""{"ok":true,"path":"/media/clip.mp4","name":"Clip"}""") }
+        try {
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            assertEquals(MediaSource.UPLOAD, vm.source.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a server that returns no name falls back to the file's own`() = runVmTestUnconfined {
+        val (vm, _) = uploadVm { respond("""{"ok":true,"path":"/media/x.mp4","name":""}""") }
+        try {
+            vm.uploadPicked(picked("holiday_clip.mp4"))
+            vm.uploading.first { !it }
+
+            assertEquals("holiday clip", assertNotNull(vm.uploaded.value).title)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `the operator is told the upload landed`() = runVmTestUnconfined {
+        val (vm, _) = uploadVm { respond("""{"ok":true,"path":"/media/x.mp4","name":"X"}""") }
+        try {
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            assertEquals("Uploaded — ready to go live", vm.message.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `progress runs to completion as the file streams`() = runVmTestUnconfined {
+        val (vm, _) = uploadVm { respond("""{"ok":true,"path":"/media/x.mp4","name":"X"}""") }
+        try {
+            vm.uploadPicked(picked(size = 100L))
+            vm.uploading.first { !it }
+
+            assertEquals(1f, vm.uploadProgress.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a file of unknown size uploads without reporting progress`() = runVmTestUnconfined {
+        // Some pickers cannot say how large a file is; the upload must still run
+        // rather than dividing by zero.
+        val (vm, _) = uploadVm { respond("""{"ok":true,"path":"/media/x.mp4","name":"X"}""") }
+        try {
+            vm.uploadPicked(PickedMediaFile("clip.mp4", 0L) { _, onProgress -> onProgress(10L) })
+            vm.uploading.first { !it }
+
+            assertEquals(0f, vm.uploadProgress.value)
+            assertNotNull(vm.uploaded.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused upload leaves nothing composed`() = runVmTestUnconfined {
+        // Go Live must not offer a path the desktop never stored.
+        val (vm, _) = uploadVm { respondError(HttpStatusCode.InternalServerError) }
+        try {
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            assertNull(vm.uploaded.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused upload says so`() = runVmTestUnconfined {
+        val (vm, _) = uploadVm { respondError(HttpStatusCode.InternalServerError) }
+        try {
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            assertNotNull(vm.message.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a refused upload leaves the screen on the source it was on`() = runVmTestUnconfined {
+        val (vm, _) = uploadVm { respondError(HttpStatusCode.BadRequest) }
+        try {
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            assertEquals(MediaSource.URL, vm.source.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `the spinner is lowered whether the upload worked or not`() = runVmTestUnconfined {
+        // A stuck spinner is the failure the operator cannot get out of.
+        val (ok, _) = uploadVm { respond("""{"ok":true,"path":"/m/x.mp4","name":"X"}""") }
+        val (bad, _) = uploadVm { respondError(HttpStatusCode.InternalServerError) }
+        try {
+            ok.uploadPicked(picked())
+            bad.uploadPicked(picked())
+
+            assertFalse(ok.uploading.first { !it })
+            assertFalse(bad.uploading.first { !it })
+        } finally {
+            tearDown(ok)
+            tearDown(bad)
+        }
+    }
+
+    @Test
+    fun `an uploaded file is what goes live, not the url field`() = runVmTestUnconfined {
+        val (vm, ws) = uploadVm {
+            respond("""{"ok":true,"path":"/media/clip.mp4","name":"Clip","mediaType":"local"}""")
+        }
+        try {
+            vm.setUrl("https://example.org/ignored.mp4")
+            vm.uploadPicked(picked())
+            vm.uploading.first { !it }
+
+            vm.goLive()
+
+            assertEquals(WsMessageType.PROJECT, ws.lastType)
+            assertTrue("/media/clip.mp4" in ws.lastPayload, ws.lastPayload)
+            assertTrue("ignored.mp4" !in ws.lastPayload, ws.lastPayload)
         } finally {
             tearDown(vm)
         }

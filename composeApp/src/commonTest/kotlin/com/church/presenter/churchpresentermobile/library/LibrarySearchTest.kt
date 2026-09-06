@@ -129,4 +129,114 @@ class LibrarySearchTest {
     fun `a blank announcement query returns everything`() {
         assertEquals(notices, LibrarySearch.announcements(notices, ""))
     }
+
+    // ── How a match is ranked ────────────────────────────────────────────
+    //
+    // The order is what makes the list useful: an operator typing "42" on a
+    // Sunday morning wants hymn 42 first, not every song whose lyrics happen to
+    // contain the digits.
+
+    private fun ranked(query: String, vararg songs: LocalSong): List<String> =
+        LibrarySearch.songs(songs.toList(), query).map { it.title }
+
+    private fun hymn(
+        title: String,
+        number: String = "",
+        author: String? = null,
+        book: String? = null,
+        body: String = "words",
+    ) = LocalSong(
+        id = title,
+        number = number,
+        title = title,
+        author = author,
+        bookName = book,
+        sections = listOf(LocalSongSection(SectionType.VERSE, body)),
+    )
+
+    @Test
+    fun `an exact number beats everything else`() {
+        val order = ranked(
+            "42",
+            hymn("Contains 42 in the words", body = "we sang 42 times"),
+            hymn("Amazing Grace", number = "42"),
+        )
+
+        assertEquals("Amazing Grace", order.first())
+    }
+
+    @Test
+    fun `a number prefix beats a title match`() {
+        val order = ranked("4", hymn("Four Seasons"), hymn("Amazing Grace", number = "42"))
+
+        assertEquals("Amazing Grace", order.first())
+    }
+
+    @Test
+    fun `an exact title beats a title prefix`() {
+        val order = ranked("grace", hymn("Grace Abounding"), hymn("Grace"))
+
+        assertEquals("Grace", order.first())
+    }
+
+    @Test
+    fun `a title prefix beats a title containing the query`() {
+        val order = ranked("grace", hymn("Amazing Grace"), hymn("Grace Abounding"))
+
+        assertEquals("Grace Abounding", order.first())
+    }
+
+    @Test
+    fun `a title match beats an author match`() {
+        val order = ranked("newton", hymn("Newton's Hymn"), hymn("Amazing Grace", author = "John Newton"))
+
+        assertEquals("Newton's Hymn", order.first())
+    }
+
+    @Test
+    fun `an author match is found when nothing else matches`() {
+        assertEquals(listOf("Amazing Grace"), ranked("newton", hymn("Amazing Grace", author = "John Newton")))
+    }
+
+    @Test
+    fun `a songbook match is found when nothing else matches`() {
+        assertEquals(listOf("Amazing Grace"), ranked("hymns", hymn("Amazing Grace", book = "Hymns")))
+    }
+
+    @Test
+    fun `a match in the lyrics is found last`() {
+        val order = ranked(
+            "wretch",
+            hymn("Wretch In The Title"),
+            hymn("Amazing Grace", body = "saved a wretch like me"),
+        )
+
+        assertEquals("Wretch In The Title", order.first())
+    }
+
+    @Test
+    fun `a song matching nothing is left out`() {
+        assertTrue(ranked("zzzz", hymn("Amazing Grace")).isEmpty())
+    }
+
+    @Test
+    fun `matching ignores case on every field`() {
+        assertEquals(listOf("Amazing Grace"), ranked("AMAZING", hymn("Amazing Grace")))
+        assertEquals(listOf("Amazing Grace"), ranked("NEWTON", hymn("Amazing Grace", author = "John Newton")))
+        assertEquals(listOf("Amazing Grace"), ranked("HYMNS", hymn("Amazing Grace", book = "Hymns")))
+    }
+
+    @Test
+    fun `a song with no number is not matched by an empty number`() {
+        // "".startsWith(q) is true for any q, so the emptiness guard is what keeps
+        // every unnumbered song from ranking as a number prefix.
+        val order = ranked("grace", hymn("Amazing Grace"), hymn("Grace"))
+
+        assertEquals("Grace", order.first())
+    }
+
+    @Test
+    fun `a song with no author or book is still searchable by title`() {
+        assertEquals(listOf("Amazing Grace"), ranked("amazing", hymn("Amazing Grace")))
+    }
 }

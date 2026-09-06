@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.network
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -72,5 +73,114 @@ class PingReporterTest {
             repoSlug = "someone/cp-mobile-fork", commit = "deadbeef", buildType = "release",
         )
         assertTrue("repo=someone/cp-mobile-fork" in fork, fork)
+    }
+
+    // ── What the live map is told ────────────────────────────────────────
+    //
+    // The app is open-source and hardcodes this URL, so a fork built from source
+    // would otherwise ping with a payload identical to an official install. The
+    // provenance parameters are what let the server tell them apart — and each is
+    // omitted rather than sent as "unknown", so a source archive with no git is
+    // simply quiet rather than noisy.
+
+    private fun url(
+        os: String = "android",
+        version: String = "1.0.18",
+        isDevBuild: Boolean = false,
+        connected: Boolean = false,
+        repoSlug: String = "churchpresenter/churchpresenter-mobile",
+        commit: String = "abc123def456",
+        buildType: String = "release",
+    ) = PingReporter.buildPingUrl(os, version, isDevBuild, connected, repoSlug, commit, buildType)
+
+    @Test
+    fun everyLaunchReportsItsPlatformOsAndVersion() {
+        val u = url()
+
+        assertTrue(u.contains("platform=mobile"), u)
+        assertTrue(u.contains("os=android"), u)
+        assertTrue(u.contains("version=1.0.18"), u)
+    }
+
+    @Test
+    fun aReleaseBuildIsNotMarkedAsDevelopment() {
+        assertFalse(url(isDevBuild = false).contains("src=dev"))
+    }
+
+    @Test
+    fun aDeveloperBuildIsMarked() {
+        // So a developer's own launches do not count as installs.
+        assertTrue(url(isDevBuild = true).contains("src=dev"))
+    }
+
+    @Test
+    fun theConnectedFlagIsSentOnlyOnceADesktopIsFound() {
+        assertFalse(url(connected = false).contains("connected=true"))
+        assertTrue(url(connected = true).contains("connected=true"))
+    }
+
+    @Test
+    fun theRepoIsReportedSoForksAreCountedSeparately() {
+        assertTrue(url(repoSlug = "someone/their-fork").contains("repo=someone/their-fork"))
+    }
+
+    @Test
+    fun anUnknownRepoIsOmittedRatherThanSent() {
+        // A source archive with no git remote; "unknown" would be noise.
+        assertFalse(url(repoSlug = "unknown").contains("repo="))
+        assertFalse(url(repoSlug = "").contains("repo="))
+    }
+
+    @Test
+    fun theCommitIsReportedWhenItIsKnown() {
+        assertTrue(url(commit = "abc123def456").contains("commit=abc123def456"))
+    }
+
+    @Test
+    fun anUnknownCommitIsOmitted() {
+        assertFalse(url(commit = "unknown").contains("commit="))
+        assertFalse(url(commit = "").contains("commit="))
+    }
+
+    @Test
+    fun theBuildTypeIsReportedWhenItIsKnown() {
+        for (type in listOf("release", "snapshot", "dirty", "nogit")) {
+            assertTrue(url(buildType = type).contains("build=$type"), type)
+        }
+    }
+
+    @Test
+    fun anUnknownBuildTypeIsOmitted() {
+        assertFalse(url(buildType = "unknown").contains("build="))
+        assertFalse(url(buildType = "").contains("build="))
+    }
+
+    @Test
+    fun aBuildWithNoProvenanceAtAllStillPings() {
+        // The launch still counts; it just carries nothing identifying.
+        val u = url(repoSlug = "unknown", commit = "unknown", buildType = "unknown")
+
+        assertTrue(u.contains("platform=mobile"), u)
+        assertFalse(u.contains("repo="), u)
+        assertFalse(u.contains("commit="), u)
+        assertFalse(u.contains("build="), u)
+    }
+
+    @Test
+    fun theUrlIsWellFormedWithOneQueryStartAndNoStrayAmpersands() {
+        val u = url()
+
+        assertEquals(1, u.count { it == '?' }, u)
+        assertFalse(u.contains("&&"), u)
+        assertFalse(u.endsWith("&"), u)
+    }
+
+    @Test
+    fun everyOptionalParameterCanBePresentAtOnce() {
+        val u = url(isDevBuild = true, connected = true)
+
+        for (part in listOf("src=dev", "connected=true", "repo=", "commit=", "build=")) {
+            assertTrue(u.contains(part), "$part missing from $u")
+        }
     }
 }

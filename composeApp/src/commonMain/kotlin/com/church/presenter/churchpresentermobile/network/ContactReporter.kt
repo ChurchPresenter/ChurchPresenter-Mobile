@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.getPlatform
 import com.church.presenter.churchpresentermobile.util.appVersion
+import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -84,9 +85,19 @@ object ContactReporter {
     /** Non-sensitive diagnostics appended to the message body to aid bug-report triage. */
     fun defaultContext(): String = "Church Presenter Mobile $appVersion · ${getPlatform().name}"
 
-    suspend fun submit(request: ContactRequest): Outcome {
+    suspend fun submit(request: ContactRequest): Outcome = submit(request, http)
+
+    /**
+     * The same submission over a supplied [client].
+     *
+     * A narrow seam, like [WsSender] elsewhere: everything that decides what the
+     * user is told — which status means retry, which means "use the web form",
+     * and where the server's own reason comes from — lives between the POST and
+     * the [Outcome], and none of it should need a live endpoint to check.
+     */
+    internal suspend fun submit(request: ContactRequest, client: HttpClient): Outcome {
         val result = apiRunCatching {
-            http.post(ENDPOINT) {
+            client.post(ENDPOINT) {
                 // The server's fallback identification, for parity with the desktop.
                 // Browsers refuse to let a script set this, which is exactly why
                 // ContactRequest.client carries the same fact in the body.
