@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.SharedPreferences
+import java.io.File
 
 /**
  * A [Context] that answers for preferences and remembers what was asked of it.
@@ -18,10 +19,13 @@ import android.content.SharedPreferences
  * @param appContext What [getApplicationContext] hands back. Defaults to this
  *   same instance; pass a different one to tell the two apart, which is how a
  *   real Activity behaves.
+ * @param files The app's private files directory. Null stands for a context that
+ *   has none yet, which is what code reading it before the app has started sees.
  */
 class RecordingContext(
     private val failStarts: Boolean = false,
     private val appContext: Context? = null,
+    private val files: File? = null,
 ) : ContextWrapper(null) {
 
     /** Preference files handed out so far, keyed by the name that was asked for. */
@@ -35,6 +39,8 @@ class RecordingContext(
         private set
 
     override fun getApplicationContext(): Context = appContext ?: this
+
+    override fun getFilesDir(): File? = files
 
     override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences =
         preferenceFiles.getOrPut(name.orEmpty()) { FakePreferences() }

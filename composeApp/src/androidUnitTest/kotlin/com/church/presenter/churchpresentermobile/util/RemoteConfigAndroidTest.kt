@@ -207,4 +207,81 @@ class RemoteConfigAndroidTest {
          */
         val firebase: FirebaseRemoteConfig = mockk(relaxed = true)
     }
+
+    // ── The shapes the app actually calls ────────────────────────────────
+    //
+    // Every parameter here has a default, and the app leans on them: startup
+    // calls init() bare, and a feature switch is read as getBoolean(key). The
+    // defaults are part of the contract, so they are exercised as written
+    // rather than only through their fully-spelled-out forms.
+
+    @Test
+    fun `initialising with nothing given uses the production fetch interval`() {
+        // An hour. Development overrides it to 0 so a flag can be flipped and
+        // seen; shipping that would ask on every launch.
+        val settings = slot<FirebaseRemoteConfigSettings>()
+        every { firebase.setConfigSettingsAsync(capture(settings)) } returns mockk(relaxed = true)
+
+        RemoteConfig.init()
+
+        assertEquals(3_600L, settings.captured.minimumFetchIntervalInSeconds)
+    }
+
+    @Test
+    fun `initialising with defaults alone still uses the production interval`() {
+        val settings = slot<FirebaseRemoteConfigSettings>()
+        every { firebase.setConfigSettingsAsync(capture(settings)) } returns mockk(relaxed = true)
+
+        RemoteConfig.init(mapOf(RemoteConfigKeys.MAINTENANCE_MODE to false))
+
+        assertEquals(3_600L, settings.captured.minimumFetchIntervalInSeconds)
+    }
+
+    @Test
+    fun `a string read with no default falls back to empty rather than to null`() {
+        // The banner is rendered straight from this; a null would need a check
+        // at every call site.
+        every { firebase.getString(any()) } returns ""
+
+        assertEquals("", RemoteConfig.getString(RemoteConfigKeys.ANNOUNCEMENT_BANNER))
+    }
+
+    @Test
+    fun `a string read with no default still returns what the server set`() {
+        every { firebase.getString(RemoteConfigKeys.ANNOUNCEMENT_BANNER) } returns "Maintenance Sunday"
+
+        assertEquals("Maintenance Sunday", RemoteConfig.getString(RemoteConfigKeys.ANNOUNCEMENT_BANNER))
+    }
+
+    @Test
+    fun `a flag read with no default is off`() {
+        // Every feature switch is read this way, so "unset" has to mean the safe
+        // side — maintenance mode off, not maintenance mode on.
+        every { firebase.getBoolean(any()) } returns false
+
+        assertFalse(RemoteConfig.getBoolean(RemoteConfigKeys.MAINTENANCE_MODE))
+    }
+
+    @Test
+    fun `a flag read with no default still returns what the server set`() {
+        every { firebase.getBoolean(RemoteConfigKeys.FEATURE_BIBLE_ENABLED) } returns true
+
+        assertTrue(RemoteConfig.getBoolean(RemoteConfigKeys.FEATURE_BIBLE_ENABLED))
+    }
+
+    @Test
+    fun `a number read with no default is zero`() {
+        // The minimum-version gate compares against this; anything but zero
+        // would lock users out of a build the server never asked to block.
+        every { firebase.getLong(any()) } returns 0L
+
+        assertEquals(0L, RemoteConfig.getLong(RemoteConfigKeys.MIN_APP_VERSION))
+    }
+
+    @Test
+    fun `a number read with no default still returns what the server set`() {
+        every { firebase.getLong(RemoteConfigKeys.MIN_APP_VERSION) } returns 19L
+
+        assertEquals(19L, RemoteConfig.getLong(RemoteConfigKeys.MIN_APP_VERSION))
+    }
 }

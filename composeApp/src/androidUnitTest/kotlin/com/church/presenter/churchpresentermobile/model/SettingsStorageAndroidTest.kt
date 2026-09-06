@@ -4,6 +4,8 @@ import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.testutil.RecordingContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.assertSame
 
 /**
@@ -97,14 +99,102 @@ class SettingsStorageAndroidTest {
 
     @Test
     fun `off a device the default host is the LAN one`() {
-        // android.os.Build's fields are null on a plain JVM, so the emulator probe
-        // throws; the guard around it is what keeps this from taking the app with
-        // it, and the answer a real phone would give is the LAN address.
+        // android.os.Build's fields are null on a plain JVM, so nothing matches
+        // the emulator test and the answer is the one a real phone would give.
         assertEquals(ApiConstants.DEFAULT_HOST, resolveDefaultHost())
     }
 
     @Test
     fun `resolving the host twice gives the same answer`() {
         assertEquals(resolveDefaultHost(), resolveDefaultHost())
+    }
+
+    // ── Which host a fresh install points at ─────────────────────────────
+    //
+    // An emulator cannot reach the developer's machine on its LAN address; it
+    // has to use 10.0.2.2. A real phone is the other way round. Guess wrong in
+    // either direction and every tab times out against an address that does not
+    // exist, with nothing on screen to say why — so the test is over the build
+    // identifiers rather than over `Build`, whose fields a unit test cannot set.
+
+    /** Build identifiers as a real phone reports them. */
+    private fun phone(
+        fingerprint: String? = "samsung/dm3q/dm3q:14/UP1A/S918BXXU:user/release-keys",
+        model: String? = "SM-S918B",
+        manufacturer: String? = "samsung",
+        brand: String? = "samsung",
+        device: String? = "dm3q",
+        product: String? = "dm3qxxx",
+        hardware: String? = "qcom",
+    ) = looksLikeEmulator(fingerprint, model, manufacturer, brand, device, product, hardware)
+
+    @Test
+    fun `a real phone is not taken for an emulator`() {
+        assertFalse(phone())
+    }
+
+    @Test
+    fun `a generic fingerprint is an emulator`() {
+        assertTrue(phone(fingerprint = "generic/sdk_gphone64/emu64x:14/UE1A:userdebug/test-keys"))
+    }
+
+    @Test
+    fun `an unknown fingerprint is an emulator`() {
+        assertTrue(phone(fingerprint = "unknown"))
+    }
+
+    @Test
+    fun `the SDK models are emulators`() {
+        assertTrue(phone(model = "google_sdk"))
+        assertTrue(phone(model = "Android SDK built for x86"))
+        assertTrue(phone(model = "Android Emulator"))
+    }
+
+    @Test
+    fun `a Genymotion image is an emulator`() {
+        assertTrue(phone(manufacturer = "Genymotion"))
+    }
+
+    @Test
+    fun `a generic brand or device is an emulator`() {
+        assertTrue(phone(brand = "generic_x86"))
+        assertTrue(phone(device = "generic_x86_arm"))
+    }
+
+    @Test
+    fun `the emulator product names are recognised`() {
+        assertTrue(phone(product = "sdk_gphone64_arm64"))
+        assertTrue(phone(product = "vbox86p"))
+    }
+
+    @Test
+    fun `the two emulator hardware names are recognised`() {
+        // goldfish is the classic AVD kernel, ranchu the current one.
+        assertTrue(phone(hardware = "goldfish"))
+        assertTrue(phone(hardware = "ranchu"))
+    }
+
+    @Test
+    fun `hardware is matched exactly, not as a substring`() {
+        // "goldfish_opengl" appears on some real devices' driver strings; a
+        // substring match there would send a phone to 10.0.2.2.
+        assertFalse(phone(hardware = "goldfish_opengl"))
+        assertFalse(phone(hardware = "ranchu_extra"))
+    }
+
+    @Test
+    fun `a build that reports nothing about itself is not an emulator`() {
+        // Every identifier is null on a plain JVM. Absence of evidence is not
+        // evidence, and guessing "emulator" here would point the app at an
+        // address no real device can route to.
+        assertFalse(looksLikeEmulator(null, null, null, null, null, null, null))
+    }
+
+    @Test
+    fun `a device whose model merely mentions a brand is not an emulator`() {
+        // The model check is a substring match, so it is the one most likely to
+        // catch a real phone by accident.
+        assertFalse(phone(model = "Pixel 8 Pro"))
+        assertFalse(phone(model = "SDK"))
     }
 }
