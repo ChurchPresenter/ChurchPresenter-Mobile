@@ -1,13 +1,13 @@
 package com.church.presenter.churchpresentermobile.ui.library
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import com.church.presenter.churchpresentermobile.model.LocalAnnouncement
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -22,38 +22,20 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class LibraryRowActionsTest {
 
-    // ── Editing and deleting ─────────────────────────────────────────────
-
     @Test
-    fun eachRowOffersExactlyTwoActions() = runComposeUiTest {
-        // Delete and Edit. A third would mean something new became reachable
-        // from the library without anyone deciding it should be.
-        showLibrary(repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace"))))
+    fun eachRowOffersEditAndDelete() = runComposeUiTest {
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"))))
 
-        assertEquals(2, actionsOnRow("42 Amazing Grace").size)
-    }
-
-    @Test
-    fun everySongGetsItsOwnPairOfActions() = runComposeUiTest {
-        showLibrary(
-            repositoryWith(
-                songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision")),
-            )
-        )
-
-        assertEquals(2, actionsOnRow("42 Amazing Grace").size)
-        assertEquals(2, actionsOnRow("7 Be Thou My Vision").size)
+        assertTrue(exists(LibraryTags.rowEdit("s1")))
+        assertTrue(exists(LibraryTags.rowDelete("s1")))
     }
 
     @Test
     fun editingASongReportsWhichOne() = runComposeUiTest {
         var edited: String? = null
-        showLibrary(
-            repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace"))),
-            onEditSong = { edited = it },
-        )
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"))), onEditSong = { edited = it })
 
-        actionsOnRow("42 Amazing Grace").last().performClick()
+        tagged(LibraryTags.rowEdit("s1")).performClick()
 
         assertEquals("s1", edited)
     }
@@ -64,65 +46,101 @@ class LibraryRowActionsTest {
         // button rather than the first in the list.
         var edited: String? = null
         showLibrary(
-            repositoryWith(
-                songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision")),
-            ),
+            libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision"))),
             onEditSong = { edited = it },
         )
 
-        actionsOnRow("7 Be Thou My Vision").last().performClick()
+        tagged(LibraryTags.rowEdit("s2")).performClick()
 
         assertEquals("s2", edited)
     }
 
     @Test
-    fun deletingAsksBeforeItRemovesAnything() = runComposeUiTest {
-        // The library is the only copy. One stray tap must not be enough.
-        val repository = repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace")))
-        showLibrary(repository)
+    fun editingANoticeReportsItSeparately() = runComposeUiTest {
+        // Songs and notices open different editors; crossing them would open a
+        // song editor on a notice's id and show a blank song.
+        var editedNotice: String? = null
+        var editedSong: String? = null
+        showLibrary(
+            libraryOf(
+                songs = listOf(song("s1", "42", "Amazing Grace")),
+                notices = listOf(LocalAnnouncement(id = "a1", title = "Bring a dish")),
+            ),
+            onEditSong = { editedSong = it },
+            onEditAnnouncement = { editedNotice = it },
+        )
 
-        actionsOnRow("42 Amazing Grace").first().performClick()
+        tagged(LibraryTags.rowEdit("a1")).performClick()
 
-        assertNotNull(repository.song("s1"), "the song went without a confirmation")
+        assertEquals("a1", editedNotice)
+        assertNull(editedSong)
     }
 
     @Test
-    fun theDeleteTapOpensAConfirmation() = runComposeUiTest {
-        val repository = repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace")))
+    fun deletingAsksBeforeItRemovesAnything() = runComposeUiTest {
+        // The library is the only copy. One stray tap must not be enough.
+        val repository = libraryOf(songs = listOf(song("s1", "42", "Amazing Grace")))
         showLibrary(repository)
-        val before = clickableCount()
 
-        actionsOnRow("42 Amazing Grace").first().performClick()
+        tagged(LibraryTags.rowDelete("s1")).performClick()
 
-        assertTrue(clickableCount() > before, "no confirmation appeared")
+        assertNotNull(repository.song("s1"), "the song went without a confirmation")
+        assertTrue(exists(LibraryTags.DELETE_CONFIRM), "no confirmation appeared")
     }
 
     @Test
     fun confirmingTheDeleteRemovesTheSong() = runComposeUiTest {
-        val repository = repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace")))
+        val repository = libraryOf(songs = listOf(song("s1", "42", "Amazing Grace")))
         showLibrary(repository)
-        actionsOnRow("42 Amazing Grace").first().performClick()
+        tagged(LibraryTags.rowDelete("s1")).performClick()
 
-        // The dialog's confirm and dismiss are the two clickables it added.
-        val all = onAllNodes(hasClickAction())
-        val count = all.fetchSemanticsNodes().size
-        all[count - 2].performClick()
+        tagged(LibraryTags.DELETE_CONFIRM).performClick()
 
         assertNull(repository.song("s1"))
+        assertFalse(exists(LibraryTags.row("s1")))
     }
 
     @Test
     fun dismissingTheConfirmationKeepsTheSong() = runComposeUiTest {
         // The way out of a mistap, and the reason the dialog exists at all.
-        val repository = repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace")))
+        val repository = libraryOf(songs = listOf(song("s1", "42", "Amazing Grace")))
         showLibrary(repository)
-        actionsOnRow("42 Amazing Grace").first().performClick()
+        tagged(LibraryTags.rowDelete("s1")).performClick()
 
-        val all = onAllNodes(hasClickAction())
-        all[all.fetchSemanticsNodes().size - 1].performClick()
+        tagged(LibraryTags.DELETE_DISMISS).performClick()
 
         assertNotNull(repository.song("s1"))
-        assertTrue(isShowing("42 Amazing Grace"))
+        assertTrue(exists(LibraryTags.row("s1")))
+    }
+
+    @Test
+    fun deletingOneSongLeavesTheOthers() = runComposeUiTest {
+        val repository = libraryOf(
+            songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision")),
+        )
+        showLibrary(repository)
+
+        tagged(LibraryTags.rowDelete("s1")).performClick()
+        tagged(LibraryTags.DELETE_CONFIRM).performClick()
+
+        assertNull(repository.song("s1"))
+        assertNotNull(repository.song("s2"))
+        assertTrue(exists(LibraryTags.row("s2")))
+    }
+
+    @Test
+    fun deletingANoticeRemovesTheNoticeAndNotASong() = runComposeUiTest {
+        val repository = libraryOf(
+            songs = listOf(song("s1", "42", "Amazing Grace")),
+            notices = listOf(LocalAnnouncement(id = "a1", title = "Bring a dish")),
+        )
+        showLibrary(repository)
+
+        tagged(LibraryTags.rowDelete("a1")).performClick()
+        tagged(LibraryTags.DELETE_CONFIRM).performClick()
+
+        assertNull(repository.announcement("a1"))
+        assertNotNull(repository.song("s1"))
     }
 
     @Test
@@ -130,9 +148,9 @@ class LibraryRowActionsTest {
         // Browsing your own library used to put the song straight on the
         // audience screen. Going live belongs to the Songs tab.
         val sender = FakeWsSender()
-        showLibrary(repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace"))), sender = sender)
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"))), sender = sender)
 
-        onNodeWithText("42 Amazing Grace", substring = true).performClick()
+        tagged(LibraryTags.row("s1")).performClick()
 
         assertTrue(sender.calls.isEmpty(), "tapping a row sent ${sender.calls}")
     }

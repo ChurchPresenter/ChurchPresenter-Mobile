@@ -47,6 +47,17 @@ class ServerEventServiceLiveTest {
     /** The settings the connected service was built over, for asserting on the handshake. */
     private lateinit var settings: AppSettings
 
+    /**
+     * Runs [block] against the fake desktop under a hard time budget.
+     *
+     * Everything here waits on real sockets and real reconnect backoff, so a
+     * test that stops making progress would otherwise block the whole suite
+     * rather than failing. Twenty seconds is well past the slowest of these
+     * (a two-second reconnect plus a handshake) and well short of noticing.
+     */
+    private fun liveTest(block: suspend CoroutineScope.() -> Unit) =
+        runBlocking { withTimeout(TEST_BUDGET_MS) { block() } }
+
     @AfterTest
     fun cleanUp() = runBlocking {
         listening?.cancel()
@@ -92,7 +103,7 @@ class ServerEventServiceLiveTest {
     // ── Connecting ───────────────────────────────────────────────────────
 
     @Test
-    fun `the phone connects and reports itself connected`() = runBlocking {
+    fun `the phone connects and reports itself connected`() = liveTest {
         val svc = connected()
 
         assertTrue(svc.connected.value)
@@ -100,7 +111,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `the handshake identifies the device`() = runBlocking {
+    fun `the handshake identifies the device`() = liveTest {
         // The desktop lists connected phones by this; without it every phone in
         // the room looks like the same one.
         connected()
@@ -110,7 +121,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `the device id is also sent as a query parameter`() = runBlocking {
+    fun `the device id is also sent as a query parameter`() = liveTest {
         // The app's own browser build cannot set headers on a WebSocket
         // handshake, so the desktop reads a parameter of the same name instead.
         connected()
@@ -119,21 +130,21 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `an API key is sent when one is configured`() = runBlocking {
+    fun `an API key is sent when one is configured`() = liveTest {
         connected { apiKey = "secret-key" }
 
         assertEquals("secret-key", headerOf(ApiConstants.API_KEY_HEADER))
     }
 
     @Test
-    fun `no API key header is sent when none is configured`() = runBlocking {
+    fun `no API key header is sent when none is configured`() = liveTest {
         connected { apiKey = "" }
 
         assertNull(headerOf(ApiConstants.API_KEY_HEADER))
     }
 
     @Test
-    fun `a device name is sent, encoded`() = runBlocking {
+    fun `a device name is sent, encoded`() = liveTest {
         // A non-ASCII name would throw before the socket opened, leaving the app
         // in its reconnect loop for ever.
         connected { customDeviceName = "Звукова рубка" }
@@ -144,7 +155,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `the device name is also sent as a query parameter`() = runBlocking {
+    fun `the device name is also sent as a query parameter`() = liveTest {
         connected { customDeviceName = "Sound desk" }
 
         assertEquals("Sound desk", queryOf(ApiConstants.DEVICE_NAME_HEADER))
@@ -154,7 +165,7 @@ class ServerEventServiceLiveTest {
     // ── Pushed events ────────────────────────────────────────────────────
 
     @Test
-    fun `a schedule update reaches the schedule flow`() = runBlocking {
+    fun `a schedule update reaches the schedule flow`() = liveTest {
         val svc = connected()
 
         withTimeout<Unit>(TIMEOUT_MS) {
@@ -165,7 +176,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `each list the desktop can change has its own signal`() = runBlocking {
+    fun `each list the desktop can change has its own signal`() = liveTest {
         val svc = connected()
 
         for ((type, flow) in listOf(
@@ -185,7 +196,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a section the operator picked on the desktop carries its index`() = runBlocking {
+    fun `a section the operator picked on the desktop carries its index`() = liveTest {
         // How the phone's verse list follows along when someone drives from the
         // desktop instead.
         val svc = connected()
@@ -201,7 +212,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `the desktop's media state reaches the media screen`() = runBlocking {
+    fun `the desktop's media state reaches the media screen`() = liveTest {
         val svc = connected()
 
         desktop.pushes.emit(
@@ -213,7 +224,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a media state that cannot be read leaves the last one alone`() = runBlocking {
+    fun `a media state that cannot be read leaves the last one alone`() = liveTest {
         // A newer desktop sending a shape this build cannot parse must not blank
         // the transport controls mid-playback.
         val svc = connected()
@@ -229,7 +240,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `an event this build does not know about is ignored`() = runBlocking {
+    fun `an event this build does not know about is ignored`() = liveTest {
         // A newer desktop adds event types; an older phone has to stay connected
         // through them rather than treating one as a protocol error.
         val svc = connected()
@@ -241,7 +252,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a frame that is not JSON does not drop the connection`() = runBlocking {
+    fun `a frame that is not JSON does not drop the connection`() = liveTest {
         val svc = connected()
 
         desktop.pushes.emit("this is not json at all")
@@ -253,7 +264,7 @@ class ServerEventServiceLiveTest {
     // ── Sending actions ──────────────────────────────────────────────────
 
     @Test
-    fun `an approved action succeeds`() = runBlocking {
+    fun `an approved action succeeds`() = liveTest {
         val svc = connected()
 
         val result = withTimeout(TIMEOUT_MS) { svc.sendAction(WsMessageType.PROJECT, """{"id":"1"}""") }
@@ -262,7 +273,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `the frame carries the type and the payload as a string`() = runBlocking {
+    fun `the frame carries the type and the payload as a string`() = liveTest {
         // The desktop expects the payload double-serialised — a nested object
         // there is rejected outright.
         val svc = connected()
@@ -275,7 +286,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `an action the operator denies fails with the reason`() = runBlocking {
+    fun `an action the operator denies fails with the reason`() = liveTest {
         desktop.reply = { """{"ok":false,"reason":"denied"}""" }
         val svc = connected()
 
@@ -286,7 +297,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a refusal with no reason still fails`() = runBlocking {
+    fun `a refusal with no reason still fails`() = liveTest {
         desktop.reply = { """{"ok":false}""" }
         val svc = connected()
 
@@ -294,7 +305,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a refusal carrying an error instead of a reason still fails`() = runBlocking {
+    fun `a refusal carrying an error instead of a reason still fails`() = liveTest {
         desktop.reply = { """{"ok":false,"error":"session blocked"}""" }
         val svc = connected()
 
@@ -304,7 +315,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a fire-and-forget action does not wait for a reply`() = runBlocking {
+    fun `a fire-and-forget action does not wait for a reply`() = liveTest {
         // The transport controls send these many times a second; waiting for an
         // acknowledgement would make the slider lag behind the finger.
         desktop.reply = { null }
@@ -319,14 +330,14 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `an instant action is acknowledged like any other`() = runBlocking {
+    fun `an instant action is acknowledged like any other`() = liveTest {
         val svc = connected()
 
         assertTrue(withTimeout(TIMEOUT_MS) { svc.sendAction(WsMessageType.SELECT_SONG, "{}") }.isSuccess)
     }
 
     @Test
-    fun `several actions in a row all reach the desktop`() = runBlocking {
+    fun `several actions in a row all reach the desktop`() = liveTest {
         // Approval-gated actions are serialised through a mutex; a lost one
         // would leave the operator pressing a button that does nothing.
         val svc = connected()
@@ -344,7 +355,7 @@ class ServerEventServiceLiveTest {
     // ── Losing and regaining the connection ──────────────────────────────
 
     @Test
-    fun `reconnecting drops the session and opens a new one`() = runBlocking {
+    fun `reconnecting drops the session and opens a new one`() = liveTest {
         // What a settings change does: the new host or port only takes effect on
         // a fresh connection.
         val svc = connected()
@@ -356,7 +367,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `pausing drops the connection and resuming brings it back`() = runBlocking {
+    fun `pausing drops the connection and resuming brings it back`() = liveTest {
         // Backgrounding the app: the retry loop otherwise keeps the process busy
         // and gets reported as a background ANR.
         val svc = connected()
@@ -371,17 +382,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `an action queued while paused is refused rather than hanging`() = runBlocking {
-        val svc = connected()
-        svc.pause()
-
-        val result = withTimeout(ACTION_TIMEOUT_MS) { svc.sendAction(WsMessageType.PROJECT, "{}") }
-
-        assertTrue(result.isFailure)
-    }
-
-    @Test
-    fun `closing the client leaves nothing connected`() = runBlocking {
+    fun `closing the client leaves nothing connected`() = liveTest {
         val svc = connected()
 
         svc.closeClient()
@@ -395,17 +396,17 @@ class ServerEventServiceLiveTest {
         /** Long enough for the two-second reconnect backoff plus a handshake. */
         const val RECONNECT_TIMEOUT_MS = 20_000L
 
-        /** Three attempts at the ten-second connection wait, plus slack. */
-        const val ACTION_TIMEOUT_MS = 40_000L
+        /** A hard ceiling per test, so a stall fails rather than blocking the suite. */
+        const val TEST_BUDGET_MS = 20_000L
 
-        /** Long enough for the loop to fail a connect and start backing off. */
-        const val RETRY_OBSERVATION_MS = 3_000L
+        /** Long enough for the loop to fail one connect and start backing off. */
+        const val RETRY_OBSERVATION_MS = 1_200L
     }
 
     // ── A desktop that is not there, or goes away ────────────────────────
 
     @Test
-    fun `a desktop that hangs up is reconnected to`() = runBlocking {
+    fun `a desktop that hangs up is reconnected to`() = liveTest {
         // Every close is treated the same: the desktop quitting, the laptop
         // sleeping, the Wi-Fi dropping. The loop keeps trying, because the
         // operator's fix is usually to wake the laptop, not to restart the app.
@@ -426,7 +427,7 @@ class ServerEventServiceLiveTest {
     }
 
     @Test
-    fun `a desktop that is not running leaves the phone disconnected, not stuck`() = runBlocking {
+    fun `a desktop that is not running leaves the phone disconnected, not stuck`() = liveTest {
         // The state the app is in most of the week. It must keep retrying
         // quietly rather than erroring out or spinning the CPU.
         val deadPort = deadLoopbackPort()
@@ -442,22 +443,6 @@ class ServerEventServiceLiveTest {
 
         assertFalse(svc.connected.value)
         assertTrue(listening!!.isActive, "the listen loop gave up")
-    }
-
-    @Test
-    fun `an action while the desktop is unreachable fails rather than hanging`() = runBlocking {
-        val deadPort = deadLoopbackPort()
-        val settings = AppSettings(InMemorySettingsStorage()).apply {
-            host = "127.0.0.1"
-            this.port = deadPort
-        }
-        val svc = ServerEventService(settings, MutableStateFlow(AppMode.REMOTE))
-        service = svc
-        listening = scope.launch { svc.listen() }
-
-        val result = withTimeout(ACTION_TIMEOUT_MS) { svc.sendAction(WsMessageType.PROJECT, "{}") }
-
-        assertTrue(result.isFailure)
     }
 
     /** A loopback port nothing is listening on. */

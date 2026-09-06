@@ -362,6 +362,99 @@ internal fun notificationText(url: String?, fallback: String): String =
     url?.takeIf { it.isNotBlank() } ?: fallback
 ```
 
+### Compose UI tests: assert what the operator can see and do
+
+A Compose test that only checks a screen renders is a coverage figure, not a
+test. Assert the things a change can actually break:
+
+- 📝 **Text** — the words on screen, including the ones derived from data
+  (`song.displayTitle`, a notice's first line). `onNodeWithText`, `hasText`.
+- 👁️ **Visibility** — that a row, hint or dialog is *there*, and equally that it
+  is **not**: an empty-state hint with content behind it, a confirmation that
+  never appeared, a chip shown for a feature the device does not have.
+- 🔤 **Content description** — every `Icon` has one (see the icons rule above),
+  and it is the only label a screen-reader user gets.
+  `onNodeWithContentDescription`.
+- 👆 **Click actions** — that tapping reaches the right callback *with the right
+  argument*. Two rows on screen and the callback carrying the first one's id is
+  a real bug that a "does it render" test never sees.
+- 🎚️ **State** — enabled/disabled (`assertIsEnabled`, `assertIsNotEnabled`),
+  selected, checked, expanded. A disabled `Modifier.clickable` **still publishes
+  a click action**, so counting clickable nodes cannot tell you whether a button
+  is pressable — read the node's state.
+- 🔁 **The effect** — where a screen writes through to a repository or a sender,
+  assert on *that*, not on the composable. "The song is gone from the
+  repository" beats "a dialog closed".
+
+❌ **Do NOT** assert on pixels, colour, spacing or font in these tests. Layout
+and appearance belong to screenshot testing (Roborazzi on Android,
+Paparazzi for JVM-rendered previews); neither is set up here yet, and a
+hand-written assertion about a `dp` value is a test that fails on every design
+tweak while catching nothing.
+
+### Selecting nodes in a Compose test — tag it, don't count it
+
+- ✅ **PREFER a test tag.** Add `Modifier.testTag(...)` to the production
+  composable and select with `onNodeWithTag`. Tags are named in one place — see
+  `ui/library/LibraryTags.kt`, an `internal object` referenced from both
+  sides so a rename cannot drift. A tag is a semantics property; it costs
+  nothing at runtime and ships in no view.
+- ✅ **Tag per item, not per screen**: `LibraryTags.rowDelete(song.id)` lets a
+  test name the row it means, which is how "the callback carried the wrong id"
+  becomes catchable.
+- ✅ **`performScrollToNode(hasTestTag(...))`** reaches a `LazyColumn` item that
+  has not been composed yet. Indices into the semantics tree cannot.
+- ✅ **Content the operator typed** — song titles, notice bodies — is matched by
+  its **text**, since it is plain data and needs no tag.
+- ⚠️ **A tag on a wrapper is not a tag on the text field.** `EditorField` and
+  `SearchField` put the caller's modifier on their outer layout, so the
+  focus/set-text actions live on a *descendant*. Match
+  `hasSetTextAction() and hasAnyAncestor(hasTestTag(tag))` — `LibraryHarness.textField`
+  does this.
+- ❌ **NEVER select by index** (`onAllNodes(hasClickAction())[3]`). It turns any
+  layout change into a failure somewhere unrelated, and it silently starts
+  pointing at a different control.
+- 🌐 **On wasmJs, `stringResource` renders empty** — compose-resources does not
+  resolve in that test runtime, and its bundle loads on a real dispatcher that
+  the test clock cannot advance, so waiting does not help. That is *why* labels
+  are unusable as selectors here, and why tags are not optional.
+
+### A slow or flaky test is a broken test — fix it when you see it
+
+- ⏱️ **NEVER** leave a test that takes tens of seconds. The suite is run on every
+  change; a minute spent waiting is a minute nobody spends reading the failure.
+  If a test is slow, find out why before writing another one.
+- 🎲 **NEVER** leave a test that passes intermittently. A flaky test is worse than
+  no test: it trains everyone to re-run the build instead of reading it.
+- ✅ **PREFER** virtual time. `runTest` fakes `delay` and `withTimeout`, so a
+  ten-second production timeout costs nothing — see `ServerEventServiceTest`,
+  which exercises the three-attempt retry ladder in microseconds.
+- ✅ **When a test genuinely needs real time** (a real socket, a real server —
+  `runTest`'s clock would expire the timeout before the handshake), use
+  `runBlocking` **and give every test a hard budget**, so a stall fails fast
+  instead of blocking the suite. `ServerEventServiceLiveTest.liveTest` is the
+  pattern:
+
+  ```kotlin
+  private fun liveTest(block: suspend CoroutineScope.() -> Unit) =
+      runBlocking { withTimeout(TEST_BUDGET_MS) { block() } }
+  ```
+
+- ✅ **ALWAYS** await a condition rather than sleeping for one: `flow.first { … }`,
+  not `delay(2_000)`. A sleep is either too short (flaky) or too long (slow), and
+  usually both on different machines.
+- 🔍 **Where to look**: `build/test-results/*/*.xml` carries a `time` per test.
+  Sort by it after any change that adds real I/O.
+- 📉 **Worked example**: two tests in `ServerEventServiceLiveTest` waited out the
+  send path's three ten-second connection timeouts — 60 of the class's 70
+  seconds, which read as a hang. Both were already covered on virtual time in
+  `ServerEventServiceTest`, so they were deleted and every remaining test given a
+  20-second budget: **70s → 6s**.
+- ❌ **NEVER** paper over flakiness with a retry, a `Thread.sleep`, or a longer
+  timeout. Find the race — it is usually a missing await on the *other* side, as
+  with the fake desktop's connection counter, which the client's own "connected"
+  flag can beat.
+
 ### Where each kind of test runs
 
 | Kind | Source set | Task |

@@ -432,4 +432,137 @@ class LibraryEditorViewModelTest {
 
         assertEquals("", vm.announcement.value.title)
     }
+
+    // ── The fields the editor writes ─────────────────────────────────────
+    //
+    // Every one of these is a text box the operator types into, and each has a
+    // different rule about what an empty box means. Getting that wrong writes
+    // an empty string where the model expects "absent", which then shows as a
+    // blank line in the song list rather than as nothing at all.
+
+    @Test
+    fun `a hymnal number is kept as typed`() {
+        // A string, not a number: hymnals use "42a" and "10b".
+        val (vm, repository) = fixture()
+        vm.editSong(null)
+
+        vm.setSongTitle("Amazing Grace")
+        vm.setSongNumber("42a")
+        vm.setSectionText(0, "Words")
+        vm.saveSong()
+
+        assertEquals("42a", repository.songs.single().number)
+    }
+
+    @Test
+    fun `a number can be cleared back to nothing`() {
+        val (vm, _) = fixture()
+        vm.editSong(null)
+        vm.setSongNumber("42")
+
+        vm.setSongNumber("")
+
+        assertEquals("", vm.song.value.number)
+    }
+
+    @Test
+    fun `setting a number marks the editor dirty`() {
+        // The discard prompt keys off this; a change that does not register
+        // would be thrown away without asking.
+        val (vm, _) = fixture()
+        vm.editSong(null)
+
+        vm.setSongNumber("42")
+
+        assertTrue(vm.isDirty.value)
+    }
+
+    @Test
+    fun `an author left blank is absent rather than empty`() {
+        val (vm, _) = fixture()
+        vm.editSong(null)
+        vm.setSongAuthor("John Newton")
+
+        vm.setSongAuthor("   ")
+
+        assertNull(vm.song.value.author, "a blank author should be absent")
+    }
+
+    @Test
+    fun `a songbook left blank is absent rather than empty`() {
+        val (vm, _) = fixture()
+        vm.editSong(null)
+        vm.setSongBook("Hymns")
+
+        vm.setSongBook("")
+
+        assertNull(vm.song.value.bookName)
+    }
+
+    @Test
+    fun `a copyright left blank is absent rather than empty`() {
+        val (vm, _) = fixture()
+        vm.editSong(null)
+        vm.setSongCopyright("CCLI 12345")
+
+        vm.setSongCopyright("")
+
+        assertNull(vm.song.value.copyright)
+    }
+
+    @Test
+    fun `the optional fields survive a save`() {
+        val (vm, repository) = fixture()
+        vm.editSong(null)
+        vm.setSongTitle("Amazing Grace")
+        vm.setSongNumber("42")
+        vm.setSongAuthor("John Newton")
+        vm.setSongBook("Hymns")
+        vm.setSongCopyright("Public domain")
+        vm.setSectionText(0, "Words")
+
+        vm.saveSong()
+
+        val saved = repository.songs.single()
+        assertEquals("John Newton", saved.author)
+        assertEquals("Hymns", saved.bookName)
+        assertEquals("Public domain", saved.copyright)
+    }
+
+    // ── Notices ──────────────────────────────────────────────────────────
+
+    @Test
+    fun `a notice's title is kept as typed`() {
+        val (vm, repository) = fixture()
+        vm.editAnnouncement(null)
+
+        vm.setAnnouncementTitle("Bring a dish")
+        vm.setAnnouncementBody("Shared lunch after the service")
+        vm.saveAnnouncement()
+
+        assertEquals("Bring a dish", repository.announcements.single().title)
+    }
+
+    @Test
+    fun `setting a notice title marks the editor dirty`() {
+        val (vm, _) = fixture()
+        vm.editAnnouncement(null)
+
+        vm.setAnnouncementTitle("Bring a dish")
+
+        assertTrue(vm.isDirty.value)
+    }
+
+    @Test
+    fun `a notice title can be cleared`() {
+        // Unlike a song's author, a blank title is kept as blank: the row falls
+        // back to the notice's first line, which is still something to read.
+        val (vm, _) = fixture()
+        vm.editAnnouncement(null)
+        vm.setAnnouncementTitle("Bring a dish")
+
+        vm.setAnnouncementTitle("")
+
+        assertEquals("", vm.announcement.value.title)
+    }
 }

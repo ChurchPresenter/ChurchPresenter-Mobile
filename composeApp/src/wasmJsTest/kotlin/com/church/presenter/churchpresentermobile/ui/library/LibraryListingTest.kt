@@ -1,11 +1,10 @@
 package com.church.presenter.churchpresentermobile.ui.library
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.LocalAnnouncement
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -18,126 +17,105 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class LibraryListingTest {
 
-    // ── What is listed ───────────────────────────────────────────────────
-
     @Test
     fun everySongInTheLibraryIsListed() = runComposeUiTest {
-        showLibrary(
-            repositoryWith(
-                songs = listOf(
-                    song("s1", "42", "Amazing Grace"),
-                    song("s2", "7", "Be Thou My Vision"),
-                )
-            )
-        )
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision"))))
+
+        assertTrue(exists(LibraryTags.row("s1")))
+        assertTrue(exists(LibraryTags.row("s2")))
+    }
+
+    @Test
+    fun aSongIsListedUnderItsNumberAndTitle() = runComposeUiTest {
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"))))
 
         assertTrue(isShowing("42 Amazing Grace"))
-        assertTrue(isShowing("7 Be Thou My Vision"))
     }
 
     @Test
     fun aNoticeIsListedAlongsideTheSongs() = runComposeUiTest {
         showLibrary(
-            repositoryWith(
+            libraryOf(
                 songs = listOf(song("s1", "42", "Amazing Grace")),
-                announcements = listOf(LocalAnnouncement(id = "a1", title = "Bring a dish")),
+                notices = listOf(LocalAnnouncement(id = "a1", title = "Bring a dish")),
             )
         )
 
-        assertTrue(isShowing("42 Amazing Grace"))
-        assertTrue(isShowing("Bring a dish"))
+        assertTrue(exists(LibraryTags.row("s1")))
+        assertTrue(exists(LibraryTags.row("a1")))
     }
 
     @Test
     fun anEmptyLibraryListsNothing() = runComposeUiTest {
-        showLibrary(repositoryWith())
+        showLibrary(libraryOf())
 
-        assertTrue(!isShowing("Amazing Grace"))
+        assertFalse(exists(LibraryTags.row("s1")))
     }
-
-    // ── Searching ────────────────────────────────────────────────────────
 
     @Test
     fun searchingNarrowsTheListToWhatMatches() = runComposeUiTest {
-        showLibrary(
-            repositoryWith(
-                songs = listOf(
-                    song("s1", "42", "Amazing Grace"),
-                    song("s2", "7", "Be Thou My Vision"),
-                )
-            )
-        )
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision"))))
 
-        search("Amazing")
+        type(LibraryTags.SEARCH, "Amazing")
 
-        assertTrue(isShowing("42 Amazing Grace"))
-        assertTrue(!isShowing("Be Thou My Vision"))
+        assertTrue(exists(LibraryTags.row("s1")))
+        assertFalse(exists(LibraryTags.row("s2")))
     }
 
     @Test
     fun searchingByNumberFindsTheSong() = runComposeUiTest {
         // How an operator with a hymnal in front of them looks a song up.
-        showLibrary(
-            repositoryWith(
-                songs = listOf(
-                    song("s1", "42", "Amazing Grace"),
-                    song("s2", "7", "Be Thou My Vision"),
-                )
-            )
-        )
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision"))))
 
-        search("42")
+        type(LibraryTags.SEARCH, "42")
 
-        assertTrue(isShowing("42 Amazing Grace"))
-        assertTrue(!isShowing("Be Thou My Vision"))
+        assertTrue(exists(LibraryTags.row("s1")))
+        assertFalse(exists(LibraryTags.row("s2")))
+    }
+
+    @Test
+    fun searchIgnoresCase() = runComposeUiTest {
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"))))
+
+        type(LibraryTags.SEARCH, "amazing")
+
+        assertTrue(exists(LibraryTags.row("s1")))
     }
 
     @Test
     fun clearingTheSearchBringsEverythingBack() = runComposeUiTest {
         // The failure that costs work: a stale filter leaving a song the
         // operator then believes they never wrote.
-        showLibrary(
-            repositoryWith(
-                songs = listOf(
-                    song("s1", "42", "Amazing Grace"),
-                    song("s2", "7", "Be Thou My Vision"),
-                )
-            )
-        )
-        search("Amazing")
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"), song("s2", "7", "Be Thou My Vision"))))
+        type(LibraryTags.SEARCH, "Amazing")
 
-        search("")
+        type(LibraryTags.SEARCH, "")
 
-        assertTrue(isShowing("42 Amazing Grace"))
-        assertTrue(isShowing("7 Be Thou My Vision"))
+        assertTrue(exists(LibraryTags.row("s1")))
+        assertTrue(exists(LibraryTags.row("s2")))
     }
 
     @Test
     fun aSearchThatMatchesNothingListsNothing() = runComposeUiTest {
-        showLibrary(repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace"))))
+        showLibrary(libraryOf(songs = listOf(song("s1", "42", "Amazing Grace"))))
 
-        search("zzzzz")
+        type(LibraryTags.SEARCH, "zzzzz")
 
-        assertTrue(!isShowing("42 Amazing Grace"))
+        assertFalse(exists(LibraryTags.row("s1")))
     }
 
     @Test
-    fun searchIgnoresCase() = runComposeUiTest {
-        showLibrary(repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace"))))
+    fun searchingLeavesNoticesOutWhenTheyDoNotMatch() = runComposeUiTest {
+        showLibrary(
+            libraryOf(
+                songs = listOf(song("s1", "42", "Amazing Grace")),
+                notices = listOf(LocalAnnouncement(id = "a1", title = "Bring a dish")),
+            )
+        )
 
-        search("amazing")
+        type(LibraryTags.SEARCH, "Amazing")
 
-        assertTrue(isShowing("42 Amazing Grace"))
-    }
-
-    // ── Typing into the search field ─────────────────────────────────────
-
-    @Test
-    fun theSearchFieldAcceptsTyping() = runComposeUiTest {
-        showLibrary(repositoryWith(songs = listOf(song("s1", "42", "Amazing Grace"))))
-
-        onNode(hasSetTextAction()).performTextInput("Ama")
-
-        assertTrue(isShowing("42 Amazing Grace"))
+        assertTrue(exists(LibraryTags.row("s1")))
+        assertFalse(exists(LibraryTags.row("a1")))
     }
 }

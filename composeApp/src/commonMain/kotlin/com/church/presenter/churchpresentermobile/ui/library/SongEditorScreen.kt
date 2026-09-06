@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -136,6 +137,7 @@ fun SongEditorScreen(
                     value = song.title,
                     onValueChange = viewModel::setSongTitle,
                     error = validation.errors[LibraryField.TITLE],
+                    modifier = Modifier.testTag(LibraryTags.FIELD_TITLE),
                 )
             }
             item {
@@ -145,13 +147,13 @@ fun SongEditorScreen(
                         value = song.number,
                         onValueChange = viewModel::setSongNumber,
                         warning = validation.warnings[LibraryField.NUMBER],
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).testTag(LibraryTags.FIELD_NUMBER),
                     )
                     EditorField(
                         label = stringResource(Res.string.editor_field_book),
                         value = song.bookName.orEmpty(),
                         onValueChange = viewModel::setSongBook,
-                        modifier = Modifier.weight(2f),
+                        modifier = Modifier.weight(2f).testTag(LibraryTags.FIELD_BOOK),
                     )
                 }
             }
@@ -160,6 +162,7 @@ fun SongEditorScreen(
                     label = stringResource(Res.string.editor_field_author),
                     value = song.author.orEmpty(),
                     onValueChange = viewModel::setSongAuthor,
+                    modifier = Modifier.testTag(LibraryTags.FIELD_AUTHOR),
                 )
             }
             item {
@@ -167,6 +170,7 @@ fun SongEditorScreen(
                     label = stringResource(Res.string.editor_field_copyright),
                     value = song.copyright.orEmpty(),
                     onValueChange = viewModel::setSongCopyright,
+                    modifier = Modifier.testTag(LibraryTags.FIELD_COPYRIGHT),
                 )
             }
 
@@ -221,7 +225,10 @@ fun SongEditorScreen(
             }
 
             item {
-                TextButton(onClick = { viewModel.addSection() }) {
+                TextButton(
+                    onClick = { viewModel.addSection() },
+                    modifier = Modifier.testTag(LibraryTags.ADD_VERSE),
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Text(
                         text = stringResource(Res.string.editor_add_section),
@@ -281,6 +288,7 @@ private fun SectionCard(
             minLines = 3,
             modifier = Modifier
                 .fillMaxWidth()
+                .testTag(LibraryTags.verse(index))
                 .clickable(onClick = onFocus),
         )
 
@@ -379,6 +387,7 @@ internal fun EditorActions(canSave: Boolean, onCancel: () -> Unit, onSave: () ->
         Box(
             modifier = Modifier
                 .weight(1f)
+                .testTag(LibraryTags.CANCEL)
                 .clip(RoundedCornerShape(AppDimens.radiusButton))
                 .background(colors.surface)
                 .clickable(onClick = onCancel)
@@ -390,6 +399,7 @@ internal fun EditorActions(canSave: Boolean, onCancel: () -> Unit, onSave: () ->
         Box(
             modifier = Modifier
                 .weight(1f)
+                .testTag(LibraryTags.SAVE)
                 .clip(RoundedCornerShape(AppDimens.radiusButton))
                 .background(if (canSave) colors.accent else colors.surface)
                 .clickable(enabled = canSave, onClick = onSave)
@@ -413,10 +423,14 @@ internal fun DiscardDialog(onDiscard: () -> Unit, onKeepEditing: () -> Unit) {
         title = { Text(stringResource(Res.string.editor_discard_title)) },
         text = { Text(stringResource(Res.string.editor_discard_body)) },
         confirmButton = {
-            TextButton(onClick = onDiscard) { Text(stringResource(Res.string.editor_discard_confirm)) }
+            TextButton(onClick = onDiscard, modifier = Modifier.testTag(LibraryTags.DISCARD)) {
+                Text(stringResource(Res.string.editor_discard_confirm))
+            }
         },
         dismissButton = {
-            TextButton(onClick = onKeepEditing) { Text(stringResource(Res.string.editor_keep_editing)) }
+            TextButton(onClick = onKeepEditing, modifier = Modifier.testTag(LibraryTags.KEEP_EDITING)) {
+                Text(stringResource(Res.string.editor_keep_editing))
+            }
         },
     )
 }

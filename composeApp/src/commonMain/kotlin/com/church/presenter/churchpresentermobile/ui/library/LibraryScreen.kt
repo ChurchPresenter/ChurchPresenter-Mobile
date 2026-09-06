@@ -41,6 +41,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -190,6 +191,7 @@ fun LibraryScreen(
                 value = query,
                 onValueChange = viewModel::setQuery,
                 placeholder = stringResource(Res.string.library_search_placeholder),
+                modifier = Modifier.testTag(LibraryTags.SEARCH),
             )
 
             Row(
@@ -289,6 +291,7 @@ private fun SongRow(
     onDelete: () -> Unit,
 ) {
     LibraryRow(
+        id = song.id,
         icon = { tint -> Icon(Icons.Filled.MusicNote, null, tint = tint, modifier = Modifier.size(18.dp)) },
         title = song.displayTitle,
         subtitle = listOfNotNull(
@@ -309,6 +312,7 @@ private fun AnnouncementRow(
     onDelete: () -> Unit,
 ) {
     LibraryRow(
+        id = announcement.id,
         icon = { tint -> Icon(Icons.Filled.Campaign, null, tint = tint, modifier = Modifier.size(18.dp)) },
         title = announcement.title.ifBlank { announcement.body.lineSequence().first() },
         subtitle = announcement.body.lineSequence().firstOrNull().orEmpty(),
@@ -320,6 +324,7 @@ private fun AnnouncementRow(
 
 @Composable
 private fun LibraryRow(
+    id: String,
     icon: @Composable (Color) -> Unit,
     title: String,
     subtitle: String,
@@ -331,6 +336,7 @@ private fun LibraryRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(LibraryTags.row(id))
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
             // Deliberately not clickable. The Library is for writing and keeping
@@ -365,19 +371,34 @@ private fun LibraryRow(
                 }
             }
         }
-        RowAction(stringResource(Res.string.library_delete), colors.danger, onDelete)
-        RowAction(stringResource(Res.string.editor_song_edit_label), colors.accent, onEdit)
+        RowAction(
+            label = stringResource(Res.string.library_delete),
+            color = colors.danger,
+            onClick = onDelete,
+            modifier = Modifier.testTag(LibraryTags.rowDelete(id)),
+        )
+        RowAction(
+            label = stringResource(Res.string.editor_song_edit_label),
+            color = colors.accent,
+            onClick = onEdit,
+            modifier = Modifier.testTag(LibraryTags.rowEdit(id)),
+        )
     }
 }
 
 @Composable
-private fun RowAction(label: String, color: Color, onClick: () -> Unit) {
+private fun RowAction(
+    label: String,
+    color: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = label,
         color = color,
         fontSize = 11.sp,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusChip))
             .clickable(onClick = onClick)
             .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -468,8 +489,16 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_delete_confirm_title)) },
         text = { Text(stringResource(Res.string.library_delete_confirm_body)) },
-        confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(Res.string.library_delete)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.editor_cancel)) } },
+        confirmButton = {
+            TextButton(onClick = onConfirm, modifier = Modifier.testTag(LibraryTags.DELETE_CONFIRM)) {
+                Text(stringResource(Res.string.library_delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, modifier = Modifier.testTag(LibraryTags.DELETE_DISMISS)) {
+                Text(stringResource(Res.string.editor_cancel))
+            }
+        },
     )
 }
 
