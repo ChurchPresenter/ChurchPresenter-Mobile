@@ -242,7 +242,14 @@ private fun ActionButton(label: String, isPrimary: Boolean, onClick: () -> Unit)
     }
 }
 
-private fun CpsetError.messageResource() = when (this) {
+/**
+ * What the operator is told when an imported `.cpset` will not open.
+ *
+ * `internal` so the mapping can be checked: each reason points at a different
+ * fix — re-export, pick a different file, update the app — and two of them
+ * sharing a message would send someone down the wrong one.
+ */
+internal fun CpsetError.messageResource() = when (this) {
     CpsetError.UNREADABLE -> Res.string.import_error_unreadable
     CpsetError.WRONG_FORMAT -> Res.string.import_error_wrong_format
     CpsetError.TOO_NEW -> Res.string.import_error_too_new

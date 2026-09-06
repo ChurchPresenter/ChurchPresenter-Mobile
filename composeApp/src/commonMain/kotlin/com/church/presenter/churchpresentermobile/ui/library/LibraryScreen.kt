@@ -600,20 +600,15 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
 @Composable
 private fun SyncChip(settings: AppSettings, onClick: () -> Unit) {
     val colors = LocalAppColors.current
-    val state = remember(settings) {
-        runCatching {
-            Json { ignoreUnknownKeys = true }
-                .decodeFromString<LibrarySyncState>(settings.librarySyncStateJson)
-        }.getOrDefault(LibrarySyncState.NEVER)
-    }
+    val state = remember(settings) { readSyncState(settings.librarySyncStateJson) }
 
-    val elapsedMs = Clock.System.now().toEpochMilliseconds() - state.lastSyncEpochMs
-    val label = when {
-        !state.hasEverSynced -> stringResource(Res.string.sync_never)
-        elapsedMs < 60_000L -> stringResource(Res.string.sync_just_now)
-        elapsedMs < 3_600_000L -> stringResource(Res.string.sync_minutes_ago, (elapsedMs / 60_000L).toString())
-        elapsedMs < 86_400_000L -> stringResource(Res.string.sync_hours_ago, (elapsedMs / 3_600_000L).toString())
-        else -> stringResource(Res.string.sync_days_ago, (elapsedMs / 86_400_000L).toString())
+    val age = syncAgeFor(state, Clock.System.now().toEpochMilliseconds())
+    val label = when (age.bucket) {
+        SyncAge.Bucket.NEVER -> stringResource(Res.string.sync_never)
+        SyncAge.Bucket.JUST_NOW -> stringResource(Res.string.sync_just_now)
+        SyncAge.Bucket.MINUTES -> stringResource(Res.string.sync_minutes_ago, age.count.toString())
+        SyncAge.Bucket.HOURS -> stringResource(Res.string.sync_hours_ago, age.count.toString())
+        SyncAge.Bucket.DAYS -> stringResource(Res.string.sync_days_ago, age.count.toString())
     }
 
     Row(
@@ -671,3 +666,49 @@ private fun ShareChip(onClick: () -> Unit) {
 
 /** Declaration order must match the segmented-control label order above. */
 private val FILTERS = listOf(LibraryFilter.ALL, LibraryFilter.SONGS, LibraryFilter.ANNOUNCEMENTS)
+
+// ── What the sync chip says ──────────────────────────────────────────────
+//
+// Split out of [SyncChip] because the thresholds are the part that can be
+// wrong, and a composable that reads the wall clock cannot be checked without
+// waiting out an hour. See the seam guidance in AGENT.md.
+
+/** How long ago the library was last synced, in the terms the chip reports. */
+internal data class SyncAge(val bucket: Bucket, val count: Long) {
+    enum class Bucket { NEVER, JUST_NOW, MINUTES, HOURS, DAYS }
+}
+
+/**
+ * Reads the stored sync state, falling back to "never synced".
+ *
+ * The blob is written by a previous version of the app and can be anything —
+ * truncated by a kill mid-write, or a shape this build predates. The Library
+ * tab has to open either way; a wrong chip is not worth a crash.
+ */
+internal fun readSyncState(storedJson: String): LibrarySyncState = runCatching {
+    Json { ignoreUnknownKeys = true }.decodeFromString<LibrarySyncState>(storedJson)
+}.getOrDefault(LibrarySyncState.NEVER)
+
+/**
+ * Which bucket [state]'s last sync falls into as of [nowMs], and the number to
+ * show with it.
+ *
+ * Coarse on purpose: the operator wants "this morning" or "last week", not a
+ * timestamp. A clock that has gone backwards — a device correcting its time, or
+ * a sync recorded on another phone — reads as "just now" rather than as a
+ * negative age.
+ */
+internal fun syncAgeFor(state: LibrarySyncState, nowMs: Long): SyncAge {
+    if (!state.hasEverSynced) return SyncAge(SyncAge.Bucket.NEVER, 0L)
+    val elapsedMs = (nowMs - state.lastSyncEpochMs).coerceAtLeast(0L)
+    return when {
+        elapsedMs < MINUTE_MS -> SyncAge(SyncAge.Bucket.JUST_NOW, 0L)
+        elapsedMs < HOUR_MS -> SyncAge(SyncAge.Bucket.MINUTES, elapsedMs / MINUTE_MS)
+        elapsedMs < DAY_MS -> SyncAge(SyncAge.Bucket.HOURS, elapsedMs / HOUR_MS)
+        else -> SyncAge(SyncAge.Bucket.DAYS, elapsedMs / DAY_MS)
+    }
+}
+
+private const val MINUTE_MS = 60_000L
+private const val HOUR_MS = 3_600_000L
+private const val DAY_MS = 86_400_000L

@@ -241,23 +241,61 @@ internal fun SongSyncSection(
             }
         }
 
+        val button = syncButtonFor(
+            isRunning = progress.isRunning,
+            isFinished = isFinished,
+            canStart = viewModel.canSync,
+        )
         SheetButton(
-            label = when {
-                progress.isRunning -> stringResource(Res.string.sync_cancel)
-                isFinished -> stringResource(Res.string.sync_done_close)
-                else -> stringResource(Res.string.sync_action)
+            label = when (button.action) {
+                SyncButton.Action.CANCEL -> stringResource(Res.string.sync_cancel)
+                SyncButton.Action.CLOSE -> stringResource(Res.string.sync_done_close)
+                SyncButton.Action.START -> stringResource(Res.string.sync_action)
             },
-            isDestructive = progress.isRunning,
-            // Every book unticked is not a sync — copying nothing and reporting
-            // success would read as the feature being broken.
-            enabled = progress.isRunning || isFinished || viewModel.canSync,
+            isDestructive = button.isDestructive,
+            enabled = button.isEnabled,
             onClick = {
-                when {
-                    progress.isRunning -> viewModel.cancel()
-                    isFinished -> onDone()
-                    else -> viewModel.sync()
+                when (button.action) {
+                    SyncButton.Action.CANCEL -> viewModel.cancel()
+                    SyncButton.Action.CLOSE -> onDone()
+                    SyncButton.Action.START -> viewModel.sync()
                 }
             },
         )
     }
+}
+
+// ── The one button at the foot of the sheet ──────────────────────────────
+//
+// It is three buttons in one — start, cancel, close — and which one it is
+// decides what the tap does. Split out of the composable because the wrong
+// branch here either cancels a sync the operator meant to start or, worse,
+// reports success for a copy that never ran.
+
+/** What the sheet's primary button currently is. */
+internal data class SyncButton(
+    val action: Action,
+    val isEnabled: Boolean,
+    val isDestructive: Boolean,
+) {
+    enum class Action { START, CANCEL, CLOSE }
+}
+
+/**
+ * The button's state for a sync that [isRunning], has [isFinished], or is
+ * waiting to be started with [canStart].
+ *
+ * Running wins over finished: an outcome left over from the previous run is
+ * still on screen while the next one is in flight, and the button has to be
+ * the way out of the running one.
+ *
+ * [canStart] gates only the start: with every book unticked there is nothing to
+ * copy, and copying nothing and reporting success reads as the feature being
+ * broken. Cancel and close are always pressable — an operator must never be
+ * trapped in the sheet.
+ */
+internal fun syncButtonFor(isRunning: Boolean, isFinished: Boolean, canStart: Boolean): SyncButton = when {
+    isRunning -> SyncButton(SyncButton.Action.CANCEL, isEnabled = true, isDestructive = true)
+    isFinished -> SyncButton(SyncButton.Action.CLOSE, isEnabled = true, isDestructive = false)
+    else -> SyncButton(SyncButton.Action.START, isEnabled = canStart, isDestructive = false)
 }
