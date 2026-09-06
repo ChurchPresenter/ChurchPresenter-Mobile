@@ -8,10 +8,12 @@ import com.church.presenter.churchpresentermobile.util.isDebugBuild
 import com.church.presenter.churchpresentermobile.util.buildType as defaultBuildType
 import com.church.presenter.churchpresentermobile.util.commitHash as defaultCommitHash
 import com.church.presenter.churchpresentermobile.util.repoSlug as defaultRepoSlug
+import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
@@ -81,10 +83,26 @@ object PingReporter {
     }
 
     private fun send(installId: String, connected: Boolean) {
+        send(installId, connected, client, scope)
+    }
+
+    /**
+     * The ping itself, over a supplied client and scope.
+     *
+     * `internal` so what goes on the wire can be checked without a request
+     * reaching the live map — see the seam guidance in AGENT.md. Returns the job
+     * so a test can wait for it; nothing in the app looks at it.
+     */
+    internal fun send(
+        installId: String,
+        connected: Boolean,
+        httpClient: HttpClient,
+        into: CoroutineScope,
+    ): Job {
         val url = buildPingUrl(getPlatform().os, appVersion, isDebugBuild, connected)
-        scope.launch {
+        return into.launch {
             apiRunCatching {
-                client.get(url) {
+                httpClient.get(url) {
                     if (installId.isNotBlank()) header("X-Install-Id", installId)
                 }
             }

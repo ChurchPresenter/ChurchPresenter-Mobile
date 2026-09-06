@@ -1,6 +1,14 @@
 package com.church.presenter.churchpresentermobile.network
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -182,5 +190,85 @@ class PingReporterTest {
         for (part in listOf("src=dev", "connected=true", "repo=", "commit=", "build=")) {
             assertTrue(u.contains(part), "$part missing from $u")
         }
+    }
+
+    // ── The request itself ───────────────────────────────────────────────
+    //
+    // Over a mock engine, so nothing reaches churchpresenter.org. What matters
+    // is that the ping is anonymous: an install id and some build facts, and
+    // nothing that identifies a church or a person.
+
+    /** Sends a ping and hands back the request that would have gone out. */
+    private suspend fun ping(
+        installId: String,
+        connected: Boolean,
+    ): io.ktor.client.request.HttpRequestData = coroutineScope {
+        var seen: io.ktor.client.request.HttpRequestData? = null
+        val client = HttpClient(MockEngine { request ->
+            seen = request
+            respond("", HttpStatusCode.OK)
+        })
+        PingReporter.send(installId, connected, client, this).join()
+        client.close()
+        assertNotNull(seen)
+    }
+
+    @Test
+    fun `the ping goes to the live map endpoint`() = runTest {
+        val request = ping("install-1", connected = false)
+
+        assertEquals("https://www.churchpresenter.org/api/ping", request.url.toString().substringBefore('?'))
+    }
+
+    @Test
+    fun `the ping says it came from the mobile app`() = runTest {
+        // The map counts desktop and mobile separately; a missing platform makes
+        // a mobile launch look like a desktop one.
+        assertTrue("platform=mobile" in ping("install-1", connected = false).url.toString())
+    }
+
+    @Test
+    fun `the install id is sent as a header, not in the URL`() = runTest {
+        // The server dedupes repeat launches by it. In the query string it would
+        // end up in access logs alongside the address it came from.
+        val request = ping("install-1", connected = false)
+
+        assertEquals("install-1", request.headers["X-Install-Id"])
+        assertTrue("install-1" !in request.url.toString(), request.url.toString())
+    }
+
+    @Test
+    fun `no install id header is sent when there is none`() = runTest {
+        // A blank one would be worse than none: the server would dedupe every
+        // install with no id down to a single row.
+        assertNull(ping("", connected = false).headers["X-Install-Id"])
+    }
+
+    @Test
+    fun `a first connection to a desktop is flagged`() = runTest {
+        // Flips this install's row so standalone use stays distinguishable from
+        // paired use.
+        assertTrue("connected=true" in ping("install-1", connected = true).url.toString())
+    }
+
+    @Test
+    fun `an ordinary launch is not flagged as connected`() = runTest {
+        assertTrue("connected=true" !in ping("install-1", connected = false).url.toString())
+    }
+
+    @Test
+    fun `the ping carries the app version`() = runTest {
+        assertTrue("version=" in ping("install-1", connected = false).url.toString())
+    }
+
+    @Test
+    fun `a ping that cannot be delivered is not a problem`() = runTest {
+        // It runs on every launch with nothing waiting on it; the map being
+        // unreachable must not surface anywhere in the app.
+        val client = HttpClient(MockEngine { error("no route to host") })
+
+        PingReporter.send("install-1", connected = false, client, this).join()
+
+        client.close()
     }
 }

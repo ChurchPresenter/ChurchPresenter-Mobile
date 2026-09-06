@@ -43,12 +43,22 @@ const val WEB_PAGE_SINK_ID = "web_page"
  * @param onBaseUrl Called with the address the server is reachable at, and with
  *   null when it stops — what tells the photo library whether it has anywhere to
  *   serve from.
+ * @param address This phone's LAN address. A seam over [localIpAddress]: whether
+ *   there is an address at all decides between serving and saying so, and a
+ *   build agent's answer is not the one a test wants to depend on.
+ * @param loadAssets The bundled display page. A seam over [WebAssets.load] for
+ *   the same reason — the bundle is not readable off a device.
+ * @param serverFactory Builds the embedded server. Seamed so the attach path can
+ *   be exercised without one, not so a different server can be substituted.
  */
 class WebPageSink(
     private val preferredPort: Int,
     private val onPortBound: (Int) -> Unit = {},
     private val photos: PhotoSource = PhotoSource.NONE,
     private val onBaseUrl: (String?) -> Unit = {},
+    private val address: () -> String? = { localIpAddress() },
+    private val loadAssets: suspend () -> WebAssets = { WebAssets.load() },
+    private val serverFactory: (WebAssets, PhotoSource) -> LocalWebServer = { a, p -> LocalWebServer(a, p) },
 ) : OutputSink {
 
     override val id: String = WEB_PAGE_SINK_ID
@@ -71,8 +81,8 @@ class WebPageSink(
         if (server != null) return
         _status.value = _status.value.copy(state = SinkState.ATTACHING, detail = null)
 
-        val address = localIpAddress()
-        if (address == null) {
+        val lanAddress = address()
+        if (lanAddress == null) {
             // No LAN address means no device could reach us anyway. Say so
             // plainly rather than starting a server nobody can find.
             _status.value = _status.value.failed(NO_NETWORK, DISPLAY_NAME)
@@ -80,22 +90,25 @@ class WebPageSink(
             return
         }
 
-        val assets = WebAssets.load()
+        val assets = loadAssets()
         if (assets.isEmpty) {
             _status.value = _status.value.failed(NO_ASSETS, DISPLAY_NAME)
             Logger.e(TAG, "display assets missing from the bundle — not starting the server")
             return
         }
 
-        val instance = LocalWebServer(assets, photos)
+        // Building the server is inside the guard too: everything from here to a
+        // bound port is one attempt, and any part of it failing has to leave a
+        // reason on the outputs row rather than escaping into the caller.
         val started = runCatching {
-            instance.start(preferredPort, ApiConstants.STANDALONE_PORT_CANDIDATES.toList())
+            val instance = serverFactory(assets, photos)
+            instance to instance.start(preferredPort, ApiConstants.STANDALONE_PORT_CANDIDATES.toList())
         }
 
-        started.onSuccess { port ->
+        started.onSuccess { (instance, port) ->
             server = instance
             onPortBound(port)
-            val url = "http://$address:$port"
+            val url = "http://$lanAddress:$port"
             onBaseUrl(url)
             _status.value = _status.value.copy(
                 state = SinkState.ATTACHED,
@@ -112,7 +125,7 @@ class WebPageSink(
                     _status.value = _status.value.copy(clientCount = count)
                 }
             }
-            Logger.d(TAG, "serving on http://$address:$port")
+            Logger.d(TAG, "serving on $url")
         }.onFailure { e ->
             _status.value = _status.value.failed(e.message, DISPLAY_NAME)
             Logger.e(TAG, "failed to start the presentation server: ${e.message}", e)

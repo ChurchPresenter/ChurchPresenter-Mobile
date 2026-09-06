@@ -10,6 +10,7 @@ import com.church.presenter.churchpresentermobile.present.OutputSink
 import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.util.ActivityHolder
 import io.mockk.every
+import io.mockk.mockkConstructor
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.unmockkAll
@@ -310,5 +311,190 @@ class ExternalDisplaySinkAndroidTest {
     @Test
     fun `detaching before attaching is harmless`() = runTest {
         sink().detach()
+    }
+
+    // ── When the screen goes away ────────────────────────────────────────
+    //
+    // The TV is unplugged, or the cast session ends. The window has already
+    // gone with it, so anything left on the outputs row — the screen's name,
+    // its resolution, a client count of one — is describing a display in
+    // someone's bag, and the operator goes on pressing Project at nothing.
+
+    @Test
+    fun `a screen unplugged mid-service goes back to searching`() = runTest {
+        withDisplays(display(id = 7, name = "Living room TV"))
+        val externalSink = sink()
+        externalSink.attach()
+        val listener = registeredListener()
+        every { manager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION) } returns emptyArray()
+
+        listener.onDisplayRemoved(7)
+
+        assertEquals(SinkState.ATTACHING, externalSink.status.value.state)
+    }
+
+    @Test
+    fun `an unplugged screen stops being advertised by name`() = runTest {
+        withDisplays(display(id = 7, name = "Living room TV"))
+        val externalSink = sink()
+        externalSink.attach()
+        val listener = registeredListener()
+
+        listener.onDisplayRemoved(7)
+
+        assertEquals("External display", externalSink.status.value.displayName)
+        assertNull(externalSink.status.value.detail)
+        assertEquals(0, externalSink.status.value.clientCount)
+    }
+
+    @Test
+    fun `some other screen going away leaves the projection alone`() = runTest {
+        // A phone can have several displays registered — an overlay, a virtual
+        // one from a screen recorder. Only the one being projected on matters.
+        withDisplays(display(id = 7, name = "Living room TV"))
+        val externalSink = sink()
+        externalSink.attach()
+        val listener = registeredListener()
+
+        listener.onDisplayRemoved(99)
+
+        assertEquals(SinkState.ATTACHED, externalSink.status.value.state)
+        assertEquals("Living room TV", externalSink.status.value.displayName)
+    }
+
+    @Test
+    fun `a screen removed before anything was showing is harmless`() = runTest {
+        withDisplays()
+        val externalSink = sink()
+        externalSink.attach()
+
+        registeredListener().onDisplayRemoved(7)
+
+        assertEquals(SinkState.ATTACHING, externalSink.status.value.state)
+    }
+
+    @Test
+    fun `re-plugging after an unplug picks the screen back up`() = runTest {
+        // The sink stays attached in intent, which is what lets a cable knocked
+        // out mid-song be pushed back in without touching the app.
+        withDisplays(display(id = 7, name = "Living room TV"))
+        val externalSink = sink()
+        externalSink.attach()
+        val listener = registeredListener()
+        every { manager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION) } returns emptyArray()
+        listener.onDisplayRemoved(7)
+
+        every { manager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION) } returns
+            arrayOf(display(id = 7, name = "Living room TV"))
+        listener.onDisplayAdded(7)
+
+        assertEquals(SinkState.ATTACHED, externalSink.status.value.state)
+        assertEquals("Living room TV", externalSink.status.value.displayName)
+    }
+
+    @Test
+    fun `a screen going away after the output was turned off is ignored`() = runTest {
+        // detach unregisters the listener, so this is only reachable if a
+        // callback was already in flight; it must not resurrect the row.
+        withDisplays(display(id = 7))
+        val externalSink = sink()
+        externalSink.attach()
+        val listener = registeredListener()
+        externalSink.detach()
+
+        listener.onDisplayRemoved(7)
+
+        assertEquals(SinkState.DETACHED, externalSink.status.value.state)
+    }
+
+    @Test
+    fun `the sink identifies itself so the outputs sheet can find it`() {
+        assertEquals(EXTERNAL_DISPLAY_SINK_ID, sink().id)
+    }
+
+    // ── When the window itself is refused ────────────────────────────────
+
+    @Test
+    fun `an Activity that will not host the window is reported, not crashed`() = runTest {
+        // A Presentation is a Dialog, and a Dialog on an Activity that is going
+        // away throws BadTokenException. Mid-service that would take the app
+        // down; the row going red is survivable.
+        withDisplays(display(name = "Living room TV"))
+        mockkConstructor(SlidePresentation::class)
+        every { anyConstructed<SlidePresentation>().show() } throws
+            IllegalStateException("Unable to add window — token is not valid")
+        val externalSink = sink()
+
+        externalSink.attach()
+
+        assertEquals(SinkState.ERROR, externalSink.status.value.state)
+    }
+
+    @Test
+    fun `a refused window says why`() = runTest {
+        withDisplays(display())
+        mockkConstructor(SlidePresentation::class)
+        every { anyConstructed<SlidePresentation>().show() } throws
+            IllegalStateException("Unable to add window — token is not valid")
+        val externalSink = sink()
+
+        externalSink.attach()
+
+        assertEquals("Unable to add window — token is not valid", externalSink.status.value.detail)
+    }
+
+    @Test
+    fun `a refused window stops advertising the screen it could not open on`() = runTest {
+        // Nothing is being projected, so leaving "Living room TV · 1920×1080" on
+        // the row would say the opposite.
+        withDisplays(display(name = "Living room TV"))
+        mockkConstructor(SlidePresentation::class)
+        every { anyConstructed<SlidePresentation>().show() } throws IllegalStateException("no token")
+        val externalSink = sink()
+
+        externalSink.attach()
+
+        assertEquals("External display", externalSink.status.value.displayName)
+        assertEquals(0, externalSink.status.value.clientCount)
+    }
+
+    @Test
+    fun `a screen already being projected on is not reopened`() = runTest {
+        // onDisplayChanged fires for brightness and rotation as well as for a
+        // mode change; tearing the window down and rebuilding it each time
+        // would flash the audience screen black.
+        withDisplays(display(id = 7))
+        mockkConstructor(SlidePresentation::class)
+        every { anyConstructed<SlidePresentation>().show() } returns Unit
+        every { anyConstructed<SlidePresentation>().isShowing } returns true
+        every { anyConstructed<SlidePresentation>().screen } returns display(id = 7)
+        val externalSink = sink()
+        externalSink.attach()
+
+        registeredListener().onDisplayChanged(7)
+
+        verify(exactly = 1) { anyConstructed<SlidePresentation>().show() }
+    }
+
+    @Test
+    fun `a window that will not close cleanly does not block the next one`() = runTest {
+        // dismiss() on a window whose Activity has already gone throws. Moving
+        // to another screen must not be stopped by the old one refusing to shut.
+        withDisplays(display(id = 7))
+        mockkConstructor(SlidePresentation::class)
+        every { anyConstructed<SlidePresentation>().show() } returns Unit
+        every { anyConstructed<SlidePresentation>().isShowing } returns false
+        every { anyConstructed<SlidePresentation>().screen } returns display(id = 7)
+        every { anyConstructed<SlidePresentation>().dismiss() } throws
+            IllegalArgumentException("View not attached to window manager")
+        val externalSink = sink()
+        externalSink.attach()
+
+        every { manager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION) } returns
+            arrayOf(display(id = 8, name = "Projector"))
+        registeredListener().onDisplayChanged(8)
+
+        assertEquals(SinkState.ATTACHED, externalSink.status.value.state)
+        assertEquals("Projector", externalSink.status.value.displayName)
     }
 }
