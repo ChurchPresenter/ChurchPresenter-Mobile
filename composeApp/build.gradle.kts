@@ -229,58 +229,19 @@ kover {
     reports {
         filters {
             excludes {
-                // Compose UI is not unit-tested — drop every @Composable plus the ui package.
-                annotatedBy("androidx.compose.runtime.Composable")
-                packages(
-                    "com.church.presenter.churchpresentermobile.ui",
-                    // Covered on the JS gate, not measurable on the Android JVM (no Main dispatcher).
-                    "com.church.presenter.churchpresentermobile.viewmodel",
-                    // Platform glue + constants (Logger/Analytics/CrashReporting/RemoteConfig/BuildUtils).
-                    "com.church.presenter.churchpresentermobile.util",
-                )
+                // Generated code only — there is no source behind it to cover.
+                //
+                // Nothing else is excluded: not the ui/viewmodel/util packages, not the
+                // platform expect/actual leaves, not @Composable functions. The figure
+                // this produces is coverage of the whole module, so it is low; that is
+                // the point. Raise it by adding tests, never by adding an exclusion.
                 classes(
-                    // App.kt Composable + its generated lambda classes ($App$…), and singletons.
-                    "*AppKt*",
                     "*ComposableSingletons*",
-                    // Generated Compose resource accessors.
                     "churchpresentermobile.composeapp.generated.resources.*",
-                    // Data fixtures & WebSocket transport loop — not unit-test targets.
-                    "*DemoData*",
-                    "*ServerEventService*",
-                    "*PingReporter*",
-                    // Platform factories / storage / Android infra (share model|network packages).
-                    "*HttpClientFactory*",
-                    "*SettingsStorage*",
-                    "*MainActivity*",
-                    "*ChurchPresenterApp*",
-                    "*FirebasePushService*",
-                    // Platform capability flags — three constants per target, no logic.
-                    "*PlatformCapabilities*",
-                    // Output sinks are platform windows/servers, not unit-test targets;
-                    // the routing and slide logic they serve is tested in `present`.
-                    "*ExternalDisplaySink*",
-                    "*SlidePresentation*",
-                    "*PresentationOwners*",
-                    "*ActivityHolder*",
-                    // Embedded server, socket/interface probing, and the OS
-                    // keep-alive hooks — all platform I/O behind narrow seams.
-                    // The pure parts (PortAllocator, WebAssets) ARE measured.
-                    "*LocalWebServer*",
-                    "*WebPageSink*",
-                    "*NetworkInfo*",
-                    "*PresentationKeepAlive*",
-                    "*PresentationForegroundService*",
-                    // Platform file I/O. The repository logic that sits on top of
-                    // it IS measured, via InMemoryFileStorage.
-                    "*FileStore*",
-                    "*DocumentIO*",
                 )
             }
         }
-        // Enforced floor for the scoped model+network logic (currently ~82% line).
-        // Set to 80 so normal churn doesn't break CI; ratchet toward 85 as the
-        // remaining error branches / upload methods get covered. `koverVerify`
-        // is run in CI (see .github/workflows/tests.yml).
+        // The project's coverage floor.
         verify {
             rule {
                 minBound(80)
@@ -410,14 +371,16 @@ tasks.register("printCoverageLink") {
 tasks.named("koverXmlReport") { finalizedBy("printCoverageLink") }
 tasks.named("koverHtmlReport") { finalizedBy("printCoverageLink") }
 
-// The Android unit-test JVM has no Dispatchers.Main (no Looper / Robolectric), so
-// ViewModel tests that install a test main dispatcher can't run there — they run on
-// the jsBrowserTest gate instead. Exclude them from JVM (Android) unit-test tasks so
-// the Kover coverage run over model+network is green. JS/Wasm test tasks are not of
-// type `Test`, so this filter does not affect them.
+// Every test runs on the Android unit-test JVM: kotlinx's Dispatchers.setMain()
+// supplies the main dispatcher Android itself does not. No test is filtered out.
+//
+// Three classes used to be, because they created a ViewModel inside runVmTest and
+// never cancelled its viewModelScope — a coroutine could then resume after
+// resetMain() and fail an unrelated later test with "Dispatchers.Main was accessed
+// when the platform dispatcher was absent". They now tearDown(vm) in a finally,
+// which is what any new ViewModel test should do (see testutil/CoroutineTest.kt).
 tasks.withType<Test>().configureEach {
     filter {
-        excludeTestsMatching("*ViewModelTest")
         isFailOnNoMatchingTests = false
     }
 }
@@ -606,6 +569,18 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
+        }
+        // Compose UI tests, on the wasmJs browser target only.
+        //
+        // They need a Skia surface. The js (legacy) Karma runtime does not load
+        // skiko, so running them there fails with
+        // "org_jetbrains_skia_Surface__1nMakeRasterN32Premul is not defined";
+        // the wasmJs target ships skiko with the test bundle and runs them as-is.
+        // Kept out of commonTest for exactly that reason — jsBrowserTest, the main
+        // gate, must not pick them up. Run with :composeApp:wasmJsBrowserTest.
+        wasmJsTest.dependencies {
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
         }
     }
 }

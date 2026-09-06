@@ -8,7 +8,10 @@ import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.testutil.FakeOutputSink
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
+import com.church.presenter.churchpresentermobile.testutil.runVmTest
+import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -44,132 +47,182 @@ class LocalNoticesViewModelTest {
     // ── The list ─────────────────────────────────────────────────────────
 
     @Test
-    fun `the notices already in the library are listed straight away`() {
+    fun `the notices already in the library are listed straight away`() = runVmTest {
         // Eagerly shared from the repository's current value, so the first frame
         // is not an empty list that fills in a moment later.
         val f = Fixture(notices = listOf(welcome, giving))
+        try {
 
-        assertEquals(listOf("a1", "a2"), f.viewModel.notices.value.map { it.id })
+            assertEquals(listOf("a1", "a2"), f.viewModel.notices.value.map { it.id })
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `a notice written in the Library tab appears here without a reload`() {
+    fun `a notice written in the Library tab appears here without a reload`() = runVmTest {
         val f = Fixture(notices = listOf(welcome))
+        try {
 
-        f.repository.upsertAnnouncement(giving)
+            f.repository.upsertAnnouncement(giving)
+            // The list is stateIn(viewModelScope, Eagerly); let its collector run.
+            advanceUntilIdle()
 
-        assertEquals(listOf("a1", "a2"), f.viewModel.notices.value.map { it.id })
+            assertEquals(listOf("a1", "a2"), f.viewModel.notices.value.map { it.id })
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `nothing is live before anything is pressed`() {
+    fun `nothing is live before anything is pressed`() = runVmTest {
         val f = Fixture(notices = listOf(welcome))
+        try {
 
-        assertNull(f.viewModel.liveId.value)
+            assertNull(f.viewModel.liveId.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     // ── Projecting ───────────────────────────────────────────────────────
 
     @Test
-    fun `projecting a notice puts it on the screen and marks it live`() {
+    fun `projecting a notice puts it on the screen and marks it live`() = runVmTest {
         val f = Fixture(notices = listOf(welcome))
+        try {
 
-        f.viewModel.project(welcome)
+            f.viewModel.project(welcome)
 
-        assertEquals("a1", f.viewModel.liveId.value)
-        assertEquals(SlideKind.ANNOUNCEMENT, f.engine.deck.value.kind)
-        assertTrue(f.sink.rendered.isNotEmpty(), "the notice should have reached the sink")
+            assertEquals("a1", f.viewModel.liveId.value)
+            assertEquals(SlideKind.ANNOUNCEMENT, f.engine.deck.value.kind)
+            assertTrue(f.sink.rendered.isNotEmpty(), "the notice should have reached the sink")
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `the projected slide carries the notice's own words`() {
+    fun `the projected slide carries the notice's own words`() = runVmTest {
         val f = Fixture(notices = listOf(welcome))
+        try {
 
-        f.viewModel.project(welcome)
+            f.viewModel.project(welcome)
 
-        assertTrue(
-            f.engine.deck.value.slides.any { it.body.contains("Service starts at 10") },
-            "expected the body text on a slide, got ${f.engine.deck.value.slides.map { it.body }}",
-        )
+            assertTrue(
+                f.engine.deck.value.slides.any { it.body.contains("Service starts at 10") },
+                "expected the body text on a slide, got ${f.engine.deck.value.slides.map { it.body }}",
+            )
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `a notice with no title still projects`() {
+    fun `a notice with no title still projects`() = runVmTest {
         // The title is optional; a blank one must not become an empty heading slide.
         val f = Fixture(notices = listOf(giving))
+        try {
 
-        f.viewModel.project(giving)
+            f.viewModel.project(giving)
 
-        assertEquals("a2", f.viewModel.liveId.value)
-        assertTrue(f.engine.deck.value.slides.isNotEmpty())
+            assertEquals("a2", f.viewModel.liveId.value)
+            assertTrue(f.engine.deck.value.slides.isNotEmpty())
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `projecting a second notice replaces the first`() {
+    fun `projecting a second notice replaces the first`() = runVmTest {
         val f = Fixture(notices = listOf(welcome, giving))
-        f.viewModel.project(welcome)
+        try {
+            f.viewModel.project(welcome)
 
-        f.viewModel.project(giving)
+            f.viewModel.project(giving)
 
-        assertEquals("a2", f.viewModel.liveId.value)
+            assertEquals("a2", f.viewModel.liveId.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `a notice can be projected again after the screen was cleared`() {
+    fun `a notice can be projected again after the screen was cleared`() = runVmTest {
         // The deck is supplied on every press rather than loaded once, so what
         // cleared the screen beforehand does not matter.
         val f = Fixture(notices = listOf(welcome))
-        f.viewModel.project(welcome)
-        f.viewModel.clear()
+        try {
+            f.viewModel.project(welcome)
+            f.viewModel.clear()
 
-        f.viewModel.project(welcome)
+            f.viewModel.project(welcome)
 
-        assertEquals("a1", f.viewModel.liveId.value)
-        assertTrue(f.engine.deck.value.slides.isNotEmpty())
+            assertEquals("a1", f.viewModel.liveId.value)
+            assertTrue(f.engine.deck.value.slides.isNotEmpty())
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     // ── Clearing ─────────────────────────────────────────────────────────
 
     @Test
-    fun `clearing takes the notice off the screen`() {
+    fun `clearing takes the notice off the screen`() = runVmTest {
         val f = Fixture(notices = listOf(welcome))
-        f.viewModel.project(welcome)
+        try {
+            f.viewModel.project(welcome)
 
-        f.viewModel.clear()
+            f.viewModel.clear()
 
-        assertNull(f.viewModel.liveId.value)
-        assertTrue(f.engine.deck.value.isEmpty)
+            assertNull(f.viewModel.liveId.value)
+            assertTrue(f.engine.deck.value.isEmpty)
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `clearing when nothing is live is harmless`() {
+    fun `clearing when nothing is live is harmless`() = runVmTest {
         val f = Fixture(notices = listOf(welcome))
+        try {
 
-        f.viewModel.clear()
+            f.viewModel.clear()
 
-        assertNull(f.viewModel.liveId.value)
+            assertNull(f.viewModel.liveId.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     // ── Remote mode ──────────────────────────────────────────────────────
 
     @Test
-    fun `with no presenter, projecting does nothing at all`() {
+    fun `with no presenter, projecting does nothing at all`() = runVmTest {
         // Remote mode has no local presenter — the press must not mark a notice
         // live when nothing can possibly be showing it.
         val f = Fixture(notices = listOf(welcome), withPresenter = false)
+        try {
 
-        f.viewModel.project(welcome)
+            f.viewModel.project(welcome)
 
-        assertNull(f.viewModel.liveId.value)
-        assertTrue(f.sink.rendered.isEmpty())
+            assertNull(f.viewModel.liveId.value)
+            assertTrue(f.sink.rendered.isEmpty())
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 
     @Test
-    fun `with no presenter, clearing is still safe`() {
+    fun `with no presenter, clearing is still safe`() = runVmTest {
         val f = Fixture(notices = listOf(welcome), withPresenter = false)
+        try {
 
-        f.viewModel.clear()
+            f.viewModel.clear()
 
-        assertNull(f.viewModel.liveId.value)
+            assertNull(f.viewModel.liveId.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 }

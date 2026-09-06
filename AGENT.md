@@ -296,10 +296,49 @@ composeApp/src/
 
 ## Testing Notes
 
+### Coverage: NEVER lower the bar to meet the code — **ASK FIRST**
+
+- 🚫 **NEVER** change the Kover floor (`minBound(...)` in `composeApp/build.gradle.kts`)
+  without explicit permission. Not to make a build green, not "temporarily".
+- 🚫 **NEVER** add an entry to the Kover `excludes { }` block without explicit
+  permission — no packages, no class patterns, no `annotatedBy(...)`.
+- ✅ **ALWAYS** raise the number by adding tests. If coverage is below the floor,
+  the answer is more tests or a conversation — never a wider exclusion.
+- 📉 **Why**: the exclusion list once hid 64% of the source, and the reported figure
+  was 91% over 3,292 hand-picked lines. Measured honestly over the whole module the
+  same suite gives ~29% of 15,688 lines. An exclusion does not improve anything; it
+  only stops the number describing the code.
+- 💬 If a gate genuinely cannot be met, say so and let the owner decide. Do not
+  quietly adjust the gate.
+
 ### Unit Testing
 - Tests go in `composeApp/src/commonTest/kotlin/`
 - Use existing test framework setup
 - Mock `SongService` for ViewModel tests
+
+### Where each kind of test runs
+
+| Kind | Source set | Task |
+|---|---|---|
+| Logic / ViewModel / service | `commonTest` | `:composeApp:jsBrowserTest` (the CI gate) |
+| Compose UI (`runComposeUiTest`) | `wasmJsTest` | `:composeApp:wasmJsBrowserTest` |
+| Coverage measurement | — | `:composeApp:koverXmlReport` (Android unit-test JVM) |
+
+- **Compose UI tests must live in `wasmJsTest`, not `commonTest`.** They need a Skia
+  surface; the js (legacy) Karma runtime has none and fails with
+  `org_jetbrains_skia_Surface__1nMakeRasterN32Premul is not defined`. The wasmJs
+  target ships skiko with its test bundle and runs them unchanged.
+- ❌ **NEVER** add Robolectric to run Compose tests. Compose Multiplatform does not
+  need it, and Robolectric's instrumenting classloader defeats Kover — the tests
+  pass while the code they exercise still reports 0% covered.
+- ⚠️ Kover measures the **Android unit-test JVM**, so Compose UI tests on wasmJs
+  prove behaviour but do not move the coverage figure. Don't expect them to.
+- ⚠️ A ViewModel test that creates a ViewModel inside `runVmTest` must
+  `tearDown(vm)` in a `finally` (see `testutil/CoroutineTest.kt`). Without it a
+  coroutine can resume after `resetMain()` and fail an unrelated later test with
+  "Dispatchers.Main was accessed when the platform dispatcher was absent".
+  `SettingsViewModelTest`, `BibleViewModelTest` and `LocalNoticesViewModelTest`
+  still need this fix; until then they are named in the Android test filter.
 
 ### Manual Testing on Android
 1. Build: `./gradlew build`

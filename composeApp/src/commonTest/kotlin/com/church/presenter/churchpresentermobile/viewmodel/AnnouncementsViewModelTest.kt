@@ -5,9 +5,14 @@ import com.church.presenter.churchpresentermobile.model.AnnouncementType
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
 import com.church.presenter.churchpresentermobile.network.ServerEventService
+import com.church.presenter.churchpresentermobile.network.WsMessageType
+import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
+import com.church.presenter.churchpresentermobile.testutil.runVmTestUnconfined
+import com.church.presenter.churchpresentermobile.testutil.tearDown
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Tests [AnnouncementsViewModel.preload] (structured + label-fallback + regex timer
@@ -179,5 +184,173 @@ class AnnouncementsViewModelTest {
         vm.update { it.copy(type = AnnouncementType.CLOCK) }
         vm.saveCurrent()
         assertEquals(AnnouncementType.CLOCK.label, vm.saved.value[1].label)
+    }
+
+    // ── The payload sent to the desktop ──────────────────────────────────
+    //
+    // buildPayload is private, so it is exercised through the two actions that
+    // use it. What matters is the shape on the wire: the desktop reads these
+    // fields by name and decides from them whether it is drawing text or
+    // running a clock.
+
+    private fun sendingVm(): Pair<AnnouncementsViewModel, FakeWsSender> {
+        val ws = FakeWsSender()
+        return AnnouncementsViewModel(AppSettings(InMemorySettingsStorage()), ws) to ws
+    }
+
+    @Test
+    fun `a text announcement carries its words and is not a timer`() = runVmTestUnconfined {
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(type = AnnouncementType.TEXT) }
+            vm.update { it.copy(text = "Welcome to the service") }
+
+            vm.addToSchedule()
+
+            val payload = ws.lastPayload
+            assertTrue(payload.contains("\"announcementText\":\"Welcome to the service\""), payload)
+            assertTrue(payload.contains("\"isTimer\":false"), payload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a timer carries no announcement text, whatever was typed`() = runVmTestUnconfined {
+        // The text field keeps its value while the user switches type, but a timer
+        // that arrives carrying text is rendered as text by the desktop.
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(text = "left over from before") }
+            vm.update { it.copy(type = AnnouncementType.COUNTDOWN) }
+
+            vm.addToSchedule()
+
+            val payload = ws.lastPayload
+            assertTrue(payload.contains("\"announcementText\":\"\""), payload)
+            assertTrue(payload.contains("\"isTimer\":true"), payload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a countdown carries its duration and no target clock time`() = runVmTestUnconfined {
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(type = AnnouncementType.COUNTDOWN) }
+            vm.update { it.copy(hours = 1) }
+            vm.update { it.copy(minutes = 2) }
+            vm.update { it.copy(seconds = 3) }
+            vm.update { it.copy(targetHour = 9) }
+            vm.update { it.copy(targetMinute = 30) }
+
+            vm.addToSchedule()
+
+            val payload = ws.lastPayload
+            assertTrue(payload.contains("\"timerHours\":1"), payload)
+            assertTrue(payload.contains("\"timerMinutes\":2"), payload)
+            assertTrue(payload.contains("\"timerSeconds\":3"), payload)
+            assertTrue(payload.contains("\"timerMode\":\"duration\""), payload)
+            // A stale target time from the other mode must not travel with it.
+            assertTrue(payload.contains("\"targetHour\":0"), payload)
+            assertTrue(payload.contains("\"targetMinute\":0"), payload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `a countdown-to-time carries its target and no duration`() = runVmTestUnconfined {
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(type = AnnouncementType.COUNTDOWN_TO_TIME) }
+            vm.update { it.copy(hours = 1) }
+            vm.update { it.copy(minutes = 2) }
+            vm.update { it.copy(targetHour = 9) }
+            vm.update { it.copy(targetMinute = 30) }
+
+            vm.addToSchedule()
+
+            val payload = ws.lastPayload
+            assertTrue(payload.contains("\"targetHour\":9"), payload)
+            assertTrue(payload.contains("\"targetMinute\":30"), payload)
+            assertTrue(payload.contains("\"timerMode\":\"clock\""), payload)
+            assertTrue(payload.contains("\"timerHours\":0"), payload)
+            assertTrue(payload.contains("\"timerMinutes\":0"), payload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `each type sends the desktop's own timer-mode string`() = runVmTestUnconfined {
+        val expected = mapOf(
+            AnnouncementType.TEXT to "duration",
+            AnnouncementType.COUNTDOWN to "duration",
+            AnnouncementType.COUNT_UP to "count_up",
+            AnnouncementType.CLOCK to "clock_display",
+            AnnouncementType.COUNTDOWN_TO_TIME to "clock",
+        )
+        for ((type, mode) in expected) {
+            val (vm, ws) = sendingVm()
+            try {
+                vm.update { it.copy(type = type) }
+                vm.addToSchedule()
+
+                assertTrue(ws.lastPayload.contains("\"timerMode\":\"$mode\""), "$type → ${ws.lastPayload}")
+            } finally {
+                tearDown(vm)
+            }
+        }
+    }
+
+    @Test
+    fun `the timer reuses the announcement's own text colour`() = runVmTestUnconfined {
+        // One colour picker on screen drives both, so they must not diverge.
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(type = AnnouncementType.COUNTDOWN) }
+            vm.update { it.copy(textColor = "#FF0000") }
+
+            vm.addToSchedule()
+
+            val payload = ws.lastPayload
+            assertTrue(payload.contains("\"textColor\":\"#FF0000\""), payload)
+            assertTrue(payload.contains("\"timerTextColor\":\"#FF0000\""), payload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `the id is left blank for the server to assign`() = runVmTestUnconfined {
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(type = AnnouncementType.TEXT) }
+            vm.update { it.copy(text = "Hello") }
+
+            vm.addToSchedule()
+
+            assertTrue(ws.lastPayload.contains("\"id\":\"\""), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `showing on screen sends the same payload down the project path`() = runVmTestUnconfined {
+        val (vm, ws) = sendingVm()
+        try {
+            vm.update { it.copy(type = AnnouncementType.TEXT) }
+            vm.update { it.copy(text = "Now showing") }
+
+            vm.showOnScreen()
+
+            assertEquals(WsMessageType.PROJECT, ws.lastType)
+            assertTrue(ws.lastPayload.contains("Now showing"), ws.lastPayload)
+        } finally {
+            tearDown(vm)
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.mockClient
 import io.ktor.client.engine.mock.respond
@@ -8,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /** Tests [SongService.getSongs] (catalog flatten) and [SongService.getSongDetail] (2-pass parse). */
@@ -70,5 +72,144 @@ class SongServiceTest {
     @Test
     fun getSongDetailNonSuccessIsFailure() = runTest {
         assertTrue(service("nope", HttpStatusCode.NotFound).getSongDetail("1", null).isFailure)
+    }
+
+    // ── getSongDetail: request shape ─────────────────────────────────────
+
+    @Test
+    fun getSongDetailAsksForTheNumberedSong() = runTest {
+        var requested = ""
+        val settings = AppSettings(InMemorySettingsStorage())
+        val svc = SongService(settings, FakeWsSender(), mockClient { path ->
+            requested = path
+            respond("""{"number":"42","title":"Grace","text":"line"}""")
+        })
+
+        svc.getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertTrue(requested.endsWith("/songs/42"), "requested $requested")
+    }
+
+    @Test
+    fun getSongDetailWithNoNumberUsesThePlaceholderSegment() = runTest {
+        // A library song has no songbook number; the desktop resolves it by title
+        // instead, and the path still has to be well-formed.
+        var requested = ""
+        val settings = AppSettings(InMemorySettingsStorage())
+        val svc = SongService(settings, FakeWsSender(), mockClient { path ->
+            requested = path
+            respond("""{"title":"Grace","text":"line"}""")
+        })
+
+        svc.getSongDetail("", null, -1, "Grace").getOrThrow()
+
+        assertTrue(requested.endsWith("/songs/_"), "requested $requested")
+    }
+
+    // ── getSongDetail: the flexible second pass ──────────────────────────
+    //
+    // Pass 1 is a plain decode covering every @SerialName the model knows
+    // ("verses", "stanzas", "text", "body", …). Only when that finds nothing does
+    // pass 2 walk every key looking for something verse-shaped — the safety net
+    // for an older or customised desktop. So these payloads deliberately use key
+    // names the model does NOT recognise; a recognised one would never get here.
+
+    @Test
+    fun lyricsUnderAnUnrecognisedArrayKeyAreStillFound() = runTest {
+        val body = """{"number":"42","title":"Grace","blocks":[{"label":"Verse 1","lines":["Amazing grace"]}]}"""
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertTrue(detail.hasLyrics, "the flexible scan should have found the blocks array")
+        assertEquals(1, detail.allVerses.size)
+    }
+
+    @Test
+    fun anArrayOfBlankVersesIsNotMistakenForLyrics() = runTest {
+        // Decodes fine but says nothing — must not count as having found lyrics,
+        // or the song opens to a set of empty slides.
+        val body = """{"number":"42","title":"Grace","blocks":[{"label":"Verse 1","lines":[]}]}"""
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertFalse(detail.hasLyrics)
+    }
+
+    @Test
+    fun plainMultiLineLyricsUnderAnUnrecognisedStringKeyAreFound() = runTest {
+        val lyrics = "Amazing grace, how sweet the sound\\nThat saved a wretch like me\\nI once was lost"
+        val body = """{"number":"42","title":"Grace","freeform":"$lyrics"}"""
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertTrue(detail.hasLyrics)
+    }
+
+    @Test
+    fun aShortSingleLineStringIsNotMistakenForLyrics() = runTest {
+        // The scan wants multi-line text over 30 characters, so an author or a
+        // copyright line is never projected as the song.
+        val body = """{"number":"42","title":"Grace","credit":"John Newton","note":"Public domain"}"""
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertFalse(detail.hasLyrics)
+    }
+
+    @Test
+    fun theLongestCandidateStringWins() = runTest {
+        val short = "Line one here padded out\\nLine two here padded"
+        val long = "Amazing grace, how sweet the sound\\nThat saved a wretch like me\\n" +
+            "I once was lost, but now am found"
+        val body = """{"number":"42","title":"Grace","aside":"$short","freeform":"$long"}"""
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertTrue(detail.plainText!!.contains("but now am found"), detail.plainText!!)
+    }
+
+    @Test
+    fun versesAreCheckedBeforePlainText() = runTest {
+        // Structured verses project as separate slides; a flat string does not,
+        // so the array has to win when an unrecognised payload carries both.
+        val lyrics = "Amazing grace, how sweet the sound\\nThat saved a wretch like me"
+        val body = """
+            {"number":"42","title":"Grace",
+             "blocks":[{"label":"Verse 1","lines":["Amazing grace"]}],
+             "freeform":"$lyrics"}
+        """.trimIndent()
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertEquals(1, detail.allVerses.size)
+        assertEquals(null, detail.plainText, "plain text must not be filled in when verses were found")
+    }
+
+    @Test
+    fun aPayloadWithNothingLyricLikeReturnsTheBaseSongUnchanged() = runTest {
+        val body = """{"number":"42","title":"Grace"}"""
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertFalse(detail.hasLyrics)
+        assertEquals("Grace", detail.title)
+    }
+
+    @Test
+    fun aRecognisedPayloadNeverReachesTheFlexibleScan() = runTest {
+        // Pass 1 succeeding short-circuits, so a stray array elsewhere in the
+        // payload cannot overwrite verses the model already understood.
+        val body = """
+            {"number":"42","title":"Grace",
+             "verses":[{"label":"Verse 1","lines":["Amazing grace"]}],
+             "blocks":[{"label":"Wrong","lines":["Should not win"]}]}
+        """.trimIndent()
+
+        val detail = service(body).getSongDetail("42", null, -1, null).getOrThrow()
+
+        assertTrue(
+            detail.allVerses.none { it.displayText.contains("Should not win") },
+            detail.allVerses.toString(),
+        )
     }
 }
