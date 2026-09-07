@@ -81,6 +81,11 @@ jobs:
   coverage:
     name: Coverage (JaCoCo)
     runs-on: ubuntu-latest
+    # pull-requests: write for the coverage comment below; everything else this job
+    # does needs no more than the read the default token already carries.
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -117,6 +122,96 @@ jobs:
         run: >-
           ./gradlew :composeApp:jacocoTestReport :composeApp:jacocoTestCoverageVerification
           -PstepSummary="$GITHUB_STEP_SUMMARY" --continue
+      # Every counter, its floor, and the figure this run measured, as one comment on
+      # the pull request — the same table the desktop app posts, read from the same
+      # JaCoCo XML and the same FLOOR csv. Nothing else in CI reports a number: the
+      # floors only speak up when they are breached, so a change could move coverage
+      # several points in either direction and say nothing at all.
+      #
+      # Never gates. The `jacocoTestCoverageVerification` step above is the real
+      # floor; a counter under its cap is marked here and nowhere enforced.
+      - name: Coverage comment
+        if: always() && github.event_name == 'pull_request'
+        # A pull request from a fork gets a read-only token, so the comment cannot be
+        # posted there however the job is configured. The numbers are still on the run
+        # summary and in the uploaded report, and the gate above has already had its
+        # say — failing this job over a comment a fork is not allowed to write would
+        # gate outside contributors on a permission they cannot be given.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          ./gradlew :composeApp:coverageFloors -q > floors.csv || true
+          python3 - <<'PY' > coverage.md
+          import os, xml.etree.ElementTree as ET
+
+          # JaCoCo's own column order, so the table reads like the HTML overview.
+          COUNTERS = ["INSTRUCTION", "BRANCH", "LINE", "COMPLEXITY", "METHOD", "CLASS"]
+          REPORT = "composeApp/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+
+          # The floors as the verification task itself has them, so the cap reported is
+          # the cap enforced. CSV: FLOOR,<module>,<counter>,<minimum>
+          floors = {}
+          if os.path.exists("floors.csv"):
+              for line in open("floors.csv"):
+                  parts = line.strip().split(",")
+                  if len(parts) == 4 and parts[0] == "FLOOR":
+                      floors[parts[2]] = float(parts[3]) * 100
+
+          # Report-wide totals are the <counter> elements on the root <report>.
+          ratios = {}
+          if os.path.exists(REPORT):
+              root = ET.parse(REPORT).getroot()
+              for c in root.findall("counter"):
+                  missed, covered = int(c.get("missed")), int(c.get("covered"))
+                  total = missed + covered
+                  if total:
+                      ratios[c.get("type")] = (100 * covered / total, covered, total)
+
+          def gap(counter):
+              floor = floors.get(counter)
+              if floor is None or counter not in ratios:
+                  return None
+              short = floor - ratios[counter][0]
+              return short if short > 0 else None
+
+          breached = [c for c in COUNTERS if gap(c) is not None]
+
+          print("<!-- coverage-table -->")
+          print("## Coverage")
+          print()
+          if not ratios:
+              print("No JaCoCo report was produced in this run — see the job log.")
+          else:
+              if breached:
+                  print(f":warning: **{len(breached)} counter(s) below floor.**")
+                  print()
+              print("| Counter | Floor | Actual | Covered |")
+              print("|---|---|---|---|")
+              for counter in COUNTERS:
+                  if counter not in ratios:
+                      continue
+                  pct, covered, total = ratios[counter]
+                  floor = floors.get(counter)
+                  cap = "" if floor is None else f"{floor:.1f}%"
+                  short = gap(counter)
+                  mark = "" if short is None else f" :warning: -{short:.2f}pt"
+                  print(f"| {counter.title()} | {cap} | {pct:.2f}%{mark} | {covered}/{total} |")
+              print()
+              print("Measured over the whole module on the Android unit-test and JVM runs.")
+              print("The floors are enforced by the `jacocoTestCoverageVerification` step, not by this table.")
+          PY
+
+          # Upsert: one comment per pull request, found by the marker on its first line.
+          id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate \
+                 --jq '.[] | select(.body | startswith("<!-- coverage-table -->")) | .id' | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/$id" -F body=@coverage.md >/dev/null
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" -F body=@coverage.md >/dev/null
+          fi
+          cat coverage.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4

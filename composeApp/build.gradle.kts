@@ -226,10 +226,58 @@ jacoco {
     toolVersion = libs.versions.jacoco.get()
 }
 
+// Generated code only — there is no source behind it to cover. Nothing else is
+// excluded: not the ui/viewmodel/util packages, not the platform expect/actual
+// leaves, not @Composable functions. The figure this produces is coverage of the
+// whole module, so it is low; that is the point. Raise it by adding tests, never
+// by adding an exclusion.
+val jacocoGeneratedExcludes = listOf(
+    "**/ComposableSingletons*",
+    "**/churchpresentermobile/composeapp/generated/resources/**",
+)
+
+val jacocoClassesDir = layout.buildDirectory.dir("tmp/jacocoClasses")
+
+// Every class must come from exactly ONE tree. commonMain is compiled twice — once
+// for Android, once for the JVM — and the two produce different bytecode under the
+// same class name, which JaCoCo refuses to merge, failing the report outright with
+// "Can't add different class with same name".
+//
+// Shared code is attributed to the JVM tree, because the JVM run is the one that
+// executes the Compose UI tests as well as every commonTest. The Android tree
+// contributes only what is genuinely Android-only — androidMain's pickers, Firebase
+// wrappers and platform actuals — which the Android unit tests are the only run to
+// touch. `DuplicatesStrategy.EXCLUDE` does exactly that: the first spec to claim a
+// path keeps it, so listing the JVM tree first drops the Android copy of anything
+// shared. Nothing is excluded from the measurement — every class still appears
+// once.
+//
+// Why a staging COPY rather than a filtered file tree: the exclusion has to be
+// computed from what the JVM compilation actually produced, and a `Provider.map`
+// that walks that directory is evaluated before the compile task has run on a clean
+// build (it stores into the configuration cache entry). The list then came out
+// EMPTY, nothing was excluded from the Android tree, and every shared class was
+// added twice — green on a warm build directory, and a hard failure on CI, which is
+// always cold. A task cannot run before its dependencies, so the merge below is
+// correct whatever state the build directory starts in.
+val jacocoClasses = tasks.register<Sync>("jacocoClasses") {
+    group = "verification"
+    description = "Merges the JVM and Android class trees into one set for JaCoCo to analyse."
+    dependsOn("compileKotlinJvm", "compileDebugKotlinAndroid")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(layout.buildDirectory.dir("classes/kotlin/jvm/main")) {
+        jacocoGeneratedExcludes.forEach { exclude(it) }
+    }
+    from(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
+        jacocoGeneratedExcludes.forEach { exclude(it) }
+    }
+    into(jacocoClassesDir)
+}
+
 tasks.register<JacocoReport>("jacocoTestReport") {
     group = "verification"
     description = "Coverage for the app's own code, from the Android unit-test run."
-    dependsOn("testDebugUnitTest", "jvmTest")
+    dependsOn("testDebugUnitTest", "jvmTest", jacocoClasses)
 
     // Both JVM test runs: the Android unit tests, and the desktop-JVM Compose UI
     // tests. Adding the second WIDENS what is measured — it is the opposite of an
@@ -244,42 +292,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         }
     )
 
-    // Generated code only — there is no source behind it to cover. Nothing else is
-    // excluded: not the ui/viewmodel/util packages, not the platform expect/actual
-    // leaves, not @Composable functions. The figure this produces is coverage of the
-    // whole module, so it is low; that is the point. Raise it by adding tests, never
-    // by adding an exclusion.
-    // Every class must come from exactly ONE tree. commonMain is compiled twice —
-    // once for Android, once for the JVM — and the two produce different bytecode
-    // under the same class name, which JaCoCo refuses to merge ("Can't add
-    // different class with same name").
-    //
-    // Shared code is therefore attributed to the JVM tree, because the JVM run is
-    // the one that executes the Compose UI tests as well as every commonTest.
-    // The Android tree keeps only what is genuinely Android-only — androidMain's
-    // pickers, Firebase wrappers and platform actuals — which the Android unit
-    // tests are the only run to touch.
-    val jvmClassesDir = layout.buildDirectory.dir("classes/kotlin/jvm/main")
-    val androidClassesDir = layout.buildDirectory.dir("tmp/kotlin-classes/debug")
-    val generatedExcludes = listOf(
-        "**/ComposableSingletons*",
-        "**/churchpresentermobile/composeapp/generated/resources/**",
-    )
-    classDirectories.setFrom(
-        jvmClassesDir.map { jvm ->
-            val sharedClasses = jvm.asFile.walkTopDown()
-                .filter { it.isFile && it.extension == "class" }
-                .map { it.relativeTo(jvm.asFile).invariantSeparatorsPath }
-                .toList()
-            files(
-                fileTree(jvm) { generatedExcludes.forEach { exclude(it) } },
-                fileTree(androidClassesDir) {
-                    generatedExcludes.forEach { exclude(it) }
-                    sharedClasses.forEach { exclude(it) }
-                },
-            )
-        }
-    )
+    classDirectories.setFrom(fileTree(jacocoClassesDir))
     sourceDirectories.setFrom(
         files(
             "src/commonMain/kotlin",
@@ -316,6 +329,28 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     finalizedBy("printCoverageLink")
 }
 
+// The project's coverage floors, one per counter.
+//
+// Set at the measured figure minus two points, capped at 0.85 — a ratchet, not a
+// target: it stops a change quietly undoing coverage that already exists, while
+// leaving room for an honest refactor that moves a few lines around.
+//
+// Raising these as coverage rises is the intended direction. Lowering one, or
+// widening the report's class directories to make a build green, is the thing
+// AGENT.md forbids without the owner saying so.
+//
+// Declared here rather than inline in the rule so `coverageFloors` below can print
+// the same numbers the verification task enforces: the pull-request comment quotes
+// this map, so a cap shown there is a cap that is actually gating.
+val coverageFloors = mapOf(
+    "INSTRUCTION" to "0.846",
+    "BRANCH" to "0.762",
+    "LINE" to "0.85",
+    "COMPLEXITY" to "0.738",
+    "METHOD" to "0.802",
+    "CLASS" to "0.844",
+)
+
 tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
     group = "verification"
     description = "Fails the build when coverage drops below the floors."
@@ -326,46 +361,28 @@ tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
 
     violationRules {
         rule {
-            // The project's coverage floors, one per counter.
-            //
-            // Set at the measured figure minus two points, capped at 0.85 — a
-            // ratchet, not a target: it stops a change quietly undoing coverage
-            // that already exists, while leaving room for an honest refactor
-            // that moves a few lines around.
-            //
-            // Raising these as coverage rises is the intended direction. Lowering
-            // one, or widening the report's class directories to make a build
-            // green, is the thing AGENT.md forbids without the owner saying so.
-            limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = "0.85".toBigDecimal()
+            coverageFloors.forEach { (counterName, floor) ->
+                limit {
+                    counter = counterName
+                    value = "COVEREDRATIO"
+                    minimum = floor.toBigDecimal()
+                }
             }
-            limit {
-                counter = "INSTRUCTION"
-                value = "COVEREDRATIO"
-                minimum = "0.846".toBigDecimal()
-            }
-            limit {
-                counter = "BRANCH"
-                value = "COVEREDRATIO"
-                minimum = "0.762".toBigDecimal()
-            }
-            limit {
-                counter = "CLASS"
-                value = "COVEREDRATIO"
-                minimum = "0.844".toBigDecimal()
-            }
-            limit {
-                counter = "METHOD"
-                value = "COVEREDRATIO"
-                minimum = "0.802".toBigDecimal()
-            }
-            limit {
-                counter = "COMPLEXITY"
-                value = "COVEREDRATIO"
-                minimum = "0.738".toBigDecimal()
-            }
+        }
+    }
+}
+
+// The configured floors as CSV — FLOOR,<module>,<counter>,<minimum> — which is the
+// shape the coverage comment in .github/workflows/tests.yml reads, and the same one
+// the desktop app's `coverageFloors` prints.
+tasks.register("coverageFloors") {
+    group = "verification"
+    description = "Prints the configured JaCoCo floors as CSV."
+    val moduleName = project.name
+    val floors = coverageFloors
+    doLast {
+        floors.forEach { (counterName, floor) ->
+            println("FLOOR,$moduleName,$counterName,$floor")
         }
     }
 }
