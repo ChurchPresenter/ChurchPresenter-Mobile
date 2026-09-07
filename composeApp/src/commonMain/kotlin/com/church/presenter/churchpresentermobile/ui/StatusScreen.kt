@@ -615,10 +615,20 @@ private fun InfoCard(icon: ImageVector, title: String, body: String) {
 // Warning metadata — resolved in composable scope so stringResource() works
 // ─────────────────────────────────────────────────────────────────────────────
 
-private data class WarningDetails(val icon: ImageVector, val title: String, val body: String)
+/** The words and icon one [StatusWarning] is shown with. */
+internal data class WarningDetails(val icon: ImageVector, val title: String, val body: String)
 
+/**
+ * Resolves a [StatusWarning] to what the operator reads.
+ *
+ * `internal` because each warning sends someone somewhere different — to the
+ * desktop's permissions, to its Bible import, to its version — and a warning
+ * that resolves to the wrong words sends them to the wrong place. Eight
+ * branches, none of them reachable from a screen test without eight different
+ * server responses.
+ */
 @Composable
-private fun warningDetails(warning: StatusWarning): WarningDetails = when (warning) {
+internal fun warningDetails(warning: StatusWarning): WarningDetails = when (warning) {
     is StatusWarning.NoApiKey -> WarningDetails(
         icon  = Icons.Filled.Warning,
         title = stringResource(Res.string.status_warn_no_api_key_title),

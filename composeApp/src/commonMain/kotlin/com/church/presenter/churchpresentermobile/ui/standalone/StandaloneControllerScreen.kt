@@ -42,6 +42,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import androidx.compose.ui.graphics.Color
@@ -104,10 +107,11 @@ fun StandaloneControllerScreen(
     settings: AppSettings,
     photos: PhotoLibrary? = null,
     modifier: Modifier = Modifier,
+    /** Supplied by tests only; the screen owns its own otherwise. */
+    providedViewModel: StandaloneViewModel? = null,
 ) {
-    val viewModel: StandaloneViewModel = viewModel(key = "standalone") {
-        StandaloneViewModel(engine, registry, settings, photos)
-    }
+    val viewModel: StandaloneViewModel = providedViewModel
+        ?: viewModel(key = "standalone") { StandaloneViewModel(engine, registry, settings, photos) }
     val colors = LocalAppColors.current
 
     val deck by viewModel.deck.collectAsState()
@@ -160,12 +164,12 @@ fun StandaloneControllerScreen(
                 .padding(horizontal = AppDimens.space16),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space14),
         ) {
-            OutputChip(sinks, onClick = { showOutputs = true })
+            OutputChip(sinks, onClick = { showOutputs = true }, modifier = Modifier.testTag(StandaloneTags.OUTPUT_CHIP))
 
-            SlidePreview(slide, deck.slides.size, index)
+            SlidePreview(slide, deck.slides.size, index, Modifier.testTag(StandaloneTags.PREVIEW))
 
             if (deck.isEmpty) {
-                EmptyDeckHint()
+                EmptyDeckHint(Modifier.testTag(StandaloneTags.EMPTY_DECK))
             } else {
                 SectionList(
                     title = deck.title,
@@ -187,7 +191,7 @@ fun StandaloneControllerScreen(
                     text = stringResource(Res.string.standalone_look),
                     color = colors.accent,
                     fontSize = 12.sp,
-                    modifier = Modifier.clickable { showLook = true },
+                    modifier = Modifier.testTag(StandaloneTags.LOOK).clickable { showLook = true },
                 )
             }
             SegmentedControl(
@@ -198,6 +202,7 @@ fun StandaloneControllerScreen(
                 ),
                 selectedIndex = BACKDROPS.indexOf(backdrop).coerceAtLeast(0),
                 onSelect = { viewModel.setBackdrop(BACKDROPS[it]) },
+                optionTag = { StandaloneTags.backdrop(it) },
             )
 
             // Choosing IMAGE is only half the instruction — it needs a photo, and
@@ -247,14 +252,18 @@ fun StandaloneControllerScreen(
 
 /** "Casting to Sanctuary TV" — or an honest note that nothing is connected yet. */
 @Composable
-private fun OutputChip(sinks: List<SinkStatus>, onClick: () -> Unit) {
+private fun OutputChip(
+    sinks: List<SinkStatus>,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val attached = sinks.filter { it.isAttached }
     val connected = attached.isNotEmpty()
     val tint = if (connected) colors.accent else colors.muted
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusPill))
             .background(if (connected) colors.accentTint else colors.surface)
             .clickable(onClick = onClick)
@@ -283,9 +292,9 @@ private fun OutputChip(sinks: List<SinkStatus>, onClick: () -> Unit) {
 
 /** A 16:9 window onto the real renderer — not a mock-up of it. */
 @Composable
-private fun SlidePreview(slide: Slide, total: Int, index: Int) {
+private fun SlidePreview(slide: Slide, total: Int, index: Int, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         OverlineRow(
             label = stringResource(Res.string.standalone_preview),
             trailing = if (total > 0) {
@@ -328,6 +337,8 @@ private fun SectionList(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag(StandaloneTags.section(i))
+                        .semantics { selected = active }
                         .clip(RoundedCornerShape(9.dp))
                         .background(if (active) colors.accent else Color.Transparent)
                         .clickable { onSelect(i) }
@@ -356,10 +367,10 @@ private fun SectionList(
 }
 
 @Composable
-private fun EmptyDeckHint() {
+private fun EmptyDeckHint(modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
@@ -396,14 +407,14 @@ private fun TransportRow(
             icon = Icons.AutoMirrored.Filled.ArrowBack,
             enabled = canStepBack,
             onClick = onPrevious,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(StandaloneTags.PREV),
         )
         ControlButton(
             label = stringResource(Res.string.standalone_next),
             icon = Icons.AutoMirrored.Filled.ArrowForward,
             enabled = canStepForward,
             onClick = onNext,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(StandaloneTags.NEXT),
         )
     }
 }
@@ -426,7 +437,7 @@ private fun StateRow(
             label = stringResource(Res.string.standalone_blank),
             icon = Icons.Filled.HideSource,
             onClick = onToggleBlank,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(StandaloneTags.BLANK),
             background = if (isBlank) Color.Black else colors.surface,
             contentColor = if (isBlank) Color.White else colors.text,
         )
@@ -440,13 +451,13 @@ private fun StateRow(
             icon = Icons.Filled.DesktopAccessDisabled,
             enabled = hasContent,
             onClick = onClear,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(StandaloneTags.CLEAR),
         )
         ControlButton(
             label = stringResource(Res.string.standalone_live),
             icon = Icons.Filled.Sensors,
             onClick = onToggleLive,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(StandaloneTags.LIVE),
             background = if (isLive) colors.danger else colors.surface,
             contentColor = if (isLive) Color.White else colors.text,
         )
@@ -517,11 +528,13 @@ private fun BackdropPhotoStrip(
                 text = stringResource(Res.string.standalone_backdrop_no_photos),
                 color = colors.muted,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(StandaloneTags.BACKDROP_NO_PHOTOS),
             )
             !canUse -> Text(
                 text = stringResource(Res.string.standalone_backdrop_needs_server),
                 color = colors.muted,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(StandaloneTags.BACKDROP_NEEDS_SERVER),
             )
             else -> {
                 Text(
@@ -529,7 +542,10 @@ private fun BackdropPhotoStrip(
                     color = colors.muted,
                     fontSize = 12.sp,
                 )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.testTag(StandaloneTags.BACKDROP_PHOTOS),
+                ) {
                     items(photos, key = { it.id }) { photo ->
                         val url = urlFor(photo.id)
                         val isSelected = url != null && url == selectedUrl
@@ -543,6 +559,7 @@ private fun BackdropPhotoStrip(
                                     color = if (isSelected) colors.accent else colors.borderSubtle,
                                     shape = RoundedCornerShape(10.dp),
                                 )
+                                .testTag(StandaloneTags.backdropPhoto(photo.id))
                                 .clickable { onPick(photo) },
                         ) {
                             AsyncImage(

@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -74,15 +75,16 @@ import org.jetbrains.compose.resources.stringResource
 internal fun BibleSyncSection(
     bibles: LocalBibleRepository,
     settings: AppSettings,
+    /** Supplied by tests only; the sheet owns its own otherwise. */
+    providedViewModel: BibleSyncViewModel? = null,
+    providedChoice: BibleChoiceViewModel? = null,
 ) {
-    val viewModel: BibleSyncViewModel = viewModel(key = "bible_sync") {
-        BibleSyncViewModel(bibles, settings)
-    }
+    val viewModel: BibleSyncViewModel = providedViewModel
+        ?: viewModel(key = "bible_sync") { BibleSyncViewModel(bibles, settings) }
     // Choosing is not downloading — the Library tab offers the same choice, so
     // the state behind it lives apart from this sheet.
-    val choice: BibleChoiceViewModel = viewModel(key = "bible_choice") {
-        BibleChoiceViewModel(bibles)
-    }
+    val choice: BibleChoiceViewModel = providedChoice
+        ?: viewModel(key = "bible_choice") { BibleChoiceViewModel(bibles) }
     val colors = LocalAppColors.current
 
     val choices by viewModel.choices.collectAsState()
@@ -110,6 +112,7 @@ internal fun BibleSyncSection(
                 color = colors.text,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_INSTALLED),
             )
             // Which one is read and presented is a choice, not the order they
             // happened to be downloaded in — so the list picks as well as lists.
@@ -118,6 +121,7 @@ internal fun BibleSyncSection(
                     text = stringResource(Res.string.bible_sync_choose_hint),
                     color = colors.muted,
                     fontSize = 11.sp,
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_CHOOSE_HINT),
                 )
             }
             installed.forEach { bible ->
@@ -125,6 +129,7 @@ internal fun BibleSyncSection(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag(LibraryTags.bibleInstalled(bible.id))
                         .clickable { choice.setActive(bible.id) },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -146,7 +151,10 @@ internal fun BibleSyncSection(
                             fontSize = 11.sp,
                         )
                     }
-                    IconButton(onClick = { pendingRemoval = bible.id }) {
+                    IconButton(
+                        onClick = { pendingRemoval = bible.id },
+                        modifier = Modifier.testTag(LibraryTags.bibleRemove(bible.id)),
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.DeleteOutline,
                             contentDescription = stringResource(Res.string.bible_sync_remove),
@@ -161,11 +169,14 @@ internal fun BibleSyncSection(
             progress.isRunning -> {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (progress.isPreparing) {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = colors.accent)
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth().testTag(LibraryTags.BIBLE_SYNC_PROGRESS),
+                            color = colors.accent,
+                        )
                     } else {
                         LinearProgressIndicator(
                             progress = { progress.fraction },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().testTag(LibraryTags.BIBLE_SYNC_PROGRESS),
                             color = colors.accent,
                         )
                     }
@@ -185,6 +196,7 @@ internal fun BibleSyncSection(
                 SheetButton(
                     label = stringResource(Res.string.bible_sync_stop),
                     isDestructive = true,
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_STOP),
                     onClick = { viewModel.cancel() },
                 )
             }
@@ -193,12 +205,20 @@ internal fun BibleSyncSection(
                 text = stringResource(Res.string.bible_sync_finding),
                 color = colors.muted,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_FINDING),
             )
 
             choices.isEmpty() -> {
-                loadError?.let { OutcomeCard(stringResource(Res.string.bible_sync_failed, it), colors.danger) }
+                loadError?.let {
+                    OutcomeCard(
+                        stringResource(Res.string.bible_sync_failed, it),
+                        colors.danger,
+                        Modifier.testTag(LibraryTags.BIBLE_SYNC_LOAD_ERROR),
+                    )
+                }
                 SheetButton(
                     label = stringResource(Res.string.bible_sync_find),
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_FIND),
                     onClick = { viewModel.loadChoices() },
                 )
             }
@@ -209,6 +229,7 @@ internal fun BibleSyncSection(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .testTag(LibraryTags.bibleChoice(choice.fileName))
                                 .clickable { viewModel.toggle(choice.fileName) }
                                 .padding(vertical = 2.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -238,6 +259,7 @@ internal fun BibleSyncSection(
                 SheetButton(
                     label = stringResource(Res.string.bible_sync_download, selection.size.toString()),
                     enabled = selection.isNotEmpty(),
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_DOWNLOAD),
                     onClick = { viewModel.sync() },
                 )
             }
@@ -267,7 +289,7 @@ internal fun BibleSyncSection(
                             result.installed.joinToString(", ")) to colors.muted
                     }
             }
-            OutcomeCard(message, tint)
+            OutcomeCard(message, tint, Modifier.testTag(LibraryTags.BIBLE_SYNC_OUTCOME))
         }
     }
 
@@ -277,12 +299,18 @@ internal fun BibleSyncSection(
             title = { Text(stringResource(Res.string.bible_sync_remove_confirm_title)) },
             text = { Text(stringResource(Res.string.bible_sync_remove_confirm_body)) },
             confirmButton = {
-                TextButton(onClick = { viewModel.remove(id); pendingRemoval = null }) {
+                TextButton(
+                    onClick = { viewModel.remove(id); pendingRemoval = null },
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_REMOVE_CONFIRM),
+                ) {
                     Text(stringResource(Res.string.bible_sync_remove))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { pendingRemoval = null }) {
+                TextButton(
+                    onClick = { pendingRemoval = null },
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_SYNC_REMOVE_DISMISS),
+                ) {
                     Text(stringResource(Res.string.qa_admin_cancel))
                 }
             },

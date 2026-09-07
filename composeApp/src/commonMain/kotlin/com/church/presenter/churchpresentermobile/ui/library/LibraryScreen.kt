@@ -200,15 +200,28 @@ fun LibraryScreen(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(AppDimens.space8),
             ) {
-                SyncChip(settings = settings, onClick = { showSync = true })
+                SyncChip(
+                    settings = settings,
+                    onClick = { showSync = true },
+                    modifier = Modifier.testTag(LibraryTags.SYNC_CHIP),
+                )
                 BibleChip(
                     bibles = bibles,
                     onCopyBible = { syncSection = SyncSection.BIBLE; showSync = true },
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_CHIP),
                 )
-                ShareChip(onClick = { showShare = true })
+                ShareChip(
+                    onClick = { showShare = true },
+                    modifier = Modifier.testTag(LibraryTags.SHARE_CHIP),
+                )
             }
             message?.let { text ->
-                Text(text, color = colors.danger, fontSize = 11.sp)
+                Text(
+                    text,
+                    color = colors.danger,
+                    fontSize = 11.sp,
+                    modifier = Modifier.testTag(LibraryTags.MESSAGE),
+                )
             }
 
             SegmentedControl(
@@ -219,20 +232,29 @@ fun LibraryScreen(
                 ),
                 selectedIndex = FILTERS.indexOf(filter).coerceAtLeast(0),
                 onSelect = { viewModel.setFilter(FILTERS[it]) },
+                optionTag = { LibraryTags.filter(it) },
             )
 
             when {
                 library.isEmpty -> EmptyLibraryHint(
                     onCopyFromComputer = { syncSection = SyncSection.SONGS; showSync = true },
                     onWriteSong = { onEditSong(null) },
+                    modifier = Modifier.testTag(LibraryTags.EMPTY_LIBRARY),
                 )
-                songs.isEmpty() && announcements.isEmpty() -> NoResultsHint()
+                songs.isEmpty() && announcements.isEmpty() ->
+                    NoResultsHint(Modifier.testTag(LibraryTags.NO_RESULTS))
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(AppDimens.space8),
                 ) {
                     if (songs.isNotEmpty()) {
-                        item { OverlineRow(stringResource(Res.string.library_section_songs), "${songs.size}") }
+                        item {
+                            OverlineRow(
+                                stringResource(Res.string.library_section_songs),
+                                "${songs.size}",
+                                modifier = Modifier.testTag(LibraryTags.SONGS_HEADING),
+                            )
+                        }
                         items(songs, key = { it.id }) { song ->
                             SongRow(
                                 song = song,
@@ -242,7 +264,13 @@ fun LibraryScreen(
                         }
                     }
                     if (announcements.isNotEmpty()) {
-                        item { OverlineRow(stringResource(Res.string.library_section_notices), "${announcements.size}") }
+                        item {
+                            OverlineRow(
+                                stringResource(Res.string.library_section_notices),
+                                "${announcements.size}",
+                                modifier = Modifier.testTag(LibraryTags.NOTICES_HEADING),
+                            )
+                        }
                         items(announcements, key = { it.id }) { item ->
                             AnnouncementRow(
                                 announcement = item,
@@ -271,7 +299,8 @@ fun LibraryScreen(
             contentColor = colors.onAccent,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(AppDimens.space16),
+                .padding(AppDimens.space16)
+                .testTag(LibraryTags.ADD),
         ) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(
@@ -431,10 +460,15 @@ private fun OriginBadge(origin: ContentOrigin) {
 }
 
 @Composable
-private fun EmptyLibraryHint(onCopyFromComputer: () -> Unit, onWriteSong: () -> Unit) {
+private fun EmptyLibraryHint(
+    onCopyFromComputer: () -> Unit,
+    onWriteSong: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     // Sync and Share sit in a chip row above this card, which an operator looking at an empty
     // list has no reason to read as "how do I get songs onto this phone". Say it here.
     EmptyState(
+        modifier = modifier,
         title = stringResource(Res.string.library_empty_title),
         body = stringResource(Res.string.library_empty_body_standalone),
         actionLabel = stringResource(Res.string.empty_action_get_content),
@@ -446,15 +480,15 @@ private fun EmptyLibraryHint(onCopyFromComputer: () -> Unit, onWriteSong: () -> 
 }
 
 @Composable
-private fun NoResultsHint() {
-    HintCard(title = stringResource(Res.string.library_no_results), body = "")
+private fun NoResultsHint(modifier: Modifier = Modifier) {
+    HintCard(title = stringResource(Res.string.library_no_results), body = "", modifier = modifier)
 }
 
 @Composable
-private fun HintCard(title: String, body: String) {
+private fun HintCard(title: String, body: String, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
@@ -476,9 +510,9 @@ private fun AddChoiceDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_add)) },
         text = { Text(stringResource(Res.string.library_empty_body)) },
-        confirmButton = { TextButton(onClick = onSong) { Text(stringResource(Res.string.library_new_song)) } },
+        confirmButton = { TextButton(onClick = onSong, modifier = Modifier.testTag(LibraryTags.ADD_SONG)) { Text(stringResource(Res.string.library_new_song)) } },
         dismissButton = {
-            TextButton(onClick = onAnnouncement) { Text(stringResource(Res.string.library_new_notice)) }
+            TextButton(onClick = onAnnouncement, modifier = Modifier.testTag(LibraryTags.ADD_NOTICE)) { Text(stringResource(Res.string.library_new_notice)) }
         },
     )
 }
@@ -513,7 +547,11 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
  * already says how to get one.
  */
 @Composable
-private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
+private fun BibleChip(
+    bibles: LocalBibleRepository,
+    onCopyBible: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val viewModel: BibleChoiceViewModel = viewModel(key = "library_bible_choice") {
         BibleChoiceViewModel(bibles)
@@ -526,7 +564,7 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
 
     Box {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .clip(RoundedCornerShape(AppDimens.radiusPill))
                 .background(colors.surface)
                 .clickable { expanded = true }
@@ -627,7 +665,7 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
  * Sunday morning with the router unplugged.
  */
 @Composable
-private fun SyncChip(settings: AppSettings, onClick: () -> Unit) {
+private fun SyncChip(settings: AppSettings, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     val state = remember(settings) { readSyncState(settings.librarySyncStateJson) }
 
@@ -641,7 +679,7 @@ private fun SyncChip(settings: AppSettings, onClick: () -> Unit) {
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusPill))
             .background(colors.surface)
             .clickable(onClick = onClick)
@@ -667,10 +705,10 @@ private fun SyncChip(settings: AppSettings, onClick: () -> Unit) {
 
 /** Opens the import/export sheet. */
 @Composable
-private fun ShareChip(onClick: () -> Unit) {
+private fun ShareChip(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusPill))
             .background(colors.surface)
             .clickable(onClick = onClick)

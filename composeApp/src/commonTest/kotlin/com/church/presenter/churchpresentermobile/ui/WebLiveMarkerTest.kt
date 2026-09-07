@@ -62,10 +62,16 @@ class WebLiveMarkerTest {
         showWeb(vm)
         val first = bookmark(vm, "example.org")
         click(UiTags.WEB_GO_LIVE)
+        // Both actions go through the ViewModel's coroutine, so the marker
+        // arrives and leaves a frame or more after the tap. Asserting straight
+        // after the click passed most of the time and failed under load — and
+        // without the first await the test could also pass while never having
+        // been live at all.
+        awaitThat { exists(UiTags.bookmarkLive(first)) }
 
         click(UiTags.WEB_CLEAR)
 
-        assertFalse(exists(UiTags.bookmarkLive(first)))
+        awaitThat { !exists(UiTags.bookmarkLive(first)) }
     }
 
     @Test

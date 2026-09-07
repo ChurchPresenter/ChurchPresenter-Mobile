@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -68,18 +69,39 @@ fun ShareSheet(
     repository: LibraryRepository,
     onDismiss: () -> Unit,
     onMessage: (String) -> Unit,
+    /** Supplied by tests only; the sheet owns its own otherwise. */
+    providedViewModel: LibraryShareViewModel? = null,
 ) {
-    val viewModel: LibraryShareViewModel = viewModel(key = "library_share") {
-        LibraryShareViewModel(repository)
-    }
+    val viewModel: LibraryShareViewModel = providedViewModel
+        ?: viewModel(key = "library_share") { LibraryShareViewModel(repository) }
     val colors = LocalAppColors.current
-    val state by viewModel.uiState.collectAsState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = colors.sheetBackground,
     ) {
+        ShareSheetContent(viewModel = viewModel, onMessage = onMessage)
+    }
+}
+
+/**
+ * The sheet's body, without the sheet around it.
+ *
+ * `internal` and separate so the import flow can be exercised without a
+ * `ModalBottomSheet`'s spring animation: the preview, the conflict question and
+ * the two answers to it are the part that decides whether someone's own edits
+ * survive an import.
+ */
+@Composable
+internal fun ShareSheetContent(
+    viewModel: LibraryShareViewModel,
+    onMessage: (String) -> Unit,
+) {
+    val colors = LocalAppColors.current
+    val state by viewModel.uiState.collectAsState()
+
+    run {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -110,11 +132,13 @@ fun ShareSheet(
                 is ShareUiState.Imported -> ResultText(
                     text = stringResource(Res.string.import_done, current.count.toString()),
                     tint = colors.accent,
+                    modifier = Modifier.testTag(LibraryTags.SHARE_RESULT),
                 )
 
                 is ShareUiState.Error -> ResultText(
                     text = stringResource(current.error.messageResource()),
                     tint = colors.danger,
+                    modifier = Modifier.testTag(LibraryTags.SHARE_RESULT),
                 )
 
                 ShareUiState.Idle -> {
@@ -122,6 +146,7 @@ fun ShareSheet(
                         ActionButton(
                             label = stringResource(Res.string.share_export),
                             isPrimary = true,
+                            modifier = Modifier.testTag(LibraryTags.SHARE_EXPORT),
                         ) {
                             share(viewModel.exportText(), viewModel.exportFileName())
                         }
@@ -136,6 +161,7 @@ fun ShareSheet(
                             label = stringResource(Res.string.share_import),
                             isPrimary = false,
                             onClick = launch,
+                            modifier = Modifier.testTag(LibraryTags.SHARE_IMPORT),
                         )
                     }
                 }
@@ -157,6 +183,7 @@ private fun PreviewCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(LibraryTags.SHARE_PREVIEW)
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
             .padding(AppDimens.space16),
@@ -164,7 +191,12 @@ private fun PreviewCard(
     ) {
         if (preview.isEmpty) {
             Text(stringResource(Res.string.import_nothing), color = colors.muted, fontSize = 13.sp)
-            ActionButton(stringResource(Res.string.import_cancel), isPrimary = false, onClick = onCancel)
+            ActionButton(
+                stringResource(Res.string.import_cancel),
+                isPrimary = false,
+                onClick = onCancel,
+                modifier = Modifier.testTag(LibraryTags.SHARE_PREVIEW_CANCEL),
+            )
             return@Column
         }
 
@@ -187,18 +219,30 @@ private fun PreviewCard(
             )
             Row(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 Box(Modifier.weight(1f)) {
-                    ActionButton(stringResource(Res.string.import_keep_mine), isPrimary = false) {
+                    ActionButton(
+                        stringResource(Res.string.import_keep_mine),
+                        isPrimary = false,
+                        modifier = Modifier.testTag(LibraryTags.shareResolve("keepMine")),
+                    ) {
                         onResolve(ConflictResolution.KEEP_MINE)
                     }
                 }
                 Box(Modifier.weight(1f)) {
-                    ActionButton(stringResource(Res.string.import_replace), isPrimary = true) {
+                    ActionButton(
+                        stringResource(Res.string.import_replace),
+                        isPrimary = true,
+                        modifier = Modifier.testTag(LibraryTags.shareResolve("replace")),
+                    ) {
                         onResolve(ConflictResolution.REPLACE)
                     }
                 }
             }
         } else {
-            ActionButton(stringResource(Res.string.import_confirm), isPrimary = true) {
+            ActionButton(
+                stringResource(Res.string.import_confirm),
+                isPrimary = true,
+                modifier = Modifier.testTag(LibraryTags.shareResolve("confirm")),
+            ) {
                 onResolve(ConflictResolution.KEEP_MINE)
             }
         }
@@ -206,14 +250,18 @@ private fun PreviewCard(
 }
 
 @Composable
-private fun ResultText(text: String, tint: androidx.compose.ui.graphics.Color) {
+private fun ResultText(
+    text: String,
+    tint: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Text(
         text = text,
         color = tint,
         fontSize = 13.sp,
         lineHeight = 18.sp,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
@@ -222,10 +270,15 @@ private fun ResultText(text: String, tint: androidx.compose.ui.graphics.Color) {
 }
 
 @Composable
-private fun ActionButton(label: String, isPrimary: Boolean, onClick: () -> Unit) {
+private fun ActionButton(
+    label: String,
+    isPrimary: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusButton))
             .background(if (isPrimary) colors.accent else colors.surfaceStrong)

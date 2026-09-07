@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -65,10 +66,13 @@ internal fun SongSyncSection(
     settings: AppSettings,
     sender: WsSender,
     onDone: () -> Unit,
+    /** Supplied by tests only; the sheet owns its own otherwise. */
+    providedViewModel: LibrarySyncViewModel? = null,
 ) {
-    val viewModel: LibrarySyncViewModel = viewModel(key = "library_sync") {
-        LibrarySyncViewModel(repository, settings, SongService(settings, sender))
-    }
+    val viewModel: LibrarySyncViewModel = providedViewModel
+        ?: viewModel(key = "library_sync") {
+            LibrarySyncViewModel(repository, settings, SongService(settings, sender))
+        }
     val colors = LocalAppColors.current
     val progress by viewModel.progress.collectAsState()
     val outcome by viewModel.outcome.collectAsState()
@@ -88,11 +92,14 @@ internal fun SongSyncSection(
         if (progress.isRunning) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 if (progress.isPreparing) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = colors.accent)
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().testTag(LibraryTags.SYNC_PROGRESS),
+                        color = colors.accent,
+                    )
                 } else {
                     LinearProgressIndicator(
                         progress = { progress.fraction },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag(LibraryTags.SYNC_PROGRESS),
                         color = colors.accent,
                     )
                 }
@@ -110,6 +117,7 @@ internal fun SongSyncSection(
                     },
                     color = colors.muted,
                     fontSize = 11.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_PROGRESS_LABEL),
                 )
                 if (progress.currentTitle.isNotBlank()) {
                     Text(
@@ -118,6 +126,7 @@ internal fun SongSyncSection(
                         fontSize = 11.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.testTag(LibraryTags.SYNC_CURRENT_TITLE),
                     )
                 }
             }
@@ -145,7 +154,7 @@ internal fun SongSyncSection(
                 is SyncOutcome.Cancelled ->
                     stringResource(Res.string.sync_cancelled, result.songCount.toString()) to colors.muted
             }
-            OutcomeCard(message, tint)
+            OutcomeCard(message, tint, Modifier.testTag(LibraryTags.SYNC_OUTCOME))
         }
 
         // A finished copy offers the way out, not the way back in: leaving
@@ -164,6 +173,7 @@ internal fun SongSyncSection(
                 ),
                 selectedIndex = if (chooseBooks) 1 else 0,
                 onSelect = { viewModel.setChooseBooks(it == 1) },
+                optionTag = { LibraryTags.syncScope(it) },
             )
         }
 
@@ -173,11 +183,13 @@ internal fun SongSyncSection(
                     text = stringResource(Res.string.sync_books_finding),
                     color = colors.muted,
                     fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_FINDING),
                 )
                 books.isEmpty() -> Text(
                     text = stringResource(Res.string.sync_books_missing),
                     color = colors.muted,
                     fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_MISSING),
                 )
                 else -> {
                     Row(
@@ -193,6 +205,7 @@ internal fun SongSyncSection(
                             },
                             color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
                             fontSize = 12.sp,
+                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOK_COUNT),
                         )
                         // A long book list is tedious to untick one at a time,
                         // and picking one of forty starts from "none".
@@ -204,16 +217,19 @@ internal fun SongSyncSection(
                             },
                             color = colors.accent,
                             fontSize = 12.sp,
-                            modifier = Modifier.clickable {
-                                if (selectedBooks.size == books.size) viewModel.clearBooks()
-                                else viewModel.selectAllBooks()
-                            },
+                            modifier = Modifier
+                                .testTag(LibraryTags.SYNC_BOOKS_TOGGLE_ALL)
+                                .clickable {
+                                    if (selectedBooks.size == books.size) viewModel.clearBooks()
+                                    else viewModel.selectAllBooks()
+                                },
                         )
                     }
                     books.forEach { book ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .testTag(LibraryTags.syncBook(book))
                                 .clickable { viewModel.toggleBook(book) },
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -235,6 +251,7 @@ internal fun SongSyncSection(
                             text = stringResource(Res.string.sync_books_none),
                             color = colors.danger,
                             fontSize = 11.sp,
+                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_NONE),
                         )
                     }
                 }
@@ -247,6 +264,7 @@ internal fun SongSyncSection(
             canStart = viewModel.canSync,
         )
         SheetButton(
+            modifier = Modifier.testTag(LibraryTags.SYNC_BUTTON),
             label = when (button.action) {
                 SyncButton.Action.CANCEL -> stringResource(Res.string.sync_cancel)
                 SyncButton.Action.CLOSE -> stringResource(Res.string.sync_done_close)

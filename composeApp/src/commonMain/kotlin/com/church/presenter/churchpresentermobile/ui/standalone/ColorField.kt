@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -49,6 +50,8 @@ internal fun ColorField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    /** Names this field's swatch and its text box for a UI test. */
+    tag: String? = null,
 ) {
     val colors = LocalAppColors.current
     // Local draft so a half-typed value survives; the parsed ones go up as they arrive.
@@ -76,7 +79,11 @@ internal fun ColorField(
                 .background(colors.surface)
                 .padding(horizontal = AppDimens.space12, vertical = 10.dp),
         ) {
-            ColorSwatch(color = parsed, onClick = { showPicker = true })
+            ColorSwatch(
+                color = parsed,
+                onClick = { showPicker = true },
+                modifier = tag?.let { Modifier.testTag("$it:swatch") } ?: Modifier,
+            )
             BasicTextField(
                 value = draft,
                 onValueChange = { typed ->
@@ -94,7 +101,9 @@ internal fun ColorField(
                     keyboardType = KeyboardType.Ascii,
                     imeAction = ImeAction.Done,
                 ),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(tag?.let { Modifier.testTag(it) } ?: Modifier),
             )
         }
     }
