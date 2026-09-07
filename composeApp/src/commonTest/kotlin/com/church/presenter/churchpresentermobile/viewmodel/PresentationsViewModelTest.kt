@@ -330,6 +330,9 @@ class PresentationsViewModelTest {
         val vm = liveVm { respond(listJson) }
         try {
             val list = vm.presentations.first { it.isNotEmpty() }
+            // Same ordering as the failure case below: the list is published
+            // before the `finally` lowers the spinner.
+            vm.isLoading.first { !it }
 
             assertEquals(1, list.size)
             assertEquals("Sermon.pptx", list.first().displayName)
@@ -345,6 +348,11 @@ class PresentationsViewModelTest {
         val vm = liveVm { respond("boom", HttpStatusCode.InternalServerError) }
         try {
             val error = vm.error.first { it != null }
+            // The spinner is lowered in the `finally` AFTER the error is
+            // published, and on an unconfined dispatcher the await above resumes
+            // inside that publication — so reading isLoading off the back of it
+            // catches the load still in flight. Wait for the spinner itself.
+            vm.isLoading.first { !it }
 
             assertNotNull(error)
             assertFalse(vm.isLoading.value)
