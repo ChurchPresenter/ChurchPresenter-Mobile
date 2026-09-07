@@ -288,4 +288,70 @@ class CpsetSerializerTest {
         assertTrue(preview.isEmpty)
         assertEquals(library, CpsetSerializer.apply(preview, library, ConflictResolution.KEEP_MINE))
     }
+
+    // ── Apply: announcements ─────────────────────────────────────────────
+    //
+    // The same three rules as songs, on the other kind of content. Worth stating
+    // separately because they are a separate code path — a fix applied to one
+    // branch and not the other is invisible until a church imports notices.
+
+    private fun notice(id: String, title: String = "Welcome", body: String = "Service at 10") =
+        LocalAnnouncement(id = id, title = title, body = body)
+
+    @Test
+    fun `a new announcement is imported and marked local`() {
+        // Marked LOCAL so a later desktop sync treats it as the user's own and
+        // does not overwrite it.
+        val document = CpsetDocument(announcements = listOf(notice("theirs")))
+        val preview = CpsetSerializer.preview(document, LibraryData.EMPTY)
+
+        val merged = CpsetSerializer.apply(preview, LibraryData.EMPTY, ConflictResolution.KEEP_MINE, importedAt = 99L)
+
+        assertEquals(1, merged.announcements.size)
+        assertEquals(ContentOrigin.LOCAL, merged.announcements.single().origin)
+        assertEquals(99L, merged.announcements.single().updatedAt)
+    }
+
+    @Test
+    fun `keeping mine leaves a conflicting announcement untouched`() {
+        val library = LibraryData(announcements = listOf(notice("mine", body = "my words")))
+        val document = CpsetDocument(announcements = listOf(notice("theirs", body = "their words")))
+        val preview = CpsetSerializer.preview(document, library)
+
+        val merged = CpsetSerializer.apply(preview, library, ConflictResolution.KEEP_MINE)
+
+        assertEquals(1, merged.announcements.size)
+        assertEquals("my words", merged.announcements.single().body)
+    }
+
+    @Test
+    fun `replacing takes the file's announcement but keeps the existing id`() {
+        val library = LibraryData(announcements = listOf(notice("mine", body = "my words")))
+        val document = CpsetDocument(announcements = listOf(notice("theirs", body = "their words")))
+        val preview = CpsetSerializer.preview(document, library)
+
+        val merged = CpsetSerializer.apply(preview, library, ConflictResolution.REPLACE)
+
+        assertEquals(1, merged.announcements.size)
+        assertEquals("their words", merged.announcements.single().body)
+        assertEquals("mine", merged.announcements.single().id, "setlists pointing at this must still resolve")
+    }
+
+    @Test
+    fun `songs and announcements are merged in the same pass`() {
+        val library = LibraryData(
+            songs = listOf(song("mySong", body = "my words")),
+            announcements = listOf(notice("myNotice", body = "my notice")),
+        )
+        val document = CpsetDocument(
+            songs = listOf(song("theirSong", body = "their words")),
+            announcements = listOf(notice("theirNotice", body = "their notice")),
+        )
+        val preview = CpsetSerializer.preview(document, library)
+
+        val merged = CpsetSerializer.apply(preview, library, ConflictResolution.REPLACE)
+
+        assertEquals("their words", merged.songs.single().sections.single().text)
+        assertEquals("their notice", merged.announcements.single().body)
+    }
 }

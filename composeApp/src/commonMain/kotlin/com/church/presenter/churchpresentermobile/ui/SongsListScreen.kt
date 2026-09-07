@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -95,39 +97,16 @@ fun SongsListScreen(
     Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
 
         // ── Error banner ──────────────────────────────────────────────────
-        if (error != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(colors.danger.copy(alpha = 0.12f))
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = error,
-                    color = colors.danger,
-                    fontSize = 13.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = stringResource(Res.string.songs_table_retry),
-                    color = colors.danger,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp).clickable { onRefresh() }
-                )
-            }
-        }
+        if (error != null) ErrorBanner(error, onRefresh)
 
         // ── Search ────────────────────────────────────────────────────────
         SearchField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
             placeholder = stringResource(Res.string.songs_table_search_placeholder),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier
+                .testTag(UiTags.SONGS_SEARCH)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
         // ── Overline: ALL SONGS / book filter  ·  N songs ────────────────
@@ -167,6 +146,7 @@ fun SongsListScreen(
                 // A local library with nothing in it is not an error — it is a phone that
                 // has not been given any songs yet, and the tab says how to fix that.
                 showsLocalLibrary && !hasActiveFilter -> EmptyState(
+                    modifier = Modifier.testTag(UiTags.SONGS_EMPTY_LOCAL_LIBRARY),
                     title = stringResource(Res.string.songs_empty_local_library),
                     body = stringResource(Res.string.songs_empty_local_library_body),
                     actionLabel = stringResource(Res.string.empty_action_get_songs),
@@ -179,7 +159,13 @@ fun SongsListScreen(
                     onSecondary = { TabNavigationHandler.navigateTo(AppTab.LIBRARY) },
                 )
                 !isLoading -> Box(
-                    modifier = Modifier.fillMaxSize().padding(32.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag(
+                            if (hasActiveFilter) UiTags.SONGS_EMPTY_NO_MATCH
+                            else UiTags.SONGS_EMPTY_NO_SONGS
+                        )
+                        .padding(32.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -191,6 +177,45 @@ fun SongsListScreen(
                 }
             }
         }
+    }
+}
+
+/**
+ * What went wrong, and the one thing that might fix it.
+ *
+ * Sits above the list rather than replacing it: a blip mid-service must not
+ * blank a catalogue the operator is working from.
+ */
+@Composable
+private fun ErrorBanner(error: String, onRefresh: () -> Unit) {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(UiTags.SONGS_ERROR)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(colors.danger.copy(alpha = 0.12f))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = error,
+            color = colors.danger,
+            fontSize = 13.sp,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = stringResource(Res.string.songs_table_retry),
+            color = colors.danger,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+                .testTag(UiTags.SONGS_RETRY)
+                .padding(start = 12.dp)
+                .clickable { onRefresh() }
+        )
     }
 }
 
@@ -214,7 +239,9 @@ private fun SongsOverline(
     ) {
         Box {
             Row(
-                modifier = Modifier.clickable(enabled = availableBooks.isNotEmpty()) { expanded = true },
+                modifier = Modifier
+                    .testTag(UiTags.SONGS_BOOK_FILTER)
+                    .clickable(enabled = availableBooks.isNotEmpty()) { expanded = true },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -230,12 +257,14 @@ private fun SongsOverline(
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 DropdownMenuItem(
                     text = { Text(allBooksLabel, fontWeight = if (selectedBook == null) FontWeight.Bold else FontWeight.Normal) },
-                    onClick = { onBookSelected(null); expanded = false }
+                    onClick = { onBookSelected(null); expanded = false },
+                    modifier = Modifier.testTag(UiTags.bookOption(null)),
                 )
                 availableBooks.forEach { book ->
                     DropdownMenuItem(
                         text = { Text(book, fontWeight = if (book == selectedBook) FontWeight.Bold else FontWeight.Normal) },
-                        onClick = { onBookSelected(book); expanded = false }
+                        onClick = { onBookSelected(book); expanded = false },
+                        modifier = Modifier.testTag(UiTags.bookOption(book)),
                     )
                 }
             }
@@ -244,6 +273,7 @@ private fun SongsOverline(
             text = stringResource(Res.string.songs_count, count),
             color = colors.muted,
             fontSize = 12.sp,
+            modifier = Modifier.testTag(UiTags.SONGS_COUNT),
         )
     }
 }
@@ -259,10 +289,11 @@ private fun SongCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.songCard(song.number, song.bookName))
+            .selectable(selected = isSelected, onClick = onClick)
             .clip(shape)
             .background(if (isSelected) colors.accentTint else colors.surface)
             .border(1.dp, if (isSelected) colors.accent else colors.borderSubtle, shape)
-            .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)

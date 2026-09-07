@@ -24,6 +24,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -80,6 +81,21 @@ fun OutputTargetsSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = colors.sheetBackground,
     ) {
+        OutputTargetsContent(sinks)
+    }
+}
+
+/**
+ * The sheet's list, without the sheet around it.
+ *
+ * `internal` so the rows can be exercised directly: which row carries the
+ * address, and which carries the "go to Control Centre" guidance, is decided
+ * per sink and cannot be reached through a `ModalBottomSheet`'s animation.
+ */
+@Composable
+internal fun OutputTargetsContent(sinks: List<SinkStatus>) {
+    val colors = LocalAppColors.current
+    run {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,6 +116,7 @@ fun OutputTargetsSheet(
                     text = stringResource(Res.string.outputs_empty),
                     color = colors.muted,
                     fontSize = 13.sp,
+                    modifier = Modifier.testTag(StandaloneTags.OUTPUTS_EMPTY),
                 )
                 Text(
                     text = stringResource(Res.string.outputs_hint),
@@ -109,15 +126,17 @@ fun OutputTargetsSheet(
                 )
             } else {
                 sinks.forEach { status ->
-                    SinkRow(status)
+                    SinkRow(status, Modifier.testTag(StandaloneTags.sink(status.id)))
                     // Only the browser sink has an address worth showing; the
                     // external display has nothing for the user to type.
-                    status.webUrl()?.let { url -> DisplayUrlCard(url) }
+                    status.webUrl()?.let { url ->
+                        DisplayUrlCard(url, Modifier.testTag(StandaloneTags.sinkUrl(status.id)))
+                    }
                     // Guidance belongs under the row it explains, and only while
                     // that row has nothing connected — once the TV is showing the
                     // slide, instructions for connecting it are just noise.
                     if (status.needsMirroringGuidance()) {
-                        MirroringGuidanceCard()
+                        MirroringGuidanceCard(Modifier.testTag(StandaloneTags.OUTPUTS_GUIDANCE))
                     }
                 }
             }
@@ -144,10 +163,10 @@ private fun SinkStatus.needsMirroringGuidance(): Boolean =
  * two live behind completely different system gestures.
  */
 @Composable
-private fun MirroringGuidanceCard() {
+private fun MirroringGuidanceCard(modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
@@ -190,10 +209,10 @@ private fun MirroringGuidanceCard() {
  * across a room and with a QR for anyone holding a phone.
  */
 @Composable
-private fun DisplayUrlCard(url: String) {
+private fun DisplayUrlCard(url: String, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
@@ -234,7 +253,7 @@ private fun SinkStatus.webUrl(): String? =
     detail?.takeIf { isAttached && it.startsWith("http://") }
 
 @Composable
-private fun SinkRow(status: SinkStatus) {
+private fun SinkRow(status: SinkStatus, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     val tint = when (status.state) {
         SinkState.ATTACHED -> colors.accent
@@ -243,7 +262,7 @@ private fun SinkRow(status: SinkStatus) {
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)

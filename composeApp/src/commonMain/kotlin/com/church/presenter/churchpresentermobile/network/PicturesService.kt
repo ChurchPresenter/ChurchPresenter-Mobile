@@ -33,9 +33,9 @@ class PicturesService(
     private val settings: AppSettings,
     private val wsService: WsSender,
     private val client: HttpClient = createHttpClient(),
-) {
     /** Separate client with no request/socket timeout — required for large photo uploads. */
-    private val uploadClient: HttpClient = createActionHttpClient()
+    private val uploadClient: HttpClient = createActionHttpClient(),
+) {
 
     init {
         Logger.d(TAG, "PicturesService created — baseUrl=${settings.apiBaseUrl}")

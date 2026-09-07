@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -149,6 +150,7 @@ fun ConnectSetupScreen(
                 ),
                 actions = {
                     TextButton(
+                        modifier = Modifier.testTag(UiTags.CONNECT_SKIP_TOP),
                         onClick = onSkip,
                         colors = ButtonDefaults.textButtonColors(
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -256,13 +258,14 @@ fun ConnectSetupScreen(
                         Text(
                             text = stringResource(Res.string.connect_setup_no_camera_note),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.testTag(UiTags.CONNECT_NO_CAMERA),
                         )
                         Spacer(Modifier.height(8.dp))
                     }
                     OutlinedTextField(
                         value = hostInput, onValueChange = { hostInput = it },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_HOST),
                         label = { Text(stringResource(Res.string.settings_host_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_host_placeholder)) },
                         isError = manualHostError != null,
@@ -273,7 +276,7 @@ fun ConnectSetupScreen(
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = portInput, onValueChange = { portInput = it },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_PORT),
                         label = { Text(stringResource(Res.string.settings_port_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_port_placeholder)) },
                         isError = manualPortError != null,
@@ -284,7 +287,7 @@ fun ConnectSetupScreen(
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = apiKeyInput, onValueChange = { apiKeyInput = it },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_API_KEY),
                         label = { Text(stringResource(Res.string.settings_api_key_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_api_key_placeholder)) },
                         singleLine = true,
@@ -295,7 +298,10 @@ fun ConnectSetupScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Button(onClick = { applyManualEntry() }) {
+                        Button(
+                            onClick = { applyManualEntry() },
+                            modifier = Modifier.testTag(UiTags.CONNECT_APPLY),
+                        ) {
                             Text(stringResource(Res.string.connect_setup_manual_apply_button))
                         }
                         if (cameraAvailable) {
@@ -312,7 +318,7 @@ fun ConnectSetupScreen(
                     Surface(
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_CONNECTED)
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -345,7 +351,7 @@ fun ConnectSetupScreen(
             // ── Done / Skip buttons ────────────────────────────────────────────
             Button(
                 onClick = onDone,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_DONE),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Icon(
@@ -360,7 +366,10 @@ fun ConnectSetupScreen(
                 )
             }
 
-            OutlinedButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = onSkip,
+                modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_SKIP),
+            ) {
                 Text(stringResource(Res.string.connect_setup_skip_button))
             }
 

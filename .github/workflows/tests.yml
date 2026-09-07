@@ -2,9 +2,13 @@ name: Tests
 
 # Runs the shared commonTest suite on every push/PR.
 #  - offline-assets: guards the bundled display page against remote dependencies.
+#  - detekt:    static analysis on the desktop app's ruleset — seconds, no secrets.
 #  - js-tests:  fast, headless-browser run of all commonTest — no secrets needed.
-#  - coverage:  Kover coverage over the Android unit-test variant (logic layer),
-#               needs GOOGLE_SERVICES_JSON_BASE64 to configure the Android build.
+#  - coverage:  JaCoCo coverage over the Android unit-test variant, gated on the
+#               floors in composeApp/build.gradle.kts. Runs with or without
+#               GOOGLE_SERVICES_JSON_BASE64 — the build writes a Firebase
+#               placeholder when the secret is absent, as it does for a fresh
+#               clone, so a fork's PR is gated exactly like anyone else's.
 
 on:
   push:
@@ -23,6 +27,34 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check bundled display page has no remote dependencies
         run: bash scripts/check_display_assets_offline.sh
+
+  detekt:
+    name: Detekt (desktop ruleset)
+    runs-on: ubuntu-latest
+    # ~10s, and it runs alongside the suite rather than after it, so a style
+    # regression is reported without waiting on the browser tests.
+    #
+    # Pre-existing findings are baselined in config/detekt/baseline.xml, so this
+    # gate fails only on findings the change itself introduced. No secrets: detekt
+    # parses source and never needs the Firebase config the coverage job decodes.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Detekt
+        run: ./gradlew :composeApp:detekt
+      - name: Upload detekt report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: composeApp/build/reports/detekt/
+          if-no-files-found: ignore
 
   js-tests:
     name: commonTest (headless browser)
@@ -47,7 +79,7 @@ jobs:
           if-no-files-found: ignore
 
   coverage:
-    name: Coverage (Kover, model+network)
+    name: Coverage (JaCoCo)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,23 +93,34 @@ jobs:
       - name: Decode google-services.json
         env:
           GS_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        # No secret is not a reason to skip the gate. The build writes a valid
+        # placeholder when the file is missing (see build.gradle.kts), which is
+        # all the Android unit-test variant needs — and secrets are unavailable
+        # to pull requests from forks, so skipping here let exactly the PRs
+        # nobody has reviewed yet through without a coverage check at all.
         run: |
           if [ -z "$GS_B64" ]; then
-            echo "GOOGLE_SERVICES_JSON_BASE64 secret not set — skipping coverage job."
-            echo "SKIP=1" >> "$GITHUB_ENV"
+            echo "GOOGLE_SERVICES_JSON_BASE64 not set — the build will write its placeholder."
             exit 0
           fi
           echo "$GS_B64" | tr -d '\r\n' | base64 -d > composeApp/google-services.json
           test -s composeApp/google-services.json || { echo "ERROR: google-services.json empty after decode" >&2; exit 1; }
-      - name: Generate + verify coverage (gates on the 80% floor)
-        if: env.SKIP != '1'
-        # --continue so the HTML/XML report is still produced even when koverVerify
-        # fails the build, so the uploaded artifact shows what dropped below the floor.
-        run: ./gradlew :composeApp:koverXmlReport :composeApp:koverHtmlReport :composeApp:koverVerify --continue
+      - name: Generate + verify coverage (fails below the floors)
+        # --continue so the HTML/XML report is still produced even when the
+        # verification fails, so the uploaded artifact shows what dropped below the floor.
+        #
+        # -PstepSummary rather than letting the task read GITHUB_STEP_SUMMARY itself: that
+        # variable is a fresh per-step file, while the Gradle daemon's environment is frozen
+        # at the moment it started — possibly during an earlier step whose summary file the
+        # runner has already discarded. A -P property travels with this invocation, so the
+        # coverage block lands on the summary page of the run a reviewer actually opens.
+        run: >-
+          ./gradlew :composeApp:jacocoTestReport :composeApp:jacocoTestCoverageVerification
+          -PstepSummary="$GITHUB_STEP_SUMMARY" --continue
       - name: Upload coverage report
-        if: always() && env.SKIP != '1'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: kover-coverage-report
-          path: composeApp/build/reports/kover/
+          name: jacoco-coverage-report
+          path: composeApp/build/reports/jacoco/
           if-no-files-found: ignore

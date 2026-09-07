@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import com.church.presenter.churchpresentermobile.model.MediaPlaybackState
+import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -51,9 +53,23 @@ class MediaViewModel(
     private val appSettings: AppSettings,
     private val eventService: ServerEventService,
     sender: WsSender = eventService,
+    /**
+     * What the desktop reports it is playing. Defaults to the socket's own feed;
+     * injectable so tests can drive the fallback in [buildPayload], where an
+     * empty composer sends whatever is already loaded over there.
+     */
+    playbackState: StateFlow<MediaPlaybackState?> = eventService.mediaState,
+    /**
+     * Builds the service this screen talks to. Injectable for the same reason
+     * [playbackState] is: an upload is an HTTP request with a progress callback,
+     * and everything this ViewModel does with the result — the title it falls
+     * back to, the message it shows, the flags it lowers again — is worth
+     * checking without a desktop on the other end.
+     */
+    serviceFactory: (AppSettings, WsSender) -> MediaCastService = { s, w -> MediaCastService(s, w) },
 ) : ViewModel() {
 
-    private val service = MediaCastService(appSettings, sender)
+    private val service = serviceFactory(appSettings, sender)
 
     /** Whether Go Live / Add to Schedule will send a URL or an uploaded local file. */
     private val _source = MutableStateFlow(MediaSource.URL)
@@ -78,7 +94,7 @@ class MediaViewModel(
     val message = _message.asStateFlow()
 
     /** Live desktop media-player state (title, position, playing…) — null until first reported. */
-    val playback = eventService.mediaState
+    val playback = playbackState
 
     /** Full URL of whatever was last sent live — drives the "ON SCREEN" badge. */
     private val _liveUrl = MutableStateFlow<String?>(null)

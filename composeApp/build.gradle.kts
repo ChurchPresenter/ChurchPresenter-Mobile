@@ -1,5 +1,6 @@
 import java.io.File
 import java.util.Properties
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -13,7 +14,8 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
-    alias(libs.plugins.kover)
+    jacoco
+    alias(libs.plugins.detekt)
 }
 
 // ---------------------------------------------------------------------------
@@ -166,93 +168,377 @@ val generateProvenanceConfig by tasks.registering {
 }
 
 // ---------------------------------------------------------------------------
-// Code-coverage (Kover) — measured on the Android unit-test JVM (where commonTest
-// runs). Scoped to the reliably-JVM-measurable logic: `model`, `network` and
-// `present` (the standalone presenter's routing/slide logic — pure by design;
-// the platform-specific output sinks live behind expect/actual leaves that are
-// named in the `classes` exclusion list below).
+// Static analysis (detekt) — same ruleset as the ChurchPresenter desktop app,
+// whose config/detekt/detekt.yml this file mirrors verbatim. Keeping the two in
+// step matters because the same people move between the repos: a rule that fails
+// here and passes there (or the reverse) turns the gate into noise.
 //
-// The `viewmodel` package is EXCLUDED from the measured number, not because it's
-// untested — it's fully covered and gated by the `jsBrowserTest` CI job — but
-// because ViewModel tests install a test Main dispatcher (viewModelScope), and the
-// Android unit-test JVM has no Dispatchers.Main without Robolectric. So VM tests
-// are excluded from the Android run (see the Test filter below) and, to keep the %
-// honest, from the Kover scope too. UI/App.kt/platform/generated are excluded as
-// non-unit-testable. Report: composeApp/build/reports/kover/.
+// Two of those rules are this project's own house rules from CODING_STANDARDS.md,
+// now enforced rather than remembered: WildcardImport, and ForbiddenImport on
+// `androidx.compose.material.*` (Material 2), which the icons package is exempt
+// from because materialIconsExtended lives under it.
+//
+// Unlike the desktop's single jvmMain source set, `src` here covers every KMP
+// source set at once — common, android, ios, js, wasmJs, mobile, web and the
+// tests — so adding a target does not silently fall out of the analysis.
+//
+// Pre-existing findings are baselined in config/detekt/baseline.xml, so the gate
+// fails only on NEW findings. Regenerate with `./gradlew :composeApp:detektBaseline`
+// — but prefer fixing over re-baselining; the file exists to stop day one from
+// being a 900-issue refactor, not to absorb new debt.
 // ---------------------------------------------------------------------------
-kover {
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    baseline = rootProject.file("config/detekt/baseline.xml")
+    source.setFrom("src")
+    parallel = true
+}
+
+// JVM_11 here, against the desktop's 21 — this module compiles to Android's
+// Java 11 target (see `compileOptions` below) and detekt has to agree with it.
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "11"
     reports {
-        filters {
-            excludes {
-                // Compose UI is not unit-tested — drop every @Composable plus the ui package.
-                annotatedBy("androidx.compose.runtime.Composable")
-                packages(
-                    "com.church.presenter.churchpresentermobile.ui",
-                    // Covered on the JS gate, not measurable on the Android JVM (no Main dispatcher).
-                    "com.church.presenter.churchpresentermobile.viewmodel",
-                    // Platform glue + constants (Logger/Analytics/CrashReporting/RemoteConfig/BuildUtils).
-                    "com.church.presenter.churchpresentermobile.util",
-                )
-                classes(
-                    // App.kt Composable + its generated lambda classes ($App$…), and singletons.
-                    "*AppKt*",
-                    "*ComposableSingletons*",
-                    // Generated Compose resource accessors.
-                    "churchpresentermobile.composeapp.generated.resources.*",
-                    // Data fixtures & WebSocket transport loop — not unit-test targets.
-                    "*DemoData*",
-                    "*ServerEventService*",
-                    "*PingReporter*",
-                    // Platform factories / storage / Android infra (share model|network packages).
-                    "*HttpClientFactory*",
-                    "*SettingsStorage*",
-                    "*MainActivity*",
-                    "*ChurchPresenterApp*",
-                    "*FirebasePushService*",
-                    // Platform capability flags — three constants per target, no logic.
-                    "*PlatformCapabilities*",
-                    // Output sinks are platform windows/servers, not unit-test targets;
-                    // the routing and slide logic they serve is tested in `present`.
-                    "*ExternalDisplaySink*",
-                    "*SlidePresentation*",
-                    "*PresentationOwners*",
-                    "*ActivityHolder*",
-                    // Embedded server, socket/interface probing, and the OS
-                    // keep-alive hooks — all platform I/O behind narrow seams.
-                    // The pure parts (PortAllocator, WebAssets) ARE measured.
-                    "*LocalWebServer*",
-                    "*WebPageSink*",
-                    "*NetworkInfo*",
-                    "*PresentationKeepAlive*",
-                    "*PresentationForegroundService*",
-                    // Platform file I/O. The repository logic that sits on top of
-                    // it IS measured, via InMemoryFileStorage.
-                    "*FileStore*",
-                    "*DocumentIO*",
-                )
-            }
+        html.required.set(true)
+        xml.required.set(false)
+        sarif.required.set(false)
+        txt.required.set(false)
+        md.required.set(false)
+    }
+}
+tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+    jvmTarget = "11"
+}
+
+// ---------------------------------------------------------------------------
+// Code coverage (JaCoCo) — measured on the Android unit-test JVM, where the
+// commonTest suite runs.
+//
+// Run:  ./gradlew :composeApp:jacocoTestReport
+// HTML: composeApp/build/reports/jacoco/jacocoTestReport/html/index.html
+//
+// This is a Kotlin Multiplatform build, so there is no conventional test/main
+// pair for the plugin's default report to attach to — hence an explicit task
+// pointing at the Android debug compilation's own output.
+// ---------------------------------------------------------------------------
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    group = "verification"
+    description = "Coverage for the app's own code, from the Android unit-test run."
+    dependsOn("testDebugUnitTest", "jvmTest")
+
+    // Both JVM test runs: the Android unit tests, and the desktop-JVM Compose UI
+    // tests. Adding the second WIDENS what is measured — it is the opposite of an
+    // exclusion, and the rule in AGENT.md about never narrowing the figure stands.
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include(
+                "jacoco/testDebugUnitTest.exec",
+                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+                "jacoco/jvmTest.exec",
+            )
         }
-        // Enforced floor for the scoped model+network logic (currently ~82% line).
-        // Set to 80 so normal churn doesn't break CI; ratchet toward 85 as the
-        // remaining error branches / upload methods get covered. `koverVerify`
-        // is run in CI (see .github/workflows/tests.yml).
-        verify {
-            rule {
-                minBound(80)
+    )
+
+    // Generated code only — there is no source behind it to cover. Nothing else is
+    // excluded: not the ui/viewmodel/util packages, not the platform expect/actual
+    // leaves, not @Composable functions. The figure this produces is coverage of the
+    // whole module, so it is low; that is the point. Raise it by adding tests, never
+    // by adding an exclusion.
+    // Every class must come from exactly ONE tree. commonMain is compiled twice —
+    // once for Android, once for the JVM — and the two produce different bytecode
+    // under the same class name, which JaCoCo refuses to merge ("Can't add
+    // different class with same name").
+    //
+    // Shared code is therefore attributed to the JVM tree, because the JVM run is
+    // the one that executes the Compose UI tests as well as every commonTest.
+    // The Android tree keeps only what is genuinely Android-only — androidMain's
+    // pickers, Firebase wrappers and platform actuals — which the Android unit
+    // tests are the only run to touch.
+    val jvmClassesDir = layout.buildDirectory.dir("classes/kotlin/jvm/main")
+    val androidClassesDir = layout.buildDirectory.dir("tmp/kotlin-classes/debug")
+    val generatedExcludes = listOf(
+        "**/ComposableSingletons*",
+        "**/churchpresentermobile/composeapp/generated/resources/**",
+    )
+    classDirectories.setFrom(
+        jvmClassesDir.map { jvm ->
+            val sharedClasses = jvm.asFile.walkTopDown()
+                .filter { it.isFile && it.extension == "class" }
+                .map { it.relativeTo(jvm.asFile).invariantSeparatorsPath }
+                .toList()
+            files(
+                fileTree(jvm) { generatedExcludes.forEach { exclude(it) } },
+                fileTree(androidClassesDir) {
+                    generatedExcludes.forEach { exclude(it) }
+                    sharedClasses.forEach { exclude(it) }
+                },
+            )
+        }
+    )
+    sourceDirectories.setFrom(
+        files(
+            "src/commonMain/kotlin",
+            "src/androidMain/kotlin",
+            "src/mobileMain/kotlin",
+            "src/jvmMain/kotlin",
+        ),
+    )
+
+    // A filtered run measures only what it ran, so the number would be nonsense.
+    // Resolved at configuration time: reading `gradle` from inside onlyIf captures
+    // the Project, which the configuration cache refuses to serialize.
+    val isFilteredRun = gradle.startParameter.taskRequests.any { request ->
+        request.args.any { it == "--tests" }
+    }
+    onlyIf { !isFilteredRun }
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)   // for CI / coverage services
+        csv.required.set(false)
+    }
+
+    // JaCoCo writes the files it reports on and never removes the ones it doesn't, so
+    // a page for a class since renamed or excluded stays on disk at 0% for anyone who
+    // opens it directly. The XML is one file and is overwritten in place; only the
+    // HTML tree needs clearing.
+    // deleteRecursively() on the resolved File rather than Project.delete(): the
+    // latter is a Gradle script object reference, which the configuration cache
+    // cannot serialize.
+    val htmlReportDir = layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html")
+    doFirst { htmlReportDir.get().asFile.deleteRecursively() }
+
+    finalizedBy("printCoverageLink")
+}
+
+tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    group = "verification"
+    description = "Fails the build when coverage drops below the floors."
+    dependsOn("jacocoTestReport")
+    executionData.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.executionData })
+    classDirectories.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.classDirectories })
+    sourceDirectories.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.sourceDirectories })
+
+    violationRules {
+        rule {
+            // The project's coverage floors, one per counter.
+            //
+            // Set at the measured figure minus two points, capped at 0.85 — a
+            // ratchet, not a target: it stops a change quietly undoing coverage
+            // that already exists, while leaving room for an honest refactor
+            // that moves a few lines around.
+            //
+            // Raising these as coverage rises is the intended direction. Lowering
+            // one, or widening the report's class directories to make a build
+            // green, is the thing AGENT.md forbids without the owner saying so.
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.85".toBigDecimal()
+            }
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.846".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.762".toBigDecimal()
+            }
+            limit {
+                counter = "CLASS"
+                value = "COVEREDRATIO"
+                minimum = "0.844".toBigDecimal()
+            }
+            limit {
+                counter = "METHOD"
+                value = "COVEREDRATIO"
+                minimum = "0.802".toBigDecimal()
+            }
+            limit {
+                counter = "COMPLEXITY"
+                value = "COVEREDRATIO"
+                minimum = "0.738".toBigDecimal()
             }
         }
     }
 }
 
-// The Android unit-test JVM has no Dispatchers.Main (no Looper / Robolectric), so
-// ViewModel tests that install a test main dispatcher can't run there — they run on
-// the jsBrowserTest gate instead. Exclude them from JVM (Android) unit-test tasks so
-// the Kover coverage run over model+network is green. JS/Wasm test tasks are not of
-// type `Test`, so this filter does not affect them.
+// Prints the headline numbers and a clickable file:// link so the report doesn't have to be hunted
+// for under build/. Ported from the desktop app's `printCoverageLink`, and reads the same
+// JaCoCo XML schema.
+//
+// Deliberately a SEPARATE task rather than a doLast on jacocoTestReport: a doLast is skipped when the
+// report is UP-TO-DATE, so re-running `check` would silently print nothing. This task declares no
+// outputs, so it never goes up-to-date and always prints.
+tasks.register("printCoverageLink") {
+    val reportDir = layout.buildDirectory.dir("reports/jacoco/jacocoTestReport")
+    // The Android unit-test run is the one JaCoCo measures, so it is the run whose test counts
+    // belong next to the coverage figure. The jsBrowserTest and wasmJsBrowserTest suites cover
+    // the same code but produce no coverage data — quoting their totals here would credit the
+    // percentage to tests that did not produce it.
+    val testResultsDir = layout.buildDirectory.dir("test-results/testDebugUnitTest")
+    // Where to append the run's summary block, resolved at CONFIGURATION time from a property the
+    // CI client passes in — not from this process's environment. `System.getenv` here reads the
+    // Gradle DAEMON's environment, which is frozen when the daemon starts, while GITHUB_STEP_SUMMARY
+    // is a fresh temp file PER STEP that the runner reads and discards when that step ends. A daemon
+    // started by an earlier step would therefore append to a file belonging to a step that had
+    // already finished — written successfully, read by nobody. (This bit the desktop app on a real
+    // run; the fix is ported here before it can happen rather than after.)
+    //
+    // A `-P` property travels with each individual invocation, so it is the live path every time.
+    // The environment stays as the fallback for anyone running the task by hand.
+    val stepSummaryPath = providers.gradleProperty("stepSummary")
+        .orElse(providers.environmentVariable("GITHUB_STEP_SUMMARY"))
+        .orNull
+    doLast {
+        val dir = reportDir.get().asFile
+        val htmlIndex = dir.resolve("html/index.html")
+        if (!htmlIndex.exists()) return@doLast
+
+        // Each per-suite TEST-*.xml carries its own totals on the root <testsuite> tag; sum them
+        // for the whole-run figure, since Gradle writes no combined summary of its own.
+        val testSummary = runCatching {
+            val suiteAttrs = Regex("""tests="(\d+)" skipped="(\d+)" failures="(\d+)" errors="(\d+)"""")
+            val files = testResultsDir.get().asFile.listFiles { f -> f.name.endsWith(".xml") }
+            if (files.isNullOrEmpty()) return@runCatching null
+            var tests = 0; var skipped = 0; var failures = 0; var errors = 0
+            files.forEach { file ->
+                val match = suiteAttrs.find(file.readText().lineSequence().take(2).joinToString("\n"))
+                    ?: return@forEach
+                tests += match.groupValues[1].toInt()
+                skipped += match.groupValues[2].toInt()
+                failures += match.groupValues[3].toInt()
+                errors += match.groupValues[4].toInt()
+            }
+            "$tests run, ${failures + errors} failed, $skipped skipped"
+        }.getOrNull()
+
+        // Regex rather than a DOM parse: the JaCoCo XML declares an external DTD, which a
+        // DocumentBuilder tries to resolve over the network. The report-wide totals are the LAST
+        // <counter> of each type in the document (they appear per-package/-class first, then once
+        // more on the closing </report> element), so the final match per type is the overall figure.
+        val lines = runCatching {
+            val xml = dir.resolve("jacocoTestReport.xml")
+            if (!xml.exists()) return@runCatching null
+            val text = xml.readText()
+            // Order matches the JaCoCo HTML overview table's own column order.
+            val labels = listOf(
+                "INSTRUCTION" to "instructions",
+                "BRANCH" to "branches",
+                "LINE" to "lines",
+                "COMPLEXITY" to "complexity",
+                "METHOD" to "methods",
+                "CLASS" to "classes",
+            )
+            labels.mapNotNull { (type, label) ->
+                val last = Regex("""<counter type="$type" missed="(\d+)" covered="(\d+)"/>""")
+                    .findAll(text).lastOrNull() ?: return@mapNotNull null
+                val missed = last.groupValues[1].toInt()
+                val covered = last.groupValues[2].toInt()
+                val total = covered + missed
+                if (total == 0) null
+                else "%.1f%% of %s (%d/%d)".format(100.0 * covered / total, label, covered, total)
+            }
+        }.getOrNull()
+
+        val summaryLines = buildList {
+            if (testSummary != null) add("Tests:    $testSummary")
+            if (lines != null) {
+                add("Coverage:")
+                lines.forEach { add("  $it") }
+            }
+        }
+
+        logger.lifecycle("")
+        summaryLines.forEach { logger.lifecycle(it) }
+        // The HTML tree only exists on the machine that produced it. On a CI runner it is deleted
+        // with the workspace when the job ends, so the line is noise there — a `file://` path
+        // pointing at a directory the reader has no way to open. Printed locally, skipped in CI.
+        //
+        // Three slashes: File.toURI() yields "file:/path", which many terminals refuse to linkify.
+        if (System.getenv("GITHUB_ACTIONS") != "true") {
+            logger.lifecycle("Report:   file://${htmlIndex.absolutePath}")
+        }
+
+        // Also put it on the run's summary page. The numbers otherwise land in the middle of the
+        // job log; the step summary is the page a reviewer actually opens from a pull request.
+        // Best-effort — a coverage print must never fail a build.
+        stepSummaryPath?.takeIf { it.isNotBlank() }?.let { path ->
+            runCatching {
+                File(path).appendText(
+                    buildString {
+                        appendLine("### Unit test coverage")
+                        appendLine()
+                        appendLine("```")
+                        summaryLines.forEach { appendLine(it) }
+                        appendLine("```")
+                        appendLine()
+                    }
+                )
+            }
+        }
+    }
+}
+
+// Every test runs on the Android unit-test JVM: kotlinx's Dispatchers.setMain()
+// supplies the main dispatcher Android itself does not. No test is filtered out.
+//
+// Three classes used to be, because they created a ViewModel inside runVmTest and
+// never cancelled its viewModelScope — a coroutine could then resume after
+// resetMain() and fail an unrelated later test with "Dispatchers.Main was accessed
+// when the platform dispatcher was absent". They now tearDown(vm) in a finally,
+// which is what any new ViewModel test should do (see testutil/CoroutineTest.kt).
 tasks.withType<Test>().configureEach {
     filter {
-        excludeTestsMatching("*ViewModelTest")
         isFailOnNoMatchingTests = false
+    }
+}
+
+// The Compose UI tests in the ui package need a Skia surface, and two of the
+// runtimes commonTest compiles for cannot provide one — the Android unit-test JVM
+// has no Activity to host a composition, and the legacy js Karma runtime ships no
+// skiko. Excluding them from those two runs is NOT a coverage exclusion: they run
+// in full on jvmTest, which is a run JaCoCo measures, and again on
+// wasmJsBrowserTest.
+val composeUiTestPackage = "com.church.presenter.churchpresentermobile.ui.*"
+
+// UI tests that drive a real ViewModel through a mocked HTTP round-trip. On a JVM
+// the request completes on real threads; the wasm runtime is single-threaded, so
+// the coroutine cannot finish inside the Compose test clock's virtual time and
+// every await times out. They run in full on jvmTest — the run JaCoCo measures —
+// so this costs no coverage and no assertion, only a duplicate run.
+val viewModelBackedUiTests = listOf(
+    "com.church.presenter.churchpresentermobile.ui.ScheduleDrawerTest",
+    "com.church.presenter.churchpresentermobile.ui.ScheduleDrawerRowTest",
+    "com.church.presenter.churchpresentermobile.ui.StatusScreenTest",
+    "com.church.presenter.churchpresentermobile.ui.SongsTableTest",
+    "com.church.presenter.churchpresentermobile.ui.DictionaryListTest",
+    "com.church.presenter.churchpresentermobile.ui.DictionaryReferenceFilterTest",
+    "com.church.presenter.churchpresentermobile.ui.PicturesGridTest",
+    "com.church.presenter.churchpresentermobile.ui.PicturesActionsTest",
+    "com.church.presenter.churchpresentermobile.ui.PresentationListTest",
+    "com.church.presenter.churchpresentermobile.ui.PresentationActionsTest",
+    "com.church.presenter.churchpresentermobile.ui.QAAdminScreenTest",
+    "com.church.presenter.churchpresentermobile.ui.SettingsStatusDialogTest",
+    "com.church.presenter.churchpresentermobile.ui.BibleTabTest",
+)
+
+// configureEach on the supertype rather than tasks.named: the Android unit-test
+// tasks are not registered yet at this point in configuration, so naming
+// testDebugUnitTest directly fails with "Task with name ... not found".
+tasks.withType<AbstractTestTask>().configureEach {
+    if (name == "testDebugUnitTest" || name == "jsBrowserTest") {
+        filter.excludeTestsMatching(composeUiTestPackage)
+    }
+    if (name == "wasmJsBrowserTest") {
+        viewModelBackedUiTests.forEach { filter.excludeTestsMatching(it) }
     }
 }
 
@@ -339,6 +625,16 @@ kotlin {
             freeCompilerArgs += listOf("-Xbinary=bundleId=com.church.presenter.churchpresentermobile")
         }
     }
+
+    // A desktop JVM target that ships no app.
+    //
+    // It exists so the Compose UI tests can run on a JVM that JaCoCo can see.
+    // The wasmJs suite proves the same behaviour but compiles to WebAssembly and
+    // runs in headless Chrome, so it produces no coverage data at all — the ui
+    // package read 0% across 2,107 lines while 300+ UI tests passed against it.
+    // Its actuals in jvmMain are the same deliberate stubs the web target
+    // carries; nothing here is reachable by a user.
+    jvm()
 
     js {
         browser {
@@ -440,6 +736,47 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
+        // MockK, on the Android unit-test JVM only.
+        //
+        // Unit tests compile against the stub android.jar, where every method is
+        // replaced by one returning a default. That leaves the framework classes
+        // this app actually depends on — PowerManager, WifiManager, RemoteMessage
+        // — inert *and* final, so they cannot be faked by hand. MockK's inline
+        // mock maker can, which is what makes the wake-lock and push paths
+        // testable without an emulator.
+        //
+        // Unlike Robolectric (see AGENT.md — never add it) MockK instruments only
+        // the classes it is asked to mock, so the code under test is still seen by
+        // JaCoCo and still reports its real coverage.
+        androidUnitTest.dependencies {
+            implementation(libs.mockk)
+        }
+        // Compose UI tests, on the wasmJs browser target only.
+        //
+        // They need a Skia surface. The js (legacy) Karma runtime does not load
+        // skiko, so running them there fails with
+        // "org_jetbrains_skia_Surface__1nMakeRasterN32Premul is not defined";
+        // the wasmJs target ships skiko with the test bundle and runs them as-is.
+        // Kept out of commonTest for exactly that reason — jsBrowserTest, the main
+        // gate, must not pick them up. Run with :composeApp:wasmJsBrowserTest.
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        // Compose UI tests live in commonTest with the rest of the suite, and need
+        // a Skia surface to run on.
+        //
+        // Two of the runtimes commonTest compiles for cannot give them one, and are
+        // filtered out below rather than left to fail:
+        //   - the legacy js Karma runtime loads no skiko, and fails with
+        //     "org_jetbrains_skia_Surface__1nMakeRasterN32Premul is not defined";
+        //   - the Android unit-test JVM has no Activity to host a composition.
+        // They run in full on jvmTest — the run JaCoCo measures — and on
+        // wasmJsBrowserTest, which ships skiko with its test bundle.
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
@@ -483,7 +820,7 @@ android {
     }
     testOptions {
         // Let commonTest run on the Android unit-test JVM (used by the best-effort
-        // Kover coverage job): unmocked android.jar methods return defaults (e.g.
+        // JaCoCo coverage job): unmocked android.jar methods return defaults (e.g.
         // Log.* no-ops) instead of throwing.
         unitTests.isReturnDefaultValues = true
     }
@@ -525,6 +862,11 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            // Makes AGP run the unit tests under the JaCoCo agent, which is what
+            // writes the .exec file jacocoTestReport reads.
+            enableUnitTestCoverage = true
+        }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true

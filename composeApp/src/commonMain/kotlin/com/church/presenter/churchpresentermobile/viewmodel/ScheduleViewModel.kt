@@ -28,8 +28,13 @@ class ScheduleViewModel(
     private val appSettings: AppSettings,
     private val eventService: ServerEventService,
     private val isDemoMode: Boolean = false,
+    /**
+     * Builds the REST service. Injectable so tests can drive the live load
+     * without a desktop, matching the seam [QAViewModel] uses.
+     */
+    private val serviceFactory: (AppSettings) -> ScheduleService = { ScheduleService(it) },
 ) : ViewModel() {
-    private var scheduleService = ScheduleService(appSettings)
+    private var scheduleService = serviceFactory(appSettings)
 
     private val _items = MutableStateFlow<List<ScheduleItem>>(emptyList())
     val items = _items.asStateFlow()
@@ -108,7 +113,7 @@ class ScheduleViewModel(
         if (isDemoMode) return
         Logger.d(TAG, "onSettingsSaved — rebuilding service and reloading")
         scheduleService.closeClient()
-        scheduleService = ScheduleService(appSettings)
+        scheduleService = serviceFactory(appSettings)
         eventService.reconnect()
         viewModelScope.launch { eventService.listen() }
         viewModelScope.launch {

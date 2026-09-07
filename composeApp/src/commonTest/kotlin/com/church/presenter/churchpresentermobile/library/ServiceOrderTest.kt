@@ -151,4 +151,129 @@ class ServiceOrderTest {
         order.clear()
         assertTrue(order.entries.first().isEmpty())
     }
+
+    // ── Reordering the running order ─────────────────────────────────────
+    //
+    // Dragged on a phone, mid-service, by someone who has just been told the
+    // order changed. The guards matter: a drag that lands outside the list must
+    // leave it exactly as it was rather than dropping an item.
+
+    private fun ServiceOrder.titles(): List<String> = current.map { it.title }
+
+    private fun threeItems(): ServiceOrder {
+        val (order, _) = order()
+        order.add(Song(number = "1", title = "First", localId = "a"))
+        order.add(Song(number = "2", title = "Second", localId = "b"))
+        order.add(Song(number = "3", title = "Third", localId = "c"))
+        return order
+    }
+
+    @Test
+    fun anItemCanBeMovedTowardsTheStart() {
+        val order = threeItems()
+
+        order.move(2, 0)
+
+        assertEquals(listOf("Third", "First", "Second"), order.titles())
+    }
+
+    @Test
+    fun anItemCanBeMovedTowardsTheEnd() {
+        val order = threeItems()
+
+        order.move(0, 2)
+
+        assertEquals(listOf("Second", "Third", "First"), order.titles())
+    }
+
+    @Test
+    fun movingAnItemOntoItselfChangesNothing() {
+        val order = threeItems()
+
+        order.move(1, 1)
+
+        assertEquals(listOf("First", "Second", "Third"), order.titles())
+    }
+
+    @Test
+    fun movingFromOutsideTheListChangesNothing() {
+        val order = threeItems()
+
+        order.move(9, 0)
+        order.move(-1, 0)
+
+        assertEquals(listOf("First", "Second", "Third"), order.titles())
+    }
+
+    @Test
+    fun movingToOutsideTheListChangesNothing() {
+        // A drag released past the end must not drop the item.
+        val order = threeItems()
+
+        order.move(0, 9)
+        order.move(0, -1)
+
+        assertEquals(listOf("First", "Second", "Third"), order.titles())
+    }
+
+    @Test
+    fun movingInAnEmptyOrderChangesNothing() {
+        val (order, _) = order()
+
+        order.move(0, 0)
+
+        assertTrue(order.titles().isEmpty())
+    }
+
+    @Test
+    fun adjacentItemsCanBeSwapped() {
+        val order = threeItems()
+
+        order.move(0, 1)
+
+        assertEquals(listOf("Second", "First", "Third"), order.titles())
+    }
+
+    @Test
+    fun aMoveSurvivesBeingReadBack() {
+        // The order is persisted; a reorder that only lived in memory would be
+        // lost the moment the screen was left.
+        val repository = LibraryRepository(InMemoryFileStorage()) { 0L }
+        val order = ServiceOrder(repository)
+        order.add(Song(number = "1", title = "First", localId = "a"))
+        order.add(Song(number = "2", title = "Second", localId = "b"))
+
+        order.move(1, 0)
+
+        assertEquals(listOf("Second", "First"), ServiceOrder(repository).current.map { it.title })
+    }
+
+    // ── Removing ─────────────────────────────────────────────────────────
+
+    @Test
+    fun removingAnItemLeavesTheRestInOrder() {
+        val order = threeItems()
+
+        order.removeAt(1)
+
+        assertEquals(listOf("First", "Third"), order.titles())
+    }
+
+    @Test
+    fun removingOutsideTheListChangesNothing() {
+        val order = threeItems()
+
+        order.removeAt(9)
+
+        assertEquals(listOf("First", "Second", "Third"), order.titles())
+    }
+
+    @Test
+    fun clearingEmptiesTheOrder() {
+        val order = threeItems()
+
+        order.clear()
+
+        assertTrue(order.titles().isEmpty())
+    }
 }

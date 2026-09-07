@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -86,8 +87,13 @@ import com.church.presenter.churchpresentermobile.viewmodel.DictionaryViewModel
 
 private val strongsRefRegex = Regex("[HG]\\d{1,5}")
 
-/** Groups an integer with commas: 2606 → "2,606". */
-private fun Int.grouped(): String {
+/**
+ * Groups an integer with commas: 2606 → "2,606".
+ *
+ * `internal` rather than private so the grouping itself can be tested without
+ * rendering a screen — every occurrence count the operator reads goes through it.
+ */
+internal fun Int.grouped(): String {
     val s = toString()
     val sb = StringBuilder()
     for ((i, c) in s.withIndex()) {
@@ -143,7 +149,9 @@ fun DictionaryScreen(
                 value = query,
                 onValueChange = { viewModel.setSearchQuery(it) },
                 placeholder = stringResource(Res.string.dictionary_search_placeholder),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .testTag(UiTags.DICT_SEARCH),
             )
             SegmentedControl(
                 options = listOf(
@@ -165,6 +173,7 @@ fun DictionaryScreen(
                         }
                     )
                 },
+                optionTag = { UiTags.dictFilter(it) },
                 modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
             )
             ReferenceFilterRow(
@@ -182,13 +191,26 @@ fun DictionaryScreen(
 
             when {
                 error != null -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    Text(error!!, color = colors.danger, fontSize = 14.sp)
+                    Text(
+                        error!!,
+                        color = colors.danger,
+                        fontSize = 14.sp,
+                        modifier = Modifier.testTag(UiTags.DICT_ERROR),
+                    )
                 }
                 isLoading && entries.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    CircularProgressIndicator(color = colors.accent)
+                    CircularProgressIndicator(
+                        color = colors.accent,
+                        modifier = Modifier.testTag(UiTags.DICT_LOADING),
+                    )
                 }
                 entries.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    Text(stringResource(Res.string.dictionary_no_entries), color = colors.muted, fontSize = 15.sp)
+                    Text(
+                        stringResource(Res.string.dictionary_no_entries),
+                        color = colors.muted,
+                        fontSize = 15.sp,
+                        modifier = Modifier.testTag(UiTags.DICT_EMPTY),
+                    )
                 }
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -200,6 +222,7 @@ fun DictionaryScreen(
                             entry = entry,
                             isLive = projectedNumber == entry.number,
                             onClick = { viewModel.selectEntry(entry) },
+                            modifier = Modifier.testTag(UiTags.dictEntry(entry.number)),
                         )
                     }
                 }
@@ -212,7 +235,6 @@ fun DictionaryScreen(
     if (selectedEntry != null) {
         EntryDetailSheet(
             entry = selectedEntry!!,
-            isLive = projectedNumber == selectedEntry!!.number,
             scheduleAdded = scheduleAdded,
             appearsIn = appearsIn,
             appearsInLoading = appearsInLoading,
@@ -256,6 +278,7 @@ private fun ReferenceFilterRow(
             selectedLabel = selectedBook?.displayName,
             options = books.map { it.displayName },
             onSelect = { onBookSelected(books[it]) },
+            tag = UiTags.DICT_REF_BOOK,
         )
         if (selectedBook != null) {
             val chapters = (1..selectedBook.totalChapters).toList()
@@ -264,6 +287,7 @@ private fun ReferenceFilterRow(
                 selectedLabel = selectedChapter?.toString(),
                 options = chapters.map { it.toString() },
                 onSelect = { onChapterSelected(chapters[it]) },
+                tag = UiTags.DICT_REF_CHAPTER,
             )
         }
         if (selectedBook != null && selectedChapter != null && verseCount > 0) {
@@ -279,12 +303,14 @@ private fun ReferenceFilterRow(
                 selectedLabel = selectedVerse?.toString(),
                 options = verses.map { it.toString() },
                 onSelect = { onVerseSelected(verses[it]) },
+                tag = UiTags.DICT_REF_VERSE,
             )
         }
         if (selectedBook != null) {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
+                    .testTag(UiTags.DICT_REF_CLEAR)
                     .clickable { onClear() }
                     .padding(8.dp),
             ) {
@@ -299,13 +325,19 @@ private fun ReferenceFilterRow(
     }
 }
 
-/** A single pill-style dropdown used by [ReferenceFilterRow]. [onSelect] receives the chosen index. */
+/**
+ * A single pill-style dropdown used by [ReferenceFilterRow]. [onSelect] receives
+ * the chosen index; [tag] names the pill, and each menu entry under it, for a
+ * UI test — the placeholders are `stringResource`s and render empty in the
+ * wasmJs test runtime.
+ */
 @Composable
 private fun RefDropdown(
     placeholder: String,
     selectedLabel: String?,
     options: List<String>,
     onSelect: (Int) -> Unit,
+    tag: String,
 ) {
     val colors = LocalAppColors.current
     var expanded by remember { mutableStateOf(false) }
@@ -317,6 +349,7 @@ private fun RefDropdown(
                 .clip(shape)
                 .background(if (active) colors.accentTint else colors.surface)
                 .border(1.dp, if (active) colors.accent else colors.borderSubtle, shape)
+                .testTag(tag)
                 .clickable { expanded = true }
                 .padding(start = 12.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -347,6 +380,7 @@ private fun RefDropdown(
                         )
                     },
                     onClick = { onSelect(idx); expanded = false },
+                    modifier = Modifier.testTag(UiTags.refOption(tag, idx)),
                 )
             }
         }
@@ -378,11 +412,16 @@ private fun NumberPill(number: String, solid: Boolean = false) {
 }
 
 @Composable
-private fun EntryRow(entry: StrongsEntry, isLive: Boolean, onClick: () -> Unit) {
+private fun EntryRow(
+    entry: StrongsEntry,
+    isLive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val shape = RoundedCornerShape(14.dp)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(shape)
             .background(if (isLive) colors.accentTint else colors.surface)
@@ -425,7 +464,10 @@ private fun EntryRow(entry: StrongsEntry, isLive: Boolean, onClick: () -> Unit) 
             }
         }
         if (entry.occurrences > 0) {
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.testTag(UiTags.dictEntryUses(entry.number)),
+            ) {
                 Text(entry.occurrences.grouped(), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 Text(stringResource(Res.string.dictionary_uses), color = colors.dim, fontSize = 9.sp, letterSpacing = 0.05.em)
             }
@@ -437,7 +479,6 @@ private fun EntryRow(entry: StrongsEntry, isLive: Boolean, onClick: () -> Unit) 
 @Composable
 private fun EntryDetailSheet(
     entry: StrongsEntry,
-    isLive: Boolean,
     scheduleAdded: Boolean,
     appearsIn: DictionaryVersesResponse?,
     appearsInLoading: Boolean,
@@ -454,117 +495,182 @@ private fun EntryDetailSheet(
         containerColor = colors.sheetBackground,
         scrimColor = colors.scrim,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
-        ) {
-            // Header: solid number pill + language + actions
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                NumberPill(entry.number, solid = true)
-                Spacer(Modifier.size(10.dp))
-                Text(
-                    text = if (entry.isHebrew) stringResource(Res.string.dictionary_filter_hebrew) else if (entry.isGreek) stringResource(Res.string.dictionary_filter_greek) else "",
-                    color = colors.muted,
-                    fontSize = 12.sp,
-                )
-                Spacer(Modifier.weight(1f))
-                IconTileButton(
-                    icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-                    contentDescription = stringResource(Res.string.label_add_to_schedule),
-                    tint = if (scheduleAdded) colors.accent else colors.amber,
-                    onClick = onAddToSchedule,
-                )
-                Spacer(Modifier.size(8.dp))
-                IconTileButton(
-                    icon = Icons.Outlined.DesktopWindows,
-                    contentDescription = stringResource(Res.string.action_go_live),
-                    tint = colors.accent,
-                    onClick = onProject,
-                )
-            }
+        EntryDetail(
+            entry = entry,
+            scheduleAdded = scheduleAdded,
+            appearsIn = appearsIn,
+            appearsInLoading = appearsInLoading,
+            onProject = onProject,
+            onAddToSchedule = onAddToSchedule,
+            onOpenNumber = onOpenNumber,
+        )
+    }
+}
 
-            Spacer(Modifier.height(16.dp))
-            // Centered word / transliteration / pronunciation
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(entry.word, color = colors.text, fontSize = 34.sp, fontWeight = FontWeight.Bold)
-                if (entry.transliteration.isNotBlank()) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(entry.transliteration, color = colors.secondary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                }
-                if (entry.pronunciation.isNotBlank()) {
-                    Text(entry.pronunciation, color = colors.muted, fontSize = 13.sp)
-                }
-            }
+/**
+ * Everything the entry sheet shows, without the sheet around it.
+ *
+ * `internal` and separate from [EntryDetailSheet] so a test can compose it
+ * directly: a `ModalBottomSheet` brings a scrim, a drag handle and a spring
+ * animation that have nothing to do with what this content says, and none of
+ * the words below are reachable until that animation settles.
+ */
+@Composable
+internal fun EntryDetail(
+    entry: StrongsEntry,
+    scheduleAdded: Boolean,
+    appearsIn: DictionaryVersesResponse?,
+    appearsInLoading: Boolean,
+    onProject: () -> Unit,
+    onAddToSchedule: () -> Unit,
+    onOpenNumber: (String) -> Unit,
+) {
+    val colors = LocalAppColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(UiTags.DICT_SHEET)
+            .verticalScroll(rememberScrollState())
+            .padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
+    ) {
+        // Header: solid number pill + language + actions
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            NumberPill(entry.number, solid = true)
+            Spacer(Modifier.size(10.dp))
+            Text(
+                text = if (entry.isHebrew) stringResource(Res.string.dictionary_filter_hebrew) else if (entry.isGreek) stringResource(Res.string.dictionary_filter_greek) else "",
+                color = colors.muted,
+                fontSize = 12.sp,
+                modifier = Modifier.testTag(UiTags.DICT_SHEET_LANGUAGE),
+            )
+            Spacer(Modifier.weight(1f))
+            IconTileButton(
+                icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+                contentDescription = stringResource(Res.string.label_add_to_schedule),
+                tint = if (scheduleAdded) colors.accent else colors.amber,
+                onClick = onAddToSchedule,
+                modifier = Modifier.testTag(UiTags.DICT_SHEET_ADD_TO_SCHEDULE),
+            )
+            Spacer(Modifier.size(8.dp))
+            IconTileButton(
+                icon = Icons.Outlined.DesktopWindows,
+                contentDescription = stringResource(Res.string.action_go_live),
+                tint = colors.accent,
+                onClick = onProject,
+                modifier = Modifier.testTag(UiTags.DICT_SHEET_PROJECT),
+            )
+        }
 
-            Spacer(Modifier.height(18.dp))
-            // Occurrences card. Part of Speech and Root were removed — neither is
-            // available in the Strong's data set (Part of Speech has no source; Root
-            // was only a heuristic extracted from the definition text).
-            MetaCard(label = stringResource(Res.string.dictionary_occurrences), modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-            }
-
-            if (entry.definition.isNotBlank()) {
-                SectionLabel(stringResource(Res.string.dictionary_definition))
-                DefinitionText(entry.definition, entry.number, onOpenNumber)
-            }
-            if (entry.kjvUsage.isNotBlank()) {
-                SectionLabel(stringResource(Res.string.dictionary_kjv_usage))
-                Text(entry.kjvUsage, color = colors.secondary, fontSize = 14.sp, lineHeight = (14 * 1.6).sp)
-            }
-
-            // Appears in — verses where this Strong's number occurs. The active
-            // reference filter (if any) orders its scope first (see ViewModel).
-            val verses = appearsIn?.verses.orEmpty()
-            if (appearsInLoading && verses.isEmpty()) {
-                SectionLabel(stringResource(Res.string.dictionary_appears_in))
-                Spacer(Modifier.height(4.dp))
-                CircularProgressIndicator(color = colors.accent, modifier = Modifier.size(20.dp))
-            } else if (verses.isNotEmpty()) {
-                val shown = verses.size
-                val total = appearsIn?.total ?: shown
-                Spacer(Modifier.height(18.dp))
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        stringResource(Res.string.dictionary_appears_in).uppercase(),
-                        color = colors.muted,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.05.em,
-                    )
-                    if (total > shown) {
-                        Spacer(Modifier.weight(1f))
-                        Text(
-                            stringResource(
-                                Res.string.dictionary_appears_in_count,
-                                shown.grouped(), total.grouped()
-                            ),
-                            color = colors.muted,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                }
+        Spacer(Modifier.height(16.dp))
+        // Centered word / transliteration / pronunciation
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(entry.word, color = colors.text, fontSize = 34.sp, fontWeight = FontWeight.Bold)
+            if (entry.transliteration.isNotBlank()) {
                 Spacer(Modifier.height(6.dp))
-                verses.forEach { v ->
-                    Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                Text(
+                    entry.transliteration,
+                    color = colors.secondary,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.testTag(UiTags.DICT_SHEET_TRANSLITERATION),
+                )
+            }
+            if (entry.pronunciation.isNotBlank()) {
+                Text(
+                    entry.pronunciation,
+                    color = colors.muted,
+                    fontSize = 13.sp,
+                    modifier = Modifier.testTag(UiTags.DICT_SHEET_PRONUNCIATION),
+                )
+            }
+        }
+
+        Spacer(Modifier.height(18.dp))
+        // Occurrences card. Part of Speech and Root were removed — neither is
+        // available in the Strong's data set (Part of Speech has no source; Root
+        // was only a heuristic extracted from the definition text).
+        MetaCard(
+            label = stringResource(Res.string.dictionary_occurrences),
+            modifier = Modifier.fillMaxWidth().testTag(UiTags.DICT_SHEET_OCCURRENCES),
+        ) {
+            Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        }
+
+        if (entry.definition.isNotBlank()) {
+            SectionLabel(stringResource(Res.string.dictionary_definition))
+            DefinitionText(entry.definition, entry.number, onOpenNumber)
+        }
+        if (entry.kjvUsage.isNotBlank()) {
+            SectionLabel(stringResource(Res.string.dictionary_kjv_usage))
+            Text(
+                entry.kjvUsage,
+                color = colors.secondary,
+                fontSize = 14.sp,
+                lineHeight = (14 * 1.6).sp,
+                modifier = Modifier.testTag(UiTags.DICT_SHEET_KJV_USAGE),
+            )
+        }
+
+        // Appears in — verses where this Strong's number occurs. The active
+        // reference filter (if any) orders its scope first (see ViewModel).
+        val verses = appearsIn?.verses.orEmpty()
+        if (appearsInLoading && verses.isEmpty()) {
+            SectionLabel(stringResource(Res.string.dictionary_appears_in))
+            Spacer(Modifier.height(4.dp))
+            CircularProgressIndicator(
+                color = colors.accent,
+                modifier = Modifier.size(20.dp).testTag(UiTags.DICT_SHEET_APPEARS_LOADING),
+            )
+        } else if (verses.isNotEmpty()) {
+            val shown = verses.size
+            val total = appearsIn?.total ?: shown
+            Spacer(Modifier.height(18.dp))
+            Row(
+                Modifier.fillMaxWidth().testTag(UiTags.DICT_SHEET_APPEARS_IN),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    stringResource(Res.string.dictionary_appears_in).uppercase(),
+                    color = colors.muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.05.em,
+                )
+                if (total > shown) {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        stringResource(
+                            Res.string.dictionary_appears_in_count,
+                            shown.grouped(), total.grouped()
+                        ),
+                        color = colors.muted,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.testTag(UiTags.DICT_SHEET_APPEARS_COUNT),
+                    )
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            verses.forEach { v ->
+                Column(
+                    Modifier.fillMaxWidth()
+                        .testTag(UiTags.dictAppearsVerse(v.reference))
+                        .padding(vertical = 6.dp)
+                ) {
+                    Text(
+                        v.reference,
+                        color = colors.accent,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    if (v.text.isNotBlank()) {
+                        Spacer(Modifier.height(2.dp))
                         Text(
-                            v.reference,
-                            color = colors.accent,
+                            v.text,
+                            color = colors.secondary,
                             fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            lineHeight = (13 * 1.5).sp,
                         )
-                        if (v.text.isNotBlank()) {
-                            Spacer(Modifier.height(2.dp))
-                            Text(
-                                v.text,
-                                color = colors.secondary,
-                                fontSize = 13.sp,
-                                lineHeight = (13 * 1.5).sp,
-                            )
-                        }
                     }
                 }
             }
@@ -595,25 +701,55 @@ private fun SectionLabel(label: String) {
     Spacer(Modifier.height(6.dp))
 }
 
+/**
+ * One stretch of a definition: plain words, or a Strong's number that should be
+ * tappable ([link] is the number to open).
+ */
+internal data class DefinitionRun(val text: String, val link: String? = null)
+
+/**
+ * Splits [definition] into the runs [DefinitionText] renders.
+ *
+ * Which words become links is the whole decision here, and it is the one that
+ * can be wrong: a cross-reference that is not tappable is a dead end, and the
+ * entry's own number linking back to itself is a loop. Pulled out of the
+ * composable so it can be asserted on directly rather than through a rendered
+ * `AnnotatedString`.
+ */
+internal fun definitionRuns(definition: String, ownNumber: String): List<DefinitionRun> {
+    val runs = mutableListOf<DefinitionRun>()
+    var last = 0
+    for (m in strongsRefRegex.findAll(definition)) {
+        if (m.range.first > last) runs += DefinitionRun(definition.substring(last, m.range.first))
+        val ref = m.value
+        runs += if (ref == ownNumber) DefinitionRun(ref) else DefinitionRun(ref, link = ref)
+        last = m.range.last + 1
+    }
+    if (last < definition.length) runs += DefinitionRun(definition.substring(last))
+    return runs
+}
+
 /** Definition text with tappable H####/G#### Strong's links (excluding the entry's own number). */
 @Composable
 private fun DefinitionText(definition: String, ownNumber: String, onOpenNumber: (String) -> Unit) {
     val colors = LocalAppColors.current
     val annotated = buildAnnotatedString {
-        var last = 0
-        for (m in strongsRefRegex.findAll(definition)) {
-            append(definition.substring(last, m.range.first))
-            val ref = m.value
-            if (ref == ownNumber) {
-                append(ref)
+        for (run in definitionRuns(definition, ownNumber)) {
+            val ref = run.link
+            if (ref == null) {
+                append(run.text)
             } else {
                 withLink(LinkAnnotation.Clickable(tag = ref, linkInteractionListener = { onOpenNumber(ref) })) {
-                    withStyle(SpanStyle(color = colors.accent, fontWeight = FontWeight.Medium)) { append(ref) }
+                    withStyle(SpanStyle(color = colors.accent, fontWeight = FontWeight.Medium)) { append(run.text) }
                 }
             }
-            last = m.range.last + 1
         }
-        append(definition.substring(last))
     }
-    Text(annotated, color = colors.secondary, fontSize = 14.sp, lineHeight = (14 * 1.6).sp)
+    Text(
+        annotated,
+        color = colors.secondary,
+        fontSize = 14.sp,
+        lineHeight = (14 * 1.6).sp,
+        modifier = Modifier.testTag(UiTags.DICT_SHEET_DEFINITION),
+    )
 }

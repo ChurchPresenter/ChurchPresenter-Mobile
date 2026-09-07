@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
@@ -168,7 +170,11 @@ private fun ChaptersGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
         state = gridState,
-        modifier = modifier.fillMaxSize().background(colors.background).verticalScrollbar(gridState),
+        modifier = modifier
+            .fillMaxSize()
+            .testTag(UiTags.BIBLE_CHAPTERS_GRID)
+            .background(colors.background)
+            .verticalScrollbar(gridState),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -178,6 +184,7 @@ private fun ChaptersGrid(
             Box(
                 modifier = Modifier
                     .height(52.dp)
+                    .testTag(UiTags.bibleChapter(chapter))
                     .clip(RoundedCornerShape(10.dp))
                     .background(colors.surface)
                     .border(1.dp, colors.borderSubtle, RoundedCornerShape(10.dp))
@@ -208,7 +215,7 @@ private fun VersesList(
     val colors = LocalAppColors.current
     if (verses.isEmpty()) {
         Box(
-            modifier = modifier.fillMaxSize().background(colors.background),
+            modifier = modifier.fillMaxSize().testTag(UiTags.BIBLE_NO_VERSES).background(colors.background),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -229,6 +236,7 @@ private fun VersesList(
                 color = colors.accent,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag(UiTags.BIBLE_MULTI_SELECT_COUNT)
                     .background(colors.accentTint)
                     .padding(horizontal = 20.dp, vertical = 8.dp)
             )
@@ -249,6 +257,8 @@ private fun VersesList(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag(UiTags.bibleVerse(index))
+                        .selectable(selected = highlighted, onClick = { onVerseToggle(index) })
                         .background(if (highlighted) colors.accentTint else colors.background)
                         .drawBehind {
                             drawRect(
@@ -256,7 +266,6 @@ private fun VersesList(
                                 size = androidx.compose.ui.geometry.Size(3.dp.toPx(), size.height)
                             )
                         }
-                        .clickable { onVerseToggle(index) }
                         .padding(horizontal = 20.dp, vertical = 13.dp),
                     verticalAlignment   = Alignment.Top,
                     horizontalArrangement = Arrangement.spacedBy(14.dp)

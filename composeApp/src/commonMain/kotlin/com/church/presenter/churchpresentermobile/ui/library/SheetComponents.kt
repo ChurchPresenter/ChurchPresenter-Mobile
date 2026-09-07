@@ -27,11 +27,12 @@ internal fun SheetButton(
     label: String,
     isDestructive: Boolean = false,
     enabled: Boolean = true,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusButton))
             .background(
@@ -60,14 +61,14 @@ internal fun SheetButton(
 
 /** A finished sync's result, in the sheet's own card style. */
 @Composable
-internal fun OutcomeCard(message: String, tint: Color) {
+internal fun OutcomeCard(message: String, tint: Color, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Text(
         text = message,
         color = tint,
         fontSize = 12.sp,
         lineHeight = 17.sp,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)

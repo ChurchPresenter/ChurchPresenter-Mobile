@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -111,16 +112,23 @@ internal fun ColorPickerDialog(
                     color = colors.muted,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.testTag(COLOR_PICKER_HEX),
                 )
             }
         },
         confirmButton = {
-            TextButton(onClick = { onPick(hex); onDismiss() }) {
+            TextButton(
+                onClick = { onPick(hex); onDismiss() },
+                modifier = Modifier.testTag(COLOR_PICKER_SAVE),
+            ) {
                 Text(stringResource(Res.string.settings_save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.qa_admin_cancel)) }
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(COLOR_PICKER_CANCEL),
+            ) { Text(stringResource(Res.string.qa_admin_cancel)) }
         },
     )
 }
@@ -191,3 +199,12 @@ internal fun rgbToHex(red: Int, green: Int, blue: Int): String =
     }
 
 private const val MAX_CHANNEL = 255f
+
+// ── Names a UI test reaches the picker by ────────────────────────────────
+//
+// The labels come from compose-resources, which renders empty in the wasmJs
+// test runtime, so the three buttons cannot be told apart by their words.
+
+internal const val COLOR_PICKER_SAVE = "standaloneColor:save"
+internal const val COLOR_PICKER_CANCEL = "standaloneColor:cancel"
+internal const val COLOR_PICKER_HEX = "standaloneColor:hex"

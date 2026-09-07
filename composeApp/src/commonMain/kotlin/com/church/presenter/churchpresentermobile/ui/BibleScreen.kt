@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -133,7 +134,7 @@ fun BibleScreen(
     }
 
     // Resolve toast events to localised strings in composable scope
-    val toastMessage = toastEvent?.toDisplayString()
+    val toastMessage = toastEvent?.bibleToastMessage()
     LaunchedEffect(toastEvent) {
         if (toastMessage != null) {
             snackbarHostState.showSnackbar(message = toastMessage, duration = SnackbarDuration.Short)
@@ -272,9 +273,16 @@ fun BibleScreen(
     }
 }
 
-/** Resolves a [ToastEvent] to a localised display string using Compose string resources. */
+/**
+ * Resolves a [ToastEvent] to a localised display string.
+ *
+ * `internal` and named after the tab it belongs to: three tabs each had a
+ * private extension of the same name, and none of them could be tested. The
+ * branch that matters is the last one — an event this tab does not handle
+ * resolves to an empty string, which shows as an empty snackbar.
+ */
 @Composable
-private fun ToastEvent.toDisplayString(): String = when (this) {
+internal fun ToastEvent.bibleToastMessage(): String = when (this) {
     is ToastEvent.BibleLive                 -> stringResource(Res.string.toast_bible_live)
     is ToastEvent.BibleAddedToSchedule      -> stringResource(Res.string.toast_bible_added_to_schedule, reference)
     is ToastEvent.FailedToProjectBible      -> stringResource(Res.string.toast_failed_to_project_bible, reason)
@@ -305,12 +313,14 @@ fun BibleBooksScreen(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
             placeholder = stringResource(Res.string.bible_search_placeholder),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier
+                .testTag(UiTags.BIBLE_SEARCH)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
         when {
             books.isEmpty() && searchQuery.isNotEmpty() -> Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().testTag(UiTags.BIBLE_NO_MATCH),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -320,7 +330,7 @@ fun BibleBooksScreen(
                 )
             }
             books.isEmpty() && !isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().testTag(UiTags.BIBLE_NO_BOOKS),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -351,6 +361,7 @@ private fun BibleBookRow(book: BibleBook, onSelect: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.bibleBook(book.displayName))
             .background(if (colors.isDark) androidx.compose.ui.graphics.Color.Transparent else colors.surface)
             .clickable { onSelect() }
             .height(60.dp)

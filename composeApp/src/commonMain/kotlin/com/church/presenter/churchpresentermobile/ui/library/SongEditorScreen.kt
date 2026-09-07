@@ -36,6 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -136,6 +138,7 @@ fun SongEditorScreen(
                     value = song.title,
                     onValueChange = viewModel::setSongTitle,
                     error = validation.errors[LibraryField.TITLE],
+                    modifier = Modifier.testTag(LibraryTags.FIELD_TITLE),
                 )
             }
             item {
@@ -145,13 +148,13 @@ fun SongEditorScreen(
                         value = song.number,
                         onValueChange = viewModel::setSongNumber,
                         warning = validation.warnings[LibraryField.NUMBER],
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).testTag(LibraryTags.FIELD_NUMBER),
                     )
                     EditorField(
                         label = stringResource(Res.string.editor_field_book),
                         value = song.bookName.orEmpty(),
                         onValueChange = viewModel::setSongBook,
-                        modifier = Modifier.weight(2f),
+                        modifier = Modifier.weight(2f).testTag(LibraryTags.FIELD_BOOK),
                     )
                 }
             }
@@ -160,6 +163,7 @@ fun SongEditorScreen(
                     label = stringResource(Res.string.editor_field_author),
                     value = song.author.orEmpty(),
                     onValueChange = viewModel::setSongAuthor,
+                    modifier = Modifier.testTag(LibraryTags.FIELD_AUTHOR),
                 )
             }
             item {
@@ -167,6 +171,7 @@ fun SongEditorScreen(
                     label = stringResource(Res.string.editor_field_copyright),
                     value = song.copyright.orEmpty(),
                     onValueChange = viewModel::setSongCopyright,
+                    modifier = Modifier.testTag(LibraryTags.FIELD_COPYRIGHT),
                 )
             }
 
@@ -221,7 +226,10 @@ fun SongEditorScreen(
             }
 
             item {
-                TextButton(onClick = { viewModel.addSection() }) {
+                TextButton(
+                    onClick = { viewModel.addSection() },
+                    modifier = Modifier.testTag(LibraryTags.ADD_VERSE),
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Text(
                         text = stringResource(Res.string.editor_add_section),
@@ -272,6 +280,7 @@ private fun SectionCard(
             options = SECTION_TYPES.map { it.label() },
             selectedIndex = SECTION_TYPES.indexOf(type).coerceAtLeast(0),
             onSelect = { onTypeChange(SECTION_TYPES[it]) },
+            optionTag = { LibraryTags.verseType(index, it) },
         )
 
         OutlinedTextField(
@@ -281,6 +290,7 @@ private fun SectionCard(
             minLines = 3,
             modifier = Modifier
                 .fillMaxWidth()
+                .testTag(LibraryTags.verse(index))
                 .clickable(onClick = onFocus),
         )
 
@@ -292,13 +302,28 @@ private fun SectionCard(
                 modifier = Modifier.padding(end = AppDimens.space8),
             )
             if (canSplit) {
-                IconAction(Icons.Filled.CallSplit, stringResource(Res.string.editor_split_section), onSplit)
+                IconAction(
+                    icon = Icons.Filled.CallSplit,
+                    description = stringResource(Res.string.editor_split_section),
+                    onClick = onSplit,
+                    modifier = Modifier.testTag(LibraryTags.verseSplit(index)),
+                )
             }
             if (!isFirst) {
-                IconAction(Icons.Filled.ArrowUpward, stringResource(Res.string.editor_move_up), onMoveUp)
+                IconAction(
+                    icon = Icons.Filled.ArrowUpward,
+                    description = stringResource(Res.string.editor_move_up),
+                    onClick = onMoveUp,
+                    modifier = Modifier.testTag(LibraryTags.verseUp(index)),
+                )
             }
             if (!isLast) {
-                IconAction(Icons.Filled.ArrowDownward, stringResource(Res.string.editor_move_down), onMoveDown)
+                IconAction(
+                    icon = Icons.Filled.ArrowDownward,
+                    description = stringResource(Res.string.editor_move_down),
+                    onClick = onMoveDown,
+                    modifier = Modifier.testTag(LibraryTags.verseDown(index)),
+                )
             }
             Box(Modifier.weight(1f))
             IconAction(
@@ -306,6 +331,7 @@ private fun SectionCard(
                 description = stringResource(Res.string.editor_remove_section),
                 onClick = onRemove,
                 tint = colors.danger,
+                modifier = Modifier.testTag(LibraryTags.verseRemove(index)),
             )
         }
     }
@@ -316,14 +342,15 @@ private fun IconAction(
     icon: ImageVector,
     description: String,
     onClick: () -> Unit,
-    tint: androidx.compose.ui.graphics.Color? = null,
+    tint: Color? = null,
+    modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
     Icon(
         imageVector = icon,
         contentDescription = description,
         tint = tint ?: colors.muted,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusChip))
             .clickable(onClick = onClick)
             .padding(6.dp)
@@ -379,6 +406,7 @@ internal fun EditorActions(canSave: Boolean, onCancel: () -> Unit, onSave: () ->
         Box(
             modifier = Modifier
                 .weight(1f)
+                .testTag(LibraryTags.CANCEL)
                 .clip(RoundedCornerShape(AppDimens.radiusButton))
                 .background(colors.surface)
                 .clickable(onClick = onCancel)
@@ -390,6 +418,7 @@ internal fun EditorActions(canSave: Boolean, onCancel: () -> Unit, onSave: () ->
         Box(
             modifier = Modifier
                 .weight(1f)
+                .testTag(LibraryTags.SAVE)
                 .clip(RoundedCornerShape(AppDimens.radiusButton))
                 .background(if (canSave) colors.accent else colors.surface)
                 .clickable(enabled = canSave, onClick = onSave)
@@ -413,10 +442,14 @@ internal fun DiscardDialog(onDiscard: () -> Unit, onKeepEditing: () -> Unit) {
         title = { Text(stringResource(Res.string.editor_discard_title)) },
         text = { Text(stringResource(Res.string.editor_discard_body)) },
         confirmButton = {
-            TextButton(onClick = onDiscard) { Text(stringResource(Res.string.editor_discard_confirm)) }
+            TextButton(onClick = onDiscard, modifier = Modifier.testTag(LibraryTags.DISCARD)) {
+                Text(stringResource(Res.string.editor_discard_confirm))
+            }
         },
         dismissButton = {
-            TextButton(onClick = onKeepEditing) { Text(stringResource(Res.string.editor_keep_editing)) }
+            TextButton(onClick = onKeepEditing, modifier = Modifier.testTag(LibraryTags.KEEP_EDITING)) {
+                Text(stringResource(Res.string.editor_keep_editing))
+            }
         },
     )
 }

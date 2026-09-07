@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -58,6 +59,7 @@ fun ContentActionButtons(
         // ── Clear Display (danger) — only while projecting ────────────────
         if (onClearDisplay != null && isProjecting) {
             SquareFab(
+                modifier = Modifier.testTag(UiTags.FAB_CLEAR_DISPLAY),
                 icon = Icons.Filled.DesktopAccessDisabled,
                 contentDescription = stringResource(Res.string.action_clear_display),
                 containerColor = colors.danger,
@@ -70,6 +72,7 @@ fun ContentActionButtons(
         // ── Hold / Freeze — only while projecting ─────────────────────────
         if (onToggleHold != null && isProjecting) {
             SquareFab(
+                modifier = Modifier.testTag(UiTags.FAB_HOLD),
                 icon = Icons.Filled.Pause,
                 contentDescription = stringResource(Res.string.action_hold_display),
                 containerColor = if (isHolding) colors.danger else colors.surfaceElevated,
