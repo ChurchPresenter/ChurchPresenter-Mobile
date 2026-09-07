@@ -107,8 +107,9 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementForm
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
 
-private val TEXT_SWATCHES = listOf("#FFFFFF", "#F5C518", "#22C55E")
-private val BG_SWATCHES = listOf("#000000", "#1E3A8A", "#7F1D1D")
+/** Widened for the UI tests, which press a swatch by the colour it carries. */
+internal val TEXT_SWATCHES = listOf("#FFFFFF", "#F5C518", "#22C55E")
+internal val BG_SWATCHES = listOf("#000000", "#1E3A8A", "#7F1D1D")
 
 private fun parseHex(hex: String): Color = try {
     Color(("FF" + hex.removePrefix("#")).toLong(16))
@@ -155,7 +156,7 @@ fun AnnouncementsScreen(
             Spacer(Modifier.height(18.dp))
             // ── On-screen preview ─────────────────────────────────────────
             Overline(stringResource(Res.string.overline_on_screen_preview))
-            PreviewCard(form)
+            PreviewCard(form, Modifier.testTag(UiTags.ANNOUNCE_PREVIEW))
 
             Spacer(Modifier.height(14.dp))
             // ── Text / timer inputs ───────────────────────────────────────
@@ -172,9 +173,9 @@ fun AnnouncementsScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.testTag(UiTags.ANNOUNCE_COUNTDOWN_FIELDS),
                     ) {
-                        Stepper(stringResource(Res.string.stepper_hrs), form.hours, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(hours = v) } }
-                        Stepper(stringResource(Res.string.stepper_min), form.minutes, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(minutes = v) } }
-                        Stepper(stringResource(Res.string.stepper_sec), form.seconds, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(seconds = v) } }
+                        Stepper(stringResource(Res.string.stepper_hrs), form.hours, 0, 23, Modifier.weight(1f), tag = UiTags.ANNOUNCE_HOURS) { v -> viewModel.update { it.copy(hours = v) } }
+                        Stepper(stringResource(Res.string.stepper_min), form.minutes, 0, 59, Modifier.weight(1f), tag = UiTags.ANNOUNCE_MINUTES) { v -> viewModel.update { it.copy(minutes = v) } }
+                        Stepper(stringResource(Res.string.stepper_sec), form.seconds, 0, 59, Modifier.weight(1f), tag = UiTags.ANNOUNCE_SECONDS) { v -> viewModel.update { it.copy(seconds = v) } }
                     }
                 }
                 AnnouncementType.COUNTDOWN_TO_TIME -> {
@@ -183,14 +184,15 @@ fun AnnouncementsScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.testTag(UiTags.ANNOUNCE_UNTIL_FIELDS),
                     ) {
-                        Stepper(stringResource(Res.string.stepper_hour), form.targetHour, 0, 23, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetHour = v) } }
-                        Stepper(stringResource(Res.string.stepper_min), form.targetMinute, 0, 59, Modifier.weight(1f)) { v -> viewModel.update { it.copy(targetMinute = v) } }
+                        Stepper(stringResource(Res.string.stepper_hour), form.targetHour, 0, 23, Modifier.weight(1f), tag = UiTags.ANNOUNCE_TARGET_HOUR) { v -> viewModel.update { it.copy(targetHour = v) } }
+                        Stepper(stringResource(Res.string.stepper_min), form.targetMinute, 0, 59, Modifier.weight(1f), tag = UiTags.ANNOUNCE_TARGET_MINUTE) { v -> viewModel.update { it.copy(targetMinute = v) } }
                     }
                 }
                 AnnouncementType.CLOCK, AnnouncementType.COUNT_UP -> Text(
                     if (form.type == AnnouncementType.CLOCK) stringResource(Res.string.announcements_clock_desc)
                     else stringResource(Res.string.announcements_count_up_desc),
                     color = colors.muted, fontSize = 13.sp,
+                    modifier = Modifier.testTag(UiTags.ANNOUNCE_TIMER_DESC),
                 )
             }
 
@@ -199,18 +201,18 @@ fun AnnouncementsScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                 SwatchGroup(stringResource(Res.string.swatch_text), TEXT_SWATCHES, form.textColor,
                     onSelect = { hex -> viewModel.update { it.copy(textColor = hex) } },
-                    onOpenPicker = { pickerTarget = "text" })
+                    onOpenPicker = { pickerTarget = "text" }, group = "text")
                 SwatchGroup(stringResource(Res.string.swatch_background), BG_SWATCHES, form.backgroundColor,
                     onSelect = { hex -> viewModel.update { it.copy(backgroundColor = hex) } },
-                    onOpenPicker = { pickerTarget = "background" })
+                    onOpenPicker = { pickerTarget = "background" }, group = "background")
             }
 
             Spacer(Modifier.height(18.dp))
             // ── Style extras (font size / animation) ──────────────────────
-            Stepper(stringResource(Res.string.stepper_font_size), form.fontSize, 16, 160, step = 4) { v -> viewModel.update { it.copy(fontSize = v) } }
+            Stepper(stringResource(Res.string.stepper_font_size), form.fontSize, 16, 160, step = 4, tag = UiTags.ANNOUNCE_FONT_SIZE) { v -> viewModel.update { it.copy(fontSize = v) } }
             Spacer(Modifier.height(14.dp))
             Overline(stringResource(Res.string.overline_animation))
-            AnimationDropdown(form.animation) { a -> viewModel.update { it.copy(animation = a) } }
+            AnimationDropdown(form.animation, Modifier.testTag(UiTags.ANNOUNCE_ANIMATION)) { a -> viewModel.update { it.copy(animation = a) } }
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.announcements_animation_duration_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
@@ -220,6 +222,7 @@ fun AnnouncementsScreen(
                 Text(stringResource(Res.string.announce_duration_seconds, secondsLabel), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             }
             Slider(
+                modifier = Modifier.testTag(UiTags.ANNOUNCE_DURATION),
                 value = (form.animationDuration / 1000f).coerceIn(0f, 30f),
                 onValueChange = { v -> viewModel.update { it.copy(animationDuration = (v * 2).roundToInt() * 500) } },
                 valueRange = 0f..30f,
@@ -350,7 +353,14 @@ private fun Chip(label: String, selected: Boolean, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun SwatchGroup(label: String, swatches: List<String>, selected: String, onSelect: (String) -> Unit, onOpenPicker: () -> Unit) {
+private fun SwatchGroup(
+    label: String,
+    swatches: List<String>,
+    selected: String,
+    onSelect: (String) -> Unit,
+    onOpenPicker: () -> Unit,
+    group: String,
+) {
     val colors = LocalAppColors.current
     val isCustom = swatches.none { it.equals(selected, ignoreCase = true) }
     Column {
@@ -368,6 +378,7 @@ private fun SwatchGroup(label: String, swatches: List<String>, selected: String,
                             color = if (isSel) colors.accent else colors.border,
                             shape = RoundedCornerShape(10.dp),
                         )
+                        .testTag(UiTags.announceSwatch(group, hex))
                         .clickable { onSelect(hex) },
                 )
             }
@@ -382,6 +393,7 @@ private fun SwatchGroup(label: String, swatches: List<String>, selected: String,
                         color = if (isCustom) colors.accent else colors.border,
                         shape = RoundedCornerShape(10.dp),
                     )
+                    .testTag(UiTags.announceCustomSwatch(group))
                     .clickable(onClick = onOpenPicker),
                 contentAlignment = Alignment.Center,
             ) {
@@ -410,27 +422,41 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
                 .background(colors.sheetBackground)
                 .padding(20.dp),
         ) {
-            Text(stringResource(Res.string.color_picker_title), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                stringResource(Res.string.color_picker_title),
+                color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.testTag(UiTags.COLOR_PICKER),
+            )
             Spacer(Modifier.height(14.dp))
             Box(
                 Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(12.dp)).background(current)
                     .border(1.dp, colors.border, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center,
-            ) { Text(hex, color = if (value > 0.6f && sat < 0.5f) Color.Black else Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium) }
+            ) {
+                Text(
+                    hex,
+                    color = if (value > 0.6f && sat < 0.5f) Color.Black else Color.White,
+                    fontSize = 13.sp, fontWeight = FontWeight.Medium,
+                    modifier = Modifier.testTag(UiTags.COLOR_PICKER_HEX),
+                )
+            }
 
-            ColorSlider(stringResource(Res.string.color_slider_hue), hue / 360f, colors.accent) { hue = it * 360f }
-            ColorSlider(stringResource(Res.string.color_slider_saturation), sat, colors.accent) { sat = it }
-            ColorSlider(stringResource(Res.string.color_slider_brightness), value, colors.accent) { value = it }
+            ColorSlider(stringResource(Res.string.color_slider_hue), hue / 360f, colors.accent, UiTags.COLOR_PICKER_HUE) { hue = it * 360f }
+            ColorSlider(stringResource(Res.string.color_slider_saturation), sat, colors.accent, UiTags.COLOR_PICKER_SATURATION) { sat = it }
+            ColorSlider(stringResource(Res.string.color_slider_brightness), value, colors.accent, UiTags.COLOR_PICKER_BRIGHTNESS) { value = it }
 
             Spacer(Modifier.height(14.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Box(
                     Modifier.weight(1f).height(46.dp).clip(RoundedCornerShape(12.dp)).background(colors.surface)
-                        .border(1.dp, colors.border, RoundedCornerShape(12.dp)).clickable(onClick = onDismiss),
+                        .border(1.dp, colors.border, RoundedCornerShape(12.dp))
+                        .testTag(UiTags.COLOR_PICKER_CANCEL)
+                        .clickable(onClick = onDismiss),
                     contentAlignment = Alignment.Center,
                 ) { Text(stringResource(Res.string.action_cancel), color = colors.text, fontSize = 14.sp) }
                 Box(
                     Modifier.weight(1f).height(46.dp).clip(RoundedCornerShape(12.dp)).background(colors.accent)
+                        .testTag(UiTags.COLOR_PICKER_USE)
                         .clickable { onPick(hex) },
                     contentAlignment = Alignment.Center,
                 ) { Text(stringResource(Res.string.color_picker_use), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) }
@@ -440,13 +466,14 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
 }
 
 @Composable
-private fun ColorSlider(label: String, value: Float, accent: Color, onChange: (Float) -> Unit) {
+private fun ColorSlider(label: String, value: Float, accent: Color, tag: String, onChange: (Float) -> Unit) {
     val colors = LocalAppColors.current
     Spacer(Modifier.height(6.dp))
     Text(label.uppercase(), color = colors.muted, fontSize = 9.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)
     Slider(
         value = value,
         onValueChange = onChange,
+        modifier = Modifier.testTag(tag),
         colors = SliderDefaults.colors(thumbColor = accent, activeTrackColor = accent, inactiveTrackColor = colors.inputBg),
     )
 }
@@ -504,7 +531,7 @@ private fun SavedRow(
 }
 
 @Composable
-private fun PreviewCard(form: AnnouncementForm) {
+private fun PreviewCard(form: AnnouncementForm, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     val previewPlaceholder = stringResource(Res.string.announcements_preview_placeholder)
     val previewText = when (form.type) {
@@ -515,7 +542,7 @@ private fun PreviewCard(form: AnnouncementForm) {
         AnnouncementType.COUNTDOWN_TO_TIME -> "→ ${p2(form.targetHour)}:${p2(form.targetMinute)}"
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(16f / 9f)
             .clip(RoundedCornerShape(12.dp))
@@ -563,9 +590,19 @@ private fun TextArea(
 }
 
 @Composable
-private fun Stepper(label: String, value: Int, min: Int, max: Int, modifier: Modifier = Modifier, step: Int = 1, onChange: (Int) -> Unit) {
+private fun Stepper(
+    label: String,
+    value: Int,
+    min: Int,
+    max: Int,
+    modifier: Modifier = Modifier,
+    step: Int = 1,
+    /** Names this stepper's two buttons and its value for a UI test. */
+    tag: String? = null,
+    onChange: (Int) -> Unit,
+) {
     val colors = LocalAppColors.current
-    Column(modifier) {
+    Column(modifier.then(tag?.let { Modifier.testTag(it) } ?: Modifier)) {
         Overline(label)
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -575,29 +612,47 @@ private fun Stepper(label: String, value: Int, min: Int, max: Int, modifier: Mod
                 .background(colors.inputBg)
                 .padding(horizontal = 8.dp, vertical = 6.dp),
         ) {
-            StepBtn("−") { onChange((value - step).coerceAtLeast(min)) }
-            Text(value.toString(), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-            StepBtn("+") { onChange((value + step).coerceAtMost(max)) }
+            StepBtn("−", tag?.let { UiTags.stepperDown(it) }) { onChange((value - step).coerceAtLeast(min)) }
+            Text(
+                value.toString(),
+                color = colors.text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .then(tag?.let { Modifier.testTag(UiTags.stepperValue(it)) } ?: Modifier),
+            )
+            StepBtn("+", tag?.let { UiTags.stepperUp(it) }) { onChange((value + step).coerceAtMost(max)) }
         }
     }
 }
 
 @Composable
-private fun StepBtn(sym: String, onClick: () -> Unit) {
+private fun StepBtn(sym: String, tag: String? = null, onClick: () -> Unit) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(colors.surface).clickable(onClick = onClick),
+        modifier = Modifier
+            .size(32.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(colors.surface)
+            .then(tag?.let { Modifier.testTag(it) } ?: Modifier)
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(sym, color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
 }
 
 @Composable
-private fun AnimationDropdown(selected: AnnouncementAnimation, onSelect: (AnnouncementAnimation) -> Unit) {
+private fun AnimationDropdown(
+    selected: AnnouncementAnimation,
+    modifier: Modifier = Modifier,
+    onSelect: (AnnouncementAnimation) -> Unit,
+) {
     val colors = LocalAppColors.current
     var expanded by remember { mutableStateOf(false) }
     Box {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(colors.inputBg)
@@ -611,7 +666,11 @@ private fun AnimationDropdown(selected: AnnouncementAnimation, onSelect: (Announ
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             AnnouncementAnimation.entries.forEach { a ->
-                DropdownMenuItem(text = { Text(announcementAnimationLabel(a)) }, onClick = { onSelect(a); expanded = false })
+                DropdownMenuItem(
+                    text = { Text(announcementAnimationLabel(a)) },
+                    onClick = { onSelect(a); expanded = false },
+                    modifier = Modifier.testTag(UiTags.announceAnimation(a.name)),
+                )
             }
         }
     }

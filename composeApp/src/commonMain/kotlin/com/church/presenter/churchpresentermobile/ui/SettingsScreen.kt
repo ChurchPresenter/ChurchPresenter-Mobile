@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -163,8 +164,17 @@ fun SettingsScreen(
     onSaved: () -> Unit,
     /** Opens the contact form. Settings is where people look for a way to reach support. */
     onContact: () -> Unit,
+    /**
+     * Supplied by tests only, matching the seam [SongsScreen] and [BibleScreen]
+     * already use. The app leaves both null and gets its own instances; a test
+     * cannot, because this screen is a `Dialog` with no ViewModelStoreOwner of
+     * its own to scope them to.
+     */
+    providedViewModel: SettingsViewModel? = null,
+    providedStatusViewModel: StatusViewModel? = null,
 ) {
-    val viewModel: SettingsViewModel = viewModel { SettingsViewModel(appSettings) }
+    val viewModel: SettingsViewModel = providedViewModel
+        ?: viewModel { SettingsViewModel(appSettings) }
     val host         by viewModel.host.collectAsState()
     val port         by viewModel.port.collectAsState()
     val apiKey       by viewModel.apiKey.collectAsState()
@@ -187,8 +197,8 @@ fun SettingsScreen(
     var testErrorSent    by remember { mutableStateOf(false) }
 
     // Inline server-status check
-    val statusViewModel: StatusViewModel =
-        viewModel(key = "settings_status") { StatusViewModel(appSettings) }
+    val statusViewModel: StatusViewModel = providedStatusViewModel
+        ?: viewModel(key = "settings_status") { StatusViewModel(appSettings) }
 
     // Directly observe the global deep-link counter.
     // This fires reliably even when the dialog is open — no token-passing required.
@@ -243,7 +253,9 @@ fun SettingsScreen(
                         text = stringResource(Res.string.settings_cancel),
                         color = colors.muted,
                         fontSize = 15.sp,
-                        modifier = Modifier.clickable { viewModel.cancel(); onDismiss() }
+                        modifier = Modifier
+                            .testTag(UiTags.SETTINGS_CANCEL)
+                            .clickable { viewModel.cancel(); onDismiss() }
                     )
                     Text(
                         text = stringResource(Res.string.settings_title),
@@ -261,6 +273,7 @@ fun SettingsScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
                             .background(colors.text)
+                            .testTag(UiTags.SETTINGS_SAVE)
                             .clickable {
                                 viewModel.save(
                                     onSuccess        = { onSaved(); onDismiss() },
@@ -307,7 +320,8 @@ fun SettingsScreen(
                                 Text(stringResource(Res.string.settings_active_server),
                                     color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                                 Text(activeUrl, color = colors.muted, fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace)
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier.testTag(UiTags.SETTINGS_ACTIVE_URL))
                             }
                         }
                     }
@@ -317,7 +331,8 @@ fun SettingsScreen(
                     // web build has none, so it never sees a choice it can't honour.
                     if (supportsStandalone) {
                         Text(stringResource(Res.string.mode_section_title),
-                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent,
+                            modifier = Modifier.testTag(UiTags.SETTINGS_MODE_SECTION))
                         val modeOptions = listOf(AppMode.REMOTE, AppMode.STANDALONE)
                         SegmentedControl(
                             options = listOf(
@@ -329,6 +344,7 @@ fun SettingsScreen(
                                 val target = modeOptions[index]
                                 if (target != appMode) pendingMode = target
                             },
+                            optionTag = { UiTags.settingsMode(it) },
                         )
                         Text(
                             text = if (appMode == AppMode.STANDALONE) {
@@ -346,16 +362,20 @@ fun SettingsScreen(
                         // ── Server section header ─────────────────────────────────
                         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
                             Text(stringResource(Res.string.settings_server_section),
-                                fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                                fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent,
+                                modifier = Modifier.testTag(UiTags.SETTINGS_SERVER_SECTION))
                             Text(stringResource(Res.string.settings_reset_to_default),
                                 fontSize = 12.sp, color = colors.muted,
-                                modifier = Modifier.clickable { viewModel.resetToDefaults() })
+                                modifier = Modifier
+                                    .testTag(UiTags.SETTINGS_RESET)
+                                    .clickable { viewModel.resetToDefaults() })
                         }
 
                         SettingsField(
                             label = stringResource(Res.string.settings_host_label),
                             value = host, onValueChange = { viewModel.setHost(it) },
                             placeholder = stringResource(Res.string.settings_host_placeholder),
+                            modifier = Modifier.testTag(UiTags.SETTINGS_HOST),
                             mono = true,
                             keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next,
                             error = hostError,
@@ -364,6 +384,7 @@ fun SettingsScreen(
                             label = stringResource(Res.string.settings_port_label),
                             value = port, onValueChange = { viewModel.setPort(it) },
                             placeholder = stringResource(Res.string.settings_port_placeholder),
+                            modifier = Modifier.testTag(UiTags.SETTINGS_PORT),
                             mono = true,
                             keyboardType = KeyboardType.Number, imeAction = ImeAction.Next,
                             error = portError,
@@ -372,6 +393,7 @@ fun SettingsScreen(
                             label = stringResource(Res.string.settings_api_key_label),
                             value = apiKey, onValueChange = { viewModel.setApiKey(it) },
                             placeholder = stringResource(Res.string.settings_api_key_placeholder),
+                            modifier = Modifier.testTag(UiTags.SETTINGS_API_KEY),
                             password = true, passwordVisible = apiKeyVisible,
                             onTogglePasswordVisible = { apiKeyVisible = !apiKeyVisible },
                             keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
@@ -384,6 +406,7 @@ fun SettingsScreen(
                             label = stringResource(Res.string.settings_device_name_label),
                             value = customDeviceName,
                             onValueChange = { viewModel.setCustomDeviceName(it) },
+                            modifier = Modifier.testTag(UiTags.SETTINGS_DEVICE_NAME),
                             placeholder = deviceName().ifBlank {
                                 stringResource(Res.string.settings_device_name_placeholder)
                             },
@@ -401,6 +424,7 @@ fun SettingsScreen(
                             label = stringResource(Res.string.settings_display_name_label),
                             value = displayName, onValueChange = { viewModel.setDisplayName(it) },
                             placeholder = stringResource(Res.string.settings_display_name_placeholder),
+                            modifier = Modifier.testTag(UiTags.SETTINGS_DISPLAY_NAME),
                             keyboardType = KeyboardType.Text, imeAction = ImeAction.Done,
                         )
 
@@ -413,6 +437,7 @@ fun SettingsScreen(
                             label = stringResource(Res.string.settings_check_status),
                             icon = Icons.Filled.Wifi,
                             onClick = { statusViewModel.recheck(); showStatusDialog = true },
+                            modifier = Modifier.testTag(UiTags.SETTINGS_CHECK_STATUS),
                         )
                     }
 
@@ -427,7 +452,8 @@ fun SettingsScreen(
                     // report in a mode that never connects.
                     if (!hasDesktop) {
                         Text(stringResource(Res.string.settings_computer_section),
-                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent)
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.accent,
+                            modifier = Modifier.testTag(UiTags.SETTINGS_COMPUTER_SECTION))
                         Text(
                             text = stringResource(Res.string.settings_computer_explain),
                             fontSize = 11.sp,
@@ -451,6 +477,7 @@ fun SettingsScreen(
                         ),
                         selectedIndex = themeOptions.indexOf(themeMode).coerceAtLeast(0),
                         onSelect = { viewModel.setThemeMode(themeOptions[it]) },
+                        optionTag = { UiTags.settingsTheme(it) },
                     )
 
                     // ── Privacy ───────────────────────────────────────────────
@@ -473,6 +500,7 @@ fun SettingsScreen(
                         Switch(
                             checked = telemetryEnabled,
                             onCheckedChange = { viewModel.setTelemetryEnabled(it) },
+                            modifier = Modifier.testTag(UiTags.SETTINGS_TELEMETRY),
                         )
                     }
 
@@ -485,6 +513,7 @@ fun SettingsScreen(
                             text = "$draftBaseUrl/songs", fontSize = 11.sp, fontFamily = FontFamily.Monospace,
                             color = colors.text,
                             modifier = Modifier.fillMaxWidth()
+                                .testTag(UiTags.SETTINGS_DRAFT_URL)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(colors.inputBg)
                                 .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -498,6 +527,7 @@ fun SettingsScreen(
                         label = stringResource(Res.string.contact_us_title),
                         icon = Icons.Filled.MailOutline,
                         onClick = onContact,
+                        modifier = Modifier.testTag(UiTags.SETTINGS_CONTACT),
                     )
 
                     // Developer — debug builds only
@@ -508,6 +538,7 @@ fun SettingsScreen(
                         OutlineActionButton(
                             label = stringResource(Res.string.settings_send_test_error),
                             icon = Icons.Filled.Warning,
+                            modifier = Modifier.testTag(UiTags.SETTINGS_TEST_ERROR),
                             onClick = {
                                 CrashReporting.recordException(
                                     RuntimeException("Test error — ChurchPresenter Mobile v$appVersion")
@@ -520,6 +551,7 @@ fun SettingsScreen(
                                 text = stringResource(Res.string.settings_test_error_sent),
                                 fontSize = 12.sp,
                                 color = colors.accent,
+                                modifier = Modifier.testTag(UiTags.SETTINGS_TEST_ERROR_SENT),
                             )
                         }
                     }
@@ -574,12 +606,15 @@ fun ServerStatusDialog(
                             }
                         },
                         navigationIcon = {
-                            IconButton(onClick = onDismiss) {
+                            IconButton(onClick = onDismiss, modifier = Modifier.testTag(UiTags.STATUS_DIALOG_CLOSE)) {
                                 Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_close))
                             }
                         },
                         actions = {
-                            IconButton(onClick = { statusViewModel.recheck() }) {
+                            IconButton(
+                                onClick = { statusViewModel.recheck() },
+                                modifier = Modifier.testTag(UiTags.STATUS_DIALOG_RECHECK),
+                            ) {
                                 Icon(Icons.Filled.Refresh,
                                     contentDescription = stringResource(Res.string.settings_status_recheck))
                             }
@@ -610,7 +645,7 @@ fun ServerStatusDialog(
                                 verticalArrangement   = Arrangement.spacedBy(16.dp),
                                 horizontalAlignment   = Alignment.CenterHorizontally,
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(modifier = Modifier.testTag(UiTags.STATUS_DIALOG_LOADING))
                                 Text(stringResource(Res.string.status_connecting),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -631,7 +666,8 @@ fun ServerStatusDialog(
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Center)
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.testTag(UiTags.STATUS_DIALOG_ERROR))
                                 Text(state.message,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -654,7 +690,8 @@ fun ServerStatusDialog(
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Center)
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.testTag(UiTags.STATUS_DIALOG_UNAUTHORIZED))
                                 Text(stringResource(Res.string.status_unauthorized_body),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -677,7 +714,8 @@ fun ServerStatusDialog(
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Center)
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.testTag(UiTags.STATUS_DIALOG_NOT_CHURCHPRESENTER))
                                 Text(stringResource(Res.string.status_not_churchpresenter_body),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -714,6 +752,7 @@ fun ServerStatusDialog(
                                                 stringResource(Res.string.status_limited_functionality),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.testTag(UiTags.STATUS_DIALOG_CONNECTED),
                                         )
                                         // Server version — from API response
                                         if (status.appVersion != null) {
@@ -721,6 +760,7 @@ fun ServerStatusDialog(
                                                 stringResource(Res.string.settings_status_server_version, status.appVersion),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.testTag(UiTags.STATUS_DIALOG_SERVER_VERSION),
                                             )
                                         }
                                         // Mobile app version
@@ -734,7 +774,7 @@ fun ServerStatusDialog(
                             }
 
                             // Permissions
-                            StatusCard {
+                            StatusCard(modifier = Modifier.testTag(UiTags.STATUS_DIALOG_PERMISSIONS)) {
                                 StatusLabel(stringResource(Res.string.status_permissions_title))
                                 Spacer(Modifier.height(8.dp))
                                 StatusPermissionRow(stringResource(Res.string.status_permission_present),
@@ -754,6 +794,7 @@ fun ServerStatusDialog(
                                            else status.bibles.joinToString("\n") { "• $it" },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.testTag(UiTags.STATUS_DIALOG_BIBLES),
                                 )
                                 Spacer(Modifier.height(12.dp))
                                 StatusLabel(stringResource(Res.string.settings_status_songbooks))
@@ -763,13 +804,17 @@ fun ServerStatusDialog(
                                            else status.songbooks.joinToString("\n") { "• $it" },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.testTag(UiTags.STATUS_DIALOG_SONGBOOKS),
                                 )
                             }
 
 
                             // Warnings
                             if (warnings.isNotEmpty()) {
-                                StatusCard(containerColor = MaterialTheme.colorScheme.errorContainer) {
+                                StatusCard(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    modifier = Modifier.testTag(UiTags.STATUS_DIALOG_WARNINGS),
+                                ) {
                                     warnings.forEach { warning ->
                                         Row(Modifier.padding(vertical = 3.dp), verticalAlignment = Alignment.Top) {
                                             Icon(Icons.Filled.Warning, null,
@@ -802,9 +847,10 @@ fun ServerStatusDialog(
 @Composable
 private fun StatusCard(
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = containerColor)) {
+    Card(modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = containerColor)) {
         Column(Modifier.padding(12.dp)) { content() }
     }
 }
@@ -874,12 +920,12 @@ private fun ModeSwitchDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = onConfirm, modifier = Modifier.testTag(UiTags.MODE_SWITCH_CONFIRM)) {
                 Text(stringResource(Res.string.mode_switch_confirm_action))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss, modifier = Modifier.testTag(UiTags.MODE_SWITCH_CANCEL)) {
                 Text(stringResource(Res.string.mode_switch_cancel))
             }
         },

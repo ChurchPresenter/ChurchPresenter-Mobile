@@ -229,4 +229,173 @@ internal object UiTags {
 
     /** One verse of the sheet's "appears in" list, by the reference it names. */
     fun dictAppearsVerse(reference: String) = "dict:appears:$reference"
+
+    // ── The pictures grid ────────────────────────────────────────────────
+    const val PICTURES_ERROR = "pictures:error"
+    const val PICTURES_RETRY = "pictures:retry"
+    const val PICTURES_EMPTY = "pictures:empty"
+    const val PICTURES_FOLDER = "pictures:folder"
+    const val PICTURES_PICK = "pictures:pick"
+    const val PICTURES_PICK_BLOCKED = "pictures:pick:blocked"
+    const val PICTURES_UPLOADING = "pictures:uploading"
+
+    /** One image tile, by the position the desktop gave it in the folder. */
+    fun pictureCell(index: Int) = "pictures:cell:$index"
+
+    // ── The presentations list ───────────────────────────────────────────
+    const val PRESENTATION_ERROR = "presentation:error"
+    const val PRESENTATION_RETRY = "presentation:retry"
+    const val PRESENTATION_EMPTY = "presentation:empty"
+    const val PRESENTATION_UPLOAD = "presentation:upload"
+    const val PRESENTATION_UPLOAD_BLOCKED = "presentation:upload:blocked"
+    const val PRESENTATION_UPLOADING = "presentation:uploading"
+
+    /** One presentation's header row, by its id. */
+    fun presentationHeader(id: String) = "presentation:header:$id"
+
+    /** One slide of a presentation, by the presentation it belongs to. */
+    fun presentationSlide(id: String, slideIndex: Int) = "presentation:slide:$id:$slideIndex"
+
+    // ── The Q&A admin board ──────────────────────────────────────────────
+    const val QA_LOADING = "qa:loading"
+    const val QA_ERROR = "qa:error"
+    const val QA_RETRY = "qa:retry"
+    const val QA_EMPTY_INCOMING = "qa:empty:incoming"
+    const val QA_EMPTY_FINISHED = "qa:empty:finished"
+    const val QA_ADD = "qa:add"
+
+    /** The Incoming / Answered tabs, by position. */
+    fun qaTab(index: Int) = "qa:tab:$index"
+
+    /** One question card, by the id the desktop gave it. */
+    fun qaCard(id: String) = "qa:card:$id"
+
+    fun qaEdit(id: String) = "qa:card:$id:edit"
+
+    fun qaDelete(id: String) = "qa:card:$id:delete"
+
+    fun qaDeny(id: String) = "qa:card:$id:deny"
+
+    fun qaApprove(id: String) = "qa:card:$id:approve"
+
+    fun qaGoLive(id: String) = "qa:card:$id:goLive"
+
+    fun qaStop(id: String) = "qa:card:$id:stop"
+
+    fun qaVotes(id: String) = "qa:card:$id:votes"
+
+    /**
+     * The status badge on a card, by which one it is.
+     *
+     * Tagged per kind rather than once: the badges say different things
+     * ("LIVE", "DENIED", "ANSWERED") and their words are `stringResource`s, so
+     * a single tag could not tell a denied question from a live one.
+     */
+    fun qaBadge(id: String, kind: String) = "qa:card:$id:badge:$kind"
+
+    // ── Adding a question from the phone ─────────────────────────────────
+    const val QA_ADD_TEXT = "qa:add:text"
+    const val QA_ADD_NAME = "qa:add:name"
+    const val QA_ADD_CONFIRM = "qa:add:confirm"
+    const val QA_ADD_CANCEL = "qa:add:cancel"
+
+    // ── The question editor ──────────────────────────────────────────────
+    const val QA_EDIT_TEXT = "qa:edit:text"
+    const val QA_EDIT_SAVE = "qa:edit:save"
+    const val QA_EDIT_CANCEL = "qa:edit:cancel"
+    const val QA_EDIT_DELETE = "qa:edit:delete"
+    const val QA_EDIT_COUNTER = "qa:edit:counter"
+    const val QA_EDIT_SUBMITTER = "qa:edit:submitter"
+
+    // ── The settings sheet ───────────────────────────────────────────────
+    const val SETTINGS_CANCEL = "settings:cancel"
+    const val SETTINGS_SAVE = "settings:save"
+    const val SETTINGS_ACTIVE_URL = "settings:activeUrl"
+    const val SETTINGS_RESET = "settings:reset"
+    const val SETTINGS_HOST = "settings:host"
+    const val SETTINGS_PORT = "settings:port"
+    const val SETTINGS_API_KEY = "settings:apiKey"
+    const val SETTINGS_DEVICE_NAME = "settings:deviceName"
+    const val SETTINGS_DISPLAY_NAME = "settings:displayName"
+    const val SETTINGS_CHECK_STATUS = "settings:checkStatus"
+    const val SETTINGS_CONTACT = "settings:contact"
+    const val SETTINGS_TELEMETRY = "settings:telemetry"
+    const val SETTINGS_DRAFT_URL = "settings:draftUrl"
+    const val SETTINGS_SERVER_SECTION = "settings:serverSection"
+    const val SETTINGS_COMPUTER_SECTION = "settings:computerSection"
+    const val SETTINGS_MODE_SECTION = "settings:modeSection"
+    const val SETTINGS_TEST_ERROR = "settings:testError"
+    const val SETTINGS_TEST_ERROR_SENT = "settings:testErrorSent"
+
+    /** One segment of the appearance control (System / Light / Dark). */
+    fun settingsTheme(index: Int) = "settings:theme:$index"
+
+    /** One segment of the mode control (Remote / Standalone). */
+    fun settingsMode(index: Int) = "settings:mode:$index"
+
+    const val MODE_SWITCH_CONFIRM = "settings:modeSwitch:confirm"
+    const val MODE_SWITCH_CANCEL = "settings:modeSwitch:cancel"
+
+    // ── The server-status dialog ─────────────────────────────────────────
+    const val STATUS_DIALOG_CLOSE = "statusDialog:close"
+    const val STATUS_DIALOG_RECHECK = "statusDialog:recheck"
+    const val STATUS_DIALOG_LOADING = "statusDialog:loading"
+    const val STATUS_DIALOG_ERROR = "statusDialog:error"
+    const val STATUS_DIALOG_UNAUTHORIZED = "statusDialog:unauthorized"
+    const val STATUS_DIALOG_NOT_CHURCHPRESENTER = "statusDialog:notChurchPresenter"
+    const val STATUS_DIALOG_CONNECTED = "statusDialog:connected"
+    const val STATUS_DIALOG_PERMISSIONS = "statusDialog:permissions"
+    const val STATUS_DIALOG_BIBLES = "statusDialog:bibles"
+    const val STATUS_DIALOG_SONGBOOKS = "statusDialog:songbooks"
+    const val STATUS_DIALOG_WARNINGS = "statusDialog:warnings"
+    const val STATUS_DIALOG_SERVER_VERSION = "statusDialog:serverVersion"
+
+    // ── The announcement composer's styling half ─────────────────────────
+    const val ANNOUNCE_PREVIEW = "announce:preview"
+    const val ANNOUNCE_TIMER_DESC = "announce:timerDesc"
+    const val ANNOUNCE_FONT_SIZE = "announce:fontSize"
+    const val ANNOUNCE_ANIMATION = "announce:animation"
+    const val ANNOUNCE_DURATION = "announce:duration"
+    const val ANNOUNCE_HOURS = "announce:hours"
+    const val ANNOUNCE_MINUTES = "announce:minutes"
+    const val ANNOUNCE_SECONDS = "announce:seconds"
+    const val ANNOUNCE_TARGET_HOUR = "announce:targetHour"
+    const val ANNOUNCE_TARGET_MINUTE = "announce:targetMinute"
+
+    /** The two ends of a stepper, and the number between them. */
+    fun stepperDown(tag: String) = "$tag:down"
+
+    fun stepperUp(tag: String) = "$tag:up"
+
+    fun stepperValue(tag: String) = "$tag:value"
+
+    /** One preset colour, by the swatch group it belongs to and its hex. */
+    fun announceSwatch(group: String, hex: String) = "announce:swatch:$group:$hex"
+
+    /** The "any other colour" tile at the end of a swatch group. */
+    fun announceCustomSwatch(group: String) = "announce:swatch:$group:custom"
+
+    /** One entry of the animation menu. */
+    fun announceAnimation(name: String) = "announce:animation:$name"
+
+    // ── The colour picker ────────────────────────────────────────────────
+    const val COLOR_PICKER = "colorPicker"
+    const val COLOR_PICKER_USE = "colorPicker:use"
+    const val COLOR_PICKER_CANCEL = "colorPicker:cancel"
+    const val COLOR_PICKER_HEX = "colorPicker:hex"
+    const val COLOR_PICKER_HUE = "colorPicker:hue"
+    const val COLOR_PICKER_SATURATION = "colorPicker:saturation"
+    const val COLOR_PICKER_BRIGHTNESS = "colorPicker:brightness"
+
+    // ── The media player's now-playing panel ─────────────────────────────
+    const val MEDIA_TITLE = "media:title"
+    const val MEDIA_SUBTITLE = "media:subtitle"
+    const val MEDIA_WILL_SEND = "media:willSend"
+    const val MEDIA_POSITION = "media:position"
+    const val MEDIA_DURATION = "media:duration"
+    const val MEDIA_ON_SCREEN = "media:onScreen"
+    const val MEDIA_SEEK = "media:seek"
+
+    /** One segment of the URL / Upload source control. */
+    fun mediaSource(index: Int) = "media:source:$index"
 }

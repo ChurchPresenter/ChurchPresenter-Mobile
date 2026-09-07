@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -124,7 +125,10 @@ fun QAAdminScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = colors.accent)
+                CircularProgressIndicator(
+                    color = colors.accent,
+                    modifier = Modifier.testTag(UiTags.QA_LOADING),
+                )
             }
             is QAUiState.Error -> Box(
                 modifier = Modifier.fillMaxSize(),
@@ -135,8 +139,15 @@ fun QAAdminScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(24.dp)
                 ) {
-                    Text(state.message, color = colors.danger)
-                    Button(onClick = { viewModel.loadQuestions() }) {
+                    Text(
+                        state.message,
+                        color = colors.danger,
+                        modifier = Modifier.testTag(UiTags.QA_ERROR),
+                    )
+                    Button(
+                        onClick = { viewModel.loadQuestions() },
+                        modifier = Modifier.testTag(UiTags.QA_RETRY),
+                    ) {
                         Text(stringResource(Res.string.qa_admin_error_retry))
                     }
                 }
@@ -164,8 +175,16 @@ fun QAAdminScreen(
     }
 }
 
+/**
+ * The board itself: the two tabs, the question cards and their actions.
+ *
+ * `internal` and separate from [QAAdminScreen] so the whole of it can be
+ * exercised without a desktop. Everything it does is decided here from plain
+ * values and reported through plain callbacks; the screen above only supplies a
+ * ViewModel's state and forwards them.
+ */
 @Composable
-private fun QAAdminContent(
+internal fun QAAdminContent(
     state: QAUiState.Admin,
     onApprove: (String) -> Unit,
     onDeny: (String) -> Unit,
@@ -202,6 +221,7 @@ private fun QAAdminContent(
                 ),
                 selectedIndex = selectedTab,
                 onSelect = { selectedTab = it },
+                optionTag = { UiTags.qaTab(it) },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
             )
 
@@ -213,7 +233,11 @@ private fun QAAdminContent(
                         if (selectedTab == 0) stringResource(Res.string.qa_admin_no_incoming)
                         else stringResource(Res.string.qa_admin_no_finished),
                         color = colors.muted,
-                        fontSize = 15.sp
+                        fontSize = 15.sp,
+                        modifier = Modifier.testTag(
+                            if (selectedTab == 0) UiTags.QA_EMPTY_INCOMING
+                            else UiTags.QA_EMPTY_FINISHED
+                        ),
                     )
                 }
             } else {
@@ -251,7 +275,7 @@ private fun QAAdminContent(
             iconColor = colors.onAccent,
             shadowColor = colors.accent.copy(alpha = if (colors.isDark) 0.35f else 0.3f),
             onClick = { showAddDialog = true },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp).testTag(UiTags.QA_ADD),
         )
     }
 
@@ -295,6 +319,7 @@ private fun QuestionCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.qaCard(question.id))
             .clip(shape)
             .background(if (isLive) colors.accentTint else colors.surface)
             .border(
@@ -335,26 +360,62 @@ private fun QuestionCard(
             if (showVotes) {
                 Icon(Icons.Filled.Star, contentDescription = null, tint = colors.muted, modifier = Modifier.size(13.dp))
                 Spacer(Modifier.width(4.dp))
-                Text(stringResource(Res.string.qa_upvotes_count, question.upvotes), fontSize = 12.sp, color = colors.muted)
+                Text(
+                    stringResource(Res.string.qa_upvotes_count, question.upvotes),
+                    fontSize = 12.sp,
+                    color = colors.muted,
+                    modifier = Modifier.testTag(UiTags.qaVotes(question.id)),
+                )
             }
             Spacer(Modifier.weight(1f))
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconSquareButton(Icons.Outlined.Edit, stringResource(Res.string.cd_edit), colors.muted, onClick = onStartEdit)
-                IconSquareButton(Icons.Outlined.Delete, stringResource(Res.string.cd_delete), colors.muted, onClick = onDelete)
+                IconSquareButton(
+                    Icons.Outlined.Edit, stringResource(Res.string.cd_edit), colors.muted,
+                    onClick = onStartEdit,
+                    modifier = Modifier.testTag(UiTags.qaEdit(question.id)),
+                )
+                IconSquareButton(
+                    Icons.Outlined.Delete, stringResource(Res.string.cd_delete), colors.muted,
+                    onClick = onDelete,
+                    modifier = Modifier.testTag(UiTags.qaDelete(question.id)),
+                )
                 when {
-                    isLive -> ActionPill(stringResource(Res.string.qa_action_stop), PillStyle.RED_TINT, onStop)
+                    isLive -> ActionPill(
+                        stringResource(Res.string.qa_action_stop), PillStyle.RED_TINT, onStop,
+                        modifier = Modifier.testTag(UiTags.qaStop(question.id)),
+                    )
                     question.status == QuestionStatus.APPROVED -> {
-                        IconSquareButton(Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger, onClick = onDeny)
-                        ActionPill(stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onDisplay)
+                        IconSquareButton(
+                            Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger,
+                            onClick = onDeny,
+                            modifier = Modifier.testTag(UiTags.qaDeny(question.id)),
+                        )
+                        ActionPill(
+                            stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onDisplay,
+                            modifier = Modifier.testTag(UiTags.qaGoLive(question.id)),
+                        )
                     }
                     question.status == QuestionStatus.PENDING -> {
-                        IconSquareButton(Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger, onClick = onDeny)
-                        ActionPill(stringResource(Res.string.qa_action_approve), PillStyle.ACCENT_TINT, onApprove)
+                        IconSquareButton(
+                            Icons.Filled.Close, stringResource(Res.string.cd_deny), colors.danger,
+                            onClick = onDeny,
+                            modifier = Modifier.testTag(UiTags.qaDeny(question.id)),
+                        )
+                        ActionPill(
+                            stringResource(Res.string.qa_action_approve), PillStyle.ACCENT_TINT, onApprove,
+                            modifier = Modifier.testTag(UiTags.qaApprove(question.id)),
+                        )
                     }
                     else -> { // DONE / DENIED (finished tab)
-                        ActionPill(stringResource(Res.string.qa_action_approve), PillStyle.ACCENT_TINT, onApprove)
-                        ActionPill(stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onApproveAndDisplay)
+                        ActionPill(
+                            stringResource(Res.string.qa_action_approve), PillStyle.ACCENT_TINT, onApprove,
+                            modifier = Modifier.testTag(UiTags.qaApprove(question.id)),
+                        )
+                        ActionPill(
+                            stringResource(Res.string.action_go_live), PillStyle.ACCENT_FILL, onApproveAndDisplay,
+                            modifier = Modifier.testTag(UiTags.qaGoLive(question.id)),
+                        )
                     }
                 }
             }
@@ -365,20 +426,36 @@ private fun QuestionCard(
 @Composable
 private fun StatusBadge(question: Question, isLive: Boolean) {
     val colors = LocalAppColors.current
+    val id = question.id
     when {
-        isLive -> Badge(text = stringResource(Res.string.qa_badge_live), fg = colors.accent, bg = colors.accentTint, dot = true)
-        question.status == QuestionStatus.APPROVED -> Badge(text = stringResource(Res.string.qa_badge_approved), fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true)
-        question.status == QuestionStatus.DENIED -> Badge(text = stringResource(Res.string.qa_badge_denied), fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f))
-        question.status == QuestionStatus.DONE -> Badge(text = stringResource(Res.string.qa_badge_answered), fg = colors.muted, bg = colors.inputBg)
+        isLive -> Badge(text = stringResource(Res.string.qa_badge_live), fg = colors.accent, bg = colors.accentTint, dot = true, modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.LIVE)))
+        question.status == QuestionStatus.APPROVED -> Badge(text = stringResource(Res.string.qa_badge_approved), fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true, modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.APPROVED)))
+        question.status == QuestionStatus.DENIED -> Badge(text = stringResource(Res.string.qa_badge_denied), fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f), modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.DENIED)))
+        question.status == QuestionStatus.DONE -> Badge(text = stringResource(Res.string.qa_badge_answered), fg = colors.muted, bg = colors.inputBg, modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.ANSWERED)))
         else -> {} // pending: no badge (muted text conveys it)
     }
 }
 
+/** The badge kinds a card can carry, named in one place for [UiTags.qaBadge]. */
+internal object QaBadge {
+    const val LIVE = "live"
+    const val APPROVED = "approved"
+    const val DENIED = "denied"
+    const val ANSWERED = "answered"
+}
+
 @Composable
-private fun Badge(text: String, fg: Color, bg: Color, dot: Boolean = false, border: Boolean = false) {
+private fun Badge(
+    text: String,
+    fg: Color,
+    bg: Color,
+    dot: Boolean = false,
+    border: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(bg)
             .then(if (border) Modifier.border(1.dp, colors.border, RoundedCornerShape(20.dp)) else Modifier)
@@ -396,7 +473,12 @@ private fun Badge(text: String, fg: Color, bg: Color, dot: Boolean = false, bord
 private enum class PillStyle { ACCENT_TINT, ACCENT_FILL, RED_TINT }
 
 @Composable
-private fun ActionPill(label: String, style: PillStyle, onClick: () -> Unit) {
+private fun ActionPill(
+    label: String,
+    style: PillStyle,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val (bg, fg) = when (style) {
         PillStyle.ACCENT_TINT -> colors.accentTint to colors.accent
@@ -404,7 +486,7 @@ private fun ActionPill(label: String, style: PillStyle, onClick: () -> Unit) {
         PillStyle.RED_TINT -> colors.danger.copy(alpha = 0.12f) to colors.danger
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(30.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(bg)
@@ -417,10 +499,16 @@ private fun ActionPill(label: String, style: PillStyle, onClick: () -> Unit) {
 }
 
 @Composable
-private fun IconSquareButton(icon: ImageVector, desc: String, tint: Color, onClick: () -> Unit) {
+private fun IconSquareButton(
+    icon: ImageVector,
+    desc: String,
+    tint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(30.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colors.inputBg)
@@ -442,94 +530,124 @@ private fun EditQuestionSheet(
 ) {
     val colors = LocalAppColors.current
     val sheetState = rememberModalBottomSheetState()
-    var text by remember(question.id) { mutableStateOf(question.text) }
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = colors.sheetBackground,
         scrimColor = colors.scrim,
     ) {
-        Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
-            // Header: Cancel / Edit question / Save
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    stringResource(Res.string.qa_admin_cancel),
-                    color = colors.muted, fontSize = 15.sp,
-                    modifier = Modifier.clickable { onDismiss() },
-                )
-                Text(
-                    stringResource(Res.string.qa_edit_question_title),
-                    color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
-                )
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(colors.accent)
-                        .clickable { if (text.isNotBlank()) onSave(text.trim()) }
-                        .padding(horizontal = 18.dp, vertical = 8.dp),
-                ) {
-                    Text(stringResource(Res.string.qa_admin_save), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                }
-            }
+        QuestionEditor(
+            question = question,
+            onSave = onSave,
+            onDelete = onDelete,
+            onDismiss = onDismiss,
+        )
+    }
+}
 
-            Spacer(Modifier.height(16.dp))
-            // Editable text field with accent focus ring
+/**
+ * The editor's body, without the sheet around it.
+ *
+ * `internal` for the same reason [EntryDetail] is: a `ModalBottomSheet` brings a
+ * scrim and a spring animation that say nothing about editing a question, and
+ * none of the fields below are reachable until that animation settles.
+ */
+@Composable
+internal fun QuestionEditor(
+    question: Question,
+    onSave: (String) -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val colors = LocalAppColors.current
+    var text by remember(question.id) { mutableStateOf(question.text) }
+
+    Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
+        // Header: Cancel / Edit question / Save
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                stringResource(Res.string.qa_admin_cancel),
+                color = colors.muted, fontSize = 15.sp,
+                modifier = Modifier.testTag(UiTags.QA_EDIT_CANCEL).clickable { onDismiss() },
+            )
+            Text(
+                stringResource(Res.string.qa_edit_question_title),
+                color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
+            )
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 110.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(colors.inputBg)
-                    .border(1.5.dp, colors.accent, RoundedCornerShape(14.dp))
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(colors.accent)
+                    .testTag(UiTags.QA_EDIT_SAVE)
+                    .clickable { if (text.isNotBlank()) onSave(text.trim()) }
+                    .padding(horizontal = 18.dp, vertical = 8.dp),
             ) {
-                if (text.isEmpty()) {
-                    Text(stringResource(Res.string.qa_admin_edit_hint), color = colors.muted, fontSize = 15.sp)
-                }
-                BasicTextField(
-                    value = text,
-                    onValueChange = { if (it.length <= 200) text = it },
-                    textStyle = TextStyle(color = colors.text, fontSize = 15.sp, lineHeight = (15 * 1.5).sp),
-                    cursorBrush = SolidColor(colors.accent),
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                Text(stringResource(Res.string.qa_admin_save), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             }
+        }
 
-            Spacer(Modifier.height(8.dp))
-            // Meta: submitter + char counter
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    if (question.submitterName.isNotBlank()) stringResource(Res.string.qa_submitted_by, question.submitterName) else "",
-                    color = colors.muted, fontSize = 11.sp,
-                )
-                Text(stringResource(Res.string.qa_char_counter, text.length), color = colors.muted, fontSize = 11.sp)
+        Spacer(Modifier.height(16.dp))
+        // Editable text field with accent focus ring
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 110.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(colors.inputBg)
+                .border(1.5.dp, colors.accent, RoundedCornerShape(14.dp))
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+        ) {
+            if (text.isEmpty()) {
+                Text(stringResource(Res.string.qa_admin_edit_hint), color = colors.muted, fontSize = 15.sp)
             }
+            BasicTextField(
+                value = text,
+                onValueChange = { if (it.length <= 200) text = it },
+                textStyle = TextStyle(color = colors.text, fontSize = 15.sp, lineHeight = (15 * 1.5).sp),
+                cursorBrush = SolidColor(colors.accent),
+                modifier = Modifier.fillMaxWidth().testTag(UiTags.QA_EDIT_TEXT),
+            )
+        }
 
-            Spacer(Modifier.height(20.dp))
-            // Full-width delete button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(13.dp))
-                    .background(colors.danger.copy(alpha = 0.12f))
-                    .border(1.dp, colors.danger.copy(alpha = 0.5f), RoundedCornerShape(13.dp))
-                    .clickable { onDelete() },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(Icons.Outlined.Delete, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(Res.string.qa_delete_question), color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-            }
+        Spacer(Modifier.height(8.dp))
+        // Meta: submitter + char counter
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                if (question.submitterName.isNotBlank()) stringResource(Res.string.qa_submitted_by, question.submitterName) else "",
+                color = colors.muted, fontSize = 11.sp,
+                modifier = Modifier.testTag(UiTags.QA_EDIT_SUBMITTER),
+            )
+            Text(
+                stringResource(Res.string.qa_char_counter, text.length),
+                color = colors.muted, fontSize = 11.sp,
+                modifier = Modifier.testTag(UiTags.QA_EDIT_COUNTER),
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+        // Full-width delete button
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(RoundedCornerShape(13.dp))
+                .background(colors.danger.copy(alpha = 0.12f))
+                .border(1.dp, colors.danger.copy(alpha = 0.5f), RoundedCornerShape(13.dp))
+                .testTag(UiTags.QA_EDIT_DELETE)
+                .clickable { onDelete() },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Outlined.Delete, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(Res.string.qa_delete_question), color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }
 
 @Composable
-private fun AddQuestionDialog(
+internal fun AddQuestionDialog(
     askForName: Boolean,
     onConfirm: (text: String, name: String) -> Unit,
     onDismiss: () -> Unit,
@@ -545,7 +663,7 @@ private fun AddQuestionDialog(
                     value = text,
                     onValueChange = { text = it },
                     placeholder = { Text(stringResource(Res.string.qa_admin_add_question_hint)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag(UiTags.QA_ADD_TEXT),
                     singleLine = false,
                     maxLines = 5
                 )
@@ -557,19 +675,26 @@ private fun AddQuestionDialog(
                         onValueChange = { name = it },
                         label = { Text(stringResource(Res.string.qa_admin_add_question_name)) },
                         placeholder = { Text(stringResource(Res.string.qa_admin_add_question_name_hint)) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag(UiTags.QA_ADD_NAME),
                         singleLine = true
                     )
                 }
             }
         },
         confirmButton = {
-            Button(onClick = { if (text.isNotBlank()) onConfirm(text.trim(), name.trim()) }, enabled = text.isNotBlank()) {
+            Button(
+                onClick = { if (text.isNotBlank()) onConfirm(text.trim(), name.trim()) },
+                enabled = text.isNotBlank(),
+                modifier = Modifier.testTag(UiTags.QA_ADD_CONFIRM),
+            ) {
                 Text(stringResource(Res.string.qa_admin_save))
             }
         },
         dismissButton = {
-            OutlinedButton(onClick = onDismiss) { Text(stringResource(Res.string.qa_admin_cancel)) }
+            OutlinedButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(UiTags.QA_ADD_CANCEL),
+            ) { Text(stringResource(Res.string.qa_admin_cancel)) }
         }
     )
 }

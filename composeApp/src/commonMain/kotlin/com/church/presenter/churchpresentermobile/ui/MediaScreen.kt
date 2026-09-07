@@ -107,7 +107,14 @@ import org.jetbrains.compose.resources.stringResource
 
 private val ON_AMBER = Color(0xFF3A2A08)
 
-private fun formatTime(ms: Long): String {
+/**
+ * A position or duration as `m:ss`.
+ *
+ * `internal` so the clock the operator reads can be tested without a desktop
+ * playing anything: a negative or absent position is reported by the desktop as
+ * 0 or -1, and both have to read as the start rather than as "-1:-1".
+ */
+internal fun formatTime(ms: Long): String {
     if (ms <= 0L) return "0:00"
     val totalSec = ms / 1000
     val m = totalSec / 60
@@ -196,7 +203,7 @@ fun MediaScreen(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         Box(Modifier.size(6.dp).clip(CircleShape).background(Color.White))
-                        Text(stringResource(Res.string.media_on_screen), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.04.em)
+                        Text(stringResource(Res.string.media_on_screen), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.04.em, modifier = Modifier.testTag(UiTags.MEDIA_ON_SCREEN))
                     }
                 }
             }
@@ -217,14 +224,15 @@ fun MediaScreen(
                 source == MediaSource.URL && composedUrl.isNotBlank() -> stringResource(Res.string.media_subtitle_url, mediaKindFrom(composedUrl))
                 else -> stringResource(Res.string.media_subtitle_empty)
             }
-            Text(title, color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(title, color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag(UiTags.MEDIA_TITLE))
             Spacer(Modifier.height(5.dp))
-            Text(subtitle, color = colors.muted, fontSize = 12.sp)
+            Text(subtitle, color = colors.muted, fontSize = 12.sp, modifier = Modifier.testTag(UiTags.MEDIA_SUBTITLE))
 
             Spacer(Modifier.height(12.dp))
             // ── Seek bar ──────────────────────────────────────────────────
             Slider(
                 value = progress,
+                modifier = Modifier.testTag(UiTags.MEDIA_SEEK),
                 enabled = loaded && durationMs > 0L,
                 onValueChange = { scrubbing = true; scrubValue = it },
                 onValueChangeFinished = {
@@ -242,8 +250,8 @@ fun MediaScreen(
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 val shownPos = if (scrubbing) (scrubValue * durationMs).toLong() else positionMs
-                Text(formatTime(shownPos), color = colors.secondary, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                Text(formatTime(durationMs), color = colors.muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+                Text(formatTime(shownPos), color = colors.secondary, fontSize = 11.sp, fontFamily = FontFamily.Monospace, modifier = Modifier.testTag(UiTags.MEDIA_POSITION))
+                Text(formatTime(durationMs), color = colors.muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace, modifier = Modifier.testTag(UiTags.MEDIA_DURATION))
             }
 
             Spacer(Modifier.height(10.dp))
@@ -319,6 +327,7 @@ fun MediaScreen(
                 willSendText,
                 color = if (sendTarget != null) colors.secondary else colors.muted,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(UiTags.MEDIA_WILL_SEND),
             )
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -376,6 +385,7 @@ fun MediaScreen(
                 options = listOf(stringResource(Res.string.media_source_network_url), stringResource(Res.string.media_source_upload)),
                 selectedIndex = if (source == MediaSource.URL) 0 else 1,
                 onSelect = { viewModel.setSource(if (it == 0) MediaSource.URL else MediaSource.UPLOAD) },
+                optionTag = { UiTags.mediaSource(it) },
             )
             Spacer(Modifier.height(12.dp))
             if (source == MediaSource.URL) {

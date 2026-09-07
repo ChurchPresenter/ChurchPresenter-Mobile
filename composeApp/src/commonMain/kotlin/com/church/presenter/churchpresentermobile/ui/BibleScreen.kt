@@ -134,7 +134,7 @@ fun BibleScreen(
     }
 
     // Resolve toast events to localised strings in composable scope
-    val toastMessage = toastEvent?.toDisplayString()
+    val toastMessage = toastEvent?.bibleToastMessage()
     LaunchedEffect(toastEvent) {
         if (toastMessage != null) {
             snackbarHostState.showSnackbar(message = toastMessage, duration = SnackbarDuration.Short)
@@ -273,9 +273,16 @@ fun BibleScreen(
     }
 }
 
-/** Resolves a [ToastEvent] to a localised display string using Compose string resources. */
+/**
+ * Resolves a [ToastEvent] to a localised display string.
+ *
+ * `internal` and named after the tab it belongs to: three tabs each had a
+ * private extension of the same name, and none of them could be tested. The
+ * branch that matters is the last one — an event this tab does not handle
+ * resolves to an empty string, which shows as an empty snackbar.
+ */
 @Composable
-private fun ToastEvent.toDisplayString(): String = when (this) {
+internal fun ToastEvent.bibleToastMessage(): String = when (this) {
     is ToastEvent.BibleLive                 -> stringResource(Res.string.toast_bible_live)
     is ToastEvent.BibleAddedToSchedule      -> stringResource(Res.string.toast_bible_added_to_schedule, reference)
     is ToastEvent.FailedToProjectBible      -> stringResource(Res.string.toast_failed_to_project_bible, reason)

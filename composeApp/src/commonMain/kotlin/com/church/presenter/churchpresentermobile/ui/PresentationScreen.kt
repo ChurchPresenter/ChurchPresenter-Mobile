@@ -39,6 +39,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -142,7 +145,7 @@ fun PresentationScreen(
     val coroutineScope = rememberCoroutineScope()
     val uploadBlockedMsg = stringResource(Res.string.upload_blocked_toast)
 
-    val toastMessage = toastEvent?.toDisplayString()
+    val toastMessage = toastEvent?.presentationToastMessage()
     LaunchedEffect(toastEvent) {
         if (toastMessage != null) {
             snackbarHostState.showSnackbar(message = toastMessage, duration = SnackbarDuration.Short)
@@ -196,14 +199,17 @@ fun PresentationScreen(
                     text = error ?: stringResource(Res.string.presentation_loading_error),
                     color = colors.danger,
                     fontSize = 13.sp,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).testTag(UiTags.PRESENTATION_ERROR)
                 )
                 Text(
                     text = stringResource(Res.string.presentation_retry),
                     color = colors.danger,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp).clickable { viewModel.loadPresentations() }
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .testTag(UiTags.PRESENTATION_RETRY)
+                        .clickable { viewModel.loadPresentations() }
                 )
             }
         }
@@ -225,7 +231,10 @@ fun PresentationScreen(
                             item(key = "header_${presentation.id}") {
                                 PresentationHeader(
                                     presentation = presentation,
-                                    isSelected = presentation == selectedPresentation
+                                    isSelected = presentation == selectedPresentation,
+                                    modifier = Modifier.testTag(
+                                        UiTags.presentationHeader(presentation.displayId)
+                                    ),
                                 )
                             }
 
@@ -236,6 +245,7 @@ fun PresentationScreen(
                                 key = { row -> "slide_${presentation.id}_${row.first().slideIndex}" }
                             ) { rowSlides ->
                                 SlideRow(
+                                    presentationId = presentation.displayId,
                                     slides = rowSlides,
                                     selectedPresentationId = selectedPresentation?.id,
                                     thisPresentationId = presentation.id,
@@ -260,7 +270,8 @@ fun PresentationScreen(
                         Text(
                             text = stringResource(Res.string.presentation_no_items),
                             color = colors.muted,
-                            fontSize = 15.sp
+                            fontSize = 15.sp,
+                            modifier = Modifier.testTag(UiTags.PRESENTATION_EMPTY)
                         )
                     }
                 }
@@ -301,7 +312,8 @@ fun PresentationScreen(
                                 modifier = Modifier
                                     .size(50.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(colors.surfaceElevated),
+                                    .background(colors.surfaceElevated)
+                                    .testTag(UiTags.PRESENTATION_UPLOADING),
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator(
@@ -318,6 +330,7 @@ fun PresentationScreen(
                                 iconColor = colors.accent,
                                 shadowColor = neutralShadow,
                                 onClick = { launchPicker() },
+                                modifier = Modifier.testTag(UiTags.PRESENTATION_UPLOAD),
                             )
                         }
                     }
@@ -349,6 +362,7 @@ fun PresentationScreen(
                         containerColor = colors.surfaceElevated,
                         iconColor = colors.muted,
                         shadowColor = neutralShadow,
+                        modifier = Modifier.testTag(UiTags.PRESENTATION_UPLOAD_BLOCKED),
                         onClick = {
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
@@ -377,9 +391,16 @@ fun PresentationScreen(
     }   // end Box
 }
 
-/** Resolves a [ToastEvent] to a localised display string using Compose string resources. */
+/**
+ * Resolves a [ToastEvent] to a localised display string.
+ *
+ * `internal` and named after the tab it belongs to: three tabs each had a
+ * private extension of the same name, and none of them could be tested. The
+ * branch that matters is the last one — an event this tab does not handle
+ * resolves to an empty string, which shows as an empty snackbar.
+ */
 @Composable
-private fun ToastEvent.toDisplayString(): String = when (this) {
+internal fun ToastEvent.presentationToastMessage(): String = when (this) {
     is ToastEvent.FailedToSelectPresentation     -> stringResource(Res.string.toast_failed_to_select_presentation, reason)
     is ToastEvent.FailedToAddPresentationSchedule -> stringResource(Res.string.toast_presentation_failed_to_add_schedule, reason)
     is ToastEvent.UploadUnsupported               -> stringResource(Res.string.toast_upload_unsupported)
@@ -393,10 +414,14 @@ private fun ToastEvent.toDisplayString(): String = when (this) {
 // ── Sub-composables ────────────────────────────────────────────────────────────
 
 @Composable
-private fun PresentationHeader(presentation: Presentation, isSelected: Boolean) {
+private fun PresentationHeader(
+    presentation: Presentation,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -427,6 +452,7 @@ private fun PresentationHeader(presentation: Presentation, isSelected: Boolean) 
 @OptIn(ExperimentalTime::class)
 @Composable
 private fun SlideRow(
+    presentationId: String,
     slides: List<PresentationSlide>,
     selectedPresentationId: String?,
     thisPresentationId: String?,
@@ -469,6 +495,10 @@ private fun SlideRow(
                         if (isSlideSelected) Modifier.border(2.5.dp, colors.accent, RoundedCornerShape(8.dp))
                         else Modifier
                     )
+                    .testTag(UiTags.presentationSlide(presentationId, slide.slideIndex))
+                    // The live slide is marked by a border and a chip; saying
+                    // "selected" states the same thing to a screen reader.
+                    .semantics { selected = isSlideSelected }
                     .clickable { onSlideTap(slide.slideIndex) }
             ) {
                 SubcomposeAsyncImage(
