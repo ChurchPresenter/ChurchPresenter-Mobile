@@ -24,6 +24,9 @@ internal object LibraryTags {
 
     fun rowEdit(id: String) = "library:row:$id:edit"
 
+    /** The "from the desktop" / "edited here" badge on a row, when it has one. */
+    fun rowOrigin(id: String) = "library:row:$id:origin"
+
     fun rowDelete(id: String) = "library:row:$id:delete"
 
     const val DELETE_CONFIRM = "library:delete:confirm"
@@ -39,6 +42,13 @@ internal object LibraryTags {
 
     /** The words of one verse, by its position in the song. */
     fun verse(index: Int) = "editor:verse:$index"
+
+    /** One section's controls, by its position in the song. */
+    fun verseType(index: Int, type: Int) = "editor:verse:$index:type:$type"
+    fun verseSplit(index: Int) = "editor:verse:$index:split"
+    fun verseUp(index: Int) = "editor:verse:$index:up"
+    fun verseDown(index: Int) = "editor:verse:$index:down"
+    fun verseRemove(index: Int) = "editor:verse:$index:remove"
 
     const val ADD_VERSE = "editor:addVerse"
     const val SAVE = "editor:save"
@@ -116,4 +126,10 @@ internal object LibraryTags {
 
     /** One half of the copy sheet — songs or Bible. */
     fun syncSection(index: Int) = "sync:section:$index"
+
+    /** One installed translation in the Bible chip's menu. */
+    fun bibleMenuItem(id: String) = "library:bible:menu:$id"
+
+    /** The menu's own "copy a Bible from your computer" entry. */
+    const val BIBLE_MENU_COPY = "library:bible:menu:copy"
 }

@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -279,6 +280,7 @@ private fun SectionCard(
             options = SECTION_TYPES.map { it.label() },
             selectedIndex = SECTION_TYPES.indexOf(type).coerceAtLeast(0),
             onSelect = { onTypeChange(SECTION_TYPES[it]) },
+            optionTag = { LibraryTags.verseType(index, it) },
         )
 
         OutlinedTextField(
@@ -300,13 +302,28 @@ private fun SectionCard(
                 modifier = Modifier.padding(end = AppDimens.space8),
             )
             if (canSplit) {
-                IconAction(Icons.Filled.CallSplit, stringResource(Res.string.editor_split_section), onSplit)
+                IconAction(
+                    icon = Icons.Filled.CallSplit,
+                    description = stringResource(Res.string.editor_split_section),
+                    onClick = onSplit,
+                    modifier = Modifier.testTag(LibraryTags.verseSplit(index)),
+                )
             }
             if (!isFirst) {
-                IconAction(Icons.Filled.ArrowUpward, stringResource(Res.string.editor_move_up), onMoveUp)
+                IconAction(
+                    icon = Icons.Filled.ArrowUpward,
+                    description = stringResource(Res.string.editor_move_up),
+                    onClick = onMoveUp,
+                    modifier = Modifier.testTag(LibraryTags.verseUp(index)),
+                )
             }
             if (!isLast) {
-                IconAction(Icons.Filled.ArrowDownward, stringResource(Res.string.editor_move_down), onMoveDown)
+                IconAction(
+                    icon = Icons.Filled.ArrowDownward,
+                    description = stringResource(Res.string.editor_move_down),
+                    onClick = onMoveDown,
+                    modifier = Modifier.testTag(LibraryTags.verseDown(index)),
+                )
             }
             Box(Modifier.weight(1f))
             IconAction(
@@ -314,6 +331,7 @@ private fun SectionCard(
                 description = stringResource(Res.string.editor_remove_section),
                 onClick = onRemove,
                 tint = colors.danger,
+                modifier = Modifier.testTag(LibraryTags.verseRemove(index)),
             )
         }
     }
@@ -324,14 +342,15 @@ private fun IconAction(
     icon: ImageVector,
     description: String,
     onClick: () -> Unit,
-    tint: androidx.compose.ui.graphics.Color? = null,
+    tint: Color? = null,
+    modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
     Icon(
         imageVector = icon,
         contentDescription = description,
         tint = tint ?: colors.muted,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusChip))
             .clickable(onClick = onClick)
             .padding(6.dp)

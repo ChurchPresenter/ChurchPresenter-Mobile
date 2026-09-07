@@ -388,7 +388,7 @@ private fun LibraryRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                OriginBadge(origin)
+                OriginBadge(origin, Modifier.testTag(LibraryTags.rowOrigin(id)))
                 if (subtitle.isNotBlank()) {
                     Text(
                         text = subtitle,
@@ -439,7 +439,7 @@ private fun RowAction(
  * later desktop sync may replace it.
  */
 @Composable
-private fun OriginBadge(origin: ContentOrigin) {
+private fun OriginBadge(origin: ContentOrigin, modifier: Modifier = Modifier) {
     if (origin == ContentOrigin.LOCAL) return
     val colors = LocalAppColors.current
     val (label, tint) = when (origin) {
@@ -452,7 +452,7 @@ private fun OriginBadge(origin: ContentOrigin) {
         color = tint,
         fontSize = 10.sp,
         fontWeight = FontWeight.Medium,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusChip))
             .background(colors.surfaceStrong)
             .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -630,6 +630,7 @@ private fun BibleChip(
                         viewModel.setActive(bible.id)
                         expanded = false
                     },
+                    modifier = Modifier.testTag(LibraryTags.bibleMenuItem(bible.id)),
                 )
             }
             HorizontalDivider(color = colors.borderSubtle)
@@ -653,6 +654,7 @@ private fun BibleChip(
                     expanded = false
                     onCopyBible()
                 },
+                modifier = Modifier.testTag(LibraryTags.BIBLE_MENU_COPY),
             )
         }
     }

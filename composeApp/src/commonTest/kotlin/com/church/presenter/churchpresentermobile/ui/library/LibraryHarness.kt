@@ -52,19 +52,41 @@ internal fun amazingGrace() = LocalSong(
     sections = listOf(LocalSongSection(SectionType.VERSE, "Amazing grace, how sweet the sound")),
 )
 
+/**
+ * A translation already on the phone, for the cases where the Bible chip only
+ * exists because one is.
+ */
+internal fun biblesWith(vararg titles: String): LocalBibleRepository {
+    val repository = LocalBibleRepository(InMemoryFileStorage(), now = { 0L })
+    titles.forEachIndexed { i, title ->
+        repository.install(
+            fileName = "bible_$i.spb",
+            text = """
+                ##Title: $title
+                1 Genesis 50
+                -----
+                B001C001V001 1 1 1 In the beginning.
+            """.trimIndent(),
+        )
+    }
+    return repository
+}
+
 @OptIn(ExperimentalTestApi::class)
 internal fun ComposeUiTest.showLibrary(
     repository: LibraryRepository,
     onEditSong: (String?) -> Unit = {},
     onEditAnnouncement: (String?) -> Unit = {},
     sender: WsSender = FakeWsSender(),
+    bibles: LocalBibleRepository = LocalBibleRepository(InMemoryFileStorage()),
+    settings: AppSettings = AppSettings(InMemorySettingsStorage()),
 ) {
     setContent {
         AppTheme(themeMode = ThemeMode.DARK) {
             LibraryScreen(
                 repository = repository,
-                bibles = LocalBibleRepository(InMemoryFileStorage()),
-                settings = AppSettings(InMemorySettingsStorage()),
+                bibles = bibles,
+                settings = settings,
                 sender = sender,
                 onEditSong = onEditSong,
                 onEditAnnouncement = onEditAnnouncement,
