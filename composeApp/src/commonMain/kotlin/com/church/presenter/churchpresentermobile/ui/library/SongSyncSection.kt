@@ -9,23 +9,31 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.sync_action
+import churchpresentermobile.composeapp.generated.resources.sync_action_all
+import churchpresentermobile.composeapp.generated.resources.sync_action_selected
+import churchpresentermobile.composeapp.generated.resources.sync_action_selected_one
 import churchpresentermobile.composeapp.generated.resources.sync_books_all
 import churchpresentermobile.composeapp.generated.resources.sync_books_choose
 import churchpresentermobile.composeapp.generated.resources.sync_books_finding
 import churchpresentermobile.composeapp.generated.resources.sync_books_none
 import churchpresentermobile.composeapp.generated.resources.sync_books_some
 import churchpresentermobile.composeapp.generated.resources.sync_books_missing
+import churchpresentermobile.composeapp.generated.resources.sync_books_failed
+import churchpresentermobile.composeapp.generated.resources.sync_books_row_count
+import churchpresentermobile.composeapp.generated.resources.sync_books_scope_all_detail
+import churchpresentermobile.composeapp.generated.resources.sync_books_section
 import churchpresentermobile.composeapp.generated.resources.sync_books_select_all
 import churchpresentermobile.composeapp.generated.resources.sync_books_select_none
 import churchpresentermobile.composeapp.generated.resources.sync_cancel
@@ -80,8 +88,147 @@ internal fun SongSyncSection(
     val selectedBooks by viewModel.selectedBooks.collectAsState()
     val isLoadingBooks by viewModel.isLoadingBooks.collectAsState()
     val chooseBooks by viewModel.chooseBooks.collectAsState()
+    val bookCounts by viewModel.bookCounts.collectAsState()
+    val booksError by viewModel.booksError.collectAsState()
+
+    // The view model is keyed to the Library tab, not to this sheet, so without
+    // this an old result greeted the next open — including after the library it
+    // reported on had been cleared.
+    LaunchedEffect(Unit) { viewModel.refreshState() }
+
+    // A finished copy offers the way out, not the way back in: leaving
+    // "Copy songs" under a result read as nothing having happened, and a
+    // whole songbook was copied a second time.
+    val isFinished = !progress.isRunning && outcome is SyncOutcome.Success
+    val isChoosing = !progress.isRunning && !isFinished
 
     Column(verticalArrangement = Arrangement.spacedBy(AppDimens.space12)) {
+
+        // The scope comes first, before the prose. Below it — under a paragraph
+        // explaining what a sync is — operators read it as a footnote and copied
+        // all five of their computer's songbooks onto a phone that needed one.
+        if (isChoosing) {
+            Text(
+                text = stringResource(Res.string.sync_books_section),
+                color = colors.text,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.sync_scope_all),
+                    stringResource(Res.string.sync_books_choose),
+                ),
+                selectedIndex = if (chooseBooks) 1 else 0,
+                onSelect = { viewModel.setChooseBooks(it == 1) },
+                optionTag = { LibraryTags.syncScope(it) },
+            )
+        }
+
+        if (isChoosing && !chooseBooks) {
+            // Says what "all" means without claiming a song count: songs the
+            // computer files under no book are copied by this and appear under
+            // none of the books opposite, so any total here would not add up.
+            Text(
+                text = stringResource(Res.string.sync_books_scope_all_detail),
+                color = colors.muted,
+                fontSize = 12.sp,
+            )
+        }
+
+        if (isChoosing && chooseBooks) {
+            when {
+                isLoadingBooks -> Text(
+                    text = stringResource(Res.string.sync_books_finding),
+                    color = colors.muted,
+                    fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_FINDING),
+                )
+                // An unreachable computer and a computer with no songbooks are
+                // different problems, and only one of them is worth retrying.
+                booksError != null -> Text(
+                    text = stringResource(Res.string.sync_books_failed, booksError.orEmpty()),
+                    color = colors.danger,
+                    fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_FAILED),
+                )
+                books.isEmpty() -> Text(
+                    text = stringResource(Res.string.sync_books_missing),
+                    color = colors.muted,
+                    fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_MISSING),
+                )
+                else -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = if (selectedBooks.size == books.size) {
+                                stringResource(Res.string.sync_books_all, books.size)
+                            } else {
+                                stringResource(Res.string.sync_books_some, selectedBooks.size, books.size)
+                            },
+                            color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
+                            fontSize = 12.sp,
+                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOK_COUNT),
+                        )
+                        // A long book list is tedious to untick one at a time,
+                        // and picking one of forty starts from "none".
+                        Text(
+                            text = if (selectedBooks.size == books.size) {
+                                stringResource(Res.string.sync_books_select_none)
+                            } else {
+                                stringResource(Res.string.sync_books_select_all)
+                            },
+                            color = colors.accent,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .testTag(LibraryTags.SYNC_BOOKS_TOGGLE_ALL)
+                                .clickable {
+                                    if (selectedBooks.size == books.size) viewModel.clearBooks()
+                                    else viewModel.selectAllBooks()
+                                },
+                        )
+                    }
+                    books.forEach { book ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag(LibraryTags.syncBook(book))
+                                .clickable { viewModel.toggleBook(book) },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = book in selectedBooks,
+                                onCheckedChange = { viewModel.toggleBook(book) },
+                            )
+                            // With the size of each book stated, "do I want this
+                            // one?" is a question the operator can actually answer.
+                            Text(
+                                text = bookCounts[book]?.let {
+                                    stringResource(Res.string.sync_books_row_count, book, it)
+                                } ?: book,
+                                color = colors.text,
+                                fontSize = 13.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    if (selectedBooks.isEmpty()) {
+                        Text(
+                            text = stringResource(Res.string.sync_books_none),
+                            color = colors.danger,
+                            fontSize = 11.sp,
+                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_NONE),
+                        )
+                    }
+                }
+            }
+        }
+
         Text(
             text = stringResource(Res.string.sync_explain),
             color = colors.muted,
@@ -157,107 +304,6 @@ internal fun SongSyncSection(
             OutcomeCard(message, tint, Modifier.testTag(LibraryTags.SYNC_OUTCOME))
         }
 
-        // A finished copy offers the way out, not the way back in: leaving
-        // "Copy songs" under a result read as nothing having happened, and a
-        // whole songbook was copied a second time.
-        val isFinished = !progress.isRunning && outcome is SyncOutcome.Success
-
-        // Which books to take. Everything, unless the operator says otherwise —
-        // stated as a choice rather than hidden behind a link, because a church
-        // that wants one of five books had no way to see this was possible.
-        if (!progress.isRunning && !isFinished) {
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.sync_scope_all),
-                    stringResource(Res.string.sync_books_choose),
-                ),
-                selectedIndex = if (chooseBooks) 1 else 0,
-                onSelect = { viewModel.setChooseBooks(it == 1) },
-                optionTag = { LibraryTags.syncScope(it) },
-            )
-        }
-
-        if (!progress.isRunning && !isFinished && chooseBooks) {
-            when {
-                isLoadingBooks -> Text(
-                    text = stringResource(Res.string.sync_books_finding),
-                    color = colors.muted,
-                    fontSize = 12.sp,
-                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_FINDING),
-                )
-                books.isEmpty() -> Text(
-                    text = stringResource(Res.string.sync_books_missing),
-                    color = colors.muted,
-                    fontSize = 12.sp,
-                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_MISSING),
-                )
-                else -> {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(
-                            text = if (selectedBooks.size == books.size) {
-                                stringResource(Res.string.sync_books_all, books.size)
-                            } else {
-                                stringResource(Res.string.sync_books_some, selectedBooks.size, books.size)
-                            },
-                            color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
-                            fontSize = 12.sp,
-                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOK_COUNT),
-                        )
-                        // A long book list is tedious to untick one at a time,
-                        // and picking one of forty starts from "none".
-                        Text(
-                            text = if (selectedBooks.size == books.size) {
-                                stringResource(Res.string.sync_books_select_none)
-                            } else {
-                                stringResource(Res.string.sync_books_select_all)
-                            },
-                            color = colors.accent,
-                            fontSize = 12.sp,
-                            modifier = Modifier
-                                .testTag(LibraryTags.SYNC_BOOKS_TOGGLE_ALL)
-                                .clickable {
-                                    if (selectedBooks.size == books.size) viewModel.clearBooks()
-                                    else viewModel.selectAllBooks()
-                                },
-                        )
-                    }
-                    books.forEach { book ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag(LibraryTags.syncBook(book))
-                                .clickable { viewModel.toggleBook(book) },
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Checkbox(
-                                checked = book in selectedBooks,
-                                onCheckedChange = { viewModel.toggleBook(book) },
-                            )
-                            Text(
-                                text = book,
-                                color = colors.text,
-                                fontSize = 13.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-                    if (selectedBooks.isEmpty()) {
-                        Text(
-                            text = stringResource(Res.string.sync_books_none),
-                            color = colors.danger,
-                            fontSize = 11.sp,
-                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_NONE),
-                        )
-                    }
-                }
-            }
-        }
-
         val button = syncButtonFor(
             isRunning = progress.isRunning,
             isFinished = isFinished,
@@ -265,10 +311,17 @@ internal fun SongSyncSection(
         )
         SheetButton(
             modifier = Modifier.testTag(LibraryTags.SYNC_BUTTON),
+            // The button names the scope, because it is the last thing read
+            // before a copy starts and the only place the choice cannot be
+            // scrolled past.
             label = when (button.action) {
                 SyncButton.Action.CANCEL -> stringResource(Res.string.sync_cancel)
                 SyncButton.Action.CLOSE -> stringResource(Res.string.sync_done_close)
-                SyncButton.Action.START -> stringResource(Res.string.sync_action)
+                SyncButton.Action.START -> when {
+                    !chooseBooks || books.isEmpty() -> stringResource(Res.string.sync_action_all)
+                    selectedBooks.size == 1 -> stringResource(Res.string.sync_action_selected_one)
+                    else -> stringResource(Res.string.sync_action_selected, selectedBooks.size)
+                }
             },
             isDestructive = button.isDestructive,
             enabled = button.isEnabled,

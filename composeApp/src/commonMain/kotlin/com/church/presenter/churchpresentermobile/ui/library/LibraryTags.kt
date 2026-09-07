@@ -66,6 +66,7 @@ internal object LibraryTags {
     const val SYNC_BOOKS_TOGGLE_ALL = "sync:books:toggleAll"
     const val SYNC_BOOKS_FINDING = "sync:books:finding"
     const val SYNC_BOOKS_MISSING = "sync:books:missing"
+    const val SYNC_BOOKS_FAILED = "sync:books:failed"
     const val SYNC_BOOKS_NONE = "sync:books:none"
 
     /** The All / Choose books control. */
@@ -114,6 +115,7 @@ internal object LibraryTags {
     const val SYNC_CHIP = "library:chip:sync"
     const val BIBLE_CHIP = "library:chip:bible"
     const val SHARE_CHIP = "library:chip:share"
+    const val STORAGE_CHIP = "library:chip:storage"
     const val ADD = "library:add"
     const val ADD_SONG = "library:add:song"
     const val ADD_NOTICE = "library:add:notice"

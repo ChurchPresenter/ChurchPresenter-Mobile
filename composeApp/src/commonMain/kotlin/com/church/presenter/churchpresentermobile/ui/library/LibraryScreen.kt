@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.IosShare
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.MusicNote
@@ -53,6 +54,7 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.library_add
 import churchpresentermobile.composeapp.generated.resources.library_bible_menu_title
 import churchpresentermobile.composeapp.generated.resources.library_bible_none
+import churchpresentermobile.composeapp.generated.resources.library_clear_chip
 import churchpresentermobile.composeapp.generated.resources.library_delete
 import churchpresentermobile.composeapp.generated.resources.library_delete_confirm_body
 import churchpresentermobile.composeapp.generated.resources.library_delete_confirm_title
@@ -141,6 +143,7 @@ fun LibraryScreen(
     var showSync by remember { mutableStateOf(false) }
     var syncSection by remember { mutableStateOf(SyncSection.SONGS) }
     var showShare by remember { mutableStateOf(false) }
+    var showClear by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
 
     if (showShare) {
@@ -172,6 +175,16 @@ fun LibraryScreen(
         )
     }
 
+    if (showClear) {
+        ClearContentSheet(
+            repository = repository,
+            bibles = bibles,
+            settings = settings,
+            sender = sender,
+            onDismiss = { showClear = false },
+        )
+    }
+
     pendingDelete?.let { (id, isSong) ->
         DeleteConfirmDialog(
             onConfirm = {
@@ -195,7 +208,7 @@ fun LibraryScreen(
             )
 
             Row(
-                // Three chips overflow a narrow phone, and the Bible one carries
+                // Four chips overflow a narrow phone, and the Bible one carries
                 // a translation's full name.
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(AppDimens.space8),
@@ -213,6 +226,12 @@ fun LibraryScreen(
                 ShareChip(
                     onClick = { showShare = true },
                     modifier = Modifier.testTag(LibraryTags.SHARE_CHIP),
+                )
+                StorageChip(
+                    bibles = bibles,
+                    hasContent = !library.isEmpty,
+                    onClick = { showClear = true },
+                    modifier = Modifier.testTag(LibraryTags.STORAGE_CHIP),
                 )
             }
             message?.let { text ->
@@ -726,6 +745,48 @@ private fun ShareChip(onClick: () -> Unit, modifier: Modifier = Modifier) {
         )
         Text(
             text = stringResource(Res.string.share_title),
+            color = colors.accent,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+/**
+ * Emptying this phone of songs or Bibles.
+ *
+ * Absent while there is nothing to clear, the way [BibleChip] hides itself with
+ * no translations installed — an offer to delete nothing is not a feature, and
+ * a destructive action sitting on a fresh install is worse than useless.
+ */
+@Composable
+private fun StorageChip(
+    bibles: LocalBibleRepository,
+    hasContent: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = LocalAppColors.current
+    val bibleIndex by bibles.index.collectAsState()
+    if (!hasContent && bibleIndex.bibles.isEmpty()) return
+
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(AppDimens.radiusPill))
+            .background(colors.surface)
+            .clickable(onClick = onClick)
+            .padding(horizontal = AppDimens.space12, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.DeleteSweep,
+            contentDescription = null,
+            tint = colors.muted,
+            modifier = Modifier.size(14.dp),
+        )
+        Text(
+            text = stringResource(Res.string.library_clear_chip),
             color = colors.accent,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,

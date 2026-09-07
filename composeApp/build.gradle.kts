@@ -815,8 +815,8 @@ android {
         applicationId = "com.church.presenter.churchpresentermobile"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 19
-        versionName = "1.0.18"
+        versionCode = 20
+        versionName = "1.0.19"
     }
     testOptions {
         // Let commonTest run on the Android unit-test JVM (used by the best-effort

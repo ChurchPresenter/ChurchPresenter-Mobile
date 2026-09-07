@@ -5,6 +5,7 @@ import com.church.presenter.churchpresentermobile.model.LibraryData
 import com.church.presenter.churchpresentermobile.model.LocalAnnouncement
 import com.church.presenter.churchpresentermobile.model.LocalSetlist
 import com.church.presenter.churchpresentermobile.model.LocalSong
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -144,6 +145,53 @@ class LibraryRepository(
     /** Empties the library on disk and in memory. */
     fun clear() {
         mutate { LibraryData.EMPTY }
+        purgeBackup()
+    }
+
+    /**
+     * Removes every song, and the service-order entries that pointed at them.
+     *
+     * Notices, saved themes and anything else in the library are untouched: a
+     * church emptying a songbook it copied by mistake is not asking for its
+     * hand-written notices to go too.
+     *
+     * Songs and setlists are settled in one [mutate]. Two would write the
+     * document twice, and the second write would roll the already-emptied
+     * library into the backup — leaving the deleted songs behind in it.
+     *
+     * Entries are matched by type as well as id: a Bible entry's reference is a
+     * passage such as `John:3:16` and a notice's is an announcement id, so
+     * matching on the raw reference alone would only be safe by accident.
+     */
+    fun clearSongs() {
+        val removedIds = _library.value.songs.map { it.id }.toSet()
+        mutate { data ->
+            data.copy(
+                songs = emptyList(),
+                setlists = data.setlists.map { setlist ->
+                    setlist.copy(
+                        entries = setlist.entries.filterNot {
+                            it.type == SetlistEntryType.SONG && it.reference in removedIds
+                        }
+                    )
+                },
+            )
+        }
+        purgeBackup()
+        Logger.d(TAG, "cleared ${removedIds.size} songs")
+    }
+
+    /**
+     * Drops the backup after a deliberate wipe.
+     *
+     * Not about recovery — an empty library file parses cleanly, so [load] would
+     * never read the backup back. It is about the deletion being real: without
+     * this, everything the user just asked to delete is still sitting on the
+     * device in `library.bak`, taking the same space it always did.
+     */
+    private fun purgeBackup() {
+        runCatching { storage.delete(LIBRARY_BACKUP_FILE) }
+            .onFailure { Logger.e(TAG, "could not delete the library backup: ${it.message}") }
     }
 
     // ── Persistence ──────────────────────────────────────────────────────

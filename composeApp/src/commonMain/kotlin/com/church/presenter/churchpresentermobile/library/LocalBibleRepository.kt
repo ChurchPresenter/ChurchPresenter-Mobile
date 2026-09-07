@@ -126,6 +126,25 @@ class LocalBibleRepository(
         }
     }
 
+    /**
+     * Removes every translation and its module file.
+     *
+     * Sweeps the store for `bible_*` files as well as walking the index, because
+     * the point of this is to get the space back: a module the index lost track
+     * of — an index write that failed after the download succeeded — is several
+     * megabytes that nothing would ever delete otherwise.
+     */
+    fun clearAll() {
+        val named = _index.value.bibles.map { moduleFile(it.id) }
+        val orphans = runCatching { storage.list().filter { it.startsWith(BIBLE_FILE_PREFIX) } }
+            .getOrDefault(emptyList())
+        (named + orphans).distinct().forEach { storage.delete(it) }
+        // Unconditionally, unlike [remove]: whichever module was parsed is gone now.
+        releaseParsed()
+        mutate { BibleLibraryIndex.EMPTY }
+        Logger.d(TAG, "cleared ${named.size} translations")
+    }
+
     /** Chooses which translation the Bible tab reads. */
     fun setActive(id: String) {
         if (_index.value.bibles.none { it.id == id }) return

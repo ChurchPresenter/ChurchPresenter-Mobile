@@ -241,6 +241,14 @@ class BibleViewModel(
             // and the server's bible_updated push.
             Logger.d(TAG, "loadBooks — standalone, no Bible source on this device")
             _allBooks.value = emptyList()
+            // The passage goes too, not just the book list. Clearing the Bible
+            // library while a chapter was open left that chapter on screen,
+            // scrollable and projectable, out of a translation that no longer
+            // exists on the device.
+            _selectedBook.value = null
+            _selectedBookNumber.value = null
+            _selectedChapter.value = null
+            _verses.value = emptyList()
             _error.value = null
             _isLoading.value = false
             return
