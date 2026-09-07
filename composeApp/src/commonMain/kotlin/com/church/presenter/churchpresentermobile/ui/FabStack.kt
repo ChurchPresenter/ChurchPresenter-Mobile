@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -60,6 +61,7 @@ fun FabStack(
     ) {
         onSelect?.let {
             SquareFab(
+                modifier = Modifier.testTag(UiTags.FAB_SELECT),
                 icon = Icons.Outlined.Checklist,
                 contentDescription = stringResource(Res.string.cd_select),
                 containerColor = colors.surfaceElevated,
@@ -70,6 +72,7 @@ fun FabStack(
         }
         onAddToSchedule?.let {
             SquareFab(
+                modifier = Modifier.testTag(UiTags.FAB_ADD_TO_SCHEDULE),
                 icon = Icons.AutoMirrored.Filled.PlaylistAdd,
                 contentDescription = stringResource(Res.string.label_add_to_schedule),
                 containerColor = colors.amber,
@@ -81,6 +84,7 @@ fun FabStack(
         onCast?.let {
             Box {
                 SquareFab(
+                    modifier = Modifier.testTag(UiTags.FAB_CAST),
                     icon = Icons.Filled.Cast,
                     contentDescription = stringResource(Res.string.cd_cast),
                     containerColor = colors.accent,
@@ -91,6 +95,7 @@ fun FabStack(
                 if (castBadgeCount > 0) {
                     Box(
                         modifier = Modifier
+                            .testTag(UiTags.FAB_CAST_BADGE)
                             .align(Alignment.TopEnd)
                             .offset(x = 4.dp, y = (-4).dp)
                             .sizeIn(minWidth = 18.dp, minHeight = 18.dp)

@@ -37,6 +37,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -182,14 +185,17 @@ fun PicturesScreen(
                     text = error ?: stringResource(Res.string.pictures_loading_error),
                     color = colors.danger,
                     fontSize = 13.sp,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).testTag(UiTags.PICTURES_ERROR)
                 )
                 Text(
                     text = stringResource(Res.string.pictures_retry),
                     color = colors.danger,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp).clickable { viewModel.loadPictures() }
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .testTag(UiTags.PICTURES_RETRY)
+                        .clickable { viewModel.loadPictures() }
                 )
             }
         }
@@ -217,7 +223,9 @@ fun PicturesScreen(
                             OverlineRow(
                                 label = currentFolder.displayName,
                                 trailing = "${currentFolder.totalImages} ${stringResource(Res.string.pictures_photos)}",
-                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
+                                modifier = Modifier
+                                    .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
+                                    .testTag(UiTags.PICTURES_FOLDER)
                             )
                         }
 
@@ -235,7 +243,8 @@ fun PicturesScreen(
                                     if (sel.fileName != null && image.fileName != null) sel.fileName == image.fileName
                                     else sel.index == image.index
                                 } ?: false,
-                                onTap = { viewModel.selectPicture(image) }
+                                onTap = { viewModel.selectPicture(image) },
+                                modifier = Modifier.testTag(UiTags.pictureCell(image.index)),
                             )
                         }
                     }
@@ -245,7 +254,8 @@ fun PicturesScreen(
                         Text(
                             text = stringResource(Res.string.pictures_no_items),
                             color = colors.muted,
-                            fontSize = 15.sp
+                            fontSize = 15.sp,
+                            modifier = Modifier.testTag(UiTags.PICTURES_EMPTY)
                         )
                     }
                 }
@@ -281,7 +291,8 @@ fun PicturesScreen(
                                 modifier = Modifier
                                     .size(50.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(colors.surfaceElevated),
+                                    .background(colors.surfaceElevated)
+                                    .testTag(UiTags.PICTURES_UPLOADING),
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator(
@@ -298,6 +309,7 @@ fun PicturesScreen(
                                 iconColor = colors.accent,
                                 shadowColor = neutralShadow,
                                 onClick = { launchPicker() },
+                                modifier = Modifier.testTag(UiTags.PICTURES_PICK),
                             )
                         }
                     }
@@ -325,6 +337,7 @@ fun PicturesScreen(
                         containerColor = colors.surfaceElevated,
                         iconColor = colors.muted,
                         shadowColor = neutralShadow,
+                        modifier = Modifier.testTag(UiTags.PICTURES_PICK_BLOCKED),
                         onClick = {
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
@@ -365,7 +378,8 @@ private fun PictureCell(
     apiKey: String,
     deviceId: String,
     isSelected: Boolean,
-    onTap: () -> Unit
+    onTap: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
     val selectedBorderColor = colors.accent
@@ -392,10 +406,14 @@ private fun PictureCell(
         contentDescription = image.fileName,
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
-        modifier = Modifier
+        modifier = modifier
             .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp)
             .aspectRatio(1f)
             .clip(RoundedCornerShape(8.dp))
+            // The highlight on the picture being shown is a border colour, which
+            // no test can read. Saying "selected" out loud states the same thing
+            // to a screen reader and to a test.
+            .semantics { selected = isSelected }
             .clickable { onTap() }
             .then(
                 if (isSelected) Modifier.border(3.dp, selectedBorderColor, RoundedCornerShape(8.dp))

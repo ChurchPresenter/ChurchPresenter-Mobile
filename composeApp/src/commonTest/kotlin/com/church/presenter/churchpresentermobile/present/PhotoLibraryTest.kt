@@ -149,4 +149,109 @@ class PhotoLibraryTest {
 
         assertContentEquals(byteArrayOf(7, 7, 7), library.source.photo(photo.id)?.bytes)
     }
+
+    // ── Serving a photo ──────────────────────────────────────────────────
+    //
+    // The library hands the embedded server a [PhotoSource] rather than being
+    // reached into, so the server keeps knowing nothing about picking or modes.
+    // What it must get right is the content type: a browser told the wrong one
+    // renders a broken image where a slide should be.
+
+    @Test
+    fun aServedPhotoCarriesItsBytesAndType() {
+        val library = library()
+        val photo = library.add("sunrise.jpg", jpeg(1, 2, 3))
+
+        val served = library.source.photo(photo.id)
+
+        assertContentEquals(jpeg(1, 2, 3), served?.bytes)
+        assertEquals("image/jpeg", served?.contentType)
+    }
+
+    @Test
+    fun anUnknownIdServesNothingRatherThanEmptyBytes() {
+        // A slide pointing at a dead URL renders as a blank screen mid-service;
+        // answering null lets the server 404 instead.
+        val library = library()
+        library.add("sunrise.jpg", jpeg(1))
+
+        assertNull(library.source.photo("no-such-photo"))
+    }
+
+    @Test
+    fun aRemovedPhotoStopsBeingServed() {
+        val library = library()
+        val photo = library.add("sunrise.jpg", jpeg(1))
+
+        library.remove(photo.id)
+
+        assertNull(library.source.photo(photo.id))
+    }
+
+    @Test
+    fun theEmptySourceServesNothingAtAll() {
+        // What remote mode and the web target are handed.
+        assertNull(PhotoSource.NONE.photo("anything"))
+    }
+
+    // ── Content types ────────────────────────────────────────────────────
+
+    @Test
+    fun eachPickedFormatGetsItsOwnContentType() {
+        val library = library()
+
+        assertEquals("image/png", library.contentTypeFor("a.png"))
+        assertEquals("image/gif", library.contentTypeFor("a.gif"))
+        assertEquals("image/webp", library.contentTypeFor("a.webp"))
+        assertEquals("image/heic", library.contentTypeFor("a.heic"))
+        assertEquals("image/heic", library.contentTypeFor("a.heif"))
+        assertEquals("image/jpeg", library.contentTypeFor("a.jpg"))
+    }
+
+    @Test
+    fun anUnknownOrMissingExtensionIsServedAsJpeg() {
+        // A camera roll is overwhelmingly JPEG, and a browser will sniff anyway.
+        val library = library()
+
+        assertEquals("image/jpeg", library.contentTypeFor("a.raw"))
+        assertEquals("image/jpeg", library.contentTypeFor("photo"))
+        assertEquals("image/jpeg", library.contentTypeFor(""))
+    }
+
+    @Test
+    fun theExtensionIsReadCaseInsensitively() {
+        // iOS hands back names in upper case.
+        val library = library()
+
+        assertEquals("image/png", library.contentTypeFor("A.PNG"))
+        assertEquals("image/heic", library.contentTypeFor("IMG_0001.HEIC"))
+    }
+
+    @Test
+    fun aServedPhotoWithNoRecognisedExtensionStillHasAType() {
+        val library = library()
+        val photo = library.add("scan", jpeg(1))
+
+        assertEquals("image/jpeg", library.source.photo(photo.id)?.contentType)
+    }
+
+    @Test
+    fun aPngIsServedAsAPng() {
+        val library = library()
+        val photo = library.add("logo.png", jpeg(1))
+
+        assertEquals("image/png", library.source.photo(photo.id)?.contentType)
+    }
+
+    @Test
+    fun clearingStopsEverythingBeingServed() {
+        val library = library()
+        val a = library.add("a.jpg", jpeg(1))
+        val b = library.add("b.png", jpeg(2))
+
+        library.clear()
+
+        assertNull(library.source.photo(a.id))
+        assertNull(library.source.photo(b.id))
+    }
 }

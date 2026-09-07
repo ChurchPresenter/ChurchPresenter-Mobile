@@ -28,10 +28,18 @@ private const val SEARCH_DEBOUNCE_MS = 300L
 class DictionaryViewModel(
     private val appSettings: AppSettings,
     eventService: WsSender,
+    /**
+     * Build the two REST services. Injectable so tests can drive search, lookup
+     * and the reference filter without a desktop — the same seam
+     * [QAViewModel] uses. Strong's data lives on the computer, so every path
+     * here is a request; without this the class is unreachable from a test.
+     */
+    serviceFactory: (AppSettings) -> DictionaryService = { DictionaryService(it, eventService) },
+    bibleServiceFactory: (AppSettings) -> BibleService = { BibleService(it, eventService) },
 ) : ViewModel() {
 
-    private val service = DictionaryService(appSettings, eventService)
-    private val bibleService = BibleService(appSettings, eventService)
+    private val service = serviceFactory(appSettings)
+    private val bibleService = bibleServiceFactory(appSettings)
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()

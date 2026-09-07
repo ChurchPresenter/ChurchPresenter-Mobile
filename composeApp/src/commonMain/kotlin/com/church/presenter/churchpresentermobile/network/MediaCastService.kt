@@ -32,9 +32,9 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefa
 class MediaCastService(
     private val settings: AppSettings,
     private val wsService: WsSender,
-) {
     /** Separate client with no request/socket timeout — required for large media uploads. */
-    private val uploadClient: HttpClient = createActionHttpClient()
+    private val uploadClient: HttpClient = createActionHttpClient(),
+) {
     /** Adds the media to the desktop schedule (does not go live). */
     suspend fun addToSchedule(item: MediaItemPayload): Result<Unit> = apiRunCatching {
         val payload = json.encodeToString(MediaRequest(item))

@@ -163,7 +163,7 @@ class PresentationForegroundService : Service() {
 
         fun start(context: Context, url: String?) {
             val intent = Intent(context, PresentationForegroundService::class.java)
-                .putExtra(EXTRA_URL, url)
+            intent.putExtra(EXTRA_URL, url)
             runCatching {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     context.startForegroundService(intent)

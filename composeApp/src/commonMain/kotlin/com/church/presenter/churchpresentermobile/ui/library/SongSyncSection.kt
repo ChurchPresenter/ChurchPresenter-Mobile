@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,10 +74,13 @@ internal fun SongSyncSection(
     settings: AppSettings,
     sender: WsSender,
     onDone: () -> Unit,
+    /** Supplied by tests only; the sheet owns its own otherwise. */
+    providedViewModel: LibrarySyncViewModel? = null,
 ) {
-    val viewModel: LibrarySyncViewModel = viewModel(key = "library_sync") {
-        LibrarySyncViewModel(repository, settings, SongService(settings, sender))
-    }
+    val viewModel: LibrarySyncViewModel = providedViewModel
+        ?: viewModel(key = "library_sync") {
+            LibrarySyncViewModel(repository, settings, SongService(settings, sender))
+        }
     val colors = LocalAppColors.current
     val progress by viewModel.progress.collectAsState()
     val outcome by viewModel.outcome.collectAsState()
@@ -117,6 +121,7 @@ internal fun SongSyncSection(
                 ),
                 selectedIndex = if (chooseBooks) 1 else 0,
                 onSelect = { viewModel.setChooseBooks(it == 1) },
+                optionTag = { LibraryTags.syncScope(it) },
             )
         }
 
@@ -137,6 +142,7 @@ internal fun SongSyncSection(
                     text = stringResource(Res.string.sync_books_finding),
                     color = colors.muted,
                     fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_FINDING),
                 )
                 // An unreachable computer and a computer with no songbooks are
                 // different problems, and only one of them is worth retrying.
@@ -144,11 +150,13 @@ internal fun SongSyncSection(
                     text = stringResource(Res.string.sync_books_failed, booksError.orEmpty()),
                     color = colors.danger,
                     fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_FAILED),
                 )
                 books.isEmpty() -> Text(
                     text = stringResource(Res.string.sync_books_missing),
                     color = colors.muted,
                     fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_MISSING),
                 )
                 else -> {
                     Row(
@@ -164,6 +172,7 @@ internal fun SongSyncSection(
                             },
                             color = if (selectedBooks.isEmpty()) colors.danger else colors.muted,
                             fontSize = 12.sp,
+                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOK_COUNT),
                         )
                         // A long book list is tedious to untick one at a time,
                         // and picking one of forty starts from "none".
@@ -175,16 +184,19 @@ internal fun SongSyncSection(
                             },
                             color = colors.accent,
                             fontSize = 12.sp,
-                            modifier = Modifier.clickable {
-                                if (selectedBooks.size == books.size) viewModel.clearBooks()
-                                else viewModel.selectAllBooks()
-                            },
+                            modifier = Modifier
+                                .testTag(LibraryTags.SYNC_BOOKS_TOGGLE_ALL)
+                                .clickable {
+                                    if (selectedBooks.size == books.size) viewModel.clearBooks()
+                                    else viewModel.selectAllBooks()
+                                },
                         )
                     }
                     books.forEach { book ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .testTag(LibraryTags.syncBook(book))
                                 .clickable { viewModel.toggleBook(book) },
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -210,6 +222,7 @@ internal fun SongSyncSection(
                             text = stringResource(Res.string.sync_books_none),
                             color = colors.danger,
                             fontSize = 11.sp,
+                            modifier = Modifier.testTag(LibraryTags.SYNC_BOOKS_NONE),
                         )
                     }
                 }
@@ -226,11 +239,14 @@ internal fun SongSyncSection(
         if (progress.isRunning) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 if (progress.isPreparing) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = colors.accent)
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().testTag(LibraryTags.SYNC_PROGRESS),
+                        color = colors.accent,
+                    )
                 } else {
                     LinearProgressIndicator(
                         progress = { progress.fraction },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag(LibraryTags.SYNC_PROGRESS),
                         color = colors.accent,
                     )
                 }
@@ -248,6 +264,7 @@ internal fun SongSyncSection(
                     },
                     color = colors.muted,
                     fontSize = 11.sp,
+                    modifier = Modifier.testTag(LibraryTags.SYNC_PROGRESS_LABEL),
                 )
                 if (progress.currentTitle.isNotBlank()) {
                     Text(
@@ -256,6 +273,7 @@ internal fun SongSyncSection(
                         fontSize = 11.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.testTag(LibraryTags.SYNC_CURRENT_TITLE),
                     )
                 }
             }
@@ -283,31 +301,72 @@ internal fun SongSyncSection(
                 is SyncOutcome.Cancelled ->
                     stringResource(Res.string.sync_cancelled, result.songCount.toString()) to colors.muted
             }
-            OutcomeCard(message, tint)
+            OutcomeCard(message, tint, Modifier.testTag(LibraryTags.SYNC_OUTCOME))
         }
 
+        val button = syncButtonFor(
+            isRunning = progress.isRunning,
+            isFinished = isFinished,
+            canStart = viewModel.canSync,
+        )
         SheetButton(
+            modifier = Modifier.testTag(LibraryTags.SYNC_BUTTON),
             // The button names the scope, because it is the last thing read
             // before a copy starts and the only place the choice cannot be
             // scrolled past.
-            label = when {
-                progress.isRunning -> stringResource(Res.string.sync_cancel)
-                isFinished -> stringResource(Res.string.sync_done_close)
-                !chooseBooks || books.isEmpty() -> stringResource(Res.string.sync_action_all)
-                selectedBooks.size == 1 -> stringResource(Res.string.sync_action_selected_one)
-                else -> stringResource(Res.string.sync_action_selected, selectedBooks.size)
+            label = when (button.action) {
+                SyncButton.Action.CANCEL -> stringResource(Res.string.sync_cancel)
+                SyncButton.Action.CLOSE -> stringResource(Res.string.sync_done_close)
+                SyncButton.Action.START -> when {
+                    !chooseBooks || books.isEmpty() -> stringResource(Res.string.sync_action_all)
+                    selectedBooks.size == 1 -> stringResource(Res.string.sync_action_selected_one)
+                    else -> stringResource(Res.string.sync_action_selected, selectedBooks.size)
+                }
             },
-            isDestructive = progress.isRunning,
-            // Every book unticked is not a sync — copying nothing and reporting
-            // success would read as the feature being broken.
-            enabled = progress.isRunning || isFinished || viewModel.canSync,
+            isDestructive = button.isDestructive,
+            enabled = button.isEnabled,
             onClick = {
-                when {
-                    progress.isRunning -> viewModel.cancel()
-                    isFinished -> onDone()
-                    else -> viewModel.sync()
+                when (button.action) {
+                    SyncButton.Action.CANCEL -> viewModel.cancel()
+                    SyncButton.Action.CLOSE -> onDone()
+                    SyncButton.Action.START -> viewModel.sync()
                 }
             },
         )
     }
+}
+
+// ── The one button at the foot of the sheet ──────────────────────────────
+//
+// It is three buttons in one — start, cancel, close — and which one it is
+// decides what the tap does. Split out of the composable because the wrong
+// branch here either cancels a sync the operator meant to start or, worse,
+// reports success for a copy that never ran.
+
+/** What the sheet's primary button currently is. */
+internal data class SyncButton(
+    val action: Action,
+    val isEnabled: Boolean,
+    val isDestructive: Boolean,
+) {
+    enum class Action { START, CANCEL, CLOSE }
+}
+
+/**
+ * The button's state for a sync that [isRunning], has [isFinished], or is
+ * waiting to be started with [canStart].
+ *
+ * Running wins over finished: an outcome left over from the previous run is
+ * still on screen while the next one is in flight, and the button has to be
+ * the way out of the running one.
+ *
+ * [canStart] gates only the start: with every book unticked there is nothing to
+ * copy, and copying nothing and reporting success reads as the feature being
+ * broken. Cancel and close are always pressable — an operator must never be
+ * trapped in the sheet.
+ */
+internal fun syncButtonFor(isRunning: Boolean, isFinished: Boolean, canStart: Boolean): SyncButton = when {
+    isRunning -> SyncButton(SyncButton.Action.CANCEL, isEnabled = true, isDestructive = true)
+    isFinished -> SyncButton(SyncButton.Action.CLOSE, isEnabled = true, isDestructive = false)
+    else -> SyncButton(SyncButton.Action.START, isEnabled = canStart, isDestructive = false)
 }

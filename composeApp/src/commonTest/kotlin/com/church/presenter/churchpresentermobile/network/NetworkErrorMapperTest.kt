@@ -351,4 +351,120 @@ class NetworkErrorMapperTest {
         assertFalse(Exception("Attempt to invoke method on a null object").isUnusableAddressError())
         assertTrue(Exception("Attempt to invoke method on a null object").shouldReportAsNonFatal())
     }
+
+    // ── Remaining message markers ────────────────────────────────────────
+    //
+    // Each `||` alternative in the mapper is its own path. The ones below were
+    // the alternatives no case reached, so a typo in any of them would have
+    // silently downgraded a recognised failure to the raw-message fallback.
+
+    @Test
+    fun darwinTlsErrorCodeIsRecognised() {
+        // The numeric form, alongside the worded ones already covered.
+        assertEquals(
+            "SSL error: could not establish a secure connection. Check server settings.",
+            Exception("Exception in http request: Error Domain=NSURLErrorDomain Code=-1200")
+                .toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun theWordTlsIsRecognisedOnItsOwn() {
+        assertEquals(
+            "SSL error: could not establish a secure connection. Check server settings.",
+            Exception("Exception in http request: TLS handshake failure").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun androidCertificateFailuresAllReadAsSslErrors() {
+        // Four distinct spellings OkHttp/Conscrypt use for the same condition:
+        // a self-signed or otherwise untrusted certificate on the desktop.
+        val expected = "SSL error: could not establish a secure connection. Check server settings."
+
+        assertEquals(expected, Exception("PKIX path building failed").toFriendlyNetworkMessage())
+        assertEquals(expected, Exception("Trust anchor for certification path not found").toFriendlyNetworkMessage())
+        assertEquals(
+            expected,
+            Exception("java.security.cert.CertPathValidatorException: bad").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun unresolvedAddressExceptionReadsAsABadAddress() {
+        // Ktor's own spelling; "Unable to resolve host" is OkHttp's.
+        assertEquals(
+            "Invalid server address. Check the IP address.",
+            Exception("java.nio.channels.UnresolvedAddressException").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun theBareWordTimeoutIsRecognised() {
+        // Distinct from "timed out" and from SocketTimeoutException, both already covered.
+        assertEquals(
+            "Connection timed out. Make sure the server is running.",
+            Exception("Request timeout after 15000 ms").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun mainThreadNetworkingIsNamedAsAnInternalFault() {
+        // Ours, not the network's — the copy tells the user to restart rather
+        // than to go and check their router.
+        assertEquals(
+            "Network error (internal). Please restart the app.",
+            Exception("android.os.NetworkOnMainThreadException").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun anExceptionWithNoMessageStillReadsAsSomething() {
+        assertEquals("Connection error", Exception().toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun anUnusableAddressSaysSoRatherThanBlamingTheNetwork() {
+        // "Server not reachable" would send the operator to check their router
+        // when the real problem is the text they typed into Settings.
+        assertEquals(
+            "That server address isn't valid. Check it in Settings.",
+            Exception("""Invalid URL host: "high dynamic range"""").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun anUnrecognisedMessageIsPassedThroughButCapped() {
+        // The fallback: better a long raw string than nothing, but not an
+        // entire NSError dictionary in a snackbar.
+        val long = "z".repeat(500)
+
+        assertEquals(120, Exception(long).toFriendlyNetworkMessage().length)
+    }
+
+    @Test
+    fun anUnrecognisedDarwinMessageFallsBackToItsFirstLineOnly() {
+        val message = "Exception in http request: something odd\nUserInfo={...}\nmore"
+
+        assertEquals("something odd", Exception(message).toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun aRequestTimeoutStatusIsTranslated() {
+        assertEquals("The server took too long to respond.", ApiException(408).toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun a401ReadsTheSameAsA403() {
+        assertEquals(
+            "Server refused the request. Check the API key in Settings.",
+            ApiException(401).toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun anyOtherServerFaultReadsAsTheDesktopFailing() {
+        assertEquals("The desktop app reported an error.", ApiException(502).toFriendlyNetworkMessage())
+        assertEquals("The desktop app reported an error.", ApiException(599).toFriendlyNetworkMessage())
+    }
 }

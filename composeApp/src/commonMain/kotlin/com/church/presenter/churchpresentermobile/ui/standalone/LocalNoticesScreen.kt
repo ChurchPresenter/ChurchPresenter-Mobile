@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,11 +57,12 @@ fun LocalNoticesScreen(
     presenter: StandaloneEngine?,
     hasOutput: Boolean,
     modifier: Modifier = Modifier,
+    /** Supplied by tests only; the screen owns its own otherwise. */
+    providedViewModel: LocalNoticesViewModel? = null,
 ) {
     val colors = LocalAppColors.current
-    val vm: LocalNoticesViewModel = viewModel(key = "local_notices") {
-        LocalNoticesViewModel(repository, presenter)
-    }
+    val vm: LocalNoticesViewModel = providedViewModel
+        ?: viewModel(key = "local_notices") { LocalNoticesViewModel(repository, presenter) }
     val notices by vm.notices.collectAsState()
     val liveId by vm.liveId.collectAsState()
 
@@ -73,7 +75,9 @@ fun LocalNoticesScreen(
                 text = stringResource(Res.string.standalone_no_output),
                 color = colors.muted,
                 fontSize = 12.sp,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp),
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp)
+                    .testTag(StandaloneTags.NO_OUTPUT),
             )
         }
 
@@ -82,7 +86,7 @@ fun LocalNoticesScreen(
                 text = stringResource(Res.string.notices_empty),
                 color = colors.muted,
                 fontSize = 13.sp,
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp).testTag(StandaloneTags.NOTICES_EMPTY),
             )
             return@Column
         }
@@ -99,6 +103,9 @@ fun LocalNoticesScreen(
                     isLive = notice.id == liveId,
                     onProject = { vm.project(notice) },
                     onClear = { vm.clear() },
+                    modifier = Modifier.testTag(StandaloneTags.notice(notice.id)),
+                    projectModifier = Modifier.testTag(StandaloneTags.noticeProject(notice.id)),
+                    clearModifier = Modifier.testTag(StandaloneTags.noticeClear(notice.id)),
                 )
             }
         }
@@ -112,10 +119,13 @@ private fun NoticeRow(
     isLive: Boolean,
     onProject: () -> Unit,
     onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+    projectModifier: Modifier = Modifier,
+    clearModifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
             .background(if (isLive) colors.surfaceElevated else colors.surface)
@@ -158,14 +168,14 @@ private fun NoticeRow(
                 label = stringResource(Res.string.action_go_live),
                 icon = Icons.Filled.Wifi,
                 onClick = onProject,
-                modifier = Modifier.weight(1f),
+                modifier = projectModifier.weight(1f),
             )
             if (isLive) {
                 OutlineActionButton(
                     label = stringResource(Res.string.action_clear_display),
                     icon = Icons.Outlined.Delete,
                     onClick = onClear,
-                    modifier = Modifier.weight(1f),
+                    modifier = clearModifier.weight(1f),
                 )
             }
         }

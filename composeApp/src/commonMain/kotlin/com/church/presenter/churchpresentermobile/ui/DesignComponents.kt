@@ -26,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -128,6 +131,10 @@ fun OverlineRow(
 /**
  * iOS-style segmented control (used by Q&A filter + Settings appearance).
  * Track radius 10, padding 3; active segment sits in an elevated pill (radius 7).
+ *
+ * @param optionTag names each segment for a UI test. The labels come from
+ *   compose-resources, which renders empty in the wasmJs test runtime, so a
+ *   caller whose segments a test must press supplies tags instead.
  */
 @Composable
 fun SegmentedControl(
@@ -135,6 +142,7 @@ fun SegmentedControl(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    optionTag: ((Int) -> String)? = null,
 ) {
     val colors = LocalAppColors.current
     Row(
@@ -150,6 +158,8 @@ fun SegmentedControl(
             Box(
                 modifier = Modifier
                     .weight(1f)
+                    .then(optionTag?.let { Modifier.testTag(it(index)) } ?: Modifier)
+                    .semantics { selected = active }
                     .clip(RoundedCornerShape(7.dp))
                     .background(if (active) colors.surfaceElevated else androidx.compose.ui.graphics.Color.Transparent)
                     .clickable { onSelect(index) }

@@ -11,7 +11,14 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-class FirebasePushService : FirebaseMessagingService() {
+/**
+ * Receives FCM tokens and pushed notices.
+ *
+ * `open` only so a test can supply an application context: an unattached
+ * service has none, and the token-persisting path is worth covering without an
+ * emulator. Nothing in the app subclasses it.
+ */
+open class FirebasePushService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Logger.d(TAG, "FCM token refreshed: $token")
@@ -24,14 +31,17 @@ class FirebasePushService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         Logger.d(TAG, "FCM message from ${message.from}")
 
-        val title = message.notification?.title
-            ?: message.data[KEY_DATA_TITLE]
-            ?: getString(R.string.notification_default_title)
-        val body = message.notification?.body
-            ?: message.data[KEY_DATA_BODY]
-            ?: ""
-
-        showNotification(title, body)
+        showNotification(
+            title = notificationTitle(
+                fromNotification = message.notification?.title,
+                fromData = message.data[KEY_DATA_TITLE],
+                default = getString(R.string.notification_default_title),
+            ),
+            body = notificationBody(
+                fromNotification = message.notification?.body,
+                fromData = message.data[KEY_DATA_BODY],
+            ),
+        )
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -60,6 +70,34 @@ class FirebasePushService : FirebaseMessagingService() {
     }
 
     companion object {
+
+        /**
+         * The heading to show for a pushed message.
+         *
+         * A push arrives one of two ways and the two are not interchangeable: a
+         * *notification* message carries its own title, while a *data* message —
+         * the kind the server sends so the app can act on it — carries the title
+         * inside the payload. Taking only the first would leave every data push
+         * showing the generic app name.
+         *
+         * `internal` rather than private so this can be tested: `RemoteMessage`
+         * reads its fields out of an `android.os.Bundle`, which the unit-test
+         * `android.jar` stubs into nothing, so the surrounding method cannot run
+         * off a device. The choice it makes can.
+         */
+        internal fun notificationTitle(
+            fromNotification: String?,
+            fromData: String?,
+            default: String,
+        ): String = fromNotification ?: fromData ?: default
+
+        /**
+         * The body to show for a pushed message. Empty rather than a placeholder:
+         * a title-only notice reads as intended, "null" does not.
+         */
+        internal fun notificationBody(fromNotification: String?, fromData: String?): String =
+            fromNotification ?: fromData ?: ""
+
         const val CHANNEL_ID     = "church_presenter_channel"
         const val PREFS_NAME     = "church_presenter_prefs"
         const val KEY_FCM_TOKEN  = "fcm_token"

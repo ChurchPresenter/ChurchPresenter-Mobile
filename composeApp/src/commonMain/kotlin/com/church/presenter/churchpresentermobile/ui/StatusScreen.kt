@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -199,13 +200,19 @@ private fun LoadingContent(onOpenSettings: () -> Unit) {
         delay(5000)
         showEscapeHatch = true
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.testTag(UiTags.STATUS_LOADING),
+    ) {
         CircularProgressIndicator()
         Spacer(Modifier.height(16.dp))
         Text(stringResource(Res.string.status_connecting), style = MaterialTheme.typography.bodyLarge)
         if (showEscapeHatch) {
             Spacer(Modifier.height(24.dp))
-            TextButton(onClick = onOpenSettings) {
+            TextButton(
+                onClick = onOpenSettings,
+                modifier = Modifier.testTag(UiTags.STATUS_OPEN_SETTINGS),
+            ) {
                 Text(stringResource(Res.string.status_open_settings))
             }
         }
@@ -224,7 +231,10 @@ private fun AllGoodContent(
     val colors = LocalAppColors.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(UiTags.STATUS_ALL_GOOD)
+            .verticalScroll(rememberScrollState()),
     ) {
         Spacer(Modifier.height(24.dp))
         // 72×72 accent-tint circle + checkmark
@@ -273,6 +283,7 @@ private fun AllGoodContent(
         }
         Spacer(Modifier.height(20.dp))
         OutlineActionButton(
+            modifier = Modifier.testTag(UiTags.STATUS_CONTINUE),
             label = stringResource(Res.string.status_continue),
             icon = Icons.Filled.CheckCircle,
             onClick = onContinue,
@@ -314,7 +325,10 @@ private fun ErrorContent(
     onContinue: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.testTag(UiTags.STATUS_ERROR),
+    ) {
         Icon(
             imageVector = Icons.Filled.Warning,
             contentDescription = null,
@@ -336,15 +350,24 @@ private fun ErrorContent(
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(24.dp))
-        Button(onClick = onRetry, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = onRetry,
+            modifier = Modifier.fillMaxWidth().testTag(UiTags.STATUS_RETRY),
+        ) {
             Text(stringResource(Res.string.status_retry))
         }
         Spacer(Modifier.height(8.dp))
-        OutlinedButton(onClick = onOpenSettings, modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = onOpenSettings,
+            modifier = Modifier.fillMaxWidth().testTag(UiTags.STATUS_OPEN_SETTINGS),
+        ) {
             Text(stringResource(Res.string.status_open_settings))
         }
         Spacer(Modifier.height(8.dp))
-        TextButton(onClick = onContinue) {
+        TextButton(
+            onClick = onContinue,
+            modifier = Modifier.testTag(UiTags.STATUS_CONTINUE),
+        ) {
             Text(stringResource(Res.string.status_continue_anyway))
         }
     }
@@ -365,6 +388,7 @@ private fun WarningsContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .testTag(UiTags.STATUS_WARNINGS)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -446,6 +470,7 @@ private fun WarningsContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
+                .testTag(UiTags.STATUS_CONTINUE)
                 .clip(RoundedCornerShape(13.dp))
                 .background(colors.accent)
                 .clickable(onClick = onContinue),
@@ -463,6 +488,7 @@ private fun WarningsContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(44.dp)
+                .testTag(UiTags.STATUS_OPEN_SETTINGS)
                 .clip(RoundedCornerShape(13.dp))
                 .clickable(onClick = onOpenSettings),
             contentAlignment = Alignment.Center,
@@ -589,10 +615,20 @@ private fun InfoCard(icon: ImageVector, title: String, body: String) {
 // Warning metadata — resolved in composable scope so stringResource() works
 // ─────────────────────────────────────────────────────────────────────────────
 
-private data class WarningDetails(val icon: ImageVector, val title: String, val body: String)
+/** The words and icon one [StatusWarning] is shown with. */
+internal data class WarningDetails(val icon: ImageVector, val title: String, val body: String)
 
+/**
+ * Resolves a [StatusWarning] to what the operator reads.
+ *
+ * `internal` because each warning sends someone somewhere different — to the
+ * desktop's permissions, to its Bible import, to its version — and a warning
+ * that resolves to the wrong words sends them to the wrong place. Eight
+ * branches, none of them reachable from a screen test without eight different
+ * server responses.
+ */
 @Composable
-private fun warningDetails(warning: StatusWarning): WarningDetails = when (warning) {
+internal fun warningDetails(warning: StatusWarning): WarningDetails = when (warning) {
     is StatusWarning.NoApiKey -> WarningDetails(
         icon  = Icons.Filled.Warning,
         title = stringResource(Res.string.status_warn_no_api_key_title),

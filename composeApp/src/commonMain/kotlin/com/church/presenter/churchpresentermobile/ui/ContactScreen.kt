@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -66,9 +67,18 @@ import org.jetbrains.compose.resources.stringResource
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ContactScreen(modifier: Modifier = Modifier) {
+fun ContactScreen(
+    modifier: Modifier = Modifier,
+    /**
+     * Injected only by tests, matching the seam [SongsTable] and
+     * [PicturesScreen] already use. The screen still owns its ViewModel in every
+     * real caller — this is how the send path is reachable without a socket.
+     */
+    providedViewModel: ContactViewModel? = null,
+) {
     val colors = LocalAppColors.current
-    val vm: ContactViewModel = viewModel(key = "contact") { ContactViewModel() }
+    val vm: ContactViewModel = providedViewModel
+        ?: viewModel(key = "contact") { ContactViewModel() }
 
     val type by vm.type.collectAsState()
     val name by vm.name.collectAsState()
@@ -101,6 +111,7 @@ fun ContactScreen(modifier: Modifier = Modifier) {
                     selected = type == value,
                     onClick = { vm.setType(value) },
                     label = { Text(stringResource(label)) },
+                    modifier = Modifier.testTag(UiTags.contactType(value.key)),
                 )
             }
         }
@@ -110,7 +121,7 @@ fun ContactScreen(modifier: Modifier = Modifier) {
             onValueChange = { vm.setName(it) },
             label = { Text(stringResource(Res.string.contact_name_label)) },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(UiTags.CONTACT_NAME),
         )
         OutlinedTextField(
             value = email,
@@ -118,13 +129,13 @@ fun ContactScreen(modifier: Modifier = Modifier) {
             label = { Text(stringResource(Res.string.contact_email_label)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(UiTags.CONTACT_EMAIL),
         )
         OutlinedTextField(
             value = message,
             onValueChange = { vm.setMessage(it) },
             label = { Text(stringResource(Res.string.contact_message_label)) },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp).testTag(UiTags.CONTACT_MESSAGE),
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
@@ -133,13 +144,13 @@ fun ContactScreen(modifier: Modifier = Modifier) {
                         else stringResource(Res.string.contact_send),
                 icon = Icons.Filled.Send,
                 onClick = { vm.send(errorText, networkText, rateLimitedText) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag(UiTags.CONTACT_SEND),
             )
             OutlineActionButton(
                 label = stringResource(Res.string.contact_open_browser),
                 icon = Icons.Outlined.OpenInNew,
                 onClick = { openUrl(ContactReporter.WEB_CONTACT_URL) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag(UiTags.CONTACT_OPEN_BROWSER),
             )
         }
 
@@ -148,8 +159,14 @@ fun ContactScreen(modifier: Modifier = Modifier) {
                 text = stringResource(Res.string.contact_sent),
                 color = colors.accent,
                 fontSize = 13.sp,
+                modifier = Modifier.testTag(UiTags.CONTACT_SENT),
             )
-            is SendStatus.Error -> Text(text = s.text, color = colors.danger, fontSize = 13.sp)
+            is SendStatus.Error -> Text(
+                text = s.text,
+                color = colors.danger,
+                fontSize = 13.sp,
+                modifier = Modifier.testTag(UiTags.CONTACT_ERROR),
+            )
             else -> Unit
         }
     }

@@ -2,7 +2,7 @@ package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
@@ -84,14 +85,14 @@ fun SongDetailScreen(
         ) {
             when {
                 isLoading -> Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().testTag(UiTags.SONG_DETAIL_LOADING),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(modifier = Modifier.size(44.dp), color = colors.accent)
                 }
 
                 error != null -> Box(
-                    modifier = Modifier.fillMaxSize().padding(32.dp),
+                    modifier = Modifier.fillMaxSize().testTag(UiTags.SONG_DETAIL_ERROR).padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -160,6 +161,7 @@ fun SongDetailScreen(
                         ) {
                             item {
                                 Text(
+                                    modifier = Modifier.testTag(UiTags.SONG_DETAIL_PLAIN_TEXT),
                                     text = detail.plainText!!,
                                     color = colors.secondary,
                                     fontSize = 14.sp,
@@ -169,7 +171,7 @@ fun SongDetailScreen(
                         }
                     } else {
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(32.dp),
+                            modifier = Modifier.fillMaxSize().testTag(UiTags.SONG_DETAIL_NO_LYRICS).padding(32.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -212,6 +214,8 @@ private fun VerseCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.verseCard(index))
+            .selectable(selected = isSelected, enabled = isProjecting, onClick = onClick)
             .clip(shape)
             .background(if (isSelected) colors.accentTint else colors.surface)
             .border(
@@ -219,7 +223,6 @@ private fun VerseCard(
                 color = if (isSelected) colors.accent else colors.borderSubtle,
                 shape = shape
             )
-            .clickable(enabled = isProjecting) { onClick() }
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(
@@ -234,7 +237,7 @@ private fun VerseCard(
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.05.em,
             )
-            if (isSelected) LivePill()
+            if (isSelected) LivePill(modifier = Modifier.testTag(UiTags.verseLivePill(index)))
         }
         Spacer(modifier = Modifier.height(8.dp))
         // Songs copied from the computer still carry their chord markup, so the
@@ -291,10 +294,10 @@ private fun ChordChart(text: String) {
 
 /** Accent-tint "• Live" pill shown on the projected verse card. */
 @Composable
-private fun LivePill() {
+private fun LivePill(modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(colors.accentTint)
             .padding(horizontal = 10.dp, vertical = 3.dp),

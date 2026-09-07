@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.StatusProbeResult
+import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
@@ -10,8 +12,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertNull
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -148,5 +152,76 @@ class StatusServiceTest {
     fun connectivityFailureIsResultFailure() = runTest {
         val svc = service { throw RuntimeException("Connect timeout has expired") }
         assertTrue(svc.fetchStatus().isFailure)
+    }
+
+    @Test
+    fun theProductionConstructorWiresItselfFromSettings() {
+        // The only path the app itself uses. It reads five separate fields off
+        // AppSettings and builds the platform client; a mis-wired field there is a
+        // runtime failure on the first probe rather than a compile error. Building
+        // it opens no connection, so this is safe to do in a unit test.
+        val settings = AppSettings(InMemorySettingsStorage()).apply {
+            host = "10.0.0.5"
+            port = 8765
+            apiKey = "s3cret"
+        }
+
+        val service = StatusService(settings)
+
+        assertNotNull(service)
+        service.closeClient()
+    }
+
+    // ── What the probe tells the desktop about this phone ────────────────
+    //
+    // The Status screen is usually the first thing to reach a newly configured
+    // desktop, so its headers are what decide whether the phone shows up in the
+    // desktop's connected-devices list at all.
+
+    /** The headers a probe sends, with [apiKey] and [deviceName] configured. */
+    private suspend fun probeHeaders(apiKey: String, deviceName: String): io.ktor.http.Headers {
+        var seen = io.ktor.http.Headers.Empty
+        val engine = MockEngine { request ->
+            seen = request.headers
+            respond("""{"appVersion":"1.4.2"}""", HttpStatusCode.OK)
+        }
+        StatusService(baseUrl, apiKey, deviceId = "test-device", client = HttpClient(engine), deviceName = deviceName)
+            .fetchStatus()
+        return seen
+    }
+
+    @Test
+    fun `the probe sends the API key when one is configured`() = runTest {
+        assertEquals("secret-key", probeHeaders("secret-key", "")[ApiConstants.API_KEY_HEADER])
+    }
+
+    @Test
+    fun `the probe sends no API key header when none is configured`() = runTest {
+        assertNull(probeHeaders("", "")[ApiConstants.API_KEY_HEADER])
+    }
+
+    @Test
+    fun `the probe always identifies the device`() = runTest {
+        assertEquals("test-device", probeHeaders("", "")[ApiConstants.DEVICE_ID_HEADER])
+    }
+
+    @Test
+    fun `the probe sends a device name when one is set`() = runTest {
+        assertEquals("Sound desk", probeHeaders("", "Sound desk")[ApiConstants.DEVICE_NAME_HEADER])
+    }
+
+    @Test
+    fun `the probe sends no name header rather than an empty one`() = runTest {
+        // A blank name is a worse label than the id it would replace, so the
+        // desktop is left to fall back rather than shown nothing.
+        assertNull(probeHeaders("", "")[ApiConstants.DEVICE_NAME_HEADER])
+    }
+
+    @Test
+    fun `a name outside ASCII is encoded before it is sent`() = runTest {
+        val name = probeHeaders("", "Звукова рубка")[ApiConstants.DEVICE_NAME_HEADER]
+
+        assertNotNull(name)
+        assertTrue(name.all { it.code < 128 }, "sent raw: $name")
     }
 }

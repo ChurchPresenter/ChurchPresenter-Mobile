@@ -1,0 +1,105 @@
+build:
+  maxIssues: 0
+
+console-reports:
+  active: true
+
+comments:
+  active: false
+
+style:
+  WildcardImport:
+    active: true
+    excludeImports: []
+  UnusedImports:
+    active: true
+  ForbiddenImport:
+    active: true
+    forbiddenPatterns: 'androidx\.compose\.material\.(?!icons)'
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+  MagicNumber:
+    active: true
+    ignorePropertyDeclaration: true
+    ignoreLocalVariableDeclaration: true
+    ignoreAnnotation: true
+    ignoreEnums: true
+    ignoreRanges: true
+  ReturnCount:
+    active: true
+    max: 3
+    excludeGuardClauses: true
+  LoopWithTooManyJumpStatements:
+    active: true
+  UnusedPrivateMember:
+    active: true
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 100
+  LongParameterList:
+    active: true
+    functionThreshold: 6
+    constructorThreshold: 7
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Composable']
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 11
+    thresholdInClasses: 11
+    thresholdInInterfaces: 11
+    thresholdInObjects: 11
+    thresholdInEnums: 11
+    ignoreDeprecated: false
+    ignorePrivate: false
+    ignoreOverridden: true
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 20
+    ignoreAnnotated: ['Composable']
+    ignoreSingleWhenExpression: true
+    ignoreSimpleWhenEntries: true
+  LargeClass:
+    active: true
+    threshold: 1000
+  NestedBlockDepth:
+    active: true
+    ignoreAnnotated: ['Composable']
+
+naming:
+  TopLevelPropertyNaming:
+    active: true
+  VariableNaming:
+    active: true
+    variablePattern: '(_)?[a-z][A-Za-z0-9]*|[A-Z][A-Z0-9_]*'
+    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*|[A-Z][A-Z0-9_]*'
+  FunctionParameterNaming:
+    active: true
+    parameterPattern: '(_)?[a-z][A-Za-z0-9]*'
+  ConstructorParameterNaming:
+    active: true
+    parameterPattern: '(_)?[a-z][A-Za-z0-9]*'
+    privateParameterPattern: '(_)?[a-z][A-Za-z0-9]*'
+
+  FunctionNaming:
+    active: true
+    ignoreAnnotated: ['Composable']
+  MatchingDeclarationName:
+    active: true
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+  SwallowedException:
+    active: true
+  TooGenericExceptionThrown:
+    active: true
+
+performance:
+  SpreadOperator:
+    active: true

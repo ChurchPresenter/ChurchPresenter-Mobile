@@ -124,9 +124,15 @@ class LibraryClearViewModel(
     }
 }
 
+// Decimal rather than binary units: a phone's storage settings say MB for a
+// million bytes, and a sheet asking permission to delete should agree with the
+// figure the operator can go and check.
+private const val BYTES_PER_KB = 1_000L
+private const val BYTES_PER_MB = 1_000_000L
+
 /** Bible sizes, for a sheet that has to justify deleting them. */
 fun formatBytes(bytes: Long): String = when {
-    bytes >= 1_000_000L -> "${bytes / 1_000_000L} MB"
-    bytes >= 1_000L -> "${bytes / 1_000L} KB"
+    bytes >= BYTES_PER_MB -> "${bytes / BYTES_PER_MB} MB"
+    bytes >= BYTES_PER_KB -> "${bytes / BYTES_PER_KB} KB"
     else -> "$bytes B"
 }

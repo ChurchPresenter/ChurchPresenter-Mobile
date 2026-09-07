@@ -25,19 +25,48 @@ fun getAppContext(): Context? = appContext
  * Returns true when the app is running inside an Android emulator.
  * The emulator cannot reach the host machine via the LAN IP — it must use 10.0.2.2.
  */
-fun isRunningOnEmulator(): Boolean =
-    Build.FINGERPRINT.startsWith("generic") ||
-    Build.FINGERPRINT.startsWith("unknown") ||
-    Build.MODEL.contains("google_sdk") ||
-    Build.MODEL.contains("Emulator") ||
-    Build.MODEL.contains("Android SDK built for") ||
-    Build.MANUFACTURER.contains("Genymotion") ||
-    Build.BRAND.startsWith("generic") ||
-    Build.DEVICE.startsWith("generic") ||
-    Build.PRODUCT.contains("sdk_gphone") ||
-    Build.PRODUCT.contains("vbox86p") ||
-    Build.HARDWARE == "goldfish" ||
-    Build.HARDWARE == "ranchu"
+fun isRunningOnEmulator(): Boolean = looksLikeEmulator(
+    fingerprint = Build.FINGERPRINT,
+    model = Build.MODEL,
+    manufacturer = Build.MANUFACTURER,
+    brand = Build.BRAND,
+    device = Build.DEVICE,
+    product = Build.PRODUCT,
+    hardware = Build.HARDWARE,
+)
+
+/**
+ * The emulator test itself, over the build identifiers rather than over
+ * [Build] — `internal` so it can be exercised without a device, since
+ * `android.os.Build`'s fields are static finals a unit test cannot set.
+ *
+ * Every parameter is nullable because they are all null on a plain JVM, and a
+ * missing identifier is evidence of nothing rather than evidence of an
+ * emulator. Getting a false positive here points the app at 10.0.2.2, which no
+ * real phone can route to — the whole Songs tab then times out.
+ */
+@Suppress("LongParameterList", "CyclomaticComplexMethod")
+internal fun looksLikeEmulator(
+    fingerprint: String?,
+    model: String?,
+    manufacturer: String?,
+    brand: String?,
+    device: String?,
+    product: String?,
+    hardware: String?,
+): Boolean =
+    fingerprint?.startsWith("generic") == true ||
+    fingerprint?.startsWith("unknown") == true ||
+    model?.contains("google_sdk") == true ||
+    model?.contains("Emulator") == true ||
+    model?.contains("Android SDK built for") == true ||
+    manufacturer?.contains("Genymotion") == true ||
+    brand?.startsWith("generic") == true ||
+    device?.startsWith("generic") == true ||
+    product?.contains("sdk_gphone") == true ||
+    product?.contains("vbox86p") == true ||
+    hardware == "goldfish" ||
+    hardware == "ranchu"
 
 /**
  * On Android: returns 10.0.2.2 when running in the emulator (routes to host machine),

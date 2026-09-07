@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -98,6 +99,7 @@ fun AnnouncementEditorScreen(
                 label = stringResource(Res.string.editor_field_title),
                 value = announcement.title,
                 onValueChange = viewModel::setAnnouncementTitle,
+                modifier = Modifier.testTag(LibraryTags.FIELD_TITLE),
             )
             EditorField(
                 label = stringResource(Res.string.editor_field_body),
@@ -106,6 +108,7 @@ fun AnnouncementEditorScreen(
                 error = validation.errors[LibraryField.BODY],
                 warning = validation.warnings[LibraryField.BODY],
                 minLines = 5,
+                modifier = Modifier.testTag(LibraryTags.FIELD_BODY),
             )
 
         }

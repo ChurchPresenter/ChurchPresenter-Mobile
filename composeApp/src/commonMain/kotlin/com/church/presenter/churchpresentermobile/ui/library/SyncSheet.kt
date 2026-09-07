@@ -96,6 +96,7 @@ fun SyncSheet(
                 ),
                 selectedIndex = if (section == SyncSection.SONGS) 0 else 1,
                 onSelect = { section = if (it == 0) SyncSection.SONGS else SyncSection.BIBLE },
+                optionTag = { LibraryTags.syncSection(it) },
             )
 
             when (section) {

@@ -10,6 +10,10 @@ import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
+import com.church.presenter.churchpresentermobile.present.SinkRegistry
+import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.testutil.FakeOutputSink
+import com.church.presenter.churchpresentermobile.testutil.tearDown
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.delay
@@ -144,5 +148,133 @@ class BibleViewModelStandaloneTest {
         assertEquals(listOf("Genesis"), vm.books.value.map { it.name })
         assertNull(vm.error.value, "the banner outlived the thing it described")
         assertFalse(vm.isLoading.value)
+    }
+
+    // ── Projecting on the device's own screen ────────────────────────────
+    //
+    // Standalone: the phone drives the output, so casting means "put the selected
+    // verses on the sink" rather than asking a desktop to. There is no toggle —
+    // stopping is the Clear Display button.
+
+    private class LocalFixture {
+        val bibles = LocalBibleRepository(InMemoryFileStorage()) { 1_700_000_000_000 }
+        val mode = MutableStateFlow(AppMode.STANDALONE)
+        val registry = SinkRegistry()
+        val sink = FakeOutputSink()
+        val engine = StandaloneEngine(mode, registry) { }
+        val viewModel: BibleViewModel
+
+        init {
+            registry.register(sink)
+            viewModel = BibleViewModel(
+                appSettings = AppSettings(InMemorySettingsStorage()),
+                eventService = FakeWsSender(),
+                isDemoMode = false,
+                presenter = engine,
+                mode = mode,
+                catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles),
+            )
+        }
+    }
+
+    private fun localModule() = """
+        ##Title: King James Version
+        1 Genesis 50
+        -----
+        B001C001V001 1 1 1 In the beginning God created the heavens and the earth.
+        B001C001V002 1 1 2 Now the earth was formless and void.
+        B001C001V003 1 1 3 And God said, Let there be light.
+    """.trimIndent()
+
+    @Test
+    fun projectingWithNoVerseSelectedAsksForOne() = runVmTest {
+        val f = LocalFixture()
+        try {
+            f.bibles.install("en_KJV.spb", localModule())
+            advanceUntilIdle()
+            f.viewModel.selectBook(f.viewModel.books.value.first())
+            f.viewModel.selectChapter(1)
+            advanceUntilIdle()
+
+            f.viewModel.toggleProjecting()
+            advanceUntilIdle()
+
+            assertFalse(f.viewModel.isProjecting.value)
+            assertTrue(f.sink.rendered.isEmpty(), "nothing should reach the screen")
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun projectingSendsTheSelectedVerseToTheDeviceScreen() = runVmTest {
+        val f = LocalFixture()
+        try {
+            f.bibles.install("en_KJV.spb", localModule())
+            advanceUntilIdle()
+            f.viewModel.selectBook(f.viewModel.books.value.first())
+            f.viewModel.selectChapter(1)
+            advanceUntilIdle()
+            f.viewModel.toggleVerseSelection(1)
+
+            f.viewModel.toggleProjecting()
+            advanceUntilIdle()
+
+            assertTrue(f.viewModel.isProjecting.value)
+            assertEquals(1, f.viewModel.projectedVerseIndex.value)
+            assertTrue(f.sink.rendered.isNotEmpty(), "the verse should have reached the sink")
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun theLowestSelectedVerseIsTheOneShownFirst() = runVmTest {
+        // A multi-verse selection projects as a run starting at its first verse,
+        // whatever order the user tapped them in.
+        val f = LocalFixture()
+        try {
+            f.bibles.install("en_KJV.spb", localModule())
+            advanceUntilIdle()
+            f.viewModel.selectBook(f.viewModel.books.value.first())
+            f.viewModel.selectChapter(1)
+            advanceUntilIdle()
+            f.viewModel.toggleMultiSelectMode()
+            f.viewModel.toggleVerseSelection(2)
+            f.viewModel.toggleVerseSelection(0)
+
+            f.viewModel.toggleProjecting()
+            advanceUntilIdle()
+
+            assertEquals(0, f.viewModel.projectedVerseIndex.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
+    }
+
+    @Test
+    fun castingAgainReprojectsRatherThanClearing() = runVmTest {
+        // The bug this guards: cast used to flip a ViewModel-local flag the engine
+        // knew nothing about, so returning to an open chapter and pressing cast
+        // cleared the screen — and every press after that showed nothing.
+        val f = LocalFixture()
+        try {
+            f.bibles.install("en_KJV.spb", localModule())
+            advanceUntilIdle()
+            f.viewModel.selectBook(f.viewModel.books.value.first())
+            f.viewModel.selectChapter(1)
+            advanceUntilIdle()
+            f.viewModel.toggleVerseSelection(0)
+            f.viewModel.toggleProjecting()
+            advanceUntilIdle()
+
+            f.viewModel.toggleProjecting()
+            advanceUntilIdle()
+
+            assertTrue(f.viewModel.isProjecting.value, "a second cast must still be projecting")
+            assertEquals(0, f.viewModel.projectedVerseIndex.value)
+        } finally {
+            tearDown(f.viewModel)
+        }
     }
 }

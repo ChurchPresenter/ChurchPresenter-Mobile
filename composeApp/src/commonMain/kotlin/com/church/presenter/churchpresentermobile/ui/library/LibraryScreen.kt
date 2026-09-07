@@ -42,6 +42,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -203,28 +204,43 @@ fun LibraryScreen(
                 value = query,
                 onValueChange = viewModel::setQuery,
                 placeholder = stringResource(Res.string.library_search_placeholder),
+                modifier = Modifier.testTag(LibraryTags.SEARCH),
             )
 
             Row(
-                // Three chips overflow a narrow phone, and the Bible one carries
+                // Four chips overflow a narrow phone, and the Bible one carries
                 // a translation's full name.
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(AppDimens.space8),
             ) {
-                SyncChip(settings = settings, onClick = { showSync = true })
+                SyncChip(
+                    settings = settings,
+                    onClick = { showSync = true },
+                    modifier = Modifier.testTag(LibraryTags.SYNC_CHIP),
+                )
                 BibleChip(
                     bibles = bibles,
                     onCopyBible = { syncSection = SyncSection.BIBLE; showSync = true },
+                    modifier = Modifier.testTag(LibraryTags.BIBLE_CHIP),
                 )
-                ShareChip(onClick = { showShare = true })
+                ShareChip(
+                    onClick = { showShare = true },
+                    modifier = Modifier.testTag(LibraryTags.SHARE_CHIP),
+                )
                 StorageChip(
                     bibles = bibles,
                     hasContent = !library.isEmpty,
                     onClick = { showClear = true },
+                    modifier = Modifier.testTag(LibraryTags.STORAGE_CHIP),
                 )
             }
             message?.let { text ->
-                Text(text, color = colors.danger, fontSize = 11.sp)
+                Text(
+                    text,
+                    color = colors.danger,
+                    fontSize = 11.sp,
+                    modifier = Modifier.testTag(LibraryTags.MESSAGE),
+                )
             }
 
             SegmentedControl(
@@ -235,20 +251,29 @@ fun LibraryScreen(
                 ),
                 selectedIndex = FILTERS.indexOf(filter).coerceAtLeast(0),
                 onSelect = { viewModel.setFilter(FILTERS[it]) },
+                optionTag = { LibraryTags.filter(it) },
             )
 
             when {
                 library.isEmpty -> EmptyLibraryHint(
                     onCopyFromComputer = { syncSection = SyncSection.SONGS; showSync = true },
                     onWriteSong = { onEditSong(null) },
+                    modifier = Modifier.testTag(LibraryTags.EMPTY_LIBRARY),
                 )
-                songs.isEmpty() && announcements.isEmpty() -> NoResultsHint()
+                songs.isEmpty() && announcements.isEmpty() ->
+                    NoResultsHint(Modifier.testTag(LibraryTags.NO_RESULTS))
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(AppDimens.space8),
                 ) {
                     if (songs.isNotEmpty()) {
-                        item { OverlineRow(stringResource(Res.string.library_section_songs), "${songs.size}") }
+                        item {
+                            OverlineRow(
+                                stringResource(Res.string.library_section_songs),
+                                "${songs.size}",
+                                modifier = Modifier.testTag(LibraryTags.SONGS_HEADING),
+                            )
+                        }
                         items(songs, key = { it.id }) { song ->
                             SongRow(
                                 song = song,
@@ -258,7 +283,13 @@ fun LibraryScreen(
                         }
                     }
                     if (announcements.isNotEmpty()) {
-                        item { OverlineRow(stringResource(Res.string.library_section_notices), "${announcements.size}") }
+                        item {
+                            OverlineRow(
+                                stringResource(Res.string.library_section_notices),
+                                "${announcements.size}",
+                                modifier = Modifier.testTag(LibraryTags.NOTICES_HEADING),
+                            )
+                        }
                         items(announcements, key = { it.id }) { item ->
                             AnnouncementRow(
                                 announcement = item,
@@ -287,7 +318,8 @@ fun LibraryScreen(
             contentColor = colors.onAccent,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(AppDimens.space16),
+                .padding(AppDimens.space16)
+                .testTag(LibraryTags.ADD),
         ) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(
@@ -307,6 +339,7 @@ private fun SongRow(
     onDelete: () -> Unit,
 ) {
     LibraryRow(
+        id = song.id,
         icon = { tint -> Icon(Icons.Filled.MusicNote, null, tint = tint, modifier = Modifier.size(18.dp)) },
         title = song.displayTitle,
         subtitle = listOfNotNull(
@@ -327,6 +360,7 @@ private fun AnnouncementRow(
     onDelete: () -> Unit,
 ) {
     LibraryRow(
+        id = announcement.id,
         icon = { tint -> Icon(Icons.Filled.Campaign, null, tint = tint, modifier = Modifier.size(18.dp)) },
         title = announcement.title.ifBlank { announcement.body.lineSequence().first() },
         subtitle = announcement.body.lineSequence().firstOrNull().orEmpty(),
@@ -338,6 +372,7 @@ private fun AnnouncementRow(
 
 @Composable
 private fun LibraryRow(
+    id: String,
     icon: @Composable (Color) -> Unit,
     title: String,
     subtitle: String,
@@ -349,6 +384,7 @@ private fun LibraryRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(LibraryTags.row(id))
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
             // Deliberately not clickable. The Library is for writing and keeping
@@ -371,7 +407,7 @@ private fun LibraryRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                OriginBadge(origin)
+                OriginBadge(origin, Modifier.testTag(LibraryTags.rowOrigin(id)))
                 if (subtitle.isNotBlank()) {
                     Text(
                         text = subtitle,
@@ -383,19 +419,34 @@ private fun LibraryRow(
                 }
             }
         }
-        RowAction(stringResource(Res.string.library_delete), colors.danger, onDelete)
-        RowAction(stringResource(Res.string.editor_song_edit_label), colors.accent, onEdit)
+        RowAction(
+            label = stringResource(Res.string.library_delete),
+            color = colors.danger,
+            onClick = onDelete,
+            modifier = Modifier.testTag(LibraryTags.rowDelete(id)),
+        )
+        RowAction(
+            label = stringResource(Res.string.editor_song_edit_label),
+            color = colors.accent,
+            onClick = onEdit,
+            modifier = Modifier.testTag(LibraryTags.rowEdit(id)),
+        )
     }
 }
 
 @Composable
-private fun RowAction(label: String, color: Color, onClick: () -> Unit) {
+private fun RowAction(
+    label: String,
+    color: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = label,
         color = color,
         fontSize = 11.sp,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusChip))
             .clickable(onClick = onClick)
             .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -407,7 +458,7 @@ private fun RowAction(label: String, color: Color, onClick: () -> Unit) {
  * later desktop sync may replace it.
  */
 @Composable
-private fun OriginBadge(origin: ContentOrigin) {
+private fun OriginBadge(origin: ContentOrigin, modifier: Modifier = Modifier) {
     if (origin == ContentOrigin.LOCAL) return
     val colors = LocalAppColors.current
     val (label, tint) = when (origin) {
@@ -420,7 +471,7 @@ private fun OriginBadge(origin: ContentOrigin) {
         color = tint,
         fontSize = 10.sp,
         fontWeight = FontWeight.Medium,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusChip))
             .background(colors.surfaceStrong)
             .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -428,10 +479,15 @@ private fun OriginBadge(origin: ContentOrigin) {
 }
 
 @Composable
-private fun EmptyLibraryHint(onCopyFromComputer: () -> Unit, onWriteSong: () -> Unit) {
+private fun EmptyLibraryHint(
+    onCopyFromComputer: () -> Unit,
+    onWriteSong: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     // Sync and Share sit in a chip row above this card, which an operator looking at an empty
     // list has no reason to read as "how do I get songs onto this phone". Say it here.
     EmptyState(
+        modifier = modifier,
         title = stringResource(Res.string.library_empty_title),
         body = stringResource(Res.string.library_empty_body_standalone),
         actionLabel = stringResource(Res.string.empty_action_get_content),
@@ -443,15 +499,15 @@ private fun EmptyLibraryHint(onCopyFromComputer: () -> Unit, onWriteSong: () -> 
 }
 
 @Composable
-private fun NoResultsHint() {
-    HintCard(title = stringResource(Res.string.library_no_results), body = "")
+private fun NoResultsHint(modifier: Modifier = Modifier) {
+    HintCard(title = stringResource(Res.string.library_no_results), body = "", modifier = modifier)
 }
 
 @Composable
-private fun HintCard(title: String, body: String) {
+private fun HintCard(title: String, body: String, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppDimens.radiusCard))
             .background(colors.surface)
@@ -473,9 +529,15 @@ private fun AddChoiceDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_add)) },
         text = { Text(stringResource(Res.string.library_empty_body)) },
-        confirmButton = { TextButton(onClick = onSong) { Text(stringResource(Res.string.library_new_song)) } },
+        confirmButton = { TextButton(
+            onClick = onSong,
+            modifier = Modifier.testTag(LibraryTags.ADD_SONG),
+        ) { Text(stringResource(Res.string.library_new_song)) } },
         dismissButton = {
-            TextButton(onClick = onAnnouncement) { Text(stringResource(Res.string.library_new_notice)) }
+            TextButton(
+                onClick = onAnnouncement,
+                modifier = Modifier.testTag(LibraryTags.ADD_NOTICE),
+            ) { Text(stringResource(Res.string.library_new_notice)) }
         },
     )
 }
@@ -486,8 +548,16 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_delete_confirm_title)) },
         text = { Text(stringResource(Res.string.library_delete_confirm_body)) },
-        confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(Res.string.library_delete)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.editor_cancel)) } },
+        confirmButton = {
+            TextButton(onClick = onConfirm, modifier = Modifier.testTag(LibraryTags.DELETE_CONFIRM)) {
+                Text(stringResource(Res.string.library_delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, modifier = Modifier.testTag(LibraryTags.DELETE_DISMISS)) {
+                Text(stringResource(Res.string.editor_cancel))
+            }
+        },
     )
 }
 
@@ -502,7 +572,11 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
  * already says how to get one.
  */
 @Composable
-private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
+private fun BibleChip(
+    bibles: LocalBibleRepository,
+    onCopyBible: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val viewModel: BibleChoiceViewModel = viewModel(key = "library_bible_choice") {
         BibleChoiceViewModel(bibles)
@@ -515,7 +589,7 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
 
     Box {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .clip(RoundedCornerShape(AppDimens.radiusPill))
                 .background(colors.surface)
                 .clickable { expanded = true }
@@ -581,6 +655,7 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
                         viewModel.setActive(bible.id)
                         expanded = false
                     },
+                    modifier = Modifier.testTag(LibraryTags.bibleMenuItem(bible.id)),
                 )
             }
             HorizontalDivider(color = colors.borderSubtle)
@@ -604,6 +679,7 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
                     expanded = false
                     onCopyBible()
                 },
+                modifier = Modifier.testTag(LibraryTags.BIBLE_MENU_COPY),
             )
         }
     }
@@ -616,26 +692,21 @@ private fun BibleChip(bibles: LocalBibleRepository, onCopyBible: () -> Unit) {
  * Sunday morning with the router unplugged.
  */
 @Composable
-private fun SyncChip(settings: AppSettings, onClick: () -> Unit) {
+private fun SyncChip(settings: AppSettings, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
-    val state = remember(settings) {
-        runCatching {
-            Json { ignoreUnknownKeys = true }
-                .decodeFromString<LibrarySyncState>(settings.librarySyncStateJson)
-        }.getOrDefault(LibrarySyncState.NEVER)
-    }
+    val state = remember(settings) { readSyncState(settings.librarySyncStateJson) }
 
-    val elapsedMs = Clock.System.now().toEpochMilliseconds() - state.lastSyncEpochMs
-    val label = when {
-        !state.hasEverSynced -> stringResource(Res.string.sync_never)
-        elapsedMs < 60_000L -> stringResource(Res.string.sync_just_now)
-        elapsedMs < 3_600_000L -> stringResource(Res.string.sync_minutes_ago, (elapsedMs / 60_000L).toString())
-        elapsedMs < 86_400_000L -> stringResource(Res.string.sync_hours_ago, (elapsedMs / 3_600_000L).toString())
-        else -> stringResource(Res.string.sync_days_ago, (elapsedMs / 86_400_000L).toString())
+    val age = syncAgeFor(state, Clock.System.now().toEpochMilliseconds())
+    val label = when (age.bucket) {
+        SyncAge.Bucket.NEVER -> stringResource(Res.string.sync_never)
+        SyncAge.Bucket.JUST_NOW -> stringResource(Res.string.sync_just_now)
+        SyncAge.Bucket.MINUTES -> stringResource(Res.string.sync_minutes_ago, age.count.toString())
+        SyncAge.Bucket.HOURS -> stringResource(Res.string.sync_hours_ago, age.count.toString())
+        SyncAge.Bucket.DAYS -> stringResource(Res.string.sync_days_ago, age.count.toString())
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusPill))
             .background(colors.surface)
             .clickable(onClick = onClick)
@@ -661,10 +732,10 @@ private fun SyncChip(settings: AppSettings, onClick: () -> Unit) {
 
 /** Opens the import/export sheet. */
 @Composable
-private fun ShareChip(onClick: () -> Unit) {
+private fun ShareChip(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusPill))
             .background(colors.surface)
             .clickable(onClick = onClick)
@@ -695,13 +766,18 @@ private fun ShareChip(onClick: () -> Unit) {
  * a destructive action sitting on a fresh install is worse than useless.
  */
 @Composable
-private fun StorageChip(bibles: LocalBibleRepository, hasContent: Boolean, onClick: () -> Unit) {
+private fun StorageChip(
+    bibles: LocalBibleRepository,
+    hasContent: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     val bibleIndex by bibles.index.collectAsState()
     if (!hasContent && bibleIndex.bibles.isEmpty()) return
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppDimens.radiusPill))
             .background(colors.surface)
             .clickable(onClick = onClick)
@@ -726,3 +802,49 @@ private fun StorageChip(bibles: LocalBibleRepository, hasContent: Boolean, onCli
 
 /** Declaration order must match the segmented-control label order above. */
 private val FILTERS = listOf(LibraryFilter.ALL, LibraryFilter.SONGS, LibraryFilter.ANNOUNCEMENTS)
+
+// ── What the sync chip says ──────────────────────────────────────────────
+//
+// Split out of [SyncChip] because the thresholds are the part that can be
+// wrong, and a composable that reads the wall clock cannot be checked without
+// waiting out an hour. See the seam guidance in AGENT.md.
+
+/** How long ago the library was last synced, in the terms the chip reports. */
+internal data class SyncAge(val bucket: Bucket, val count: Long) {
+    enum class Bucket { NEVER, JUST_NOW, MINUTES, HOURS, DAYS }
+}
+
+/**
+ * Reads the stored sync state, falling back to "never synced".
+ *
+ * The blob is written by a previous version of the app and can be anything —
+ * truncated by a kill mid-write, or a shape this build predates. The Library
+ * tab has to open either way; a wrong chip is not worth a crash.
+ */
+internal fun readSyncState(storedJson: String): LibrarySyncState = runCatching {
+    Json { ignoreUnknownKeys = true }.decodeFromString<LibrarySyncState>(storedJson)
+}.getOrDefault(LibrarySyncState.NEVER)
+
+/**
+ * Which bucket [state]'s last sync falls into as of [nowMs], and the number to
+ * show with it.
+ *
+ * Coarse on purpose: the operator wants "this morning" or "last week", not a
+ * timestamp. A clock that has gone backwards — a device correcting its time, or
+ * a sync recorded on another phone — reads as "just now" rather than as a
+ * negative age.
+ */
+internal fun syncAgeFor(state: LibrarySyncState, nowMs: Long): SyncAge {
+    if (!state.hasEverSynced) return SyncAge(SyncAge.Bucket.NEVER, 0L)
+    val elapsedMs = (nowMs - state.lastSyncEpochMs).coerceAtLeast(0L)
+    return when {
+        elapsedMs < MINUTE_MS -> SyncAge(SyncAge.Bucket.JUST_NOW, 0L)
+        elapsedMs < HOUR_MS -> SyncAge(SyncAge.Bucket.MINUTES, elapsedMs / MINUTE_MS)
+        elapsedMs < DAY_MS -> SyncAge(SyncAge.Bucket.HOURS, elapsedMs / HOUR_MS)
+        else -> SyncAge(SyncAge.Bucket.DAYS, elapsedMs / DAY_MS)
+    }
+}
+
+private const val MINUTE_MS = 60_000L
+private const val HOUR_MS = 3_600_000L
+private const val DAY_MS = 86_400_000L

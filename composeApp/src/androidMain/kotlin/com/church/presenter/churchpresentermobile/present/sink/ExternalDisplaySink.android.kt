@@ -98,7 +98,7 @@ private class AndroidExternalDisplaySink : OutputSink {
             override fun onDisplayRemoved(displayId: Int) {
                 // The TV was unplugged or the cast session ended. Drop the window
                 // but stay "attached" so re-plugging mid-service just works.
-                if (presentation?.display?.displayId == displayId) {
+                if (presentation?.screen?.displayId == displayId) {
                     dismissPresentation()
                     _status.value = _status.value.searching(DEFAULT_NAME)
                 }
@@ -126,7 +126,7 @@ private class AndroidExternalDisplaySink : OutputSink {
             _status.value = _status.value.searching(DEFAULT_NAME)
             return
         }
-        if (presentation?.display?.displayId == display.displayId && presentation?.isShowing == true) return
+        if (presentation?.screen?.displayId == display.displayId && presentation?.isShowing == true) return
 
         dismissPresentation()
         runCatching {
@@ -164,11 +164,21 @@ private class AndroidExternalDisplaySink : OutputSink {
     }
 }
 
-/** The window shown on the secondary display. Hosts Compose, driven by [SlideBus]. */
-private class SlidePresentation(
+/**
+ * The window shown on the secondary display. Hosts Compose, driven by [SlideBus].
+ *
+ * `internal` rather than private only so a test can stand in for it — showing a
+ * Dialog on a stale Activity throws, and that refusal is the one thing here the
+ * sink has to survive. Nothing outside this file constructs it.
+ *
+ * @property screen The display this window was opened on. Kept rather than read
+ *   back through `Presentation.getDisplay()`, so the sink can tell which screen
+ *   went away without depending on the framework returning it.
+ */
+internal class SlidePresentation(
     activity: Activity,
-    display: Display,
-) : Presentation(activity, display) {
+    val screen: Display,
+) : Presentation(activity, screen) {
 
     private val owners = PresentationOwners()
 

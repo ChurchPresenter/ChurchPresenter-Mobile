@@ -7,9 +7,33 @@ import com.google.firebase.ktx.Firebase
 
 actual object Analytics {
 
+    private var handle: FirebaseAnalytics? = null
+    private var resolved = false
+
     // Nullable + guarded: Firebase isn't available on a bare JVM (unit tests) or before
-    // FirebaseApp is initialised — analytics must never crash the caller.
-    private val fa: FirebaseAnalytics? by lazy { runCatching { Firebase.analytics }.getOrNull() }
+    // FirebaseApp is initialised — analytics must never crash the caller. Resolved
+    // once, then remembered, however it turned out.
+    private val fa: FirebaseAnalytics?
+        get() {
+            if (!resolved) {
+                handle = runCatching { Firebase.analytics }.getOrNull()
+                resolved = true
+            }
+            return handle
+        }
+
+    /**
+     * Supplies the handle directly instead of looking Firebase up.
+     *
+     * `internal` purely so the calls below can be checked without an emulator —
+     * see the seam guidance in AGENT.md. Passing null puts it back to unresolved,
+     * so the ordinary Firebase lookup happens again on the next call — which is
+     * what every test that is not about analytics should leave behind.
+     */
+    internal fun useHandle(analytics: FirebaseAnalytics?) {
+        handle = analytics
+        resolved = analytics != null
+    }
 
     actual fun init() {
         runCatching {

@@ -454,4 +454,250 @@ class SlideDeckBuilderTest {
     fun aProtocolRelativeAddressGetsAScheme() {
         assertEquals("https://example.com", SlideDeckBuilder.normaliseLink("//example.com"))
     }
+
+    // ── Titles, numbers and books: which source wins ─────────────────────
+    //
+    // A song arrives twice — once from the catalogue row and once from the detail
+    // fetch — and the two can disagree. The detail is the fuller record, so it
+    // wins, but only where it actually says something.
+
+    @Test
+    fun `the detail's title wins over the catalogue row`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Amazing Grace"),
+            SongDetail(number = "42", title = "Amazing Grace (arr.)", text = "words"),
+        )
+
+        assertTrue(deck.title.contains("arr."), deck.title)
+    }
+
+    @Test
+    fun `a blank detail title falls back to the catalogue row`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Amazing Grace"),
+            SongDetail(number = "42", title = "   ", text = "words"),
+        )
+
+        assertTrue(deck.title.contains("Amazing Grace"), deck.title)
+    }
+
+    @Test
+    fun `a blank detail number falls back to the catalogue row`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(number = "", title = "Grace", text = "words"),
+        )
+
+        assertTrue(deck.title.startsWith("42"), deck.title)
+    }
+
+    @Test
+    fun `a song with no number is titled by name alone`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "", title = "Grace"),
+            SongDetail(title = "Grace", text = "words"),
+        )
+
+        assertEquals("Grace", deck.title)
+    }
+
+    @Test
+    fun `the book and number identify the slide's source`() {
+        // sourceId is how a later edit finds its way back to the right song.
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace", bookName = "Hymns"),
+            SongDetail(number = "42", title = "Grace", text = "words"),
+        )
+
+        assertEquals("Hymns:42", deck.slides.first().sourceId)
+    }
+
+    @Test
+    fun `a song with neither book nor number has no source id`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "", title = "Grace"),
+            SongDetail(title = "Grace", text = "words"),
+        )
+
+        assertNull(deck.slides.first().sourceId)
+    }
+
+    // ── Section labels ───────────────────────────────────────────────────
+
+    @Test
+    fun `a numeric label is expanded into a verse heading`() {
+        // Desktops send "1"; the screen should read "Verse 1".
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(
+                title = "Grace",
+                verses = listOf(SongVerse(label = "2", lines = listOf("words"))),
+            ),
+        )
+
+        assertTrue(deck.slides.first().reference!!.endsWith("Verse 2"), deck.slides.first().reference!!)
+    }
+
+    @Test
+    fun `a worded label is kept as it was sent`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(
+                title = "Grace",
+                verses = listOf(SongVerse(label = "Chorus", lines = listOf("words"))),
+            ),
+        )
+
+        assertTrue(deck.slides.first().reference!!.endsWith("Chorus"), deck.slides.first().reference!!)
+    }
+
+    @Test
+    fun `a missing label is numbered by position`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(
+                title = "Grace",
+                verses = listOf(
+                    SongVerse(lines = listOf("one")),
+                    SongVerse(lines = listOf("two")),
+                ),
+            ),
+        )
+
+        assertTrue(deck.slides[1].reference!!.endsWith("Verse 2"), deck.slides[1].reference!!)
+    }
+
+    @Test
+    fun `a whitespace-only label is numbered by position too`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(title = "Grace", verses = listOf(SongVerse(label = "   ", lines = listOf("one")))),
+        )
+
+        assertTrue(deck.slides.first().reference!!.endsWith("Verse 1"), deck.slides.first().reference!!)
+    }
+
+    @Test
+    fun `a song with no title shows only the section heading`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "", title = ""),
+            SongDetail(title = "", verses = listOf(SongVerse(label = "Chorus", lines = listOf("words")))),
+        )
+
+        assertEquals("Chorus", deck.slides.first().reference)
+    }
+
+    // ── Falling back to plain lyrics ─────────────────────────────────────
+
+    @Test
+    fun `a song with no verses is split into stanzas on blank lines`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(title = "Grace", text = "one\n\ntwo\n\nthree"),
+        )
+
+        assertEquals(3, deck.slides.size)
+        assertEquals(listOf("one", "two", "three"), deck.slides.map { it.body })
+    }
+
+    @Test
+    fun `runs of blank lines do not produce empty slides`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(title = "Grace", text = "one\n\n\n\n   \n\ntwo"),
+        )
+
+        assertEquals(2, deck.slides.size)
+        assertTrue(deck.slides.none { it.body.isBlank() })
+    }
+
+    @Test
+    fun `verses that are all blank fall through to the plain text`() {
+        // A desktop can answer with a verse array that decodes but says nothing.
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(
+                title = "Grace",
+                verses = listOf(SongVerse(label = "Verse 1", lines = emptyList())),
+                text = "the real words",
+            ),
+        )
+
+        assertEquals(listOf("the real words"), deck.slides.map { it.body })
+    }
+
+    @Test
+    fun `a song with nothing at all makes an empty deck`() {
+        val deck = SlideDeckBuilder.fromSong(
+            Song(id = 1, number = "42", title = "Grace"),
+            SongDetail(title = "Grace"),
+        )
+
+        assertTrue(deck.slides.isEmpty())
+    }
+
+    // ── Announcements ────────────────────────────────────────────────────
+
+    @Test
+    fun `an announcement with no title is headed by its first line`() {
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "Welcome to the service\nStarts at 10")
+
+        assertEquals("Welcome to the service", deck.title)
+    }
+
+    @Test
+    fun `a very long first line is trimmed for the heading`() {
+        // The heading is a label, not the content; the body still has all of it.
+        val long = "w".repeat(120)
+        val deck = SlideDeckBuilder.fromAnnouncement(text = long)
+
+        assertEquals(40, deck.title.length)
+        assertEquals(long, deck.slides.first().body)
+    }
+
+    @Test
+    fun `a blank announcement title falls back to the first line`() {
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "Welcome", title = "   ")
+
+        assertEquals("Welcome", deck.title)
+        assertNull(deck.slides.first().reference, "a blank title is no heading at all")
+    }
+
+    @Test
+    fun `an announcement with a title shows it above the body`() {
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "Starts at 10", title = "Welcome")
+
+        assertEquals("Welcome", deck.title)
+        assertEquals("Welcome", deck.slides.first().reference)
+    }
+
+    @Test
+    fun `an empty announcement makes an empty deck`() {
+        // Nothing to project; a blank slide would just black out the screen.
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "   ")
+
+        assertTrue(deck.slides.isEmpty())
+    }
+
+    @Test
+    fun `an empty announcement still keeps its title`() {
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "", title = "Welcome")
+
+        assertEquals("Welcome", deck.title)
+    }
+
+    @Test
+    fun `an announcement carries its id so an edit can find it again`() {
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "Welcome", id = "a1")
+
+        assertEquals("a1", deck.slides.first().sourceId)
+    }
+
+    @Test
+    fun `an announcement is drawn in the sans face`() {
+        // Notices are prose, not verse; the serif face is for lyrics.
+        val deck = SlideDeckBuilder.fromAnnouncement(text = "Welcome")
+
+        assertEquals(SlideFont.SANS, deck.slides.first().theme.font)
+    }
 }

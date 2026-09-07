@@ -36,8 +36,18 @@ private const val UPLOAD_POLL_INTERVAL_MS = 1_000L
  * @param appSettings The shared [AppSettings] instance used to configure the API service.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
  */
-class PresentationsViewModel(private val appSettings: AppSettings, private val eventService: WsSender, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var presentationService = PresentationService(appSettings, eventService)
+class PresentationsViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: WsSender,
+    private val isDemoMode: Boolean = false,
+    /**
+     * Builds the REST service. Injectable so tests can drive the live paths
+     * without a desktop, matching the seam
+     * [com.church.presenter.churchpresentermobile.viewmodel.QAViewModel] uses.
+     */
+    private val serviceFactory: (AppSettings) -> PresentationService = { PresentationService(it, eventService) },
+) : ViewModel() {
+    private var presentationService = serviceFactory(appSettings)
 
     private val _presentations = MutableStateFlow<List<Presentation>>(emptyList())
     val presentations: StateFlow<List<Presentation>> = _presentations.asStateFlow()
@@ -214,7 +224,7 @@ class PresentationsViewModel(private val appSettings: AppSettings, private val e
     fun onSettingsSaved() {
         Logger.d(TAG, "onSettingsSaved — new url=${appSettings.apiBaseUrl}")
         presentationService.closeClient()
-        presentationService = PresentationService(appSettings, eventService)
+        presentationService = serviceFactory(appSettings)
         _presentations.value = emptyList()
         _selectedPresentation.value = null
         _selectedSlideIndex.value = null

@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -123,15 +124,55 @@ internal fun LookSheet(
     onDeleteTheme: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var namingTheme by remember { mutableStateOf(false) }
-    var themeName by remember { mutableStateOf("") }
     val colors = LocalAppColors.current
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = colors.sheetBackground,
     ) {
+        LookSheetContent(
+            theme = theme,
+            onThemeChange = onThemeChange,
+            showChords = showChords,
+            onShowChordsChange = onShowChordsChange,
+            textSize = textSize,
+            onTextSizeChange = onTextSizeChange,
+            presets = presets,
+            savedThemes = savedThemes,
+            onApplyTheme = onApplyTheme,
+            onSaveTheme = onSaveTheme,
+            onDeleteTheme = onDeleteTheme,
+        )
+    }
+}
+
+/**
+ * Everything the look sheet holds, without the sheet around it.
+ *
+ * `internal` and separate so the controls can be exercised directly: a
+ * `ModalBottomSheet` brings a scrim and a spring animation that say nothing
+ * about what a switch does to the audience screen.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun LookSheetContent(
+    theme: SlideTheme,
+    onThemeChange: ((SlideTheme) -> SlideTheme) -> Unit,
+    showChords: Boolean,
+    onShowChordsChange: (Boolean) -> Unit,
+    textSize: SlideTextSize,
+    onTextSizeChange: (SlideTextSize) -> Unit,
+    presets: List<NamedTheme>,
+    savedThemes: List<NamedTheme>,
+    onApplyTheme: (NamedTheme) -> Unit,
+    onSaveTheme: (String) -> Unit,
+    onDeleteTheme: (String) -> Unit,
+) {
+    var namingTheme by remember { mutableStateOf(false) }
+    var themeName by remember { mutableStateOf("") }
+    val colors = LocalAppColors.current
+
+    run {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,7 +193,11 @@ internal fun LookSheet(
             OverlineRow(stringResource(Res.string.standalone_themes))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 presets.forEach { preset ->
-                    ThemeChip(name = preset.name, onClick = { onApplyTheme(preset) })
+                    ThemeChip(
+                        name = preset.name,
+                        onClick = { onApplyTheme(preset) },
+                        modifier = Modifier.testTag(LookTags.preset(preset.name)),
+                    )
                 }
             }
 
@@ -164,6 +209,8 @@ internal fun LookSheet(
                             name = saved.name,
                             onClick = { onApplyTheme(saved) },
                             onDelete = { onDeleteTheme(saved.name) },
+                            modifier = Modifier.testTag(LookTags.savedTheme(saved.name)),
+                            deleteModifier = Modifier.testTag(LookTags.deleteTheme(saved.name)),
                         )
                     }
                 }
@@ -172,6 +219,7 @@ internal fun LookSheet(
             if (namingTheme) {
                 SettingsField(
                     label = stringResource(Res.string.standalone_theme_name),
+                    modifier = Modifier.testTag(LookTags.THEME_NAME),
                     value = themeName,
                     onValueChange = { themeName = it },
                     placeholder = "",
@@ -182,18 +230,20 @@ internal fun LookSheet(
                     text = stringResource(Res.string.standalone_theme_save_action),
                     color = colors.accent,
                     fontSize = 13.sp,
-                    modifier = Modifier.clickable {
-                        onSaveTheme(themeName)
-                        themeName = ""
-                        namingTheme = false
-                    },
+                    modifier = Modifier
+                        .testTag(LookTags.THEME_SAVE_CONFIRM)
+                        .clickable {
+                            onSaveTheme(themeName)
+                            themeName = ""
+                            namingTheme = false
+                        },
                 )
             } else {
                 Text(
                     text = stringResource(Res.string.standalone_theme_save),
                     color = colors.accent,
                     fontSize = 13.sp,
-                    modifier = Modifier.clickable { namingTheme = true },
+                    modifier = Modifier.testTag(LookTags.THEME_SAVE).clickable { namingTheme = true },
                 )
             }
 
@@ -203,12 +253,14 @@ internal fun LookSheet(
                     value = theme.gradientTop,
                     onValueChange = { hex -> onThemeChange { it.copy(gradientTop = hex) } },
                     modifier = Modifier.weight(1f),
+                    tag = LookTags.GRADIENT_TOP,
                 )
                 ColorField(
                     label = stringResource(Res.string.standalone_gradient_bottom),
                     value = theme.gradientBottom,
                     onValueChange = { hex -> onThemeChange { it.copy(gradientBottom = hex) } },
                     modifier = Modifier.weight(1f),
+                    tag = LookTags.GRADIENT_BOTTOM,
                 )
             }
 
@@ -218,12 +270,14 @@ internal fun LookSheet(
                     value = theme.textColor,
                     onValueChange = { hex -> onThemeChange { it.copy(textColor = hex) } },
                     modifier = Modifier.weight(1f),
+                    tag = LookTags.TEXT_COLOUR,
                 )
                 ColorField(
                     label = stringResource(Res.string.standalone_accent_colour),
                     value = theme.accentColor,
                     onValueChange = { hex -> onThemeChange { it.copy(accentColor = hex) } },
                     modifier = Modifier.weight(1f),
+                    tag = LookTags.ACCENT_COLOUR,
                 )
             }
 
@@ -236,6 +290,7 @@ internal fun LookSheet(
                 ),
                 selectedIndex = TEXT_SIZES.indexOf(textSize).coerceAtLeast(0),
                 onSelect = { index -> onTextSizeChange(TEXT_SIZES[index]) },
+                optionTag = { LookTags.textSize(it) },
             )
 
             OverlineRow(stringResource(Res.string.standalone_font))
@@ -246,6 +301,7 @@ internal fun LookSheet(
                 ),
                 selectedIndex = FONTS.indexOf(theme.font).coerceAtLeast(0),
                 onSelect = { index -> onThemeChange { it.copy(font = FONTS[index]) } },
+                optionTag = { LookTags.font(it) },
             )
 
             OverlineRow(stringResource(Res.string.standalone_align))
@@ -257,6 +313,7 @@ internal fun LookSheet(
                 ),
                 selectedIndex = TEXT_ALIGNS.indexOf(theme.textAlign).coerceAtLeast(0),
                 onSelect = { index -> onThemeChange { it.copy(textAlign = TEXT_ALIGNS[index]) } },
+                optionTag = { LookTags.align(it) },
             )
 
             OverlineRow(stringResource(Res.string.standalone_margin))
@@ -268,6 +325,7 @@ internal fun LookSheet(
                 ),
                 selectedIndex = MARGINS.indexOf(theme.margin).coerceAtLeast(0),
                 onSelect = { index -> onThemeChange { it.copy(margin = MARGINS[index]) } },
+                optionTag = { LookTags.margin(it) },
             )
 
             OverlineRow(stringResource(Res.string.standalone_valign))
@@ -279,9 +337,11 @@ internal fun LookSheet(
                 ),
                 selectedIndex = VERTICAL_ALIGNS.indexOf(theme.verticalAlign).coerceAtLeast(0),
                 onSelect = { index -> onThemeChange { it.copy(verticalAlign = VERTICAL_ALIGNS[index]) } },
+                optionTag = { LookTags.verticalAlign(it) },
             )
 
             SettingsField(
+                modifier = Modifier.testTag(LookTags.BRAND_LINE),
                 label = stringResource(Res.string.standalone_brand_line),
                 value = theme.brandLine.orEmpty(),
                 onValueChange = { typed ->
@@ -297,6 +357,7 @@ internal fun LookSheet(
             // usually still wants the chapter and verse over scripture.
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_reference_songs),
+                tag = LookTags.SHOW_SONG_REFERENCE,
                 hint = stringResource(Res.string.standalone_show_reference_hint),
                 checked = theme.showSongReference,
                 onCheckedChange = { on -> onThemeChange { it.copy(showSongReference = on) } },
@@ -304,18 +365,21 @@ internal fun LookSheet(
 
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_reference_bible),
+                tag = LookTags.SHOW_BIBLE_REFERENCE,
                 checked = theme.showBibleReference,
                 onCheckedChange = { on -> onThemeChange { it.copy(showBibleReference = on) } },
             )
 
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_reference_other),
+                tag = LookTags.SHOW_OTHER_REFERENCE,
                 checked = theme.showOtherReference,
                 onCheckedChange = { on -> onThemeChange { it.copy(showOtherReference = on) } },
             )
 
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_clock),
+                tag = LookTags.SHOW_CLOCK,
                 checked = theme.showClock,
                 onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
             )
@@ -325,6 +389,7 @@ internal fun LookSheet(
             // slide, so none of them has to be told separately.
             ToggleRow(
                 label = stringResource(Res.string.standalone_autofit),
+                tag = LookTags.AUTO_FIT,
                 hint = stringResource(Res.string.standalone_autofit_hint),
                 checked = theme.autoFitText,
                 onCheckedChange = { on -> onThemeChange { it.copy(autoFitText = on) } },
@@ -332,6 +397,7 @@ internal fun LookSheet(
 
             ToggleRow(
                 label = stringResource(Res.string.standalone_ignore_breaks),
+                tag = LookTags.IGNORE_BREAKS,
                 hint = stringResource(Res.string.standalone_ignore_breaks_hint),
                 checked = theme.ignoreLineBreaks,
                 onCheckedChange = { on -> onThemeChange { it.copy(ignoreLineBreaks = on) } },
@@ -339,6 +405,7 @@ internal fun LookSheet(
 
             ToggleRow(
                 label = stringResource(Res.string.standalone_show_chords),
+                tag = LookTags.SHOW_CHORDS,
                 hint = stringResource(Res.string.standalone_show_chords_hint),
                 checked = showChords,
                 onCheckedChange = onShowChordsChange,
@@ -350,6 +417,7 @@ internal fun LookSheet(
                 fontSize = 13.sp,
                 modifier = Modifier
                     .padding(top = AppDimens.space8)
+                    .testTag(LookTags.RESET)
                     .clickable { onThemeChange { SlideTheme() } },
             )
 
@@ -360,10 +428,16 @@ internal fun LookSheet(
 
 /** A named look. Tapping adopts it; the cross removes a saved one. */
 @Composable
-private fun ThemeChip(name: String, onClick: () -> Unit, onDelete: (() -> Unit)? = null) {
+private fun ThemeChip(
+    name: String,
+    onClick: () -> Unit,
+    onDelete: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    deleteModifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = AppDimens.space8)
             .clip(RoundedCornerShape(12.dp))
             .background(colors.surface)
@@ -378,7 +452,7 @@ private fun ThemeChip(name: String, onClick: () -> Unit, onDelete: (() -> Unit)?
                 imageVector = Icons.Outlined.Close,
                 contentDescription = stringResource(Res.string.standalone_theme_delete),
                 tint = colors.muted,
-                modifier = Modifier.size(14.dp).clickable(onClick = onDelete),
+                modifier = deleteModifier.size(14.dp).clickable(onClick = onDelete),
             )
         }
     }
@@ -391,6 +465,7 @@ private fun ToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     hint: String? = null,
+    tag: String? = null,
 ) {
     val colors = LocalAppColors.current
     Row(
@@ -402,7 +477,11 @@ private fun ToggleRow(
             Text(text = label, color = colors.text, fontSize = 14.sp)
             hint?.let { Text(text = it, color = colors.muted, fontSize = 11.sp, lineHeight = 15.sp) }
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            modifier = tag?.let { Modifier.testTag(it) } ?: Modifier,
+        )
     }
 }
 
@@ -419,3 +498,45 @@ private val MARGINS = listOf(SlideMargin.THIN, SlideMargin.MEDIUM, SlideMargin.T
 /** Option order for the text-size control — must match its labels. */
 private val TEXT_SIZES =
     listOf(SlideTextSize.SMALL, SlideTextSize.MEDIUM, SlideTextSize.LARGE)
+
+/**
+ * Names the look sheet's controls for a UI test.
+ *
+ * Every label here is a `stringResource`, which renders empty in the wasmJs test
+ * runtime — five segmented controls and seven switches would be
+ * indistinguishable without these.
+ */
+internal object LookTags {
+    const val THEME_NAME = "look:themeName"
+    const val THEME_SAVE = "look:themeSave"
+    const val THEME_SAVE_CONFIRM = "look:themeSave:confirm"
+    const val GRADIENT_TOP = "look:gradientTop"
+    const val GRADIENT_BOTTOM = "look:gradientBottom"
+    const val TEXT_COLOUR = "look:textColour"
+    const val ACCENT_COLOUR = "look:accentColour"
+    const val BRAND_LINE = "look:brandLine"
+    const val SHOW_SONG_REFERENCE = "look:showSongReference"
+    const val SHOW_BIBLE_REFERENCE = "look:showBibleReference"
+    const val SHOW_OTHER_REFERENCE = "look:showOtherReference"
+    const val SHOW_CLOCK = "look:showClock"
+    const val AUTO_FIT = "look:autoFit"
+    const val IGNORE_BREAKS = "look:ignoreBreaks"
+    const val SHOW_CHORDS = "look:showChords"
+    const val RESET = "look:reset"
+
+    fun preset(name: String) = "look:preset:$name"
+
+    fun savedTheme(name: String) = "look:saved:$name"
+
+    fun deleteTheme(name: String) = "look:saved:$name:delete"
+
+    fun textSize(index: Int) = "look:textSize:$index"
+
+    fun font(index: Int) = "look:font:$index"
+
+    fun align(index: Int) = "look:align:$index"
+
+    fun margin(index: Int) = "look:margin:$index"
+
+    fun verticalAlign(index: Int) = "look:valign:$index"
+}

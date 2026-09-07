@@ -433,4 +433,106 @@ class StandaloneLookTest {
         assertEquals(true, Slide(kind = SlideKind.BIBLE, theme = theme).showsReference())
         assertEquals(true, Slide(kind = SlideKind.ANNOUNCEMENT, theme = theme).showsReference())
     }
+
+    // ── Saved looks ──────────────────────────────────────────────────────
+    //
+    // A church sets its colours once and expects them next Sunday. The store is
+    // a JSON blob in settings, written by whatever version of the app last ran,
+    // so reading it has to survive anything.
+
+    @Test
+    fun `a look saved under a name that already exists replaces it`() = runVmTest {
+        // Otherwise "Evening" quietly becomes two entries and the operator picks
+        // the stale one.
+        val (viewModel, _) = vm()
+        viewModel.updateTheme { it.copy(textColor = "#111111") }
+        viewModel.saveCurrentTheme("Evening")
+
+        viewModel.updateTheme { it.copy(textColor = "#222222") }
+        viewModel.saveCurrentTheme("Evening")
+
+        assertEquals(1, viewModel.savedThemes.value.size)
+        assertEquals("#222222", viewModel.savedThemes.value.single().theme.textColor)
+    }
+
+    @Test
+    fun `a name that is only spaces is not saved`() {
+        // The dialog lets an empty field through; a nameless entry in the list
+        // could never be picked again.
+        val (viewModel, _) = vm()
+
+        viewModel.saveCurrentTheme("   ")
+
+        assertTrue(viewModel.savedThemes.value.isEmpty())
+    }
+
+    @Test
+    fun `a name is trimmed before it is saved`() {
+        val (viewModel, _) = vm()
+
+        viewModel.saveCurrentTheme("  Evening  ")
+
+        assertEquals("Evening", viewModel.savedThemes.value.single().name)
+    }
+
+    @Test
+    fun `deleting a look that was never saved is harmless`() {
+        val (viewModel, _) = vm()
+        viewModel.saveCurrentTheme("Evening")
+
+        viewModel.deleteSavedTheme("Morning")
+
+        assertEquals(listOf("Evening"), viewModel.savedThemes.value.map { it.name })
+    }
+
+    @Test
+    fun `several looks are kept, newest last`() {
+        // The order the list is drawn in; reversing it would move the buttons
+        // under the operator between services.
+        val (viewModel, _) = vm()
+
+        viewModel.saveCurrentTheme("Morning")
+        viewModel.saveCurrentTheme("Evening")
+
+        assertEquals(listOf("Morning", "Evening"), viewModel.savedThemes.value.map { it.name })
+    }
+
+    @Test
+    fun `a saved-looks blob this build cannot read opens as no looks`() {
+        // Written by a previous version, or truncated by a kill mid-write. The
+        // controller has to open either way — losing the list is recoverable,
+        // a crash on the presenting screen is not.
+        for (stored in listOf("not json", "{}", """[{"name":1}]""", "")) {
+            val settings = AppSettings(InMemorySettingsStorage()).apply { savedThemesJson = stored }
+
+            val (viewModel, _) = vm(settings)
+
+            assertTrue(viewModel.savedThemes.value.isEmpty(), stored)
+        }
+    }
+
+    @Test
+    fun `a look can still be saved after an unreadable blob was found`() {
+        // The recovery path: the bad blob is replaced by the next write rather
+        // than blocking every later save.
+        val settings = AppSettings(InMemorySettingsStorage()).apply { savedThemesJson = "not json" }
+        val (viewModel, _) = vm(settings)
+
+        viewModel.saveCurrentTheme("Evening")
+
+        assertEquals(listOf("Evening"), viewModel.savedThemes.value.map { it.name })
+    }
+
+    @Test
+    fun `deleting a look leaves the screen showing it`() {
+        // Applying copies the values in rather than remembering where they came
+        // from, so removing the entry must not change what is projected.
+        val (viewModel, _) = vm()
+        viewModel.updateTheme { it.copy(textColor = "#ABCDEF") }
+        viewModel.saveCurrentTheme("Evening")
+
+        viewModel.deleteSavedTheme("Evening")
+
+        assertEquals("#ABCDEF", viewModel.theme.value.textColor)
+    }
 }

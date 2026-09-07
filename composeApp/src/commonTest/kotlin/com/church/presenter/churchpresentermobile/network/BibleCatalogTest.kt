@@ -120,4 +120,43 @@ class BibleCatalogTest {
 
         assertTrue(catalog.hasNoBible.first())
     }
+
+    // ── Falling back to a downloaded translation ─────────────────────────
+
+    @Test
+    fun aQuietDesktopIsAnsweredFromTheDownloadedTranslation() = runTest {
+        // The operator has a copy on the phone; a dropped Wi-Fi mid-service should
+        // read from it rather than showing an error over a chapter they can see.
+        val bibles = LocalBibleRepository(InMemoryFileStorage()) { 1L }
+        bibles.install("en_KJV.spb", module)
+        val reader = FakeReader(verses = Result.failure(Exception("Connect timeout has expired")))
+        val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), reader, bibles)
+
+        val verses = catalog.chapter(1, 1).getOrThrow()
+
+        assertTrue(verses.isNotEmpty())
+        assertTrue(verses.first().text!!.contains("In the beginning"), "${verses.first().text}")
+    }
+
+    @Test
+    fun withNothingDownloadedTheDesktopsFailureIsReported() = runTest {
+        // No local copy to fall back on, so the timeout is the honest answer.
+        val bibles = LocalBibleRepository(InMemoryFileStorage()) { 1L }
+        val reader = FakeReader(verses = Result.failure(Exception("Connect timeout has expired")))
+        val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), reader, bibles)
+
+        assertTrue(catalog.chapter(1, 1).isFailure)
+    }
+
+    @Test
+    fun aReachableDesktopIsPreferredOverTheLocalCopy() = runTest {
+        // The desktop's translation is the one the congregation is seeing.
+        val bibles = LocalBibleRepository(InMemoryFileStorage()) { 1L }
+        bibles.install("en_KJV.spb", module)
+        val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), FakeReader(), bibles)
+
+        val verses = catalog.chapter(1, 1).getOrThrow()
+
+        assertEquals("from the desktop", verses.first().text)
+    }
 }

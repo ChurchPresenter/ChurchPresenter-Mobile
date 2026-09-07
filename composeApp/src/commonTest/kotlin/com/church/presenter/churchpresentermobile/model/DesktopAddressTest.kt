@@ -159,4 +159,98 @@ class DesktopAddressTest {
 
         assertTrue(assertIs<DesktopAddress.Outcome.Invalid>(outcome).hostInvalid)
     }
+
+    // ── What can be a host ───────────────────────────────────────────────
+    //
+    // The field writes through on every keystroke, so anything accepted here
+    // reaches the HTTP client and the socket's reconnect loop. A dictated address
+    // that arrived as "high dynamic range" was accepted, saved, and then thrown
+    // out by the URL builder on every request, forever.
+
+    @Test
+    fun `ordinary hosts are usable`() {
+        for (host in listOf("10.0.0.5", "192.168.1.100", "desktop", "desktop.local", "my-mac", "my_mac", "MyMac")) {
+            assertTrue(DesktopAddress.isUsableHost(host), host)
+        }
+    }
+
+    @Test
+    fun `anything a url would have to escape is refused`() {
+        for (host in listOf("high dynamic range", "my mac", "10.0.0.5:8765", "host/path", "host?q", "a,b", "a@b")) {
+            assertFalse(DesktopAddress.isUsableHost(host), host)
+        }
+    }
+
+    @Test
+    fun `a blank host is not usable`() {
+        assertFalse(DesktopAddress.isUsableHost(""))
+        assertFalse(DesktopAddress.isUsableHost("   "))
+    }
+
+    @Test
+    fun `a host must start on something alphanumeric`() {
+        assertFalse(DesktopAddress.isUsableHost("-desktop"))
+        assertFalse(DesktopAddress.isUsableHost(".desktop"))
+        assertFalse(DesktopAddress.isUsableHost("_desktop"))
+    }
+
+    @Test
+    fun `a bracketed IPv6 literal is the one legitimate use of colons`() {
+        assertTrue(DesktopAddress.isUsableHost("[fe80::1]"))
+        assertTrue(DesktopAddress.isUsableHost("[::1]"))
+    }
+
+    @Test
+    fun `an unclosed or malformed IPv6 literal is refused`() {
+        assertFalse(DesktopAddress.isUsableHost("[fe80::1"))
+        assertFalse(DesktopAddress.isUsableHost("[not hex]"))
+    }
+
+    @Test
+    fun `a well-formed but wrong name is still usable`() {
+        // It fails later, where it is correctly reported as unreachable — this
+        // check only rejects what cannot be a host at all.
+        assertTrue(DesktopAddress.isUsableHost("printer"))
+    }
+
+    @Test
+    fun `surrounding whitespace is trimmed before the check`() {
+        assertTrue(DesktopAddress.isUsableHost("  10.0.0.5  "))
+    }
+
+    // ── Normalising a pasted address ─────────────────────────────────────
+
+    @Test
+    fun `every scheme is stripped`() {
+        for (scheme in listOf("http://", "https://", "ws://", "wss://")) {
+            assertEquals("10.0.0.5", DesktopAddress.normalizeHost("$scheme" + "10.0.0.5"))
+        }
+    }
+
+    @Test
+    fun `a scheme is stripped whatever case it is written in`() {
+        assertEquals("10.0.0.5", DesktopAddress.normalizeHost("HTTP://10.0.0.5"))
+    }
+
+    @Test
+    fun `a path, query and fragment are all dropped`() {
+        assertEquals("10.0.0.5", DesktopAddress.normalizeHost("http://10.0.0.5/display"))
+        assertEquals("10.0.0.5", DesktopAddress.normalizeHost("10.0.0.5?x=1"))
+        assertEquals("10.0.0.5", DesktopAddress.normalizeHost("10.0.0.5#top"))
+    }
+
+    @Test
+    fun `a bare host is left alone`() {
+        assertEquals("desktop.local", DesktopAddress.normalizeHost("desktop.local"))
+    }
+
+    @Test
+    fun `the port survives normalisation and then fails the host check`() {
+        // Pasting the whole address from a browser is the obvious thing to try, and
+        // it lands as an error rather than being split into host and port.
+        val normalized = DesktopAddress.normalizeHost("http://10.0.0.5:8765/")
+
+        assertEquals("10.0.0.5:8765", normalized)
+        assertFalse(DesktopAddress.isUsableHost(normalized))
+    }
 }

@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -135,7 +136,8 @@ fun ScheduleDrawerContent(
                 Text(
                     text = stringResource(Res.string.schedule_drawer_item_count, visibleItems.size),
                     fontSize = 11.sp,
-                    color = colors.muted
+                    color = colors.muted,
+                    modifier = Modifier.testTag(UiTags.DRAWER_COUNT)
                 )
             }
             IconTileButton(
@@ -143,7 +145,7 @@ fun ScheduleDrawerContent(
                 contentDescription = stringResource(Res.string.cd_close),
                 tint = colors.muted,
                 onClick = onClose,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp).testTag(UiTags.DRAWER_CLOSE)
             )
         }
 
@@ -158,6 +160,7 @@ fun ScheduleDrawerContent(
                 fontSize = 13.sp,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag(UiTags.DRAWER_ERROR)
                     .padding(horizontal = 20.dp, vertical = 8.dp)
             )
         }
@@ -177,8 +180,12 @@ fun ScheduleDrawerContent(
                         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                         modifier = Modifier.fillMaxSize().verticalScrollbar(listState)
                     ) {
-                        items(visibleItems) { item ->
-                            ScheduleItemRow(item = item, onClick = { onItemClick(item) })
+                        itemsIndexed(visibleItems) { index, item ->
+                            ScheduleItemRow(
+                                item = item,
+                                index = index,
+                                onClick = { onItemClick(item) },
+                            )
                         }
                     }
                 }
@@ -190,7 +197,8 @@ fun ScheduleDrawerContent(
                         Text(
                             text = stringResource(Res.string.schedule_drawer_empty),
                             color = colors.muted,
-                            fontSize = 14.sp
+                            fontSize = 14.sp,
+                            modifier = Modifier.testTag(UiTags.DRAWER_EMPTY)
                         )
                     }
                 }
@@ -218,7 +226,7 @@ private fun scheduleTypeStyleFor(type: String?): ScheduleTypeStyle {
 }
 
 @Composable
-private fun ScheduleItemRow(item: ScheduleItem, onClick: () -> Unit = {}) {
+private fun ScheduleItemRow(item: ScheduleItem, index: Int, onClick: () -> Unit = {}) {
     val colors = LocalAppColors.current
     val style = scheduleTypeStyleFor(item.type)
     val leftBorder = if (item.active) colors.accent else Color.Transparent
@@ -226,6 +234,7 @@ private fun ScheduleItemRow(item: ScheduleItem, onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(UiTags.scheduleRow(index))
             .background(if (item.active) colors.accentTint else colors.background)
             .drawBehind {
                 drawRect(color = leftBorder, size = Size(3.dp.toPx(), size.height))
@@ -271,7 +280,11 @@ private fun ScheduleItemRow(item: ScheduleItem, onClick: () -> Unit = {}) {
 
         // Active "Live" marker
         if (item.active) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.testTag(UiTags.scheduleRowLive(index)),
+            ) {
                 Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(colors.accent))
                 Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
             }

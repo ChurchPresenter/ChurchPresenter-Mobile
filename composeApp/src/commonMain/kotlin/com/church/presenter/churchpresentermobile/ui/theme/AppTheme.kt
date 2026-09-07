@@ -74,7 +74,14 @@ private val md_dark_inversePrimary = Color(0xFF3D5A80)
 // Design-token-aligned overrides so Material components (TextField, Snackbar,
 // TopAppBar, etc.) inherit the redesign palette even before a screen is migrated
 // to LocalAppColors.
-private val LightColorScheme = lightColorScheme(
+/**
+ * Material's own scheme for each mode.
+ *
+ * `internal` rather than `private` so the module's tests can check the two are
+ * coherent — screens mix these with [LocalAppColors], and a light Material
+ * scheme under a dark [AppTheme] puts white cards on a near-black background.
+ */
+internal val LightColorScheme = lightColorScheme(
     primary = Color(0xFF16A34A),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFFFFFFFF),
@@ -104,7 +111,7 @@ private val LightColorScheme = lightColorScheme(
     inversePrimary = md_light_inversePrimary,
 )
 
-private val DarkColorScheme = darkColorScheme(
+internal val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF86EFAC),
     onPrimary = Color(0xFF09090B),
     primaryContainer = Color(0xFF17171F),

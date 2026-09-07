@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.present
 
+import kotlinx.coroutines.test.runTest
+import kotlin.test.assertNotNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -94,5 +96,84 @@ class WebAssetsTest {
                 "$name would be served as an opaque download",
             )
         }
+    }
+
+    // ── Content types ────────────────────────────────────────────────────
+
+    @Test
+    fun eachBundledFileTypeGetsItsOwnContentType() {
+        // A browser told the wrong type for a script or stylesheet refuses to run
+        // it, and the display page comes up unstyled.
+        assertEquals("text/html; charset=utf-8", WebAssets.contentTypeFor("index.html"))
+        assertEquals("application/javascript; charset=utf-8", WebAssets.contentTypeFor("app.js"))
+        assertEquals("text/css; charset=utf-8", WebAssets.contentTypeFor("style.css"))
+        assertEquals("font/woff2", WebAssets.contentTypeFor("inter.woff2"))
+        assertEquals("font/woff", WebAssets.contentTypeFor("inter.woff"))
+        assertEquals("image/png", WebAssets.contentTypeFor("logo.png"))
+        assertEquals("image/svg+xml", WebAssets.contentTypeFor("icon.svg"))
+    }
+
+    @Test
+    fun bothJpegSpellingsAreRecognised() {
+        assertEquals("image/jpeg", WebAssets.contentTypeFor("photo.jpg"))
+        assertEquals("image/jpeg", WebAssets.contentTypeFor("photo.jpeg"))
+    }
+
+    @Test
+    fun anUnknownOrMissingExtensionFallsBackToBytes() {
+        assertEquals("application/octet-stream", WebAssets.contentTypeFor("data.bin"))
+        assertEquals("application/octet-stream", WebAssets.contentTypeFor("LICENSE"))
+        assertEquals("application/octet-stream", WebAssets.contentTypeFor(""))
+    }
+
+    @Test
+    fun onlyTheLastExtensionDecidesTheType() {
+        assertEquals("application/javascript; charset=utf-8", WebAssets.contentTypeFor("app.min.js"))
+    }
+
+    // ── Loading the bundled files ────────────────────────────────────────
+    //
+    // `load()` reads every bundled file into memory. It is deliberately tolerant:
+    // a file that fails to load is skipped rather than fatal, because a missing
+    // font should degrade the display page's typography and not stop the service.
+    //
+    // In a unit test there is no Android asset context, so every read fails —
+    // which is exactly the degraded path worth pinning, and it exercises the
+    // whole loop.
+
+    @Test
+    fun loadingReturnsAnAssetSetEvenWhenNothingCanBeRead() = runTest {
+        val assets = WebAssets.load()
+
+        assertNotNull(assets)
+    }
+
+    @Test
+    fun aFileThatCannotBeReadIsSkippedRatherThanFatal() = runTest {
+        // The whole point of the runCatching around each read: a bundle that is
+        // missing or unreadable yields fewer assets, never an exception.
+        //
+        // Deliberately NOT asserting the result is empty. That held only because
+        // every runtime this ran on happened to resolve no resources; on the
+        // desktop JVM the bundle is genuinely on the classpath and loads, which
+        // is correct behaviour and used to fail this test.
+        val assets = WebAssets.load()
+
+        assertNotNull(assets, "load() must return a bundle rather than throwing")
+    }
+
+    @Test
+    fun loadingIsRepeatableAndConsistent() = runTest {
+        val first = WebAssets.load()
+        val second = WebAssets.load()
+
+        assertEquals(first.isEmpty, second.isEmpty)
+    }
+
+    @Test
+    fun anAssetThatWasNotBundledIsSimplyAbsent() = runTest {
+        val assets = WebAssets.load()
+
+        assertNull(assets.forPath("/not-a-bundled-file.txt"))
     }
 }

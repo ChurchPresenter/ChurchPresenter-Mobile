@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,9 +49,12 @@ fun LocalWebScreen(
     presenter: StandaloneEngine?,
     hasOutput: Boolean,
     modifier: Modifier = Modifier,
+    /** Supplied by tests only; the screen owns its own otherwise. */
+    providedViewModel: LocalWebViewModel? = null,
 ) {
     val colors = LocalAppColors.current
-    val vm: LocalWebViewModel = viewModel(key = "local_web") { LocalWebViewModel(presenter) }
+    val vm: LocalWebViewModel = providedViewModel
+        ?: viewModel(key = "local_web") { LocalWebViewModel(presenter) }
     val url by vm.url.collectAsState()
     val canProject by vm.canProject.collectAsState()
     val projecting by vm.projecting.collectAsState()
@@ -66,7 +70,7 @@ fun LocalWebScreen(
             placeholder = { Text("https://" + stringResource(Res.string.web_url_placeholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(StandaloneTags.WEB_URL),
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
@@ -74,14 +78,14 @@ fun LocalWebScreen(
                 label = stringResource(Res.string.action_go_live),
                 icon = Icons.Filled.Wifi,
                 onClick = { if (canProject) vm.project() },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag(StandaloneTags.WEB_GO_LIVE),
             )
             if (projecting != null) {
                 OutlineActionButton(
                     label = stringResource(Res.string.action_clear_display),
                     icon = Icons.Outlined.Delete,
                     onClick = { vm.clearDisplay() },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag(StandaloneTags.WEB_CLEAR),
                 )
             }
         }
@@ -93,11 +97,17 @@ fun LocalWebScreen(
                 text = stringResource(Res.string.web_not_a_link),
                 color = colors.danger,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(StandaloneTags.WEB_NOT_A_LINK),
             )
         }
 
         if (!hasOutput) {
-            Text(stringResource(Res.string.standalone_no_output), color = colors.muted, fontSize = 12.sp)
+            Text(
+                stringResource(Res.string.standalone_no_output),
+                color = colors.muted,
+                fontSize = 12.sp,
+                modifier = Modifier.testTag(StandaloneTags.WEB_NO_OUTPUT),
+            )
         }
 
         // The browser screen frames the page, and a great many sites forbid that.
@@ -109,6 +119,7 @@ fun LocalWebScreen(
                 text = stringResource(Res.string.web_refuses_framing, host),
                 color = colors.amber,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(StandaloneTags.WEB_REFUSES_FRAMING),
             )
         }
 
@@ -118,6 +129,7 @@ fun LocalWebScreen(
                 color = colors.muted,
                 fontSize = 11.sp,
                 fontFamily = FontFamily.Monospace,
+                modifier = Modifier.testTag(StandaloneTags.WEB_LIVE_URL),
             )
         }
     }

@@ -28,8 +28,18 @@ private const val TAG = "PicturesViewModel"
  * @param appSettings The shared [AppSettings] instance.
  * @param isDemoMode  When true, demo content from [DemoData] is used instead of live API calls.
  */
-class PicturesViewModel(private val appSettings: AppSettings, private val eventService: WsSender, private val isDemoMode: Boolean = false) : ViewModel() {
-    private var picturesService = PicturesService(appSettings, eventService)
+class PicturesViewModel(
+    private val appSettings: AppSettings,
+    private val eventService: WsSender,
+    private val isDemoMode: Boolean = false,
+    /**
+     * Builds the REST service. Injectable so tests can drive the live paths —
+     * loading, projecting, uploading — without a desktop, the same seam
+     * [com.church.presenter.churchpresentermobile.viewmodel.QAViewModel] uses.
+     */
+    private val serviceFactory: (AppSettings) -> PicturesService = { PicturesService(it, eventService) },
+) : ViewModel() {
+    private var picturesService = serviceFactory(appSettings)
 
     private val _folder = MutableStateFlow<PicturesFolder?>(null)
     val folder = _folder.asStateFlow()
@@ -323,7 +333,7 @@ class PicturesViewModel(private val appSettings: AppSettings, private val eventS
     fun onSettingsSaved() {
         Logger.d(TAG, "onSettingsSaved — new url=${appSettings.apiBaseUrl}")
         picturesService.closeClient()
-        picturesService = PicturesService(appSettings, eventService)
+        picturesService = serviceFactory(appSettings)
         _folder.value = null
         _selectedImage.value = null
         _pendingScrollIndex.value = null
