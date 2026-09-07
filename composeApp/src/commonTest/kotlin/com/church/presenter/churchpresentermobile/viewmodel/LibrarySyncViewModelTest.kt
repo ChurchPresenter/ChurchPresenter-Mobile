@@ -398,8 +398,13 @@ class LibrarySyncViewModelTest {
         try {
             f.viewModel.sync()
             f.viewModel.outcome.first { it != null }
+            // The outcome is published before the remembered state is written, and
+            // on an unconfined dispatcher the await above resumes inside that very
+            // assignment — so `state.value` here is still LibrarySyncState.NEVER and
+            // the host reads back empty. Wait for the write instead.
+            val state = f.viewModel.state.first { it.hasEverSynced }
 
-            assertEquals(f.settings.host, f.viewModel.state.value.sourceHost)
+            assertEquals(f.settings.host, state.sourceHost)
         } finally {
             tearDown(f.viewModel)
         }
@@ -412,7 +417,10 @@ class LibrarySyncViewModelTest {
         try {
             f.viewModel.sync()
             f.viewModel.outcome.first { it != null }
-            val written = f.viewModel.state.value
+            // Same race as above — and here it would pass silently, comparing one
+            // LibrarySyncState.NEVER against another and proving nothing about what
+            // was persisted.
+            val written = f.viewModel.state.first { it.hasEverSynced }
 
             val reopened = LibrarySyncViewModel(
                 f.repository,
