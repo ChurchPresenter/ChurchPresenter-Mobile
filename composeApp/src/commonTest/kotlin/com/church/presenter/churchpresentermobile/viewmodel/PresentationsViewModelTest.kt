@@ -544,9 +544,13 @@ class PresentationsViewModelTest {
         try {
             vm.uploadPresentationFile(file())
             val id = vm.pendingScrollToId.first { it != null }
+            // The selection is set on the line AFTER the scroll target, so the
+            // await above resumes with it still null. Wait for it rather than
+            // reading it off the back of the scroll id.
+            val selected = vm.selectedPresentation.first { it != null }
 
             assertEquals("p9", id)
-            assertEquals("p9", vm.selectedPresentation.value?.displayId)
+            assertEquals("p9", selected?.displayId)
             assertEquals(1, vm.presentations.value.size)
         } finally {
             tearDown(vm)
