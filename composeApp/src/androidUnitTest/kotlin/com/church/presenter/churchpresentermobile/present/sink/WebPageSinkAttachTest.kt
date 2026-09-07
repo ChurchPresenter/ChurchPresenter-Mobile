@@ -3,7 +3,6 @@ package com.church.presenter.churchpresentermobile.present.sink
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
 import com.church.presenter.churchpresentermobile.model.SlideKind
-import com.church.presenter.churchpresentermobile.present.LocalWebServer
 import com.church.presenter.churchpresentermobile.present.PhotoSource
 import com.church.presenter.churchpresentermobile.present.ServedPhoto
 import com.church.presenter.churchpresentermobile.present.SinkState
@@ -84,7 +83,7 @@ class WebPageSinkAttachTest {
         onBaseUrl = onBaseUrl,
         address = { address },
         loadAssets = { assets },
-        serverFactory = { a, p -> LocalWebServer(a, p) },
+        serverFactory = localWebServerFactory,
     ).also { sinks += it }
 
     /** The port out of an attached sink's URL. */
@@ -345,7 +344,7 @@ class WebPageSinkAttachTest {
             preferredPort = 0,
             address = { address },
             loadAssets = { assets },
-            serverFactory = { a, p -> LocalWebServer(a, p) },
+            serverFactory = localWebServerFactory,
         ).also { sinks += it }
         webSink.attach()
         assertEquals(SinkState.ERROR, webSink.status.value.state)
@@ -372,7 +371,7 @@ class WebPageSinkAttachTest {
     // day something did.
 
     /** A sink over a stand-in server, so the sink's own handling can be driven. */
-    private fun sinkOver(server: LocalWebServer) = WebPageSink(
+    private fun sinkOver(server: DisplayServer) = WebPageSink(
         preferredPort = 0,
         address = { "127.0.0.1" },
         loadAssets = { assets },
@@ -383,7 +382,7 @@ class WebPageSinkAttachTest {
     fun `a publish that fails leaves the sink serving rather than throwing`() = runBlocking {
         // render() runs on the action path and may fire many times a second
         // while an operator scrubs a deck; a throw there would reach the UI.
-        val server = mockk<LocalWebServer>(relaxed = true) {
+        val server = mockk<DisplayServer>(relaxed = true) {
             every { clientCount } returns MutableStateFlow(0)
             every { publish(any()) } throws IllegalStateException("socket closed")
         }

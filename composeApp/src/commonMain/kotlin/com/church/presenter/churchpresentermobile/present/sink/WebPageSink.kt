@@ -2,7 +2,6 @@ package com.church.presenter.churchpresentermobile.present.sink
 
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
 import com.church.presenter.churchpresentermobile.network.ApiConstants
-import com.church.presenter.churchpresentermobile.present.LocalWebServer
 import com.church.presenter.churchpresentermobile.present.OutputSink
 import com.church.presenter.churchpresentermobile.present.PhotoSource
 import com.church.presenter.churchpresentermobile.present.PresentationKeepAlive
@@ -49,7 +48,9 @@ const val WEB_PAGE_SINK_ID = "web_page"
  * @param loadAssets The bundled display page. A seam over [WebAssets.load] for
  *   the same reason — the bundle is not readable off a device.
  * @param serverFactory Builds the embedded server. Seamed so the attach path can
- *   be exercised without one, not so a different server can be substituted.
+ *   be exercised without one, not so a different server can be substituted — see
+ *   [DisplayServer], which exists only because the platform server is an
+ *   `expect class` a test cannot stand in for.
  */
 class WebPageSink(
     private val preferredPort: Int,
@@ -58,7 +59,7 @@ class WebPageSink(
     private val onBaseUrl: (String?) -> Unit = {},
     private val address: () -> String? = { localIpAddress() },
     private val loadAssets: suspend () -> WebAssets = { WebAssets.load() },
-    private val serverFactory: (WebAssets, PhotoSource) -> LocalWebServer = { a, p -> LocalWebServer(a, p) },
+    private val serverFactory: (WebAssets, PhotoSource) -> DisplayServer = localWebServerFactory,
 ) : OutputSink {
 
     override val id: String = WEB_PAGE_SINK_ID
@@ -71,7 +72,7 @@ class WebPageSink(
     private val json = Json { encodeDefaults = true }
     private val scope = CoroutineScope(SupervisorJob())
 
-    private var server: LocalWebServer? = null
+    private var server: DisplayServer? = null
     private var clientWatcher: Job? = null
 
     /** The last envelope, replayed by the server to any display that connects later. */
