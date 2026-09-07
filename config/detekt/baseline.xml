@@ -16,7 +16,7 @@
     <ID>FunctionNaming:ExternalDisplayViewController.kt$fun ExternalDisplayViewController(): UIViewController</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
     <ID>LongMethod:AnnouncementsScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun AnnouncementsScreen( viewModel: AnnouncementsViewModel, modifier: Modifier = Modifier, )</ID>
-    <ID>LongMethod:App.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable @Preview fun App()</ID>
+    <ID>LongMethod:App.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable @Preview fun App( appSettings: AppSettings = remember { AppSettings() }, onLaunchPing: (String) -&gt; Unit = { PingReporter.pingOnOpen(it) }, )</ID>
     <ID>LongMethod:BibleScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BibleScreen( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, onNavigationChanged: (book: BibleBook?, chapter: Int?) -&gt; Unit, onRegisterBackAction: (action: (() -&gt; Unit)?) -&gt; Unit, pendingNavBookName: String? = null, pendingNavChapter: Int? = null, pendingNavVerses: Set&lt;Int&gt; = emptySet(), onPendingNavHandled: () -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, providedViewModel: BibleViewModel? = null, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:BibleSyncSection.kt$@Composable internal fun BibleSyncSection( bibles: LocalBibleRepository, settings: AppSettings, /** Supplied by tests only; the sheet owns its own otherwise. */ providedViewModel: BibleSyncViewModel? = null, providedChoice: BibleChoiceViewModel? = null, )</ID>
     <ID>LongMethod:CertSetupScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun CertSetupScreen( certFingerprint: String? = null, onDone: () -&gt; Unit, onSkip: () -&gt; Unit, )</ID>
@@ -348,7 +348,6 @@
     <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.web_bookmarks_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:WebScreen.kt$Text(stringResource(Res.string.web_url_placeholder), color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)</ID>
     <ID>NestedBlockDepth:ChordProParser.kt$ChordProParser$fun parse(text: String, id: String, fallbackTitle: String = ""): LocalSong</ID>
-    <ID>NewLineAtEndOfFile:Greeting.kt$com.church.presenter.churchpresentermobile.Greeting.kt</ID>
     <ID>NewLineAtEndOfFile:MainActivity.kt$com.church.presenter.churchpresentermobile.MainActivity.kt</ID>
     <ID>NewLineAtEndOfFile:main.kt$com.church.presenter.churchpresentermobile.main.kt</ID>
     <ID>ReturnCount:BibleViewModel.kt$BibleViewModel$fun toggleProjecting()</ID>

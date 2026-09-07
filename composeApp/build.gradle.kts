@@ -292,7 +292,25 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         }
     )
 
-    classDirectories.setFrom(fileTree(jacocoClassesDir))
+    // The ONE exclusion, added on the owner's explicit instruction (2026-09-07)
+    // and scoped as narrowly as it can be.
+    //
+    // MainActivity is `registerForActivityResult`, `enableEdgeToEdge`,
+    // `super.onCreate`, `setContent`, `checkSelfPermission` — framework calls
+    // that need a real Activity, which means an emulator, which AGENT.md rules
+    // out. Nothing about it can be asserted from a unit test.
+    //
+    // What it DECIDED was pulled out first rather than excluded along with it:
+    // `deepLinkToHandle` and `shortcutTab` live in MainActivityKt, are covered
+    // by MainActivityIntentsTest, and are deliberately NOT matched here — the
+    // pattern names the class and its inner classes only. If logic ever moves
+    // back into the Activity, it disappears from the figure silently, so keep
+    // extracting rather than widening this.
+    classDirectories.setFrom(
+        fileTree(jacocoClassesDir) {
+            exclude("**/MainActivity.class", "**/MainActivity\$*.class")
+        }
+    )
     sourceDirectories.setFrom(
         files(
             "src/commonMain/kotlin",
@@ -342,13 +360,20 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 // Declared here rather than inline in the rule so `coverageFloors` below can print
 // the same numbers the verification task enforces: the pull-request comment quotes
 // this map, so a cap shown there is a cap that is actually gating.
+// Whole percentages, set by one rule: 85 where the measured figure has reached
+// it, and otherwise the measured figure rounded down to the next whole percent
+// below itself. 85 is the ceiling on the FLOOR, not on the ambition — coverage
+// above it is welcome, it simply does not ratchet the gate any higher.
+//
+// Measured when set (2026-09-07): instruction 90.4, branch 80.0, line 93.1,
+// complexity 78.2, method 85.2, class 91.5.
 val coverageFloors = mapOf(
-    "INSTRUCTION" to "0.846",
-    "BRANCH" to "0.762",
+    "INSTRUCTION" to "0.85",
+    "BRANCH" to "0.79",
     "LINE" to "0.85",
-    "COMPLEXITY" to "0.738",
-    "METHOD" to "0.802",
-    "CLASS" to "0.844",
+    "COMPLEXITY" to "0.77",
+    "METHOD" to "0.85",
+    "CLASS" to "0.85",
 )
 
 tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
@@ -545,6 +570,10 @@ val viewModelBackedUiTests = listOf(
     "com.church.presenter.churchpresentermobile.ui.QAAdminScreenTest",
     "com.church.presenter.churchpresentermobile.ui.SettingsStatusDialogTest",
     "com.church.presenter.churchpresentermobile.ui.BibleTabTest",
+    // The shell test composes the WHOLE app, which starts a real status check
+    // and waits for it. On the single-threaded wasm runtime that request cannot
+    // complete inside the Compose test clock, so the wait can only expire.
+    "com.church.presenter.churchpresentermobile.ui.AppShellTest",
 )
 
 // configureEach on the supertype rather than tasks.named: the Android unit-test

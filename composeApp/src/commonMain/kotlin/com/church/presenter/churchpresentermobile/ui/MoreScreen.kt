@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -109,6 +110,7 @@ private fun MoreRow(entry: MoreEntry, onClick: () -> Unit) {
     val shape = RoundedCornerShape(14.dp)
     Row(
         modifier = Modifier
+            .testTag(UiTags.moreRow(entry.destination))
             .fillMaxWidth()
             .clip(shape)
             .background(colors.surface)

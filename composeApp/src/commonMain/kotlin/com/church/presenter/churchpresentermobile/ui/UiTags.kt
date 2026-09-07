@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.model.MoreDestination
+
 /**
  * Semantics tags for the app's screens, so a UI test can name what it is
  * reaching for.
@@ -263,6 +266,27 @@ internal object UiTags {
     const val QA_EMPTY_INCOMING = "qa:empty:incoming"
     const val QA_EMPTY_FINISHED = "qa:empty:finished"
     const val QA_ADD = "qa:add"
+
+    /**
+     * One entry in the bottom tab strip, by the tab it selects.
+     *
+     * Named by the tab rather than by position, because the strip's contents
+     * differ between remote and standalone — an index would point at Media in
+     * one mode and Library in the other.
+     *
+     * Needed because the strip's labels come from compose-resources, which
+     * resolve to empty strings in the wasmJs test runtime; matching them by text
+     * works on the JVM and silently matches nothing there.
+     */
+    fun tab(tab: AppTab) = "tab:${tab.name.lowercase()}"
+
+    /**
+     * One row of the More launcher, by the destination it opens.
+     *
+     * The list differs by mode, and its labels are `stringResource`s, so neither
+     * an index nor the text can name a row reliably.
+     */
+    fun moreRow(destination: MoreDestination) = "more:row:${destination.name.lowercase()}"
 
     /** The Incoming / Answered tabs, by position. */
     fun qaTab(index: Int) = "qa:tab:$index"
