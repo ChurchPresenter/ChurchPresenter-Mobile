@@ -38,7 +38,13 @@ class QAScreenshotTest {
     private val questions = listOf(
         question("1", "How do we know the promises still apply to us today?", name = "Ruth"),
         question("2", "What does 'grace' mean in verse 8?", QuestionStatus.APPROVED, "Sam", upvotes = 7),
-        question("3", "Could you say more about the second point?", QuestionStatus.APPROVED, upvotes = 2, downvotes = 1),
+        question(
+            "3",
+            "Could you say more about the second point?",
+            QuestionStatus.APPROVED,
+            upvotes = 2,
+            downvotes = 1,
+        ),
         question("4", "Where can we read the passage again?", QuestionStatus.DONE, "Ann"),
     )
 

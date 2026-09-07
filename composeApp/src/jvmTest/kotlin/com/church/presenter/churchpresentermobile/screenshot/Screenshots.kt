@@ -1,20 +1,30 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.runDesktopComposeUiTest
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.ThemeMode
+import com.church.presenter.churchpresentermobile.ui.BottomTabBar
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import io.github.takahirom.roborazzi.captureRoboImage
 
@@ -59,6 +69,33 @@ internal object Screenshots {
 
     /** A tablet/landscape width, for the composables whose layout changes with it. */
     val TABLET_WIDTH: Dp = 840.dp
+
+    // ── Store and website images ─────────────────────────────────────────
+    //
+    // A different job from a golden: nobody diffs these, they are pictures of
+    // the app for a listing page. They are written outside `screenshots/` so a
+    // content tweak that makes a nicer marketing shot does not fail the test
+    // gate, and so nothing here has to be reviewed as a golden.
+
+    /** Where the store/website images go, relative to the module directory. */
+    const val MARKETING_DIR: String = "marketing"
+
+    /**
+     * Pixels per dp for a store image.
+     *
+     * A golden renders at density 1 — 360dp of layout becomes a 360px PNG,
+     * which is fine for a diff and useless on a listing page, where Apple and
+     * Google both want something around 1080px wide. At 3x the same 360dp
+     * phone frame comes out 1080x2340, which is a real device screenshot's
+     * shape and resolution.
+     */
+    const val STORE_DENSITY: Float = 3f
+
+    /** The phone frame the store images use: 1080x2340 at [STORE_DENSITY]. */
+    val STORE_PHONE_HEIGHT: Dp = 780.dp
+
+    /** The tablet frame: 2520x3360 at [STORE_DENSITY]. */
+    val STORE_TABLET_HEIGHT: Dp = 1120.dp
 }
 
 /**
@@ -172,6 +209,75 @@ private fun goldenPath(name: String, theme: ThemeMode): String {
     }
     val (subject, state) = parts
     return "${Screenshots.DIR}/$subject/${state}__${theme.suffix}.png"
+}
+
+/**
+ * Captures one screen as a **store/website image** — `marketing/<name>__<theme>.png`.
+ *
+ * Not a golden and not diffed. The differences from [screenshot] are the ones
+ * that matter to a listing page rather than to a test:
+ *
+ * - **Rendered at 3x** ([Screenshots.STORE_DENSITY]), so a phone frame comes out
+ *   1080x2340 instead of 360x780. A golden's job is to be compared; this one's
+ *   job is to be looked at on a Retina display and uploaded to App Store
+ *   Connect, and both stores reject images this small.
+ * - **A fixed height as well as a width**, so every image in the set is exactly
+ *   the same shape. A store listing with screenshots of three different aspect
+ *   ratios looks broken before anyone reads a word of it.
+ *
+ * One image per screen, in both themes, is what the set is: the app at its
+ * best, not every state it can reach.
+ */
+@OptIn(ExperimentalTestApi::class)
+internal fun marketingShot(
+    name: String,
+    width: Dp = Screenshots.PHONE_WIDTH,
+    height: Dp = Screenshots.STORE_PHONE_HEIGHT,
+    themes: List<ThemeMode> = listOf(ThemeMode.LIGHT, ThemeMode.DARK),
+    tab: AppTab? = null,
+    tabs: List<AppTab> = AppTab.forMode(AppMode.REMOTE),
+    header: (@Composable () -> Unit)? = null,
+    until: (ComposeUiTest.() -> Boolean)? = null,
+    content: @Composable () -> Unit,
+) {
+    // The test window has to be opened at the size we want the PNG to be. The
+    // default one is 1024x768, and a capture is clipped to it — asking for a
+    // 1080x2340 frame inside it produced sixteen identical 1024x768 images of
+    // a cropped screen.
+    val density = Screenshots.STORE_DENSITY
+    val widthPx = (width.value * density).toInt()
+    val heightPx = (height.value * density).toInt()
+
+    themes.forEach { theme ->
+        runDesktopComposeUiTest(width = widthPx, height = heightPx) {
+            setContent {
+                CompositionLocalProvider(LocalDensity provides Density(density)) {
+                    AppTheme(themeMode = theme) {
+                        Scaffold(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            // The app's own chrome, wired the way App.kt wires it.
+                            // Without it these are pictures of a screen's contents,
+                            // not of the app: no title, and no tab strip, which is
+                            // the one thing every real screenshot of a phone app has
+                            // along the bottom.
+                            topBar = { header?.invoke() },
+                            bottomBar = {
+                                if (tab != null) {
+                                    BottomTabBar(selectedTab = tab, onTabSelected = {}, tabs = tabs)
+                                }
+                            },
+                        ) { padding ->
+                            Box(Modifier.fillMaxSize().padding(padding)) { content() }
+                        }
+                    }
+                }
+            }
+            until?.let { waitUntil(timeoutMillis = CONTENT_TIMEOUT_MS) { it() } }
+            onRoot().captureRoboImage(
+                "${Screenshots.MARKETING_DIR}/${name}__${theme.suffix}.png",
+            )
+        }
+    }
 }
 
 private val ThemeMode.suffix: String

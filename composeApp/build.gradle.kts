@@ -556,6 +556,12 @@ val viewModelBackedUiTests = listOf(
 // `screenshotTest` below is the only task that runs them.
 val screenshotTestPackage = "com.church.presenter.churchpresentermobile.screenshot.*"
 
+// The store/website images are produced by the same machinery but are NOT a
+// test: nothing diffs them, and they are meant to change whenever the app
+// looks better. Kept out of every run including screenshotTest, and produced
+// on demand by `marketingScreenshots` below.
+val marketingTestClass = "com.church.presenter.churchpresentermobile.screenshot.MarketingScreenshotTest"
+
 // configureEach on the supertype rather than tasks.named: the Android unit-test
 // tasks are not registered yet at this point in configuration, so naming
 // testDebugUnitTest directly fails with "Task with name ... not found".
@@ -566,8 +572,17 @@ tasks.withType<AbstractTestTask>().configureEach {
     if (name == "wasmJsBrowserTest") {
         viewModelBackedUiTests.forEach { filter.excludeTestsMatching(it) }
     }
-    if (name != "screenshotTest") {
+    // The screenshot package is off-limits to every ordinary run. Note that
+    // `marketingScreenshots` lives in that same package, so it has to be spared
+    // this too — excluding the package there left the task matching nothing and
+    // "succeeding" in silence, having written not one image.
+    if (name != "screenshotTest" && name != "marketingScreenshots") {
         filter.excludeTestsMatching(screenshotTestPackage)
+    }
+    // …and the marketing class is off-limits to everything except its own task,
+    // screenshotTest included: it is not a golden and must never be verified.
+    if (name != "marketingScreenshots") {
+        filter.excludeTestsMatching(marketingTestClass)
     }
 }
 
@@ -631,6 +646,46 @@ tasks.register<Test>("screenshotTest") {
     // Rendering is single-threaded per test and the images are compared in
     // memory; forking further JVMs costs more than it saves.
     maxParallelForks = 1
+}
+
+// ---------------------------------------------------------------------------
+// Store and website images
+//
+//   ./gradlew :composeApp:marketingScreenshots
+//
+// Writes composeApp/marketing/<screen>__light.png and __dark.png — one image
+// per screen at 1080x2340, which is a real phone screenshot's shape and the
+// resolution the App Store and Play both want.
+//
+// Always records and never verifies: these are pictures of the app, not
+// golden files. Nothing compares them, so a redesign simply produces better
+// ones, and re-running is always what was meant — hence no up-to-date check.
+// ---------------------------------------------------------------------------
+tasks.register<Test>("marketingScreenshots") {
+    group = "documentation"
+    description = "Renders one store/website image per screen into composeApp/marketing/."
+
+    val jvmTestCompilation = kotlin.targets.getByName("jvm").compilations.getByName("test")
+    testClassesDirs = jvmTestCompilation.output.classesDirs
+    classpath = jvmTestCompilation.output.allOutputs + jvmTestCompilation.runtimeDependencyFiles
+
+    filter.includeTestsMatching(marketingTestClass)
+
+    systemProperty("roborazzi.test.record", "true")
+    systemProperty("roborazzi.test.verify", "false")
+    systemProperty("roborazzi.test.compare", "false")
+
+    outputs.upToDateWhen { false }
+    maxParallelForks = 1
+
+    // Resolved at CONFIGURATION time: reading `layout` from inside doLast
+    // captures the Project, which the configuration cache refuses to serialize
+    // — the same trap the JaCoCo report task documents above.
+    val marketingDir = layout.projectDirectory.dir("marketing").asFile.path
+    doLast {
+        logger.lifecycle("")
+        logger.lifecycle("Store images: file://$marketingDir")
+    }
 }
 
 // ---------------------------------------------------------------------------
