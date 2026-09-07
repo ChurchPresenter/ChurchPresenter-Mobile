@@ -582,7 +582,15 @@ class PicturesViewModelTest {
         val vm = uploadVm(folderStatus = HttpStatusCode.InternalServerError)
         try {
             vm.uploadDevicePhotos(listOf(photo("a.jpg")))
-            val error = vm.error.first { it != null && it.contains("Uploaded but") }
+            // The upload publishes TWO "Uploaded but …" errors in a row — the
+            // failed projection first, then the failed folder reload. Waiting on
+            // the shared prefix catches whichever one the dispatcher happens to
+            // be on, so the assertion below failed intermittently on the
+            // projection message; the teardown that followed then tore down a
+            // ViewModel still mid-upload, and THAT hang is what CI reported.
+            val error = vm.error.first { it != null && it.contains("failed to load folder") }
+            // The spinner is lowered after the error is published.
+            vm.isUploading.first { !it }
 
             assertTrue(error!!.contains("folder"), error)
             assertFalse(vm.isUploading.value)
