@@ -167,8 +167,9 @@ class SongSyncOutcomeTest {
 
         click(LibraryTags.SYNC_BUTTON)
 
-        awaitThat { vm.outcome.value is SyncOutcome.Success }
-        assertTrue(vm.state.value.hasEverSynced)
+        // The stamp is written after the outcome is published, so await the
+        // thing being asserted rather than a signal that precedes it.
+        awaitThat { vm.state.value.hasEverSynced }
     }
 
     // ── A copy that half worked ──────────────────────────────────────────

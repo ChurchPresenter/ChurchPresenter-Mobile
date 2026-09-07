@@ -318,7 +318,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 
 tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
     group = "verification"
-    description = "Fails the build when line coverage drops below the floor."
+    description = "Fails the build when coverage drops below the floors."
     dependsOn("jacocoTestReport")
     executionData.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.executionData })
     classDirectories.setFrom(tasks.named<JacocoReport>("jacocoTestReport").map { it.classDirectories })
@@ -326,11 +326,45 @@ tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
 
     violationRules {
         rule {
-            // The project's coverage floor.
+            // The project's coverage floors, one per counter.
+            //
+            // Set at the measured figure minus two points, capped at 0.85 — a
+            // ratchet, not a target: it stops a change quietly undoing coverage
+            // that already exists, while leaving room for an honest refactor
+            // that moves a few lines around.
+            //
+            // Raising these as coverage rises is the intended direction. Lowering
+            // one, or widening the report's class directories to make a build
+            // green, is the thing AGENT.md forbids without the owner saying so.
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = "0.80".toBigDecimal()
+                minimum = "0.85".toBigDecimal()
+            }
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.846".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.762".toBigDecimal()
+            }
+            limit {
+                counter = "CLASS"
+                value = "COVEREDRATIO"
+                minimum = "0.844".toBigDecimal()
+            }
+            limit {
+                counter = "METHOD"
+                value = "COVEREDRATIO"
+                minimum = "0.802".toBigDecimal()
+            }
+            limit {
+                counter = "COMPLEXITY"
+                value = "COVEREDRATIO"
+                minimum = "0.738".toBigDecimal()
             }
         }
     }

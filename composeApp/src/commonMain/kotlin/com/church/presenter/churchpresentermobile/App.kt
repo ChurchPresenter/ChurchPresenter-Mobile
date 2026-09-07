@@ -156,7 +156,7 @@ fun App() {
     // server's documented privacy intent. Opted-out users still send an
     // anonymous geo ping (PingReporter treats a blank id as "no id").
     LaunchedEffect(Unit) {
-        PingReporter.pingOnOpen(if (appSettings.isTelemetryEnabled) appSettings.deviceId else "")
+        PingReporter.pingOnOpen(pingDeviceId(appSettings.isTelemetryEnabled, appSettings.deviceId))
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -173,8 +173,13 @@ fun App() {
     // Debug builds always skip demo mode so developers work against live data.
     var isDemoMode by remember {
         mutableStateOf(
-            if (isDebugBuild) false
-            else RemoteConfig.getBoolean(RemoteConfigKeys.IS_DEMO_MODE, RemoteConfigDefaults.IS_DEMO_MODE)
+            startsInDemoMode(
+                isDebug = isDebugBuild,
+                remoteFlag = RemoteConfig.getBoolean(
+                    RemoteConfigKeys.IS_DEMO_MODE,
+                    RemoteConfigDefaults.IS_DEMO_MODE,
+                ),
+            )
         )
     }
     // On debug builds the LaunchedEffect is omitted entirely — we never call
@@ -275,7 +280,7 @@ fun App() {
     // gate as pingOnOpen above.
     LaunchedEffect(eventService) {
         eventService.connected.first { it }
-        PingReporter.pingConnected(if (appSettings.isTelemetryEnabled) appSettings.deviceId else "")
+        PingReporter.pingConnected(pingDeviceId(appSettings.isTelemetryEnabled, appSettings.deviceId))
     }
 
     // Pause the WebSocket reconnect loop while the app is backgrounded so it stops
@@ -452,7 +457,7 @@ fun App() {
         if (deepLinkCount > 0) {
             settingsSaveToken++
             // Don't open settings if the connect-setup screen handled the scan
-            if (!showConnectSetup) {
+            if (deepLinkOpensSettings(showConnectSetup)) {
                 showSettings = true
             }
             snackbarHostState.showSnackbar(
@@ -498,11 +503,11 @@ fun App() {
     // tab that is no longer in the strip. Every index lookup below is therefore
     // written to survive a -1, and this effect settles it on the next frame.
     LaunchedEffect(appMode) {
-        if (selectedTab !in tabs) selectedTab = tabs.first()
+        selectedTab = settledTab(selectedTab, tabs)
         // Same for a More destination opened before the switch: standalone cannot
         // fill the desktop-backed screens, so leaving one open would strand the
         // operator on a screen the launcher no longer offers a way back to.
-        moreDestination?.let { if (it !in MoreDestination.forMode(appMode)) moreDestination = null }
+        moreDestination = settledMoreDestination(moreDestination, appMode)
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -520,7 +525,7 @@ fun App() {
 
     // ── Pager state — drives swipe-between-tabs ───────────────────────────
     val pagerState = rememberPagerState(
-        initialPage = tabs.indexOf(selectedTab).coerceAtLeast(0),
+        initialPage = pageForTab(selectedTab, tabs),
         pageCount = { tabs.size }
     )
 
@@ -537,7 +542,7 @@ fun App() {
     // re-firing every tab's network calls.
     LaunchedEffect(pagerState, tabs) {
         snapshotFlow { pagerState.settledPage }.drop(1).collect { page ->
-            selectedTab = tabs.getOrNull(page) ?: tabs.first()
+            selectedTab = tabForPage(page, tabs)
         }
     }
 
@@ -546,7 +551,7 @@ fun App() {
     // while changing index (SONGS is 0 in remote, 1 in standalone) — without this
     // the pager would be left showing a different tab than the strip highlights.
     LaunchedEffect(selectedTab, tabs) {
-        val targetPage = tabs.indexOf(selectedTab).coerceAtLeast(0)
+        val targetPage = pageForTab(selectedTab, tabs)
         if (pagerState.currentPage != targetPage) {
             pagerState.animateScrollToPage(targetPage)
         }
@@ -558,16 +563,7 @@ fun App() {
         // crash reports a trail of which tabs were visited leading up to the crash.
         CrashReporting.log("Tab selected: ${selectedTab.name.lowercase()}")
         // Only log the tab-level screen when not inside a detail sub-screen
-        val tabScreen = when (selectedTab) {
-            AppTab.PRESENT       -> AnalyticsScreen.STANDALONE
-            AppTab.LIBRARY       -> AnalyticsScreen.LIBRARY
-            AppTab.SONGS         -> AnalyticsScreen.SONGS
-            AppTab.BIBLE         -> AnalyticsScreen.BIBLE_BOOKS
-            AppTab.MEDIA         -> AnalyticsScreen.MEDIA
-            AppTab.PRESENTATION  -> AnalyticsScreen.PRESENTATIONS
-            AppTab.MORE          -> AnalyticsScreen.MORE
-        }
-        Analytics.logScreenView(tabScreen)
+        Analytics.logScreenView(tabScreenName(selectedTab))
     }
 
     // Song detail open/close → update screen name
@@ -580,11 +576,7 @@ fun App() {
     LaunchedEffect(bibleBook, bibleChapter) {
         if (selectedTab != AppTab.BIBLE) return@LaunchedEffect
         Analytics.logScreenView(
-            when {
-                bibleChapter != null -> AnalyticsScreen.BIBLE_VERSES
-                bibleBook    != null -> AnalyticsScreen.BIBLE_CHAPTERS
-                else                 -> AnalyticsScreen.BIBLE_BOOKS
-            }
+            bibleScreenName(hasBook = bibleBook != null, hasChapter = bibleChapter != null)
         )
     }
 
@@ -605,15 +597,7 @@ fun App() {
 
     // Log More sub-screen views
     LaunchedEffect(moreDestination) {
-        when (moreDestination) {
-            MoreDestination.PICTURES -> Analytics.logScreenView(AnalyticsScreen.PICTURES)
-            MoreDestination.QA -> Analytics.logScreenView(AnalyticsScreen.QA_ADMIN)
-            MoreDestination.DICTIONARY -> Analytics.logScreenView(AnalyticsScreen.DICTIONARY)
-            MoreDestination.ANNOUNCEMENTS -> Analytics.logScreenView(AnalyticsScreen.ANNOUNCEMENTS)
-            MoreDestination.WEB -> Analytics.logScreenView(AnalyticsScreen.WEB)
-            MoreDestination.CONTACT -> Unit
-            null -> {}
-        }
+        moreScreenName(moreDestination)?.let(Analytics::logScreenView)
     }
 
     // Dedicated image HTTP client: same SSL bypass but no ContentNegotiation,
@@ -803,85 +787,32 @@ fun App() {
                                             songDetailBookName = null
                                             bibleBook = null
                                             bibleChapter = null
-                                            when (item.type?.lowercase()) {
-                                                "song" -> {
-                                                    val title = item.title
-                                                    if (title != null) {
-                                                        selectedTab     = AppTab.SONGS
-                                                        pendingSongTitle = title
-                                                        pendingSongBook  = item.bookName
+                                            val destination = destinationFor(item)
+                                            destination.tab?.let { selectedTab = it }
+                                            destination.moreDestination?.let { moreDestination = it }
+                                            when (destination.tab) {
+                                                AppTab.SONGS -> {
+                                                    pendingSongTitle = destination.songTitle
+                                                    pendingSongBook = destination.songBook
+                                                }
+                                                AppTab.BIBLE -> {
+                                                    pendingBibleBookName = destination.bibleBookName
+                                                    pendingBibleChapter = destination.bibleChapter
+                                                    pendingBibleVerses = destination.bibleVerses
+                                                }
+                                                AppTab.PRESENTATION -> pendingPresentationId = destination.presentationId
+                                                AppTab.MEDIA -> pendingMediaUrl = destination.mediaUrl
+                                                AppTab.MORE -> when (destination.moreDestination) {
+                                                    MoreDestination.PICTURES -> {
+                                                        pendingPictureFolderId = destination.pictureFolderId
+                                                        pendingPictureImageIndex = destination.pictureImageIndex
                                                     }
+                                                    MoreDestination.ANNOUNCEMENTS -> pendingAnnouncement = destination.announcement
+                                                    MoreDestination.WEB -> pendingWebUrl = destination.webUrl
+                                                    MoreDestination.DICTIONARY -> pendingDictionaryQuery = destination.dictionaryQuery
+                                                    else -> Unit
                                                 }
-                                                "bible" -> {
-                                                    // Prefer structured fields; fall back to parsing title
-                                                    // (e.g. "1 Kings 17:3,4,7" or "John 3:16-18")
-                                                    var bookName = item.bookName
-                                                    var chapter  = item.chapter
-
-                                                    // Raw verse string from dedicated field or title suffix
-                                                    val rawVerseStr: String? =
-                                                        item.verseRange?.takeIf { it.isNotBlank() }
-                                                            ?: item.verseNumber?.toString()
-
-                                                    // Title parsing fallback for book, chapter and/or verses
-                                                    val titleToParse = item.title?.trim()
-                                                    var titleVerseStr: String? = null
-                                                    if (titleToParse != null && titleToParse.contains(":")) {
-                                                        val colonIdx    = titleToParse.lastIndexOf(':')
-                                                        titleVerseStr   = titleToParse.substring(colonIdx + 1).trim()
-                                                        val beforeColon = titleToParse.substring(0, colonIdx).trim()
-                                                        val lastSpace   = beforeColon.lastIndexOf(' ')
-                                                        if (lastSpace >= 0) {
-                                                            if (bookName == null) bookName = beforeColon.substring(0, lastSpace).trim().ifBlank { null }
-                                                            if (chapter  == null) chapter  = beforeColon.substring(lastSpace + 1).toIntOrNull()
-                                                        }
-                                                    }
-
-                                                    val verseStr = rawVerseStr ?: titleVerseStr
-
-                                                    if (bookName != null && chapter != null) {
-                                                        selectedTab         = AppTab.BIBLE
-                                                        pendingBibleBookName = bookName
-                                                        pendingBibleChapter  = chapter
-                                                        pendingBibleVerses   = parseVerseString(verseStr)
-                                                    }
-                                                }
-                                                "image", "picture" -> {
-                                                    // Pictures now live under the More tab.
-                                                    selectedTab              = AppTab.MORE
-                                                    moreDestination          = MoreDestination.PICTURES
-                                                    // Server puts the folder UUID in the generic "id" field
-                                                    pendingPictureFolderId   = item.id ?: item.folderId
-                                                    pendingPictureImageIndex = item.imageIndex
-                                                }
-                                                "presentation" -> {
-                                                    val id = item.id
-                                                    if (!id.isNullOrBlank()) {
-                                                        selectedTab           = AppTab.PRESENTATION
-                                                        pendingPresentationId = id
-                                                    }
-                                                }
-                                                "media" -> {
-                                                    selectedTab = AppTab.MEDIA
-                                                    pendingMediaUrl = item.mediaUrl
-                                                }
-                                                "announcement" -> {
-                                                    selectedTab     = AppTab.MORE
-                                                    moreDestination = MoreDestination.ANNOUNCEMENTS
-                                                    pendingAnnouncement = item
-                                                }
-                                                "website", "web" -> {
-                                                    selectedTab     = AppTab.MORE
-                                                    moreDestination = MoreDestination.WEB
-                                                    pendingWebUrl = item.url ?: item.displayText
-                                                }
-                                                "dictionary" -> {
-                                                    selectedTab     = AppTab.MORE
-                                                    moreDestination = MoreDestination.DICTIONARY
-                                                    // Schedule sends "word (translit): definition" — search by the word.
-                                                    pendingDictionaryQuery =
-                                                        (item.text ?: item.displayText)?.substringBefore(" (")?.trim()
-                                                }
+                                                else -> Unit
                                             }
                                         }
                                     }
@@ -968,7 +899,7 @@ fun App() {
                         tabs = tabs,
                         onTabSelected = { tab ->
                             // Re-tapping the active More tab returns to its launcher grid.
-                            if (tab == AppTab.MORE && selectedTab == AppTab.MORE) moreDestination = null
+                            if (tapReturnsToMoreLauncher(tab, selectedTab)) moreDestination = null
                             selectedTab = tab
                         }
                     )
@@ -1186,31 +1117,4 @@ fun App() {
             }
         } // end ModalNavigationDrawer
     }
-}
-
-/**
- * Parses a verse string into a set of 1-based verse numbers.
- *
- * Handles all common formats:
- *   "3"       → {3}
- *   "3-7"     → {3,4,5,6,7}
- *   "3,4,7"   → {3,4,7}
- *   "3-5,7"   → {3,4,5,7}
- *   null/"" → {}
- */
-private fun parseVerseString(verseStr: String?): Set<Int> {
-    if (verseStr.isNullOrBlank()) return emptySet()
-    val result = mutableSetOf<Int>()
-    for (token in verseStr.split(",")) {
-        val part = token.trim()
-        if (part.contains("-")) {
-            val sides = part.split("-")
-            val start = sides.firstOrNull()?.trim()?.toIntOrNull() ?: continue
-            val end   = sides.lastOrNull()?.trim()?.toIntOrNull()  ?: start
-            for (v in start..end) result += v
-        } else {
-            part.toIntOrNull()?.let { result += it }
-        }
-    }
-    return result
 }

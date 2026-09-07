@@ -4,8 +4,11 @@ name: Tests
 #  - offline-assets: guards the bundled display page against remote dependencies.
 #  - detekt:    static analysis on the desktop app's ruleset — seconds, no secrets.
 #  - js-tests:  fast, headless-browser run of all commonTest — no secrets needed.
-#  - coverage:  JaCoCo coverage over the Android unit-test variant,
-#               needs GOOGLE_SERVICES_JSON_BASE64 to configure the Android build.
+#  - coverage:  JaCoCo coverage over the Android unit-test variant, gated on the
+#               floors in composeApp/build.gradle.kts. Runs with or without
+#               GOOGLE_SERVICES_JSON_BASE64 — the build writes a Firebase
+#               placeholder when the secret is absent, as it does for a fresh
+#               clone, so a fork's PR is gated exactly like anyone else's.
 
 on:
   push:
@@ -90,16 +93,19 @@ jobs:
       - name: Decode google-services.json
         env:
           GS_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        # No secret is not a reason to skip the gate. The build writes a valid
+        # placeholder when the file is missing (see build.gradle.kts), which is
+        # all the Android unit-test variant needs — and secrets are unavailable
+        # to pull requests from forks, so skipping here let exactly the PRs
+        # nobody has reviewed yet through without a coverage check at all.
         run: |
           if [ -z "$GS_B64" ]; then
-            echo "GOOGLE_SERVICES_JSON_BASE64 secret not set — skipping coverage job."
-            echo "SKIP=1" >> "$GITHUB_ENV"
+            echo "GOOGLE_SERVICES_JSON_BASE64 not set — the build will write its placeholder."
             exit 0
           fi
           echo "$GS_B64" | tr -d '\r\n' | base64 -d > composeApp/google-services.json
           test -s composeApp/google-services.json || { echo "ERROR: google-services.json empty after decode" >&2; exit 1; }
-      - name: Generate + verify coverage (gates on the 80% floor)
-        if: env.SKIP != '1'
+      - name: Generate + verify coverage (fails below the floors)
         # --continue so the HTML/XML report is still produced even when the
         # verification fails, so the uploaded artifact shows what dropped below the floor.
         #
@@ -112,7 +118,7 @@ jobs:
           ./gradlew :composeApp:jacocoTestReport :composeApp:jacocoTestCoverageVerification
           -PstepSummary="$GITHUB_STEP_SUMMARY" --continue
       - name: Upload coverage report
-        if: always() && env.SKIP != '1'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-coverage-report
