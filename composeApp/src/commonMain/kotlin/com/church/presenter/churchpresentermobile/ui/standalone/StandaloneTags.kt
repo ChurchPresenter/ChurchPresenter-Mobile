@@ -52,6 +52,19 @@ internal object StandaloneTags {
 
     fun noticeClear(id: String) = "localNotices:row:$id:clear"
 
+    // ── Photos held on this device ───────────────────────────────────────
+    const val PHOTOS_EMPTY = "localPhotos:empty"
+    const val PHOTOS_PICK = "localPhotos:pick"
+    const val PHOTOS_CLEAR = "localPhotos:clear"
+    const val PHOTOS_NO_SERVER = "localPhotos:noServer"
+
+    /** One picked photo, by its id. */
+    fun photo(id: String) = "localPhotos:photo:$id"
+
+    fun photoRemove(id: String) = "localPhotos:photo:$id:remove"
+
+    fun photoLive(id: String) = "localPhotos:photo:$id:live"
+
     // ── A link shown by this device ──────────────────────────────────────
     const val WEB_URL = "localWeb:url"
     const val WEB_GO_LIVE = "localWeb:goLive"

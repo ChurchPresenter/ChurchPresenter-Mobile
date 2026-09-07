@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,11 +67,12 @@ fun LocalPhotosScreen(
     library: PhotoLibrary,
     presenter: StandaloneEngine?,
     modifier: Modifier = Modifier,
+    /** Supplied by tests only; the screen owns its own otherwise. */
+    providedViewModel: LocalPhotosViewModel? = null,
 ) {
     val colors = LocalAppColors.current
-    val vm: LocalPhotosViewModel = viewModel(key = "local_photos") {
-        LocalPhotosViewModel(library, presenter)
-    }
+    val vm: LocalPhotosViewModel = providedViewModel
+        ?: viewModel(key = "local_photos") { LocalPhotosViewModel(library, presenter) }
     val photos by vm.photos.collectAsState()
     val canProject by vm.canProject.collectAsState()
     val projectingId by vm.projectingId.collectAsState()
@@ -87,7 +89,7 @@ fun LocalPhotosScreen(
                     label = stringResource(Res.string.pictures_pick_from_device),
                     icon = Icons.Outlined.Image,
                     onClick = launch,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag(StandaloneTags.PHOTOS_PICK),
                 )
             }
             if (projectingId != null) {
@@ -95,7 +97,7 @@ fun LocalPhotosScreen(
                     label = stringResource(Res.string.action_clear_display),
                     icon = Icons.Outlined.Delete,
                     onClick = { vm.clearDisplay() },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag(StandaloneTags.PHOTOS_CLEAR),
                 )
             }
         }
@@ -108,12 +110,18 @@ fun LocalPhotosScreen(
                 text = stringResource(Res.string.standalone_no_output),
                 color = colors.muted,
                 fontSize = 12.sp,
+                modifier = Modifier.testTag(StandaloneTags.PHOTOS_NO_SERVER),
             )
         }
 
         if (photos.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(Res.string.pictures_no_items), color = colors.muted, fontSize = 14.sp)
+                Text(
+                    text = stringResource(Res.string.pictures_no_items),
+                    color = colors.muted,
+                    fontSize = 14.sp,
+                    modifier = Modifier.testTag(StandaloneTags.PHOTOS_EMPTY),
+                )
             }
             return@Column
         }
@@ -133,6 +141,9 @@ fun LocalPhotosScreen(
                     enabled = canProject,
                     onClick = { vm.project(photo) },
                     onRemove = { vm.remove(photo.id) },
+                    modifier = Modifier.testTag(StandaloneTags.photo(photo.id)),
+                    removeModifier = Modifier.testTag(StandaloneTags.photoRemove(photo.id)),
+                    liveModifier = Modifier.testTag(StandaloneTags.photoLive(photo.id)),
                 )
             }
         }
@@ -147,12 +158,15 @@ private fun PhotoTile(
     enabled: Boolean,
     onClick: () -> Unit,
     onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
+    removeModifier: Modifier = Modifier,
+    liveModifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
     val shape = RoundedCornerShape(12.dp)
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f)
             .clip(shape)
             .background(colors.surface)
@@ -187,7 +201,7 @@ private fun PhotoTile(
             contentDescription = stringResource(Res.string.cd_delete),
             tint = colors.muted,
             onClick = onRemove,
-            modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).size(28.dp),
+            modifier = removeModifier.align(Alignment.TopEnd).padding(4.dp).size(28.dp),
         )
 
         if (isProjecting) {
@@ -195,7 +209,7 @@ private fun PhotoTile(
                 imageVector = Icons.Filled.Visibility,
                 contentDescription = null,
                 tint = colors.accent,
-                modifier = Modifier.align(Alignment.BottomStart).padding(8.dp).size(18.dp),
+                modifier = liveModifier.align(Alignment.BottomStart).padding(8.dp).size(18.dp),
             )
         }
     }

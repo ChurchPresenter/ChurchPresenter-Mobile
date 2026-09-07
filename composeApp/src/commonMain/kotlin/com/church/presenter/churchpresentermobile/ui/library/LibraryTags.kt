@@ -117,7 +117,6 @@ internal object LibraryTags {
     const val ADD = "library:add"
     const val ADD_SONG = "library:add:song"
     const val ADD_NOTICE = "library:add:notice"
-    const val ADD_DISMISS = "library:add:dismiss"
     const val SONGS_HEADING = "library:heading:songs"
     const val NOTICES_HEADING = "library:heading:notices"
 
