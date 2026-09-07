@@ -21,6 +21,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -581,10 +584,32 @@ class PicturesViewModelTest {
     fun `a photo that uploaded but whose folder would not load says so`() = runVmTestUnconfined {
         val vm = uploadVm(folderStatus = HttpStatusCode.InternalServerError)
         try {
-            vm.uploadDevicePhotos(listOf(photo("a.jpg")))
-            val error = vm.error.first { it != null && it.contains("Uploaded but") }
+            // `error` cannot be SAMPLED here, and this is the trap that made
+            // this test flaky twice.
+            //
+            // The upload writes it three times — "Uploaded but failed to
+            // project", then "Uploaded but failed to load folder" — while the
+            // load the CONSTRUCTOR started (init { loadPictures() }) is writing
+            // it too, including a `_error.value = null`. StateFlow conflates, so
+            // whichever value the collector happens to resume on is the only one
+            // it sees: `first { it.contains(...) }` can miss the message
+            // entirely, hang the body, and surface as UncompletedCoroutinesError
+            // rather than as anything resembling the real cause.
+            //
+            // So record every emission instead of sampling one. The collector is
+            // unconfined, so it resumes inside each assignment and no value is
+            // conflated away.
+            val seen = mutableListOf<String?>()
+            val watcher = launch(UnconfinedTestDispatcher(testScheduler)) { vm.error.toList(seen) }
 
-            assertTrue(error!!.contains("folder"), error)
+            vm.uploadDevicePhotos(listOf(photo("a.jpg")))
+            vm.isUploading.first { !it }
+            watcher.cancel()
+
+            assertTrue(
+                seen.any { it != null && it.contains("failed to load folder") },
+                "no folder-reload error was published; saw $seen",
+            )
             assertFalse(vm.isUploading.value)
         } finally {
             tearDown(vm)
