@@ -125,6 +125,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(0)) }
         click(UiTags.pictureCell(0))
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -138,6 +139,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(0)) }
         click(UiTags.pictureCell(0))
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -151,6 +153,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(1)) }
         click(UiTags.pictureCell(1))
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -168,6 +171,7 @@ class PicturesActionsTest {
         awaitThat { vm.isProjecting.value }
         click(UiTags.FAB_CAST)
         awaitThat { !vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -185,6 +189,7 @@ class PicturesActionsTest {
         awaitThat { desktop.payloadsOf(WsMessageType.SELECT_PICTURE).size == 1 }
         click(UiTags.FAB_CAST)
         awaitThat { desktop.actions.contains(WsMessageType.CLEAR) }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -201,6 +206,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(0)) }
         click(UiTags.pictureCell(0))
         awaitThat { vm.selectedImage.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -215,6 +221,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(2)) }
         click(UiTags.pictureCell(2))
         awaitThat { vm.selectedImage.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -235,6 +242,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(4)) }
         click(UiTags.pictureCell(4))
         awaitThat { vm.selectedImage.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -266,6 +274,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(0)) }
         click(UiTags.pictureCell(0))
         awaitThat { vm.selectedImage.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -290,6 +299,7 @@ class PicturesActionsTest {
         awaitThat { exists(UiTags.pictureCell(0)) }
         click(UiTags.pictureCell(0))
         awaitThat { desktop.payloadsOf(WsMessageType.SELECT_PICTURE).size == 1 }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 

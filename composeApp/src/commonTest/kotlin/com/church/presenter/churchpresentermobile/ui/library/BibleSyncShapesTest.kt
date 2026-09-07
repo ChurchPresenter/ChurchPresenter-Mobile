@@ -96,7 +96,7 @@ class BibleSyncShapesTest {
     }
 
     /** Finds the offers, ticks the named ones, and starts the download. */
-    private fun ComposeUiTest.download(f: Fixture, vararg fileNames: String) {
+    private fun ComposeUiTest.download(vararg fileNames: String) {
         click(LibraryTags.BIBLE_SYNC_FIND)
         awaitThat { exists(LibraryTags.bibleChoice(fileNames.first())) }
         fileNames.forEach { click(LibraryTags.bibleChoice(it)) }
@@ -110,7 +110,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value != null }
         val outcome = f.viewModel.outcome.value
@@ -122,7 +122,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -132,7 +132,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value != null }
         assertTrue(f.viewModel.installed.value.isEmpty())
@@ -143,7 +143,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_INSTALLED))
@@ -155,7 +155,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { "##Title: Empty\n-----\n" })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value != null }
         assertTrue(f.viewModel.installed.value.isEmpty())
@@ -168,7 +168,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { if (it == 0) module("King James Version") else null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
 
         awaitThat { f.viewModel.installed.value.size == 1 }
     }
@@ -178,7 +178,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { if (it == 0) module("King James Version") else null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
 
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         assertEquals("King James Version", f.viewModel.installed.value.first().title)
@@ -191,7 +191,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { if (it == 0) module("King James Version") else null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Success }
         assertTrue((f.viewModel.outcome.value as BibleSyncOutcome.Success).failed.isNotEmpty())
@@ -202,7 +202,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { if (it == 0) module("King James Version") else null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -212,7 +212,7 @@ class BibleSyncShapesTest {
         val f = fixture(bodyFor = { if (it == 0) module("King James Version") else null })
         showBibleSync(f)
 
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_INSTALLED) }
     }
@@ -270,7 +270,7 @@ class BibleSyncShapesTest {
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
     }
@@ -279,7 +279,7 @@ class BibleSyncShapesTest {
     fun stoppingADownloadEndsIt() = runComposeUiTest {
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -294,7 +294,7 @@ class BibleSyncShapesTest {
         // fetched — and the sheet has to say so rather than report "copied".
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -306,7 +306,7 @@ class BibleSyncShapesTest {
     fun aStoppedDownloadShowsItsResultLine() = runComposeUiTest {
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -318,7 +318,7 @@ class BibleSyncShapesTest {
     fun aStoppedDownloadSkipsTheRest() = runComposeUiTest {
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -331,7 +331,7 @@ class BibleSyncShapesTest {
     fun aStoppedDownloadPutsTheOffersBack() = runComposeUiTest {
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -343,7 +343,7 @@ class BibleSyncShapesTest {
     fun aStoppedDownloadCanBeStartedAgain() = runComposeUiTest {
         val f = fixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
         click(LibraryTags.BIBLE_SYNC_STOP)
         awaitThat { exists(LibraryTags.BIBLE_SYNC_DOWNLOAD) }
@@ -360,7 +360,7 @@ class BibleSyncShapesTest {
         // A 4 MB module is slow to fetch again over church Wi-Fi.
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
 
         click(LibraryTags.bibleRemove(f.viewModel.installed.value.first().id))
@@ -372,7 +372,7 @@ class BibleSyncShapesTest {
     fun askingIsNotRemoving() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
 
         click(LibraryTags.bibleRemove(f.viewModel.installed.value.first().id))
@@ -385,7 +385,7 @@ class BibleSyncShapesTest {
     fun confirmingRemovesTheTranslation() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         click(LibraryTags.bibleRemove(f.viewModel.installed.value.first().id))
         awaitThat { exists(LibraryTags.BIBLE_SYNC_REMOVE_CONFIRM) }
@@ -399,7 +399,7 @@ class BibleSyncShapesTest {
     fun confirmingClosesTheQuestion() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         click(LibraryTags.bibleRemove(f.viewModel.installed.value.first().id))
         awaitThat { exists(LibraryTags.BIBLE_SYNC_REMOVE_CONFIRM) }
@@ -413,7 +413,7 @@ class BibleSyncShapesTest {
     fun removingTheLastTranslationLeavesNoInstalledHeading() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         click(LibraryTags.bibleRemove(f.viewModel.installed.value.first().id))
         awaitThat { exists(LibraryTags.BIBLE_SYNC_REMOVE_CONFIRM) }
@@ -427,7 +427,7 @@ class BibleSyncShapesTest {
     fun backingOutOfARemovalKeepsTheTranslation() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         click(LibraryTags.bibleRemove(f.viewModel.installed.value.first().id))
         awaitThat { exists(LibraryTags.BIBLE_SYNC_REMOVE_DISMISS) }
@@ -442,7 +442,7 @@ class BibleSyncShapesTest {
     fun backingOutTwiceIsStillHarmless() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         val id = f.viewModel.installed.value.first().id
         click(LibraryTags.bibleRemove(id))
@@ -462,7 +462,7 @@ class BibleSyncShapesTest {
         val f = fixture()
         showBibleSync(f)
 
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
 
         awaitThat { f.viewModel.installed.value.size == 2 }
         assertTrue(exists(LibraryTags.BIBLE_SYNC_CHOOSE_HINT))
@@ -473,7 +473,7 @@ class BibleSyncShapesTest {
         val f = fixture()
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.installed.value.size == 1 }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_CHOOSE_HINT))
@@ -483,7 +483,7 @@ class BibleSyncShapesTest {
     fun pickingAnInstalledTranslationMakesItTheActiveOne() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { f.viewModel.installed.value.size == 2 }
         val second = f.viewModel.installed.value[1].id
 
@@ -496,7 +496,7 @@ class BibleSyncShapesTest {
     fun removingTheActiveTranslationLeavesTheOther() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { f.viewModel.installed.value.size == 2 }
         val first = f.viewModel.installed.value[0].id
         click(LibraryTags.bibleInstalled(first))

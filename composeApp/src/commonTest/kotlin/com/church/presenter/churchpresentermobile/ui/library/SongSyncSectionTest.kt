@@ -328,12 +328,14 @@ class SongSyncSectionTest {
 
     @Test
     fun aComputerThatRefusesTheBookListSaysSo() = runComposeUiTest {
+        // Its own line, not the empty-list one: a computer that refused is
+        // worth asking again, a computer with no songbooks is not.
         val vm = syncVm(status = HttpStatusCode.InternalServerError)
         showSongSync(vm)
 
         click(LibraryTags.syncScope(1))
 
-        awaitThat { exists(LibraryTags.SYNC_BOOKS_MISSING) }
+        awaitThat { exists(LibraryTags.SYNC_BOOKS_FAILED) }
     }
 
     @Test

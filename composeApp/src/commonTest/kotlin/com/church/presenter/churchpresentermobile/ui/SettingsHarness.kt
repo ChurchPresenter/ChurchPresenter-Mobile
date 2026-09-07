@@ -91,7 +91,7 @@ internal val restrictedDesktop = """
 """.trimIndent()
 
 /** Something answered, but it is not ChurchPresenter. */
-internal val notChurchPresenter = """{"message":"hello from nginx"}"""
+internal const val NOT_CHURCH_PRESENTER = """{"message":"hello from nginx"}"""
 
 @OptIn(ExperimentalTestApi::class)
 internal fun ComposeUiTest.showSettings(

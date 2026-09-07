@@ -288,14 +288,27 @@ class SongSyncScopeTest {
     }
 
     @Test
-    fun aDesktopThatOffersNoBooksSaysSo() = runComposeUiTest {
-        // Rather than an empty gap where a list should be.
+    fun aDesktopThatRefusesTheBookListSaysSo() = runComposeUiTest {
+        // An unreachable computer and a computer with no songbooks are
+        // different problems, and only one of them is worth retrying — so this
+        // is the failure line, not the empty-list one.
         val viewModel = vm(catalogueStatus = HttpStatusCode.InternalServerError)
         showSongSync(viewModel)
 
         click(LibraryTags.syncScope(1))
 
-        awaitThat { exists(LibraryTags.SYNC_BOOKS_MISSING) }
+        awaitThat { exists(LibraryTags.SYNC_BOOKS_FAILED) }
+    }
+
+    @Test
+    fun aDesktopThatRefusesTheBookListIsNotReportedAsEmpty() = runComposeUiTest {
+        val viewModel = vm(catalogueStatus = HttpStatusCode.InternalServerError)
+        showSongSync(viewModel)
+
+        click(LibraryTags.syncScope(1))
+
+        awaitThat { exists(LibraryTags.SYNC_BOOKS_FAILED) }
+        assertFalse(exists(LibraryTags.SYNC_BOOKS_MISSING))
     }
 
     @Test

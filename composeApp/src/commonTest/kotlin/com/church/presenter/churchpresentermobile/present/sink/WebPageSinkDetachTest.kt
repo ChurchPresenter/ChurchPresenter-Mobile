@@ -363,7 +363,7 @@ class WebPageSinkDetachTest {
         // knowing, since detach runs as the app goes away.)
         val handed = mutableListOf<String?>()
         val server = object : DisplayServer by FakeDisplayServer() {
-            override suspend fun stop(): Unit = throw IllegalStateException("already gone")
+            override suspend fun stop(): Unit = error("already gone")
         }
         val sink = WebPageSink(
             preferredPort = 8080,

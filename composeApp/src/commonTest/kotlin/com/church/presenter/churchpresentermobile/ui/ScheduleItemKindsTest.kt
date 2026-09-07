@@ -111,7 +111,9 @@ class ScheduleItemKindsTest {
 
     @Test
     fun anAnnouncementIsListed() = runComposeUiTest {
-        val vm = drawerVm(oneItem("id" to str("a"), "type" to str("announcement"), "displayText" to str("Coffee after")))
+        val vm = drawerVm(
+            oneItem("id" to str("a"), "type" to str("announcement"), "displayText" to str("Coffee after"))
+        )
         showDrawer(vm)
 
         awaitThat { isShowing("Coffee after") }
@@ -374,7 +376,14 @@ class ScheduleItemKindsTest {
     @Test
     fun theLiveFlagIsReadFromEitherSpellingTheDesktopSends() = runComposeUiTest {
         // Two server versions, two field names, one meaning.
-        val vm = drawerVm(oneItem("id" to str("a"), "type" to str("song"), "displayText" to str("First"), "isActive" to "true"))
+        val vm = drawerVm(
+            oneItem(
+                "id" to str("a"),
+                "type" to str("song"),
+                "displayText" to str("First"),
+                "isActive" to "true",
+            )
+        )
         showDrawer(vm)
 
         awaitThat { exists(UiTags.scheduleRowLive(0)) }

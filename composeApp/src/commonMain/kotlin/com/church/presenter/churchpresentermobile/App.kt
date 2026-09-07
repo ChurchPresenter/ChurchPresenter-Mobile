@@ -499,6 +499,46 @@ fun App() {
     val initialTab = TabNavigationHandler.requestedTab.value ?: AppTab.SONGS
     var selectedTab by rememberSaveable { mutableStateOf(initialTab) }
 
+    // Applying a drawer tap, hoisted out of the drawer's own lambda so the
+    // assignments read at a sane indent. Where the tap *goes* is decided by
+    // [destinationFor], which is a plain function over the row's payload.
+    val openScheduleItem: (ScheduleDestination) -> Unit = { destination ->
+        // Clear any leftover song/bible detail state so the destination shows
+        // its own header (with the right back button) rather than the previous
+        // screen's.
+        songDetailTitle = null
+        songDetailBookName = null
+        bibleBook = null
+        bibleChapter = null
+
+        destination.tab?.let { selectedTab = it }
+        destination.moreDestination?.let { moreDestination = it }
+        when (destination.tab) {
+            AppTab.SONGS -> {
+                pendingSongTitle = destination.songTitle
+                pendingSongBook = destination.songBook
+            }
+            AppTab.BIBLE -> {
+                pendingBibleBookName = destination.bibleBookName
+                pendingBibleChapter = destination.bibleChapter
+                pendingBibleVerses = destination.bibleVerses
+            }
+            AppTab.PRESENTATION -> pendingPresentationId = destination.presentationId
+            AppTab.MEDIA -> pendingMediaUrl = destination.mediaUrl
+            AppTab.MORE -> when (destination.moreDestination) {
+                MoreDestination.PICTURES -> {
+                    pendingPictureFolderId = destination.pictureFolderId
+                    pendingPictureImageIndex = destination.pictureImageIndex
+                }
+                MoreDestination.ANNOUNCEMENTS -> pendingAnnouncement = destination.announcement
+                MoreDestination.WEB -> pendingWebUrl = destination.webUrl
+                MoreDestination.DICTIONARY -> pendingDictionaryQuery = destination.dictionaryQuery
+                else -> Unit
+            }
+            else -> Unit
+        }
+    }
+
     // selectedTab is rememberSaveable, so after a mode switch it can still hold a
     // tab that is no longer in the strip. Every index lookup below is therefore
     // written to survive a -1, and this effect settles it on the next frame.
@@ -780,40 +820,7 @@ fun App() {
                                     onItemClick = { item ->
                                         coroutineScope.launch {
                                             drawerState.close()
-                                            // Clear any leftover song/bible detail state so the
-                                            // destination shows its own header (with the right back
-                                            // button) rather than the previous screen's.
-                                            songDetailTitle = null
-                                            songDetailBookName = null
-                                            bibleBook = null
-                                            bibleChapter = null
-                                            val destination = destinationFor(item)
-                                            destination.tab?.let { selectedTab = it }
-                                            destination.moreDestination?.let { moreDestination = it }
-                                            when (destination.tab) {
-                                                AppTab.SONGS -> {
-                                                    pendingSongTitle = destination.songTitle
-                                                    pendingSongBook = destination.songBook
-                                                }
-                                                AppTab.BIBLE -> {
-                                                    pendingBibleBookName = destination.bibleBookName
-                                                    pendingBibleChapter = destination.bibleChapter
-                                                    pendingBibleVerses = destination.bibleVerses
-                                                }
-                                                AppTab.PRESENTATION -> pendingPresentationId = destination.presentationId
-                                                AppTab.MEDIA -> pendingMediaUrl = destination.mediaUrl
-                                                AppTab.MORE -> when (destination.moreDestination) {
-                                                    MoreDestination.PICTURES -> {
-                                                        pendingPictureFolderId = destination.pictureFolderId
-                                                        pendingPictureImageIndex = destination.pictureImageIndex
-                                                    }
-                                                    MoreDestination.ANNOUNCEMENTS -> pendingAnnouncement = destination.announcement
-                                                    MoreDestination.WEB -> pendingWebUrl = destination.webUrl
-                                                    MoreDestination.DICTIONARY -> pendingDictionaryQuery = destination.dictionaryQuery
-                                                    else -> Unit
-                                                }
-                                                else -> Unit
-                                            }
+                                            openScheduleItem(destinationFor(item))
                                         }
                                     }
                 )

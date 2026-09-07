@@ -17,6 +17,10 @@ import kotlin.test.assertTrue
  * few run on real time with a hard budget rather than on the test clock: the
  * sink collects the count on its own scope, and a virtual clock would expire
  * the wait before that collection ever ran.
+ *
+ * In `jvmTest` rather than `commonTest` because `runBlocking` is a JVM idea —
+ * Kotlin/JS has no thread to block, so a common-source version does not compile
+ * for the browser targets. This is the run JaCoCo measures either way.
  */
 class WebPageSinkClientsTest {
 

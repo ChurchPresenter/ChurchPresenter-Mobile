@@ -61,7 +61,7 @@ class StatusViewModelTest {
     }
 
     @Test
-    fun notChurchPresenterMapsToNotChurchPresenter() = runVmTestUnconfined {
+    fun NOT_CHURCH_PRESENTERMapsToNotChurchPresenter() = runVmTestUnconfined {
         val vm = vm { path ->
             if (isStatus(path)) respond("nope", HttpStatusCode.NotFound)
             else respond("<html>router</html>", HttpStatusCode.OK)

@@ -173,9 +173,30 @@ fun AnnouncementsScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.testTag(UiTags.ANNOUNCE_COUNTDOWN_FIELDS),
                     ) {
-                        Stepper(stringResource(Res.string.stepper_hrs), form.hours, 0, 23, Modifier.weight(1f), tag = UiTags.ANNOUNCE_HOURS) { v -> viewModel.update { it.copy(hours = v) } }
-                        Stepper(stringResource(Res.string.stepper_min), form.minutes, 0, 59, Modifier.weight(1f), tag = UiTags.ANNOUNCE_MINUTES) { v -> viewModel.update { it.copy(minutes = v) } }
-                        Stepper(stringResource(Res.string.stepper_sec), form.seconds, 0, 59, Modifier.weight(1f), tag = UiTags.ANNOUNCE_SECONDS) { v -> viewModel.update { it.copy(seconds = v) } }
+                        Stepper(
+                            stringResource(Res.string.stepper_hrs),
+                            form.hours,
+                            0,
+                            23,
+                            Modifier.weight(1f),
+                            tag = UiTags.ANNOUNCE_HOURS,
+                        ) { v -> viewModel.update { it.copy(hours = v) } }
+                        Stepper(
+                            stringResource(Res.string.stepper_min),
+                            form.minutes,
+                            0,
+                            59,
+                            Modifier.weight(1f),
+                            tag = UiTags.ANNOUNCE_MINUTES,
+                        ) { v -> viewModel.update { it.copy(minutes = v) } }
+                        Stepper(
+                            stringResource(Res.string.stepper_sec),
+                            form.seconds,
+                            0,
+                            59,
+                            Modifier.weight(1f),
+                            tag = UiTags.ANNOUNCE_SECONDS,
+                        ) { v -> viewModel.update { it.copy(seconds = v) } }
                     }
                 }
                 AnnouncementType.COUNTDOWN_TO_TIME -> {
@@ -184,8 +205,22 @@ fun AnnouncementsScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.testTag(UiTags.ANNOUNCE_UNTIL_FIELDS),
                     ) {
-                        Stepper(stringResource(Res.string.stepper_hour), form.targetHour, 0, 23, Modifier.weight(1f), tag = UiTags.ANNOUNCE_TARGET_HOUR) { v -> viewModel.update { it.copy(targetHour = v) } }
-                        Stepper(stringResource(Res.string.stepper_min), form.targetMinute, 0, 59, Modifier.weight(1f), tag = UiTags.ANNOUNCE_TARGET_MINUTE) { v -> viewModel.update { it.copy(targetMinute = v) } }
+                        Stepper(
+                            stringResource(Res.string.stepper_hour),
+                            form.targetHour,
+                            0,
+                            23,
+                            Modifier.weight(1f),
+                            tag = UiTags.ANNOUNCE_TARGET_HOUR,
+                        ) { v -> viewModel.update { it.copy(targetHour = v) } }
+                        Stepper(
+                            stringResource(Res.string.stepper_min),
+                            form.targetMinute,
+                            0,
+                            59,
+                            Modifier.weight(1f),
+                            tag = UiTags.ANNOUNCE_TARGET_MINUTE,
+                        ) { v -> viewModel.update { it.copy(targetMinute = v) } }
                     }
                 }
                 AnnouncementType.CLOCK, AnnouncementType.COUNT_UP -> Text(
@@ -209,10 +244,20 @@ fun AnnouncementsScreen(
 
             Spacer(Modifier.height(18.dp))
             // ── Style extras (font size / animation) ──────────────────────
-            Stepper(stringResource(Res.string.stepper_font_size), form.fontSize, 16, 160, step = 4, tag = UiTags.ANNOUNCE_FONT_SIZE) { v -> viewModel.update { it.copy(fontSize = v) } }
+            Stepper(
+                stringResource(Res.string.stepper_font_size),
+                form.fontSize,
+                16,
+                160,
+                step = 4,
+                tag = UiTags.ANNOUNCE_FONT_SIZE,
+            ) { v -> viewModel.update { it.copy(fontSize = v) } }
             Spacer(Modifier.height(14.dp))
             Overline(stringResource(Res.string.overline_animation))
-            AnimationDropdown(form.animation, Modifier.testTag(UiTags.ANNOUNCE_ANIMATION)) { a -> viewModel.update { it.copy(animation = a) } }
+            AnimationDropdown(
+                form.animation,
+                Modifier.testTag(UiTags.ANNOUNCE_ANIMATION),
+            ) { a -> viewModel.update { it.copy(animation = a) } }
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.announcements_animation_duration_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
@@ -288,7 +333,13 @@ fun AnnouncementsScreen(
             // ── Saved (matches design) ────────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.announcements_saved_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
-                Text(stringResource(Res.string.announcements_add_new), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.testTag(UiTags.ANNOUNCE_SAVE).clickable { viewModel.saveCurrent() })
+                Text(
+                    stringResource(Res.string.announcements_add_new),
+                    color = colors.accent,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.testTag(UiTags.ANNOUNCE_SAVE).clickable { viewModel.saveCurrent() },
+                )
             }
             Spacer(Modifier.height(10.dp))
             if (saved.isEmpty()) {
@@ -441,9 +492,24 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
                 )
             }
 
-            ColorSlider(stringResource(Res.string.color_slider_hue), hue / 360f, colors.accent, UiTags.COLOR_PICKER_HUE) { hue = it * 360f }
-            ColorSlider(stringResource(Res.string.color_slider_saturation), sat, colors.accent, UiTags.COLOR_PICKER_SATURATION) { sat = it }
-            ColorSlider(stringResource(Res.string.color_slider_brightness), value, colors.accent, UiTags.COLOR_PICKER_BRIGHTNESS) { value = it }
+            ColorSlider(
+                stringResource(Res.string.color_slider_hue),
+                hue / 360f,
+                colors.accent,
+                UiTags.COLOR_PICKER_HUE,
+            ) { hue = it * 360f }
+            ColorSlider(
+                stringResource(Res.string.color_slider_saturation),
+                sat,
+                colors.accent,
+                UiTags.COLOR_PICKER_SATURATION,
+            ) { sat = it }
+            ColorSlider(
+                stringResource(Res.string.color_slider_brightness),
+                value,
+                colors.accent,
+                UiTags.COLOR_PICKER_BRIGHTNESS,
+            ) { value = it }
 
             Spacer(Modifier.height(14.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

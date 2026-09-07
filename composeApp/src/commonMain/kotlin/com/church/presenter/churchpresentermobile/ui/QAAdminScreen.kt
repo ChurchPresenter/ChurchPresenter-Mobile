@@ -428,10 +428,32 @@ private fun StatusBadge(question: Question, isLive: Boolean) {
     val colors = LocalAppColors.current
     val id = question.id
     when {
-        isLive -> Badge(text = stringResource(Res.string.qa_badge_live), fg = colors.accent, bg = colors.accentTint, dot = true, modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.LIVE)))
-        question.status == QuestionStatus.APPROVED -> Badge(text = stringResource(Res.string.qa_badge_approved), fg = colors.muted, bg = colors.surfaceStrong.copy(alpha = 0f), border = true, modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.APPROVED)))
-        question.status == QuestionStatus.DENIED -> Badge(text = stringResource(Res.string.qa_badge_denied), fg = colors.danger, bg = colors.danger.copy(alpha = 0.12f), modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.DENIED)))
-        question.status == QuestionStatus.DONE -> Badge(text = stringResource(Res.string.qa_badge_answered), fg = colors.muted, bg = colors.inputBg, modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.ANSWERED)))
+        isLive -> Badge(
+            text = stringResource(Res.string.qa_badge_live),
+            fg = colors.accent,
+            bg = colors.accentTint,
+            dot = true,
+            modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.LIVE)),
+        )
+        question.status == QuestionStatus.APPROVED -> Badge(
+            text = stringResource(Res.string.qa_badge_approved),
+            fg = colors.muted,
+            bg = colors.surfaceStrong.copy(alpha = 0f),
+            border = true,
+            modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.APPROVED)),
+        )
+        question.status == QuestionStatus.DENIED -> Badge(
+            text = stringResource(Res.string.qa_badge_denied),
+            fg = colors.danger,
+            bg = colors.danger.copy(alpha = 0.12f),
+            modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.DENIED)),
+        )
+        question.status == QuestionStatus.DONE -> Badge(
+            text = stringResource(Res.string.qa_badge_answered),
+            fg = colors.muted,
+            bg = colors.inputBg,
+            modifier = Modifier.testTag(UiTags.qaBadge(id, QaBadge.ANSWERED)),
+        )
         else -> {} // pending: no badge (muted text conveys it)
     }
 }

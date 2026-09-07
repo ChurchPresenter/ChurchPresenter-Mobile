@@ -6,12 +6,10 @@ package com.church.presenter.churchpresentermobile
  * app, so most of these actuals are the same deliberate stubs the web target
  * carries — present so the shared code compiles, never reached by a user.
  */
-class JvmPlatform : Platform {
+actual fun getPlatform(): Platform = object : Platform {
     override val name: String = "JVM test host"
     override val os: String = "jvm"
 }
-
-actual fun getPlatform(): Platform = JvmPlatform()
 
 actual fun generateUUID(): String = java.util.UUID.randomUUID().toString()
 

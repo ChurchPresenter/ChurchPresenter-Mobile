@@ -111,6 +111,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("sermon", 0)) }
         click(UiTags.presentationSlide("sermon", 0))
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -124,6 +125,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("sermon", 0)) }
         click(UiTags.presentationSlide("sermon", 0))
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -137,6 +139,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("sermon", 2)) }
         click(UiTags.presentationSlide("sermon", 2))
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -154,6 +157,7 @@ class PresentationActionsTest {
         awaitThat { desktop.payloadsOf(WsMessageType.SELECT_SLIDE).size == 1 }
         click(UiTags.FAB_CAST)
         awaitThat { !vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -170,6 +174,7 @@ class PresentationActionsTest {
         awaitThat { vm.isProjecting.value }
         click(UiTags.FAB_CAST)
         awaitThat { !vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -186,6 +191,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("sermon", 0)) }
         click(UiTags.presentationSlide("sermon", 0))
         awaitThat { vm.selectedPresentation.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -200,6 +206,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("notices", 0)) }
         click(UiTags.presentationSlide("notices", 0))
         awaitThat { vm.selectedPresentation.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -231,6 +238,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("sermon", 0)) }
         click(UiTags.presentationSlide("sermon", 0))
         awaitThat { vm.selectedPresentation.value != null }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 
@@ -255,6 +263,7 @@ class PresentationActionsTest {
         awaitThat { exists(UiTags.presentationSlide("sermon", 0)) }
         click(UiTags.presentationSlide("sermon", 0))
         awaitThat { desktop.payloadsOf(WsMessageType.SELECT_SLIDE).size == 1 }
+        awaitThat { exists(UiTags.FAB_ADD_TO_SCHEDULE) }
 
         click(UiTags.FAB_ADD_TO_SCHEDULE)
 

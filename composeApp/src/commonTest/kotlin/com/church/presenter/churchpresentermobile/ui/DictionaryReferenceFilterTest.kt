@@ -415,6 +415,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_CHAPTER, 4)) }
         click(UiTags.refOption(UiTags.DICT_REF_CHAPTER, 4))
         awaitThat { vm.refChapter.value == 5 }
+        awaitThat { exists(UiTags.DICT_REF_BOOK) }
 
         click(UiTags.DICT_REF_BOOK)
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 1)) }
@@ -441,6 +442,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_VERSE, 2)) }
         click(UiTags.refOption(UiTags.DICT_REF_VERSE, 2))
         awaitThat { vm.refVerse.value == 3 }
+        awaitThat { exists(UiTags.DICT_REF_BOOK) }
 
         click(UiTags.DICT_REF_BOOK)
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 1)) }
@@ -463,6 +465,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_CHAPTER, 0)) }
         click(UiTags.refOption(UiTags.DICT_REF_CHAPTER, 0))
         awaitThat { exists(UiTags.DICT_REF_VERSE) }
+        awaitThat { exists(UiTags.DICT_REF_BOOK) }
 
         click(UiTags.DICT_REF_BOOK)
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 1)) }
@@ -492,6 +495,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_VERSE, 0)) }
         click(UiTags.refOption(UiTags.DICT_REF_VERSE, 0))
         awaitThat { vm.refVerse.value == 1 }
+        awaitThat { exists(UiTags.DICT_REF_CHAPTER) }
 
         click(UiTags.DICT_REF_CHAPTER)
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_CHAPTER, 1)) }
@@ -527,6 +531,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 0)) }
         click(UiTags.refOption(UiTags.DICT_REF_BOOK, 0))
         awaitThat { exists(UiTags.DICT_REF_CHAPTER) }
+        awaitThat { exists(UiTags.DICT_REF_CLEAR) }
 
         click(UiTags.DICT_REF_CLEAR)
 
@@ -574,6 +579,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 0)) }
         click(UiTags.refOption(UiTags.DICT_REF_BOOK, 0))
         awaitThat { desktop.searches.any { it["book"] == "1" } }
+        awaitThat { exists(UiTags.DICT_REF_CLEAR) }
 
         click(UiTags.DICT_REF_CLEAR)
 
@@ -592,6 +598,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 0)) }
         click(UiTags.refOption(UiTags.DICT_REF_BOOK, 0))
         awaitThat { vm.refBook.value != null }
+        awaitThat { exists(UiTags.DICT_REF_CLEAR) }
 
         click(UiTags.DICT_REF_CLEAR)
 
@@ -609,6 +616,7 @@ class DictionaryReferenceFilterTest {
         awaitThat { exists(UiTags.refOption(UiTags.DICT_REF_BOOK, 0)) }
         click(UiTags.refOption(UiTags.DICT_REF_BOOK, 0))
         awaitThat { vm.refBook.value != null }
+        awaitThat { exists(UiTags.DICT_REF_CLEAR) }
 
         click(UiTags.DICT_REF_CLEAR)
 

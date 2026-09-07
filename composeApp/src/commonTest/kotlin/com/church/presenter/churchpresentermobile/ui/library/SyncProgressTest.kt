@@ -113,7 +113,7 @@ class SyncProgressTest {
         )
     }
 
-    private fun ComposeUiTest.startBibleDownload(f: BibleFixture) {
+    private fun ComposeUiTest.startBibleDownload() {
         click(LibraryTags.BIBLE_SYNC_FIND)
         awaitThat { exists(LibraryTags.bibleChoice("en_KJV.spb")) }
         click(LibraryTags.bibleChoice("en_KJV.spb"))
@@ -275,7 +275,7 @@ class SyncProgressTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
 
-        startBibleDownload(f)
+        startBibleDownload()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_PROGRESS) }
     }
@@ -285,7 +285,7 @@ class SyncProgressTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
 
-        startBibleDownload(f)
+        startBibleDownload()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
     }
@@ -295,7 +295,7 @@ class SyncProgressTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
 
-        startBibleDownload(f)
+        startBibleDownload()
 
         awaitThat { !exists(LibraryTags.BIBLE_SYNC_DOWNLOAD) }
     }
@@ -304,7 +304,7 @@ class SyncProgressTest {
     fun stoppingADownloadEndsIt() = runComposeUiTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
-        startBibleDownload(f)
+        startBibleDownload()
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -316,7 +316,7 @@ class SyncProgressTest {
     fun stoppingADownloadReportsWhatItManaged() = runComposeUiTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
-        startBibleDownload(f)
+        startBibleDownload()
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -328,7 +328,7 @@ class SyncProgressTest {
     fun stoppingADownloadBringsThePickListBack() = runComposeUiTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
-        startBibleDownload(f)
+        startBibleDownload()
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -340,7 +340,7 @@ class SyncProgressTest {
     fun aStoppedDownloadTakesTheProgressBarAway() = runComposeUiTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
-        startBibleDownload(f)
+        startBibleDownload()
         awaitThat { exists(LibraryTags.BIBLE_SYNC_PROGRESS) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -364,7 +364,7 @@ class SyncProgressTest {
     fun aStoppedDownloadCanBeStartedAgain() = runComposeUiTest {
         val f = BibleFixture(300)
         showBibleSync(f)
-        startBibleDownload(f)
+        startBibleDownload()
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
         click(LibraryTags.BIBLE_SYNC_STOP)
         awaitThat { exists(LibraryTags.BIBLE_SYNC_DOWNLOAD) }
@@ -380,7 +380,7 @@ class SyncProgressTest {
         val f = BibleFixture(1_500)
         showBibleSync(f)
 
-        startBibleDownload(f)
+        startBibleDownload()
 
         awaitThat { f.viewModel.progress.value.isRunning }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_OUTCOME))
@@ -391,7 +391,7 @@ class SyncProgressTest {
         val f = BibleFixture(0)
         showBibleSync(f)
 
-        startBibleDownload(f)
+        startBibleDownload()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_STOP))

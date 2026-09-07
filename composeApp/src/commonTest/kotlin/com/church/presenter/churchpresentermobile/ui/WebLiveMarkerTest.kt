@@ -68,6 +68,7 @@ class WebLiveMarkerTest {
         // without the first await the test could also pass while never having
         // been live at all.
         awaitThat { exists(UiTags.bookmarkLive(first)) }
+        awaitThat { exists(UiTags.WEB_CLEAR) }
 
         click(UiTags.WEB_CLEAR)
 

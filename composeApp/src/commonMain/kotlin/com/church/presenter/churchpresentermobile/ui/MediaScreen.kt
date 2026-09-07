@@ -203,7 +203,14 @@ fun MediaScreen(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         Box(Modifier.size(6.dp).clip(CircleShape).background(Color.White))
-                        Text(stringResource(Res.string.media_on_screen), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.04.em, modifier = Modifier.testTag(UiTags.MEDIA_ON_SCREEN))
+                        Text(
+                            stringResource(Res.string.media_on_screen),
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.04.em,
+                            modifier = Modifier.testTag(UiTags.MEDIA_ON_SCREEN),
+                        )
                     }
                 }
             }
@@ -224,7 +231,15 @@ fun MediaScreen(
                 source == MediaSource.URL && composedUrl.isNotBlank() -> stringResource(Res.string.media_subtitle_url, mediaKindFrom(composedUrl))
                 else -> stringResource(Res.string.media_subtitle_empty)
             }
-            Text(title, color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag(UiTags.MEDIA_TITLE))
+            Text(
+                title,
+                color = colors.text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.testTag(UiTags.MEDIA_TITLE),
+            )
             Spacer(Modifier.height(5.dp))
             Text(subtitle, color = colors.muted, fontSize = 12.sp, modifier = Modifier.testTag(UiTags.MEDIA_SUBTITLE))
 
@@ -250,8 +265,20 @@ fun MediaScreen(
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 val shownPos = if (scrubbing) (scrubValue * durationMs).toLong() else positionMs
-                Text(formatTime(shownPos), color = colors.secondary, fontSize = 11.sp, fontFamily = FontFamily.Monospace, modifier = Modifier.testTag(UiTags.MEDIA_POSITION))
-                Text(formatTime(durationMs), color = colors.muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace, modifier = Modifier.testTag(UiTags.MEDIA_DURATION))
+                Text(
+                    formatTime(shownPos),
+                    color = colors.secondary,
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.testTag(UiTags.MEDIA_POSITION),
+                )
+                Text(
+                    formatTime(durationMs),
+                    color = colors.muted,
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.testTag(UiTags.MEDIA_DURATION),
+                )
             }
 
             Spacer(Modifier.height(10.dp))
@@ -261,8 +288,20 @@ fun MediaScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CircleControl(Icons.Filled.Stop, stringResource(Res.string.media_cd_stop), 46.dp, enabled = loaded, modifier = Modifier.testTag(UiTags.MEDIA_STOP)) { viewModel.stopPlayback() }
-                CircleControl(Icons.Filled.Replay10, stringResource(Res.string.media_cd_back10), 52.dp, enabled = loaded, modifier = Modifier.testTag(UiTags.MEDIA_BACK_10)) { viewModel.seekBackward() }
+                CircleControl(
+                    Icons.Filled.Stop,
+                    stringResource(Res.string.media_cd_stop),
+                    46.dp,
+                    enabled = loaded,
+                    modifier = Modifier.testTag(UiTags.MEDIA_STOP),
+                ) { viewModel.stopPlayback() }
+                CircleControl(
+                    Icons.Filled.Replay10,
+                    stringResource(Res.string.media_cd_back10),
+                    52.dp,
+                    enabled = loaded,
+                    modifier = Modifier.testTag(UiTags.MEDIA_BACK_10),
+                ) { viewModel.seekBackward() }
                 // Big play/pause
                 Box(
                     modifier = Modifier
@@ -280,7 +319,13 @@ fun MediaScreen(
                         modifier = Modifier.size(30.dp),
                     )
                 }
-                CircleControl(Icons.Filled.Forward10, stringResource(Res.string.media_cd_forward10), 52.dp, enabled = loaded, modifier = Modifier.testTag(UiTags.MEDIA_FORWARD_10)) { viewModel.seekForward() }
+                CircleControl(
+                    Icons.Filled.Forward10,
+                    stringResource(Res.string.media_cd_forward10),
+                    52.dp,
+                    enabled = loaded,
+                    modifier = Modifier.testTag(UiTags.MEDIA_FORWARD_10),
+                ) { viewModel.seekForward() }
                 CircleControl(
                     if (playback?.muted == true) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
                     stringResource(Res.string.media_cd_mute), 46.dp, enabled = loaded,

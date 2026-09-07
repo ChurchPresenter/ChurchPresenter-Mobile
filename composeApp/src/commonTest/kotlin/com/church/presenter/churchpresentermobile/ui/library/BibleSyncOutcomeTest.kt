@@ -20,7 +20,6 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -82,7 +81,7 @@ class BibleSyncOutcomeTest {
     }
 
     /** Finds the offered translations, ticks the first, and downloads. */
-    private fun ComposeUiTest.downloadFirst(f: Fixture) {
+    private fun ComposeUiTest.downloadFirst() {
         click(LibraryTags.BIBLE_SYNC_FIND)
         awaitThat { exists(LibraryTags.bibleChoice("en_KJV.spb")) }
         click(LibraryTags.bibleChoice("en_KJV.spb"))
@@ -96,7 +95,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Success }
     }
@@ -106,7 +105,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -116,7 +115,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Success }
         val outcome = f.viewModel.outcome.value as BibleSyncOutcome.Success
@@ -128,7 +127,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Success }
         assertTrue((f.viewModel.outcome.value as BibleSyncOutcome.Success).failed.isEmpty())
@@ -139,7 +138,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
     }
@@ -149,7 +148,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_INSTALLED) }
     }
@@ -159,7 +158,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { isShowing("King James Version") }
     }
@@ -169,7 +168,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.choice.activeId.value != null }
     }
@@ -179,7 +178,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_PROGRESS))
@@ -191,7 +190,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.bibleChoice("ru_RST77.spb")) }
     }
@@ -205,7 +204,7 @@ class BibleSyncOutcomeTest {
         val f = fixture(moduleStatus = HttpStatusCode.InternalServerError)
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value != null }
         val outcome = f.viewModel.outcome.value
@@ -222,7 +221,7 @@ class BibleSyncOutcomeTest {
         val f = fixture(moduleStatus = HttpStatusCode.InternalServerError)
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -232,7 +231,7 @@ class BibleSyncOutcomeTest {
         val f = fixture(moduleStatus = HttpStatusCode.InternalServerError)
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value != null }
         assertTrue(f.viewModel.installed.value.isEmpty())
@@ -243,7 +242,7 @@ class BibleSyncOutcomeTest {
         val f = fixture(moduleStatus = HttpStatusCode.InternalServerError)
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value != null }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_INSTALLED))
@@ -255,7 +254,7 @@ class BibleSyncOutcomeTest {
         val f = fixture(moduleBody = "##Title: Empty\n")
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.outcome.value != null }
         assertTrue(f.viewModel.installed.value.isEmpty())
@@ -266,7 +265,7 @@ class BibleSyncOutcomeTest {
         val f = fixture(moduleBody = "##Title: Empty\n")
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -275,7 +274,7 @@ class BibleSyncOutcomeTest {
     fun aFailedDownloadCanBeTriedAgain() = runComposeUiTest {
         val f = fixture(moduleStatus = HttpStatusCode.InternalServerError)
         showBibleSync(f)
-        downloadFirst(f)
+        downloadFirst()
         awaitThat { f.viewModel.outcome.value != null }
 
         assertTrue(exists(LibraryTags.BIBLE_SYNC_DOWNLOAD))
@@ -332,7 +331,7 @@ class BibleSyncOutcomeTest {
     fun eachInstalledTranslationCanBeRemoved() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        downloadFirst(f)
+        downloadFirst()
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         val id = f.viewModel.installed.value.first().id
 
@@ -343,7 +342,7 @@ class BibleSyncOutcomeTest {
     fun removingTheLastTranslationTakesTheSectionAway() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        downloadFirst(f)
+        downloadFirst()
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         val id = f.viewModel.installed.value.first().id
         click(LibraryTags.bibleRemove(id))
@@ -358,7 +357,7 @@ class BibleSyncOutcomeTest {
     fun aRemovedTranslationCanBeDownloadedAgain() = runComposeUiTest {
         val f = fixture()
         showBibleSync(f)
-        downloadFirst(f)
+        downloadFirst()
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         val id = f.viewModel.installed.value.first().id
         click(LibraryTags.bibleRemove(id))
@@ -386,7 +385,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
         assertTrue(f.viewModel.installed.value.first().verseCount > 0)
@@ -399,7 +398,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_INSTALLED) }
         assertTrue(exists(LibraryTags.bibleChoice("ru_RST77.spb")))
@@ -412,7 +411,7 @@ class BibleSyncOutcomeTest {
         val f = fixture()
         showBibleSync(f)
 
-        downloadFirst(f)
+        downloadFirst()
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_INSTALLED) }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_FIND))

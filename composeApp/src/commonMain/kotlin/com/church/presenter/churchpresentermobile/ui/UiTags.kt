@@ -342,7 +342,7 @@ internal object UiTags {
     const val STATUS_DIALOG_LOADING = "statusDialog:loading"
     const val STATUS_DIALOG_ERROR = "statusDialog:error"
     const val STATUS_DIALOG_UNAUTHORIZED = "statusDialog:unauthorized"
-    const val STATUS_DIALOG_NOT_CHURCHPRESENTER = "statusDialog:notChurchPresenter"
+    const val STATUS_DIALOG_NOT_CHURCHPRESENTER = "statusDialog:NOT_CHURCH_PRESENTER"
     const val STATUS_DIALOG_CONNECTED = "statusDialog:connected"
     const val STATUS_DIALOG_PERMISSIONS = "statusDialog:permissions"
     const val STATUS_DIALOG_BIBLES = "statusDialog:bibles"

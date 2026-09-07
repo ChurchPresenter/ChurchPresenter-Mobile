@@ -288,7 +288,7 @@ class SettingsStatusDialogTest {
     @Test
     fun aStrangerAnsweringIsReportedAsSuch() = runComposeUiTest {
         val settings = storedSettings()
-        showSettings(settings, status = statusVm(settings, body = notChurchPresenter))
+        showSettings(settings, status = statusVm(settings, body = NOT_CHURCH_PRESENTER))
 
         click(UiTags.SETTINGS_CHECK_STATUS)
 
@@ -299,7 +299,7 @@ class SettingsStatusDialogTest {
     fun aStrangerAnsweringIsNotReportedAsConnected() = runComposeUiTest {
         // A router's admin page on the same port is a real way to get here.
         val settings = storedSettings()
-        showSettings(settings, status = statusVm(settings, body = notChurchPresenter))
+        showSettings(settings, status = statusVm(settings, body = NOT_CHURCH_PRESENTER))
 
         click(UiTags.SETTINGS_CHECK_STATUS)
 
@@ -310,7 +310,7 @@ class SettingsStatusDialogTest {
     @Test
     fun aStrangerAnsweringIsNotReportedAsARejectedKey() = runComposeUiTest {
         val settings = storedSettings()
-        showSettings(settings, status = statusVm(settings, body = notChurchPresenter))
+        showSettings(settings, status = statusVm(settings, body = NOT_CHURCH_PRESENTER))
 
         click(UiTags.SETTINGS_CHECK_STATUS)
 
@@ -359,6 +359,7 @@ class SettingsStatusDialogTest {
         showSettings(settings, status = unreachableStatusVm(settings))
         click(UiTags.SETTINGS_CHECK_STATUS)
         awaitThat { exists(UiTags.STATUS_DIALOG_ERROR) }
+        awaitThat { exists(UiTags.STATUS_DIALOG_CLOSE) }
 
         click(UiTags.STATUS_DIALOG_CLOSE)
 
@@ -386,6 +387,7 @@ class SettingsStatusDialogTest {
         showSettings(settings, status = statusVm(settings, body = healthyDesktop))
         click(UiTags.SETTINGS_CHECK_STATUS)
         awaitThat { exists(UiTags.STATUS_DIALOG_CONNECTED) }
+        awaitThat { exists(UiTags.STATUS_DIALOG_RECHECK) }
 
         click(UiTags.STATUS_DIALOG_RECHECK)
 
@@ -398,6 +400,7 @@ class SettingsStatusDialogTest {
         showSettings(settings, status = statusVm(settings, body = healthyDesktop))
         click(UiTags.SETTINGS_CHECK_STATUS)
         awaitThat { exists(UiTags.STATUS_DIALOG_CONNECTED) }
+        awaitThat { exists(UiTags.STATUS_DIALOG_RECHECK) }
 
         click(UiTags.STATUS_DIALOG_RECHECK)
 

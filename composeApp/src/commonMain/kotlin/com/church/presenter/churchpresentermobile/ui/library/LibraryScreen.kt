@@ -529,9 +529,15 @@ private fun AddChoiceDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_add)) },
         text = { Text(stringResource(Res.string.library_empty_body)) },
-        confirmButton = { TextButton(onClick = onSong, modifier = Modifier.testTag(LibraryTags.ADD_SONG)) { Text(stringResource(Res.string.library_new_song)) } },
+        confirmButton = { TextButton(
+            onClick = onSong,
+            modifier = Modifier.testTag(LibraryTags.ADD_SONG),
+        ) { Text(stringResource(Res.string.library_new_song)) } },
         dismissButton = {
-            TextButton(onClick = onAnnouncement, modifier = Modifier.testTag(LibraryTags.ADD_NOTICE)) { Text(stringResource(Res.string.library_new_notice)) }
+            TextButton(
+                onClick = onAnnouncement,
+                modifier = Modifier.testTag(LibraryTags.ADD_NOTICE),
+            ) { Text(stringResource(Res.string.library_new_notice)) }
         },
     )
 }

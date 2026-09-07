@@ -499,6 +499,7 @@ class BibleTabTest {
         click(UiTags.bibleVerse(0))
         click(UiTags.FAB_CAST)
         awaitThat { vm.isProjecting.value }
+        awaitThat { exists(UiTags.FAB_CAST) }
 
         click(UiTags.FAB_CAST)
 
@@ -557,6 +558,7 @@ class BibleTabTest {
         awaitThat { exists(UiTags.BIBLE_CHAPTERS_GRID) }
         click(UiTags.bibleChapter(1))
         awaitThat { exists(UiTags.bibleVerse(1)) }
+        awaitThat { exists(UiTags.FAB_SELECT) }
 
         click(UiTags.FAB_SELECT)
         click(UiTags.bibleVerse(0))
@@ -574,6 +576,7 @@ class BibleTabTest {
         awaitThat { exists(UiTags.BIBLE_CHAPTERS_GRID) }
         click(UiTags.bibleChapter(1))
         awaitThat { exists(UiTags.bibleVerse(0)) }
+        awaitThat { exists(UiTags.FAB_SELECT) }
 
         click(UiTags.FAB_SELECT)
         click(UiTags.bibleVerse(0))

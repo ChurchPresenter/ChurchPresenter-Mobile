@@ -252,7 +252,7 @@ class SyncOutcomeCardTest {
         )
     }
 
-    private fun ComposeUiTest.download(f: BibleFixture, vararg fileNames: String) {
+    private fun ComposeUiTest.download(vararg fileNames: String) {
         click(LibraryTags.BIBLE_SYNC_FIND)
         awaitThat { exists(LibraryTags.bibleChoice(fileNames.first())) }
         fileNames.forEach { click(LibraryTags.bibleChoice(it)) }
@@ -268,7 +268,7 @@ class SyncOutcomeCardTest {
         )
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Failed }
     }
@@ -280,7 +280,7 @@ class SyncOutcomeCardTest {
         )
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -292,7 +292,7 @@ class SyncOutcomeCardTest {
         )
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Failed }
         assertTrue(f.viewModel.installed.value.isEmpty())
@@ -308,7 +308,7 @@ class SyncOutcomeCardTest {
             ),
         )
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Failed }
 
         // A finished attempt clears the ticks, so trying again is a fresh pick.
@@ -327,7 +327,7 @@ class SyncOutcomeCardTest {
         )
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Success }
         assertTrue((f.viewModel.outcome.value as BibleSyncOutcome.Success).failed.isNotEmpty())
@@ -340,7 +340,7 @@ class SyncOutcomeCardTest {
         )
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value != null }
         assertTrue(f.viewModel.installed.value.isEmpty())
@@ -353,7 +353,7 @@ class SyncOutcomeCardTest {
         )
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
     }
@@ -362,7 +362,7 @@ class SyncOutcomeCardTest {
     fun aStoppedDownloadPutsItsAccountOnScreen() = runComposeUiTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -375,7 +375,7 @@ class SyncOutcomeCardTest {
     fun aStoppedDownloadTakesTheProgressBarAway() = runComposeUiTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -387,7 +387,7 @@ class SyncOutcomeCardTest {
     fun aStoppedDownloadTakesTheStopButtonAway() = runComposeUiTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -399,7 +399,7 @@ class SyncOutcomeCardTest {
     fun aStoppedDownloadStillListsWhatArrived() = runComposeUiTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
 
         click(LibraryTags.BIBLE_SYNC_STOP)
@@ -413,7 +413,7 @@ class SyncOutcomeCardTest {
         val f = bibleFixture()
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { f.viewModel.outcome.value is BibleSyncOutcome.Success }
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
@@ -424,7 +424,7 @@ class SyncOutcomeCardTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
         assertFalse(exists(LibraryTags.BIBLE_SYNC_OUTCOME))
@@ -437,7 +437,7 @@ class SyncOutcomeCardTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
         assertFalse(exists(LibraryTags.bibleChoice("ru_RST77.spb")))
@@ -448,7 +448,7 @@ class SyncOutcomeCardTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
 
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
 
         awaitThat { exists(LibraryTags.BIBLE_SYNC_PROGRESS) }
     }
@@ -457,7 +457,7 @@ class SyncOutcomeCardTest {
     fun aSecondDownloadClearsTheFirstsResult() = runComposeUiTest {
         val f = bibleFixture(delayMs = 1_000)
         showBibleSync(f)
-        download(f, "en_KJV.spb", "ru_RST77.spb")
+        download("en_KJV.spb", "ru_RST77.spb")
         awaitThat { exists(LibraryTags.BIBLE_SYNC_STOP) }
         click(LibraryTags.BIBLE_SYNC_STOP)
         awaitThat { exists(LibraryTags.BIBLE_SYNC_OUTCOME) }
@@ -499,7 +499,7 @@ class SyncOutcomeCardTest {
         // So an operator does not download 4 MB they already have.
         val f = bibleFixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
 
         awaitThat { f.viewModel.choices.value.any { it.isInstalled } }
@@ -509,7 +509,7 @@ class SyncOutcomeCardTest {
     fun downloadingTheSameModuleTwiceDoesNotDuplicateIt() = runComposeUiTest {
         val f = bibleFixture()
         showBibleSync(f)
-        download(f, "en_KJV.spb")
+        download("en_KJV.spb")
         awaitThat { f.viewModel.installed.value.size == 1 }
 
         click(LibraryTags.BIBLE_SYNC_DOWNLOAD)
