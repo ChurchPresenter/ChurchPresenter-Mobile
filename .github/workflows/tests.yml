@@ -9,11 +9,22 @@ name: Tests
 #               GOOGLE_SERVICES_JSON_BASE64 — the build writes a Firebase
 #               placeholder when the secret is absent, as it does for a fresh
 #               clone, so a fork's PR is gated exactly like anyone else's.
+#  - screenshots: Roborazzi golden images. FAILS the build on any visual change
+#               that is not in the committed goldens, so a branch cannot merge
+#               with an unreviewed one.
 
 on:
   push:
     branches: [ main ]
   pull_request:
+  # Manual "record" run — see the screenshots job. Goldens are tied to the OS
+  # that drew them, so they have to be produced on a runner, not a laptop.
+  workflow_dispatch:
+    inputs:
+      record:
+        description: "Re-record the screenshot goldens on Linux and upload them as an artifact"
+        type: boolean
+        default: false
 
 # Opt into Node.js 24 now — Node.js 20 actions are deprecated (forced June 2026).
 env:
@@ -77,6 +88,65 @@ jobs:
           name: js-test-report
           path: composeApp/build/reports/tests/
           if-no-files-found: ignore
+
+  # Golden-image tests. A visual change that is not in the committed goldens
+  # fails this job, and with the check required on the branch it stops the merge
+  # — which is the point: a screenshot suite nobody has to look at is a folder
+  # of PNGs, not a test.
+  #
+  # Why this runs on ubuntu and nowhere else: a golden is a byte-for-byte
+  # comparison, and text does not rasterise identically across operating
+  # systems. The committed images are therefore whatever THIS runner draws, and
+  # a laptop cannot produce a comparable one. Hence the record path below,
+  # rather than "run it locally with -Precord and commit what you get".
+  screenshots:
+    name: Screenshots (Roborazzi)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # The gate. No -Precord, so Roborazzi compares against the committed
+      # goldens and fails on the first one that differs.
+      - name: Verify screenshots
+        if: ${{ !inputs.record }}
+        run: ./gradlew :composeApp:screenshotTest
+
+      # What changed, as pictures: <name>_actual.png and a side-by-side
+      # <name>_compare.png per failure. Without these the failure is a file name
+      # and a reviewer has no way to tell a regression from an intended redesign.
+      - name: Upload diffs
+        if: ${{ failure() && !inputs.record }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-diffs
+          path: composeApp/build/outputs/roborazzi/
+          if-no-files-found: ignore
+
+      # The record path, run by hand from the Actions tab when a change is
+      # MEANT to move the pixels: it redraws every golden on this runner and
+      # uploads them. Download, unzip over composeApp/screenshots/, commit, and
+      # the gate goes green on the new images — which is also the moment a
+      # reviewer sees the redesign in the diff.
+      #
+      # Deliberately NOT a push back to the branch: goldens are the thing being
+      # reviewed, and a bot commit that lands them unread defeats the suite.
+      - name: Record screenshots
+        if: ${{ inputs.record }}
+        run: ./gradlew :composeApp:screenshotTest -Precord
+      - name: Upload recorded goldens
+        if: ${{ inputs.record }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-linux
+          path: composeApp/screenshots/
+          if-no-files-found: error
 
   coverage:
     name: Coverage (JaCoCo)

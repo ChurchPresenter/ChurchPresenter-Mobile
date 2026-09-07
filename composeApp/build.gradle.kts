@@ -550,6 +550,15 @@ val viewModelBackedUiTests = listOf(
 // configureEach on the supertype rather than tasks.named: the Android unit-test
 // tasks are not registered yet at this point in configuration, so naming
 // testDebugUnitTest directly fails with "Task with name ... not found".
+// Screenshot tests are a JVM-only affair (they need Skia and a golden file on
+// disk), and they are slow and assert nothing about behaviour, so no ordinary
+// test run should pay for them — including jvmTest, the run JaCoCo measures.
+// `screenshotTest` below is the only task that runs them.
+val screenshotTestPackage = "com.church.presenter.churchpresentermobile.screenshot.*"
+
+// configureEach on the supertype rather than tasks.named: the Android unit-test
+// tasks are not registered yet at this point in configuration, so naming
+// testDebugUnitTest directly fails with "Task with name ... not found".
 tasks.withType<AbstractTestTask>().configureEach {
     if (name == "testDebugUnitTest" || name == "jsBrowserTest") {
         filter.excludeTestsMatching(composeUiTestPackage)
@@ -557,6 +566,71 @@ tasks.withType<AbstractTestTask>().configureEach {
     if (name == "wasmJsBrowserTest") {
         viewModelBackedUiTests.forEach { filter.excludeTestsMatching(it) }
     }
+    if (name != "screenshotTest") {
+        filter.excludeTestsMatching(screenshotTestPackage)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Screenshot tests (Roborazzi, on the JVM target)
+//
+//   ./gradlew :composeApp:screenshotTest -Precord   → (re)write the goldens
+//   ./gradlew :composeApp:screenshotTest            → verify against them
+//
+// A second Test task over the SAME jvm test compilation, rather than a source
+// set or module of its own: the screenshot tests build their subjects out of the
+// harnesses the behavioural UI tests already use, and a split would either
+// duplicate those or export them.
+//
+// Roborazzi decides what to do from system properties read inside the test JVM —
+// passing -Droborazzi.test.record on the command line sets it on the Gradle
+// daemon, where the test runner never sees it, and every capture then silently
+// does nothing. They are forwarded explicitly here.
+//
+// Goldens live in composeApp/screenshots and are committed: a screenshot test is
+// a diff against a reviewed image, so the image has to be in the review.
+// ---------------------------------------------------------------------------
+val recordScreenshots = providers.gradleProperty("record").isPresent
+
+tasks.register<Test>("screenshotTest") {
+    group = "verification"
+    description = "Renders every composable in the screenshot suite and diffs it against the committed golden."
+
+    val jvmTestCompilation = kotlin.targets.getByName("jvm").compilations.getByName("test")
+    testClassesDirs = jvmTestCompilation.output.classesDirs
+    classpath = jvmTestCompilation.output.allOutputs + jvmTestCompilation.runtimeDependencyFiles
+
+    filter.includeTestsMatching(screenshotTestPackage)
+
+    systemProperty("roborazzi.test.record", recordScreenshots.toString())
+    systemProperty("roborazzi.test.verify", (!recordScreenshots).toString())
+    // compare alongside verify: verify is what fails the build, compare is what
+    // writes the side-by-side image that shows a reviewer WHAT moved.
+    systemProperty("roborazzi.test.compare", (!recordScreenshots).toString())
+    // Where a failed comparison writes its actual/diff images. The goldens
+    // themselves are addressed by the test, not by this.
+    systemProperty("roborazzi.output.dir", layout.buildDirectory.dir("outputs/roborazzi").get().asFile.path)
+
+    // The goldens are this task's real input in verify mode, and nothing else
+    // tells Gradle so: the class files are unchanged when someone edits or
+    // deletes a PNG, so without this the task goes UP-TO-DATE and the run that
+    // was supposed to catch the difference does not happen at all. (Observed:
+    // a golden swapped for a completely different image still "passed", in
+    // 442ms, because the task never started.)
+    //
+    // In record mode they are the OUTPUT instead, and re-recording is always
+    // what was asked for, so the check is simply switched off.
+    if (recordScreenshots) {
+        outputs.upToDateWhen { false }
+    } else {
+        inputs.dir(layout.projectDirectory.dir("screenshots"))
+            .withPropertyName("goldens")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+    }
+
+    // Rendering is single-threaded per test and the images are compared in
+    // memory; forking further JVMs costs more than it saves.
+    maxParallelForks = 1
 }
 
 // ---------------------------------------------------------------------------
@@ -792,8 +866,21 @@ kotlin {
         //   - the Android unit-test JVM has no Activity to host a composition.
         // They run in full on jvmTest — the run JaCoCo measures — and on
         // wasmJsBrowserTest, which ships skiko with its test bundle.
+        // The screenshot harness takes a `ComposeUiTest.() -> Boolean` so a
+        // capture can wait for a ViewModel-fed screen to fill. That puts an
+        // experimental type in its signature, which would otherwise oblige every
+        // screenshot test to repeat @OptIn — the suite is built on the Compose
+        // test API by definition, so it is declared once here instead.
+        jvmTest {
+            languageSettings.optIn("androidx.compose.ui.test.ExperimentalTestApi")
+        }
         jvmTest.dependencies {
             implementation(compose.desktop.currentOs)
+            // Screenshot testing. Roborazzi's compose-desktop artifact captures the
+            // Skia surface a runComposeUiTest already renders on, so the golden
+            // images come from the same runtime — and the same composables — as the
+            // behavioural UI tests next to them. No Robolectric: see AGENT.md.
+            implementation(libs.roborazzi.composeDesktop)
         }
     }
 }

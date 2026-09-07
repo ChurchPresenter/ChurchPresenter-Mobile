@@ -387,10 +387,66 @@ test. Assert the things a change can actually break:
   repository" beats "a dialog closed".
 
 ❌ **Do NOT** assert on pixels, colour, spacing or font in these tests. Layout
-and appearance belong to screenshot testing (Roborazzi on Android,
-Paparazzi for JVM-rendered previews); neither is set up here yet, and a
-hand-written assertion about a `dp` value is a test that fails on every design
-tweak while catching nothing.
+and appearance belong to the screenshot suite (below), and a hand-written
+assertion about a `dp` value is a test that fails on every design tweak while
+catching nothing.
+
+### Screenshot tests: Roborazzi, on the JVM target
+
+Golden-image tests live in `composeApp/src/jvmTest/.../screenshot/` and the
+images they are compared against live in `composeApp/screenshots/`, committed.
+
+```bash
+./gradlew :composeApp:screenshotTest -Precord   # (re)write the goldens
+./gradlew :composeApp:screenshotTest            # verify against them
+```
+
+- 📸 **Every capture goes through `screenshot(name) { … }`** (`screenshot/Screenshots.kt`),
+  which frames the subject identically everywhere: the app theme, a fixed width,
+  a real background — and takes the picture **once per theme**, writing
+  `<name>__light.png` and `<name>__dark.png`. A test that called
+  `captureRoboImage` directly would produce a golden nobody else's is comparable
+  with.
+- 🏷️ **The name is the subject AND the state** — `content-actions__held`, not
+  `content-actions`. One file per state is the whole point, and a colliding name
+  silently overwrites another test's golden.
+- 📁 **The subject becomes the folder**: `pictures__empty-folder` is written to
+  `screenshots/pictures/empty-folder__light.png`. Nothing to declare and nothing
+  to keep in step — a state cannot end up filed away from its siblings, and the
+  directory reads as one folder per thing instead of hundreds of loose PNGs.
+  `screenshot()` rejects a name without `__` for that reason.
+- 🎭 **Capture the states, not the composable.** Loading, error, empty,
+  populated, filtered, selected, standalone-vs-remote. A single "it renders"
+  golden is a screenshot, not a test.
+- ❌ **NEVER Robolectric** — the rule below still stands. Roborazzi's
+  **`roborazzi-compose-desktop`** artifact captures the Skia surface that
+  `runComposeUiTest` already renders on, so the goldens come from the same
+  runtime as the behavioural UI tests and JaCoCo is untouched.
+- 🚫 **`screenshotTest` is the only run that executes them.** They are filtered
+  out of `jvmTest`, `testDebugUnitTest` and both browser runs — they assert
+  nothing about behaviour and no gate should pay for them.
+- ⚙️ **Roborazzi is driven by system properties read inside the test JVM.**
+  `-Droborazzi.test.record=true` on the command line sets it on the Gradle
+  *daemon*, where the runner never sees it and every capture silently does
+  nothing; the task forwards them explicitly. For the same class of reason the
+  goldens are declared as a task **input** in verify mode — without that, editing
+  a PNG leaves the task `UP-TO-DATE` and the run that was supposed to catch the
+  difference never happens.
+- 🚦 **CI gates on them, so a branch with an unreviewed visual change cannot
+  merge.** The `Screenshots (Roborazzi)` job in `.github/workflows/tests.yml`
+  runs the verify, and uploads `<name>_actual.png` and a side-by-side
+  `<name>_compare.png` for every failure as the `screenshot-diffs` artifact.
+- 🖥️ **The committed goldens are LINUX images — record them on the runner, not
+  on your machine.** Text does not rasterise identically across operating
+  systems, so a macOS `-Precord` produces images that fail on CI even though
+  nothing changed. When a change is *meant* to move pixels: run the Tests
+  workflow from the Actions tab with **record** ticked, download the
+  `screenshots-linux` artifact, unzip it over `composeApp/screenshots/`, and
+  commit — which is also how the redesign reaches a reviewer as a diff.
+  `-Precord` locally is still the right tool while *writing* a test; just don't
+  commit what it draws.
+- ✅ **`stringResource` DOES resolve on this target** (unlike wasmJs, see below),
+  so screens can be captured with their real labels.
 
 ### Sample Compose UI test
 
@@ -501,6 +557,7 @@ class MyComposeTest {
 |---|---|---|
 | Logic / ViewModel / service | `commonTest` | `:composeApp:jsBrowserTest` (the CI gate) |
 | Compose UI (`runComposeUiTest`) | `wasmJsTest` | `:composeApp:wasmJsBrowserTest` |
+| Screenshot / golden image | `jvmTest`, `screenshot` package | `:composeApp:screenshotTest` (`-Precord` to rewrite) |
 | Coverage measurement | — | `:composeApp:jacocoTestReport` (Android unit-test JVM) |
 
 - **Compose UI tests must live in `wasmJsTest`, not `commonTest`.** They need a Skia
