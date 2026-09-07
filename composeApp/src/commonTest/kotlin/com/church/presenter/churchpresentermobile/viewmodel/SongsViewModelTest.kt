@@ -732,6 +732,9 @@ class SongsViewModelTest {
 
             vm.openSongDetail(song)
             val error = vm.detailError.first { it != null }
+            // The failure is published before the spinner is taken down, so the
+            // sheet is briefly showing both — wait for it to settle.
+            vm.isLoadingDetail.first { !it }
 
             assertNotNull(error)
             assertFalse(vm.isLoadingDetail.value)

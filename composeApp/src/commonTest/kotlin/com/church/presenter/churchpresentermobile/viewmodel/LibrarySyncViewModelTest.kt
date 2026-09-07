@@ -378,11 +378,13 @@ class LibrarySyncViewModelTest {
         try {
             f.viewModel.sync()
             val outcome = f.viewModel.outcome.first { it != null }
+            // The outcome is published before the remembered state is written,
+            // so reading `state.value` off the back of it is a race.
+            val state = f.viewModel.state.first { it.hasEverSynced }
 
             assertIs<SyncOutcome.Success>(outcome)
             assertTrue(f.repository.songs.isNotEmpty(), "the catalogue should have been written in")
-            assertTrue(f.viewModel.state.value.hasEverSynced)
-            assertEquals(f.repository.songs.size, f.viewModel.state.value.songCount)
+            assertEquals(f.repository.songs.size, state.songCount)
         } finally {
             tearDown(f.viewModel)
         }

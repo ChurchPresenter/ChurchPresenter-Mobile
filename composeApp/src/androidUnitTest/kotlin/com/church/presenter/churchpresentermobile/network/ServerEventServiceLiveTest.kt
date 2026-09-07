@@ -83,6 +83,10 @@ class ServerEventServiceLiveTest {
         service = svc
         listening = scope.launch { svc.listen() }
         withTimeout(TIMEOUT_MS) { svc.connected.first { it } }
+        // The phone is connected once the upgrade response lands; the desktop
+        // side of that session runs a moment later. Everything below reads what
+        // that side recorded, or pushes at it, so wait for it too.
+        withTimeout<Int>(TIMEOUT_MS) { desktop.awaitReady() }
         return svc
     }
 

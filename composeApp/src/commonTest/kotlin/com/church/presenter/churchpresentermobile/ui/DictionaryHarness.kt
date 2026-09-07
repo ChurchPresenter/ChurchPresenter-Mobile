@@ -21,6 +21,8 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
@@ -123,14 +125,22 @@ internal class FakeDesktop(
 ) {
     val sender = FakeWsSender()
 
+    // Recorded from the mock engine, which answers on whichever thread the
+    // screen's request landed on, and read from `awaitThat`, which polls on the
+    // test thread. A plain MutableList threw ConcurrentModificationException out
+    // of the poll when the two met; a StateFlow hands the reader a snapshot.
+    private val recordedSearches = MutableStateFlow<List<Map<String, String>>>(emptyList())
+    private val recordedVerseRequests = MutableStateFlow<List<Map<String, String>>>(emptyList())
+    private val recordedLookups = MutableStateFlow<List<String>>(emptyList())
+
     /** The query parameters of every dictionary search the screen has made. */
-    val searches = mutableListOf<Map<String, String>>()
+    val searches: List<Map<String, String>> get() = recordedSearches.value
 
     /** The query parameters of every "appears in" request. */
-    val verseRequests = mutableListOf<Map<String, String>>()
+    val verseRequests: List<Map<String, String>> get() = recordedVerseRequests.value
 
     /** Every Strong's number looked up by a tapped definition link. */
-    val lookups = mutableListOf<String>()
+    val lookups: List<String> get() = recordedLookups.value
 
     val lastSearch: Map<String, String> get() = searches.last()
 
@@ -142,18 +152,18 @@ internal class FakeDesktop(
         val params = paramsOf(request.url)
         when {
             path.endsWith("/verses") -> {
-                verseRequests += params
+                recordedVerseRequests.update { it + params }
                 val body = verses
                 if (body == null) respond("not found", HttpStatusCode.NotFound)
                 else respond(json.encodeToString(DictionaryVersesResponse.serializer(), body))
             }
             path.endsWith("/dictionary") -> {
-                searches += params
+                recordedSearches.update { it + params }
                 if (searchStatus != HttpStatusCode.OK) respond("boom", searchStatus)
                 else respond(json.encodeToString(entriesSerializer, entries))
             }
             else -> {
-                lookups += path.substringAfterLast('/')
+                recordedLookups.update { it + path.substringAfterLast('/') }
                 val found = lookupEntry
                 if (lookupStatus != HttpStatusCode.OK || found == null) {
                     respond("no such entry", HttpStatusCode.NotFound)

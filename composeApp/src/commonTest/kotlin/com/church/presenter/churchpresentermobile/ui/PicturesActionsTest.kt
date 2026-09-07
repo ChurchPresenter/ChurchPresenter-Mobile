@@ -455,6 +455,9 @@ class PicturesActionsTest {
 
         vm.uploadDevicePhotos(listOf(photo()))
 
+        // `isUploading` is only true once the launched upload starts running, so
+        // waiting for it to be false says nothing until the upload is under way.
+        awaitThat { desktop.uploads.isNotEmpty() }
         awaitThat { !vm.isUploading.value }
         assertTrue(vm.isProjecting.value)
     }
