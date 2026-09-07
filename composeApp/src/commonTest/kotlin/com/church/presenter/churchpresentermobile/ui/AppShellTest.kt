@@ -120,6 +120,45 @@ class AppShellTest {
     }
 
     @Test
+    fun skipping_setup_records_it_and_moves_on() = runComposeUiTest {
+        // Skipping is a real choice — a church on a phone with no computer yet.
+        // What matters is that the app REMEMBERS it: without the flag, every
+        // subsequent launch drops the operator back into setup they declined.
+        val settings = AppSettings(InMemorySettingsStorage())
+        setContent { App(appSettings = settings, onLaunchPing = {}) }
+        passTheSplash()
+        waitUntil(timeoutMillis = 10_000) { exists(UiTags.CONNECT_SKIP) }
+
+        tap(UiTags.CONNECT_SKIP)
+
+        assertTrue(settings.isConnectSetupDone, "a skipped setup was not recorded as done")
+        assertTrue(settings.isSetupComplete, "setup was left incomplete after skipping")
+    }
+
+    @Test
+    fun finishing_setup_records_it_too() = runComposeUiTest {
+        val settings = AppSettings(InMemorySettingsStorage())
+        setContent { App(appSettings = settings, onLaunchPing = {}) }
+        passTheSplash()
+        waitUntil(timeoutMillis = 10_000) { exists(UiTags.CONNECT_DONE) || exists(UiTags.CONNECT_SKIP) }
+
+        if (exists(UiTags.CONNECT_DONE)) {
+            tap(UiTags.CONNECT_DONE)
+            assertTrue(settings.isConnectSetupDone, "a finished setup was not recorded as done")
+        }
+    }
+
+    @Test
+    fun a_device_that_has_finished_setup_is_not_asked_again() = runComposeUiTest {
+        // The other half of the flag's job, and the reason it is worth a test:
+        // it is read on the launch AFTER the one that wrote it.
+        setContent { App(appSettings = settledSettings(), onLaunchPing = {}) }
+        passTheSplash()
+
+        assertTrue(!exists(UiTags.CONNECT_SKIP), "a set-up device was sent back to setup")
+    }
+
+    @Test
     fun the_launch_ping_fires_once_per_launch() = runComposeUiTest {
         // Once per launch is what the live map counts; a ping per recomposition
         // would inflate one install into dozens.
