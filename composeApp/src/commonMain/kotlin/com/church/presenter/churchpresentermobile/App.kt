@@ -138,11 +138,26 @@ import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * The whole app.
+ *
+ * @param appSettings The persisted settings the whole shell reads. Defaults to
+ * the real store; supplied by tests so what the app shows after the splash —
+ * mode picker, connection setup, status check or the tab strip — is decided by
+ * the test rather than by whatever happens to be on the machine running it.
+ * @param onLaunchPing How the launch ping reaches the live map, taking the
+ * install id. Supplied only by tests: the default is the real reporter, and
+ * without this seam merely *rendering* App in a test sends a request to
+ * churchpresenter.org and books a phantom install on the map. The same seam
+ * shape as `providedViewModel` / `serviceFactory` elsewhere in this codebase.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun App() {
-    val appSettings = remember { AppSettings() }
+fun App(
+    appSettings: AppSettings = remember { AppSettings() },
+    onLaunchPing: (String) -> Unit = { PingReporter.pingOnOpen(it) },
+) {
 
     // Seed the process-wide mode holder from persisted settings before anything
     // reads it. AppSettings coerces to REMOTE on platforms without an output
@@ -156,7 +171,7 @@ fun App() {
     // server's documented privacy intent. Opted-out users still send an
     // anonymous geo ping (PingReporter treats a blank id as "no id").
     LaunchedEffect(Unit) {
-        PingReporter.pingOnOpen(pingDeviceId(appSettings.isTelemetryEnabled, appSettings.deviceId))
+        onLaunchPing(pingDeviceId(appSettings.isTelemetryEnabled, appSettings.deviceId))
     }
 
     val snackbarHostState = remember { SnackbarHostState() }

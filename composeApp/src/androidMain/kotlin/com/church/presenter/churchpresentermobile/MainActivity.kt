@@ -114,9 +114,7 @@ class MainActivity : ComponentActivity() {
     private var lastHandledDeepLinkUrl: String? = null
 
     private fun processStoredDeepLink() {
-        val url = intent?.dataString ?: return
-        if (!url.startsWith("churchpresenter://")) return
-        if (url == lastHandledDeepLinkUrl) return   // already processed
+        val url = deepLinkToHandle(intent?.dataString, lastHandledDeepLinkUrl) ?: return
         lastHandledDeepLinkUrl = url
         DeepLinkHandler.handle(url, AppSettings())
     }
@@ -131,12 +129,7 @@ class MainActivity : ComponentActivity() {
         val action = intent?.action ?: return
         if (action == lastHandledShortcutAction) return
         lastHandledShortcutAction = action
-        when (action) {
-            "com.church.presenter.churchpresentermobile.OPEN_SONGS" ->
-                TabNavigationHandler.navigateTo(AppTab.SONGS)
-            "com.church.presenter.churchpresentermobile.OPEN_BIBLE" ->
-                TabNavigationHandler.navigateTo(AppTab.BIBLE)
-        }
+        shortcutTab(action)?.let { TabNavigationHandler.navigateTo(it) }
     }
 
 
@@ -157,6 +150,46 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val RC_NOTIFICATION_PERMISSION = 1001
     }
+}
+
+/** The scheme a QR code / deep link must use for this app to act on it. */
+internal const val DEEP_LINK_SCHEME = "churchpresenter://"
+
+internal const val SHORTCUT_OPEN_SONGS = "com.church.presenter.churchpresentermobile.OPEN_SONGS"
+internal const val SHORTCUT_OPEN_BIBLE = "com.church.presenter.churchpresentermobile.OPEN_BIBLE"
+
+/**
+ * The deep link to act on, or null when there is nothing new to do.
+ *
+ * Pulled out of [MainActivity] because it is the only part of the deep-link path
+ * that can be wrong, and the Activity around it needs an emulator to run.
+ *
+ * The dedupe against [lastHandled] is the point: this is reached from `onResume`,
+ * which fires again on every foreground and every configuration change, and the
+ * intent is still attached. Without it, one scanned QR code re-applies its
+ * host/port/key every time the screen rotates.
+ *
+ * @param url the intent's data string, which is absent for an ordinary launch.
+ * @param lastHandled the last URL acted on, so the same one is ignored.
+ */
+internal fun deepLinkToHandle(url: String?, lastHandled: String?): String? {
+    if (url == null) return null
+    if (!url.startsWith(DEEP_LINK_SCHEME)) return null
+    if (url == lastHandled) return null
+    return url
+}
+
+/**
+ * The tab a home-screen shortcut opens, or null when the action is not one.
+ *
+ * Separate from the Activity for the same reason, and worth pinning because the
+ * mapping is by string: a typo here sends someone who long-pressed "Songs" to
+ * the Bible, and nothing else would notice.
+ */
+internal fun shortcutTab(action: String?): AppTab? = when (action) {
+    SHORTCUT_OPEN_SONGS -> AppTab.SONGS
+    SHORTCUT_OPEN_BIBLE -> AppTab.BIBLE
+    else -> null
 }
 
 @Preview
