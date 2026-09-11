@@ -471,6 +471,35 @@ images they are compared against live in `composeApp/screenshots/`, committed.
   commit — which is also how the redesign reaches a reviewer as a diff.
   `-Precord` locally is still the right tool while *writing* a test; just don't
   commit what it draws.
+- 🤖 **"Re-record the screenshots" means the CI recipe below, not a local
+  `-Precord`.** When asked to re-record, refresh or update the goldens, do this
+  from the terminal (the branch must be pushed first — the runner records
+  whatever `--ref` points at):
+
+  ```bash
+  gh workflow run tests.yml --ref <branch> -f record=true
+  gh run list --workflow=tests.yml --branch <branch> --limit 1 --json databaseId   # grab the id
+  gh run watch <run-id> --exit-status --interval 30
+  gh run download <run-id> -n screenshots-linux -D /tmp/goldens   # refuses to overwrite in place
+  cp -R /tmp/goldens/. composeApp/screenshots/
+  git diff --stat <base-commit> -- composeApp/screenshots   # only the screens you changed should differ
+  ```
+
+  Then commit the PNGs. Sanity check before committing — diff against the last
+  commit whose goldens came from Linux, not against a Mac-recorded HEAD: if
+  screens the branch never touched show as modified, something other than the
+  OS is moving pixels and the diff needs a look. **Symptom of getting this wrong**: a CI run where
+  ~200 of ~220 screenshot tests fail with `AssertionError at
+  RoborazziOptions.common.kt` right after a goldens commit — that is a
+  Mac-recorded set, and the fix is to re-record on Linux, never to "fix" the
+  screens.
+- 🌓 **A screen that applies its own `AppTheme` ignores the harness's theme.**
+  `App()` reads `appSettings.themeMode`, and a fresh install is `SYSTEM`, which
+  is whatever the recording machine happens to be — so `app__*` came out light
+  on Linux and dark on a Mac in dark mode, and both files were the same image.
+  Capture each theme separately with the settings seeded to match
+  (`AppScreenshotTest.settingsIn`). Cheap check after any record: a `__dark.png`
+  whose mean brightness is over 50% is a light capture wearing the wrong name.
 - ✅ **`stringResource` DOES resolve on this target** (unlike wasmJs, see below),
   so screens can be captured with their real labels.
 

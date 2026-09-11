@@ -492,8 +492,10 @@ class PicturesViewModelTest {
         try {
             vm.uploadDevicePhotos(listOf(photo("a.jpg")))
             vm.pendingScrollIndex.first { it != null }
+            // The scroll index is published a few statements before the spinner
+            // flags are reset, so wait for the reset rather than racing it.
+            vm.isUploading.first { !it }
 
-            assertFalse(vm.isUploading.value)
             assertNull(vm.uploadProgress.value)
             assertEquals(0, vm.uploadPhotoTotal.value)
             assertEquals(0, vm.uploadPhotoIndex.value)
@@ -554,10 +556,12 @@ class PicturesViewModelTest {
         try {
             vm.uploadDevicePhotos(listOf(photo("big.jpg")))
             val error = vm.error.first { it != null }
+            // The error is published inside the upload loop; the spinner is only
+            // cleared once the loop is over, so await that rather than racing it.
+            vm.isUploading.first { !it }
 
             assertTrue(error!!.contains("big.jpg"), error)
             assertFalse(vm.isProjecting.value, "nothing uploaded, so nothing to project")
-            assertFalse(vm.isUploading.value)
         } finally {
             tearDown(vm)
         }
