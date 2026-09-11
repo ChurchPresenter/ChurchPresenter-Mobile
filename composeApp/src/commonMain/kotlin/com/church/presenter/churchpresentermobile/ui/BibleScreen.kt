@@ -404,9 +404,13 @@ internal fun ToastEvent.bibleToastMessage(): String = when (this) {
  *
  * @param errorBanner Drawn inside the books pane rather than across all three:
  *   it is the books request that failed, and its Retry reloads that list.
+ *
+ * `internal` rather than private so the screenshot suite can frame the
+ * arrangement with plain data — reaching it through [BibleScreen] would mean
+ * standing up a ViewModel and a WebSocket to photograph three `Column`s.
  */
 @Composable
-private fun BibleThreePane(
+internal fun BibleThreePane(
     book: BibleBook?,
     chapter: Int?,
     errorBanner: @Composable () -> Unit,

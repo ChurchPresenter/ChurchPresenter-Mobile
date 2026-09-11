@@ -244,9 +244,12 @@ internal fun UrlField(value: String, onValueChange: (String) -> Unit, modifier: 
  * Only the right half scrolls. The player's own height is fixed by its 16:9
  * artwork, and a transport row that could scroll out of reach is exactly what the
  * phone layout already goes out of its way to prevent.
+ *
+ * `internal` for the same reason [MediaPlayerPane] is: so the arrangement can be
+ * framed from plain data rather than from a live MediaViewModel.
  */
 @Composable
-private fun MediaTwoPane(
+internal fun MediaTwoPane(
     player: @Composable ColumnScope.() -> Unit,
     send: @Composable ColumnScope.() -> Unit,
     snackbarHostState: SnackbarHostState,
