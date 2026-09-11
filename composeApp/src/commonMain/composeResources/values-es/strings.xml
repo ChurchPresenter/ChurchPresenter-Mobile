@@ -439,5 +439,15 @@
     <string name="contact_rate_limited_browser">Por seguridad, completa el envío en tu navegador.</string>
     <string name="contact_network_error">No se pudo conectar con el servidor. Comprueba tu conexión a internet e inténtalo de nuevo.</string>
     <string name="contact_open_browser">Abrir en el navegador</string>
-</resources>
 
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Ninguna canción abierta</string>
+    <string name="songs_pane_empty_body">Elija una canción a la izquierda y sus estrofas aparecerán aquí.</string>
+    <string name="more_pane_empty_title">Ninguna herramienta abierta</string>
+    <string name="more_pane_empty_body">Elija una herramienta a la izquierda y se abrirá aquí.</string>
+    <string name="library_pane_empty_title">No se está editando nada</string>
+    <string name="library_pane_empty_body">Edite un elemento a la izquierda, o añada uno nuevo, y se abrirá aquí.</string>
+    <string name="bible_pane_empty_title">Ningún capítulo abierto</string>
+    <string name="bible_pane_empty_body">Elija un libro y luego un capítulo; sus versículos aparecerán aquí.</string>
+    <string name="bible_chapters_overline">Capítulo</string>
+</resources>

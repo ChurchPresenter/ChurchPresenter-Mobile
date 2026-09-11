@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Tittel</string>
+    <string name="songs_table_header_book">Sangbok</string>
+    <string name="songs_table_header_tune">Melodi</string>
+    <string name="songs_table_search_placeholder">Søk på # eller tittel…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Ingen sanger tilgjengelig</string>
+    <string name="songs_table_no_match">Ingen sanger samsvarer med filteret</string>
+    <string name="songs_table_retry">Prøv igjen</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Alle sangbøker</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Åpne innstillinger</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Innstillinger</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Vert / IP-adresse</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API-nøkkel (valgfritt)</string>
+    <string name="settings_api_key_placeholder">La stå tomt hvis det ikke kreves</string>
+    <string name="settings_save">Lagre</string>
+    <string name="settings_cancel">Avbryt</string>
+    <string name="settings_invalid_port">Porten må være et tall mellom 1 og 65535</string>
+    <string name="settings_host_empty">Verten kan ikke være tom</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Utseende</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Lyst</string>
+    <string name="settings_theme_dark">Mørkt</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Sanger</string>
+    <string name="tab_bible">Bibelen</string>
+    <string name="tab_pictures">Bilder</string>
+    <string name="tab_presentation">Presentasjon</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bibelen — kommer snart</string>
+    <string name="pictures_coming_soon">🖼  Bilder — kommer snart</string>
+    <string name="presentation_coming_soon">📽  Presentasjon — kommer snart</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Ingen presentasjoner tilgjengelig</string>
+    <string name="presentation_loading_error">Kunne ikke laste presentasjoner</string>
+    <string name="presentation_retry">Prøv igjen</string>
+    <string name="presentation_slides">lysbilder</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Ingen bilder tilgjengelig</string>
+    <string name="pictures_loading_error">Kunne ikke laste bilder</string>
+    <string name="pictures_retry">Prøv igjen</string>
+    <string name="pictures_photos">bilder</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Søk i bøker…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Ingen bibelbøker tilgjengelig</string>
+    <string name="bible_no_match">Ingen bøker samsvarer med søket</string>
+    <string name="bible_chapter_label">Kapittel</string>
+    <string name="bible_chapters_title">Kapitler</string>
+    <string name="bible_no_verses">Ingen vers tilgjengelig</string>
+    <string name="bible_back">← Tilbake</string>
+    <string name="bible_loading_error">Kunne ikke laste</string>
+    <string name="bible_retry">Prøv igjen</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Plan</string>
+    <string name="schedule_drawer_refresh">Oppdater planen</string>
+    <string name="schedule_drawer_empty">Ingen elementer i planen</string>
+    <string name="schedule_drawer_error">Feil: %1$s</string>
+    <string name="schedule_drawer_open">Åpne planen</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Legg til i planen</string>
+    <string name="song_detail_schedule_request_sent">Forespørsel sendt ✓</string>
+    <string name="song_detail_project_to_screen">Vis på skjermen</string>
+    <string name="song_detail_stop_projecting">Slutt å vise</string>
+    <string name="song_detail_fab_actions">Handlinger</string>
+    <string name="song_detail_fab_close_actions">Lukk handlinger</string>
+    <string name="song_detail_projecting_badge">▶  Vises</string>
+    <string name="song_detail_no_lyrics">Ingen sangtekst tilgjengelig</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Legg til i planen</string>
+    <string name="bible_detail_schedule_request_sent">Forespørsel sendt ✓</string>
+    <string name="bible_detail_project_to_screen">Vis på skjermen</string>
+    <string name="bible_detail_stop_projecting">Slutt å vise</string>
+    <string name="bible_detail_fab_actions">Handlinger</string>
+    <string name="bible_detail_fab_close_actions">Lukk handlinger</string>
+    <string name="bible_detail_projecting_badge">▶  Vises</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Legg til i planen</string>
+    <string name="pictures_schedule_request_sent">Forespørsel sendt ✓</string>
+    <string name="pictures_project_to_screen">Vis på skjermen</string>
+    <string name="pictures_stop_projecting">Slutt å vise</string>
+    <string name="pictures_pick_from_device">Velg fra enheten</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Legg til i planen</string>
+    <string name="action_project_to_screen">Vis på skjermen</string>
+    <string name="action_stop_projecting">Slutt å vise</string>
+    <string name="pictures_uploading">Laster opp…</string>
+    <string name="upload_overlay_subtitle">Vent litt, ikke lukk appen</string>
+    <string name="upload_overlay_photo_counter">Bilde %1$d av %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Bildet ble lagt til i planen</string>
+    <string name="toast_pictures_failed_to_add_schedule">Kunne ikke legge bildet til i planen: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Legg til i planen</string>
+    <string name="presentation_schedule_request_sent">Forespørsel sendt ✓</string>
+    <string name="presentation_project_to_screen">Vis på skjermen</string>
+    <string name="presentation_stop_projecting">Slutt å vise</string>
+    <string name="presentation_upload_file">Last opp presentasjon</string>
+    <string name="presentation_uploading">Laster opp…</string>
+    <string name="toast_presentation_added_to_schedule">Presentasjonen ble lagt til i planen</string>
+    <string name="toast_presentation_failed_to_add_schedule">Kunne ikke legge presentasjonen til i planen: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Kunne ikke velge presentasjon: %1$s</string>
+    <string name="toast_upload_unsupported">Opplasting støttes ikke av denne serveren. Oppdater ChurchPresenter på datamaskinen til nyeste versjon.</string>
+    <string name="toast_upload_file_too_large">Filen er for stor for serveren. Prøv en mindre fil.</string>
+    <string name="toast_upload_server_error">Serveren avviste opplastingen: %1$s</string>
+    <string name="toast_upload_failed">Opplastingen mislyktes: %1$s</string>
+    <string name="toast_upload_reload_failed">Lastet opp, men kunne ikke laste listen på nytt: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Sangen vises nå på skjermen</string>
+    <string name="toast_request_failed">Forespørselen mislyktes</string>
+    <string name="toast_no_song_selected">Ingen sang valgt</string>
+    <string name="toast_song_added_to_schedule">«%1$s» ble lagt til i planen</string>
+    <string name="toast_failed_to_project">Kunne ikke vise sangen: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Kunne ikke legge til i planen: %1$s</string>
+    <string name="toast_request_denied">Forespørselen ble avvist</string>
+    <string name="toast_session_blocked">Økten er blokkert — ingen flere forespørsler godtas</string>
+    <string name="toast_request_rejected">Forespørselen ble avvist av serveren (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Forespørselen ble avvist: %1$s</string>
+    <string name="toast_bible_live">Bibelstedet vises nå på skjermen</string>
+    <string name="toast_bible_added_to_schedule">«%1$s» ble lagt til i planen</string>
+    <string name="toast_failed_to_project_bible">Kunne ikke vise: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Kunne ikke legge til i planen: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server satt til %1$s:%2$s</string>
+    <string name="qr_scan_button">Skann QR-kode</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Stol på serverens sertifikat</string>
+    <string name="cert_setup_subtitle">Engangsoppsett kreves</string>
+    <string name="cert_setup_intro">ChurchPresenter bruker et privat HTTPS-sertifikat for sikker kommunikasjon. Du må installere det én gang slik at enheten stoler på tilkoblingen.</string>
+    <string name="cert_setup_scan_title">Skann sertifikatets QR-kode</string>
+    <string name="cert_setup_scan_desktop_hint">I ChurchPresenter på datamaskinen: Innstillinger → Server → trykk «Download Cert» for å vise QR-koden.</string>
+    <string name="cert_setup_scan_button">Skann QR-kode</string>
+    <string name="cert_setup_scan_or_divider">eller bruk lagret adresse</string>
+    <string name="cert_setup_url_scanned">✓ URL skannet</string>
+    <string name="cert_setup_url_label">Sertifikatets URL</string>
+    <string name="cert_setup_open_button">Åpne sertifikatets URL</string>
+    <string name="cert_setup_step2_ios_title">iOS — Installer profilen</string>
+    <string name="cert_setup_step2_ios_body">Safari spør om å laste ned en konfigurasjonsprofil. Trykk Tillat, gå så til Innstillinger → Generelt → VPN og enhetsadministrering, trykk ChurchPresenter og installer.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Stol på sertifikatet</string>
+    <string name="cert_setup_step3_ios_body">Innstillinger → Generelt → Om → Innstillinger for sertifikattillit → slå på full tillit for ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Installer sertifikatet</string>
+    <string name="cert_setup_step2_android_body">Chrome laster ned .crt-filen. Trykk på den i nedlastingsvarselet, velg «CA-sertifikat» og gi det et navn som «ChurchPresenter».</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ «Kan ikke installere fra ukjente kilder»?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android kan blokkere installasjonen hvis nettleseren ikke har lov til å installere filer. Gå til Innstillinger → Apper → [nettleseren din] → Installer ukjente apper, og slå på «Tillat fra denne kilden». Kom tilbake hit og trykk på filen igjen.</string>
+    <string name="cert_setup_fingerprint_title">Bekreft fingeravtrykk (anbefalt)</string>
+    <string name="cert_setup_fingerprint_body">Sammenlign dette fingeravtrykket med det ChurchPresenter på datamaskinen viser under Innstillinger → Server → Certificate SHA-256. De må stemme overens.</string>
+    <string name="cert_setup_fingerprint_unavailable">Koble til serveren først for å se fingeravtrykket</string>
+    <string name="cert_setup_done_button">Ferdig — sertifikatet er installert</string>
+    <string name="cert_setup_skip_button">Hopp over foreløpig</string>
+    <string name="cert_setup_skip_note">Du kan komme tilbake til denne veiledningen når som helst fra Innstillinger.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Koble til datamaskinen</string>
+    <string name="connect_setup_subtitle">Engangsoppsett kreves</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile kobler seg til ChurchPresenter-appen på datamaskinen i det lokale nettverket. Skann QR-koden fra datamaskinen for å sette opp tilkoblingen automatisk.</string>
+    <string name="connect_setup_step1_title">Åpne ChurchPresenter på datamaskinen</string>
+    <string name="connect_setup_step1_body">Start ChurchPresenter på datamaskinen og sørg for at den kjører på samme Wi-Fi-nettverk som denne enheten.</string>
+    <string name="connect_setup_step2_title">Vis tilkoblingens QR-kode</string>
+    <string name="connect_setup_step2_body">Gå til Innstillinger → Mobil i appen på datamaskinen og trykk «Show QR Code». En QR-kode med tilkoblingsdetaljene vises på skjermen.</string>
+    <string name="connect_setup_step3_title">Skann QR-koden nedenfor</string>
+    <string name="connect_setup_step3_body">Trykk på knappen nedenfor for å åpne kameraet og skanne QR-koden som vises på datamaskinen. Tilkoblingen settes opp automatisk.</string>
+    <string name="connect_setup_scan_button">Skann QR-kode</string>
+    <string name="connect_setup_connected">✓ Koblet til %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Ferdig — tilkoblet</string>
+    <string name="connect_setup_skip_button">Hopp over foreløpig</string>
+    <string name="connect_setup_skip_note">Du kan skanne QR-koden når som helst fra Innstillinger.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Navnet ditt (for spørsmål og svar)</string>
+    <string name="settings_display_name_placeholder">La stå tomt for å bruke enhets-ID</string>
+    <string name="settings_privacy_section">Personvern</string>
+    <string name="settings_telemetry_label">Del bruks- og krasjdata</string>
+    <string name="settings_telemetry_description">Hjelper oss å finne og rette feil. Slå av for å slutte å sende analyse- og krasjrapporter.</string>
+    <string name="tab_qa_admin">Spørsmål</string>
+    <string name="qa_admin_session_active">Økten er aktiv</string>
+    <string name="qa_admin_session_stopped">Økten er stoppet</string>
+    <string name="qa_admin_incoming_tab">Innkomne (%1$d)</string>
+    <string name="qa_admin_finished_tab">Ferdige (%1$d)</string>
+    <string name="qa_admin_no_incoming">Ingen innkomne spørsmål</string>
+    <string name="qa_admin_no_finished">Ingen ferdige spørsmål</string>
+    <string name="qa_admin_approve">Godkjenn</string>
+    <string name="qa_admin_deny">Avvis</string>
+    <string name="qa_admin_go_live">Vis nå</string>
+    <string name="qa_admin_done">Merk som ferdig</string>
+    <string name="qa_admin_clear_display">Tøm skjermen</string>
+    <string name="qa_admin_now_live">Vises:</string>
+    <string name="qa_admin_edit_hint">Rediger spørsmålsteksten…</string>
+    <string name="qa_admin_add_question">Legg til spørsmål</string>
+    <string name="qa_admin_add_question_hint">Skriv spørsmålet ditt…</string>
+    <string name="qa_admin_save">Lagre</string>
+    <string name="qa_admin_cancel">Avbryt</string>
+    <string name="qa_admin_error_retry">Prøv igjen</string>
+    <string name="action_clear_display">Tøm skjermen</string>
+    <string name="action_hold_display">Frys skjermen</string>
+    <string name="action_multi_select">Velg flere</string>
+    <string name="bible_multi_select_count">%1$d valgt</string>
+    <string name="connect_setup_no_camera_note">Fant ingen kamera på denne enheten. Skriv inn tilkoblingsdetaljene manuelt:</string>
+    <string name="connect_setup_manual_entry_toggle">Skriv inn manuelt i stedet</string>
+    <string name="connect_setup_scan_instead_toggle">Skann QR-kode i stedet</string>
+    <string name="connect_setup_manual_apply_button">Bruk</string>
+    <string name="settings_active_url_label">Kobler nå til:</string>
+    <string name="settings_reset_to_default">Tilbakestill til standard</string>
+    <string name="settings_draft_url_label">Kobler til etter lagring:</string>
+    <string name="settings_check_status">Sjekk serverstatus</string>
+    <string name="settings_developer_section">Utvikler</string>
+    <string name="settings_send_test_error">Send testfeil til Sentry</string>
+    <string name="settings_test_error_sent">✓ Testfeil sendt til Sentry</string>
+    <string name="settings_check_status_description">Sjekk serverstatus</string>
+    <string name="settings_status_recheck">Sjekk på nytt</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobil: %1$s</string>
+    <string name="settings_status_api_key_enabled">API-nøkkel: aktivert</string>
+    <string name="settings_status_api_key_none">API-nøkkel: ingen</string>
+    <string name="settings_status_endpoints">Endepunkter</string>
+    <string name="settings_status_bibles">Bibler</string>
+    <string name="settings_status_songbooks">Sangbøker</string>
+    <string name="settings_status_none">ingen</string>
+    <string name="status_connecting">Kobler til serveren…</string>
+    <string name="status_connected">Serveren er tilkoblet</string>
+    <string name="status_continue">Fortsett</string>
+    <string name="status_retry">Prøv igjen</string>
+    <string name="status_open_settings">Åpne innstillinger</string>
+    <string name="status_continue_anyway">Fortsett likevel</string>
+    <string name="status_limited_functionality">Begrenset funksjonalitet</string>
+    <string name="status_server_version">Serverversjon: %1$s</string>
+    <string name="status_issues_detected">Følgende problemer ble funnet på den tilkoblede serveren:</string>
+    <string name="status_endpoint_unavailable">Statusendepunktet finnes ikke i denne serverversjonen — oppdater ChurchPresenter på datamaskinen for full rapportering.</string>
+    <string name="status_error_title">Kunne ikke nå serveren</string>
+    <string name="status_permissions_title">Denne enhetens tillatelser</string>
+    <string name="status_permission_present">Styre presentasjonen</string>
+    <string name="status_permission_schedule">Legge til i planen</string>
+    <string name="status_permission_upload">Laste opp filer</string>
+    <string name="status_permission_blocked">— blokkert</string>
+    <string name="status_info_bibles">Tilgjengelige bibler</string>
+    <string name="status_info_songbooks">Tilgjengelige sangbøker</string>
+    <string name="status_info_features">Aktiverte funksjoner</string>
+    <string name="status_warn_no_api_key_title">Ingen API-nøkkel satt opp</string>
+    <string name="status_warn_no_api_key_body">Serveren har ingen API-nøkkel satt. Enkelte beskyttede endepunkter kan avvise forespørsler. Vurder å aktivere en API-nøkkel i serverinnstillingene til ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Ingen bibeloversettelser tilgjengelig</string>
+    <string name="status_warn_no_bibles_body">Serveren har ingen bibeloversettelser lastet inn. Bibelfanen vil være tom. Legg til en oversettelse i ChurchPresenter på datamaskinen.</string>
+    <string name="status_warn_no_songbooks_title">Ingen sangbøker tilgjengelig</string>
+    <string name="status_warn_no_songbooks_body">Serveren har ingen sangbøker lastet inn. Sangfanen vil være tom. Importer en sangbok i ChurchPresenter på datamaskinen.</string>
+    <string name="status_warn_present_blocked_title">Presentasjonsstyring blokkert</string>
+    <string name="status_warn_present_blocked_body">Denne enheten har ikke lov til å styre presentasjonen (vise, tømme, velge lysbilder). Be serveradministratoren gi enheten Presenter-tillatelsen.</string>
+    <string name="status_warn_schedule_blocked_title">Redigering av planen blokkert</string>
+    <string name="status_warn_schedule_blocked_body">Denne enheten har ikke lov til å legge elementer til i planen. Be serveradministratoren gi enheten Schedule-tillatelsen.</string>
+    <string name="status_warn_upload_blocked_title">Filopplasting blokkert</string>
+    <string name="status_warn_upload_blocked_body">Denne enheten har ikke lov til å laste opp presentasjoner eller bilder. Be serveradministratoren gi enheten Upload-tillatelsen.</string>
+    <string name="upload_blocked_toast">Filopplasting er slått av for denne enheten. Be serveradministratoren gi Upload-tillatelsen.</string>
+    <string name="status_warn_unknown_version_title">Ukjent serverversjon</string>
+    <string name="status_warn_unknown_version_body">Serveren oppga versjon «%1$s». Enkelte funksjoner i appen er kanskje ikke kompatible med denne versjonen.</string>
+    <string name="status_warn_missing_endpoint_title">Manglende API-endepunkt: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Serveren har ikke endepunktet «%1$s». Funksjoner som bygger på det, blir utilgjengelige.</string>
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Ingen media lastet</string>
+    <string name="media_playing">Spiller</string>
+    <string name="media_playing_on_desktop">Spiller på datamaskinen</string>
+    <string name="media_local_ready">Lokal fil · klar til visning</string>
+    <string name="media_pick_to_upload">Velg en fil å laste opp</string>
+    <string name="media_source_network_url">Nettverks-URL</string>
+    <string name="media_source_upload">Last opp fra telefonen</string>
+    <string name="media_subtitle_url">%1$s · Nettverks-URL</string>
+    <string name="media_subtitle_empty">Lim inn en nettverks-URL nedenfor for å sende media</string>
+    <string name="media_on_screen">PÅ SKJERMEN</string>
+    <string name="media_cd_stop">Stopp</string>
+    <string name="media_cd_back10">Tilbake 10 sekunder</string>
+    <string name="media_cd_forward10">Fremover 10 sekunder</string>
+    <string name="media_cd_play">Spill</string>
+    <string name="media_cd_pause">Pause</string>
+    <string name="media_cd_mute">Lyd av</string>
+    <string name="media_add_to_schedule">Legg til i planen</string>
+    <string name="media_go_live">Vis nå</string>
+    <string name="media_clear_screen">Tøm skjermen</string>
+    <string name="media_source_label">KILDE</string>
+    <string name="media_will_send">Sender: %1$s</string>
+    <string name="media_target_uploaded">Opplastet fil · %1$s</string>
+    <string name="media_target_loaded">Lastet på datamaskinen · %1$s</string>
+    <string name="media_target_url">Nettverks-URL</string>
+    <string name="media_target_none">Velg en kilde nedenfor for å sende media</string>
+    <string name="media_load_label">LAST INN MEDIA</string>
+    <string name="media_uploading_percent">Laster opp… %1$d%%</string>
+    <string name="media_choose_file">Velg en video- eller lydfil</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Opplasting er slått av på datamaskinen</string>
+    <string name="media_uploads_disabled_hint">Slå på «Allow file uploads from mobile devices» i serverinnstillingene i appen på datamaskinen.</string>
+    <string name="media_playing_generic">media</string>
+    <string name="more_photos_title">Bilder</string>
+    <string name="more_photos_subtitle">Bla i og vis bildemapper</string>
+    <string name="more_qa_title">Spørsmål</string>
+    <string name="more_qa_subtitle">Gå gjennom og vis spørsmål fra publikum</string>
+    <string name="more_dictionary_title">Ordbok</string>
+    <string name="more_dictionary_subtitle">Strongs hebraiske og greske leksikon</string>
+    <string name="more_announcements_title">Kunngjøringer</string>
+    <string name="more_announcements_subtitle">Tekst, klokker og nedtellinger</string>
+    <string name="more_web_title">Nett</string>
+    <string name="more_web_subtitle">Vis en nettside på skjermen</string>
+    <string name="strongs_dictionary_title">Strongs ordbok</string>
+    <string name="web_title">Nett</string>
+    <string name="announcements_title">Kunngjøringer</string>
+    <string name="action_clear">Tøm</string>
+    <string name="action_cancel">Avbryt</string>
+    <string name="action_go_live">Vis nå</string>
+    <string name="label_add_to_schedule">Legg til i planen</string>
+    <string name="label_live">Direkte</string>
+    <string name="cd_delete">Slett</string>
+    <string name="cd_close">Lukk</string>
+    <string name="cd_select">Velg</string>
+    <string name="cd_cast">Cast</string>
+    <string name="cd_back">Tilbake</string>
+    <string name="cd_settings">Innstillinger</string>
+    <string name="cd_schedule">Plan</string>
+    <string name="overline_on_screen_preview">Forhåndsvisning</string>
+    <string name="announcements_text_placeholder">Kunngjøringstekst…</string>
+    <string name="overline_duration">Varighet</string>
+    <string name="overline_target_time">Måltidspunkt</string>
+    <string name="overline_animation">Animasjon</string>
+    <string name="stepper_hrs">Tim</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sek</string>
+    <string name="stepper_hour">Time</string>
+    <string name="stepper_font_size">Skriftstørrelse</string>
+    <string name="swatch_text">Tekst</string>
+    <string name="swatch_background">Bakgrunn</string>
+    <string name="announcements_clock_desc">Viser klokkeslettet nå, direkte.</string>
+    <string name="announcements_count_up_desc">Teller opp fra null når den vises.</string>
+    <string name="announcements_animation_duration_label">ANIMASJONENS VARIGHET</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">LAGREDE</string>
+    <string name="announcements_add_new">+ Ny</string>
+    <string name="announcements_no_saved">Ingen lagrede kunngjøringer ennå. Lag en og trykk «+ Ny».</string>
+    <string name="color_picker_title">Velg en farge</string>
+    <string name="color_picker_use">Bruk fargen</string>
+    <string name="color_slider_hue">Fargetone</string>
+    <string name="color_slider_saturation">Metning</string>
+    <string name="color_slider_brightness">Lysstyrke</string>
+    <string name="cd_custom_color">Egen farge</string>
+    <string name="announcements_preview_placeholder">Kunngjøringen din</string>
+    <string name="web_bookmarks_label">BOKMERKER</string>
+    <string name="web_add_bookmark">+ Legg til</string>
+    <string name="web_no_bookmarks">Ingen bokmerker ennå. Skriv inn en URL og trykk «+ Legg til».</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Søk etter nummer, ord eller betydning…</string>
+    <string name="dictionary_filter_all">Alle</string>
+    <string name="dictionary_filter_hebrew">Hebraisk</string>
+    <string name="dictionary_filter_greek">Gresk</string>
+    <string name="dictionary_no_entries">Ingen treff</string>
+    <string name="dictionary_uses">BRUK</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Ordklasse</string>
+    <string name="dictionary_occurrences">Forekomster</string>
+    <string name="dictionary_root">Rot</string>
+    <string name="dictionary_definition">Definisjon</string>
+    <string name="dictionary_kjv_usage">KJV-bruk</string>
+    <string name="qa_edit_question_title">Rediger spørsmål</string>
+    <string name="qa_delete_question">Slett spørsmålet</string>
+    <string name="qa_submitted_by">Sendt inn av %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Stopp</string>
+    <string name="qa_action_approve">Godkjenn</string>
+    <string name="cd_edit">Rediger</string>
+    <string name="cd_deny">Avvis</string>
+    <string name="qa_badge_live">DIREKTE</string>
+    <string name="qa_badge_approved">✓ Godkjent</string>
+    <string name="qa_badge_denied">Avvist</string>
+    <string name="qa_badge_answered">Besvart</string>
+    <string name="schedule_drawer_item_count">%1$d elementer</string>
+    <string name="presentation_slide_desc">Lysbilde %1$d</string>
+    <string name="presentation_slide_live">▶ DIREKTE</string>
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Vis</string>
+    <string name="tab_more">Mer</string>
+    <string name="songs_count">%1$d sanger</string>
+    <string name="bible_chapters_count">%1$d kap</string>
+    <string name="status_version_line">Server: %1$s · Mobil: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Tekst</string>
+    <string name="announce_type_countdown">Nedtelling</string>
+    <string name="announce_type_count_up">Opptelling</string>
+    <string name="announce_type_clock">Klokke</string>
+    <string name="announce_type_countdown_to_time">Nedtelling til klokkeslett</string>
+    <string name="announce_anim_none">Ingen</string>
+    <string name="announce_anim_fade">Ton</string>
+    <string name="announce_anim_slide_up">Skyv opp</string>
+    <string name="announce_anim_slide_down">Skyv ned</string>
+    <string name="announce_anim_slide_left">Skyv fra venstre</string>
+    <string name="announce_anim_slide_right">Skyv fra høyre</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Bok</string>
+    <string name="dictionary_ref_chapter">Kapittel</string>
+    <string name="dictionary_ref_verse">Vers</string>
+    <string name="dictionary_ref_clear">Tøm referansefilteret</string>
+    <string name="dictionary_appears_in">Forekommer i</string>
+    <string name="dictionary_appears_in_count">%1$s av %2$s</string>
+    <string name="settings_active_server">Aktiv server</string>
+    <string name="contact_us_title">Kontakt oss</string>
+    <string name="contact_type_label">Type</string>
+    <string name="contact_type_feature">Funksjonsønske</string>
+    <string name="contact_type_feedback">Tilbakemelding</string>
+    <string name="contact_type_testimonial">Omtale</string>
+    <string name="contact_type_bug">Feilrapport</string>
+    <string name="contact_name_label">Navn</string>
+    <string name="contact_email_label">E-post (valgfritt)</string>
+    <string name="contact_message_label">Melding</string>
+    <string name="contact_send">Send</string>
+    <string name="contact_sending">Sender…</string>
+    <string name="contact_sent">Meldingen er sendt. Takk!</string>
+    <string name="contact_error">Kunne ikke sende. Prøv igjen.</string>
+    <string name="contact_rate_limited_browser">Av sikkerhetsgrunner må du fullføre sendingen i nettleseren.</string>
+    <string name="contact_network_error">Kunne ikke nå serveren. Sjekk internettforbindelsen og prøv igjen.</string>
+    <string name="contact_open_browser">Åpne i nettleseren</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Ingen sang åpen</string>
+    <string name="songs_pane_empty_body">Velg en sang til venstre, så vises versene her.</string>
+    <string name="more_pane_empty_title">Ingen verktøy åpent</string>
+    <string name="more_pane_empty_body">Velg et verktøy til venstre, så åpnes det her.</string>
+    <string name="library_pane_empty_title">Ingenting redigeres</string>
+    <string name="library_pane_empty_body">Rediger et element til venstre, eller legg til et nytt, så åpnes det her.</string>
+    <string name="bible_pane_empty_title">Ingen kapittel åpent</string>
+    <string name="bible_pane_empty_body">Velg en bok og så et kapittel, så vises versene her.</string>
+    <string name="bible_chapters_overline">Kapittel</string>
+</resources>

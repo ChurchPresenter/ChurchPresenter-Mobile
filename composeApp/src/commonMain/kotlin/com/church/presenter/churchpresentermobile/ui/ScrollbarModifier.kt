@@ -13,11 +13,13 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
 /**
- * Draws a thin vertical scroll-thumb on the right edge of a [LazyColumn].
+ * Draws a thin vertical scroll-thumb on the trailing edge of a [LazyColumn] —
+ * the right in a left-to-right layout, the left in a right-to-left one.
  * Uses [drawWithContent] so no extra Box wrapper is needed.
  * Works on all targets (Android, iOS, Web).
  */
@@ -56,7 +58,10 @@ fun Modifier.verticalScrollbar(
 
         drawRoundRect(
             color       = thumbColor,
-            topLeft     = Offset(size.width - width.toPx(), thumbTop),
+            // Trailing edge, not "the right": in a right-to-left locale the
+            // content's own edge is on the left, and a thumb pinned to the right
+            // sits over the text instead of beside it.
+            topLeft     = Offset(thumbX(layoutDirection, size.width, width.toPx()), thumbTop),
             size        = Size(width.toPx(), thumbH),
             cornerRadius = CornerRadius(width.toPx() / 2)
         )
@@ -64,7 +69,7 @@ fun Modifier.verticalScrollbar(
 }
 
 /**
- * Draws a thin vertical scroll-thumb on the right edge of a [LazyVerticalGrid].
+ * Draws a thin vertical scroll-thumb on the trailing edge of a [LazyVerticalGrid].
  * Works on all targets (Android, iOS, Web).
  */
 fun Modifier.verticalScrollbar(
@@ -108,10 +113,18 @@ fun Modifier.verticalScrollbar(
 
         drawRoundRect(
             color        = thumbColor,
-            topLeft      = Offset(size.width - width.toPx(), thumbTop),
+            topLeft      = Offset(thumbX(layoutDirection, size.width, width.toPx()), thumbTop),
             size         = Size(width.toPx(), thumbH),
             cornerRadius = CornerRadius(width.toPx() / 2)
         )
     }
 }
 
+/**
+ * Where the scroll thumb sits across the width.
+ *
+ * A plain function over plain numbers, so the one thing that can be wrong —
+ * which edge it lands on — is checkable without a Skia surface.
+ */
+internal fun thumbX(direction: LayoutDirection, totalWidth: Float, thumbWidth: Float): Float =
+    if (direction == LayoutDirection.Rtl) 0f else totalWidth - thumbWidth

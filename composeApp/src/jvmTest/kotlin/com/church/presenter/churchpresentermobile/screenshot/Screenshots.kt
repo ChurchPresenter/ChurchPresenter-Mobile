@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
@@ -20,6 +21,8 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.runDesktopComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
@@ -69,6 +72,16 @@ internal object Screenshots {
 
     /** A tablet/landscape width, for the composables whose layout changes with it. */
     val TABLET_WIDTH: Dp = 840.dp
+
+    /**
+     * A 12.9" tablet in landscape — the size the two-pane layouts were drawn at.
+     *
+     * Needed as a *surface*, not just a width: `runComposeUiTest` opens a
+     * 1024x768 window and a capture is CLIPPED to it, not overflowed. A two-pane
+     * screen photographed in the default window records a cropped golden that
+     * looks plausible enough to commit and hides the pane it cut off.
+     */
+    val TABLET_SURFACE: DpSize = DpSize(1366.dp, 900.dp)
 
     // ── Store and website images ─────────────────────────────────────────
     //
@@ -130,6 +143,14 @@ private const val CONTENT_TIMEOUT_MS = 5_000L
  * @param themes Which themes to capture. Both by default — a colour that only
  *   goes wrong in the dark is exactly what this suite is for. Narrow it only
  *   for a subject that has no themed surface at all.
+ * @param surface The window to render into, for a subject too wide for the
+ *   default one — the tablet layouts. A capture is **clipped** to this window
+ *   rather than overflowing it, so a two-pane screen shot in the default window
+ *   records a cropped golden. Pass `width = null` alongside it and let the
+ *   subject fill the surface.
+ * @param layoutDirection Which way round to lay the subject out. Only worth
+ *   setting for a golden whose whole point is the mirroring — everything else
+ *   would double the suite for no extra coverage.
  */
 @OptIn(ExperimentalTestApi::class)
 internal fun screenshot(
@@ -137,18 +158,24 @@ internal fun screenshot(
     width: Dp? = Screenshots.PHONE_WIDTH,
     themes: List<ThemeMode> = listOf(ThemeMode.LIGHT, ThemeMode.DARK),
     dialog: Boolean = false,
+    surface: DpSize? = null,
+    layoutDirection: LayoutDirection = LayoutDirection.Ltr,
     until: (ComposeUiTest.() -> Boolean)? = null,
     content: @Composable () -> Unit,
 ) {
     themes.forEach { theme ->
-        runComposeUiTest {
+        // One body whichever window it renders into, so a wide golden is framed
+        // by exactly the same theme and background as a phone-width one.
+        val capture: ComposeUiTest.() -> Unit = {
             setContent {
-                AppTheme(themeMode = theme) {
-                    // An explicit surface, because the capture takes the root
-                    // node's bounds and a transparent background would leave the
-                    // PNG's alpha channel deciding what the reviewer sees.
-                    Surface(color = MaterialTheme.colorScheme.background) {
-                        Box(if (width != null) Modifier.width(width) else Modifier) { content() }
+                CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                    AppTheme(themeMode = theme) {
+                        // An explicit surface, because the capture takes the root
+                        // node's bounds and a transparent background would leave
+                        // the PNG's alpha channel deciding what the reviewer sees.
+                        Surface(color = MaterialTheme.colorScheme.background) {
+                            Box(if (width != null) Modifier.width(width) else Modifier) { content() }
+                        }
                     }
                 }
             }
@@ -158,6 +185,14 @@ internal fun screenshot(
             // a populated screen and green forever after.
             until?.let { waitUntil(timeoutMillis = CONTENT_TIMEOUT_MS) { it() } }
             drawnRoot(dialog).captureRoboImage(goldenPath(name, theme))
+        }
+        if (surface == null) {
+            runComposeUiTest { capture() }
+        } else {
+            runDesktopComposeUiTest(
+                width = surface.width.value.toInt(),
+                height = surface.height.value.toInt(),
+            ) { capture() }
         }
     }
 }

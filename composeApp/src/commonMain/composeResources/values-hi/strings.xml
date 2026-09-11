@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">शीर्षक</string>
+    <string name="songs_table_header_book">भजन पुस्तक</string>
+    <string name="songs_table_header_tune">धुन</string>
+    <string name="songs_table_search_placeholder"># या शीर्षक से खोजें…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">कोई भजन उपलब्ध नहीं</string>
+    <string name="songs_table_no_match">फ़िल्टर से मेल खाता कोई भजन नहीं</string>
+    <string name="songs_table_retry">पुनः प्रयास करें</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">सभी भजन पुस्तकें</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">सेटिंग खोलें</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">सेटिंग</string>
+    <string name="settings_server_section">सर्वर</string>
+    <string name="settings_host_label">होस्ट / IP पता</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">पोर्ट</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API कुंजी (वैकल्पिक)</string>
+    <string name="settings_api_key_placeholder">आवश्यक न हो तो खाली छोड़ें</string>
+    <string name="settings_save">सहेजें</string>
+    <string name="settings_cancel">रद्द करें</string>
+    <string name="settings_invalid_port">पोर्ट 1 और 65535 के बीच की संख्या होनी चाहिए</string>
+    <string name="settings_host_empty">होस्ट खाली नहीं हो सकता</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">रूप</string>
+    <string name="settings_theme_system">सिस्टम</string>
+    <string name="settings_theme_light">हल्का</string>
+    <string name="settings_theme_dark">गहरा</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">भजन</string>
+    <string name="tab_bible">बाइबल</string>
+    <string name="tab_pictures">चित्र</string>
+    <string name="tab_presentation">प्रस्तुति</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  बाइबल — जल्द आ रहा है</string>
+    <string name="pictures_coming_soon">🖼  चित्र — जल्द आ रहे हैं</string>
+    <string name="presentation_coming_soon">📽  प्रस्तुति — जल्द आ रही है</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">कोई प्रस्तुति उपलब्ध नहीं</string>
+    <string name="presentation_loading_error">प्रस्तुतियाँ लोड नहीं हो सकीं</string>
+    <string name="presentation_retry">पुनः प्रयास करें</string>
+    <string name="presentation_slides">स्लाइड</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">कोई चित्र उपलब्ध नहीं</string>
+    <string name="pictures_loading_error">चित्र लोड नहीं हो सके</string>
+    <string name="pictures_retry">पुनः प्रयास करें</string>
+    <string name="pictures_photos">तस्वीरें</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">पुस्तकें खोजें…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">कोई बाइबल पुस्तक उपलब्ध नहीं</string>
+    <string name="bible_no_match">खोज से मेल खाती कोई पुस्तक नहीं</string>
+    <string name="bible_chapter_label">अध्याय</string>
+    <string name="bible_chapters_title">अध्याय</string>
+    <string name="bible_no_verses">कोई पद उपलब्ध नहीं</string>
+    <string name="bible_back">← वापस</string>
+    <string name="bible_loading_error">लोड नहीं हो सका</string>
+    <string name="bible_retry">पुनः प्रयास करें</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">कार्यक्रम</string>
+    <string name="schedule_drawer_refresh">कार्यक्रम ताज़ा करें</string>
+    <string name="schedule_drawer_empty">कार्यक्रम में कोई आइटम नहीं</string>
+    <string name="schedule_drawer_error">त्रुटि: %1$s</string>
+    <string name="schedule_drawer_open">कार्यक्रम खोलें</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="song_detail_schedule_request_sent">अनुरोध भेजा गया ✓</string>
+    <string name="song_detail_project_to_screen">स्क्रीन पर दिखाएँ</string>
+    <string name="song_detail_stop_projecting">दिखाना बंद करें</string>
+    <string name="song_detail_fab_actions">क्रियाएँ</string>
+    <string name="song_detail_fab_close_actions">क्रियाएँ बंद करें</string>
+    <string name="song_detail_projecting_badge">▶  दिखाया जा रहा है</string>
+    <string name="song_detail_no_lyrics">कोई बोल उपलब्ध नहीं</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="bible_detail_schedule_request_sent">अनुरोध भेजा गया ✓</string>
+    <string name="bible_detail_project_to_screen">स्क्रीन पर दिखाएँ</string>
+    <string name="bible_detail_stop_projecting">दिखाना बंद करें</string>
+    <string name="bible_detail_fab_actions">क्रियाएँ</string>
+    <string name="bible_detail_fab_close_actions">क्रियाएँ बंद करें</string>
+    <string name="bible_detail_projecting_badge">▶  दिखाया जा रहा है</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="pictures_schedule_request_sent">अनुरोध भेजा गया ✓</string>
+    <string name="pictures_project_to_screen">स्क्रीन पर दिखाएँ</string>
+    <string name="pictures_stop_projecting">दिखाना बंद करें</string>
+    <string name="pictures_pick_from_device">डिवाइस से चुनें</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="action_project_to_screen">स्क्रीन पर दिखाएँ</string>
+    <string name="action_stop_projecting">दिखाना बंद करें</string>
+    <string name="pictures_uploading">अपलोड हो रहा है…</string>
+    <string name="upload_overlay_subtitle">कृपया प्रतीक्षा करें, ऐप बंद न करें</string>
+    <string name="upload_overlay_photo_counter">तस्वीर %1$d / %2$d</string>
+    <string name="toast_pictures_added_to_schedule">चित्र कार्यक्रम में जोड़ा गया</string>
+    <string name="toast_pictures_failed_to_add_schedule">चित्र कार्यक्रम में नहीं जोड़ा जा सका: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="presentation_schedule_request_sent">अनुरोध भेजा गया ✓</string>
+    <string name="presentation_project_to_screen">स्क्रीन पर दिखाएँ</string>
+    <string name="presentation_stop_projecting">दिखाना बंद करें</string>
+    <string name="presentation_upload_file">प्रस्तुति अपलोड करें</string>
+    <string name="presentation_uploading">अपलोड हो रहा है…</string>
+    <string name="toast_presentation_added_to_schedule">प्रस्तुति कार्यक्रम में जोड़ी गई</string>
+    <string name="toast_presentation_failed_to_add_schedule">प्रस्तुति कार्यक्रम में नहीं जोड़ी जा सकी: %1$s</string>
+    <string name="toast_failed_to_select_presentation">प्रस्तुति चुनी नहीं जा सकी: %1$s</string>
+    <string name="toast_upload_unsupported">यह सर्वर अपलोड का समर्थन नहीं करता। अपने कंप्यूटर पर ChurchPresenter को नवीनतम संस्करण में अपडेट करें।</string>
+    <string name="toast_upload_file_too_large">फ़ाइल सर्वर के लिए बहुत बड़ी है। छोटी फ़ाइल आज़माएँ।</string>
+    <string name="toast_upload_server_error">सर्वर ने अपलोड अस्वीकार किया: %1$s</string>
+    <string name="toast_upload_failed">अपलोड विफल: %1$s</string>
+    <string name="toast_upload_reload_failed">अपलोड हो गया, पर सूची फिर से लोड नहीं हो सकी: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">भजन अब स्क्रीन पर है</string>
+    <string name="toast_request_failed">अनुरोध विफल</string>
+    <string name="toast_no_song_selected">कोई भजन नहीं चुना गया</string>
+    <string name="toast_song_added_to_schedule">“%1$s” कार्यक्रम में जोड़ा गया</string>
+    <string name="toast_failed_to_project">भजन नहीं दिखाया जा सका: %1$s</string>
+    <string name="toast_failed_to_add_schedule">कार्यक्रम में नहीं जोड़ा जा सका: %1$s</string>
+    <string name="toast_request_denied">अनुरोध अस्वीकार किया गया</string>
+    <string name="toast_session_blocked">सत्र अवरुद्ध है — आगे कोई अनुरोध स्वीकार नहीं किया जाएगा</string>
+    <string name="toast_request_rejected">सर्वर ने अनुरोध अस्वीकार किया (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">अनुरोध अस्वीकार: %1$s</string>
+    <string name="toast_bible_live">बाइबल का अंश अब स्क्रीन पर है</string>
+    <string name="toast_bible_added_to_schedule">“%1$s” कार्यक्रम में जोड़ा गया</string>
+    <string name="toast_failed_to_project_bible">नहीं दिखाया जा सका: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">कार्यक्रम में नहीं जोड़ा जा सका: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ सर्वर %1$s:%2$s पर सेट किया गया</string>
+    <string name="qr_scan_button">QR कोड स्कैन करें</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">सर्वर प्रमाणपत्र पर भरोसा करें</string>
+    <string name="cert_setup_subtitle">एक बार की सेटअप आवश्यक है</string>
+    <string name="cert_setup_intro">ChurchPresenter सुरक्षित संचार के लिए निजी HTTPS प्रमाणपत्र का उपयोग करता है। आपको इसे एक बार इंस्टॉल करना होगा ताकि आपका डिवाइस इस कनेक्शन पर भरोसा करे।</string>
+    <string name="cert_setup_scan_title">प्रमाणपत्र का QR कोड स्कैन करें</string>
+    <string name="cert_setup_scan_desktop_hint">कंप्यूटर के ChurchPresenter में: सेटिंग → सर्वर → QR कोड दिखाने के लिए “Download Cert” दबाएँ।</string>
+    <string name="cert_setup_scan_button">QR कोड स्कैन करें</string>
+    <string name="cert_setup_scan_or_divider">या सहेजा गया पता उपयोग करें</string>
+    <string name="cert_setup_url_scanned">✓ URL स्कैन किया गया</string>
+    <string name="cert_setup_url_label">प्रमाणपत्र URL</string>
+    <string name="cert_setup_open_button">प्रमाणपत्र URL खोलें</string>
+    <string name="cert_setup_step2_ios_title">iOS — प्रोफ़ाइल इंस्टॉल करें</string>
+    <string name="cert_setup_step2_ios_body">Safari कॉन्फ़िगरेशन प्रोफ़ाइल डाउनलोड करने को कहेगा। अनुमति दें पर टैप करें, फिर सेटिंग → सामान्य → VPN और डिवाइस प्रबंधन पर जाएँ, ChurchPresenter पर टैप करें और इंस्टॉल करें।</string>
+    <string name="cert_setup_step3_ios_title">iOS — प्रमाणपत्र पर भरोसा करें</string>
+    <string name="cert_setup_step3_ios_body">सेटिंग → सामान्य → परिचय → प्रमाणपत्र विश्वास सेटिंग → ChurchPresenter CA के लिए पूर्ण विश्वास सक्षम करें।</string>
+    <string name="cert_setup_step2_android_title">Android — प्रमाणपत्र इंस्टॉल करें</string>
+    <string name="cert_setup_step2_android_body">Chrome .crt फ़ाइल डाउनलोड करता है। डाउनलोड सूचना से उस पर टैप करें, “CA प्रमाणपत्र” चुनें और उसे “ChurchPresenter” जैसा नाम दें।</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ “अज्ञात स्रोतों से इंस्टॉल नहीं हो सकता”?</string>
+    <string name="cert_setup_android_unknown_sources_body">यदि आपके ब्राउज़र को फ़ाइल इंस्टॉल करने की अनुमति नहीं है तो Android इंस्टॉल रोक सकता है। सेटिंग → ऐप्स → [आपका ब्राउज़र] → अज्ञात ऐप्स इंस्टॉल करें पर जाएँ, फिर “इस स्रोत से अनुमति दें” सक्षम करें। यहाँ लौटें और फ़ाइल पर फिर टैप करें।</string>
+    <string name="cert_setup_fingerprint_title">फ़िंगरप्रिंट सत्यापित करें (अनुशंसित)</string>
+    <string name="cert_setup_fingerprint_body">इस फ़िंगरप्रिंट की तुलना उससे करें जो कंप्यूटर पर ChurchPresenter सेटिंग → सर्वर → Certificate SHA-256 में दिखाता है। दोनों मेल खाने चाहिए।</string>
+    <string name="cert_setup_fingerprint_unavailable">फ़िंगरप्रिंट देखने के लिए पहले सर्वर से कनेक्ट करें</string>
+    <string name="cert_setup_done_button">पूर्ण — प्रमाणपत्र इंस्टॉल हो गया</string>
+    <string name="cert_setup_skip_button">अभी छोड़ें</string>
+    <string name="cert_setup_skip_note">आप इस मार्गदर्शिका पर सेटिंग से कभी भी लौट सकते हैं।</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">कंप्यूटर से कनेक्ट करें</string>
+    <string name="connect_setup_subtitle">एक बार की सेटअप आवश्यक है</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile आपके स्थानीय नेटवर्क में कंप्यूटर पर चल रहे ChurchPresenter ऐप से जुड़ता है। कनेक्शन अपने आप कॉन्फ़िगर करने के लिए कंप्यूटर से QR कोड स्कैन करें।</string>
+    <string name="connect_setup_step1_title">अपने कंप्यूटर पर ChurchPresenter खोलें</string>
+    <string name="connect_setup_step1_body">कंप्यूटर पर ChurchPresenter डेस्कटॉप ऐप चलाएँ और सुनिश्चित करें कि यह इस डिवाइस के समान Wi-Fi नेटवर्क पर है।</string>
+    <string name="connect_setup_step2_title">कनेक्शन QR कोड दिखाएँ</string>
+    <string name="connect_setup_step2_body">डेस्कटॉप ऐप में सेटिंग → मोबाइल पर जाएँ और “Show QR Code” दबाएँ। कनेक्शन विवरण वाला QR कोड स्क्रीन पर दिखेगा।</string>
+    <string name="connect_setup_step3_title">नीचे दिया QR कोड स्कैन करें</string>
+    <string name="connect_setup_step3_body">कैमरा खोलने और कंप्यूटर पर दिख रहा QR कोड स्कैन करने के लिए नीचे बटन पर टैप करें। कनेक्शन अपने आप कॉन्फ़िगर हो जाएगा।</string>
+    <string name="connect_setup_scan_button">QR कोड स्कैन करें</string>
+    <string name="connect_setup_connected">✓ %1$s:%2$s से जुड़ा</string>
+    <string name="connect_setup_done_button">पूर्ण — जुड़ गया</string>
+    <string name="connect_setup_skip_button">अभी छोड़ें</string>
+    <string name="connect_setup_skip_note">आप QR कोड सेटिंग से कभी भी स्कैन कर सकते हैं।</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">आपका नाम (प्रश्नोत्तर के लिए)</string>
+    <string name="settings_display_name_placeholder">डिवाइस ID उपयोग करने के लिए खाली छोड़ें</string>
+    <string name="settings_privacy_section">गोपनीयता</string>
+    <string name="settings_telemetry_label">उपयोग और क्रैश डेटा साझा करें</string>
+    <string name="settings_telemetry_description">हमें बग खोजने और ठीक करने में मदद करता है। विश्लेषण और क्रैश रिपोर्ट भेजना बंद करने के लिए इसे बंद करें।</string>
+    <string name="tab_qa_admin">प्रश्नोत्तर</string>
+    <string name="qa_admin_session_active">सत्र सक्रिय</string>
+    <string name="qa_admin_session_stopped">सत्र रोका गया</string>
+    <string name="qa_admin_incoming_tab">आने वाले (%1$d)</string>
+    <string name="qa_admin_finished_tab">पूर्ण (%1$d)</string>
+    <string name="qa_admin_no_incoming">कोई आने वाला प्रश्न नहीं</string>
+    <string name="qa_admin_no_finished">कोई पूर्ण प्रश्न नहीं</string>
+    <string name="qa_admin_approve">स्वीकृत करें</string>
+    <string name="qa_admin_deny">अस्वीकार करें</string>
+    <string name="qa_admin_go_live">अभी दिखाएँ</string>
+    <string name="qa_admin_done">पूर्ण के रूप में चिह्नित करें</string>
+    <string name="qa_admin_clear_display">स्क्रीन साफ़ करें</string>
+    <string name="qa_admin_now_live">दिखाया जा रहा है:</string>
+    <string name="qa_admin_edit_hint">प्रश्न का पाठ संपादित करें…</string>
+    <string name="qa_admin_add_question">प्रश्न जोड़ें</string>
+    <string name="qa_admin_add_question_hint">अपना प्रश्न लिखें…</string>
+    <string name="qa_admin_save">सहेजें</string>
+    <string name="qa_admin_cancel">रद्द करें</string>
+    <string name="qa_admin_error_retry">पुनः प्रयास करें</string>
+    <string name="action_clear_display">स्क्रीन साफ़ करें</string>
+    <string name="action_hold_display">स्क्रीन रोकें</string>
+    <string name="action_multi_select">एकाधिक चुनें</string>
+    <string name="bible_multi_select_count">%1$d चयनित</string>
+    <string name="connect_setup_no_camera_note">इस डिवाइस पर कोई कैमरा नहीं मिला। कनेक्शन विवरण मैन्युअल रूप से दर्ज करें:</string>
+    <string name="connect_setup_manual_entry_toggle">इसके बजाय मैन्युअल रूप से दर्ज करें</string>
+    <string name="connect_setup_scan_instead_toggle">इसके बजाय QR कोड स्कैन करें</string>
+    <string name="connect_setup_manual_apply_button">लागू करें</string>
+    <string name="settings_active_url_label">अभी इससे जुड़ रहा है:</string>
+    <string name="settings_reset_to_default">डिफ़ॉल्ट पर रीसेट करें</string>
+    <string name="settings_draft_url_label">सहेजने के बाद इससे जुड़ेगा:</string>
+    <string name="settings_check_status">सर्वर स्थिति जाँचें</string>
+    <string name="settings_developer_section">डेवलपर</string>
+    <string name="settings_send_test_error">Sentry को परीक्षण त्रुटि भेजें</string>
+    <string name="settings_test_error_sent">✓ परीक्षण त्रुटि Sentry को भेजी गई</string>
+    <string name="settings_check_status_description">सर्वर स्थिति जाँचें</string>
+    <string name="settings_status_recheck">फिर से जाँचें</string>
+    <string name="settings_status_server_version">सर्वर: %1$s</string>
+    <string name="settings_status_mobile_version">मोबाइल: %1$s</string>
+    <string name="settings_status_api_key_enabled">API कुंजी: सक्षम</string>
+    <string name="settings_status_api_key_none">API कुंजी: कोई नहीं</string>
+    <string name="settings_status_endpoints">एंडपॉइंट</string>
+    <string name="settings_status_bibles">बाइबल</string>
+    <string name="settings_status_songbooks">भजन पुस्तकें</string>
+    <string name="settings_status_none">कोई नहीं</string>
+    <string name="status_connecting">सर्वर से जुड़ रहा है…</string>
+    <string name="status_connected">सर्वर जुड़ गया</string>
+    <string name="status_continue">जारी रखें</string>
+    <string name="status_retry">पुनः प्रयास करें</string>
+    <string name="status_open_settings">सेटिंग खोलें</string>
+    <string name="status_continue_anyway">फिर भी जारी रखें</string>
+    <string name="status_limited_functionality">सीमित कार्यक्षमता</string>
+    <string name="status_server_version">सर्वर संस्करण: %1$s</string>
+    <string name="status_issues_detected">जुड़े हुए सर्वर पर निम्न समस्याएँ मिलीं:</string>
+    <string name="status_endpoint_unavailable">इस सर्वर संस्करण में स्थिति एंडपॉइंट अभी उपलब्ध नहीं है — पूरी जानकारी के लिए कंप्यूटर पर ChurchPresenter अपडेट करें।</string>
+    <string name="status_error_title">सर्वर तक नहीं पहुँचा जा सका</string>
+    <string name="status_permissions_title">इस डिवाइस की अनुमतियाँ</string>
+    <string name="status_permission_present">प्रस्तुति नियंत्रित करना</string>
+    <string name="status_permission_schedule">कार्यक्रम में जोड़ना</string>
+    <string name="status_permission_upload">फ़ाइलें अपलोड करना</string>
+    <string name="status_permission_blocked">— अवरुद्ध</string>
+    <string name="status_info_bibles">उपलब्ध बाइबल</string>
+    <string name="status_info_songbooks">उपलब्ध भजन पुस्तकें</string>
+    <string name="status_info_features">सक्षम सुविधाएँ</string>
+    <string name="status_warn_no_api_key_title">कोई API कुंजी कॉन्फ़िगर नहीं</string>
+    <string name="status_warn_no_api_key_body">सर्वर पर कोई API कुंजी सेट नहीं है। कुछ सुरक्षित एंडपॉइंट अनुरोध अस्वीकार कर सकते हैं। ChurchPresenter सर्वर सेटिंग में API कुंजी सक्षम करने पर विचार करें।</string>
+    <string name="status_warn_no_bibles_title">कोई बाइबल अनुवाद उपलब्ध नहीं</string>
+    <string name="status_warn_no_bibles_body">सर्वर पर कोई बाइबल अनुवाद लोड नहीं है। बाइबल टैब खाली रहेगा। कंप्यूटर पर ChurchPresenter ऐप में अनुवाद जोड़ें।</string>
+    <string name="status_warn_no_songbooks_title">कोई भजन पुस्तक उपलब्ध नहीं</string>
+    <string name="status_warn_no_songbooks_body">सर्वर पर कोई भजन पुस्तक लोड नहीं है। भजन टैब खाली रहेगा। कंप्यूटर पर ChurchPresenter ऐप में भजन पुस्तक आयात करें।</string>
+    <string name="status_warn_present_blocked_title">प्रस्तुति नियंत्रण अवरुद्ध</string>
+    <string name="status_warn_present_blocked_body">इस डिवाइस को प्रस्तुति नियंत्रित करने (दिखाना, साफ़ करना, स्लाइड चुनना) की अनुमति नहीं है। सर्वर व्यवस्थापक से इस डिवाइस को Presenter अनुमति देने को कहें।</string>
+    <string name="status_warn_schedule_blocked_title">कार्यक्रम संपादन अवरुद्ध</string>
+    <string name="status_warn_schedule_blocked_body">इस डिवाइस को कार्यक्रम में आइटम जोड़ने की अनुमति नहीं है। सर्वर व्यवस्थापक से इस डिवाइस को Schedule अनुमति देने को कहें।</string>
+    <string name="status_warn_upload_blocked_title">फ़ाइल अपलोड अवरुद्ध</string>
+    <string name="status_warn_upload_blocked_body">इस डिवाइस को प्रस्तुतियाँ या चित्र अपलोड करने की अनुमति नहीं है। सर्वर व्यवस्थापक से इस डिवाइस को Upload अनुमति देने को कहें।</string>
+    <string name="upload_blocked_toast">इस डिवाइस के लिए फ़ाइल अपलोड बंद है। सर्वर व्यवस्थापक से Upload अनुमति देने को कहें।</string>
+    <string name="status_warn_unknown_version_title">अपरिचित सर्वर संस्करण</string>
+    <string name="status_warn_unknown_version_body">सर्वर ने संस्करण “%1$s” बताया। इस ऐप की कुछ सुविधाएँ इस संस्करण के साथ संगत नहीं हो सकतीं।</string>
+    <string name="status_warn_missing_endpoint_title">अनुपलब्ध API एंडपॉइंट: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">सर्वर “%1$s” एंडपॉइंट प्रदान नहीं करता। उस पर निर्भर सुविधाएँ उपलब्ध नहीं होंगी।</string>
+    <string name="media_title">मीडिया</string>
+    <string name="media_no_media_loaded">कोई मीडिया लोड नहीं</string>
+    <string name="media_playing">चल रहा है</string>
+    <string name="media_playing_on_desktop">कंप्यूटर पर चल रहा है</string>
+    <string name="media_local_ready">स्थानीय फ़ाइल · दिखाने के लिए तैयार</string>
+    <string name="media_pick_to_upload">अपलोड करने के लिए फ़ाइल चुनें</string>
+    <string name="media_source_network_url">नेटवर्क URL</string>
+    <string name="media_source_upload">फ़ोन से अपलोड करें</string>
+    <string name="media_subtitle_url">%1$s · नेटवर्क URL</string>
+    <string name="media_subtitle_empty">मीडिया भेजने के लिए नीचे नेटवर्क URL चिपकाएँ</string>
+    <string name="media_on_screen">स्क्रीन पर</string>
+    <string name="media_cd_stop">रोकें</string>
+    <string name="media_cd_back10">10 सेकंड पीछे</string>
+    <string name="media_cd_forward10">10 सेकंड आगे</string>
+    <string name="media_cd_play">चलाएँ</string>
+    <string name="media_cd_pause">ठहराएँ</string>
+    <string name="media_cd_mute">म्यूट करें</string>
+    <string name="media_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="media_go_live">अभी दिखाएँ</string>
+    <string name="media_clear_screen">स्क्रीन साफ़ करें</string>
+    <string name="media_source_label">स्रोत</string>
+    <string name="media_will_send">भेजा जाएगा: %1$s</string>
+    <string name="media_target_uploaded">अपलोड की गई फ़ाइल · %1$s</string>
+    <string name="media_target_loaded">कंप्यूटर पर लोड · %1$s</string>
+    <string name="media_target_url">नेटवर्क URL</string>
+    <string name="media_target_none">मीडिया भेजने के लिए नीचे स्रोत चुनें</string>
+    <string name="media_load_label">मीडिया लोड करें</string>
+    <string name="media_uploading_percent">अपलोड हो रहा है… %1$d%%</string>
+    <string name="media_choose_file">वीडियो या ऑडियो फ़ाइल चुनें</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">कंप्यूटर पर अपलोड बंद हैं</string>
+    <string name="media_uploads_disabled_hint">कंप्यूटर ऐप की सर्वर सेटिंग में “Allow file uploads from mobile devices” सक्षम करें।</string>
+    <string name="media_playing_generic">मीडिया</string>
+    <string name="more_photos_title">तस्वीरें</string>
+    <string name="more_photos_subtitle">चित्र फ़ोल्डर देखें और दिखाएँ</string>
+    <string name="more_qa_title">प्रश्नोत्तर</string>
+    <string name="more_qa_subtitle">श्रोताओं के प्रश्न देखें और दिखाएँ</string>
+    <string name="more_dictionary_title">शब्दकोश</string>
+    <string name="more_dictionary_subtitle">स्ट्रॉन्ग का इब्रानी और यूनानी शब्दकोश</string>
+    <string name="more_announcements_title">घोषणाएँ</string>
+    <string name="more_announcements_subtitle">पाठ, घड़ियाँ और उलटी गिनती</string>
+    <string name="more_web_title">वेब</string>
+    <string name="more_web_subtitle">स्क्रीन पर वेब पेज दिखाएँ</string>
+    <string name="strongs_dictionary_title">स्ट्रॉन्ग शब्दकोश</string>
+    <string name="web_title">वेब</string>
+    <string name="announcements_title">घोषणाएँ</string>
+    <string name="action_clear">साफ़ करें</string>
+    <string name="action_cancel">रद्द करें</string>
+    <string name="action_go_live">अभी दिखाएँ</string>
+    <string name="label_add_to_schedule">कार्यक्रम में जोड़ें</string>
+    <string name="label_live">लाइव</string>
+    <string name="cd_delete">हटाएँ</string>
+    <string name="cd_close">बंद करें</string>
+    <string name="cd_select">चुनें</string>
+    <string name="cd_cast">कास्ट करें</string>
+    <string name="cd_back">वापस</string>
+    <string name="cd_settings">सेटिंग</string>
+    <string name="cd_schedule">कार्यक्रम</string>
+    <string name="overline_on_screen_preview">स्क्रीन पूर्वावलोकन</string>
+    <string name="announcements_text_placeholder">घोषणा का पाठ…</string>
+    <string name="overline_duration">अवधि</string>
+    <string name="overline_target_time">लक्ष्य समय</string>
+    <string name="overline_animation">एनिमेशन</string>
+    <string name="stepper_hrs">घंटे</string>
+    <string name="stepper_min">मिनट</string>
+    <string name="stepper_sec">सेकंड</string>
+    <string name="stepper_hour">घंटा</string>
+    <string name="stepper_font_size">फ़ॉन्ट आकार</string>
+    <string name="swatch_text">पाठ</string>
+    <string name="swatch_background">पृष्ठभूमि</string>
+    <string name="announcements_clock_desc">वर्तमान समय लाइव दिखाता है।</string>
+    <string name="announcements_count_up_desc">दिखना शुरू होने पर शून्य से ऊपर गिनता है।</string>
+    <string name="announcements_animation_duration_label">एनिमेशन अवधि</string>
+    <string name="animation_duration_ms">%1$d मि.से.</string>
+    <string name="announcements_saved_label">सहेजी गई</string>
+    <string name="announcements_add_new">+ नई</string>
+    <string name="announcements_no_saved">अभी कोई सहेजी गई घोषणा नहीं। एक लिखें और “+ नई” पर टैप करें।</string>
+    <string name="color_picker_title">रंग चुनें</string>
+    <string name="color_picker_use">यह रंग उपयोग करें</string>
+    <string name="color_slider_hue">रंगत</string>
+    <string name="color_slider_saturation">संतृप्ति</string>
+    <string name="color_slider_brightness">चमक</string>
+    <string name="cd_custom_color">कस्टम रंग</string>
+    <string name="announcements_preview_placeholder">आपकी घोषणा</string>
+    <string name="web_bookmarks_label">बुकमार्क</string>
+    <string name="web_add_bookmark">+ जोड़ें</string>
+    <string name="web_no_bookmarks">अभी कोई बुकमार्क नहीं। URL दर्ज करें और “+ जोड़ें” पर टैप करें।</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">संख्या, शब्द या अर्थ खोजें…</string>
+    <string name="dictionary_filter_all">सभी</string>
+    <string name="dictionary_filter_hebrew">इब्रानी</string>
+    <string name="dictionary_filter_greek">यूनानी</string>
+    <string name="dictionary_no_entries">कोई प्रविष्टि नहीं मिली</string>
+    <string name="dictionary_uses">प्रयोग</string>
+    <string name="dictionary_occurrences_count">%1$s बार</string>
+    <string name="dictionary_part_of_speech">शब्द भेद</string>
+    <string name="dictionary_occurrences">उपस्थितियाँ</string>
+    <string name="dictionary_root">मूल</string>
+    <string name="dictionary_definition">परिभाषा</string>
+    <string name="dictionary_kjv_usage">KJV में प्रयोग</string>
+    <string name="qa_edit_question_title">प्रश्न संपादित करें</string>
+    <string name="qa_delete_question">प्रश्न हटाएँ</string>
+    <string name="qa_submitted_by">%1$s द्वारा भेजा गया</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">रोकें</string>
+    <string name="qa_action_approve">स्वीकृत करें</string>
+    <string name="cd_edit">संपादित करें</string>
+    <string name="cd_deny">अस्वीकार करें</string>
+    <string name="qa_badge_live">लाइव</string>
+    <string name="qa_badge_approved">✓ स्वीकृत</string>
+    <string name="qa_badge_denied">अस्वीकृत</string>
+    <string name="qa_badge_answered">उत्तर दिया गया</string>
+    <string name="schedule_drawer_item_count">%1$d आइटम</string>
+    <string name="presentation_slide_desc">स्लाइड %1$d</string>
+    <string name="presentation_slide_live">▶ लाइव</string>
+    <string name="tab_media">मीडिया</string>
+    <string name="tab_present">दिखाएँ</string>
+    <string name="tab_more">और</string>
+    <string name="songs_count">%1$d भजन</string>
+    <string name="bible_chapters_count">%1$d अध्याय</string>
+    <string name="status_version_line">सर्वर: %1$s · मोबाइल: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">पाठ</string>
+    <string name="announce_type_countdown">उलटी गिनती</string>
+    <string name="announce_type_count_up">सीधी गिनती</string>
+    <string name="announce_type_clock">घड़ी</string>
+    <string name="announce_type_countdown_to_time">समय तक उलटी गिनती</string>
+    <string name="announce_anim_none">कोई नहीं</string>
+    <string name="announce_anim_fade">फ़ेड</string>
+    <string name="announce_anim_slide_up">ऊपर सरकाएँ</string>
+    <string name="announce_anim_slide_down">नीचे सरकाएँ</string>
+    <string name="announce_anim_slide_left">बाएँ से सरकाएँ</string>
+    <string name="announce_anim_slide_right">दाएँ से सरकाएँ</string>
+    <string name="announce_duration_seconds">%1$s से.</string>
+    <string name="dictionary_ref_book">पुस्तक</string>
+    <string name="dictionary_ref_chapter">अध्याय</string>
+    <string name="dictionary_ref_verse">पद</string>
+    <string name="dictionary_ref_clear">संदर्भ फ़िल्टर साफ़ करें</string>
+    <string name="dictionary_appears_in">यहाँ आता है</string>
+    <string name="dictionary_appears_in_count">%2$s में से %1$s</string>
+    <string name="settings_active_server">सक्रिय सर्वर</string>
+    <string name="contact_us_title">संपर्क करें</string>
+    <string name="contact_type_label">प्रकार</string>
+    <string name="contact_type_feature">सुविधा का अनुरोध</string>
+    <string name="contact_type_feedback">प्रतिक्रिया</string>
+    <string name="contact_type_testimonial">प्रशंसापत्र</string>
+    <string name="contact_type_bug">बग रिपोर्ट</string>
+    <string name="contact_name_label">नाम</string>
+    <string name="contact_email_label">ईमेल (वैकल्पिक)</string>
+    <string name="contact_message_label">संदेश</string>
+    <string name="contact_send">भेजें</string>
+    <string name="contact_sending">भेजा जा रहा है…</string>
+    <string name="contact_sent">संदेश भेजा गया। धन्यवाद!</string>
+    <string name="contact_error">भेजा नहीं जा सका। कृपया फिर से प्रयास करें।</string>
+    <string name="contact_rate_limited_browser">सुरक्षा के लिए कृपया अपने ब्राउज़र में भेजना पूरा करें।</string>
+    <string name="contact_network_error">सर्वर तक नहीं पहुँचा जा सका। अपना इंटरनेट कनेक्शन जाँचें और फिर प्रयास करें।</string>
+    <string name="contact_open_browser">ब्राउज़र में खोलें</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">कोई भजन खुला नहीं</string>
+    <string name="songs_pane_empty_body">बाईं ओर एक भजन चुनें, उसके पद यहाँ दिखेंगे।</string>
+    <string name="more_pane_empty_title">कोई उपकरण खुला नहीं</string>
+    <string name="more_pane_empty_body">बाईं ओर एक उपकरण चुनें, वह यहाँ खुलेगा।</string>
+    <string name="library_pane_empty_title">कुछ भी संपादित नहीं हो रहा</string>
+    <string name="library_pane_empty_body">बाईं ओर किसी आइटम को संपादित करें, या नया जोड़ें, वह यहाँ खुलेगा।</string>
+    <string name="bible_pane_empty_title">कोई अध्याय खुला नहीं</string>
+    <string name="bible_pane_empty_body">पहले पुस्तक, फिर अध्याय चुनें, उसके पद यहाँ दिखेंगे।</string>
+    <string name="bible_chapters_overline">अध्याय</string>
+</resources>

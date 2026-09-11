@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.horizontalScroll
@@ -32,6 +34,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,6 +55,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.library_add
+import churchpresentermobile.composeapp.generated.resources.library_pane_empty_body
+import churchpresentermobile.composeapp.generated.resources.library_pane_empty_title
+import churchpresentermobile.composeapp.generated.resources.tab_library
 import churchpresentermobile.composeapp.generated.resources.library_bible_menu_title
 import churchpresentermobile.composeapp.generated.resources.library_bible_none
 import churchpresentermobile.composeapp.generated.resources.library_clear_chip
@@ -102,6 +108,9 @@ import com.church.presenter.churchpresentermobile.ui.EmptyState
 import churchpresentermobile.composeapp.generated.resources.empty_action_get_content
 import churchpresentermobile.composeapp.generated.resources.empty_action_write_song
 import churchpresentermobile.composeapp.generated.resources.library_empty_body_standalone
+import com.church.presenter.churchpresentermobile.ui.EmptyState
+import com.church.presenter.churchpresentermobile.ui.LibraryListPaneWidth
+import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryFilter
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryViewModel
@@ -848,3 +857,50 @@ internal fun syncAgeFor(state: LibrarySyncState, nowMs: Long): SyncAge {
 private const val MINUTE_MS = 60_000L
 private const val HOUR_MS = 3_600_000L
 private const val DAY_MS = 86_400_000L
+
+/**
+ * The tablet's arrangement for the Library tab: the list on the left, whatever
+ * is being edited filling what is left.
+ *
+ * Unlike the other split tabs this one needs no header for its detail pane — the
+ * editors already draw their own, with the back arrow that closes them. What
+ * changes is only that the back arrow now empties a pane instead of returning to
+ * a screen.
+ *
+ * @param editor The open editor, or null when nothing is being edited. Built by
+ *   the caller: which of the two editors is open, and for which item, is the
+ *   shell's state machine, not this composable's.
+ */
+@Composable
+fun LibraryTwoPane(
+    list: @Composable () -> Unit,
+    editor: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+    onMenu: (() -> Unit)? = null,
+    onSettings: (() -> Unit)? = null,
+) {
+    val colors = LocalAppColors.current
+    Row(modifier = modifier.fillMaxSize().background(colors.background)) {
+        Column(modifier = Modifier.width(LibraryListPaneWidth).fillMaxHeight()) {
+            ScreenHeader(
+                title = stringResource(Res.string.tab_library),
+                onMenu = onMenu,
+                onSettings = onSettings,
+            )
+            Box(modifier = Modifier.weight(1f)) { list() }
+        }
+
+        VerticalDivider(color = colors.borderSubtle)
+
+        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            if (editor != null) {
+                editor()
+            } else {
+                EmptyState(
+                    title = stringResource(Res.string.library_pane_empty_title),
+                    body = stringResource(Res.string.library_pane_empty_body),
+                )
+            }
+        }
+    }
+}

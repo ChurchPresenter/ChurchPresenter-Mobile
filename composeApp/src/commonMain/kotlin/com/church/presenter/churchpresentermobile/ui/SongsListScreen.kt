@@ -136,8 +136,7 @@ fun SongsListScreen(
                         items(sortedSongs) { song ->
                             SongCard(
                                 song = song,
-                                isSelected = selectedSong?.number == song.number
-                                        && selectedSong?.bookName == song.bookName,
+                                isSelected = selectedSong?.identity == song.identity,
                                 onClick = { onSongClick(song) }
                             )
                         }

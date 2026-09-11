@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Sarlavha</string>
+    <string name="songs_table_header_book">Qo'shiqlar kitobi</string>
+    <string name="songs_table_header_tune">Kuy</string>
+    <string name="songs_table_search_placeholder"># yoki sarlavha bo'yicha qidirish…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Qo'shiqlar mavjud emas</string>
+    <string name="songs_table_no_match">Filtrga mos qo'shiq topilmadi</string>
+    <string name="songs_table_retry">Qayta urinish</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Barcha qo'shiq kitoblari</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Sozlamalarni ochish</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Sozlamalar</string>
+    <string name="settings_server_section">Server</string>
+    <string name="settings_host_label">Xost / IP manzil</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API kaliti (ixtiyoriy)</string>
+    <string name="settings_api_key_placeholder">Talab qilinmasa, bo'sh qoldiring</string>
+    <string name="settings_save">Saqlash</string>
+    <string name="settings_cancel">Bekor qilish</string>
+    <string name="settings_invalid_port">Port 1 va 65535 orasidagi son bo'lishi kerak</string>
+    <string name="settings_host_empty">Xost bo'sh bo'lishi mumkin emas</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Ko'rinish</string>
+    <string name="settings_theme_system">Tizim</string>
+    <string name="settings_theme_light">Yorug'</string>
+    <string name="settings_theme_dark">Qorong'i</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Qo'shiqlar</string>
+    <string name="tab_bible">Muqaddas Kitob</string>
+    <string name="tab_pictures">Rasmlar</string>
+    <string name="tab_presentation">Taqdimot</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Muqaddas Kitob — tez orada</string>
+    <string name="pictures_coming_soon">🖼  Rasmlar — tez orada</string>
+    <string name="presentation_coming_soon">📽  Taqdimot — tez orada</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Taqdimotlar mavjud emas</string>
+    <string name="presentation_loading_error">Taqdimotlarni yuklab bo'lmadi</string>
+    <string name="presentation_retry">Qayta urinish</string>
+    <string name="presentation_slides">slayd</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Rasmlar mavjud emas</string>
+    <string name="pictures_loading_error">Rasmlarni yuklab bo'lmadi</string>
+    <string name="pictures_retry">Qayta urinish</string>
+    <string name="pictures_photos">surat</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Kitoblarni qidirish…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Muqaddas Kitob kitoblari mavjud emas</string>
+    <string name="bible_no_match">Qidiruvga mos kitob topilmadi</string>
+    <string name="bible_chapter_label">Bob</string>
+    <string name="bible_chapters_title">Boblar</string>
+    <string name="bible_no_verses">Oyatlar mavjud emas</string>
+    <string name="bible_back">← Orqaga</string>
+    <string name="bible_loading_error">Yuklab bo'lmadi</string>
+    <string name="bible_retry">Qayta urinish</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Jadval</string>
+    <string name="schedule_drawer_refresh">Jadvalni yangilash</string>
+    <string name="schedule_drawer_empty">Jadvalda elementlar yo'q</string>
+    <string name="schedule_drawer_error">Xato: %1$s</string>
+    <string name="schedule_drawer_open">Jadvalni ochish</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="song_detail_schedule_request_sent">So'rov yuborildi ✓</string>
+    <string name="song_detail_project_to_screen">Ekranda ko'rsatish</string>
+    <string name="song_detail_stop_projecting">Ko'rsatishni to'xtatish</string>
+    <string name="song_detail_fab_actions">Amallar</string>
+    <string name="song_detail_fab_close_actions">Amallarni yopish</string>
+    <string name="song_detail_projecting_badge">▶  Ko'rsatilmoqda</string>
+    <string name="song_detail_no_lyrics">Matn mavjud emas</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="bible_detail_schedule_request_sent">So'rov yuborildi ✓</string>
+    <string name="bible_detail_project_to_screen">Ekranda ko'rsatish</string>
+    <string name="bible_detail_stop_projecting">Ko'rsatishni to'xtatish</string>
+    <string name="bible_detail_fab_actions">Amallar</string>
+    <string name="bible_detail_fab_close_actions">Amallarni yopish</string>
+    <string name="bible_detail_projecting_badge">▶  Ko'rsatilmoqda</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="pictures_schedule_request_sent">So'rov yuborildi ✓</string>
+    <string name="pictures_project_to_screen">Ekranda ko'rsatish</string>
+    <string name="pictures_stop_projecting">Ko'rsatishni to'xtatish</string>
+    <string name="pictures_pick_from_device">Qurilmadan tanlash</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="action_project_to_screen">Ekranda ko'rsatish</string>
+    <string name="action_stop_projecting">Ko'rsatishni to'xtatish</string>
+    <string name="pictures_uploading">Yuklanmoqda…</string>
+    <string name="upload_overlay_subtitle">Kuting, ilovani yopmang</string>
+    <string name="upload_overlay_photo_counter">Surat %1$d / %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Rasm jadvalga qo'shildi</string>
+    <string name="toast_pictures_failed_to_add_schedule">Rasmni jadvalga qo'shib bo'lmadi: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="presentation_schedule_request_sent">So'rov yuborildi ✓</string>
+    <string name="presentation_project_to_screen">Ekranda ko'rsatish</string>
+    <string name="presentation_stop_projecting">Ko'rsatishni to'xtatish</string>
+    <string name="presentation_upload_file">Taqdimot yuklash</string>
+    <string name="presentation_uploading">Yuklanmoqda…</string>
+    <string name="toast_presentation_added_to_schedule">Taqdimot jadvalga qo'shildi</string>
+    <string name="toast_presentation_failed_to_add_schedule">Taqdimotni jadvalga qo'shib bo'lmadi: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Taqdimotni tanlab bo'lmadi: %1$s</string>
+    <string name="toast_upload_unsupported">Bu server yuklashni qo'llab-quvvatlamaydi. Kompyuteringizdagi ChurchPresenter'ni eng so'nggi versiyaga yangilang.</string>
+    <string name="toast_upload_file_too_large">Fayl server qabul qila oladiganidan katta. Kichikroq fayl bilan urinib ko'ring.</string>
+    <string name="toast_upload_server_error">Server yuklashni rad etdi: %1$s</string>
+    <string name="toast_upload_failed">Yuklash muvaffaqiyatsiz tugadi: %1$s</string>
+    <string name="toast_upload_reload_failed">Yuklandi, ammo ro'yxatni qayta yuklab bo'lmadi: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Qo'shiq endi ekranda</string>
+    <string name="toast_request_failed">So'rov muvaffaqiyatsiz tugadi</string>
+    <string name="toast_no_song_selected">Hech qanday qo'shiq tanlanmadi</string>
+    <string name="toast_song_added_to_schedule">“%1$s” jadvalga qo'shildi</string>
+    <string name="toast_failed_to_project">Qo'shiqni ko'rsatib bo'lmadi: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Jadvalga qo'shib bo'lmadi: %1$s</string>
+    <string name="toast_request_denied">So'rov rad etildi</string>
+    <string name="toast_session_blocked">Seans bloklangan — boshqa so'rovlar qabul qilinmaydi</string>
+    <string name="toast_request_rejected">So'rov server tomonidan rad etildi (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">So'rov rad etildi: %1$s</string>
+    <string name="toast_bible_live">Muqaddas Kitob parchasi endi ekranda</string>
+    <string name="toast_bible_added_to_schedule">“%1$s” jadvalga qo'shildi</string>
+    <string name="toast_failed_to_project_bible">Ko'rsatib bo'lmadi: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Jadvalga qo'shib bo'lmadi: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Server %1$s:%2$s ga o'rnatildi</string>
+    <string name="qr_scan_button">QR kodni skanerlash</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Server sertifikatiga ishonish</string>
+    <string name="cert_setup_subtitle">Bir martalik sozlash talab qilinadi</string>
+    <string name="cert_setup_intro">ChurchPresenter xavfsiz aloqa uchun shaxsiy HTTPS sertifikatidan foydalanadi. Qurilmangiz ulanishga ishonishi uchun uni bir marta o'rnatishingiz kerak.</string>
+    <string name="cert_setup_scan_title">Sertifikatning QR kodini skanerlang</string>
+    <string name="cert_setup_scan_desktop_hint">Kompyuterdagi ChurchPresenter'da: Sozlamalar → Server → QR kodni ko'rsatish uchun “Download Cert” tugmasini bosing.</string>
+    <string name="cert_setup_scan_button">QR kodni skanerlash</string>
+    <string name="cert_setup_scan_or_divider">yoki saqlangan manzildan foydalaning</string>
+    <string name="cert_setup_url_scanned">✓ URL skanerlandi</string>
+    <string name="cert_setup_url_label">Sertifikat URL manzili</string>
+    <string name="cert_setup_open_button">Sertifikat URL manzilini ochish</string>
+    <string name="cert_setup_step2_ios_title">iOS — Profilni o'rnating</string>
+    <string name="cert_setup_step2_ios_body">Safari konfiguratsiya profilini yuklab olishni so'raydi. Ruxsat berish tugmasini bosing, so'ng Sozlamalar → Umumiy → VPN va Qurilma boshqaruvi bo'limiga o'ting, ChurchPresenter'ni bosing va o'rnating.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Sertifikatga ishoning</string>
+    <string name="cert_setup_step3_ios_body">Sozlamalar → Umumiy → Haqida → Sertifikat ishonchi sozlamalari → ChurchPresenter CA uchun to'liq ishonchni yoqing.</string>
+    <string name="cert_setup_step2_android_title">Android — Sertifikatni o'rnating</string>
+    <string name="cert_setup_step2_android_body">Chrome .crt faylini yuklab oladi. Yuklab olish bildirishnomasidan uni bosing, “CA sertifikati”ni tanlang va unga “ChurchPresenter” kabi nom bering.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ “Noma'lum manbalardan o'rnatib bo'lmaydi”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Agar brauzeringizga fayl o'rnatishga ruxsat berilmagan bo'lsa, Android o'rnatishni bloklashi mumkin. Sozlamalar → Ilovalar → [brauzeringiz] → Noma'lum ilovalarni o'rnatish bo'limiga o'ting va “Ushbu manbaga ruxsat berish”ni yoqing. Bu yerga qayting va faylni yana bosing.</string>
+    <string name="cert_setup_fingerprint_title">Barmoq izini tekshiring (tavsiya etiladi)</string>
+    <string name="cert_setup_fingerprint_body">Ushbu barmoq izini kompyuterdagi ChurchPresenter Sozlamalar → Server → Certificate SHA-256 bo'limida ko'rsatadigani bilan solishtiring. Ular mos kelishi kerak.</string>
+    <string name="cert_setup_fingerprint_unavailable">Barmoq izini ko'rish uchun avval serverga ulaning</string>
+    <string name="cert_setup_done_button">Tayyor — sertifikat o'rnatildi</string>
+    <string name="cert_setup_skip_button">Hozircha o'tkazib yuborish</string>
+    <string name="cert_setup_skip_note">Ushbu qo'llanmaga istalgan vaqtda Sozlamalardan qaytishingiz mumkin.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Kompyuterga ulanish</string>
+    <string name="connect_setup_subtitle">Bir martalik sozlash talab qilinadi</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile mahalliy tarmog'ingizdagi kompyuterda ishlayotgan ChurchPresenter ilovasiga ulanadi. Ulanish avtomatik sozlanishi uchun kompyuterdagi QR kodni skanerlang.</string>
+    <string name="connect_setup_step1_title">Kompyuteringizda ChurchPresenter'ni oching</string>
+    <string name="connect_setup_step1_body">Kompyuterda ChurchPresenter ilovasini ishga tushiring va u ushbu qurilma bilan bir xil Wi-Fi tarmog'ida ishlayotganiga ishonch hosil qiling.</string>
+    <string name="connect_setup_step2_title">Ulanish QR kodini ko'rsating</string>
+    <string name="connect_setup_step2_body">Kompyuter ilovasida Sozlamalar → Mobil bo'limiga o'ting va “Show QR Code” tugmasini bosing. Ekranda ulanish ma'lumotlari bilan QR kod paydo bo'ladi.</string>
+    <string name="connect_setup_step3_title">Quyidagi QR kodni skanerlang</string>
+    <string name="connect_setup_step3_body">Kamerani ochish va kompyuterda ko'rsatilgan QR kodni skanerlash uchun quyidagi tugmani bosing. Ulanish avtomatik sozlanadi.</string>
+    <string name="connect_setup_scan_button">QR kodni skanerlash</string>
+    <string name="connect_setup_connected">✓ %1$s:%2$s ga ulandi</string>
+    <string name="connect_setup_done_button">Tayyor — ulandi</string>
+    <string name="connect_setup_skip_button">Hozircha o'tkazib yuborish</string>
+    <string name="connect_setup_skip_note">QR kodni istalgan vaqtda Sozlamalardan skanerlashingiz mumkin.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Ismingiz (Savol-javob uchun)</string>
+    <string name="settings_display_name_placeholder">Qurilma identifikatoridan foydalanish uchun bo'sh qoldiring</string>
+    <string name="settings_privacy_section">Maxfiylik</string>
+    <string name="settings_telemetry_label">Foydalanish va nosozlik ma'lumotlarini ulashish</string>
+    <string name="settings_telemetry_description">Xatolarni topish va tuzatishga yordam beradi. Tahlil va nosozlik hisobotlarini yuborishni to'xtatish uchun o'chiring.</string>
+    <string name="tab_qa_admin">Savol-javob</string>
+    <string name="qa_admin_session_active">Seans faol</string>
+    <string name="qa_admin_session_stopped">Seans to'xtatildi</string>
+    <string name="qa_admin_incoming_tab">Kelayotgan (%1$d)</string>
+    <string name="qa_admin_finished_tab">Tugallangan (%1$d)</string>
+    <string name="qa_admin_no_incoming">Kelayotgan savollar yo'q</string>
+    <string name="qa_admin_no_finished">Tugallangan savollar yo'q</string>
+    <string name="qa_admin_approve">Tasdiqlash</string>
+    <string name="qa_admin_deny">Rad etish</string>
+    <string name="qa_admin_go_live">Hozir ko'rsatish</string>
+    <string name="qa_admin_done">Tugallangan deb belgilash</string>
+    <string name="qa_admin_clear_display">Ekranni tozalash</string>
+    <string name="qa_admin_now_live">Ko'rsatilmoqda:</string>
+    <string name="qa_admin_edit_hint">Savol matnini tahrirlash…</string>
+    <string name="qa_admin_add_question">Savol qo'shish</string>
+    <string name="qa_admin_add_question_hint">Savolingizni yozing…</string>
+    <string name="qa_admin_save">Saqlash</string>
+    <string name="qa_admin_cancel">Bekor qilish</string>
+    <string name="qa_admin_error_retry">Qayta urinish</string>
+    <string name="action_clear_display">Ekranni tozalash</string>
+    <string name="action_hold_display">Ekranni muzlatish</string>
+    <string name="action_multi_select">Bir nechtasini tanlash</string>
+    <string name="bible_multi_select_count">%1$d ta tanlandi</string>
+    <string name="connect_setup_no_camera_note">Bu qurilmada kamera aniqlanmadi. Ulanish ma'lumotlarini qo'lda kiriting:</string>
+    <string name="connect_setup_manual_entry_toggle">Buning o'rniga qo'lda kiriting</string>
+    <string name="connect_setup_scan_instead_toggle">Buning o'rniga QR kodni skanerlang</string>
+    <string name="connect_setup_manual_apply_button">Qo'llash</string>
+    <string name="settings_active_url_label">Hozir ulanmoqda:</string>
+    <string name="settings_reset_to_default">Standart holatga qaytarish</string>
+    <string name="settings_draft_url_label">Saqlangandan so'ng ulanadi:</string>
+    <string name="settings_check_status">Server holatini tekshirish</string>
+    <string name="settings_developer_section">Dasturchi</string>
+    <string name="settings_send_test_error">Sentry'ga sinov xatosini yuborish</string>
+    <string name="settings_test_error_sent">✓ Sinov xatosi Sentry'ga yuborildi</string>
+    <string name="settings_check_status_description">Server holatini tekshirish</string>
+    <string name="settings_status_recheck">Qayta tekshirish</string>
+    <string name="settings_status_server_version">Server: %1$s</string>
+    <string name="settings_status_mobile_version">Mobil: %1$s</string>
+    <string name="settings_status_api_key_enabled">API kaliti: yoqilgan</string>
+    <string name="settings_status_api_key_none">API kaliti: yo'q</string>
+    <string name="settings_status_endpoints">Uchlar</string>
+    <string name="settings_status_bibles">Muqaddas Kitoblar</string>
+    <string name="settings_status_songbooks">Qo'shiq kitoblari</string>
+    <string name="settings_status_none">yo'q</string>
+    <string name="status_connecting">Serverga ulanmoqda…</string>
+    <string name="status_connected">Server ulandi</string>
+    <string name="status_continue">Davom etish</string>
+    <string name="status_retry">Qayta urinish</string>
+    <string name="status_open_settings">Sozlamalarni ochish</string>
+    <string name="status_continue_anyway">Baribir davom etish</string>
+    <string name="status_limited_functionality">Cheklangan imkoniyatlar</string>
+    <string name="status_server_version">Server versiyasi: %1$s</string>
+    <string name="status_issues_detected">Ulangan serverda quyidagi muammolar aniqlandi:</string>
+    <string name="status_endpoint_unavailable">Holat uchi bu server versiyasida hali mavjud emas — to'liq hisobot uchun kompyuterdagi ChurchPresenter'ni yangilang.</string>
+    <string name="status_error_title">Serverga ulanib bo'lmadi</string>
+    <string name="status_permissions_title">Ushbu qurilmaning ruxsatlari</string>
+    <string name="status_permission_present">Taqdimotni boshqarish</string>
+    <string name="status_permission_schedule">Jadvalga qo'shish</string>
+    <string name="status_permission_upload">Fayl yuklash</string>
+    <string name="status_permission_blocked">— bloklangan</string>
+    <string name="status_info_bibles">Mavjud Muqaddas Kitoblar</string>
+    <string name="status_info_songbooks">Mavjud qo'shiq kitoblari</string>
+    <string name="status_info_features">Yoqilgan imkoniyatlar</string>
+    <string name="status_warn_no_api_key_title">API kaliti sozlanmagan</string>
+    <string name="status_warn_no_api_key_body">Serverda API kaliti o'rnatilmagan. Ba'zi himoyalangan uchlar so'rovlarni rad etishi mumkin. ChurchPresenter server sozlamalarida API kalitini yoqishni ko'rib chiqing.</string>
+    <string name="status_warn_no_bibles_title">Muqaddas Kitob tarjimalari mavjud emas</string>
+    <string name="status_warn_no_bibles_body">Serverga Muqaddas Kitob tarjimalari yuklanmagan. Muqaddas Kitob yorlig'i bo'sh bo'ladi. Kompyuterdagi ChurchPresenter ilovasida tarjima qo'shing.</string>
+    <string name="status_warn_no_songbooks_title">Qo'shiq kitoblari mavjud emas</string>
+    <string name="status_warn_no_songbooks_body">Serverga qo'shiq kitoblari yuklanmagan. Qo'shiqlar yorlig'i bo'sh bo'ladi. Kompyuterdagi ChurchPresenter ilovasida qo'shiq kitobini import qiling.</string>
+    <string name="status_warn_present_blocked_title">Taqdimot boshqaruvi bloklangan</string>
+    <string name="status_warn_present_blocked_body">Ushbu qurilmaga taqdimotni boshqarishga (ko'rsatish, tozalash, slayd tanlash) ruxsat berilmagan. Server administratoridan bu qurilmaga Presenter ruxsatini berishni so'rang.</string>
+    <string name="status_warn_schedule_blocked_title">Jadvalni tahrirlash bloklangan</string>
+    <string name="status_warn_schedule_blocked_body">Ushbu qurilmaga jadvalga element qo'shishga ruxsat berilmagan. Server administratoridan bu qurilmaga Schedule ruxsatini berishni so'rang.</string>
+    <string name="status_warn_upload_blocked_title">Fayl yuklash bloklangan</string>
+    <string name="status_warn_upload_blocked_body">Ushbu qurilmaga taqdimot yoki rasm yuklashga ruxsat berilmagan. Server administratoridan bu qurilmaga Upload ruxsatini berishni so'rang.</string>
+    <string name="upload_blocked_toast">Bu qurilma uchun fayl yuklash o'chirilgan. Server administratoridan Upload ruxsatini berishni so'rang.</string>
+    <string name="status_warn_unknown_version_title">Tanilmagan server versiyasi</string>
+    <string name="status_warn_unknown_version_body">Server “%1$s” versiyasini xabar qildi. Ushbu ilovaning ba'zi imkoniyatlari bu versiya bilan mos kelmasligi mumkin.</string>
+    <string name="status_warn_missing_endpoint_title">API uchi yo'q: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Server “%1$s” uchini taqdim etmaydi. Unga tayanadigan imkoniyatlar mavjud bo'lmaydi.</string>
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Media yuklanmagan</string>
+    <string name="media_playing">Ijro etilmoqda</string>
+    <string name="media_playing_on_desktop">Kompyuterda ijro etilmoqda</string>
+    <string name="media_local_ready">Mahalliy fayl · ko'rsatishga tayyor</string>
+    <string name="media_pick_to_upload">Yuklash uchun fayl tanlang</string>
+    <string name="media_source_network_url">Tarmoq URL manzili</string>
+    <string name="media_source_upload">Telefondan yuklash</string>
+    <string name="media_subtitle_url">%1$s · Tarmoq URL manzili</string>
+    <string name="media_subtitle_empty">Media yuborish uchun quyiga tarmoq URL manzilini joylashtiring</string>
+    <string name="media_on_screen">EKRANDA</string>
+    <string name="media_cd_stop">To'xtatish</string>
+    <string name="media_cd_back10">10 soniya orqaga</string>
+    <string name="media_cd_forward10">10 soniya oldinga</string>
+    <string name="media_cd_play">Ijro etish</string>
+    <string name="media_cd_pause">Pauza</string>
+    <string name="media_cd_mute">Ovozni o'chirish</string>
+    <string name="media_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="media_go_live">Hozir ko'rsatish</string>
+    <string name="media_clear_screen">Ekranni tozalash</string>
+    <string name="media_source_label">MANBA</string>
+    <string name="media_will_send">Yuboriladi: %1$s</string>
+    <string name="media_target_uploaded">Yuklangan fayl · %1$s</string>
+    <string name="media_target_loaded">Kompyuterda yuklangan · %1$s</string>
+    <string name="media_target_url">Tarmoq URL manzili</string>
+    <string name="media_target_none">Media yuborish uchun quyidan manba tanlang</string>
+    <string name="media_load_label">MEDIA YUKLASH</string>
+    <string name="media_uploading_percent">Yuklanmoqda… %1$d%%</string>
+    <string name="media_choose_file">Video yoki audio fayl tanlang</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Kompyuterda yuklash o'chirilgan</string>
+    <string name="media_uploads_disabled_hint">Kompyuter ilovasining Server sozlamalarida “Allow file uploads from mobile devices” bandini yoqing.</string>
+    <string name="media_playing_generic">media</string>
+    <string name="more_photos_title">Suratlar</string>
+    <string name="more_photos_subtitle">Rasm papkalarini ko'rish va ko'rsatish</string>
+    <string name="more_qa_title">Savol-javob</string>
+    <string name="more_qa_subtitle">Tomoshabin savollarini ko'rib chiqish va ko'rsatish</string>
+    <string name="more_dictionary_title">Lug'at</string>
+    <string name="more_dictionary_subtitle">Strongning ibroniy va yunon lug'ati</string>
+    <string name="more_announcements_title">E'lonlar</string>
+    <string name="more_announcements_subtitle">Matn, soatlar va teskari sanoq</string>
+    <string name="more_web_title">Veb</string>
+    <string name="more_web_subtitle">Ekranda veb-sahifani ko'rsatish</string>
+    <string name="strongs_dictionary_title">Strong lug'ati</string>
+    <string name="web_title">Veb</string>
+    <string name="announcements_title">E'lonlar</string>
+    <string name="action_clear">Tozalash</string>
+    <string name="action_cancel">Bekor qilish</string>
+    <string name="action_go_live">Hozir ko'rsatish</string>
+    <string name="label_add_to_schedule">Jadvalga qo'shish</string>
+    <string name="label_live">Jonli</string>
+    <string name="cd_delete">O'chirish</string>
+    <string name="cd_close">Yopish</string>
+    <string name="cd_select">Tanlash</string>
+    <string name="cd_cast">Uzatish</string>
+    <string name="cd_back">Orqaga</string>
+    <string name="cd_settings">Sozlamalar</string>
+    <string name="cd_schedule">Jadval</string>
+    <string name="overline_on_screen_preview">Ekran ko'rinishi</string>
+    <string name="announcements_text_placeholder">E'lon matni…</string>
+    <string name="overline_duration">Davomiyligi</string>
+    <string name="overline_target_time">Maqsadli vaqt</string>
+    <string name="overline_animation">Animatsiya</string>
+    <string name="stepper_hrs">Soat</string>
+    <string name="stepper_min">Daq</string>
+    <string name="stepper_sec">Son</string>
+    <string name="stepper_hour">Soat</string>
+    <string name="stepper_font_size">Shrift o'lchami</string>
+    <string name="swatch_text">Matn</string>
+    <string name="swatch_background">Fon</string>
+    <string name="announcements_clock_desc">Joriy vaqtni jonli ko'rsatadi.</string>
+    <string name="announcements_count_up_desc">Ko'rsatila boshlaganda noldan yuqoriga sanaydi.</string>
+    <string name="announcements_animation_duration_label">ANIMATSIYA DAVOMIYLIGI</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SAQLANGAN</string>
+    <string name="announcements_add_new">+ Yangi</string>
+    <string name="announcements_no_saved">Hali saqlangan e'lonlar yo'q. Bittasini yozing va “+ Yangi” tugmasini bosing.</string>
+    <string name="color_picker_title">Rang tanlang</string>
+    <string name="color_picker_use">Rangdan foydalanish</string>
+    <string name="color_slider_hue">Tus</string>
+    <string name="color_slider_saturation">To'yinganlik</string>
+    <string name="color_slider_brightness">Yorqinlik</string>
+    <string name="cd_custom_color">Maxsus rang</string>
+    <string name="announcements_preview_placeholder">Sizning e'loningiz</string>
+    <string name="web_bookmarks_label">XATCHO'PLAR</string>
+    <string name="web_add_bookmark">+ Qo'shish</string>
+    <string name="web_no_bookmarks">Hali xatcho'plar yo'q. URL kiriting va “+ Qo'shish” tugmasini bosing.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Raqam, so'z yoki ma'noni qidirish…</string>
+    <string name="dictionary_filter_all">Barchasi</string>
+    <string name="dictionary_filter_hebrew">Ibroniy</string>
+    <string name="dictionary_filter_greek">Yunon</string>
+    <string name="dictionary_no_entries">Yozuvlar topilmadi</string>
+    <string name="dictionary_uses">QO'LLANILISHI</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">So'z turkumi</string>
+    <string name="dictionary_occurrences">Uchrashi</string>
+    <string name="dictionary_root">O'zak</string>
+    <string name="dictionary_definition">Ta'rif</string>
+    <string name="dictionary_kjv_usage">KJV qo'llanilishi</string>
+    <string name="qa_edit_question_title">Savolni tahrirlash</string>
+    <string name="qa_delete_question">Savolni o'chirish</string>
+    <string name="qa_submitted_by">Yuboruvchi: %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">To'xtatish</string>
+    <string name="qa_action_approve">Tasdiqlash</string>
+    <string name="cd_edit">Tahrirlash</string>
+    <string name="cd_deny">Rad etish</string>
+    <string name="qa_badge_live">JONLI</string>
+    <string name="qa_badge_approved">✓ Tasdiqlandi</string>
+    <string name="qa_badge_denied">Rad etildi</string>
+    <string name="qa_badge_answered">Javob berildi</string>
+    <string name="schedule_drawer_item_count">%1$d ta element</string>
+    <string name="presentation_slide_desc">Slayd %1$d</string>
+    <string name="presentation_slide_live">▶ JONLI</string>
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Ko'rsatish</string>
+    <string name="tab_more">Ko'proq</string>
+    <string name="songs_count">%1$d ta qo'shiq</string>
+    <string name="bible_chapters_count">%1$d bob</string>
+    <string name="status_version_line">Server: %1$s · Mobil: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Matn</string>
+    <string name="announce_type_countdown">Teskari sanoq</string>
+    <string name="announce_type_count_up">Oldinga sanoq</string>
+    <string name="announce_type_clock">Soat</string>
+    <string name="announce_type_countdown_to_time">Vaqtgacha teskari sanoq</string>
+    <string name="announce_anim_none">Yo'q</string>
+    <string name="announce_anim_fade">So'nish</string>
+    <string name="announce_anim_slide_up">Yuqoriga siljish</string>
+    <string name="announce_anim_slide_down">Pastga siljish</string>
+    <string name="announce_anim_slide_left">Chapdan siljish</string>
+    <string name="announce_anim_slide_right">O'ngdan siljish</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Kitob</string>
+    <string name="dictionary_ref_chapter">Bob</string>
+    <string name="dictionary_ref_verse">Oyat</string>
+    <string name="dictionary_ref_clear">Havola filtrini tozalash</string>
+    <string name="dictionary_appears_in">Uchraydi</string>
+    <string name="dictionary_appears_in_count">%2$s dan %1$s</string>
+    <string name="settings_active_server">Faol server</string>
+    <string name="contact_us_title">Biz bilan bog'laning</string>
+    <string name="contact_type_label">Turi</string>
+    <string name="contact_type_feature">Imkoniyat so'rovi</string>
+    <string name="contact_type_feedback">Fikr-mulohaza</string>
+    <string name="contact_type_testimonial">Tavsiya</string>
+    <string name="contact_type_bug">Xato haqida xabar</string>
+    <string name="contact_name_label">Ism</string>
+    <string name="contact_email_label">Elektron pochta (ixtiyoriy)</string>
+    <string name="contact_message_label">Xabar</string>
+    <string name="contact_send">Yuborish</string>
+    <string name="contact_sending">Yuborilmoqda…</string>
+    <string name="contact_sent">Xabar yuborildi. Rahmat!</string>
+    <string name="contact_error">Yuborib bo'lmadi. Iltimos, qayta urinib ko'ring.</string>
+    <string name="contact_rate_limited_browser">Xavfsizlik uchun yuborishni brauzeringizda yakunlang.</string>
+    <string name="contact_network_error">Serverga ulanib bo'lmadi. Internet aloqangizni tekshiring va qayta urinib ko'ring.</string>
+    <string name="contact_open_browser">Brauzerda ochish</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Ochiq qo'shiq yo'q</string>
+    <string name="songs_pane_empty_body">Chap tomondan qo'shiq tanlang, uning bandlari shu yerda paydo bo'ladi.</string>
+    <string name="more_pane_empty_title">Ochiq vosita yo'q</string>
+    <string name="more_pane_empty_body">Chap tomondan vosita tanlang, u shu yerda ochiladi.</string>
+    <string name="library_pane_empty_title">Hech narsa tahrirlanmayapti</string>
+    <string name="library_pane_empty_body">Chap tomondagi elementni tahrirlang yoki yangisini qo'shing, u shu yerda ochiladi.</string>
+    <string name="bible_pane_empty_title">Ochiq bob yo'q</string>
+    <string name="bible_pane_empty_body">Kitobni, so'ngra bobni tanlang, uning oyatlari shu yerda paydo bo'ladi.</string>
+    <string name="bible_chapters_overline">Bob</string>
+</resources>

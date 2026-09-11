@@ -133,6 +133,15 @@
     <string name="song_detail_fab_close_actions">Close actions</string>
     <string name="song_detail_projecting_badge">▶  Projecting</string>
     <string name="song_detail_no_lyrics">No lyrics available</string>
+    <string name="songs_pane_empty_title">No song open</string>
+    <string name="more_pane_empty_title">No tool open</string>
+    <string name="library_pane_empty_title">Nothing being edited</string>
+    <string name="bible_pane_empty_title">No chapter open</string>
+    <string name="bible_pane_empty_body">Pick a book, then a chapter, and its verses appear here.</string>
+    <string name="bible_chapters_overline">Chapter</string>
+    <string name="library_pane_empty_body">Edit an item on the left, or add a new one, and it opens here.</string>
+    <string name="more_pane_empty_body">Pick a tool on the left and it opens here.</string>
+    <string name="songs_pane_empty_body">Pick a song on the left and its verses appear here.</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Add to Schedule</string>

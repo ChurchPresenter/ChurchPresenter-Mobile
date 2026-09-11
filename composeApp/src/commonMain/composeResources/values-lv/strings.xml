@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Nosaukums</string>
+    <string name="songs_table_header_book">Dziesmu grāmata</string>
+    <string name="songs_table_header_tune">Melodija</string>
+    <string name="songs_table_search_placeholder">Meklēt pēc # vai nosaukuma…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Nav pieejamu dziesmu</string>
+    <string name="songs_table_no_match">Neviena dziesma neatbilst filtram</string>
+    <string name="songs_table_retry">Mēģināt vēlreiz</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Visas dziesmu grāmatas</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Atvērt iestatījumus</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Iestatījumi</string>
+    <string name="settings_server_section">Serveris</string>
+    <string name="settings_host_label">Resursdators / IP adrese</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Ports</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API atslēga (nav obligāta)</string>
+    <string name="settings_api_key_placeholder">Atstājiet tukšu, ja nav nepieciešama</string>
+    <string name="settings_save">Saglabāt</string>
+    <string name="settings_cancel">Atcelt</string>
+    <string name="settings_invalid_port">Portam jābūt skaitlim no 1 līdz 65535</string>
+    <string name="settings_host_empty">Resursdators nevar būt tukšs</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Izskats</string>
+    <string name="settings_theme_system">Sistēmas</string>
+    <string name="settings_theme_light">Gaišs</string>
+    <string name="settings_theme_dark">Tumšs</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Dziesmas</string>
+    <string name="tab_bible">Bībele</string>
+    <string name="tab_pictures">Attēli</string>
+    <string name="tab_presentation">Prezentācija</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Bībele — drīzumā</string>
+    <string name="pictures_coming_soon">🖼  Attēli — drīzumā</string>
+    <string name="presentation_coming_soon">📽  Prezentācija — drīzumā</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Nav pieejamu prezentāciju</string>
+    <string name="presentation_loading_error">Neizdevās ielādēt prezentācijas</string>
+    <string name="presentation_retry">Mēģināt vēlreiz</string>
+    <string name="presentation_slides">slaidi</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Nav pieejamu attēlu</string>
+    <string name="pictures_loading_error">Neizdevās ielādēt attēlus</string>
+    <string name="pictures_retry">Mēģināt vēlreiz</string>
+    <string name="pictures_photos">fotoattēli</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Meklēt grāmatas…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Nav pieejamu Bībeles grāmatu</string>
+    <string name="bible_no_match">Neviena grāmata neatbilst meklējumam</string>
+    <string name="bible_chapter_label">Nodaļa</string>
+    <string name="bible_chapters_title">Nodaļas</string>
+    <string name="bible_no_verses">Nav pieejamu pantu</string>
+    <string name="bible_back">← Atpakaļ</string>
+    <string name="bible_loading_error">Neizdevās ielādēt</string>
+    <string name="bible_retry">Mēģināt vēlreiz</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Grafiks</string>
+    <string name="schedule_drawer_refresh">Atsvaidzināt grafiku</string>
+    <string name="schedule_drawer_empty">Grafikā nav ierakstu</string>
+    <string name="schedule_drawer_error">Kļūda: %1$s</string>
+    <string name="schedule_drawer_open">Atvērt grafiku</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Pievienot grafikam</string>
+    <string name="song_detail_schedule_request_sent">Pieprasījums nosūtīts ✓</string>
+    <string name="song_detail_project_to_screen">Rādīt uz ekrāna</string>
+    <string name="song_detail_stop_projecting">Pārtraukt rādīšanu</string>
+    <string name="song_detail_fab_actions">Darbības</string>
+    <string name="song_detail_fab_close_actions">Aizvērt darbības</string>
+    <string name="song_detail_projecting_badge">▶  Tiek rādīts</string>
+    <string name="song_detail_no_lyrics">Nav pieejamu vārdu</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Pievienot grafikam</string>
+    <string name="bible_detail_schedule_request_sent">Pieprasījums nosūtīts ✓</string>
+    <string name="bible_detail_project_to_screen">Rādīt uz ekrāna</string>
+    <string name="bible_detail_stop_projecting">Pārtraukt rādīšanu</string>
+    <string name="bible_detail_fab_actions">Darbības</string>
+    <string name="bible_detail_fab_close_actions">Aizvērt darbības</string>
+    <string name="bible_detail_projecting_badge">▶  Tiek rādīts</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Pievienot grafikam</string>
+    <string name="pictures_schedule_request_sent">Pieprasījums nosūtīts ✓</string>
+    <string name="pictures_project_to_screen">Rādīt uz ekrāna</string>
+    <string name="pictures_stop_projecting">Pārtraukt rādīšanu</string>
+    <string name="pictures_pick_from_device">Izvēlēties no ierīces</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Pievienot grafikam</string>
+    <string name="action_project_to_screen">Rādīt uz ekrāna</string>
+    <string name="action_stop_projecting">Pārtraukt rādīšanu</string>
+    <string name="pictures_uploading">Notiek augšupielāde…</string>
+    <string name="upload_overlay_subtitle">Lūdzu, uzgaidiet un neaizveriet lietotni</string>
+    <string name="upload_overlay_photo_counter">Attēls %1$d no %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Attēls pievienots grafikam</string>
+    <string name="toast_pictures_failed_to_add_schedule">Neizdevās pievienot attēlu grafikam: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Pievienot grafikam</string>
+    <string name="presentation_schedule_request_sent">Pieprasījums nosūtīts ✓</string>
+    <string name="presentation_project_to_screen">Rādīt uz ekrāna</string>
+    <string name="presentation_stop_projecting">Pārtraukt rādīšanu</string>
+    <string name="presentation_upload_file">Augšupielādēt prezentāciju</string>
+    <string name="presentation_uploading">Notiek augšupielāde…</string>
+    <string name="toast_presentation_added_to_schedule">Prezentācija pievienota grafikam</string>
+    <string name="toast_presentation_failed_to_add_schedule">Neizdevās pievienot prezentāciju grafikam: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Neizdevās atlasīt prezentāciju: %1$s</string>
+    <string name="toast_upload_unsupported">Šis serveris neatbalsta augšupielādi. Atjauniniet ChurchPresenter datorā uz jaunāko versiju.</string>
+    <string name="toast_upload_file_too_large">Fails ir pārāk liels serverim. Mēģiniet mazāku failu.</string>
+    <string name="toast_upload_server_error">Serveris noraidīja augšupielādi: %1$s</string>
+    <string name="toast_upload_failed">Augšupielāde neizdevās: %1$s</string>
+    <string name="toast_upload_reload_failed">Augšupielādēts, bet neizdevās pārlādēt sarakstu: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Dziesma tagad ir redzama uz ekrāna</string>
+    <string name="toast_request_failed">Pieprasījums neizdevās</string>
+    <string name="toast_no_song_selected">Neviena dziesma nav atlasīta</string>
+    <string name="toast_song_added_to_schedule">“%1$s” pievienota grafikam</string>
+    <string name="toast_failed_to_project">Neizdevās parādīt dziesmu: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Neizdevās pievienot grafikam: %1$s</string>
+    <string name="toast_request_denied">Pieprasījums tika noraidīts</string>
+    <string name="toast_session_blocked">Sesija ir bloķēta — turpmāki pieprasījumi netiks pieņemti</string>
+    <string name="toast_request_rejected">Serveris noraidīja pieprasījumu (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Pieprasījums noraidīts: %1$s</string>
+    <string name="toast_bible_live">Bībeles fragments tagad ir redzams uz ekrāna</string>
+    <string name="toast_bible_added_to_schedule">“%1$s” pievienots grafikam</string>
+    <string name="toast_failed_to_project_bible">Neizdevās parādīt: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Neizdevās pievienot grafikam: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Serveris iestatīts uz %1$s:%2$s</string>
+    <string name="qr_scan_button">Skenēt QR kodu</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Uzticēties servera sertifikātam</string>
+    <string name="cert_setup_subtitle">Nepieciešama vienreizēja iestatīšana</string>
+    <string name="cert_setup_intro">ChurchPresenter izmanto privātu HTTPS sertifikātu drošai saziņai. Tas vienreiz jāinstalē, lai ierīce uzticētos savienojumam.</string>
+    <string name="cert_setup_scan_title">Skenējiet sertifikāta QR kodu</string>
+    <string name="cert_setup_scan_desktop_hint">ChurchPresenter datorā: Iestatījumi → Serveris → nospiediet “Download Cert”, lai parādītu QR kodu.</string>
+    <string name="cert_setup_scan_button">Skenēt QR kodu</string>
+    <string name="cert_setup_scan_or_divider">vai izmantot saglabāto adresi</string>
+    <string name="cert_setup_url_scanned">✓ URL noskenēts</string>
+    <string name="cert_setup_url_label">Sertifikāta URL</string>
+    <string name="cert_setup_open_button">Atvērt sertifikāta URL</string>
+    <string name="cert_setup_step2_ios_title">iOS — Instalējiet profilu</string>
+    <string name="cert_setup_step2_ios_body">Safari lūgs lejupielādēt konfigurācijas profilu. Pieskarieties Atļaut, pēc tam dodieties uz Iestatījumi → Vispārīgi → VPN un ierīču pārvaldība, pieskarieties ChurchPresenter un instalējiet.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Uzticieties sertifikātam</string>
+    <string name="cert_setup_step3_ios_body">Iestatījumi → Vispārīgi → Par → Sertifikātu uzticamības iestatījumi → ieslēdziet pilnu uzticēšanos ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Instalējiet sertifikātu</string>
+    <string name="cert_setup_step2_android_body">Chrome lejupielādē .crt failu. Pieskarieties tam lejupielāžu paziņojumā, izvēlieties “CA sertifikāts” un piešķiriet nosaukumu, piemēram, “ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ “Nevar instalēt no nezināmiem avotiem”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android var bloķēt instalēšanu, ja pārlūkam nav atļauts instalēt failus. Dodieties uz Iestatījumi → Lietotnes → [jūsu pārlūks] → Instalēt nezināmas lietotnes un ieslēdziet “Atļaut no šī avota”. Atgriezieties šeit un pieskarieties failam vēlreiz.</string>
+    <string name="cert_setup_fingerprint_title">Pārbaudiet nospiedumu (ieteicams)</string>
+    <string name="cert_setup_fingerprint_body">Salīdziniet šo nospiedumu ar to, ko ChurchPresenter datorā rāda sadaļā Iestatījumi → Serveris → Certificate SHA-256. Tiem jāsakrīt.</string>
+    <string name="cert_setup_fingerprint_unavailable">Vispirms izveidojiet savienojumu ar serveri, lai redzētu nospiedumu</string>
+    <string name="cert_setup_done_button">Gatavs — sertifikāts instalēts</string>
+    <string name="cert_setup_skip_button">Izlaist pagaidām</string>
+    <string name="cert_setup_skip_note">Jūs jebkurā laikā varat atgriezties pie šīs pamācības no Iestatījumiem.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Savienoties ar datoru</string>
+    <string name="connect_setup_subtitle">Nepieciešama vienreizēja iestatīšana</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile savienojas ar ChurchPresenter lietotni datorā vietējā tīklā. Noskenējiet QR kodu no datora, lai savienojumu konfigurētu automātiski.</string>
+    <string name="connect_setup_step1_title">Atveriet ChurchPresenter datorā</string>
+    <string name="connect_setup_step1_body">Palaidiet ChurchPresenter lietotni datorā un pārliecinieties, ka tā darbojas tajā pašā Wi-Fi tīklā, kur šī ierīce.</string>
+    <string name="connect_setup_step2_title">Parādiet savienojuma QR kodu</string>
+    <string name="connect_setup_step2_body">Datora lietotnē dodieties uz Iestatījumi → Mobilais un nospiediet “Show QR Code”. Ekrānā parādīsies QR kods ar savienojuma datiem.</string>
+    <string name="connect_setup_step3_title">Noskenējiet zemāk esošo QR kodu</string>
+    <string name="connect_setup_step3_body">Pieskarieties pogai zemāk, lai atvērtu kameru un noskenētu datorā redzamo QR kodu. Savienojums tiks konfigurēts automātiski.</string>
+    <string name="connect_setup_scan_button">Skenēt QR kodu</string>
+    <string name="connect_setup_connected">✓ Savienots ar %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Gatavs — savienots</string>
+    <string name="connect_setup_skip_button">Izlaist pagaidām</string>
+    <string name="connect_setup_skip_note">Jūs jebkurā laikā varat noskenēt QR kodu no Iestatījumiem.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Jūsu vārds (jautājumiem un atbildēm)</string>
+    <string name="settings_display_name_placeholder">Atstājiet tukšu, lai izmantotu ierīces ID</string>
+    <string name="settings_privacy_section">Privātums</string>
+    <string name="settings_telemetry_label">Kopīgot lietojuma un avāriju datus</string>
+    <string name="settings_telemetry_description">Palīdz mums atrast un labot kļūdas. Izslēdziet, lai pārtrauktu analītikas un avāriju ziņojumu sūtīšanu.</string>
+    <string name="tab_qa_admin">Jautājumi</string>
+    <string name="qa_admin_session_active">Sesija ir aktīva</string>
+    <string name="qa_admin_session_stopped">Sesija ir apturēta</string>
+    <string name="qa_admin_incoming_tab">Ienākošie (%1$d)</string>
+    <string name="qa_admin_finished_tab">Pabeigtie (%1$d)</string>
+    <string name="qa_admin_no_incoming">Nav ienākošo jautājumu</string>
+    <string name="qa_admin_no_finished">Nav pabeigtu jautājumu</string>
+    <string name="qa_admin_approve">Apstiprināt</string>
+    <string name="qa_admin_deny">Noraidīt</string>
+    <string name="qa_admin_go_live">Rādīt tagad</string>
+    <string name="qa_admin_done">Atzīmēt kā pabeigtu</string>
+    <string name="qa_admin_clear_display">Notīrīt ekrānu</string>
+    <string name="qa_admin_now_live">Tiek rādīts:</string>
+    <string name="qa_admin_edit_hint">Rediģēt jautājuma tekstu…</string>
+    <string name="qa_admin_add_question">Pievienot jautājumu</string>
+    <string name="qa_admin_add_question_hint">Ierakstiet savu jautājumu…</string>
+    <string name="qa_admin_save">Saglabāt</string>
+    <string name="qa_admin_cancel">Atcelt</string>
+    <string name="qa_admin_error_retry">Mēģināt vēlreiz</string>
+    <string name="action_clear_display">Notīrīt ekrānu</string>
+    <string name="action_hold_display">Iesaldēt ekrānu</string>
+    <string name="action_multi_select">Atlasīt vairākus</string>
+    <string name="bible_multi_select_count">Atlasīti: %1$d</string>
+    <string name="connect_setup_no_camera_note">Šajā ierīcē nav atrasta kamera. Ievadiet savienojuma datus manuāli:</string>
+    <string name="connect_setup_manual_entry_toggle">Ievadīt manuāli</string>
+    <string name="connect_setup_scan_instead_toggle">Skenēt QR kodu</string>
+    <string name="connect_setup_manual_apply_button">Lietot</string>
+    <string name="settings_active_url_label">Pašlaik savienojas ar:</string>
+    <string name="settings_reset_to_default">Atiestatīt uz noklusējumu</string>
+    <string name="settings_draft_url_label">Pēc saglabāšanas savienosies ar:</string>
+    <string name="settings_check_status">Pārbaudīt servera statusu</string>
+    <string name="settings_developer_section">Izstrādātājam</string>
+    <string name="settings_send_test_error">Nosūtīt testa kļūdu uz Sentry</string>
+    <string name="settings_test_error_sent">✓ Testa kļūda nosūtīta uz Sentry</string>
+    <string name="settings_check_status_description">Pārbaudīt servera statusu</string>
+    <string name="settings_status_recheck">Pārbaudīt vēlreiz</string>
+    <string name="settings_status_server_version">Serveris: %1$s</string>
+    <string name="settings_status_mobile_version">Mobilais: %1$s</string>
+    <string name="settings_status_api_key_enabled">API atslēga: ieslēgta</string>
+    <string name="settings_status_api_key_none">API atslēga: nav</string>
+    <string name="settings_status_endpoints">Galapunkti</string>
+    <string name="settings_status_bibles">Bībeles</string>
+    <string name="settings_status_songbooks">Dziesmu grāmatas</string>
+    <string name="settings_status_none">nav</string>
+    <string name="status_connecting">Savienojas ar serveri…</string>
+    <string name="status_connected">Serveris savienots</string>
+    <string name="status_continue">Turpināt</string>
+    <string name="status_retry">Mēģināt vēlreiz</string>
+    <string name="status_open_settings">Atvērt iestatījumus</string>
+    <string name="status_continue_anyway">Tomēr turpināt</string>
+    <string name="status_limited_functionality">Ierobežota funkcionalitāte</string>
+    <string name="status_server_version">Servera versija: %1$s</string>
+    <string name="status_issues_detected">Savienotajā serverī tika atklātas šādas problēmas:</string>
+    <string name="status_endpoint_unavailable">Statusa galapunkts šajā servera versijā vēl nav pieejams — atjauniniet ChurchPresenter datorā, lai iegūtu pilnu pārskatu.</string>
+    <string name="status_error_title">Neizdevās sasniegt serveri</string>
+    <string name="status_permissions_title">Šīs ierīces atļaujas</string>
+    <string name="status_permission_present">Vadīt prezentāciju</string>
+    <string name="status_permission_schedule">Pievienot grafikam</string>
+    <string name="status_permission_upload">Augšupielādēt failus</string>
+    <string name="status_permission_blocked">— bloķēts</string>
+    <string name="status_info_bibles">Pieejamās Bībeles</string>
+    <string name="status_info_songbooks">Pieejamās dziesmu grāmatas</string>
+    <string name="status_info_features">Ieslēgtās funkcijas</string>
+    <string name="status_warn_no_api_key_title">API atslēga nav konfigurēta</string>
+    <string name="status_warn_no_api_key_body">Serverim nav iestatīta API atslēga. Daži aizsargātie galapunkti var noraidīt pieprasījumus. Apsveriet API atslēgas ieslēgšanu ChurchPresenter servera iestatījumos.</string>
+    <string name="status_warn_no_bibles_title">Nav pieejamu Bībeles tulkojumu</string>
+    <string name="status_warn_no_bibles_body">Serverī nav ielādēts neviens Bībeles tulkojums. Bībeles cilne būs tukša. Pievienojiet tulkojumu ChurchPresenter lietotnē datorā.</string>
+    <string name="status_warn_no_songbooks_title">Nav pieejamu dziesmu grāmatu</string>
+    <string name="status_warn_no_songbooks_body">Serverī nav ielādēta neviena dziesmu grāmata. Dziesmu cilne būs tukša. Importējiet dziesmu grāmatu ChurchPresenter lietotnē datorā.</string>
+    <string name="status_warn_present_blocked_title">Prezentācijas vadība bloķēta</string>
+    <string name="status_warn_present_blocked_body">Šai ierīcei nav atļauts vadīt prezentāciju (rādīt, notīrīt, atlasīt slaidus). Lūdziet servera administratoram piešķirt ierīcei Presenter atļauju.</string>
+    <string name="status_warn_schedule_blocked_title">Grafika rediģēšana bloķēta</string>
+    <string name="status_warn_schedule_blocked_body">Šai ierīcei nav atļauts pievienot ierakstus grafikam. Lūdziet servera administratoram piešķirt ierīcei Schedule atļauju.</string>
+    <string name="status_warn_upload_blocked_title">Failu augšupielāde bloķēta</string>
+    <string name="status_warn_upload_blocked_body">Šai ierīcei nav atļauts augšupielādēt prezentācijas vai attēlus. Lūdziet servera administratoram piešķirt ierīcei Upload atļauju.</string>
+    <string name="upload_blocked_toast">Šai ierīcei failu augšupielāde ir izslēgta. Lūdziet servera administratoram piešķirt Upload atļauju.</string>
+    <string name="status_warn_unknown_version_title">Neatpazīta servera versija</string>
+    <string name="status_warn_unknown_version_body">Serveris ziņoja versiju “%1$s”. Dažas šīs lietotnes funkcijas var nebūt saderīgas ar šo versiju.</string>
+    <string name="status_warn_missing_endpoint_title">Trūkst API galapunkta: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Serveris nepiedāvā galapunktu “%1$s”. Funkcijas, kas uz to balstās, nebūs pieejamas.</string>
+    <string name="media_title">Multivide</string>
+    <string name="media_no_media_loaded">Nav ielādēta multivide</string>
+    <string name="media_playing">Atskaņo</string>
+    <string name="media_playing_on_desktop">Atskaņo datorā</string>
+    <string name="media_local_ready">Vietējais fails · gatavs rādīšanai</string>
+    <string name="media_pick_to_upload">Izvēlieties augšupielādējamo failu</string>
+    <string name="media_source_network_url">Tīkla URL</string>
+    <string name="media_source_upload">Augšupielādēt no tālruņa</string>
+    <string name="media_subtitle_url">%1$s · Tīkla URL</string>
+    <string name="media_subtitle_empty">Ielīmējiet tīkla URL zemāk, lai nosūtītu multividi</string>
+    <string name="media_on_screen">UZ EKRĀNA</string>
+    <string name="media_cd_stop">Apturēt</string>
+    <string name="media_cd_back10">Atpakaļ par 10 sekundēm</string>
+    <string name="media_cd_forward10">Uz priekšu par 10 sekundēm</string>
+    <string name="media_cd_play">Atskaņot</string>
+    <string name="media_cd_pause">Pauzēt</string>
+    <string name="media_cd_mute">Izslēgt skaņu</string>
+    <string name="media_add_to_schedule">Pievienot grafikam</string>
+    <string name="media_go_live">Rādīt tagad</string>
+    <string name="media_clear_screen">Notīrīt ekrānu</string>
+    <string name="media_source_label">AVOTS</string>
+    <string name="media_will_send">Tiks nosūtīts: %1$s</string>
+    <string name="media_target_uploaded">Augšupielādēts fails · %1$s</string>
+    <string name="media_target_loaded">Ielādēts datorā · %1$s</string>
+    <string name="media_target_url">Tīkla URL</string>
+    <string name="media_target_none">Izvēlieties avotu zemāk, lai nosūtītu multividi</string>
+    <string name="media_load_label">IELĀDĒT MULTIVIDI</string>
+    <string name="media_uploading_percent">Augšupielādē… %1$d%%</string>
+    <string name="media_choose_file">Izvēlieties video vai audio failu</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Augšupielādes datorā ir izslēgtas</string>
+    <string name="media_uploads_disabled_hint">Ieslēdziet “Allow file uploads from mobile devices” datora lietotnes servera iestatījumos.</string>
+    <string name="media_playing_generic">multivide</string>
+    <string name="more_photos_title">Fotoattēli</string>
+    <string name="more_photos_subtitle">Pārlūkot un rādīt attēlu mapes</string>
+    <string name="more_qa_title">Jautājumi</string>
+    <string name="more_qa_subtitle">Pārskatīt un rādīt klausītāju jautājumus</string>
+    <string name="more_dictionary_title">Vārdnīca</string>
+    <string name="more_dictionary_subtitle">Stronga ebreju un grieķu leksikons</string>
+    <string name="more_announcements_title">Paziņojumi</string>
+    <string name="more_announcements_subtitle">Teksts, pulksteņi un atpakaļskaitīšana</string>
+    <string name="more_web_title">Tīmeklis</string>
+    <string name="more_web_subtitle">Rādīt tīmekļa lapu uz ekrāna</string>
+    <string name="strongs_dictionary_title">Stronga vārdnīca</string>
+    <string name="web_title">Tīmeklis</string>
+    <string name="announcements_title">Paziņojumi</string>
+    <string name="action_clear">Notīrīt</string>
+    <string name="action_cancel">Atcelt</string>
+    <string name="action_go_live">Rādīt tagad</string>
+    <string name="label_add_to_schedule">Pievienot grafikam</string>
+    <string name="label_live">Tiešraidē</string>
+    <string name="cd_delete">Dzēst</string>
+    <string name="cd_close">Aizvērt</string>
+    <string name="cd_select">Atlasīt</string>
+    <string name="cd_cast">Apraidīt</string>
+    <string name="cd_back">Atpakaļ</string>
+    <string name="cd_settings">Iestatījumi</string>
+    <string name="cd_schedule">Grafiks</string>
+    <string name="overline_on_screen_preview">Priekšskatījums ekrānā</string>
+    <string name="announcements_text_placeholder">Paziņojuma teksts…</string>
+    <string name="overline_duration">Ilgums</string>
+    <string name="overline_target_time">Mērķa laiks</string>
+    <string name="overline_animation">Animācija</string>
+    <string name="stepper_hrs">St</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sek</string>
+    <string name="stepper_hour">Stunda</string>
+    <string name="stepper_font_size">Fonta lielums</string>
+    <string name="swatch_text">Teksts</string>
+    <string name="swatch_background">Fons</string>
+    <string name="announcements_clock_desc">Rāda pašreizējo laiku tiešraidē.</string>
+    <string name="announcements_count_up_desc">Skaita uz augšu no nulles, kad sākas rādīšana.</string>
+    <string name="announcements_animation_duration_label">ANIMĀCIJAS ILGUMS</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SAGLABĀTIE</string>
+    <string name="announcements_add_new">+ Jauns</string>
+    <string name="announcements_no_saved">Vēl nav saglabātu paziņojumu. Izveidojiet vienu un pieskarieties “+ Jauns”.</string>
+    <string name="color_picker_title">Izvēlieties krāsu</string>
+    <string name="color_picker_use">Lietot krāsu</string>
+    <string name="color_slider_hue">Tonis</string>
+    <string name="color_slider_saturation">Piesātinājums</string>
+    <string name="color_slider_brightness">Spilgtums</string>
+    <string name="cd_custom_color">Pielāgota krāsa</string>
+    <string name="announcements_preview_placeholder">Jūsu paziņojums</string>
+    <string name="web_bookmarks_label">GRĀMATZĪMES</string>
+    <string name="web_add_bookmark">+ Pievienot</string>
+    <string name="web_no_bookmarks">Vēl nav grāmatzīmju. Ievadiet URL un pieskarieties “+ Pievienot”.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Meklēt numuru, vārdu vai nozīmi…</string>
+    <string name="dictionary_filter_all">Visi</string>
+    <string name="dictionary_filter_hebrew">Ebreju</string>
+    <string name="dictionary_filter_greek">Grieķu</string>
+    <string name="dictionary_no_entries">Nav atrasts neviens ieraksts</string>
+    <string name="dictionary_uses">LIETOJUMS</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Vārdšķira</string>
+    <string name="dictionary_occurrences">Sastopamība</string>
+    <string name="dictionary_root">Sakne</string>
+    <string name="dictionary_definition">Definīcija</string>
+    <string name="dictionary_kjv_usage">KJV lietojums</string>
+    <string name="qa_edit_question_title">Rediģēt jautājumu</string>
+    <string name="qa_delete_question">Dzēst jautājumu</string>
+    <string name="qa_submitted_by">Iesniedza %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Apturēt</string>
+    <string name="qa_action_approve">Apstiprināt</string>
+    <string name="cd_edit">Rediģēt</string>
+    <string name="cd_deny">Noraidīt</string>
+    <string name="qa_badge_live">TIEŠRAIDĒ</string>
+    <string name="qa_badge_approved">✓ Apstiprināts</string>
+    <string name="qa_badge_denied">Noraidīts</string>
+    <string name="qa_badge_answered">Atbildēts</string>
+    <string name="schedule_drawer_item_count">%1$d ieraksti</string>
+    <string name="presentation_slide_desc">Slaids %1$d</string>
+    <string name="presentation_slide_live">▶ TIEŠRAIDĒ</string>
+    <string name="tab_media">Multivide</string>
+    <string name="tab_present">Rādīt</string>
+    <string name="tab_more">Vairāk</string>
+    <string name="songs_count">%1$d dziesmas</string>
+    <string name="bible_chapters_count">%1$d nod.</string>
+    <string name="status_version_line">Serveris: %1$s · Mobilais: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Teksts</string>
+    <string name="announce_type_countdown">Atpakaļskaitīšana</string>
+    <string name="announce_type_count_up">Skaitīšana uz augšu</string>
+    <string name="announce_type_clock">Pulkstenis</string>
+    <string name="announce_type_countdown_to_time">Atpakaļskaitīšana līdz laikam</string>
+    <string name="announce_anim_none">Nav</string>
+    <string name="announce_anim_fade">Izgaišana</string>
+    <string name="announce_anim_slide_up">Slīdēt uz augšu</string>
+    <string name="announce_anim_slide_down">Slīdēt uz leju</string>
+    <string name="announce_anim_slide_left">Slīdēt no kreisās</string>
+    <string name="announce_anim_slide_right">Slīdēt no labās</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Grāmata</string>
+    <string name="dictionary_ref_chapter">Nodaļa</string>
+    <string name="dictionary_ref_verse">Pants</string>
+    <string name="dictionary_ref_clear">Notīrīt atsauces filtru</string>
+    <string name="dictionary_appears_in">Sastopams</string>
+    <string name="dictionary_appears_in_count">%1$s no %2$s</string>
+    <string name="settings_active_server">Aktīvais serveris</string>
+    <string name="contact_us_title">Sazinieties ar mums</string>
+    <string name="contact_type_label">Veids</string>
+    <string name="contact_type_feature">Funkcijas pieprasījums</string>
+    <string name="contact_type_feedback">Atsauksme</string>
+    <string name="contact_type_testimonial">Ieteikums</string>
+    <string name="contact_type_bug">Kļūdas ziņojums</string>
+    <string name="contact_name_label">Vārds</string>
+    <string name="contact_email_label">E-pasts (nav obligāts)</string>
+    <string name="contact_message_label">Ziņojums</string>
+    <string name="contact_send">Sūtīt</string>
+    <string name="contact_sending">Sūta…</string>
+    <string name="contact_sent">Ziņojums nosūtīts. Paldies!</string>
+    <string name="contact_error">Neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz.</string>
+    <string name="contact_rate_limited_browser">Drošības nolūkos, lūdzu, pabeidziet sūtīšanu pārlūkā.</string>
+    <string name="contact_network_error">Neizdevās sasniegt serveri. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</string>
+    <string name="contact_open_browser">Atvērt pārlūkā</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Nav atvērta neviena dziesma</string>
+    <string name="songs_pane_empty_body">Izvēlieties dziesmu kreisajā pusē, un tās panti parādīsies šeit.</string>
+    <string name="more_pane_empty_title">Nav atvērts neviens rīks</string>
+    <string name="more_pane_empty_body">Izvēlieties rīku kreisajā pusē, un tas atvērsies šeit.</string>
+    <string name="library_pane_empty_title">Nekas netiek rediģēts</string>
+    <string name="library_pane_empty_body">Rediģējiet ierakstu kreisajā pusē vai pievienojiet jaunu, un tas atvērsies šeit.</string>
+    <string name="bible_pane_empty_title">Nav atvērta neviena nodaļa</string>
+    <string name="bible_pane_empty_body">Izvēlieties grāmatu, pēc tam nodaļu, un tās panti parādīsies šeit.</string>
+    <string name="bible_chapters_overline">Nodaļa</string>
+</resources>

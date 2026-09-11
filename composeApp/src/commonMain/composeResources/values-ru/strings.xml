@@ -439,5 +439,15 @@
     <string name="contact_rate_limited_browser">В целях безопасности завершите отправку в браузере.</string>
     <string name="contact_network_error">Не удалось связаться с сервером. Проверьте подключение к интернету и повторите попытку.</string>
     <string name="contact_open_browser">Открыть в браузере</string>
-</resources>
 
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Песня не открыта</string>
+    <string name="songs_pane_empty_body">Выберите песню слева — её куплеты появятся здесь.</string>
+    <string name="more_pane_empty_title">Инструмент не открыт</string>
+    <string name="more_pane_empty_body">Выберите инструмент слева — он откроется здесь.</string>
+    <string name="library_pane_empty_title">Ничего не редактируется</string>
+    <string name="library_pane_empty_body">Отредактируйте элемент слева или добавьте новый — он откроется здесь.</string>
+    <string name="bible_pane_empty_title">Глава не открыта</string>
+    <string name="bible_pane_empty_body">Выберите книгу, затем главу — её стихи появятся здесь.</string>
+    <string name="bible_chapters_overline">Глава</string>
+</resources>

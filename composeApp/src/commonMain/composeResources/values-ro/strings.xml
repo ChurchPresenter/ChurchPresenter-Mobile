@@ -470,4 +470,15 @@
     <string name="contact_rate_limited_browser">Din motive de securitate, finalizează trimiterea în browser.</string>
     <string name="contact_network_error">Serverul nu a putut fi contactat. Verifică conexiunea la internet și încearcă din nou.</string>
     <string name="contact_open_browser">Deschide în Browser</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Niciun cântec deschis</string>
+    <string name="songs_pane_empty_body">Alegeți un cântec în stânga, iar strofele lui apar aici.</string>
+    <string name="more_pane_empty_title">Niciun instrument deschis</string>
+    <string name="more_pane_empty_body">Alegeți un instrument în stânga și se va deschide aici.</string>
+    <string name="library_pane_empty_title">Nu se editează nimic</string>
+    <string name="library_pane_empty_body">Editați un element în stânga sau adăugați unul nou și se va deschide aici.</string>
+    <string name="bible_pane_empty_title">Niciun capitol deschis</string>
+    <string name="bible_pane_empty_body">Alegeți o carte, apoi un capitol, iar versetele lui apar aici.</string>
+    <string name="bible_chapters_overline">Capitol</string>
 </resources>

@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,6 +72,7 @@ fun ScreenHeader(
                     tint = colors.accent,
                     modifier = Modifier
                         .size(24.dp)
+                        .testTag(UiTags.HEADER_BACK)
                         .clickable(onClick = onBack),
                 )
                 Spacer(Modifier.width(12.dp))
@@ -82,6 +84,7 @@ fun ScreenHeader(
                     tint = colors.text,
                     modifier = Modifier
                         .size(22.dp)
+                        .testTag(UiTags.HEADER_MENU)
                         .clickable(onClick = onMenu),
                 )
                 Spacer(Modifier.width(14.dp))
@@ -112,7 +115,7 @@ fun ScreenHeader(
 
         if (onSettings != null) {
             Spacer(Modifier.width(12.dp))
-            GearButton(onClick = onSettings)
+            GearButton(onClick = onSettings, modifier = Modifier.testTag(UiTags.HEADER_SETTINGS))
         }
     }
 }

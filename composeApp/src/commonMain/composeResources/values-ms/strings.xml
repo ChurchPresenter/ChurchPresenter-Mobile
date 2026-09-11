@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Tajuk</string>
+    <string name="songs_table_header_book">Buku lagu</string>
+    <string name="songs_table_header_tune">Melodi</string>
+    <string name="songs_table_search_placeholder">Cari mengikut # atau tajuk…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Tiada lagu tersedia</string>
+    <string name="songs_table_no_match">Tiada lagu sepadan dengan penapis</string>
+    <string name="songs_table_retry">Cuba lagi</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Semua buku lagu</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Buka tetapan</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Tetapan</string>
+    <string name="settings_server_section">Pelayan</string>
+    <string name="settings_host_label">Hos / Alamat IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">Kunci API (pilihan)</string>
+    <string name="settings_api_key_placeholder">Biarkan kosong jika tidak diperlukan</string>
+    <string name="settings_save">Simpan</string>
+    <string name="settings_cancel">Batal</string>
+    <string name="settings_invalid_port">Port mesti nombor antara 1 dan 65535</string>
+    <string name="settings_host_empty">Hos tidak boleh kosong</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Penampilan</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Cerah</string>
+    <string name="settings_theme_dark">Gelap</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Lagu</string>
+    <string name="tab_bible">Alkitab</string>
+    <string name="tab_pictures">Gambar</string>
+    <string name="tab_presentation">Pembentangan</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Alkitab — akan datang</string>
+    <string name="pictures_coming_soon">🖼  Gambar — akan datang</string>
+    <string name="presentation_coming_soon">📽  Pembentangan — akan datang</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Tiada pembentangan tersedia</string>
+    <string name="presentation_loading_error">Gagal memuatkan pembentangan</string>
+    <string name="presentation_retry">Cuba lagi</string>
+    <string name="presentation_slides">slaid</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Tiada gambar tersedia</string>
+    <string name="pictures_loading_error">Gagal memuatkan gambar</string>
+    <string name="pictures_retry">Cuba lagi</string>
+    <string name="pictures_photos">foto</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Cari kitab…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Tiada kitab Alkitab tersedia</string>
+    <string name="bible_no_match">Tiada kitab sepadan dengan carian</string>
+    <string name="bible_chapter_label">Pasal</string>
+    <string name="bible_chapters_title">Pasal</string>
+    <string name="bible_no_verses">Tiada ayat tersedia</string>
+    <string name="bible_back">← Kembali</string>
+    <string name="bible_loading_error">Gagal memuatkan</string>
+    <string name="bible_retry">Cuba lagi</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Jadual</string>
+    <string name="schedule_drawer_refresh">Muat semula jadual</string>
+    <string name="schedule_drawer_empty">Tiada item dalam jadual</string>
+    <string name="schedule_drawer_error">Ralat: %1$s</string>
+    <string name="schedule_drawer_open">Buka jadual</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Tambah ke jadual</string>
+    <string name="song_detail_schedule_request_sent">Permintaan dihantar ✓</string>
+    <string name="song_detail_project_to_screen">Paparkan pada skrin</string>
+    <string name="song_detail_stop_projecting">Hentikan paparan</string>
+    <string name="song_detail_fab_actions">Tindakan</string>
+    <string name="song_detail_fab_close_actions">Tutup tindakan</string>
+    <string name="song_detail_projecting_badge">▶  Dipaparkan</string>
+    <string name="song_detail_no_lyrics">Tiada lirik tersedia</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Tambah ke jadual</string>
+    <string name="bible_detail_schedule_request_sent">Permintaan dihantar ✓</string>
+    <string name="bible_detail_project_to_screen">Paparkan pada skrin</string>
+    <string name="bible_detail_stop_projecting">Hentikan paparan</string>
+    <string name="bible_detail_fab_actions">Tindakan</string>
+    <string name="bible_detail_fab_close_actions">Tutup tindakan</string>
+    <string name="bible_detail_projecting_badge">▶  Dipaparkan</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Tambah ke jadual</string>
+    <string name="pictures_schedule_request_sent">Permintaan dihantar ✓</string>
+    <string name="pictures_project_to_screen">Paparkan pada skrin</string>
+    <string name="pictures_stop_projecting">Hentikan paparan</string>
+    <string name="pictures_pick_from_device">Pilih daripada peranti</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Tambah ke jadual</string>
+    <string name="action_project_to_screen">Paparkan pada skrin</string>
+    <string name="action_stop_projecting">Hentikan paparan</string>
+    <string name="pictures_uploading">Memuat naik…</string>
+    <string name="upload_overlay_subtitle">Sila tunggu, jangan tutup aplikasi</string>
+    <string name="upload_overlay_photo_counter">Foto %1$d daripada %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Gambar ditambah ke jadual</string>
+    <string name="toast_pictures_failed_to_add_schedule">Gagal menambah gambar ke jadual: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Tambah ke jadual</string>
+    <string name="presentation_schedule_request_sent">Permintaan dihantar ✓</string>
+    <string name="presentation_project_to_screen">Paparkan pada skrin</string>
+    <string name="presentation_stop_projecting">Hentikan paparan</string>
+    <string name="presentation_upload_file">Muat naik pembentangan</string>
+    <string name="presentation_uploading">Memuat naik…</string>
+    <string name="toast_presentation_added_to_schedule">Pembentangan ditambah ke jadual</string>
+    <string name="toast_presentation_failed_to_add_schedule">Gagal menambah pembentangan ke jadual: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Gagal memilih pembentangan: %1$s</string>
+    <string name="toast_upload_unsupported">Pelayan ini tidak menyokong muat naik. Kemas kini ChurchPresenter pada komputer ke versi terkini.</string>
+    <string name="toast_upload_file_too_large">Fail terlalu besar untuk diterima pelayan. Cuba fail yang lebih kecil.</string>
+    <string name="toast_upload_server_error">Pelayan menolak muat naik: %1$s</string>
+    <string name="toast_upload_failed">Muat naik gagal: %1$s</string>
+    <string name="toast_upload_reload_failed">Dimuat naik, tetapi gagal memuat semula senarai: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Lagu kini dipaparkan pada skrin</string>
+    <string name="toast_request_failed">Permintaan gagal</string>
+    <string name="toast_no_song_selected">Tiada lagu dipilih</string>
+    <string name="toast_song_added_to_schedule">“%1$s” ditambah ke jadual</string>
+    <string name="toast_failed_to_project">Gagal memaparkan lagu: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Gagal menambah ke jadual: %1$s</string>
+    <string name="toast_request_denied">Permintaan ditolak</string>
+    <string name="toast_session_blocked">Sesi disekat — tiada permintaan lanjut akan diterima</string>
+    <string name="toast_request_rejected">Permintaan ditolak oleh pelayan (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Permintaan ditolak: %1$s</string>
+    <string name="toast_bible_live">Petikan Alkitab kini dipaparkan pada skrin</string>
+    <string name="toast_bible_added_to_schedule">“%1$s” ditambah ke jadual</string>
+    <string name="toast_failed_to_project_bible">Gagal memaparkan: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Gagal menambah ke jadual: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Pelayan ditetapkan kepada %1$s:%2$s</string>
+    <string name="qr_scan_button">Imbas kod QR</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Percayai sijil pelayan</string>
+    <string name="cert_setup_subtitle">Persediaan sekali sahaja diperlukan</string>
+    <string name="cert_setup_intro">ChurchPresenter menggunakan sijil HTTPS persendirian untuk komunikasi selamat. Anda perlu memasangnya sekali supaya peranti anda mempercayai sambungan ini.</string>
+    <string name="cert_setup_scan_title">Imbas kod QR sijil</string>
+    <string name="cert_setup_scan_desktop_hint">Dalam ChurchPresenter pada komputer: Tetapan → Pelayan → tekan “Download Cert” untuk memaparkan kod QR.</string>
+    <string name="cert_setup_scan_button">Imbas kod QR</string>
+    <string name="cert_setup_scan_or_divider">atau guna alamat yang disimpan</string>
+    <string name="cert_setup_url_scanned">✓ URL diimbas</string>
+    <string name="cert_setup_url_label">URL sijil</string>
+    <string name="cert_setup_open_button">Buka URL sijil</string>
+    <string name="cert_setup_step2_ios_title">iOS — Pasang profil</string>
+    <string name="cert_setup_step2_ios_body">Safari akan meminta memuat turun profil konfigurasi. Ketik Benarkan, kemudian pergi ke Tetapan → Umum → VPN &amp; Pengurusan Peranti, ketik ChurchPresenter dan pasang.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Percayai sijil</string>
+    <string name="cert_setup_step3_ios_body">Tetapan → Umum → Perihal → Tetapan Kepercayaan Sijil → hidupkan kepercayaan penuh untuk ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Pasang sijil</string>
+    <string name="cert_setup_step2_android_body">Chrome memuat turun fail .crt. Ketik fail itu daripada pemberitahuan muat turun, pilih “Sijil CA” dan berikan nama seperti “ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ “Tidak boleh pasang daripada sumber tidak diketahui”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android mungkin menyekat pemasangan jika pelayar anda tidak dibenarkan memasang fail. Pergi ke Tetapan → Apl → [pelayar anda] → Pasang apl tidak diketahui, kemudian hidupkan “Benarkan daripada sumber ini”. Kembali ke sini dan ketik fail itu semula.</string>
+    <string name="cert_setup_fingerprint_title">Sahkan cap jari (disyorkan)</string>
+    <string name="cert_setup_fingerprint_body">Bandingkan cap jari ini dengan yang dipaparkan ChurchPresenter pada komputer di Tetapan → Pelayan → Certificate SHA-256. Kedua-duanya mesti sepadan.</string>
+    <string name="cert_setup_fingerprint_unavailable">Sambung ke pelayan dahulu untuk melihat cap jari</string>
+    <string name="cert_setup_done_button">Selesai — sijil dipasang</string>
+    <string name="cert_setup_skip_button">Langkau buat masa ini</string>
+    <string name="cert_setup_skip_note">Anda boleh kembali ke panduan ini bila-bila masa daripada Tetapan.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Sambung ke komputer</string>
+    <string name="connect_setup_subtitle">Persediaan sekali sahaja diperlukan</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile menyambung ke aplikasi ChurchPresenter pada komputer dalam rangkaian tempatan anda. Imbas kod QR daripada komputer untuk mengkonfigurasi sambungan secara automatik.</string>
+    <string name="connect_setup_step1_title">Buka ChurchPresenter pada komputer anda</string>
+    <string name="connect_setup_step1_body">Lancarkan aplikasi ChurchPresenter pada komputer dan pastikan ia berjalan pada rangkaian Wi-Fi yang sama dengan peranti ini.</string>
+    <string name="connect_setup_step2_title">Paparkan kod QR sambungan</string>
+    <string name="connect_setup_step2_body">Dalam aplikasi komputer pergi ke Tetapan → Mudah alih dan tekan “Show QR Code”. Kod QR dengan butiran sambungan akan muncul pada skrin.</string>
+    <string name="connect_setup_step3_title">Imbas kod QR di bawah</string>
+    <string name="connect_setup_step3_body">Ketik butang di bawah untuk membuka kamera dan mengimbas kod QR yang dipaparkan pada komputer. Sambungan akan dikonfigurasi secara automatik.</string>
+    <string name="connect_setup_scan_button">Imbas kod QR</string>
+    <string name="connect_setup_connected">✓ Disambungkan ke %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Selesai — disambungkan</string>
+    <string name="connect_setup_skip_button">Langkau buat masa ini</string>
+    <string name="connect_setup_skip_note">Anda boleh mengimbas kod QR bila-bila masa daripada Tetapan.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Nama anda (untuk Soal Jawab)</string>
+    <string name="settings_display_name_placeholder">Biarkan kosong untuk menggunakan ID peranti</string>
+    <string name="settings_privacy_section">Privasi</string>
+    <string name="settings_telemetry_label">Kongsi data penggunaan &amp; ranap</string>
+    <string name="settings_telemetry_description">Membantu kami mencari dan membaiki pepijat. Matikan untuk berhenti menghantar analitis dan laporan ranap.</string>
+    <string name="tab_qa_admin">Soal Jawab</string>
+    <string name="qa_admin_session_active">Sesi aktif</string>
+    <string name="qa_admin_session_stopped">Sesi dihentikan</string>
+    <string name="qa_admin_incoming_tab">Masuk (%1$d)</string>
+    <string name="qa_admin_finished_tab">Selesai (%1$d)</string>
+    <string name="qa_admin_no_incoming">Tiada soalan masuk</string>
+    <string name="qa_admin_no_finished">Tiada soalan selesai</string>
+    <string name="qa_admin_approve">Luluskan</string>
+    <string name="qa_admin_deny">Tolak</string>
+    <string name="qa_admin_go_live">Paparkan sekarang</string>
+    <string name="qa_admin_done">Tandakan selesai</string>
+    <string name="qa_admin_clear_display">Kosongkan skrin</string>
+    <string name="qa_admin_now_live">Dipaparkan:</string>
+    <string name="qa_admin_edit_hint">Edit teks soalan…</string>
+    <string name="qa_admin_add_question">Tambah soalan</string>
+    <string name="qa_admin_add_question_hint">Taip soalan anda…</string>
+    <string name="qa_admin_save">Simpan</string>
+    <string name="qa_admin_cancel">Batal</string>
+    <string name="qa_admin_error_retry">Cuba lagi</string>
+    <string name="action_clear_display">Kosongkan skrin</string>
+    <string name="action_hold_display">Bekukan skrin</string>
+    <string name="action_multi_select">Pilih beberapa</string>
+    <string name="bible_multi_select_count">%1$d dipilih</string>
+    <string name="connect_setup_no_camera_note">Tiada kamera dikesan pada peranti ini. Masukkan butiran sambungan secara manual:</string>
+    <string name="connect_setup_manual_entry_toggle">Masukkan secara manual</string>
+    <string name="connect_setup_scan_instead_toggle">Imbas kod QR sebaliknya</string>
+    <string name="connect_setup_manual_apply_button">Guna</string>
+    <string name="settings_active_url_label">Kini menyambung ke:</string>
+    <string name="settings_reset_to_default">Set semula kepada lalai</string>
+    <string name="settings_draft_url_label">Akan menyambung selepas menyimpan:</string>
+    <string name="settings_check_status">Semak status pelayan</string>
+    <string name="settings_developer_section">Pembangun</string>
+    <string name="settings_send_test_error">Hantar ralat ujian ke Sentry</string>
+    <string name="settings_test_error_sent">✓ Ralat ujian dihantar ke Sentry</string>
+    <string name="settings_check_status_description">Semak status pelayan</string>
+    <string name="settings_status_recheck">Semak semula</string>
+    <string name="settings_status_server_version">Pelayan: %1$s</string>
+    <string name="settings_status_mobile_version">Mudah alih: %1$s</string>
+    <string name="settings_status_api_key_enabled">Kunci API: dihidupkan</string>
+    <string name="settings_status_api_key_none">Kunci API: tiada</string>
+    <string name="settings_status_endpoints">Titik akhir</string>
+    <string name="settings_status_bibles">Alkitab</string>
+    <string name="settings_status_songbooks">Buku lagu</string>
+    <string name="settings_status_none">tiada</string>
+    <string name="status_connecting">Menyambung ke pelayan…</string>
+    <string name="status_connected">Pelayan disambungkan</string>
+    <string name="status_continue">Teruskan</string>
+    <string name="status_retry">Cuba lagi</string>
+    <string name="status_open_settings">Buka tetapan</string>
+    <string name="status_continue_anyway">Teruskan juga</string>
+    <string name="status_limited_functionality">Fungsi terhad</string>
+    <string name="status_server_version">Versi pelayan: %1$s</string>
+    <string name="status_issues_detected">Masalah berikut dikesan pada pelayan yang disambungkan:</string>
+    <string name="status_endpoint_unavailable">Titik akhir status belum tersedia pada versi pelayan ini — kemas kini ChurchPresenter pada komputer untuk laporan penuh.</string>
+    <string name="status_error_title">Tidak dapat menghubungi pelayan</string>
+    <string name="status_permissions_title">Kebenaran peranti ini</string>
+    <string name="status_permission_present">Mengawal pembentangan</string>
+    <string name="status_permission_schedule">Menambah ke jadual</string>
+    <string name="status_permission_upload">Memuat naik fail</string>
+    <string name="status_permission_blocked">— disekat</string>
+    <string name="status_info_bibles">Alkitab tersedia</string>
+    <string name="status_info_songbooks">Buku lagu tersedia</string>
+    <string name="status_info_features">Ciri yang dihidupkan</string>
+    <string name="status_warn_no_api_key_title">Kunci API tidak dikonfigurasi</string>
+    <string name="status_warn_no_api_key_body">Pelayan tiada kunci API ditetapkan. Sesetengah titik akhir terlindung mungkin menolak permintaan. Pertimbangkan menghidupkan kunci API dalam tetapan pelayan ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Tiada terjemahan Alkitab tersedia</string>
+    <string name="status_warn_no_bibles_body">Pelayan tiada terjemahan Alkitab dimuatkan. Tab Alkitab akan kosong. Tambah terjemahan dalam aplikasi ChurchPresenter pada komputer.</string>
+    <string name="status_warn_no_songbooks_title">Tiada buku lagu tersedia</string>
+    <string name="status_warn_no_songbooks_body">Pelayan tiada buku lagu dimuatkan. Tab Lagu akan kosong. Import buku lagu dalam aplikasi ChurchPresenter pada komputer.</string>
+    <string name="status_warn_present_blocked_title">Kawalan pembentangan disekat</string>
+    <string name="status_warn_present_blocked_body">Peranti ini tidak dibenarkan mengawal pembentangan (memapar, mengosongkan, memilih slaid). Minta pentadbir pelayan memberikan peranti ini kebenaran Presenter.</string>
+    <string name="status_warn_schedule_blocked_title">Penyuntingan jadual disekat</string>
+    <string name="status_warn_schedule_blocked_body">Peranti ini tidak dibenarkan menambah item ke jadual. Minta pentadbir pelayan memberikan peranti ini kebenaran Schedule.</string>
+    <string name="status_warn_upload_blocked_title">Muat naik fail disekat</string>
+    <string name="status_warn_upload_blocked_body">Peranti ini tidak dibenarkan memuat naik pembentangan atau gambar. Minta pentadbir pelayan memberikan peranti ini kebenaran Upload.</string>
+    <string name="upload_blocked_toast">Muat naik fail dilumpuhkan untuk peranti ini. Minta pentadbir pelayan memberikan kebenaran Upload.</string>
+    <string name="status_warn_unknown_version_title">Versi pelayan tidak dikenali</string>
+    <string name="status_warn_unknown_version_body">Pelayan melaporkan versi “%1$s”. Sesetengah ciri aplikasi ini mungkin tidak serasi dengan versi tersebut.</string>
+    <string name="status_warn_missing_endpoint_title">Titik akhir API tiada: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Pelayan tidak menyediakan titik akhir “%1$s”. Ciri yang bergantung padanya tidak akan tersedia.</string>
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Tiada media dimuatkan</string>
+    <string name="media_playing">Sedang main</string>
+    <string name="media_playing_on_desktop">Dimainkan pada komputer</string>
+    <string name="media_local_ready">Fail setempat · sedia dipaparkan</string>
+    <string name="media_pick_to_upload">Pilih fail untuk dimuat naik</string>
+    <string name="media_source_network_url">URL rangkaian</string>
+    <string name="media_source_upload">Muat naik daripada telefon</string>
+    <string name="media_subtitle_url">%1$s · URL rangkaian</string>
+    <string name="media_subtitle_empty">Tampal URL rangkaian di bawah untuk menghantar media</string>
+    <string name="media_on_screen">PADA SKRIN</string>
+    <string name="media_cd_stop">Hentikan</string>
+    <string name="media_cd_back10">Undur 10 saat</string>
+    <string name="media_cd_forward10">Maju 10 saat</string>
+    <string name="media_cd_play">Main</string>
+    <string name="media_cd_pause">Jeda</string>
+    <string name="media_cd_mute">Senyapkan</string>
+    <string name="media_add_to_schedule">Tambah ke jadual</string>
+    <string name="media_go_live">Paparkan sekarang</string>
+    <string name="media_clear_screen">Kosongkan skrin</string>
+    <string name="media_source_label">SUMBER</string>
+    <string name="media_will_send">Akan menghantar: %1$s</string>
+    <string name="media_target_uploaded">Fail dimuat naik · %1$s</string>
+    <string name="media_target_loaded">Dimuatkan pada komputer · %1$s</string>
+    <string name="media_target_url">URL rangkaian</string>
+    <string name="media_target_none">Pilih sumber di bawah untuk menghantar media</string>
+    <string name="media_load_label">MUATKAN MEDIA</string>
+    <string name="media_uploading_percent">Memuat naik… %1$d%%</string>
+    <string name="media_choose_file">Pilih fail video atau audio</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Muat naik dimatikan pada komputer</string>
+    <string name="media_uploads_disabled_hint">Hidupkan “Allow file uploads from mobile devices” dalam tetapan Pelayan aplikasi komputer.</string>
+    <string name="media_playing_generic">media</string>
+    <string name="more_photos_title">Foto</string>
+    <string name="more_photos_subtitle">Layari dan paparkan folder imej</string>
+    <string name="more_qa_title">Soal Jawab</string>
+    <string name="more_qa_subtitle">Semak dan paparkan soalan hadirin</string>
+    <string name="more_dictionary_title">Kamus</string>
+    <string name="more_dictionary_subtitle">Leksikon Ibrani &amp; Yunani Strong</string>
+    <string name="more_announcements_title">Pengumuman</string>
+    <string name="more_announcements_subtitle">Teks, jam &amp; pemasa undur</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Paparkan halaman web pada skrin</string>
+    <string name="strongs_dictionary_title">Kamus Strong</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Pengumuman</string>
+    <string name="action_clear">Kosongkan</string>
+    <string name="action_cancel">Batal</string>
+    <string name="action_go_live">Paparkan sekarang</string>
+    <string name="label_add_to_schedule">Tambah ke jadual</string>
+    <string name="label_live">Langsung</string>
+    <string name="cd_delete">Padam</string>
+    <string name="cd_close">Tutup</string>
+    <string name="cd_select">Pilih</string>
+    <string name="cd_cast">Hantar</string>
+    <string name="cd_back">Kembali</string>
+    <string name="cd_settings">Tetapan</string>
+    <string name="cd_schedule">Jadual</string>
+    <string name="overline_on_screen_preview">Pratonton skrin</string>
+    <string name="announcements_text_placeholder">Teks pengumuman…</string>
+    <string name="overline_duration">Tempoh</string>
+    <string name="overline_target_time">Masa sasaran</string>
+    <string name="overline_animation">Animasi</string>
+    <string name="stepper_hrs">Jam</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Saat</string>
+    <string name="stepper_hour">Jam</string>
+    <string name="stepper_font_size">Saiz fon</string>
+    <string name="swatch_text">Teks</string>
+    <string name="swatch_background">Latar belakang</string>
+    <string name="announcements_clock_desc">Memaparkan waktu semasa secara langsung.</string>
+    <string name="announcements_count_up_desc">Mengira naik dari sifar apabila mula dipaparkan.</string>
+    <string name="announcements_animation_duration_label">TEMPOH ANIMASI</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">DISIMPAN</string>
+    <string name="announcements_add_new">+ Baharu</string>
+    <string name="announcements_no_saved">Belum ada pengumuman disimpan. Karang satu dan ketik “+ Baharu”.</string>
+    <string name="color_picker_title">Pilih warna</string>
+    <string name="color_picker_use">Guna warna</string>
+    <string name="color_slider_hue">Rona</string>
+    <string name="color_slider_saturation">Ketepuan</string>
+    <string name="color_slider_brightness">Kecerahan</string>
+    <string name="cd_custom_color">Warna tersuai</string>
+    <string name="announcements_preview_placeholder">Pengumuman anda</string>
+    <string name="web_bookmarks_label">PENANDA BUKU</string>
+    <string name="web_add_bookmark">+ Tambah</string>
+    <string name="web_no_bookmarks">Belum ada penanda buku. Masukkan URL dan ketik “+ Tambah”.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Cari nombor, perkataan atau maksud…</string>
+    <string name="dictionary_filter_all">Semua</string>
+    <string name="dictionary_filter_hebrew">Ibrani</string>
+    <string name="dictionary_filter_greek">Yunani</string>
+    <string name="dictionary_no_entries">Tiada entri dijumpai</string>
+    <string name="dictionary_uses">PENGGUNAAN</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Golongan kata</string>
+    <string name="dictionary_occurrences">Kemunculan</string>
+    <string name="dictionary_root">Kata akar</string>
+    <string name="dictionary_definition">Takrif</string>
+    <string name="dictionary_kjv_usage">Penggunaan KJV</string>
+    <string name="qa_edit_question_title">Edit soalan</string>
+    <string name="qa_delete_question">Padam soalan</string>
+    <string name="qa_submitted_by">Dihantar oleh %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Hentikan</string>
+    <string name="qa_action_approve">Luluskan</string>
+    <string name="cd_edit">Edit</string>
+    <string name="cd_deny">Tolak</string>
+    <string name="qa_badge_live">LANGSUNG</string>
+    <string name="qa_badge_approved">✓ Diluluskan</string>
+    <string name="qa_badge_denied">Ditolak</string>
+    <string name="qa_badge_answered">Dijawab</string>
+    <string name="schedule_drawer_item_count">%1$d item</string>
+    <string name="presentation_slide_desc">Slaid %1$d</string>
+    <string name="presentation_slide_live">▶ LANGSUNG</string>
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Papar</string>
+    <string name="tab_more">Lagi</string>
+    <string name="songs_count">%1$d lagu</string>
+    <string name="bible_chapters_count">%1$d psl</string>
+    <string name="status_version_line">Pelayan: %1$s · Mudah alih: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Teks</string>
+    <string name="announce_type_countdown">Kira detik</string>
+    <string name="announce_type_count_up">Kira naik</string>
+    <string name="announce_type_clock">Jam</string>
+    <string name="announce_type_countdown_to_time">Kira detik ke masa</string>
+    <string name="announce_anim_none">Tiada</string>
+    <string name="announce_anim_fade">Pudar</string>
+    <string name="announce_anim_slide_up">Luncur ke atas</string>
+    <string name="announce_anim_slide_down">Luncur ke bawah</string>
+    <string name="announce_anim_slide_left">Luncur dari kiri</string>
+    <string name="announce_anim_slide_right">Luncur dari kanan</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Kitab</string>
+    <string name="dictionary_ref_chapter">Pasal</string>
+    <string name="dictionary_ref_verse">Ayat</string>
+    <string name="dictionary_ref_clear">Kosongkan penapis rujukan</string>
+    <string name="dictionary_appears_in">Muncul dalam</string>
+    <string name="dictionary_appears_in_count">%1$s daripada %2$s</string>
+    <string name="settings_active_server">Pelayan aktif</string>
+    <string name="contact_us_title">Hubungi kami</string>
+    <string name="contact_type_label">Jenis</string>
+    <string name="contact_type_feature">Permintaan ciri</string>
+    <string name="contact_type_feedback">Maklum balas</string>
+    <string name="contact_type_testimonial">Testimoni</string>
+    <string name="contact_type_bug">Laporan pepijat</string>
+    <string name="contact_name_label">Nama</string>
+    <string name="contact_email_label">E-mel (pilihan)</string>
+    <string name="contact_message_label">Mesej</string>
+    <string name="contact_send">Hantar</string>
+    <string name="contact_sending">Menghantar…</string>
+    <string name="contact_sent">Mesej dihantar. Terima kasih!</string>
+    <string name="contact_error">Tidak dapat menghantar. Sila cuba lagi.</string>
+    <string name="contact_rate_limited_browser">Demi keselamatan, sila selesaikan penghantaran dalam pelayar anda.</string>
+    <string name="contact_network_error">Tidak dapat menghubungi pelayan. Semak sambungan internet anda dan cuba lagi.</string>
+    <string name="contact_open_browser">Buka dalam pelayar</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Tiada lagu dibuka</string>
+    <string name="songs_pane_empty_body">Pilih lagu di sebelah kiri dan rangkapnya akan muncul di sini.</string>
+    <string name="more_pane_empty_title">Tiada alat dibuka</string>
+    <string name="more_pane_empty_body">Pilih alat di sebelah kiri dan ia akan terbuka di sini.</string>
+    <string name="library_pane_empty_title">Tiada apa-apa sedang disunting</string>
+    <string name="library_pane_empty_body">Sunting item di sebelah kiri, atau tambah yang baharu, dan ia akan terbuka di sini.</string>
+    <string name="bible_pane_empty_title">Tiada pasal dibuka</string>
+    <string name="bible_pane_empty_body">Pilih kitab, kemudian pasal, dan ayatnya akan muncul di sini.</string>
+    <string name="bible_chapters_overline">Pasal</string>
+</resources>

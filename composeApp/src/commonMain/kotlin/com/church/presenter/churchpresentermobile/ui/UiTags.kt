@@ -280,6 +280,25 @@ internal object UiTags {
      */
     fun tab(tab: AppTab) = "tab:${tab.name.lowercase()}"
 
+    // ── The shared header ────────────────────────────────────────────────
+    //
+    // Every control here is an Icon whose only label is a `stringResource`, and
+    // those render empty in the wasmJs runtime — so none of them can be reached
+    // by text. The header is also the one place a split tab draws twice (once
+    // per pane), which makes "did the right one get pressed" a real question.
+    const val HEADER_BACK = "header:back"
+    const val HEADER_MENU = "header:menu"
+    const val HEADER_SETTINGS = "header:settings"
+
+    /**
+     * The side rail's brand mark.
+     *
+     * Tagged because it is the one thing on screen that says which layout is
+     * showing: the tab entries carry the same [tab] tags in both, so nothing else
+     * tells a rail apart from a bottom strip.
+     */
+    const val NAV_RAIL_BRAND = "navRail:brand"
+
     /**
      * One row of the More launcher, by the destination it opens.
      *

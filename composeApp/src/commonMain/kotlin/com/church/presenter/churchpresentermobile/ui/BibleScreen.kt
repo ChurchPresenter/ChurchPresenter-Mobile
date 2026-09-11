@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -50,13 +53,17 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_count
-import churchpresentermobile.composeapp.generated.resources.bible_loading_error
 import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_body
 import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_title
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
 import churchpresentermobile.composeapp.generated.resources.bible_retry
 import churchpresentermobile.composeapp.generated.resources.bible_search_placeholder
+import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
+import churchpresentermobile.composeapp.generated.resources.bible_chapters_overline
+import churchpresentermobile.composeapp.generated.resources.bible_pane_empty_body
+import churchpresentermobile.composeapp.generated.resources.bible_pane_empty_title
+import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.toast_bible_added_to_schedule
 import churchpresentermobile.composeapp.generated.resources.toast_bible_live
 import churchpresentermobile.composeapp.generated.resources.toast_failed_to_add_bible_schedule
@@ -79,8 +86,11 @@ import org.jetbrains.compose.resources.stringResource
  * - [BibleBooksScreen] — searchable list of all Bible books (root)
  * - [BibleDetailScreen] — chapter grid → verse list (when a book is selected)
  *
- * Toolbar title, back-arrow, and tab visibility are controlled by the parent
- * App scaffold via [onNavigationChanged] and [onRegisterBackAction].
+ * On a phone those are alternatives, one level at a time, and the toolbar
+ * title, back-arrow and tab visibility are controlled by the parent App scaffold
+ * via [onNavigationChanged] and [onRegisterBackAction]. With [twoPane] set all
+ * three levels are on screen at once — books, chapters, verses — and this screen
+ * draws its own pane headers.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,6 +105,12 @@ fun BibleScreen(
     pendingNavVerses: Set<Int> = emptySet(),
     onPendingNavHandled: () -> Unit = {},
     onScheduleRefresh: () -> Unit = {},
+    /** Lay the three levels out side by side rather than one at a time. */
+    twoPane: Boolean = false,
+    /** Opens the schedule drawer. Only used in [twoPane], which owns its header. */
+    onMenu: (() -> Unit)? = null,
+    /** Opens settings. Only used in [twoPane], which owns its header. */
+    onSettings: (() -> Unit)? = null,
     providedViewModel: BibleViewModel? = null,
     modifier: Modifier = Modifier
 ) {
@@ -106,9 +122,7 @@ fun BibleScreen(
             BibleViewModel(appSettings, ServerEventService(appSettings), isDemoMode)
         }
 
-    LaunchedEffect(settingsSaveToken) {
-        if (settingsSaveToken > 0) vm.onSettingsSaved(settingsSaveToken)
-    }
+    LaunchedEffect(settingsSaveToken) { if (settingsSaveToken > 0) vm.onSettingsSaved(settingsSaveToken) }
 
     val books               by vm.books.collectAsState()
     val bookSearchQuery     by vm.bookSearchQuery.collectAsState()
@@ -126,149 +140,233 @@ fun BibleScreen(
     val scheduleAdded       by vm.scheduleAdded.collectAsState()
     val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val toastEvent          by vm.toastEvent.collectAsState()
-
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(scheduleRefreshTrigger) {
-        if (scheduleRefreshTrigger > 0) onScheduleRefresh()
+    LaunchedEffect(scheduleRefreshTrigger) { if (scheduleRefreshTrigger > 0) onScheduleRefresh() }
+    BibleToasts(toastEvent, snackbarHostState, vm::toastShown)
+
+    ReportBibleNavigation(
+        selectedBook, selectedChapter, onNavigationChanged, onRegisterBackAction, vm::navigateBack,
+    )
+
+    // Intercept the system back button when a book (or chapter) is open. Not in
+    // two panes: every level is already on screen, so there is no previous one
+    // for back to return to.
+    AppBackHandler(enabled = selectedBook != null && !twoPane, onBack = vm::navigateBack)
+
+    // ── Schedule-driven navigation ────────────────────────────────────────
+    LaunchedEffect(pendingNavBookName, pendingNavChapter) {
+        if (pendingNavBookName == null || pendingNavChapter == null) return@LaunchedEffect
+        vm.navigateToBookAndChapter(pendingNavBookName, pendingNavChapter, pendingNavVerses)
+        onPendingNavHandled()
     }
 
-    // Resolve toast events to localised strings in composable scope
-    val toastMessage = toastEvent?.bibleToastMessage()
-    LaunchedEffect(toastEvent) {
-        if (toastMessage != null) {
-            snackbarHostState.showSnackbar(message = toastMessage, duration = SnackbarDuration.Short)
-            vm.toastShown()
+    val colors = LocalAppColors.current
+
+    if (hasNoLocalBibles) {
+        NoBibleYet(modifier)
+        return
+    }
+
+    // The three levels, each named once, because the phone shows one at a time and
+    // the tablet shows all three at once.
+    val booksPane: @Composable () -> Unit = {
+        BibleBooksScreen(
+            books, bookSearchQuery, vm::setBookSearchQuery, vm::selectBook, isLoading,
+            Modifier.fillMaxSize(),
+        )
+    }
+    val chaptersPane: @Composable (BibleBook, Int) -> Unit = { book, columns ->
+        ChaptersGrid(book, vm::selectChapter, Modifier.fillMaxSize(), selectedChapter, columns)
+    }
+    val versesPane: @Composable (BibleBook, Int) -> Unit = { book, chapter ->
+        BibleVersesPane(
+            book = book,
+            selectedChapter = chapter,
+            verses = verses,
+            isProjecting = isProjecting,
+            scheduleAdded = scheduleAdded,
+            selectedVerseIndices = selectedVerseIndices,
+            projectedVerseIndex = projectedVerseIndex,
+            onChapterSelect = vm::selectChapter,
+            onVerseToggleSelection = vm::toggleVerseSelection,
+            onToggleProjecting = vm::toggleProjecting,
+            onAddToSchedule = vm::addToSchedule,
+            modifier = Modifier.fillMaxSize(),
+            isLoading = isLoading,
+            isHolding = isHolding,
+            isMultiSelectMode = isMultiSelectMode,
+            onToggleMultiSelect = vm::toggleMultiSelectMode,
+            onToggleHold = vm::toggleHold,
+            onClearDisplay = vm::clearDisplay,
+        )
+    }
+    val errorBanner: @Composable () -> Unit = { BibleErrorBanner(error, vm::refresh) }
+
+    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
+        if (twoPane) {
+            BibleThreePane(
+                book = selectedBook,
+                chapter = selectedChapter,
+                errorBanner = errorBanner,
+                booksPane = booksPane,
+                chaptersPane = chaptersPane,
+                versesPane = versesPane,
+                onMenu = onMenu,
+                onSettings = onSettings,
+            )
+        } else {
+            BibleOnePane(
+                book = selectedBook,
+                chapter = selectedChapter,
+                isRefreshing = isLoading,
+                onRefresh = vm::refresh,
+                errorBanner = errorBanner,
+                booksPane = booksPane,
+                chaptersPane = chaptersPane,
+                versesPane = versesPane,
+            )
+        }
+        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
+    }
+}
+
+/**
+ * The phone's arrangement: one level at a time, with the header's back arrow to
+ * climb out of it.
+ *
+ * Separate from [BibleScreen] only so the coordinator above stays about wiring
+ * the ViewModel up rather than about layout — the two arrangements sit side by
+ * side and read as the alternatives they are.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BibleOnePane(
+    book: BibleBook?,
+    chapter: Int?,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    errorBanner: @Composable () -> Unit,
+    booksPane: @Composable () -> Unit,
+    chaptersPane: @Composable (BibleBook, Int) -> Unit,
+    versesPane: @Composable (BibleBook, Int) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        errorBanner()
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.weight(1f).fillMaxWidth()
+        ) {
+            when {
+                book != null && chapter != null -> versesPane(book, chapter)
+                book != null -> chaptersPane(book, PHONE_CHAPTER_COLUMNS)
+                else -> booksPane()
+            }
         }
     }
+}
 
+/**
+ * Standalone with no translation copied onto the device yet.
+ *
+ * Offers the one thing that fixes it rather than naming a mode the operator
+ * would have to go and switch to.
+ */
+@Composable
+private fun NoBibleYet(modifier: Modifier = Modifier) {
+    val colors = LocalAppColors.current
+    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
+        EmptyState(
+            title = stringResource(Res.string.bible_standalone_empty_title),
+            body = stringResource(Res.string.bible_standalone_empty_body),
+            actionLabel = stringResource(Res.string.empty_action_get_bible),
+            actionIcon = Icons.Filled.CloudDownload,
+            onAction = {
+                // The Library tab owns the sheet; ask it to open on the Bible half.
+                SyncRequestHandler.request(SyncSection.BIBLE)
+                TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+            },
+        )
+    }
+}
+
+/** Shows each toast the ViewModel raises, once, in this tab's own wording. */
+@Composable
+private fun BibleToasts(
+    toastEvent: ToastEvent?,
+    hostState: SnackbarHostState,
+    onShown: () -> Unit,
+) {
+    val message = toastEvent?.bibleToastMessage()
+    LaunchedEffect(toastEvent) {
+        if (message != null) {
+            hostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+            onShown()
+        }
+    }
+}
+
+/**
+ * Tells the App scaffold how deep into the Bible the operator is, so its header
+ * can name the place and its back arrow can climb out of it.
+ *
+ * The callbacks are held through [rememberUpdatedState] because the effects key
+ * on the *position*, not on the lambdas: a recomposition that hands over fresh
+ * lambdas must not re-report a navigation that has not changed.
+ */
+@Composable
+private fun ReportBibleNavigation(
+    book: BibleBook?,
+    chapter: Int?,
+    onNavigationChanged: (BibleBook?, Int?) -> Unit,
+    onRegisterBackAction: ((() -> Unit)?) -> Unit,
+    onBack: () -> Unit,
+) {
     val currentOnNavigationChanged by rememberUpdatedState(onNavigationChanged)
-    LaunchedEffect(selectedBook, selectedChapter) {
-        currentOnNavigationChanged(selectedBook, selectedChapter)
+    LaunchedEffect(book, chapter) {
+        currentOnNavigationChanged(book, chapter)
     }
 
     val currentOnRegisterBackAction by rememberUpdatedState(onRegisterBackAction)
-    DisposableEffect(selectedBook) {
-        if (selectedBook != null) {
-            currentOnRegisterBackAction { vm.navigateBack() }
+    val currentOnBack by rememberUpdatedState(onBack)
+    DisposableEffect(book) {
+        if (book != null) {
+            currentOnRegisterBackAction { currentOnBack() }
         } else {
             currentOnRegisterBackAction(null)
         }
         onDispose { currentOnRegisterBackAction(null) }
     }
+}
 
-    // Intercept the system back button when a book (or chapter) is open
-    AppBackHandler(enabled = selectedBook != null) {
-        vm.navigateBack()
-    }
-
-    // ── Schedule-driven navigation ────────────────────────────────────────
-    LaunchedEffect(pendingNavBookName, pendingNavChapter) {
-        if (pendingNavBookName != null && pendingNavChapter != null) {
-            vm.navigateToBookAndChapter(
-                bookName     = pendingNavBookName,
-                chapter      = pendingNavChapter,
-                verseNumbers = pendingNavVerses
-            )
-            onPendingNavHandled()
-        }
-    }
-
+/** The books request having failed, said where the Retry that fixes it is. */
+@Composable
+private fun BibleErrorBanner(error: String?, onRetry: () -> Unit) {
+    if (error == null) return
     val colors = LocalAppColors.current
-
-    // Standalone reads a translation copied onto this device. With none copied yet the tab
-    // offers the one thing that fixes that, rather than naming a mode the operator would have
-    // to switch to.
-    if (hasNoLocalBibles) {
-        Box(modifier = modifier.fillMaxSize().background(colors.background)) {
-            EmptyState(
-                title = stringResource(Res.string.bible_standalone_empty_title),
-                body = stringResource(Res.string.bible_standalone_empty_body),
-                actionLabel = stringResource(Res.string.empty_action_get_bible),
-                actionIcon = Icons.Filled.CloudDownload,
-                onAction = {
-                    // The Library tab owns the sheet; ask it to open on the Bible half.
-                    SyncRequestHandler.request(SyncSection.BIBLE)
-                    TabNavigationHandler.navigateTo(AppTab.LIBRARY)
-                },
-            )
-        }
-        return
-    }
-
-    // ── Error banner ──────────────────────────────────────────────────────
-    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            if (error != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(colors.danger.copy(alpha = 0.12f))
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = error ?: stringResource(Res.string.bible_loading_error),
-                        color = colors.danger,
-                        fontSize = 13.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = stringResource(Res.string.bible_retry),
-                        color = colors.danger,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 12.dp).clickable { vm.refresh() }
-                    )
-                }
-            }
-
-            // ── Switch between books list and detail ──────────────────────
-            PullToRefreshBox(
-                isRefreshing = isLoading,
-                onRefresh = { vm.refresh() },
-                modifier = Modifier.weight(1f).fillMaxWidth()
-            ) {
-                if (selectedBook != null) {
-                    BibleDetailScreen(
-                        book = selectedBook!!,
-                        selectedChapter = selectedChapter,
-                        verses = verses,
-                        isLoading = isLoading,
-                        isProjecting = isProjecting,
-                        isHolding = isHolding,
-                        scheduleAdded = scheduleAdded,
-                        selectedVerseIndices = selectedVerseIndices,
-                        projectedVerseIndex = projectedVerseIndex,
-                        isMultiSelectMode = isMultiSelectMode,
-                        onToggleMultiSelect = { vm.toggleMultiSelectMode() },
-                        onChapterSelect = { vm.selectChapter(it) },
-                        onVerseToggleSelection = { vm.toggleVerseSelection(it) },
-                        onToggleProjecting = { vm.toggleProjecting() },
-                        onToggleHold = { vm.toggleHold() },
-                        onClearDisplay = { vm.clearDisplay() },
-                        onAddToSchedule = { vm.addToSchedule() },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    BibleBooksScreen(
-                        books = books,
-                        isLoading = isLoading,
-                        searchQuery = bookSearchQuery,
-                        onSearchQueryChange = { vm.setBookSearchQuery(it) },
-                        onBookSelect = { vm.selectBook(it) },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        }
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(colors.danger.copy(alpha = 0.12f))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = error,
+            color = colors.danger,
+            fontSize = 13.sp,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = stringResource(Res.string.bible_retry),
+            color = colors.danger,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(start = 12.dp).clickable { onRetry() }
         )
     }
 }
@@ -293,6 +391,98 @@ internal fun ToastEvent.bibleToastMessage(): String = when (this) {
     is ToastEvent.RequestRejectedWithReason -> stringResource(Res.string.toast_request_rejected_reason, reason)
     else                                    -> ""
 }
+
+/**
+ * The tablet's arrangement for the Bible tab: books, chapters and verses in
+ * three panes rather than three screens.
+ *
+ * The phone walks down those levels one at a time and climbs back with the
+ * header's back arrow. Here there is nothing to climb back to, so each pane
+ * carries its own heading — the tab's over the books, the reference over the
+ * verses — and the two panes to the right stand empty until a book, then a
+ * chapter, is picked.
+ *
+ * @param errorBanner Drawn inside the books pane rather than across all three:
+ *   it is the books request that failed, and its Retry reloads that list.
+ *
+ * `internal` rather than private so the screenshot suite can frame the
+ * arrangement with plain data — reaching it through [BibleScreen] would mean
+ * standing up a ViewModel and a WebSocket to photograph three `Column`s.
+ */
+@Composable
+internal fun BibleThreePane(
+    book: BibleBook?,
+    chapter: Int?,
+    errorBanner: @Composable () -> Unit,
+    booksPane: @Composable () -> Unit,
+    chaptersPane: @Composable (BibleBook, Int) -> Unit,
+    versesPane: @Composable (BibleBook, Int) -> Unit,
+    modifier: Modifier = Modifier,
+    onMenu: (() -> Unit)? = null,
+    onSettings: (() -> Unit)? = null,
+) {
+    val colors = LocalAppColors.current
+    Row(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.width(BibleBooksPaneWidth).fillMaxHeight()) {
+            ScreenHeader(
+                title = stringResource(Res.string.tab_bible),
+                onMenu = onMenu,
+                onSettings = onSettings,
+            )
+            errorBanner()
+            Box(modifier = Modifier.weight(1f)) { booksPane() }
+        }
+
+        VerticalDivider(color = colors.borderSubtle)
+
+        // Kept in place, empty, rather than appearing when a book is picked:
+        // a pane that materialises mid-tap shifts the verses out from under the
+        // finger already reaching for them.
+        Column(
+            modifier = Modifier
+                .width(BibleChaptersPaneWidth)
+                .fillMaxHeight(),
+        ) {
+            // No horizontal padding here: the grid below brings its own, and
+            // padding the pane as well left two chapter cells unable to fit.
+            OverlineRow(
+                label = stringResource(Res.string.bible_chapters_overline),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 22.dp, bottom = 10.dp),
+            )
+            if (book != null) {
+                Box(modifier = Modifier.weight(1f)) { chaptersPane(book, PANE_CHAPTER_COLUMNS) }
+            }
+        }
+
+        VerticalDivider(color = colors.borderSubtle)
+
+        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            if (book != null && chapter != null) {
+                ScreenHeader(
+                    title = "${book.displayName} · ${stringResource(Res.string.bible_chapter_label)} $chapter",
+                )
+                HorizontalDivider(color = colors.borderSubtle)
+                Box(modifier = Modifier.weight(1f)) { versesPane(book, chapter) }
+            } else {
+                EmptyState(
+                    title = stringResource(Res.string.bible_pane_empty_title),
+                    body = stringResource(Res.string.bible_pane_empty_body),
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Chapters per row, on a phone and in the tablet's chapter pane.
+ *
+ * Two numbers rather than one adaptive rule: the phone shows the grid *instead
+ * of* the books and gets the width for four, while the pane is a narrow column
+ * between the books and the verses and fits two.
+ */
+private const val PHONE_CHAPTER_COLUMNS = 4
+private const val PANE_CHAPTER_COLUMNS = 2
 
 /**
  * Searchable list of Bible books.

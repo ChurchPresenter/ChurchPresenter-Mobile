@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">标题</string>
+    <string name="songs_table_header_book">诗歌本</string>
+    <string name="songs_table_header_tune">曲调</string>
+    <string name="songs_table_search_placeholder">按编号或标题搜索…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">没有可用的诗歌</string>
+    <string name="songs_table_no_match">没有符合筛选条件的诗歌</string>
+    <string name="songs_table_retry">重试</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">所有诗歌本</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">打开设置</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">设置</string>
+    <string name="settings_server_section">服务器</string>
+    <string name="settings_host_label">主机 / IP 地址</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">端口</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API 密钥（可选）</string>
+    <string name="settings_api_key_placeholder">如不需要请留空</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_cancel">取消</string>
+    <string name="settings_invalid_port">端口必须是 1 到 65535 之间的数字</string>
+    <string name="settings_host_empty">主机不能为空</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">外观</string>
+    <string name="settings_theme_system">跟随系统</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">诗歌</string>
+    <string name="tab_bible">圣经</string>
+    <string name="tab_pictures">图片</string>
+    <string name="tab_presentation">演示</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  圣经 — 即将推出</string>
+    <string name="pictures_coming_soon">🖼  图片 — 即将推出</string>
+    <string name="presentation_coming_soon">📽  演示 — 即将推出</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">没有可用的演示文稿</string>
+    <string name="presentation_loading_error">无法加载演示文稿</string>
+    <string name="presentation_retry">重试</string>
+    <string name="presentation_slides">张幻灯片</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">没有可用的图片</string>
+    <string name="pictures_loading_error">无法加载图片</string>
+    <string name="pictures_retry">重试</string>
+    <string name="pictures_photos">张照片</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">搜索书卷…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">没有可用的圣经书卷</string>
+    <string name="bible_no_match">没有符合搜索条件的书卷</string>
+    <string name="bible_chapter_label">章</string>
+    <string name="bible_chapters_title">章</string>
+    <string name="bible_no_verses">没有可用的经文</string>
+    <string name="bible_back">← 返回</string>
+    <string name="bible_loading_error">加载失败</string>
+    <string name="bible_retry">重试</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">程序单</string>
+    <string name="schedule_drawer_refresh">刷新程序单</string>
+    <string name="schedule_drawer_empty">程序单中没有项目</string>
+    <string name="schedule_drawer_error">错误：%1$s</string>
+    <string name="schedule_drawer_open">打开程序单</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">加入程序单</string>
+    <string name="song_detail_schedule_request_sent">请求已发送 ✓</string>
+    <string name="song_detail_project_to_screen">投放到屏幕</string>
+    <string name="song_detail_stop_projecting">停止投放</string>
+    <string name="song_detail_fab_actions">操作</string>
+    <string name="song_detail_fab_close_actions">关闭操作</string>
+    <string name="song_detail_projecting_badge">▶  投放中</string>
+    <string name="song_detail_no_lyrics">没有可用的歌词</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">加入程序单</string>
+    <string name="bible_detail_schedule_request_sent">请求已发送 ✓</string>
+    <string name="bible_detail_project_to_screen">投放到屏幕</string>
+    <string name="bible_detail_stop_projecting">停止投放</string>
+    <string name="bible_detail_fab_actions">操作</string>
+    <string name="bible_detail_fab_close_actions">关闭操作</string>
+    <string name="bible_detail_projecting_badge">▶  投放中</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">加入程序单</string>
+    <string name="pictures_schedule_request_sent">请求已发送 ✓</string>
+    <string name="pictures_project_to_screen">投放到屏幕</string>
+    <string name="pictures_stop_projecting">停止投放</string>
+    <string name="pictures_pick_from_device">从设备选择</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">加入程序单</string>
+    <string name="action_project_to_screen">投放到屏幕</string>
+    <string name="action_stop_projecting">停止投放</string>
+    <string name="pictures_uploading">上传中…</string>
+    <string name="upload_overlay_subtitle">请稍候，不要关闭应用</string>
+    <string name="upload_overlay_photo_counter">第 %1$d 张，共 %2$d 张</string>
+    <string name="toast_pictures_added_to_schedule">图片已加入程序单</string>
+    <string name="toast_pictures_failed_to_add_schedule">无法将图片加入程序单：%1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">加入程序单</string>
+    <string name="presentation_schedule_request_sent">请求已发送 ✓</string>
+    <string name="presentation_project_to_screen">投放到屏幕</string>
+    <string name="presentation_stop_projecting">停止投放</string>
+    <string name="presentation_upload_file">上传演示文稿</string>
+    <string name="presentation_uploading">上传中…</string>
+    <string name="toast_presentation_added_to_schedule">演示文稿已加入程序单</string>
+    <string name="toast_presentation_failed_to_add_schedule">无法将演示文稿加入程序单：%1$s</string>
+    <string name="toast_failed_to_select_presentation">无法选择演示文稿：%1$s</string>
+    <string name="toast_upload_unsupported">此服务器不支持上传。请将电脑上的 ChurchPresenter 更新到最新版本。</string>
+    <string name="toast_upload_file_too_large">文件超出服务器允许的大小。请尝试较小的文件。</string>
+    <string name="toast_upload_server_error">服务器拒绝了上传：%1$s</string>
+    <string name="toast_upload_failed">上传失败：%1$s</string>
+    <string name="toast_upload_reload_failed">已上传，但无法重新加载列表：%1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">诗歌已投放到屏幕</string>
+    <string name="toast_request_failed">请求失败</string>
+    <string name="toast_no_song_selected">未选择诗歌</string>
+    <string name="toast_song_added_to_schedule">“%1$s”已加入程序单</string>
+    <string name="toast_failed_to_project">无法投放诗歌：%1$s</string>
+    <string name="toast_failed_to_add_schedule">无法加入程序单：%1$s</string>
+    <string name="toast_request_denied">请求被拒绝</string>
+    <string name="toast_session_blocked">会话已被阻止 — 不再接受任何请求</string>
+    <string name="toast_request_rejected">服务器拒绝了请求（HTTP %1$s）</string>
+    <string name="toast_request_rejected_reason">请求被拒绝：%1$s</string>
+    <string name="toast_bible_live">经文已投放到屏幕</string>
+    <string name="toast_bible_added_to_schedule">“%1$s”已加入程序单</string>
+    <string name="toast_failed_to_project_bible">无法投放：%1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">无法加入程序单：%1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ 服务器已设为 %1$s:%2$s</string>
+    <string name="qr_scan_button">扫描二维码</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">信任服务器证书</string>
+    <string name="cert_setup_subtitle">需要一次性设置</string>
+    <string name="cert_setup_intro">ChurchPresenter 使用私有 HTTPS 证书来保证通信安全。您需要安装一次，设备才会信任此连接。</string>
+    <string name="cert_setup_scan_title">扫描证书二维码</string>
+    <string name="cert_setup_scan_desktop_hint">在电脑的 ChurchPresenter 中：设置 → 服务器 → 按“Download Cert”显示二维码。</string>
+    <string name="cert_setup_scan_button">扫描二维码</string>
+    <string name="cert_setup_scan_or_divider">或使用已保存的地址</string>
+    <string name="cert_setup_url_scanned">✓ 已扫描 URL</string>
+    <string name="cert_setup_url_label">证书 URL</string>
+    <string name="cert_setup_open_button">打开证书 URL</string>
+    <string name="cert_setup_step2_ios_title">iOS — 安装描述文件</string>
+    <string name="cert_setup_step2_ios_body">Safari 会提示下载配置描述文件。点按“允许”，然后前往 设置 → 通用 → VPN 与设备管理，点按 ChurchPresenter 并安装。</string>
+    <string name="cert_setup_step3_ios_title">iOS — 信任该证书</string>
+    <string name="cert_setup_step3_ios_body">设置 → 通用 → 关于本机 → 证书信任设置 → 为 ChurchPresenter CA 启用完全信任。</string>
+    <string name="cert_setup_step2_android_title">Android — 安装证书</string>
+    <string name="cert_setup_step2_android_body">Chrome 会下载 .crt 文件。从下载通知中点按该文件，选择“CA 证书”，并命名为“ChurchPresenter”之类的名称。</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ 提示“无法从未知来源安装”？</string>
+    <string name="cert_setup_android_unknown_sources_body">如果浏览器未获准安装文件，Android 可能会阻止安装。前往 设置 → 应用 →［您的浏览器］→ 安装未知应用，然后启用“允许来自此来源”。返回此处并再次点按该文件。</string>
+    <string name="cert_setup_fingerprint_title">核对指纹（推荐）</string>
+    <string name="cert_setup_fingerprint_body">请将此指纹与电脑上 ChurchPresenter 的 设置 → 服务器 → Certificate SHA-256 中显示的指纹进行比对，两者必须一致。</string>
+    <string name="cert_setup_fingerprint_unavailable">请先连接服务器以查看指纹</string>
+    <string name="cert_setup_done_button">完成 — 证书已安装</string>
+    <string name="cert_setup_skip_button">暂时跳过</string>
+    <string name="cert_setup_skip_note">您随时可以从设置返回此指南。</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">连接到电脑</string>
+    <string name="connect_setup_subtitle">需要一次性设置</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile 会连接到本地网络中电脑上的 ChurchPresenter 应用。扫描电脑上的二维码即可自动配置连接。</string>
+    <string name="connect_setup_step1_title">在电脑上打开 ChurchPresenter</string>
+    <string name="connect_setup_step1_body">启动电脑上的 ChurchPresenter 桌面应用，并确保它与本设备处于同一 Wi-Fi 网络。</string>
+    <string name="connect_setup_step2_title">显示连接二维码</string>
+    <string name="connect_setup_step2_body">在桌面应用中前往 设置 → 移动设备，按“Show QR Code”。屏幕上会出现包含连接信息的二维码。</string>
+    <string name="connect_setup_step3_title">扫描下方二维码</string>
+    <string name="connect_setup_step3_body">点按下方按钮打开相机，扫描电脑上显示的二维码。连接将自动完成配置。</string>
+    <string name="connect_setup_scan_button">扫描二维码</string>
+    <string name="connect_setup_connected">✓ 已连接到 %1$s:%2$s</string>
+    <string name="connect_setup_done_button">完成 — 已连接</string>
+    <string name="connect_setup_skip_button">暂时跳过</string>
+    <string name="connect_setup_skip_note">您随时可以从设置扫描二维码。</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">您的姓名（用于问答）</string>
+    <string name="settings_display_name_placeholder">留空则使用设备 ID</string>
+    <string name="settings_privacy_section">隐私</string>
+    <string name="settings_telemetry_label">共享使用情况与崩溃数据</string>
+    <string name="settings_telemetry_description">帮助我们发现并修复问题。关闭后将停止发送分析和崩溃报告。</string>
+    <string name="tab_qa_admin">问答</string>
+    <string name="qa_admin_session_active">会话进行中</string>
+    <string name="qa_admin_session_stopped">会话已停止</string>
+    <string name="qa_admin_incoming_tab">待处理（%1$d）</string>
+    <string name="qa_admin_finished_tab">已完成（%1$d）</string>
+    <string name="qa_admin_no_incoming">没有待处理的问题</string>
+    <string name="qa_admin_no_finished">没有已完成的问题</string>
+    <string name="qa_admin_approve">批准</string>
+    <string name="qa_admin_deny">拒绝</string>
+    <string name="qa_admin_go_live">立即投放</string>
+    <string name="qa_admin_done">标记为完成</string>
+    <string name="qa_admin_clear_display">清空屏幕</string>
+    <string name="qa_admin_now_live">投放中：</string>
+    <string name="qa_admin_edit_hint">编辑问题内容…</string>
+    <string name="qa_admin_add_question">添加问题</string>
+    <string name="qa_admin_add_question_hint">输入您的问题…</string>
+    <string name="qa_admin_save">保存</string>
+    <string name="qa_admin_cancel">取消</string>
+    <string name="qa_admin_error_retry">重试</string>
+    <string name="action_clear_display">清空屏幕</string>
+    <string name="action_hold_display">冻结屏幕</string>
+    <string name="action_multi_select">多选</string>
+    <string name="bible_multi_select_count">已选 %1$d 节</string>
+    <string name="connect_setup_no_camera_note">此设备未检测到相机。请手动输入连接信息：</string>
+    <string name="connect_setup_manual_entry_toggle">改为手动输入</string>
+    <string name="connect_setup_scan_instead_toggle">改为扫描二维码</string>
+    <string name="connect_setup_manual_apply_button">应用</string>
+    <string name="settings_active_url_label">当前连接到：</string>
+    <string name="settings_reset_to_default">恢复默认</string>
+    <string name="settings_draft_url_label">保存后将连接到：</string>
+    <string name="settings_check_status">检查服务器状态</string>
+    <string name="settings_developer_section">开发者</string>
+    <string name="settings_send_test_error">向 Sentry 发送测试错误</string>
+    <string name="settings_test_error_sent">✓ 测试错误已发送到 Sentry</string>
+    <string name="settings_check_status_description">检查服务器状态</string>
+    <string name="settings_status_recheck">重新检查</string>
+    <string name="settings_status_server_version">服务器：%1$s</string>
+    <string name="settings_status_mobile_version">移动端：%1$s</string>
+    <string name="settings_status_api_key_enabled">API 密钥：已启用</string>
+    <string name="settings_status_api_key_none">API 密钥：无</string>
+    <string name="settings_status_endpoints">接口</string>
+    <string name="settings_status_bibles">圣经</string>
+    <string name="settings_status_songbooks">诗歌本</string>
+    <string name="settings_status_none">无</string>
+    <string name="status_connecting">正在连接服务器…</string>
+    <string name="status_connected">服务器已连接</string>
+    <string name="status_continue">继续</string>
+    <string name="status_retry">重试</string>
+    <string name="status_open_settings">打开设置</string>
+    <string name="status_continue_anyway">仍然继续</string>
+    <string name="status_limited_functionality">功能受限</string>
+    <string name="status_server_version">服务器版本：%1$s</string>
+    <string name="status_issues_detected">在已连接的服务器上检测到以下问题：</string>
+    <string name="status_endpoint_unavailable">此服务器版本尚不提供状态接口 — 请更新电脑上的 ChurchPresenter 以获取完整信息。</string>
+    <string name="status_error_title">无法连接服务器</string>
+    <string name="status_permissions_title">本设备的权限</string>
+    <string name="status_permission_present">控制演示</string>
+    <string name="status_permission_schedule">加入程序单</string>
+    <string name="status_permission_upload">上传文件</string>
+    <string name="status_permission_blocked">— 已阻止</string>
+    <string name="status_info_bibles">可用的圣经译本</string>
+    <string name="status_info_songbooks">可用的诗歌本</string>
+    <string name="status_info_features">已启用的功能</string>
+    <string name="status_warn_no_api_key_title">未配置 API 密钥</string>
+    <string name="status_warn_no_api_key_body">服务器未设置 API 密钥。部分受保护的接口可能拒绝请求。建议在 ChurchPresenter 服务器设置中启用 API 密钥。</string>
+    <string name="status_warn_no_bibles_title">没有可用的圣经译本</string>
+    <string name="status_warn_no_bibles_body">服务器未加载任何圣经译本，圣经标签页将为空。请在电脑的 ChurchPresenter 应用中添加译本。</string>
+    <string name="status_warn_no_songbooks_title">没有可用的诗歌本</string>
+    <string name="status_warn_no_songbooks_body">服务器未加载任何诗歌本，诗歌标签页将为空。请在电脑的 ChurchPresenter 应用中导入诗歌本。</string>
+    <string name="status_warn_present_blocked_title">演示控制已被阻止</string>
+    <string name="status_warn_present_blocked_body">本设备无权控制演示（投放、清空、选择幻灯片）。请让服务器管理员为本设备授予 Presenter 权限。</string>
+    <string name="status_warn_schedule_blocked_title">程序单编辑已被阻止</string>
+    <string name="status_warn_schedule_blocked_body">本设备无权向程序单添加项目。请让服务器管理员为本设备授予 Schedule 权限。</string>
+    <string name="status_warn_upload_blocked_title">文件上传已被阻止</string>
+    <string name="status_warn_upload_blocked_body">本设备无权上传演示文稿或图片。请让服务器管理员为本设备授予 Upload 权限。</string>
+    <string name="upload_blocked_toast">本设备的文件上传已停用。请让服务器管理员授予 Upload 权限。</string>
+    <string name="status_warn_unknown_version_title">无法识别的服务器版本</string>
+    <string name="status_warn_unknown_version_body">服务器报告版本为“%1$s”。本应用的部分功能可能与该版本不兼容。</string>
+    <string name="status_warn_missing_endpoint_title">缺少 API 接口：%1$s</string>
+    <string name="status_warn_missing_endpoint_body">服务器未提供“%1$s”接口。依赖该接口的功能将不可用。</string>
+    <string name="media_title">媒体</string>
+    <string name="media_no_media_loaded">未加载媒体</string>
+    <string name="media_playing">正在播放</string>
+    <string name="media_playing_on_desktop">正在电脑上播放</string>
+    <string name="media_local_ready">本地文件 · 可以投放</string>
+    <string name="media_pick_to_upload">选择要上传的文件</string>
+    <string name="media_source_network_url">网络 URL</string>
+    <string name="media_source_upload">从手机上传</string>
+    <string name="media_subtitle_url">%1$s · 网络 URL</string>
+    <string name="media_subtitle_empty">在下方粘贴网络 URL 以发送媒体</string>
+    <string name="media_on_screen">屏幕显示中</string>
+    <string name="media_cd_stop">停止</string>
+    <string name="media_cd_back10">后退 10 秒</string>
+    <string name="media_cd_forward10">前进 10 秒</string>
+    <string name="media_cd_play">播放</string>
+    <string name="media_cd_pause">暂停</string>
+    <string name="media_cd_mute">静音</string>
+    <string name="media_add_to_schedule">加入程序单</string>
+    <string name="media_go_live">立即投放</string>
+    <string name="media_clear_screen">清空屏幕</string>
+    <string name="media_source_label">来源</string>
+    <string name="media_will_send">将发送：%1$s</string>
+    <string name="media_target_uploaded">已上传的文件 · %1$s</string>
+    <string name="media_target_loaded">已在电脑上加载 · %1$s</string>
+    <string name="media_target_url">网络 URL</string>
+    <string name="media_target_none">请在下方选择来源以发送媒体</string>
+    <string name="media_load_label">加载媒体</string>
+    <string name="media_uploading_percent">上传中… %1$d%%</string>
+    <string name="media_choose_file">选择视频或音频文件</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">电脑端已关闭上传</string>
+    <string name="media_uploads_disabled_hint">请在电脑应用的服务器设置中启用“Allow file uploads from mobile devices”。</string>
+    <string name="media_playing_generic">媒体</string>
+    <string name="more_photos_title">照片</string>
+    <string name="more_photos_subtitle">浏览并投放图片文件夹</string>
+    <string name="more_qa_title">问答</string>
+    <string name="more_qa_subtitle">审阅并投放会众的提问</string>
+    <string name="more_dictionary_title">词典</string>
+    <string name="more_dictionary_subtitle">史特朗希伯来文与希腊文词典</string>
+    <string name="more_announcements_title">公告</string>
+    <string name="more_announcements_subtitle">文字、时钟与倒计时</string>
+    <string name="more_web_title">网页</string>
+    <string name="more_web_subtitle">在屏幕上投放网页</string>
+    <string name="strongs_dictionary_title">史特朗词典</string>
+    <string name="web_title">网页</string>
+    <string name="announcements_title">公告</string>
+    <string name="action_clear">清空</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_go_live">立即投放</string>
+    <string name="label_add_to_schedule">加入程序单</string>
+    <string name="label_live">直播</string>
+    <string name="cd_delete">删除</string>
+    <string name="cd_close">关闭</string>
+    <string name="cd_select">选择</string>
+    <string name="cd_cast">投放</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_settings">设置</string>
+    <string name="cd_schedule">程序单</string>
+    <string name="overline_on_screen_preview">屏幕预览</string>
+    <string name="announcements_text_placeholder">公告内容…</string>
+    <string name="overline_duration">时长</string>
+    <string name="overline_target_time">目标时间</string>
+    <string name="overline_animation">动画</string>
+    <string name="stepper_hrs">时</string>
+    <string name="stepper_min">分</string>
+    <string name="stepper_sec">秒</string>
+    <string name="stepper_hour">小时</string>
+    <string name="stepper_font_size">字号</string>
+    <string name="swatch_text">文字</string>
+    <string name="swatch_background">背景</string>
+    <string name="announcements_clock_desc">实时显示当前时间。</string>
+    <string name="announcements_count_up_desc">开始投放时从零向上计时。</string>
+    <string name="announcements_animation_duration_label">动画时长</string>
+    <string name="animation_duration_ms">%1$d 毫秒</string>
+    <string name="announcements_saved_label">已保存</string>
+    <string name="announcements_add_new">+ 新建</string>
+    <string name="announcements_no_saved">还没有保存的公告。撰写一条后点按“+ 新建”。</string>
+    <string name="color_picker_title">选择颜色</string>
+    <string name="color_picker_use">使用此颜色</string>
+    <string name="color_slider_hue">色相</string>
+    <string name="color_slider_saturation">饱和度</string>
+    <string name="color_slider_brightness">明度</string>
+    <string name="cd_custom_color">自定义颜色</string>
+    <string name="announcements_preview_placeholder">您的公告</string>
+    <string name="web_bookmarks_label">书签</string>
+    <string name="web_add_bookmark">+ 添加</string>
+    <string name="web_no_bookmarks">还没有书签。输入 URL 后点按“+ 添加”。</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">搜索编号、单词或含义…</string>
+    <string name="dictionary_filter_all">全部</string>
+    <string name="dictionary_filter_hebrew">希伯来文</string>
+    <string name="dictionary_filter_greek">希腊文</string>
+    <string name="dictionary_no_entries">未找到词条</string>
+    <string name="dictionary_uses">用法</string>
+    <string name="dictionary_occurrences_count">%1$s 次</string>
+    <string name="dictionary_part_of_speech">词性</string>
+    <string name="dictionary_occurrences">出现次数</string>
+    <string name="dictionary_root">词根</string>
+    <string name="dictionary_definition">释义</string>
+    <string name="dictionary_kjv_usage">KJV 译法</string>
+    <string name="qa_edit_question_title">编辑问题</string>
+    <string name="qa_delete_question">删除问题</string>
+    <string name="qa_submitted_by">提交者：%1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">停止</string>
+    <string name="qa_action_approve">批准</string>
+    <string name="cd_edit">编辑</string>
+    <string name="cd_deny">拒绝</string>
+    <string name="qa_badge_live">直播</string>
+    <string name="qa_badge_approved">✓ 已批准</string>
+    <string name="qa_badge_denied">已拒绝</string>
+    <string name="qa_badge_answered">已回答</string>
+    <string name="schedule_drawer_item_count">%1$d 个项目</string>
+    <string name="presentation_slide_desc">第 %1$d 张幻灯片</string>
+    <string name="presentation_slide_live">▶ 直播</string>
+    <string name="tab_media">媒体</string>
+    <string name="tab_present">投放</string>
+    <string name="tab_more">更多</string>
+    <string name="songs_count">%1$d 首诗歌</string>
+    <string name="bible_chapters_count">%1$d 章</string>
+    <string name="status_version_line">服务器：%1$s · 移动端：%2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">文字</string>
+    <string name="announce_type_countdown">倒计时</string>
+    <string name="announce_type_count_up">正计时</string>
+    <string name="announce_type_clock">时钟</string>
+    <string name="announce_type_countdown_to_time">倒计时至指定时刻</string>
+    <string name="announce_anim_none">无</string>
+    <string name="announce_anim_fade">淡入淡出</string>
+    <string name="announce_anim_slide_up">向上滑入</string>
+    <string name="announce_anim_slide_down">向下滑入</string>
+    <string name="announce_anim_slide_left">从左滑入</string>
+    <string name="announce_anim_slide_right">从右滑入</string>
+    <string name="announce_duration_seconds">%1$s 秒</string>
+    <string name="dictionary_ref_book">书卷</string>
+    <string name="dictionary_ref_chapter">章</string>
+    <string name="dictionary_ref_verse">节</string>
+    <string name="dictionary_ref_clear">清除引用筛选</string>
+    <string name="dictionary_appears_in">出现于</string>
+    <string name="dictionary_appears_in_count">%2$s 中的 %1$s</string>
+    <string name="settings_active_server">当前服务器</string>
+    <string name="contact_us_title">联系我们</string>
+    <string name="contact_type_label">类型</string>
+    <string name="contact_type_feature">功能建议</string>
+    <string name="contact_type_feedback">反馈</string>
+    <string name="contact_type_testimonial">使用感言</string>
+    <string name="contact_type_bug">问题报告</string>
+    <string name="contact_name_label">姓名</string>
+    <string name="contact_email_label">电子邮箱（可选）</string>
+    <string name="contact_message_label">留言</string>
+    <string name="contact_send">发送</string>
+    <string name="contact_sending">发送中…</string>
+    <string name="contact_sent">已发送，谢谢！</string>
+    <string name="contact_error">发送失败，请重试。</string>
+    <string name="contact_rate_limited_browser">为了安全，请在浏览器中完成发送。</string>
+    <string name="contact_network_error">无法连接服务器。请检查网络连接后重试。</string>
+    <string name="contact_open_browser">在浏览器中打开</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">未打开任何诗歌</string>
+    <string name="songs_pane_empty_body">在左侧选择一首诗歌，歌词将显示在这里。</string>
+    <string name="more_pane_empty_title">未打开任何工具</string>
+    <string name="more_pane_empty_body">在左侧选择一个工具，它会在这里打开。</string>
+    <string name="library_pane_empty_title">当前没有正在编辑的内容</string>
+    <string name="library_pane_empty_body">编辑左侧的项目，或新增一项，它会在这里打开。</string>
+    <string name="bible_pane_empty_title">未打开任何章</string>
+    <string name="bible_pane_empty_body">先选择书卷，再选择章，经文将显示在这里。</string>
+    <string name="bible_chapters_overline">章</string>
+</resources>

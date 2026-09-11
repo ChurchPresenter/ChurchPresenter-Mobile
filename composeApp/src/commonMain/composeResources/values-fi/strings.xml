@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Nimi</string>
+    <string name="songs_table_header_book">Laulukirja</string>
+    <string name="songs_table_header_tune">Sävelmä</string>
+    <string name="songs_table_search_placeholder">Hae numerolla tai nimellä…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Ei lauluja saatavilla</string>
+    <string name="songs_table_no_match">Yksikään laulu ei vastaa suodatinta</string>
+    <string name="songs_table_retry">Yritä uudelleen</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Kaikki laulukirjat</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Avaa asetukset</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Asetukset</string>
+    <string name="settings_server_section">Palvelin</string>
+    <string name="settings_host_label">Isäntä / IP-osoite</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Portti</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API-avain (valinnainen)</string>
+    <string name="settings_api_key_placeholder">Jätä tyhjäksi, jos ei tarvita</string>
+    <string name="settings_save">Tallenna</string>
+    <string name="settings_cancel">Peruuta</string>
+    <string name="settings_invalid_port">Portin on oltava luku väliltä 1–65535</string>
+    <string name="settings_host_empty">Isäntä ei voi olla tyhjä</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Ulkoasu</string>
+    <string name="settings_theme_system">Järjestelmä</string>
+    <string name="settings_theme_light">Vaalea</string>
+    <string name="settings_theme_dark">Tumma</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Laulut</string>
+    <string name="tab_bible">Raamattu</string>
+    <string name="tab_pictures">Kuvat</string>
+    <string name="tab_presentation">Esitys</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Raamattu — tulossa pian</string>
+    <string name="pictures_coming_soon">🖼  Kuvat — tulossa pian</string>
+    <string name="presentation_coming_soon">📽  Esitys — tulossa pian</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Ei esityksiä saatavilla</string>
+    <string name="presentation_loading_error">Esitysten lataaminen epäonnistui</string>
+    <string name="presentation_retry">Yritä uudelleen</string>
+    <string name="presentation_slides">diaa</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Ei kuvia saatavilla</string>
+    <string name="pictures_loading_error">Kuvien lataaminen epäonnistui</string>
+    <string name="pictures_retry">Yritä uudelleen</string>
+    <string name="pictures_photos">kuvaa</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Hae kirjoja…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Ei Raamatun kirjoja saatavilla</string>
+    <string name="bible_no_match">Yksikään kirja ei vastaa hakua</string>
+    <string name="bible_chapter_label">Luku</string>
+    <string name="bible_chapters_title">Luvut</string>
+    <string name="bible_no_verses">Ei jakeita saatavilla</string>
+    <string name="bible_back">← Takaisin</string>
+    <string name="bible_loading_error">Lataaminen epäonnistui</string>
+    <string name="bible_retry">Yritä uudelleen</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Ohjelma</string>
+    <string name="schedule_drawer_refresh">Päivitä ohjelma</string>
+    <string name="schedule_drawer_empty">Ei kohteita ohjelmassa</string>
+    <string name="schedule_drawer_error">Virhe: %1$s</string>
+    <string name="schedule_drawer_open">Avaa ohjelma</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="song_detail_schedule_request_sent">Pyyntö lähetetty ✓</string>
+    <string name="song_detail_project_to_screen">Näytä näytöllä</string>
+    <string name="song_detail_stop_projecting">Lopeta näyttäminen</string>
+    <string name="song_detail_fab_actions">Toiminnot</string>
+    <string name="song_detail_fab_close_actions">Sulje toiminnot</string>
+    <string name="song_detail_projecting_badge">▶  Näytetään</string>
+    <string name="song_detail_no_lyrics">Ei sanoja saatavilla</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="bible_detail_schedule_request_sent">Pyyntö lähetetty ✓</string>
+    <string name="bible_detail_project_to_screen">Näytä näytöllä</string>
+    <string name="bible_detail_stop_projecting">Lopeta näyttäminen</string>
+    <string name="bible_detail_fab_actions">Toiminnot</string>
+    <string name="bible_detail_fab_close_actions">Sulje toiminnot</string>
+    <string name="bible_detail_projecting_badge">▶  Näytetään</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="pictures_schedule_request_sent">Pyyntö lähetetty ✓</string>
+    <string name="pictures_project_to_screen">Näytä näytöllä</string>
+    <string name="pictures_stop_projecting">Lopeta näyttäminen</string>
+    <string name="pictures_pick_from_device">Valitse laitteelta</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="action_project_to_screen">Näytä näytöllä</string>
+    <string name="action_stop_projecting">Lopeta näyttäminen</string>
+    <string name="pictures_uploading">Lähetetään…</string>
+    <string name="upload_overlay_subtitle">Odota, älä sulje sovellusta</string>
+    <string name="upload_overlay_photo_counter">Kuva %1$d / %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Kuva lisättiin ohjelmaan</string>
+    <string name="toast_pictures_failed_to_add_schedule">Kuvan lisääminen ohjelmaan epäonnistui: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="presentation_schedule_request_sent">Pyyntö lähetetty ✓</string>
+    <string name="presentation_project_to_screen">Näytä näytöllä</string>
+    <string name="presentation_stop_projecting">Lopeta näyttäminen</string>
+    <string name="presentation_upload_file">Lähetä esitys</string>
+    <string name="presentation_uploading">Lähetetään…</string>
+    <string name="toast_presentation_added_to_schedule">Esitys lisättiin ohjelmaan</string>
+    <string name="toast_presentation_failed_to_add_schedule">Esityksen lisääminen ohjelmaan epäonnistui: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Esityksen valinta epäonnistui: %1$s</string>
+    <string name="toast_upload_unsupported">Tämä palvelin ei tue lähettämistä. Päivitä tietokoneen ChurchPresenter uusimpaan versioon.</string>
+    <string name="toast_upload_file_too_large">Tiedosto on liian suuri palvelimelle. Kokeile pienempää tiedostoa.</string>
+    <string name="toast_upload_server_error">Palvelin hylkäsi lähetyksen: %1$s</string>
+    <string name="toast_upload_failed">Lähetys epäonnistui: %1$s</string>
+    <string name="toast_upload_reload_failed">Lähetettiin, mutta listan päivitys epäonnistui: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Laulu näkyy nyt näytöllä</string>
+    <string name="toast_request_failed">Pyyntö epäonnistui</string>
+    <string name="toast_no_song_selected">Laulua ei ole valittu</string>
+    <string name="toast_song_added_to_schedule">”%1$s” lisättiin ohjelmaan</string>
+    <string name="toast_failed_to_project">Laulun näyttäminen epäonnistui: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Ohjelmaan lisääminen epäonnistui: %1$s</string>
+    <string name="toast_request_denied">Pyyntö evättiin</string>
+    <string name="toast_session_blocked">Istunto on estetty — uusia pyyntöjä ei hyväksytä</string>
+    <string name="toast_request_rejected">Palvelin hylkäsi pyynnön (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Pyyntö hylättiin: %1$s</string>
+    <string name="toast_bible_live">Raamatunkohta näkyy nyt näytöllä</string>
+    <string name="toast_bible_added_to_schedule">”%1$s” lisättiin ohjelmaan</string>
+    <string name="toast_failed_to_project_bible">Näyttäminen epäonnistui: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Ohjelmaan lisääminen epäonnistui: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Palvelimeksi asetettiin %1$s:%2$s</string>
+    <string name="qr_scan_button">Skannaa QR-koodi</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Luota palvelimen varmenteeseen</string>
+    <string name="cert_setup_subtitle">Kertaluonteinen määritys tarvitaan</string>
+    <string name="cert_setup_intro">ChurchPresenter käyttää yksityistä HTTPS-varmennetta turvalliseen viestintään. Sinun on asennettava se kerran, jotta laitteesi luottaa yhteyteen.</string>
+    <string name="cert_setup_scan_title">Skannaa varmenteen QR-koodi</string>
+    <string name="cert_setup_scan_desktop_hint">Tietokoneen ChurchPresenterissä: Asetukset → Palvelin → paina ”Download Cert” näyttääksesi QR-koodin.</string>
+    <string name="cert_setup_scan_button">Skannaa QR-koodi</string>
+    <string name="cert_setup_scan_or_divider">tai käytä tallennettua osoitetta</string>
+    <string name="cert_setup_url_scanned">✓ URL skannattu</string>
+    <string name="cert_setup_url_label">Varmenteen URL</string>
+    <string name="cert_setup_open_button">Avaa varmenteen URL</string>
+    <string name="cert_setup_step2_ios_title">iOS — Asenna profiili</string>
+    <string name="cert_setup_step2_ios_body">Safari pyytää lataamaan määritysprofiilin. Napauta Salli ja siirry sitten kohtaan Asetukset → Yleiset → VPN ja laitehallinta, napauta ChurchPresenter ja asenna.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Luota varmenteeseen</string>
+    <string name="cert_setup_step3_ios_body">Asetukset → Yleiset → Tietoja → Varmenneluottamusasetukset → ota täysi luottamus käyttöön ChurchPresenter CA:lle.</string>
+    <string name="cert_setup_step2_android_title">Android — Asenna varmenne</string>
+    <string name="cert_setup_step2_android_body">Chrome lataa .crt-tiedoston. Napauta sitä latausilmoituksesta, valitse ”CA-varmenne” ja anna sille nimi, esimerkiksi ”ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ ”Asennus tuntemattomista lähteistä ei onnistu”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android voi estää asennuksen, jos selaimesi ei saa asentaa tiedostoja. Siirry kohtaan Asetukset → Sovellukset → [selaimesi] → Asenna tuntemattomia sovelluksia ja ota käyttöön ”Salli tästä lähteestä”. Palaa tänne ja napauta tiedostoa uudelleen.</string>
+    <string name="cert_setup_fingerprint_title">Tarkista sormenjälki (suositeltavaa)</string>
+    <string name="cert_setup_fingerprint_body">Vertaa tätä sormenjälkeä siihen, jonka tietokoneen ChurchPresenter näyttää kohdassa Asetukset → Palvelin → Certificate SHA-256. Niiden on täsmättävä.</string>
+    <string name="cert_setup_fingerprint_unavailable">Yhdistä ensin palvelimeen nähdäksesi sormenjäljen</string>
+    <string name="cert_setup_done_button">Valmis — varmenne asennettu</string>
+    <string name="cert_setup_skip_button">Ohita toistaiseksi</string>
+    <string name="cert_setup_skip_note">Voit palata tähän ohjeeseen milloin tahansa Asetuksista.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Yhdistä tietokoneeseen</string>
+    <string name="connect_setup_subtitle">Kertaluonteinen määritys tarvitaan</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile yhdistyy tietokoneen ChurchPresenter-sovellukseen paikallisverkossa. Skannaa tietokoneen QR-koodi, niin yhteys määritetään automaattisesti.</string>
+    <string name="connect_setup_step1_title">Avaa ChurchPresenter tietokoneellasi</string>
+    <string name="connect_setup_step1_body">Käynnistä ChurchPresenter-sovellus tietokoneella ja varmista, että se on samassa Wi-Fi-verkossa kuin tämä laite.</string>
+    <string name="connect_setup_step2_title">Näytä yhteyden QR-koodi</string>
+    <string name="connect_setup_step2_body">Siirry tietokonesovelluksessa kohtaan Asetukset → Mobiili ja paina ”Show QR Code”. Näytölle ilmestyy QR-koodi, jossa on yhteystiedot.</string>
+    <string name="connect_setup_step3_title">Skannaa alla oleva QR-koodi</string>
+    <string name="connect_setup_step3_body">Napauta alla olevaa painiketta avataksesi kameran ja skannataksesi tietokoneen näytöllä olevan QR-koodin. Yhteys määritetään automaattisesti.</string>
+    <string name="connect_setup_scan_button">Skannaa QR-koodi</string>
+    <string name="connect_setup_connected">✓ Yhdistetty kohteeseen %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Valmis — yhdistetty</string>
+    <string name="connect_setup_skip_button">Ohita toistaiseksi</string>
+    <string name="connect_setup_skip_note">Voit skannata QR-koodin milloin tahansa Asetuksista.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Nimesi (kysymyksiä varten)</string>
+    <string name="settings_display_name_placeholder">Jätä tyhjäksi käyttääksesi laitetunnusta</string>
+    <string name="settings_privacy_section">Tietosuoja</string>
+    <string name="settings_telemetry_label">Jaa käyttö- ja kaatumistiedot</string>
+    <string name="settings_telemetry_description">Auttaa meitä löytämään ja korjaamaan virheitä. Poista käytöstä lopettaaksesi analytiikka- ja kaatumisraporttien lähettämisen.</string>
+    <string name="tab_qa_admin">Kysymykset</string>
+    <string name="qa_admin_session_active">Istunto käynnissä</string>
+    <string name="qa_admin_session_stopped">Istunto pysäytetty</string>
+    <string name="qa_admin_incoming_tab">Saapuneet (%1$d)</string>
+    <string name="qa_admin_finished_tab">Valmiit (%1$d)</string>
+    <string name="qa_admin_no_incoming">Ei saapuneita kysymyksiä</string>
+    <string name="qa_admin_no_finished">Ei valmiita kysymyksiä</string>
+    <string name="qa_admin_approve">Hyväksy</string>
+    <string name="qa_admin_deny">Hylkää</string>
+    <string name="qa_admin_go_live">Näytä nyt</string>
+    <string name="qa_admin_done">Merkitse valmiiksi</string>
+    <string name="qa_admin_clear_display">Tyhjennä näyttö</string>
+    <string name="qa_admin_now_live">Näytöllä:</string>
+    <string name="qa_admin_edit_hint">Muokkaa kysymyksen tekstiä…</string>
+    <string name="qa_admin_add_question">Lisää kysymys</string>
+    <string name="qa_admin_add_question_hint">Kirjoita kysymyksesi…</string>
+    <string name="qa_admin_save">Tallenna</string>
+    <string name="qa_admin_cancel">Peruuta</string>
+    <string name="qa_admin_error_retry">Yritä uudelleen</string>
+    <string name="action_clear_display">Tyhjennä näyttö</string>
+    <string name="action_hold_display">Pysäytä näyttö</string>
+    <string name="action_multi_select">Valitse useita</string>
+    <string name="bible_multi_select_count">%1$d valittu</string>
+    <string name="connect_setup_no_camera_note">Laitteesta ei löytynyt kameraa. Syötä yhteystiedot käsin:</string>
+    <string name="connect_setup_manual_entry_toggle">Syötä käsin</string>
+    <string name="connect_setup_scan_instead_toggle">Skannaa QR-koodi</string>
+    <string name="connect_setup_manual_apply_button">Käytä</string>
+    <string name="settings_active_url_label">Yhdistetään parhaillaan:</string>
+    <string name="settings_reset_to_default">Palauta oletus</string>
+    <string name="settings_draft_url_label">Yhdistetään tallennuksen jälkeen:</string>
+    <string name="settings_check_status">Tarkista palvelimen tila</string>
+    <string name="settings_developer_section">Kehittäjä</string>
+    <string name="settings_send_test_error">Lähetä testivirhe Sentryyn</string>
+    <string name="settings_test_error_sent">✓ Testivirhe lähetetty Sentryyn</string>
+    <string name="settings_check_status_description">Tarkista palvelimen tila</string>
+    <string name="settings_status_recheck">Tarkista uudelleen</string>
+    <string name="settings_status_server_version">Palvelin: %1$s</string>
+    <string name="settings_status_mobile_version">Mobiili: %1$s</string>
+    <string name="settings_status_api_key_enabled">API-avain: käytössä</string>
+    <string name="settings_status_api_key_none">API-avain: ei mitään</string>
+    <string name="settings_status_endpoints">Päätepisteet</string>
+    <string name="settings_status_bibles">Raamatut</string>
+    <string name="settings_status_songbooks">Laulukirjat</string>
+    <string name="settings_status_none">ei mitään</string>
+    <string name="status_connecting">Yhdistetään palvelimeen…</string>
+    <string name="status_connected">Palvelin yhdistetty</string>
+    <string name="status_continue">Jatka</string>
+    <string name="status_retry">Yritä uudelleen</string>
+    <string name="status_open_settings">Avaa asetukset</string>
+    <string name="status_continue_anyway">Jatka silti</string>
+    <string name="status_limited_functionality">Rajoitettu toiminnallisuus</string>
+    <string name="status_server_version">Palvelimen versio: %1$s</string>
+    <string name="status_issues_detected">Yhdistetyltä palvelimelta löytyi seuraavat ongelmat:</string>
+    <string name="status_endpoint_unavailable">Tilapäätepiste ei ole vielä käytettävissä tässä palvelinversiossa — päivitä tietokoneen ChurchPresenter saadaksesi täydet tiedot.</string>
+    <string name="status_error_title">Palvelimeen ei saatu yhteyttä</string>
+    <string name="status_permissions_title">Tämän laitteen oikeudet</string>
+    <string name="status_permission_present">Ohjata esitystä</string>
+    <string name="status_permission_schedule">Lisätä ohjelmaan</string>
+    <string name="status_permission_upload">Lähettää tiedostoja</string>
+    <string name="status_permission_blocked">— estetty</string>
+    <string name="status_info_bibles">Saatavilla olevat raamatut</string>
+    <string name="status_info_songbooks">Saatavilla olevat laulukirjat</string>
+    <string name="status_info_features">Käytössä olevat ominaisuudet</string>
+    <string name="status_warn_no_api_key_title">API-avainta ei ole määritetty</string>
+    <string name="status_warn_no_api_key_body">Palvelimelle ei ole asetettu API-avainta. Jotkin suojatut päätepisteet voivat hylätä pyyntöjä. Harkitse API-avaimen käyttöönottoa ChurchPresenterin palvelinasetuksissa.</string>
+    <string name="status_warn_no_bibles_title">Ei raamatunkäännöksiä saatavilla</string>
+    <string name="status_warn_no_bibles_body">Palvelimelle ei ole ladattu raamatunkäännöksiä. Raamattu-välilehti on tyhjä. Lisää käännös tietokoneen ChurchPresenter-sovelluksessa.</string>
+    <string name="status_warn_no_songbooks_title">Ei laulukirjoja saatavilla</string>
+    <string name="status_warn_no_songbooks_body">Palvelimelle ei ole ladattu laulukirjoja. Laulut-välilehti on tyhjä. Tuo laulukirja tietokoneen ChurchPresenter-sovelluksessa.</string>
+    <string name="status_warn_present_blocked_title">Esityksen ohjaus estetty</string>
+    <string name="status_warn_present_blocked_body">Tällä laitteella ei ole oikeutta ohjata esitystä (näyttää, tyhjentää, valita dioja). Pyydä palvelimen ylläpitäjää myöntämään laitteelle Presenter-oikeus.</string>
+    <string name="status_warn_schedule_blocked_title">Ohjelman muokkaus estetty</string>
+    <string name="status_warn_schedule_blocked_body">Tällä laitteella ei ole oikeutta lisätä kohteita ohjelmaan. Pyydä palvelimen ylläpitäjää myöntämään laitteelle Schedule-oikeus.</string>
+    <string name="status_warn_upload_blocked_title">Tiedostojen lähetys estetty</string>
+    <string name="status_warn_upload_blocked_body">Tällä laitteella ei ole oikeutta lähettää esityksiä tai kuvia. Pyydä palvelimen ylläpitäjää myöntämään laitteelle Upload-oikeus.</string>
+    <string name="upload_blocked_toast">Tiedostojen lähetys on poistettu käytöstä tältä laitteelta. Pyydä palvelimen ylläpitäjää myöntämään Upload-oikeus.</string>
+    <string name="status_warn_unknown_version_title">Tuntematon palvelinversio</string>
+    <string name="status_warn_unknown_version_body">Palvelin ilmoitti version ”%1$s”. Jotkin sovelluksen ominaisuudet eivät välttämättä ole yhteensopivia tämän version kanssa.</string>
+    <string name="status_warn_missing_endpoint_title">Puuttuva API-päätepiste: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Palvelin ei tarjoa päätepistettä ”%1$s”. Siihen perustuvat ominaisuudet eivät ole käytettävissä.</string>
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Mediaa ei ole ladattu</string>
+    <string name="media_playing">Toistetaan</string>
+    <string name="media_playing_on_desktop">Toistetaan tietokoneella</string>
+    <string name="media_local_ready">Paikallinen tiedosto · valmis näytettäväksi</string>
+    <string name="media_pick_to_upload">Valitse lähetettävä tiedosto</string>
+    <string name="media_source_network_url">Verkko-URL</string>
+    <string name="media_source_upload">Lähetä puhelimesta</string>
+    <string name="media_subtitle_url">%1$s · Verkko-URL</string>
+    <string name="media_subtitle_empty">Liitä alle verkko-URL lähettääksesi mediaa</string>
+    <string name="media_on_screen">NÄYTÖLLÄ</string>
+    <string name="media_cd_stop">Pysäytä</string>
+    <string name="media_cd_back10">Taakse 10 sekuntia</string>
+    <string name="media_cd_forward10">Eteen 10 sekuntia</string>
+    <string name="media_cd_play">Toista</string>
+    <string name="media_cd_pause">Keskeytä</string>
+    <string name="media_cd_mute">Mykistä</string>
+    <string name="media_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="media_go_live">Näytä nyt</string>
+    <string name="media_clear_screen">Tyhjennä näyttö</string>
+    <string name="media_source_label">LÄHDE</string>
+    <string name="media_will_send">Lähetetään: %1$s</string>
+    <string name="media_target_uploaded">Lähetetty tiedosto · %1$s</string>
+    <string name="media_target_loaded">Ladattu tietokoneella · %1$s</string>
+    <string name="media_target_url">Verkko-URL</string>
+    <string name="media_target_none">Valitse alta lähde lähettääksesi mediaa</string>
+    <string name="media_load_label">LATAA MEDIAA</string>
+    <string name="media_uploading_percent">Lähetetään… %1$d%%</string>
+    <string name="media_choose_file">Valitse video- tai äänitiedosto</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Lähetykset on poistettu käytöstä tietokoneella</string>
+    <string name="media_uploads_disabled_hint">Ota käyttöön ”Allow file uploads from mobile devices” tietokonesovelluksen palvelinasetuksissa.</string>
+    <string name="media_playing_generic">mediaa</string>
+    <string name="more_photos_title">Kuvat</string>
+    <string name="more_photos_subtitle">Selaa ja näytä kuvakansioita</string>
+    <string name="more_qa_title">Kysymykset</string>
+    <string name="more_qa_subtitle">Käy läpi ja näytä yleisön kysymyksiä</string>
+    <string name="more_dictionary_title">Sanakirja</string>
+    <string name="more_dictionary_subtitle">Strongin heprean ja kreikan sanasto</string>
+    <string name="more_announcements_title">Tiedotteet</string>
+    <string name="more_announcements_subtitle">Tekstit, kellot ja ajastimet</string>
+    <string name="more_web_title">Verkko</string>
+    <string name="more_web_subtitle">Näytä verkkosivu näytöllä</string>
+    <string name="strongs_dictionary_title">Strongin sanakirja</string>
+    <string name="web_title">Verkko</string>
+    <string name="announcements_title">Tiedotteet</string>
+    <string name="action_clear">Tyhjennä</string>
+    <string name="action_cancel">Peruuta</string>
+    <string name="action_go_live">Näytä nyt</string>
+    <string name="label_add_to_schedule">Lisää ohjelmaan</string>
+    <string name="label_live">Suora</string>
+    <string name="cd_delete">Poista</string>
+    <string name="cd_close">Sulje</string>
+    <string name="cd_select">Valitse</string>
+    <string name="cd_cast">Suoratoista</string>
+    <string name="cd_back">Takaisin</string>
+    <string name="cd_settings">Asetukset</string>
+    <string name="cd_schedule">Ohjelma</string>
+    <string name="overline_on_screen_preview">Esikatselu näytöllä</string>
+    <string name="announcements_text_placeholder">Tiedotteen teksti…</string>
+    <string name="overline_duration">Kesto</string>
+    <string name="overline_target_time">Kohdeaika</string>
+    <string name="overline_animation">Animaatio</string>
+    <string name="stepper_hrs">t</string>
+    <string name="stepper_min">min</string>
+    <string name="stepper_sec">s</string>
+    <string name="stepper_hour">Tunti</string>
+    <string name="stepper_font_size">Fonttikoko</string>
+    <string name="swatch_text">Teksti</string>
+    <string name="swatch_background">Tausta</string>
+    <string name="announcements_clock_desc">Näyttää kellonajan reaaliaikaisesti.</string>
+    <string name="announcements_count_up_desc">Laskee nollasta ylöspäin, kun se tulee näytölle.</string>
+    <string name="announcements_animation_duration_label">ANIMAATION KESTO</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">TALLENNETUT</string>
+    <string name="announcements_add_new">+ Uusi</string>
+    <string name="announcements_no_saved">Ei tallennettuja tiedotteita vielä. Kirjoita yksi ja napauta ”+ Uusi”.</string>
+    <string name="color_picker_title">Valitse väri</string>
+    <string name="color_picker_use">Käytä väriä</string>
+    <string name="color_slider_hue">Sävy</string>
+    <string name="color_slider_saturation">Kylläisyys</string>
+    <string name="color_slider_brightness">Kirkkaus</string>
+    <string name="cd_custom_color">Oma väri</string>
+    <string name="announcements_preview_placeholder">Tiedotteesi</string>
+    <string name="web_bookmarks_label">KIRJANMERKIT</string>
+    <string name="web_add_bookmark">+ Lisää</string>
+    <string name="web_no_bookmarks">Ei kirjanmerkkejä vielä. Syötä URL ja napauta ”+ Lisää”.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Hae numeroa, sanaa tai merkitystä…</string>
+    <string name="dictionary_filter_all">Kaikki</string>
+    <string name="dictionary_filter_hebrew">Heprea</string>
+    <string name="dictionary_filter_greek">Kreikka</string>
+    <string name="dictionary_no_entries">Ei osumia</string>
+    <string name="dictionary_uses">KÄYTTÖ</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Sanaluokka</string>
+    <string name="dictionary_occurrences">Esiintymät</string>
+    <string name="dictionary_root">Kantasana</string>
+    <string name="dictionary_definition">Määritelmä</string>
+    <string name="dictionary_kjv_usage">KJV-käyttö</string>
+    <string name="qa_edit_question_title">Muokkaa kysymystä</string>
+    <string name="qa_delete_question">Poista kysymys</string>
+    <string name="qa_submitted_by">Lähettäjä: %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Pysäytä</string>
+    <string name="qa_action_approve">Hyväksy</string>
+    <string name="cd_edit">Muokkaa</string>
+    <string name="cd_deny">Hylkää</string>
+    <string name="qa_badge_live">SUORA</string>
+    <string name="qa_badge_approved">✓ Hyväksytty</string>
+    <string name="qa_badge_denied">Hylätty</string>
+    <string name="qa_badge_answered">Vastattu</string>
+    <string name="schedule_drawer_item_count">%1$d kohdetta</string>
+    <string name="presentation_slide_desc">Dia %1$d</string>
+    <string name="presentation_slide_live">▶ SUORA</string>
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Esitä</string>
+    <string name="tab_more">Lisää</string>
+    <string name="songs_count">%1$d laulua</string>
+    <string name="bible_chapters_count">%1$d lukua</string>
+    <string name="status_version_line">Palvelin: %1$s · Mobiili: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Teksti</string>
+    <string name="announce_type_countdown">Lähtölaskenta</string>
+    <string name="announce_type_count_up">Ylöslaskenta</string>
+    <string name="announce_type_clock">Kello</string>
+    <string name="announce_type_countdown_to_time">Lähtölaskenta kellonaikaan</string>
+    <string name="announce_anim_none">Ei mitään</string>
+    <string name="announce_anim_fade">Häivytys</string>
+    <string name="announce_anim_slide_up">Liu'uta ylös</string>
+    <string name="announce_anim_slide_down">Liu'uta alas</string>
+    <string name="announce_anim_slide_left">Liu'uta vasemmalta</string>
+    <string name="announce_anim_slide_right">Liu'uta oikealta</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Kirja</string>
+    <string name="dictionary_ref_chapter">Luku</string>
+    <string name="dictionary_ref_verse">Jae</string>
+    <string name="dictionary_ref_clear">Tyhjennä viitesuodatin</string>
+    <string name="dictionary_appears_in">Esiintyy kohdassa</string>
+    <string name="dictionary_appears_in_count">%1$s / %2$s</string>
+    <string name="settings_active_server">Aktiivinen palvelin</string>
+    <string name="contact_us_title">Ota yhteyttä</string>
+    <string name="contact_type_label">Tyyppi</string>
+    <string name="contact_type_feature">Ominaisuustoive</string>
+    <string name="contact_type_feedback">Palaute</string>
+    <string name="contact_type_testimonial">Suositus</string>
+    <string name="contact_type_bug">Virheilmoitus</string>
+    <string name="contact_name_label">Nimi</string>
+    <string name="contact_email_label">Sähköposti (valinnainen)</string>
+    <string name="contact_message_label">Viesti</string>
+    <string name="contact_send">Lähetä</string>
+    <string name="contact_sending">Lähetetään…</string>
+    <string name="contact_sent">Viesti lähetetty. Kiitos!</string>
+    <string name="contact_error">Lähetys ei onnistunut. Yritä uudelleen.</string>
+    <string name="contact_rate_limited_browser">Viimeistele lähetys turvallisuussyistä selaimessa.</string>
+    <string name="contact_network_error">Palvelimeen ei saatu yhteyttä. Tarkista internetyhteys ja yritä uudelleen.</string>
+    <string name="contact_open_browser">Avaa selaimessa</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Ei avattua laulua</string>
+    <string name="songs_pane_empty_body">Valitse laulu vasemmalta, niin sen säkeistöt näkyvät tässä.</string>
+    <string name="more_pane_empty_title">Ei avattua työkalua</string>
+    <string name="more_pane_empty_body">Valitse työkalu vasemmalta, niin se avautuu tähän.</string>
+    <string name="library_pane_empty_title">Mitään ei muokata</string>
+    <string name="library_pane_empty_body">Muokkaa kohdetta vasemmalta tai lisää uusi, niin se avautuu tähän.</string>
+    <string name="bible_pane_empty_title">Ei avattua lukua</string>
+    <string name="bible_pane_empty_body">Valitse kirja ja sitten luku, niin sen jakeet näkyvät tässä.</string>
+    <string name="bible_chapters_overline">Luku</string>
+</resources>

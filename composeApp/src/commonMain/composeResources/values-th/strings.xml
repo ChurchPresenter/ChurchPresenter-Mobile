@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">ชื่อเพลง</string>
+    <string name="songs_table_header_book">หนังสือเพลง</string>
+    <string name="songs_table_header_tune">ทำนอง</string>
+    <string name="songs_table_search_placeholder">ค้นหาด้วยหมายเลขหรือชื่อเพลง…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">ไม่มีเพลงให้ใช้งาน</string>
+    <string name="songs_table_no_match">ไม่มีเพลงที่ตรงกับตัวกรอง</string>
+    <string name="songs_table_retry">ลองอีกครั้ง</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">หนังสือเพลงทั้งหมด</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">เปิดการตั้งค่า</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">การตั้งค่า</string>
+    <string name="settings_server_section">เซิร์ฟเวอร์</string>
+    <string name="settings_host_label">โฮสต์ / ที่อยู่ IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">พอร์ต</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">คีย์ API (ไม่บังคับ)</string>
+    <string name="settings_api_key_placeholder">เว้นว่างไว้หากไม่จำเป็น</string>
+    <string name="settings_save">บันทึก</string>
+    <string name="settings_cancel">ยกเลิก</string>
+    <string name="settings_invalid_port">พอร์ตต้องเป็นตัวเลขระหว่าง 1 ถึง 65535</string>
+    <string name="settings_host_empty">โฮสต์ต้องไม่ว่าง</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">ลักษณะที่ปรากฏ</string>
+    <string name="settings_theme_system">ตามระบบ</string>
+    <string name="settings_theme_light">สว่าง</string>
+    <string name="settings_theme_dark">มืด</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">เพลง</string>
+    <string name="tab_bible">พระคัมภีร์</string>
+    <string name="tab_pictures">รูปภาพ</string>
+    <string name="tab_presentation">งานนำเสนอ</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  พระคัมภีร์ — เร็ว ๆ นี้</string>
+    <string name="pictures_coming_soon">🖼  รูปภาพ — เร็ว ๆ นี้</string>
+    <string name="presentation_coming_soon">📽  งานนำเสนอ — เร็ว ๆ นี้</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">ไม่มีงานนำเสนอให้ใช้งาน</string>
+    <string name="presentation_loading_error">โหลดงานนำเสนอไม่สำเร็จ</string>
+    <string name="presentation_retry">ลองอีกครั้ง</string>
+    <string name="presentation_slides">สไลด์</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">ไม่มีรูปภาพให้ใช้งาน</string>
+    <string name="pictures_loading_error">โหลดรูปภาพไม่สำเร็จ</string>
+    <string name="pictures_retry">ลองอีกครั้ง</string>
+    <string name="pictures_photos">รูป</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">ค้นหาหนังสือ…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">ไม่มีหนังสือพระคัมภีร์ให้ใช้งาน</string>
+    <string name="bible_no_match">ไม่มีหนังสือที่ตรงกับการค้นหา</string>
+    <string name="bible_chapter_label">บท</string>
+    <string name="bible_chapters_title">บท</string>
+    <string name="bible_no_verses">ไม่มีข้อพระคัมภีร์ให้ใช้งาน</string>
+    <string name="bible_back">← ย้อนกลับ</string>
+    <string name="bible_loading_error">โหลดไม่สำเร็จ</string>
+    <string name="bible_retry">ลองอีกครั้ง</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">กำหนดการ</string>
+    <string name="schedule_drawer_refresh">รีเฟรชกำหนดการ</string>
+    <string name="schedule_drawer_empty">ไม่มีรายการในกำหนดการ</string>
+    <string name="schedule_drawer_error">ข้อผิดพลาด: %1$s</string>
+    <string name="schedule_drawer_open">เปิดกำหนดการ</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="song_detail_schedule_request_sent">ส่งคำขอแล้ว ✓</string>
+    <string name="song_detail_project_to_screen">แสดงบนจอ</string>
+    <string name="song_detail_stop_projecting">หยุดแสดง</string>
+    <string name="song_detail_fab_actions">การดำเนินการ</string>
+    <string name="song_detail_fab_close_actions">ปิดการดำเนินการ</string>
+    <string name="song_detail_projecting_badge">▶  กำลังแสดง</string>
+    <string name="song_detail_no_lyrics">ไม่มีเนื้อเพลง</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="bible_detail_schedule_request_sent">ส่งคำขอแล้ว ✓</string>
+    <string name="bible_detail_project_to_screen">แสดงบนจอ</string>
+    <string name="bible_detail_stop_projecting">หยุดแสดง</string>
+    <string name="bible_detail_fab_actions">การดำเนินการ</string>
+    <string name="bible_detail_fab_close_actions">ปิดการดำเนินการ</string>
+    <string name="bible_detail_projecting_badge">▶  กำลังแสดง</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="pictures_schedule_request_sent">ส่งคำขอแล้ว ✓</string>
+    <string name="pictures_project_to_screen">แสดงบนจอ</string>
+    <string name="pictures_stop_projecting">หยุดแสดง</string>
+    <string name="pictures_pick_from_device">เลือกจากอุปกรณ์</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="action_project_to_screen">แสดงบนจอ</string>
+    <string name="action_stop_projecting">หยุดแสดง</string>
+    <string name="pictures_uploading">กำลังอัปโหลด…</string>
+    <string name="upload_overlay_subtitle">โปรดรอ อย่าปิดแอป</string>
+    <string name="upload_overlay_photo_counter">รูปที่ %1$d จาก %2$d</string>
+    <string name="toast_pictures_added_to_schedule">เพิ่มรูปภาพลงกำหนดการแล้ว</string>
+    <string name="toast_pictures_failed_to_add_schedule">เพิ่มรูปภาพลงกำหนดการไม่สำเร็จ: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="presentation_schedule_request_sent">ส่งคำขอแล้ว ✓</string>
+    <string name="presentation_project_to_screen">แสดงบนจอ</string>
+    <string name="presentation_stop_projecting">หยุดแสดง</string>
+    <string name="presentation_upload_file">อัปโหลดงานนำเสนอ</string>
+    <string name="presentation_uploading">กำลังอัปโหลด…</string>
+    <string name="toast_presentation_added_to_schedule">เพิ่มงานนำเสนอลงกำหนดการแล้ว</string>
+    <string name="toast_presentation_failed_to_add_schedule">เพิ่มงานนำเสนอลงกำหนดการไม่สำเร็จ: %1$s</string>
+    <string name="toast_failed_to_select_presentation">เลือกงานนำเสนอไม่สำเร็จ: %1$s</string>
+    <string name="toast_upload_unsupported">เซิร์ฟเวอร์นี้ไม่รองรับการอัปโหลด โปรดอัปเดต ChurchPresenter บนคอมพิวเตอร์เป็นเวอร์ชันล่าสุด</string>
+    <string name="toast_upload_file_too_large">ไฟล์ใหญ่เกินกว่าที่เซิร์ฟเวอร์จะรับได้ ลองใช้ไฟล์ที่เล็กลง</string>
+    <string name="toast_upload_server_error">เซิร์ฟเวอร์ปฏิเสธการอัปโหลด: %1$s</string>
+    <string name="toast_upload_failed">อัปโหลดไม่สำเร็จ: %1$s</string>
+    <string name="toast_upload_reload_failed">อัปโหลดแล้ว แต่โหลดรายการใหม่ไม่สำเร็จ: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">เพลงกำลังแสดงบนจอแล้ว</string>
+    <string name="toast_request_failed">คำขอล้มเหลว</string>
+    <string name="toast_no_song_selected">ยังไม่ได้เลือกเพลง</string>
+    <string name="toast_song_added_to_schedule">เพิ่ม “%1$s” ลงกำหนดการแล้ว</string>
+    <string name="toast_failed_to_project">แสดงเพลงไม่สำเร็จ: %1$s</string>
+    <string name="toast_failed_to_add_schedule">เพิ่มลงกำหนดการไม่สำเร็จ: %1$s</string>
+    <string name="toast_request_denied">คำขอถูกปฏิเสธ</string>
+    <string name="toast_session_blocked">เซสชันถูกบล็อก — จะไม่รับคำขอเพิ่มเติม</string>
+    <string name="toast_request_rejected">เซิร์ฟเวอร์ปฏิเสธคำขอ (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">คำขอถูกปฏิเสธ: %1$s</string>
+    <string name="toast_bible_live">ข้อพระคัมภีร์กำลังแสดงบนจอแล้ว</string>
+    <string name="toast_bible_added_to_schedule">เพิ่ม “%1$s” ลงกำหนดการแล้ว</string>
+    <string name="toast_failed_to_project_bible">แสดงไม่สำเร็จ: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">เพิ่มลงกำหนดการไม่สำเร็จ: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ ตั้งเซิร์ฟเวอร์เป็น %1$s:%2$s แล้ว</string>
+    <string name="qr_scan_button">สแกนคิวอาร์โค้ด</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">เชื่อถือใบรับรองของเซิร์ฟเวอร์</string>
+    <string name="cert_setup_subtitle">ต้องตั้งค่าเพียงครั้งเดียว</string>
+    <string name="cert_setup_intro">ChurchPresenter ใช้ใบรับรอง HTTPS ส่วนตัวเพื่อการสื่อสารที่ปลอดภัย คุณต้องติดตั้งหนึ่งครั้งเพื่อให้อุปกรณ์เชื่อถือการเชื่อมต่อนี้</string>
+    <string name="cert_setup_scan_title">สแกนคิวอาร์โค้ดของใบรับรอง</string>
+    <string name="cert_setup_scan_desktop_hint">ใน ChurchPresenter บนคอมพิวเตอร์: การตั้งค่า → เซิร์ฟเวอร์ → กด “Download Cert” เพื่อแสดงคิวอาร์โค้ด</string>
+    <string name="cert_setup_scan_button">สแกนคิวอาร์โค้ด</string>
+    <string name="cert_setup_scan_or_divider">หรือใช้ที่อยู่ที่บันทึกไว้</string>
+    <string name="cert_setup_url_scanned">✓ สแกน URL แล้ว</string>
+    <string name="cert_setup_url_label">URL ของใบรับรอง</string>
+    <string name="cert_setup_open_button">เปิด URL ของใบรับรอง</string>
+    <string name="cert_setup_step2_ios_title">iOS — ติดตั้งโปรไฟล์</string>
+    <string name="cert_setup_step2_ios_body">Safari จะขอดาวน์โหลดโปรไฟล์การกำหนดค่า แตะ อนุญาต แล้วไปที่ การตั้งค่า → ทั่วไป → VPN และการจัดการอุปกรณ์ แตะ ChurchPresenter และติดตั้ง</string>
+    <string name="cert_setup_step3_ios_title">iOS — เชื่อถือใบรับรอง</string>
+    <string name="cert_setup_step3_ios_body">การตั้งค่า → ทั่วไป → เกี่ยวกับ → การตั้งค่าความเชื่อถือใบรับรอง → เปิดความเชื่อถือเต็มรูปแบบสำหรับ ChurchPresenter CA</string>
+    <string name="cert_setup_step2_android_title">Android — ติดตั้งใบรับรอง</string>
+    <string name="cert_setup_step2_android_body">Chrome จะดาวน์โหลดไฟล์ .crt แตะไฟล์จากการแจ้งเตือนดาวน์โหลด เลือก “ใบรับรอง CA” และตั้งชื่อเช่น “ChurchPresenter”</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ ขึ้นว่า “ติดตั้งจากแหล่งที่ไม่รู้จักไม่ได้” ใช่ไหม</string>
+    <string name="cert_setup_android_unknown_sources_body">Android อาจบล็อกการติดตั้งหากเบราว์เซอร์ของคุณไม่ได้รับอนุญาตให้ติดตั้งไฟล์ ไปที่ การตั้งค่า → แอป → [เบราว์เซอร์ของคุณ] → ติดตั้งแอปที่ไม่รู้จัก แล้วเปิด “อนุญาตจากแหล่งนี้” กลับมาที่นี่และแตะไฟล์อีกครั้ง</string>
+    <string name="cert_setup_fingerprint_title">ตรวจสอบลายนิ้วมือ (แนะนำ)</string>
+    <string name="cert_setup_fingerprint_body">เปรียบเทียบลายนิ้วมือนี้กับที่ ChurchPresenter บนคอมพิวเตอร์แสดงใน การตั้งค่า → เซิร์ฟเวอร์ → Certificate SHA-256 ทั้งสองต้องตรงกัน</string>
+    <string name="cert_setup_fingerprint_unavailable">เชื่อมต่อเซิร์ฟเวอร์ก่อนเพื่อดูลายนิ้วมือ</string>
+    <string name="cert_setup_done_button">เสร็จสิ้น — ติดตั้งใบรับรองแล้ว</string>
+    <string name="cert_setup_skip_button">ข้ามไปก่อน</string>
+    <string name="cert_setup_skip_note">คุณกลับมาที่คู่มือนี้ได้ทุกเมื่อจากการตั้งค่า</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">เชื่อมต่อกับคอมพิวเตอร์</string>
+    <string name="connect_setup_subtitle">ต้องตั้งค่าเพียงครั้งเดียว</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile เชื่อมต่อกับแอป ChurchPresenter บนคอมพิวเตอร์ในเครือข่ายท้องถิ่นของคุณ สแกนคิวอาร์โค้ดจากคอมพิวเตอร์เพื่อกำหนดค่าการเชื่อมต่ออัตโนมัติ</string>
+    <string name="connect_setup_step1_title">เปิด ChurchPresenter บนคอมพิวเตอร์</string>
+    <string name="connect_setup_step1_body">เปิดแอป ChurchPresenter บนคอมพิวเตอร์ และตรวจสอบว่าอยู่บนเครือข่าย Wi-Fi เดียวกับอุปกรณ์นี้</string>
+    <string name="connect_setup_step2_title">แสดงคิวอาร์โค้ดสำหรับเชื่อมต่อ</string>
+    <string name="connect_setup_step2_body">ในแอปบนคอมพิวเตอร์ไปที่ การตั้งค่า → มือถือ แล้วกด “Show QR Code” คิวอาร์โค้ดพร้อมรายละเอียดการเชื่อมต่อจะปรากฏบนหน้าจอ</string>
+    <string name="connect_setup_step3_title">สแกนคิวอาร์โค้ดด้านล่าง</string>
+    <string name="connect_setup_step3_body">แตะปุ่มด้านล่างเพื่อเปิดกล้องและสแกนคิวอาร์โค้ดที่แสดงบนคอมพิวเตอร์ การเชื่อมต่อจะถูกกำหนดค่าอัตโนมัติ</string>
+    <string name="connect_setup_scan_button">สแกนคิวอาร์โค้ด</string>
+    <string name="connect_setup_connected">✓ เชื่อมต่อกับ %1$s:%2$s แล้ว</string>
+    <string name="connect_setup_done_button">เสร็จสิ้น — เชื่อมต่อแล้ว</string>
+    <string name="connect_setup_skip_button">ข้ามไปก่อน</string>
+    <string name="connect_setup_skip_note">คุณสแกนคิวอาร์โค้ดได้ทุกเมื่อจากการตั้งค่า</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">ชื่อของคุณ (สำหรับถาม-ตอบ)</string>
+    <string name="settings_display_name_placeholder">เว้นว่างเพื่อใช้รหัสอุปกรณ์</string>
+    <string name="settings_privacy_section">ความเป็นส่วนตัว</string>
+    <string name="settings_telemetry_label">แบ่งปันข้อมูลการใช้งานและข้อขัดข้อง</string>
+    <string name="settings_telemetry_description">ช่วยให้เราพบและแก้ไขข้อบกพร่อง ปิดเพื่อหยุดส่งข้อมูลวิเคราะห์และรายงานข้อขัดข้อง</string>
+    <string name="tab_qa_admin">ถาม-ตอบ</string>
+    <string name="qa_admin_session_active">เซสชันกำลังทำงาน</string>
+    <string name="qa_admin_session_stopped">เซสชันหยุดแล้ว</string>
+    <string name="qa_admin_incoming_tab">เข้ามา (%1$d)</string>
+    <string name="qa_admin_finished_tab">เสร็จแล้ว (%1$d)</string>
+    <string name="qa_admin_no_incoming">ไม่มีคำถามเข้ามา</string>
+    <string name="qa_admin_no_finished">ไม่มีคำถามที่เสร็จแล้ว</string>
+    <string name="qa_admin_approve">อนุมัติ</string>
+    <string name="qa_admin_deny">ปฏิเสธ</string>
+    <string name="qa_admin_go_live">แสดงตอนนี้</string>
+    <string name="qa_admin_done">ทำเครื่องหมายว่าเสร็จ</string>
+    <string name="qa_admin_clear_display">ล้างหน้าจอ</string>
+    <string name="qa_admin_now_live">กำลังแสดง:</string>
+    <string name="qa_admin_edit_hint">แก้ไขข้อความคำถาม…</string>
+    <string name="qa_admin_add_question">เพิ่มคำถาม</string>
+    <string name="qa_admin_add_question_hint">พิมพ์คำถามของคุณ…</string>
+    <string name="qa_admin_save">บันทึก</string>
+    <string name="qa_admin_cancel">ยกเลิก</string>
+    <string name="qa_admin_error_retry">ลองอีกครั้ง</string>
+    <string name="action_clear_display">ล้างหน้าจอ</string>
+    <string name="action_hold_display">ค้างหน้าจอ</string>
+    <string name="action_multi_select">เลือกหลายรายการ</string>
+    <string name="bible_multi_select_count">เลือกแล้ว %1$d ข้อ</string>
+    <string name="connect_setup_no_camera_note">ไม่พบกล้องบนอุปกรณ์นี้ กรอกรายละเอียดการเชื่อมต่อด้วยตนเอง:</string>
+    <string name="connect_setup_manual_entry_toggle">กรอกด้วยตนเองแทน</string>
+    <string name="connect_setup_scan_instead_toggle">สแกนคิวอาร์โค้ดแทน</string>
+    <string name="connect_setup_manual_apply_button">ใช้งาน</string>
+    <string name="settings_active_url_label">กำลังเชื่อมต่อกับ:</string>
+    <string name="settings_reset_to_default">รีเซ็ตเป็นค่าเริ่มต้น</string>
+    <string name="settings_draft_url_label">จะเชื่อมต่อหลังบันทึก:</string>
+    <string name="settings_check_status">ตรวจสอบสถานะเซิร์ฟเวอร์</string>
+    <string name="settings_developer_section">นักพัฒนา</string>
+    <string name="settings_send_test_error">ส่งข้อผิดพลาดทดสอบไปยัง Sentry</string>
+    <string name="settings_test_error_sent">✓ ส่งข้อผิดพลาดทดสอบไปยัง Sentry แล้ว</string>
+    <string name="settings_check_status_description">ตรวจสอบสถานะเซิร์ฟเวอร์</string>
+    <string name="settings_status_recheck">ตรวจสอบอีกครั้ง</string>
+    <string name="settings_status_server_version">เซิร์ฟเวอร์: %1$s</string>
+    <string name="settings_status_mobile_version">มือถือ: %1$s</string>
+    <string name="settings_status_api_key_enabled">คีย์ API: เปิดใช้งาน</string>
+    <string name="settings_status_api_key_none">คีย์ API: ไม่มี</string>
+    <string name="settings_status_endpoints">ปลายทาง</string>
+    <string name="settings_status_bibles">พระคัมภีร์</string>
+    <string name="settings_status_songbooks">หนังสือเพลง</string>
+    <string name="settings_status_none">ไม่มี</string>
+    <string name="status_connecting">กำลังเชื่อมต่อเซิร์ฟเวอร์…</string>
+    <string name="status_connected">เชื่อมต่อเซิร์ฟเวอร์แล้ว</string>
+    <string name="status_continue">ดำเนินการต่อ</string>
+    <string name="status_retry">ลองอีกครั้ง</string>
+    <string name="status_open_settings">เปิดการตั้งค่า</string>
+    <string name="status_continue_anyway">ดำเนินการต่อไป</string>
+    <string name="status_limited_functionality">ใช้งานได้จำกัด</string>
+    <string name="status_server_version">เวอร์ชันเซิร์ฟเวอร์: %1$s</string>
+    <string name="status_issues_detected">พบปัญหาต่อไปนี้บนเซิร์ฟเวอร์ที่เชื่อมต่ออยู่:</string>
+    <string name="status_endpoint_unavailable">เซิร์ฟเวอร์เวอร์ชันนี้ยังไม่มีปลายทางสถานะ — อัปเดต ChurchPresenter บนคอมพิวเตอร์เพื่อรายงานความสามารถครบถ้วน</string>
+    <string name="status_error_title">ไม่สามารถเข้าถึงเซิร์ฟเวอร์</string>
+    <string name="status_permissions_title">สิทธิ์ของอุปกรณ์นี้</string>
+    <string name="status_permission_present">ควบคุมงานนำเสนอ</string>
+    <string name="status_permission_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="status_permission_upload">อัปโหลดไฟล์</string>
+    <string name="status_permission_blocked">— ถูกบล็อก</string>
+    <string name="status_info_bibles">พระคัมภีร์ที่ใช้ได้</string>
+    <string name="status_info_songbooks">หนังสือเพลงที่ใช้ได้</string>
+    <string name="status_info_features">คุณสมบัติที่เปิดใช้งาน</string>
+    <string name="status_warn_no_api_key_title">ยังไม่ได้ตั้งค่าคีย์ API</string>
+    <string name="status_warn_no_api_key_body">เซิร์ฟเวอร์ยังไม่ได้ตั้งคีย์ API ปลายทางที่มีการป้องกันบางแห่งอาจปฏิเสธคำขอ พิจารณาเปิดใช้คีย์ API ในการตั้งค่าเซิร์ฟเวอร์ของ ChurchPresenter</string>
+    <string name="status_warn_no_bibles_title">ไม่มีฉบับแปลพระคัมภีร์ให้ใช้งาน</string>
+    <string name="status_warn_no_bibles_body">เซิร์ฟเวอร์ยังไม่ได้โหลดฉบับแปลพระคัมภีร์ แท็บพระคัมภีร์จะว่างเปล่า เพิ่มฉบับแปลในแอป ChurchPresenter บนคอมพิวเตอร์</string>
+    <string name="status_warn_no_songbooks_title">ไม่มีหนังสือเพลงให้ใช้งาน</string>
+    <string name="status_warn_no_songbooks_body">เซิร์ฟเวอร์ยังไม่ได้โหลดหนังสือเพลง แท็บเพลงจะว่างเปล่า นำเข้าหนังสือเพลงในแอป ChurchPresenter บนคอมพิวเตอร์</string>
+    <string name="status_warn_present_blocked_title">การควบคุมงานนำเสนอถูกบล็อก</string>
+    <string name="status_warn_present_blocked_body">อุปกรณ์นี้ไม่ได้รับอนุญาตให้ควบคุมงานนำเสนอ (แสดง ล้าง เลือกสไลด์) ขอให้ผู้ดูแลเซิร์ฟเวอร์มอบสิทธิ์ Presenter ให้อุปกรณ์นี้</string>
+    <string name="status_warn_schedule_blocked_title">การแก้ไขกำหนดการถูกบล็อก</string>
+    <string name="status_warn_schedule_blocked_body">อุปกรณ์นี้ไม่ได้รับอนุญาตให้เพิ่มรายการลงกำหนดการ ขอให้ผู้ดูแลเซิร์ฟเวอร์มอบสิทธิ์ Schedule ให้อุปกรณ์นี้</string>
+    <string name="status_warn_upload_blocked_title">การอัปโหลดไฟล์ถูกบล็อก</string>
+    <string name="status_warn_upload_blocked_body">อุปกรณ์นี้ไม่ได้รับอนุญาตให้อัปโหลดงานนำเสนอหรือรูปภาพ ขอให้ผู้ดูแลเซิร์ฟเวอร์มอบสิทธิ์ Upload ให้อุปกรณ์นี้</string>
+    <string name="upload_blocked_toast">การอัปโหลดไฟล์ถูกปิดใช้งานสำหรับอุปกรณ์นี้ ขอให้ผู้ดูแลเซิร์ฟเวอร์มอบสิทธิ์ Upload</string>
+    <string name="status_warn_unknown_version_title">ไม่รู้จักเวอร์ชันเซิร์ฟเวอร์</string>
+    <string name="status_warn_unknown_version_body">เซิร์ฟเวอร์รายงานเวอร์ชัน “%1$s” คุณสมบัติบางอย่างของแอปนี้อาจไม่รองรับเวอร์ชันดังกล่าว</string>
+    <string name="status_warn_missing_endpoint_title">ไม่มีปลายทาง API: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">เซิร์ฟเวอร์ไม่มีปลายทาง “%1$s” คุณสมบัติที่พึ่งพาปลายทางนี้จะใช้งานไม่ได้</string>
+    <string name="media_title">สื่อ</string>
+    <string name="media_no_media_loaded">ยังไม่ได้โหลดสื่อ</string>
+    <string name="media_playing">กำลังเล่น</string>
+    <string name="media_playing_on_desktop">กำลังเล่นบนคอมพิวเตอร์</string>
+    <string name="media_local_ready">ไฟล์ในเครื่อง · พร้อมแสดง</string>
+    <string name="media_pick_to_upload">เลือกไฟล์เพื่ออัปโหลด</string>
+    <string name="media_source_network_url">URL เครือข่าย</string>
+    <string name="media_source_upload">อัปโหลดจากโทรศัพท์</string>
+    <string name="media_subtitle_url">%1$s · URL เครือข่าย</string>
+    <string name="media_subtitle_empty">วาง URL เครือข่ายด้านล่างเพื่อส่งสื่อ</string>
+    <string name="media_on_screen">แสดงบนจอ</string>
+    <string name="media_cd_stop">หยุด</string>
+    <string name="media_cd_back10">ถอยหลัง 10 วินาที</string>
+    <string name="media_cd_forward10">เดินหน้า 10 วินาที</string>
+    <string name="media_cd_play">เล่น</string>
+    <string name="media_cd_pause">หยุดชั่วคราว</string>
+    <string name="media_cd_mute">ปิดเสียง</string>
+    <string name="media_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="media_go_live">แสดงตอนนี้</string>
+    <string name="media_clear_screen">ล้างหน้าจอ</string>
+    <string name="media_source_label">แหล่งที่มา</string>
+    <string name="media_will_send">จะส่ง: %1$s</string>
+    <string name="media_target_uploaded">ไฟล์ที่อัปโหลด · %1$s</string>
+    <string name="media_target_loaded">โหลดไว้บนคอมพิวเตอร์ · %1$s</string>
+    <string name="media_target_url">URL เครือข่าย</string>
+    <string name="media_target_none">เลือกแหล่งที่มาด้านล่างเพื่อส่งสื่อ</string>
+    <string name="media_load_label">โหลดสื่อ</string>
+    <string name="media_uploading_percent">กำลังอัปโหลด… %1$d%%</string>
+    <string name="media_choose_file">เลือกไฟล์วิดีโอหรือเสียง</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">การอัปโหลดถูกปิดบนคอมพิวเตอร์</string>
+    <string name="media_uploads_disabled_hint">เปิด “Allow file uploads from mobile devices” ในการตั้งค่าเซิร์ฟเวอร์ของแอปบนคอมพิวเตอร์</string>
+    <string name="media_playing_generic">สื่อ</string>
+    <string name="more_photos_title">รูปภาพ</string>
+    <string name="more_photos_subtitle">เรียกดูและแสดงโฟลเดอร์รูปภาพ</string>
+    <string name="more_qa_title">ถาม-ตอบ</string>
+    <string name="more_qa_subtitle">ตรวจสอบและแสดงคำถามจากผู้ร่วมประชุม</string>
+    <string name="more_dictionary_title">พจนานุกรม</string>
+    <string name="more_dictionary_subtitle">พจนานุกรมฮีบรูและกรีกของสตรอง</string>
+    <string name="more_announcements_title">ประกาศ</string>
+    <string name="more_announcements_subtitle">ข้อความ นาฬิกา และตัวนับถอยหลัง</string>
+    <string name="more_web_title">เว็บ</string>
+    <string name="more_web_subtitle">แสดงหน้าเว็บบนจอ</string>
+    <string name="strongs_dictionary_title">พจนานุกรมสตรอง</string>
+    <string name="web_title">เว็บ</string>
+    <string name="announcements_title">ประกาศ</string>
+    <string name="action_clear">ล้าง</string>
+    <string name="action_cancel">ยกเลิก</string>
+    <string name="action_go_live">แสดงตอนนี้</string>
+    <string name="label_add_to_schedule">เพิ่มลงกำหนดการ</string>
+    <string name="label_live">สด</string>
+    <string name="cd_delete">ลบ</string>
+    <string name="cd_close">ปิด</string>
+    <string name="cd_select">เลือก</string>
+    <string name="cd_cast">แคสต์</string>
+    <string name="cd_back">ย้อนกลับ</string>
+    <string name="cd_settings">การตั้งค่า</string>
+    <string name="cd_schedule">กำหนดการ</string>
+    <string name="overline_on_screen_preview">ตัวอย่างบนจอ</string>
+    <string name="announcements_text_placeholder">ข้อความประกาศ…</string>
+    <string name="overline_duration">ระยะเวลา</string>
+    <string name="overline_target_time">เวลาเป้าหมาย</string>
+    <string name="overline_animation">แอนิเมชัน</string>
+    <string name="stepper_hrs">ชม.</string>
+    <string name="stepper_min">นาที</string>
+    <string name="stepper_sec">วิ</string>
+    <string name="stepper_hour">ชั่วโมง</string>
+    <string name="stepper_font_size">ขนาดตัวอักษร</string>
+    <string name="swatch_text">ข้อความ</string>
+    <string name="swatch_background">พื้นหลัง</string>
+    <string name="announcements_clock_desc">แสดงเวลาปัจจุบันแบบสด</string>
+    <string name="announcements_count_up_desc">นับขึ้นจากศูนย์เมื่อเริ่มแสดง</string>
+    <string name="announcements_animation_duration_label">ระยะเวลาแอนิเมชัน</string>
+    <string name="animation_duration_ms">%1$d มิลลิวินาที</string>
+    <string name="announcements_saved_label">ที่บันทึกไว้</string>
+    <string name="announcements_add_new">+ ใหม่</string>
+    <string name="announcements_no_saved">ยังไม่มีประกาศที่บันทึกไว้ เขียนสักรายการแล้วแตะ “+ ใหม่”</string>
+    <string name="color_picker_title">เลือกสี</string>
+    <string name="color_picker_use">ใช้สีนี้</string>
+    <string name="color_slider_hue">เฉดสี</string>
+    <string name="color_slider_saturation">ความอิ่มตัว</string>
+    <string name="color_slider_brightness">ความสว่าง</string>
+    <string name="cd_custom_color">สีกำหนดเอง</string>
+    <string name="announcements_preview_placeholder">ประกาศของคุณ</string>
+    <string name="web_bookmarks_label">บุ๊กมาร์ก</string>
+    <string name="web_add_bookmark">+ เพิ่ม</string>
+    <string name="web_no_bookmarks">ยังไม่มีบุ๊กมาร์ก ป้อน URL แล้วแตะ “+ เพิ่ม”</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">ค้นหาหมายเลข คำ หรือความหมาย…</string>
+    <string name="dictionary_filter_all">ทั้งหมด</string>
+    <string name="dictionary_filter_hebrew">ฮีบรู</string>
+    <string name="dictionary_filter_greek">กรีก</string>
+    <string name="dictionary_no_entries">ไม่พบรายการ</string>
+    <string name="dictionary_uses">การใช้</string>
+    <string name="dictionary_occurrences_count">%1$s ครั้ง</string>
+    <string name="dictionary_part_of_speech">ชนิดของคำ</string>
+    <string name="dictionary_occurrences">ที่ปรากฏ</string>
+    <string name="dictionary_root">รากศัพท์</string>
+    <string name="dictionary_definition">คำจำกัดความ</string>
+    <string name="dictionary_kjv_usage">การใช้ใน KJV</string>
+    <string name="qa_edit_question_title">แก้ไขคำถาม</string>
+    <string name="qa_delete_question">ลบคำถาม</string>
+    <string name="qa_submitted_by">ส่งโดย %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">หยุด</string>
+    <string name="qa_action_approve">อนุมัติ</string>
+    <string name="cd_edit">แก้ไข</string>
+    <string name="cd_deny">ปฏิเสธ</string>
+    <string name="qa_badge_live">สด</string>
+    <string name="qa_badge_approved">✓ อนุมัติแล้ว</string>
+    <string name="qa_badge_denied">ปฏิเสธแล้ว</string>
+    <string name="qa_badge_answered">ตอบแล้ว</string>
+    <string name="schedule_drawer_item_count">%1$d รายการ</string>
+    <string name="presentation_slide_desc">สไลด์ %1$d</string>
+    <string name="presentation_slide_live">▶ สด</string>
+    <string name="tab_media">สื่อ</string>
+    <string name="tab_present">แสดง</string>
+    <string name="tab_more">เพิ่มเติม</string>
+    <string name="songs_count">%1$d เพลง</string>
+    <string name="bible_chapters_count">%1$d บท</string>
+    <string name="status_version_line">เซิร์ฟเวอร์: %1$s · มือถือ: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">ข้อความ</string>
+    <string name="announce_type_countdown">นับถอยหลัง</string>
+    <string name="announce_type_count_up">นับขึ้น</string>
+    <string name="announce_type_clock">นาฬิกา</string>
+    <string name="announce_type_countdown_to_time">นับถอยหลังถึงเวลา</string>
+    <string name="announce_anim_none">ไม่มี</string>
+    <string name="announce_anim_fade">จางเข้า</string>
+    <string name="announce_anim_slide_up">เลื่อนขึ้น</string>
+    <string name="announce_anim_slide_down">เลื่อนลง</string>
+    <string name="announce_anim_slide_left">เลื่อนจากซ้าย</string>
+    <string name="announce_anim_slide_right">เลื่อนจากขวา</string>
+    <string name="announce_duration_seconds">%1$s วิ</string>
+    <string name="dictionary_ref_book">หนังสือ</string>
+    <string name="dictionary_ref_chapter">บท</string>
+    <string name="dictionary_ref_verse">ข้อ</string>
+    <string name="dictionary_ref_clear">ล้างตัวกรองการอ้างอิง</string>
+    <string name="dictionary_appears_in">ปรากฏใน</string>
+    <string name="dictionary_appears_in_count">%1$s จาก %2$s</string>
+    <string name="settings_active_server">เซิร์ฟเวอร์ที่ใช้งาน</string>
+    <string name="contact_us_title">ติดต่อเรา</string>
+    <string name="contact_type_label">ประเภท</string>
+    <string name="contact_type_feature">ขอคุณสมบัติใหม่</string>
+    <string name="contact_type_feedback">ความคิดเห็น</string>
+    <string name="contact_type_testimonial">คำรับรอง</string>
+    <string name="contact_type_bug">รายงานข้อบกพร่อง</string>
+    <string name="contact_name_label">ชื่อ</string>
+    <string name="contact_email_label">อีเมล (ไม่บังคับ)</string>
+    <string name="contact_message_label">ข้อความ</string>
+    <string name="contact_send">ส่ง</string>
+    <string name="contact_sending">กำลังส่ง…</string>
+    <string name="contact_sent">ส่งข้อความแล้ว ขอบคุณ!</string>
+    <string name="contact_error">ส่งไม่สำเร็จ โปรดลองอีกครั้ง</string>
+    <string name="contact_rate_limited_browser">เพื่อความปลอดภัย โปรดส่งให้เสร็จในเบราว์เซอร์ของคุณ</string>
+    <string name="contact_network_error">ไม่สามารถเข้าถึงเซิร์ฟเวอร์ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</string>
+    <string name="contact_open_browser">เปิดในเบราว์เซอร์</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">ยังไม่ได้เปิดเพลง</string>
+    <string name="songs_pane_empty_body">เลือกเพลงทางด้านซ้าย แล้วเนื้อเพลงจะปรากฏที่นี่</string>
+    <string name="more_pane_empty_title">ยังไม่ได้เปิดเครื่องมือ</string>
+    <string name="more_pane_empty_body">เลือกเครื่องมือทางด้านซ้าย แล้วจะเปิดขึ้นที่นี่</string>
+    <string name="library_pane_empty_title">ไม่มีรายการที่กำลังแก้ไข</string>
+    <string name="library_pane_empty_body">แก้ไขรายการทางด้านซ้าย หรือเพิ่มรายการใหม่ แล้วจะเปิดขึ้นที่นี่</string>
+    <string name="bible_pane_empty_title">ยังไม่ได้เปิดบท</string>
+    <string name="bible_pane_empty_body">เลือกหนังสือ แล้วเลือกบท ข้อพระคัมภีร์จะปรากฏที่นี่</string>
+    <string name="bible_chapters_overline">บท</string>
+</resources>

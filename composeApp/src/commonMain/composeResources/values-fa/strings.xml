@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">عنوان</string>
+    <string name="songs_table_header_book">کتاب سرودها</string>
+    <string name="songs_table_header_tune">آهنگ</string>
+    <string name="songs_table_search_placeholder">جست‌وجو با شماره یا عنوان…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">هیچ سرودی در دسترس نیست</string>
+    <string name="songs_table_no_match">هیچ سرودی با فیلتر مطابقت ندارد</string>
+    <string name="songs_table_retry">تلاش دوباره</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">همهٔ کتاب‌های سرود</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">باز کردن تنظیمات</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">تنظیمات</string>
+    <string name="settings_server_section">سرور</string>
+    <string name="settings_host_label">میزبان / نشانی IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">درگاه</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">کلید API (اختیاری)</string>
+    <string name="settings_api_key_placeholder">اگر لازم نیست خالی بگذارید</string>
+    <string name="settings_save">ذخیره</string>
+    <string name="settings_cancel">لغو</string>
+    <string name="settings_invalid_port">درگاه باید عددی بین ۱ و ۶۵۵۳۵ باشد</string>
+    <string name="settings_host_empty">میزبان نمی‌تواند خالی باشد</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">ظاهر</string>
+    <string name="settings_theme_system">سیستم</string>
+    <string name="settings_theme_light">روشن</string>
+    <string name="settings_theme_dark">تیره</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">سرودها</string>
+    <string name="tab_bible">کتاب‌مقدس</string>
+    <string name="tab_pictures">تصاویر</string>
+    <string name="tab_presentation">ارائه</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  کتاب‌مقدس — به‌زودی</string>
+    <string name="pictures_coming_soon">🖼  تصاویر — به‌زودی</string>
+    <string name="presentation_coming_soon">📽  ارائه — به‌زودی</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">هیچ ارائه‌ای در دسترس نیست</string>
+    <string name="presentation_loading_error">بارگذاری ارائه‌ها ناموفق بود</string>
+    <string name="presentation_retry">تلاش دوباره</string>
+    <string name="presentation_slides">اسلاید</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">هیچ تصویری در دسترس نیست</string>
+    <string name="pictures_loading_error">بارگذاری تصاویر ناموفق بود</string>
+    <string name="pictures_retry">تلاش دوباره</string>
+    <string name="pictures_photos">عکس</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">جست‌وجوی کتاب‌ها…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">هیچ کتابی از کتاب‌مقدس در دسترس نیست</string>
+    <string name="bible_no_match">هیچ کتابی با جست‌وجو مطابقت ندارد</string>
+    <string name="bible_chapter_label">باب</string>
+    <string name="bible_chapters_title">باب‌ها</string>
+    <string name="bible_no_verses">هیچ آیه‌ای در دسترس نیست</string>
+    <string name="bible_back">→ بازگشت</string>
+    <string name="bible_loading_error">بارگذاری ناموفق بود</string>
+    <string name="bible_retry">تلاش دوباره</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">برنامه</string>
+    <string name="schedule_drawer_refresh">تازه‌سازی برنامه</string>
+    <string name="schedule_drawer_empty">موردی در برنامه نیست</string>
+    <string name="schedule_drawer_error">خطا: %1$s</string>
+    <string name="schedule_drawer_open">باز کردن برنامه</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">افزودن به برنامه</string>
+    <string name="song_detail_schedule_request_sent">درخواست ارسال شد ✓</string>
+    <string name="song_detail_project_to_screen">نمایش روی صفحه</string>
+    <string name="song_detail_stop_projecting">توقف نمایش</string>
+    <string name="song_detail_fab_actions">کنش‌ها</string>
+    <string name="song_detail_fab_close_actions">بستن کنش‌ها</string>
+    <string name="song_detail_projecting_badge">▶  در حال نمایش</string>
+    <string name="song_detail_no_lyrics">متنی در دسترس نیست</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">افزودن به برنامه</string>
+    <string name="bible_detail_schedule_request_sent">درخواست ارسال شد ✓</string>
+    <string name="bible_detail_project_to_screen">نمایش روی صفحه</string>
+    <string name="bible_detail_stop_projecting">توقف نمایش</string>
+    <string name="bible_detail_fab_actions">کنش‌ها</string>
+    <string name="bible_detail_fab_close_actions">بستن کنش‌ها</string>
+    <string name="bible_detail_projecting_badge">▶  در حال نمایش</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">افزودن به برنامه</string>
+    <string name="pictures_schedule_request_sent">درخواست ارسال شد ✓</string>
+    <string name="pictures_project_to_screen">نمایش روی صفحه</string>
+    <string name="pictures_stop_projecting">توقف نمایش</string>
+    <string name="pictures_pick_from_device">انتخاب از دستگاه</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">افزودن به برنامه</string>
+    <string name="action_project_to_screen">نمایش روی صفحه</string>
+    <string name="action_stop_projecting">توقف نمایش</string>
+    <string name="pictures_uploading">در حال بارگذاری…</string>
+    <string name="upload_overlay_subtitle">لطفاً صبر کنید، برنامه را نبندید</string>
+    <string name="upload_overlay_photo_counter">عکس %1$d از %2$d</string>
+    <string name="toast_pictures_added_to_schedule">تصویر به برنامه افزوده شد</string>
+    <string name="toast_pictures_failed_to_add_schedule">افزودن تصویر به برنامه ناموفق بود: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">افزودن به برنامه</string>
+    <string name="presentation_schedule_request_sent">درخواست ارسال شد ✓</string>
+    <string name="presentation_project_to_screen">نمایش روی صفحه</string>
+    <string name="presentation_stop_projecting">توقف نمایش</string>
+    <string name="presentation_upload_file">بارگذاری ارائه</string>
+    <string name="presentation_uploading">در حال بارگذاری…</string>
+    <string name="toast_presentation_added_to_schedule">ارائه به برنامه افزوده شد</string>
+    <string name="toast_presentation_failed_to_add_schedule">افزودن ارائه به برنامه ناموفق بود: %1$s</string>
+    <string name="toast_failed_to_select_presentation">انتخاب ارائه ناموفق بود: %1$s</string>
+    <string name="toast_upload_unsupported">این سرور از بارگذاری پشتیبانی نمی‌کند. ChurchPresenter را روی رایانه به آخرین نسخه به‌روز کنید.</string>
+    <string name="toast_upload_file_too_large">پرونده بزرگ‌تر از حدی است که سرور می‌پذیرد. پرونده کوچک‌تری را امتحان کنید.</string>
+    <string name="toast_upload_server_error">سرور بارگذاری را رد کرد: %1$s</string>
+    <string name="toast_upload_failed">بارگذاری ناموفق بود: %1$s</string>
+    <string name="toast_upload_reload_failed">بارگذاری شد، اما بازخوانی فهرست ناموفق بود: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">سرود اکنون روی صفحه است</string>
+    <string name="toast_request_failed">درخواست ناموفق بود</string>
+    <string name="toast_no_song_selected">هیچ سرودی انتخاب نشده است</string>
+    <string name="toast_song_added_to_schedule">«%1$s» به برنامه افزوده شد</string>
+    <string name="toast_failed_to_project">نمایش سرود ناموفق بود: %1$s</string>
+    <string name="toast_failed_to_add_schedule">افزودن به برنامه ناموفق بود: %1$s</string>
+    <string name="toast_request_denied">درخواست رد شد</string>
+    <string name="toast_session_blocked">نشست مسدود است — درخواست دیگری پذیرفته نمی‌شود</string>
+    <string name="toast_request_rejected">سرور درخواست را رد کرد (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">درخواست رد شد: %1$s</string>
+    <string name="toast_bible_live">بخش کتاب‌مقدس اکنون روی صفحه است</string>
+    <string name="toast_bible_added_to_schedule">«%1$s» به برنامه افزوده شد</string>
+    <string name="toast_failed_to_project_bible">نمایش ناموفق بود: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">افزودن به برنامه ناموفق بود: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ سرور روی %1$s:%2$s تنظیم شد</string>
+    <string name="qr_scan_button">پویش کد QR</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">اعتماد به گواهی سرور</string>
+    <string name="cert_setup_subtitle">یک‌بار راه‌اندازی لازم است</string>
+    <string name="cert_setup_intro">ChurchPresenter برای ارتباط امن از یک گواهی HTTPS خصوصی استفاده می‌کند. باید یک‌بار آن را نصب کنید تا دستگاه شما به این اتصال اعتماد کند.</string>
+    <string name="cert_setup_scan_title">کد QR گواهی را پویش کنید</string>
+    <string name="cert_setup_scan_desktop_hint">در ChurchPresenter روی رایانه: تنظیمات ← سرور ← برای نمایش کد QR روی «Download Cert» بزنید.</string>
+    <string name="cert_setup_scan_button">پویش کد QR</string>
+    <string name="cert_setup_scan_or_divider">یا از نشانی ذخیره‌شده استفاده کنید</string>
+    <string name="cert_setup_url_scanned">✓ نشانی پویش شد</string>
+    <string name="cert_setup_url_label">نشانی گواهی</string>
+    <string name="cert_setup_open_button">باز کردن نشانی گواهی</string>
+    <string name="cert_setup_step2_ios_title">iOS — نمایه را نصب کنید</string>
+    <string name="cert_setup_step2_ios_body">Safari دانلود یک نمایهٔ پیکربندی را درخواست می‌کند. «اجازه» را بزنید، سپس به تنظیمات ← عمومی ← VPN و مدیریت دستگاه بروید، ChurchPresenter را بزنید و نصب کنید.</string>
+    <string name="cert_setup_step3_ios_title">iOS — به گواهی اعتماد کنید</string>
+    <string name="cert_setup_step3_ios_body">تنظیمات ← عمومی ← درباره ← تنظیمات اعتماد گواهی ← اعتماد کامل را برای ChurchPresenter CA فعال کنید.</string>
+    <string name="cert_setup_step2_android_title">Android — گواهی را نصب کنید</string>
+    <string name="cert_setup_step2_android_body">Chrome پروندهٔ ‎.crt را دانلود می‌کند. از اعلان دانلود روی آن بزنید، «گواهی CA» را انتخاب کنید و نامی مانند «ChurchPresenter» بگذارید.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ پیام «نصب از منابع ناشناس ممکن نیست»؟</string>
+    <string name="cert_setup_android_unknown_sources_body">اگر مرورگر شما اجازهٔ نصب پرونده نداشته باشد، Android ممکن است نصب را مسدود کند. به تنظیمات ← برنامه‌ها ← [مرورگر شما] ← نصب برنامه‌های ناشناس بروید و «اجازه از این منبع» را فعال کنید. به اینجا بازگردید و دوباره روی پرونده بزنید.</string>
+    <string name="cert_setup_fingerprint_title">اثر انگشت را بررسی کنید (توصیه می‌شود)</string>
+    <string name="cert_setup_fingerprint_body">این اثر انگشت را با آنچه ChurchPresenter روی رایانه در تنظیمات ← سرور ← Certificate SHA-256 نشان می‌دهد مقایسه کنید. باید یکسان باشند.</string>
+    <string name="cert_setup_fingerprint_unavailable">برای دیدن اثر انگشت ابتدا به سرور متصل شوید</string>
+    <string name="cert_setup_done_button">انجام شد — گواهی نصب شد</string>
+    <string name="cert_setup_skip_button">فعلاً رد کن</string>
+    <string name="cert_setup_skip_note">هر زمان می‌توانید از تنظیمات به این راهنما بازگردید.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">اتصال به رایانه</string>
+    <string name="connect_setup_subtitle">یک‌بار راه‌اندازی لازم است</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile به برنامهٔ ChurchPresenter روی رایانه در شبکهٔ محلی شما متصل می‌شود. برای پیکربندی خودکار اتصال، کد QR را از رایانه پویش کنید.</string>
+    <string name="connect_setup_step1_title">ChurchPresenter را روی رایانه باز کنید</string>
+    <string name="connect_setup_step1_body">برنامهٔ ChurchPresenter را روی رایانه اجرا کنید و مطمئن شوید روی همان شبکهٔ Wi-Fi این دستگاه است.</string>
+    <string name="connect_setup_step2_title">کد QR اتصال را نمایش دهید</string>
+    <string name="connect_setup_step2_body">در برنامهٔ رایانه به تنظیمات ← موبایل بروید و «Show QR Code» را بزنید. کد QR با جزئیات اتصال روی صفحه نمایان می‌شود.</string>
+    <string name="connect_setup_step3_title">کد QR زیر را پویش کنید</string>
+    <string name="connect_setup_step3_body">برای باز کردن دوربین و پویش کد QR نمایش‌داده‌شده روی رایانه، دکمهٔ زیر را بزنید. اتصال به‌طور خودکار پیکربندی می‌شود.</string>
+    <string name="connect_setup_scan_button">پویش کد QR</string>
+    <string name="connect_setup_connected">✓ به %1$s:%2$s متصل شد</string>
+    <string name="connect_setup_done_button">انجام شد — متصل شد</string>
+    <string name="connect_setup_skip_button">فعلاً رد کن</string>
+    <string name="connect_setup_skip_note">هر زمان می‌توانید کد QR را از تنظیمات پویش کنید.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">نام شما (برای پرسش و پاسخ)</string>
+    <string name="settings_display_name_placeholder">برای استفاده از شناسهٔ دستگاه خالی بگذارید</string>
+    <string name="settings_privacy_section">حریم خصوصی</string>
+    <string name="settings_telemetry_label">اشتراک داده‌های استفاده و خرابی</string>
+    <string name="settings_telemetry_description">به ما کمک می‌کند اشکالات را بیابیم و برطرف کنیم. برای توقف ارسال تحلیل‌ها و گزارش‌های خرابی خاموش کنید.</string>
+    <string name="tab_qa_admin">پرسش و پاسخ</string>
+    <string name="qa_admin_session_active">نشست فعال است</string>
+    <string name="qa_admin_session_stopped">نشست متوقف شد</string>
+    <string name="qa_admin_incoming_tab">دریافتی (%1$d)</string>
+    <string name="qa_admin_finished_tab">پایان‌یافته (%1$d)</string>
+    <string name="qa_admin_no_incoming">پرسش دریافتی وجود ندارد</string>
+    <string name="qa_admin_no_finished">پرسش پایان‌یافته وجود ندارد</string>
+    <string name="qa_admin_approve">تأیید</string>
+    <string name="qa_admin_deny">رد</string>
+    <string name="qa_admin_go_live">اکنون نمایش بده</string>
+    <string name="qa_admin_done">علامت‌گذاری به‌عنوان انجام‌شده</string>
+    <string name="qa_admin_clear_display">پاک کردن صفحه</string>
+    <string name="qa_admin_now_live">در حال نمایش:</string>
+    <string name="qa_admin_edit_hint">ویرایش متن پرسش…</string>
+    <string name="qa_admin_add_question">افزودن پرسش</string>
+    <string name="qa_admin_add_question_hint">پرسش خود را بنویسید…</string>
+    <string name="qa_admin_save">ذخیره</string>
+    <string name="qa_admin_cancel">لغو</string>
+    <string name="qa_admin_error_retry">تلاش دوباره</string>
+    <string name="action_clear_display">پاک کردن صفحه</string>
+    <string name="action_hold_display">ثابت نگه داشتن صفحه</string>
+    <string name="action_multi_select">انتخاب چندتایی</string>
+    <string name="bible_multi_select_count">%1$d انتخاب‌شده</string>
+    <string name="connect_setup_no_camera_note">دوربینی روی این دستگاه یافت نشد. جزئیات اتصال را دستی وارد کنید:</string>
+    <string name="connect_setup_manual_entry_toggle">به‌جای آن دستی وارد کنید</string>
+    <string name="connect_setup_scan_instead_toggle">به‌جای آن کد QR را پویش کنید</string>
+    <string name="connect_setup_manual_apply_button">اعمال</string>
+    <string name="settings_active_url_label">اکنون متصل می‌شود به:</string>
+    <string name="settings_reset_to_default">بازنشانی به پیش‌فرض</string>
+    <string name="settings_draft_url_label">پس از ذخیره متصل می‌شود به:</string>
+    <string name="settings_check_status">بررسی وضعیت سرور</string>
+    <string name="settings_developer_section">توسعه‌دهنده</string>
+    <string name="settings_send_test_error">ارسال خطای آزمایشی به Sentry</string>
+    <string name="settings_test_error_sent">✓ خطای آزمایشی به Sentry ارسال شد</string>
+    <string name="settings_check_status_description">بررسی وضعیت سرور</string>
+    <string name="settings_status_recheck">بررسی دوباره</string>
+    <string name="settings_status_server_version">سرور: %1$s</string>
+    <string name="settings_status_mobile_version">موبایل: %1$s</string>
+    <string name="settings_status_api_key_enabled">کلید API: فعال</string>
+    <string name="settings_status_api_key_none">کلید API: ندارد</string>
+    <string name="settings_status_endpoints">نقاط پایانی</string>
+    <string name="settings_status_bibles">نسخه‌های کتاب‌مقدس</string>
+    <string name="settings_status_songbooks">کتاب‌های سرود</string>
+    <string name="settings_status_none">هیچ‌کدام</string>
+    <string name="status_connecting">در حال اتصال به سرور…</string>
+    <string name="status_connected">سرور متصل شد</string>
+    <string name="status_continue">ادامه</string>
+    <string name="status_retry">تلاش دوباره</string>
+    <string name="status_open_settings">باز کردن تنظیمات</string>
+    <string name="status_continue_anyway">با این حال ادامه بده</string>
+    <string name="status_limited_functionality">قابلیت محدود</string>
+    <string name="status_server_version">نسخهٔ سرور: %1$s</string>
+    <string name="status_issues_detected">مشکلات زیر روی سرور متصل شناسایی شد:</string>
+    <string name="status_endpoint_unavailable">نقطهٔ پایانی وضعیت هنوز در این نسخهٔ سرور موجود نیست — برای گزارش کامل، ChurchPresenter را روی رایانه به‌روز کنید.</string>
+    <string name="status_error_title">دسترسی به سرور ممکن نشد</string>
+    <string name="status_permissions_title">مجوزهای این دستگاه</string>
+    <string name="status_permission_present">کنترل ارائه</string>
+    <string name="status_permission_schedule">افزودن به برنامه</string>
+    <string name="status_permission_upload">بارگذاری پرونده‌ها</string>
+    <string name="status_permission_blocked">— مسدود</string>
+    <string name="status_info_bibles">نسخه‌های موجود کتاب‌مقدس</string>
+    <string name="status_info_songbooks">کتاب‌های سرود موجود</string>
+    <string name="status_info_features">قابلیت‌های فعال</string>
+    <string name="status_warn_no_api_key_title">کلید API پیکربندی نشده است</string>
+    <string name="status_warn_no_api_key_body">روی سرور کلید API تنظیم نشده است. برخی نقاط پایانی محافظت‌شده ممکن است درخواست‌ها را رد کنند. فعال کردن کلید API در تنظیمات سرور ChurchPresenter را در نظر بگیرید.</string>
+    <string name="status_warn_no_bibles_title">هیچ ترجمه‌ای از کتاب‌مقدس در دسترس نیست</string>
+    <string name="status_warn_no_bibles_body">روی سرور هیچ ترجمه‌ای از کتاب‌مقدس بارگذاری نشده است. برگهٔ کتاب‌مقدس خالی خواهد بود. در برنامهٔ ChurchPresenter روی رایانه ترجمه‌ای اضافه کنید.</string>
+    <string name="status_warn_no_songbooks_title">هیچ کتاب سرودی در دسترس نیست</string>
+    <string name="status_warn_no_songbooks_body">روی سرور هیچ کتاب سرودی بارگذاری نشده است. برگهٔ سرودها خالی خواهد بود. در برنامهٔ ChurchPresenter روی رایانه کتاب سرود وارد کنید.</string>
+    <string name="status_warn_present_blocked_title">کنترل ارائه مسدود است</string>
+    <string name="status_warn_present_blocked_body">این دستگاه اجازهٔ کنترل ارائه (نمایش، پاک کردن، انتخاب اسلاید) را ندارد. از مدیر سرور بخواهید مجوز Presenter را به این دستگاه بدهد.</string>
+    <string name="status_warn_schedule_blocked_title">ویرایش برنامه مسدود است</string>
+    <string name="status_warn_schedule_blocked_body">این دستگاه اجازهٔ افزودن مورد به برنامه را ندارد. از مدیر سرور بخواهید مجوز Schedule را به این دستگاه بدهد.</string>
+    <string name="status_warn_upload_blocked_title">بارگذاری پرونده مسدود است</string>
+    <string name="status_warn_upload_blocked_body">این دستگاه اجازهٔ بارگذاری ارائه یا تصویر را ندارد. از مدیر سرور بخواهید مجوز Upload را به این دستگاه بدهد.</string>
+    <string name="upload_blocked_toast">بارگذاری پرونده برای این دستگاه غیرفعال است. از مدیر سرور بخواهید مجوز Upload را بدهد.</string>
+    <string name="status_warn_unknown_version_title">نسخهٔ سرور ناشناخته است</string>
+    <string name="status_warn_unknown_version_body">سرور نسخهٔ «%1$s» را گزارش کرد. ممکن است برخی قابلیت‌های این برنامه با این نسخه سازگار نباشند.</string>
+    <string name="status_warn_missing_endpoint_title">نقطهٔ پایانی API موجود نیست: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">سرور نقطهٔ پایانی «%1$s» را ارائه نمی‌دهد. قابلیت‌های وابسته به آن در دسترس نخواهند بود.</string>
+    <string name="media_title">رسانه</string>
+    <string name="media_no_media_loaded">رسانه‌ای بارگذاری نشده است</string>
+    <string name="media_playing">در حال پخش</string>
+    <string name="media_playing_on_desktop">در حال پخش روی رایانه</string>
+    <string name="media_local_ready">پروندهٔ محلی · آمادهٔ نمایش</string>
+    <string name="media_pick_to_upload">پرونده‌ای برای بارگذاری انتخاب کنید</string>
+    <string name="media_source_network_url">نشانی شبکه</string>
+    <string name="media_source_upload">بارگذاری از تلفن</string>
+    <string name="media_subtitle_url">%1$s · نشانی شبکه</string>
+    <string name="media_subtitle_empty">برای ارسال رسانه، نشانی شبکه را در پایین بچسبانید</string>
+    <string name="media_on_screen">روی صفحه</string>
+    <string name="media_cd_stop">توقف</string>
+    <string name="media_cd_back10">۱۰ ثانیه عقب</string>
+    <string name="media_cd_forward10">۱۰ ثانیه جلو</string>
+    <string name="media_cd_play">پخش</string>
+    <string name="media_cd_pause">مکث</string>
+    <string name="media_cd_mute">بی‌صدا</string>
+    <string name="media_add_to_schedule">افزودن به برنامه</string>
+    <string name="media_go_live">اکنون نمایش بده</string>
+    <string name="media_clear_screen">پاک کردن صفحه</string>
+    <string name="media_source_label">منبع</string>
+    <string name="media_will_send">ارسال می‌شود: %1$s</string>
+    <string name="media_target_uploaded">پروندهٔ بارگذاری‌شده · %1$s</string>
+    <string name="media_target_loaded">بارگذاری‌شده روی رایانه · %1$s</string>
+    <string name="media_target_url">نشانی شبکه</string>
+    <string name="media_target_none">برای ارسال رسانه، منبعی را از پایین انتخاب کنید</string>
+    <string name="media_load_label">بارگذاری رسانه</string>
+    <string name="media_uploading_percent">در حال بارگذاری… %1$d%%</string>
+    <string name="media_choose_file">پروندهٔ ویدیو یا صوت انتخاب کنید</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">بارگذاری روی رایانه خاموش است</string>
+    <string name="media_uploads_disabled_hint">در تنظیمات سرور برنامهٔ رایانه، «Allow file uploads from mobile devices» را فعال کنید.</string>
+    <string name="media_playing_generic">رسانه</string>
+    <string name="more_photos_title">عکس‌ها</string>
+    <string name="more_photos_subtitle">پوشه‌های تصویر را مرور و نمایش دهید</string>
+    <string name="more_qa_title">پرسش و پاسخ</string>
+    <string name="more_qa_subtitle">پرسش‌های حاضران را بررسی و نمایش دهید</string>
+    <string name="more_dictionary_title">واژه‌نامه</string>
+    <string name="more_dictionary_subtitle">واژه‌نامهٔ عبری و یونانی استرانگ</string>
+    <string name="more_announcements_title">اعلان‌ها</string>
+    <string name="more_announcements_subtitle">متن، ساعت و شمارش معکوس</string>
+    <string name="more_web_title">وب</string>
+    <string name="more_web_subtitle">نمایش یک صفحهٔ وب روی صفحه</string>
+    <string name="strongs_dictionary_title">واژه‌نامهٔ استرانگ</string>
+    <string name="web_title">وب</string>
+    <string name="announcements_title">اعلان‌ها</string>
+    <string name="action_clear">پاک کردن</string>
+    <string name="action_cancel">لغو</string>
+    <string name="action_go_live">اکنون نمایش بده</string>
+    <string name="label_add_to_schedule">افزودن به برنامه</string>
+    <string name="label_live">زنده</string>
+    <string name="cd_delete">حذف</string>
+    <string name="cd_close">بستن</string>
+    <string name="cd_select">انتخاب</string>
+    <string name="cd_cast">ارسال تصویر</string>
+    <string name="cd_back">بازگشت</string>
+    <string name="cd_settings">تنظیمات</string>
+    <string name="cd_schedule">برنامه</string>
+    <string name="overline_on_screen_preview">پیش‌نمایش صفحه</string>
+    <string name="announcements_text_placeholder">متن اعلان…</string>
+    <string name="overline_duration">مدت</string>
+    <string name="overline_target_time">زمان هدف</string>
+    <string name="overline_animation">پویانمایی</string>
+    <string name="stepper_hrs">ساعت</string>
+    <string name="stepper_min">دقیقه</string>
+    <string name="stepper_sec">ثانیه</string>
+    <string name="stepper_hour">ساعت</string>
+    <string name="stepper_font_size">اندازهٔ قلم</string>
+    <string name="swatch_text">متن</string>
+    <string name="swatch_background">پس‌زمینه</string>
+    <string name="announcements_clock_desc">زمان کنونی را زنده نشان می‌دهد.</string>
+    <string name="announcements_count_up_desc">هنگام شروع نمایش از صفر رو به بالا می‌شمارد.</string>
+    <string name="announcements_animation_duration_label">مدت پویانمایی</string>
+    <string name="animation_duration_ms">%1$d م‌ث</string>
+    <string name="announcements_saved_label">ذخیره‌شده‌ها</string>
+    <string name="announcements_add_new">+ جدید</string>
+    <string name="announcements_no_saved">هنوز اعلان ذخیره‌شده‌ای نیست. یکی بنویسید و «+ جدید» را بزنید.</string>
+    <string name="color_picker_title">یک رنگ انتخاب کنید</string>
+    <string name="color_picker_use">استفاده از رنگ</string>
+    <string name="color_slider_hue">فام</string>
+    <string name="color_slider_saturation">اشباع</string>
+    <string name="color_slider_brightness">روشنایی</string>
+    <string name="cd_custom_color">رنگ سفارشی</string>
+    <string name="announcements_preview_placeholder">اعلان شما</string>
+    <string name="web_bookmarks_label">نشانک‌ها</string>
+    <string name="web_add_bookmark">+ افزودن</string>
+    <string name="web_no_bookmarks">هنوز نشانکی نیست. نشانی را وارد کنید و «+ افزودن» را بزنید.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">جست‌وجوی شماره، واژه یا معنا…</string>
+    <string name="dictionary_filter_all">همه</string>
+    <string name="dictionary_filter_hebrew">عبری</string>
+    <string name="dictionary_filter_greek">یونانی</string>
+    <string name="dictionary_no_entries">مدخلی یافت نشد</string>
+    <string name="dictionary_uses">کاربرد</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">نقش دستوری</string>
+    <string name="dictionary_occurrences">موارد کاربرد</string>
+    <string name="dictionary_root">ریشه</string>
+    <string name="dictionary_definition">تعریف</string>
+    <string name="dictionary_kjv_usage">کاربرد در KJV</string>
+    <string name="qa_edit_question_title">ویرایش پرسش</string>
+    <string name="qa_delete_question">حذف پرسش</string>
+    <string name="qa_submitted_by">ارسال‌شده توسط %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">توقف</string>
+    <string name="qa_action_approve">تأیید</string>
+    <string name="cd_edit">ویرایش</string>
+    <string name="cd_deny">رد</string>
+    <string name="qa_badge_live">زنده</string>
+    <string name="qa_badge_approved">✓ تأییدشده</string>
+    <string name="qa_badge_denied">ردشده</string>
+    <string name="qa_badge_answered">پاسخ داده‌شده</string>
+    <string name="schedule_drawer_item_count">%1$d مورد</string>
+    <string name="presentation_slide_desc">اسلاید %1$d</string>
+    <string name="presentation_slide_live">▶ زنده</string>
+    <string name="tab_media">رسانه</string>
+    <string name="tab_present">نمایش</string>
+    <string name="tab_more">بیشتر</string>
+    <string name="songs_count">%1$d سرود</string>
+    <string name="bible_chapters_count">%1$d باب</string>
+    <string name="status_version_line">سرور: %1$s · موبایل: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">متن</string>
+    <string name="announce_type_countdown">شمارش معکوس</string>
+    <string name="announce_type_count_up">شمارش رو به بالا</string>
+    <string name="announce_type_clock">ساعت</string>
+    <string name="announce_type_countdown_to_time">شمارش معکوس تا زمان مشخص</string>
+    <string name="announce_anim_none">بدون</string>
+    <string name="announce_anim_fade">محو</string>
+    <string name="announce_anim_slide_up">لغزش به بالا</string>
+    <string name="announce_anim_slide_down">لغزش به پایین</string>
+    <string name="announce_anim_slide_left">لغزش از چپ</string>
+    <string name="announce_anim_slide_right">لغزش از راست</string>
+    <string name="announce_duration_seconds">%1$s ث</string>
+    <string name="dictionary_ref_book">کتاب</string>
+    <string name="dictionary_ref_chapter">باب</string>
+    <string name="dictionary_ref_verse">آیه</string>
+    <string name="dictionary_ref_clear">پاک کردن فیلتر ارجاع</string>
+    <string name="dictionary_appears_in">یافت می‌شود در</string>
+    <string name="dictionary_appears_in_count">%1$s از %2$s</string>
+    <string name="settings_active_server">سرور فعال</string>
+    <string name="contact_us_title">تماس با ما</string>
+    <string name="contact_type_label">نوع</string>
+    <string name="contact_type_feature">درخواست قابلیت</string>
+    <string name="contact_type_feedback">بازخورد</string>
+    <string name="contact_type_testimonial">گواهی</string>
+    <string name="contact_type_bug">گزارش اشکال</string>
+    <string name="contact_name_label">نام</string>
+    <string name="contact_email_label">رایانامه (اختیاری)</string>
+    <string name="contact_message_label">پیام</string>
+    <string name="contact_send">ارسال</string>
+    <string name="contact_sending">در حال ارسال…</string>
+    <string name="contact_sent">پیام ارسال شد. سپاسگزاریم!</string>
+    <string name="contact_error">ارسال ممکن نشد. لطفاً دوباره تلاش کنید.</string>
+    <string name="contact_rate_limited_browser">برای امنیت، لطفاً ارسال را در مرورگر خود کامل کنید.</string>
+    <string name="contact_network_error">دسترسی به سرور ممکن نشد. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.</string>
+    <string name="contact_open_browser">باز کردن در مرورگر</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">سرودی باز نیست</string>
+    <string name="songs_pane_empty_body">سرودی را از فهرست انتخاب کنید تا بندهایش اینجا نمایان شود.</string>
+    <string name="more_pane_empty_title">ابزاری باز نیست</string>
+    <string name="more_pane_empty_body">ابزاری را از فهرست انتخاب کنید تا اینجا باز شود.</string>
+    <string name="library_pane_empty_title">چیزی در حال ویرایش نیست</string>
+    <string name="library_pane_empty_body">موردی را از فهرست ویرایش کنید یا مورد تازه‌ای بیفزایید تا اینجا باز شود.</string>
+    <string name="bible_pane_empty_title">بابی باز نیست</string>
+    <string name="bible_pane_empty_body">ابتدا کتاب و سپس باب را انتخاب کنید تا آیه‌هایش اینجا نمایان شود.</string>
+    <string name="bible_chapters_overline">باب</string>
+</resources>

@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">ຫົວຂໍ້</string>
+    <string name="songs_table_header_book">ປຶ້ມເພງ</string>
+    <string name="songs_table_header_tune">ທຳນອງ</string>
+    <string name="songs_table_search_placeholder">ຄົ້ນຫາດ້ວຍເລກ ຫຼື ຫົວຂໍ້…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">ບໍ່ມີເພງໃຫ້ໃຊ້</string>
+    <string name="songs_table_no_match">ບໍ່ມີເພງທີ່ກົງກັບຕົວກັ່ນຕອງ</string>
+    <string name="songs_table_retry">ລອງໃໝ່</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">ປຶ້ມເພງທັງໝົດ</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">ເປີດການຕັ້ງຄ່າ</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">ການຕັ້ງຄ່າ</string>
+    <string name="settings_server_section">ເຊີບເວີ</string>
+    <string name="settings_host_label">ໂຮສ / ທີ່ຢູ່ IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">ພອດ</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">ກະແຈ API (ບໍ່ບັງຄັບ)</string>
+    <string name="settings_api_key_placeholder">ຖ້າບໍ່ຈຳເປັນໃຫ້ປະຫວ່າງໄວ້</string>
+    <string name="settings_save">ບັນທຶກ</string>
+    <string name="settings_cancel">ຍົກເລີກ</string>
+    <string name="settings_invalid_port">ພອດຕ້ອງເປັນຕົວເລກລະຫວ່າງ 1 ຫາ 65535</string>
+    <string name="settings_host_empty">ໂຮສຕ້ອງບໍ່ຫວ່າງເປົ່າ</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">ຮູບລັກສະນະ</string>
+    <string name="settings_theme_system">ລະບົບ</string>
+    <string name="settings_theme_light">ສະຫວ່າງ</string>
+    <string name="settings_theme_dark">ມືດ</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">ເພງ</string>
+    <string name="tab_bible">ພຣະຄຳພີ</string>
+    <string name="tab_pictures">ຮູບພາບ</string>
+    <string name="tab_presentation">ການນຳສະເໜີ</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  ພຣະຄຳພີ — ໄວໆນີ້</string>
+    <string name="pictures_coming_soon">🖼  ຮູບພາບ — ໄວໆນີ້</string>
+    <string name="presentation_coming_soon">📽  ການນຳສະເໜີ — ໄວໆນີ້</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">ບໍ່ມີການນຳສະເໜີໃຫ້ໃຊ້</string>
+    <string name="presentation_loading_error">ໂຫຼດການນຳສະເໜີບໍ່ສຳເລັດ</string>
+    <string name="presentation_retry">ລອງໃໝ່</string>
+    <string name="presentation_slides">ສະໄລ້</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">ບໍ່ມີຮູບພາບໃຫ້ໃຊ້</string>
+    <string name="pictures_loading_error">ໂຫຼດຮູບພາບບໍ່ສຳເລັດ</string>
+    <string name="pictures_retry">ລອງໃໝ່</string>
+    <string name="pictures_photos">ຮູບ</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">ຄົ້ນຫາປຶ້ມ…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">ບໍ່ມີປຶ້ມພຣະຄຳພີໃຫ້ໃຊ້</string>
+    <string name="bible_no_match">ບໍ່ມີປຶ້ມທີ່ກົງກັບການຄົ້ນຫາ</string>
+    <string name="bible_chapter_label">ບົດ</string>
+    <string name="bible_chapters_title">ບົດ</string>
+    <string name="bible_no_verses">ບໍ່ມີຂໍ້ພຣະຄຳພີໃຫ້ໃຊ້</string>
+    <string name="bible_back">← ກັບຄືນ</string>
+    <string name="bible_loading_error">ໂຫຼດບໍ່ສຳເລັດ</string>
+    <string name="bible_retry">ລອງໃໝ່</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">ກຳນົດການ</string>
+    <string name="schedule_drawer_refresh">ໂຫຼດກຳນົດການໃໝ່</string>
+    <string name="schedule_drawer_empty">ບໍ່ມີລາຍການໃນກຳນົດການ</string>
+    <string name="schedule_drawer_error">ຂໍ້ຜິດພາດ: %1$s</string>
+    <string name="schedule_drawer_open">ເປີດກຳນົດການ</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="song_detail_schedule_request_sent">ສົ່ງຄຳຂໍແລ້ວ ✓</string>
+    <string name="song_detail_project_to_screen">ສະແດງເທິງຈໍ</string>
+    <string name="song_detail_stop_projecting">ຢຸດການສະແດງ</string>
+    <string name="song_detail_fab_actions">ການກະທຳ</string>
+    <string name="song_detail_fab_close_actions">ປິດການກະທຳ</string>
+    <string name="song_detail_projecting_badge">▶  ກຳລັງສະແດງ</string>
+    <string name="song_detail_no_lyrics">ບໍ່ມີເນື້ອເພງ</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="bible_detail_schedule_request_sent">ສົ່ງຄຳຂໍແລ້ວ ✓</string>
+    <string name="bible_detail_project_to_screen">ສະແດງເທິງຈໍ</string>
+    <string name="bible_detail_stop_projecting">ຢຸດການສະແດງ</string>
+    <string name="bible_detail_fab_actions">ການກະທຳ</string>
+    <string name="bible_detail_fab_close_actions">ປິດການກະທຳ</string>
+    <string name="bible_detail_projecting_badge">▶  ກຳລັງສະແດງ</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="pictures_schedule_request_sent">ສົ່ງຄຳຂໍແລ້ວ ✓</string>
+    <string name="pictures_project_to_screen">ສະແດງເທິງຈໍ</string>
+    <string name="pictures_stop_projecting">ຢຸດການສະແດງ</string>
+    <string name="pictures_pick_from_device">ເລືອກຈາກອຸປະກອນ</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="action_project_to_screen">ສະແດງເທິງຈໍ</string>
+    <string name="action_stop_projecting">ຢຸດການສະແດງ</string>
+    <string name="pictures_uploading">ກຳລັງອັບໂຫຼດ…</string>
+    <string name="upload_overlay_subtitle">ກະລຸນາລໍຖ້າ, ຢ່າປິດແອັບ</string>
+    <string name="upload_overlay_photo_counter">ຮູບ %1$d ຈາກ %2$d</string>
+    <string name="toast_pictures_added_to_schedule">ເພີ່ມຮູບໃສ່ກຳນົດການແລ້ວ</string>
+    <string name="toast_pictures_failed_to_add_schedule">ເພີ່ມຮູບໃສ່ກຳນົດການບໍ່ສຳເລັດ: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="presentation_schedule_request_sent">ສົ່ງຄຳຂໍແລ້ວ ✓</string>
+    <string name="presentation_project_to_screen">ສະແດງເທິງຈໍ</string>
+    <string name="presentation_stop_projecting">ຢຸດການສະແດງ</string>
+    <string name="presentation_upload_file">ອັບໂຫຼດການນຳສະເໜີ</string>
+    <string name="presentation_uploading">ກຳລັງອັບໂຫຼດ…</string>
+    <string name="toast_presentation_added_to_schedule">ເພີ່ມການນຳສະເໜີໃສ່ກຳນົດການແລ້ວ</string>
+    <string name="toast_presentation_failed_to_add_schedule">ເພີ່ມການນຳສະເໜີໃສ່ກຳນົດການບໍ່ສຳເລັດ: %1$s</string>
+    <string name="toast_failed_to_select_presentation">ເລືອກການນຳສະເໜີບໍ່ສຳເລັດ: %1$s</string>
+    <string name="toast_upload_unsupported">ເຊີບເວີນີ້ບໍ່ຮອງຮັບການອັບໂຫຼດ. ກະລຸນາອັບເດດ ChurchPresenter ໃນຄອມພິວເຕີເປັນລຸ້ນລ່າສຸດ.</string>
+    <string name="toast_upload_file_too_large">ໄຟລ໌ໃຫຍ່ເກີນກວ່າທີ່ເຊີບເວີຮັບໄດ້. ລອງໄຟລ໌ທີ່ນ້ອຍກວ່າ.</string>
+    <string name="toast_upload_server_error">ເຊີບເວີປະຕິເສດການອັບໂຫຼດ: %1$s</string>
+    <string name="toast_upload_failed">ອັບໂຫຼດບໍ່ສຳເລັດ: %1$s</string>
+    <string name="toast_upload_reload_failed">ອັບໂຫຼດແລ້ວ ແຕ່ໂຫຼດລາຍການໃໝ່ບໍ່ສຳເລັດ: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">ເພງກຳລັງສະແດງເທິງຈໍແລ້ວ</string>
+    <string name="toast_request_failed">ຄຳຂໍລົ້ມເຫຼວ</string>
+    <string name="toast_no_song_selected">ຍັງບໍ່ໄດ້ເລືອກເພງ</string>
+    <string name="toast_song_added_to_schedule">ເພີ່ມ “%1$s” ໃສ່ກຳນົດການແລ້ວ</string>
+    <string name="toast_failed_to_project">ສະແດງເພງບໍ່ສຳເລັດ: %1$s</string>
+    <string name="toast_failed_to_add_schedule">ເພີ່ມໃສ່ກຳນົດການບໍ່ສຳເລັດ: %1$s</string>
+    <string name="toast_request_denied">ຄຳຂໍຖືກປະຕິເສດ</string>
+    <string name="toast_session_blocked">ເຊສຊັນຖືກບລັອກ — ຈະບໍ່ຮັບຄຳຂໍເພີ່ມອີກ</string>
+    <string name="toast_request_rejected">ເຊີບເວີປະຕິເສດຄຳຂໍ (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">ຄຳຂໍຖືກປະຕິເສດ: %1$s</string>
+    <string name="toast_bible_live">ຂໍ້ພຣະຄຳພີກຳລັງສະແດງເທິງຈໍແລ້ວ</string>
+    <string name="toast_bible_added_to_schedule">ເພີ່ມ “%1$s” ໃສ່ກຳນົດການແລ້ວ</string>
+    <string name="toast_failed_to_project_bible">ສະແດງບໍ່ສຳເລັດ: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">ເພີ່ມໃສ່ກຳນົດການບໍ່ສຳເລັດ: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ ຕັ້ງເຊີບເວີເປັນ %1$s:%2$s ແລ້ວ</string>
+    <string name="qr_scan_button">ສະແກນ QR ໂຄດ</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">ເຊື່ອຖືໃບຢັ້ງຢືນຂອງເຊີບເວີ</string>
+    <string name="cert_setup_subtitle">ຕ້ອງຕັ້ງຄ່າຄັ້ງດຽວ</string>
+    <string name="cert_setup_intro">ChurchPresenter ໃຊ້ໃບຢັ້ງຢືນ HTTPS ສ່ວນຕົວເພື່ອການສື່ສານທີ່ປອດໄພ. ທ່ານຕ້ອງຕິດຕັ້ງມັນຄັ້ງດຽວເພື່ອໃຫ້ອຸປະກອນເຊື່ອຖືການເຊື່ອມຕໍ່ນີ້.</string>
+    <string name="cert_setup_scan_title">ສະແກນ QR ໂຄດຂອງໃບຢັ້ງຢືນ</string>
+    <string name="cert_setup_scan_desktop_hint">ໃນ ChurchPresenter ເທິງຄອມພິວເຕີ: ການຕັ້ງຄ່າ → ເຊີບເວີ → ກົດ “Download Cert” ເພື່ອສະແດງ QR ໂຄດ.</string>
+    <string name="cert_setup_scan_button">ສະແກນ QR ໂຄດ</string>
+    <string name="cert_setup_scan_or_divider">ຫຼື ໃຊ້ທີ່ຢູ່ທີ່ບັນທຶກໄວ້</string>
+    <string name="cert_setup_url_scanned">✓ ສະແກນ URL ແລ້ວ</string>
+    <string name="cert_setup_url_label">URL ຂອງໃບຢັ້ງຢືນ</string>
+    <string name="cert_setup_open_button">ເປີດ URL ຂອງໃບຢັ້ງຢືນ</string>
+    <string name="cert_setup_step2_ios_title">iOS — ຕິດຕັ້ງໂປຣໄຟລ໌</string>
+    <string name="cert_setup_step2_ios_body">Safari ຈະຂໍດາວໂຫຼດໂປຣໄຟລ໌ການຕັ້ງຄ່າ. ແຕະ ອະນຸຍາດ ແລ້ວໄປທີ່ ການຕັ້ງຄ່າ → ທົ່ວໄປ → VPN ແລະ ການຈັດການອຸປະກອນ, ແຕະ ChurchPresenter ແລ້ວຕິດຕັ້ງ.</string>
+    <string name="cert_setup_step3_ios_title">iOS — ເຊື່ອຖືໃບຢັ້ງຢືນ</string>
+    <string name="cert_setup_step3_ios_body">ການຕັ້ງຄ່າ → ທົ່ວໄປ → ກ່ຽວກັບ → ການຕັ້ງຄ່າຄວາມເຊື່ອຖືໃບຢັ້ງຢືນ → ເປີດຄວາມເຊື່ອຖືເຕັມຮູບແບບສຳລັບ ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — ຕິດຕັ້ງໃບຢັ້ງຢືນ</string>
+    <string name="cert_setup_step2_android_body">Chrome ຈະດາວໂຫຼດໄຟລ໌ .crt. ແຕະໄຟລ໌ຈາກການແຈ້ງເຕືອນດາວໂຫຼດ, ເລືອກ “ໃບຢັ້ງຢືນ CA” ແລ້ວຕັ້ງຊື່ເຊັ່ນ “ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ ຂຶ້ນວ່າ “ຕິດຕັ້ງຈາກແຫຼ່ງທີ່ບໍ່ຮູ້ຈັກບໍ່ໄດ້” ບໍ?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android ອາດບລັອກການຕິດຕັ້ງຫາກບຣາວເຊີຂອງທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຕິດຕັ້ງໄຟລ໌. ໄປທີ່ ການຕັ້ງຄ່າ → ແອັບ → [ບຣາວເຊີຂອງທ່ານ] → ຕິດຕັ້ງແອັບທີ່ບໍ່ຮູ້ຈັກ ແລ້ວເປີດ “ອະນຸຍາດຈາກແຫຼ່ງນີ້”. ກັບມາທີ່ນີ້ແລ້ວແຕະໄຟລ໌ອີກຄັ້ງ.</string>
+    <string name="cert_setup_fingerprint_title">ກວດສອບລາຍນິ້ວມື (ແນະນຳ)</string>
+    <string name="cert_setup_fingerprint_body">ປຽບທຽບລາຍນິ້ວມືນີ້ກັບທີ່ ChurchPresenter ເທິງຄອມພິວເຕີສະແດງໃນ ການຕັ້ງຄ່າ → ເຊີບເວີ → Certificate SHA-256. ທັງສອງຕ້ອງກົງກັນ.</string>
+    <string name="cert_setup_fingerprint_unavailable">ເຊື່ອມຕໍ່ກັບເຊີບເວີກ່ອນເພື່ອເບິ່ງລາຍນິ້ວມື</string>
+    <string name="cert_setup_done_button">ສຳເລັດ — ຕິດຕັ້ງໃບຢັ້ງຢືນແລ້ວ</string>
+    <string name="cert_setup_skip_button">ຂ້າມໄປກ່ອນ</string>
+    <string name="cert_setup_skip_note">ທ່ານສາມາດກັບມາທີ່ຄູ່ມືນີ້ໄດ້ທຸກເມື່ອຈາກການຕັ້ງຄ່າ.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">ເຊື່ອມຕໍ່ກັບຄອມພິວເຕີ</string>
+    <string name="connect_setup_subtitle">ຕ້ອງຕັ້ງຄ່າຄັ້ງດຽວ</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile ເຊື່ອມຕໍ່ກັບແອັບ ChurchPresenter ເທິງຄອມພິວເຕີໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ. ສະແກນ QR ໂຄດຈາກຄອມພິວເຕີເພື່ອຕັ້ງຄ່າການເຊື່ອມຕໍ່ອັດຕະໂນມັດ.</string>
+    <string name="connect_setup_step1_title">ເປີດ ChurchPresenter ໃນຄອມພິວເຕີຂອງທ່ານ</string>
+    <string name="connect_setup_step1_body">ເປີດແອັບ ChurchPresenter ໃນຄອມພິວເຕີ ແລະ ກວດໃຫ້ແນ່ໃຈວ່າມັນຢູ່ໃນເຄືອຂ່າຍ Wi-Fi ດຽວກັນກັບອຸປະກອນນີ້.</string>
+    <string name="connect_setup_step2_title">ສະແດງ QR ໂຄດການເຊື່ອມຕໍ່</string>
+    <string name="connect_setup_step2_body">ໃນແອັບຄອມພິວເຕີໄປທີ່ ການຕັ້ງຄ່າ → ມືຖື ແລ້ວກົດ “Show QR Code”. QR ໂຄດພ້ອມລາຍລະອຽດການເຊື່ອມຕໍ່ຈະປາກົດເທິງຈໍ.</string>
+    <string name="connect_setup_step3_title">ສະແກນ QR ໂຄດຂ້າງລຸ່ມ</string>
+    <string name="connect_setup_step3_body">ແຕະປຸ່ມຂ້າງລຸ່ມເພື່ອເປີດກ້ອງ ແລະ ສະແກນ QR ໂຄດທີ່ສະແດງເທິງຄອມພິວເຕີ. ການເຊື່ອມຕໍ່ຈະຖືກຕັ້ງຄ່າອັດຕະໂນມັດ.</string>
+    <string name="connect_setup_scan_button">ສະແກນ QR ໂຄດ</string>
+    <string name="connect_setup_connected">✓ ເຊື່ອມຕໍ່ກັບ %1$s:%2$s ແລ້ວ</string>
+    <string name="connect_setup_done_button">ສຳເລັດ — ເຊື່ອມຕໍ່ແລ້ວ</string>
+    <string name="connect_setup_skip_button">ຂ້າມໄປກ່ອນ</string>
+    <string name="connect_setup_skip_note">ທ່ານສາມາດສະແກນ QR ໂຄດໄດ້ທຸກເມື່ອຈາກການຕັ້ງຄ່າ.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">ຊື່ຂອງທ່ານ (ສຳລັບຖາມ-ຕອບ)</string>
+    <string name="settings_display_name_placeholder">ປະຫວ່າງໄວ້ເພື່ອໃຊ້ລະຫັດອຸປະກອນ</string>
+    <string name="settings_privacy_section">ຄວາມເປັນສ່ວນຕົວ</string>
+    <string name="settings_telemetry_label">ແບ່ງປັນຂໍ້ມູນການໃຊ້ງານ ແລະ ຂໍ້ຂັດຂ້ອງ</string>
+    <string name="settings_telemetry_description">ຊ່ວຍໃຫ້ພວກເຮົາພົບ ແລະ ແກ້ໄຂຂໍ້ຜິດພາດ. ປິດເພື່ອຢຸດສົ່ງຂໍ້ມູນວິເຄາະ ແລະ ລາຍງານຂໍ້ຂັດຂ້ອງ.</string>
+    <string name="tab_qa_admin">ຖາມ-ຕອບ</string>
+    <string name="qa_admin_session_active">ເຊສຊັນກຳລັງເຮັດວຽກ</string>
+    <string name="qa_admin_session_stopped">ເຊສຊັນຢຸດແລ້ວ</string>
+    <string name="qa_admin_incoming_tab">ເຂົ້າມາ (%1$d)</string>
+    <string name="qa_admin_finished_tab">ສຳເລັດ (%1$d)</string>
+    <string name="qa_admin_no_incoming">ບໍ່ມີຄຳຖາມເຂົ້າມາ</string>
+    <string name="qa_admin_no_finished">ບໍ່ມີຄຳຖາມທີ່ສຳເລັດ</string>
+    <string name="qa_admin_approve">ອະນຸມັດ</string>
+    <string name="qa_admin_deny">ປະຕິເສດ</string>
+    <string name="qa_admin_go_live">ສະແດງດຽວນີ້</string>
+    <string name="qa_admin_done">ໝາຍວ່າສຳເລັດ</string>
+    <string name="qa_admin_clear_display">ລ້າງຈໍ</string>
+    <string name="qa_admin_now_live">ກຳລັງສະແດງ:</string>
+    <string name="qa_admin_edit_hint">ແກ້ໄຂຂໍ້ຄວາມຄຳຖາມ…</string>
+    <string name="qa_admin_add_question">ເພີ່ມຄຳຖາມ</string>
+    <string name="qa_admin_add_question_hint">ພິມຄຳຖາມຂອງທ່ານ…</string>
+    <string name="qa_admin_save">ບັນທຶກ</string>
+    <string name="qa_admin_cancel">ຍົກເລີກ</string>
+    <string name="qa_admin_error_retry">ລອງໃໝ່</string>
+    <string name="action_clear_display">ລ້າງຈໍ</string>
+    <string name="action_hold_display">ຄ້າງຈໍ</string>
+    <string name="action_multi_select">ເລືອກຫຼາຍລາຍການ</string>
+    <string name="bible_multi_select_count">ເລືອກແລ້ວ %1$d</string>
+    <string name="connect_setup_no_camera_note">ບໍ່ພົບກ້ອງໃນອຸປະກອນນີ້. ໃສ່ລາຍລະອຽດການເຊື່ອມຕໍ່ດ້ວຍຕົນເອງ:</string>
+    <string name="connect_setup_manual_entry_toggle">ໃສ່ດ້ວຍຕົນເອງແທນ</string>
+    <string name="connect_setup_scan_instead_toggle">ສະແກນ QR ໂຄດແທນ</string>
+    <string name="connect_setup_manual_apply_button">ນຳໃຊ້</string>
+    <string name="settings_active_url_label">ກຳລັງເຊື່ອມຕໍ່ກັບ:</string>
+    <string name="settings_reset_to_default">ຣີເຊັດເປັນຄ່າເລີ່ມຕົ້ນ</string>
+    <string name="settings_draft_url_label">ຈະເຊື່ອມຕໍ່ຫຼັງບັນທຶກ:</string>
+    <string name="settings_check_status">ກວດສອບສະຖານະເຊີບເວີ</string>
+    <string name="settings_developer_section">ນັກພັດທະນາ</string>
+    <string name="settings_send_test_error">ສົ່ງຂໍ້ຜິດພາດທົດສອບໄປ Sentry</string>
+    <string name="settings_test_error_sent">✓ ສົ່ງຂໍ້ຜິດພາດທົດສອບໄປ Sentry ແລ້ວ</string>
+    <string name="settings_check_status_description">ກວດສອບສະຖານະເຊີບເວີ</string>
+    <string name="settings_status_recheck">ກວດອີກຄັ້ງ</string>
+    <string name="settings_status_server_version">ເຊີບເວີ: %1$s</string>
+    <string name="settings_status_mobile_version">ມືຖື: %1$s</string>
+    <string name="settings_status_api_key_enabled">ກະແຈ API: ເປີດໃຊ້</string>
+    <string name="settings_status_api_key_none">ກະແຈ API: ບໍ່ມີ</string>
+    <string name="settings_status_endpoints">ປາຍທາງ</string>
+    <string name="settings_status_bibles">ພຣະຄຳພີ</string>
+    <string name="settings_status_songbooks">ປຶ້ມເພງ</string>
+    <string name="settings_status_none">ບໍ່ມີ</string>
+    <string name="status_connecting">ກຳລັງເຊື່ອມຕໍ່ເຊີບເວີ…</string>
+    <string name="status_connected">ເຊື່ອມຕໍ່ເຊີບເວີແລ້ວ</string>
+    <string name="status_continue">ສືບຕໍ່</string>
+    <string name="status_retry">ລອງໃໝ່</string>
+    <string name="status_open_settings">ເປີດການຕັ້ງຄ່າ</string>
+    <string name="status_continue_anyway">ສືບຕໍ່ຕໍ່ໄປ</string>
+    <string name="status_limited_functionality">ໃຊ້ງານໄດ້ຈຳກັດ</string>
+    <string name="status_server_version">ລຸ້ນເຊີບເວີ: %1$s</string>
+    <string name="status_issues_detected">ພົບບັນຫາຕໍ່ໄປນີ້ໃນເຊີບເວີທີ່ເຊື່ອມຕໍ່ຢູ່:</string>
+    <string name="status_endpoint_unavailable">ລຸ້ນເຊີບເວີນີ້ຍັງບໍ່ມີປາຍທາງສະຖານະ — ອັບເດດ ChurchPresenter ໃນຄອມພິວເຕີເພື່ອລາຍງານຄົບຖ້ວນ.</string>
+    <string name="status_error_title">ບໍ່ສາມາດຕິດຕໍ່ເຊີບເວີໄດ້</string>
+    <string name="status_permissions_title">ສິດຂອງອຸປະກອນນີ້</string>
+    <string name="status_permission_present">ຄວບຄຸມການນຳສະເໜີ</string>
+    <string name="status_permission_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="status_permission_upload">ອັບໂຫຼດໄຟລ໌</string>
+    <string name="status_permission_blocked">— ຖືກບລັອກ</string>
+    <string name="status_info_bibles">ພຣະຄຳພີທີ່ໃຊ້ໄດ້</string>
+    <string name="status_info_songbooks">ປຶ້ມເພງທີ່ໃຊ້ໄດ້</string>
+    <string name="status_info_features">ຄຸນສົມບັດທີ່ເປີດໃຊ້</string>
+    <string name="status_warn_no_api_key_title">ຍັງບໍ່ໄດ້ຕັ້ງກະແຈ API</string>
+    <string name="status_warn_no_api_key_body">ເຊີບເວີຍັງບໍ່ໄດ້ຕັ້ງກະແຈ API. ບາງປາຍທາງທີ່ປ້ອງກັນໄວ້ອາດປະຕິເສດຄຳຂໍ. ພິຈາລະນາເປີດໃຊ້ກະແຈ API ໃນການຕັ້ງຄ່າເຊີບເວີຂອງ ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">ບໍ່ມີສະບັບແປພຣະຄຳພີໃຫ້ໃຊ້</string>
+    <string name="status_warn_no_bibles_body">ເຊີບເວີຍັງບໍ່ໄດ້ໂຫຼດສະບັບແປພຣະຄຳພີ. ແຖບພຣະຄຳພີຈະຫວ່າງເປົ່າ. ເພີ່ມສະບັບແປໃນແອັບ ChurchPresenter ເທິງຄອມພິວເຕີ.</string>
+    <string name="status_warn_no_songbooks_title">ບໍ່ມີປຶ້ມເພງໃຫ້ໃຊ້</string>
+    <string name="status_warn_no_songbooks_body">ເຊີບເວີຍັງບໍ່ໄດ້ໂຫຼດປຶ້ມເພງ. ແຖບເພງຈະຫວ່າງເປົ່າ. ນຳເຂົ້າປຶ້ມເພງໃນແອັບ ChurchPresenter ເທິງຄອມພິວເຕີ.</string>
+    <string name="status_warn_present_blocked_title">ການຄວບຄຸມການນຳສະເໜີຖືກບລັອກ</string>
+    <string name="status_warn_present_blocked_body">ອຸປະກອນນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຄວບຄຸມການນຳສະເໜີ (ສະແດງ, ລ້າງ, ເລືອກສະໄລ້). ຂໍໃຫ້ຜູ້ດູແລເຊີບເວີມອບສິດ Presenter ໃຫ້ອຸປະກອນນີ້.</string>
+    <string name="status_warn_schedule_blocked_title">ການແກ້ໄຂກຳນົດການຖືກບລັອກ</string>
+    <string name="status_warn_schedule_blocked_body">ອຸປະກອນນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເພີ່ມລາຍການໃສ່ກຳນົດການ. ຂໍໃຫ້ຜູ້ດູແລເຊີບເວີມອບສິດ Schedule ໃຫ້ອຸປະກອນນີ້.</string>
+    <string name="status_warn_upload_blocked_title">ການອັບໂຫຼດໄຟລ໌ຖືກບລັອກ</string>
+    <string name="status_warn_upload_blocked_body">ອຸປະກອນນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ອັບໂຫຼດການນຳສະເໜີ ຫຼື ຮູບພາບ. ຂໍໃຫ້ຜູ້ດູແລເຊີບເວີມອບສິດ Upload ໃຫ້ອຸປະກອນນີ້.</string>
+    <string name="upload_blocked_toast">ການອັບໂຫຼດໄຟລ໌ຖືກປິດສຳລັບອຸປະກອນນີ້. ຂໍໃຫ້ຜູ້ດູແລເຊີບເວີມອບສິດ Upload.</string>
+    <string name="status_warn_unknown_version_title">ບໍ່ຮູ້ຈັກລຸ້ນເຊີບເວີ</string>
+    <string name="status_warn_unknown_version_body">ເຊີບເວີລາຍງານລຸ້ນ “%1$s”. ບາງຄຸນສົມບັດຂອງແອັບນີ້ອາດບໍ່ເຂົ້າກັນກັບລຸ້ນນັ້ນ.</string>
+    <string name="status_warn_missing_endpoint_title">ບໍ່ມີປາຍທາງ API: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">ເຊີບເວີບໍ່ມີປາຍທາງ “%1$s”. ຄຸນສົມບັດທີ່ອາໄສມັນຈະໃຊ້ບໍ່ໄດ້.</string>
+    <string name="media_title">ສື່</string>
+    <string name="media_no_media_loaded">ຍັງບໍ່ໄດ້ໂຫຼດສື່</string>
+    <string name="media_playing">ກຳລັງຫຼິ້ນ</string>
+    <string name="media_playing_on_desktop">ກຳລັງຫຼິ້ນເທິງຄອມພິວເຕີ</string>
+    <string name="media_local_ready">ໄຟລ໌ໃນເຄື່ອງ · ພ້ອມສະແດງ</string>
+    <string name="media_pick_to_upload">ເລືອກໄຟລ໌ເພື່ອອັບໂຫຼດ</string>
+    <string name="media_source_network_url">URL ເຄືອຂ່າຍ</string>
+    <string name="media_source_upload">ອັບໂຫຼດຈາກໂທລະສັບ</string>
+    <string name="media_subtitle_url">%1$s · URL ເຄືອຂ່າຍ</string>
+    <string name="media_subtitle_empty">ວາງ URL ເຄືອຂ່າຍຂ້າງລຸ່ມເພື່ອສົ່ງສື່</string>
+    <string name="media_on_screen">ເທິງຈໍ</string>
+    <string name="media_cd_stop">ຢຸດ</string>
+    <string name="media_cd_back10">ຖອຍຫຼັງ 10 ວິນາທີ</string>
+    <string name="media_cd_forward10">ເລື່ອນໜ້າ 10 ວິນາທີ</string>
+    <string name="media_cd_play">ຫຼິ້ນ</string>
+    <string name="media_cd_pause">ຢຸດຊົ່ວຄາວ</string>
+    <string name="media_cd_mute">ປິດສຽງ</string>
+    <string name="media_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="media_go_live">ສະແດງດຽວນີ້</string>
+    <string name="media_clear_screen">ລ້າງຈໍ</string>
+    <string name="media_source_label">ແຫຼ່ງ</string>
+    <string name="media_will_send">ຈະສົ່ງ: %1$s</string>
+    <string name="media_target_uploaded">ໄຟລ໌ທີ່ອັບໂຫຼດ · %1$s</string>
+    <string name="media_target_loaded">ໂຫຼດໄວ້ເທິງຄອມພິວເຕີ · %1$s</string>
+    <string name="media_target_url">URL ເຄືອຂ່າຍ</string>
+    <string name="media_target_none">ເລືອກແຫຼ່ງຂ້າງລຸ່ມເພື່ອສົ່ງສື່</string>
+    <string name="media_load_label">ໂຫຼດສື່</string>
+    <string name="media_uploading_percent">ກຳລັງອັບໂຫຼດ… %1$d%%</string>
+    <string name="media_choose_file">ເລືອກໄຟລ໌ວິດີໂອ ຫຼື ສຽງ</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">ການອັບໂຫຼດຖືກປິດໃນຄອມພິວເຕີ</string>
+    <string name="media_uploads_disabled_hint">ເປີດ “Allow file uploads from mobile devices” ໃນການຕັ້ງຄ່າເຊີບເວີຂອງແອັບຄອມພິວເຕີ.</string>
+    <string name="media_playing_generic">ສື່</string>
+    <string name="more_photos_title">ຮູບພາບ</string>
+    <string name="more_photos_subtitle">ເບິ່ງ ແລະ ສະແດງໂຟນເດີຮູບພາບ</string>
+    <string name="more_qa_title">ຖາມ-ຕອບ</string>
+    <string name="more_qa_subtitle">ກວດ ແລະ ສະແດງຄຳຖາມຈາກຜູ້ຮ່ວມ</string>
+    <string name="more_dictionary_title">ວັດຈະນານຸກົມ</string>
+    <string name="more_dictionary_subtitle">ວັດຈະນານຸກົມເຮັບເຣີ ແລະ ກຣີກຂອງສະຕຣົງ</string>
+    <string name="more_announcements_title">ປະກາດ</string>
+    <string name="more_announcements_subtitle">ຂໍ້ຄວາມ, ໂມງ ແລະ ນັບຖອຍຫຼັງ</string>
+    <string name="more_web_title">ເວັບ</string>
+    <string name="more_web_subtitle">ສະແດງໜ້າເວັບເທິງຈໍ</string>
+    <string name="strongs_dictionary_title">ວັດຈະນານຸກົມສະຕຣົງ</string>
+    <string name="web_title">ເວັບ</string>
+    <string name="announcements_title">ປະກາດ</string>
+    <string name="action_clear">ລ້າງ</string>
+    <string name="action_cancel">ຍົກເລີກ</string>
+    <string name="action_go_live">ສະແດງດຽວນີ້</string>
+    <string name="label_add_to_schedule">ເພີ່ມໃສ່ກຳນົດການ</string>
+    <string name="label_live">ສົດ</string>
+    <string name="cd_delete">ລຶບ</string>
+    <string name="cd_close">ປິດ</string>
+    <string name="cd_select">ເລືອກ</string>
+    <string name="cd_cast">ສົ່ງພາບ</string>
+    <string name="cd_back">ກັບຄືນ</string>
+    <string name="cd_settings">ການຕັ້ງຄ່າ</string>
+    <string name="cd_schedule">ກຳນົດການ</string>
+    <string name="overline_on_screen_preview">ຕົວຢ່າງເທິງຈໍ</string>
+    <string name="announcements_text_placeholder">ຂໍ້ຄວາມປະກາດ…</string>
+    <string name="overline_duration">ໄລຍະເວລາ</string>
+    <string name="overline_target_time">ເວລາເປົ້າໝາຍ</string>
+    <string name="overline_animation">ອະນິເມຊັນ</string>
+    <string name="stepper_hrs">ຊມ</string>
+    <string name="stepper_min">ນທ</string>
+    <string name="stepper_sec">ວິ</string>
+    <string name="stepper_hour">ຊົ່ວໂມງ</string>
+    <string name="stepper_font_size">ຂະໜາດຕົວອັກສອນ</string>
+    <string name="swatch_text">ຂໍ້ຄວາມ</string>
+    <string name="swatch_background">ພື້ນຫຼັງ</string>
+    <string name="announcements_clock_desc">ສະແດງເວລາປັດຈຸບັນແບບສົດ.</string>
+    <string name="announcements_count_up_desc">ນັບຂຶ້ນຈາກສູນເມື່ອເລີ່ມສະແດງ.</string>
+    <string name="announcements_animation_duration_label">ໄລຍະເວລາອະນິເມຊັນ</string>
+    <string name="animation_duration_ms">%1$d ມິລລິວິນາທີ</string>
+    <string name="announcements_saved_label">ທີ່ບັນທຶກໄວ້</string>
+    <string name="announcements_add_new">+ ໃໝ່</string>
+    <string name="announcements_no_saved">ຍັງບໍ່ມີປະກາດທີ່ບັນທຶກໄວ້. ຂຽນອັນໜຶ່ງແລ້ວແຕະ “+ ໃໝ່”.</string>
+    <string name="color_picker_title">ເລືອກສີ</string>
+    <string name="color_picker_use">ໃຊ້ສີນີ້</string>
+    <string name="color_slider_hue">ເຉດສີ</string>
+    <string name="color_slider_saturation">ຄວາມອີ່ມຕົວ</string>
+    <string name="color_slider_brightness">ຄວາມສະຫວ່າງ</string>
+    <string name="cd_custom_color">ສີກຳນົດເອງ</string>
+    <string name="announcements_preview_placeholder">ປະກາດຂອງທ່ານ</string>
+    <string name="web_bookmarks_label">ບຸກມາກ</string>
+    <string name="web_add_bookmark">+ ເພີ່ມ</string>
+    <string name="web_no_bookmarks">ຍັງບໍ່ມີບຸກມາກ. ໃສ່ URL ແລ້ວແຕະ “+ ເພີ່ມ”.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">ຄົ້ນຫາເລກ, ຄຳສັບ ຫຼື ຄວາມໝາຍ…</string>
+    <string name="dictionary_filter_all">ທັງໝົດ</string>
+    <string name="dictionary_filter_hebrew">ເຮັບເຣີ</string>
+    <string name="dictionary_filter_greek">ກຣີກ</string>
+    <string name="dictionary_no_entries">ບໍ່ພົບລາຍການ</string>
+    <string name="dictionary_uses">ການໃຊ້</string>
+    <string name="dictionary_occurrences_count">%1$s ຄັ້ງ</string>
+    <string name="dictionary_part_of_speech">ຊະນິດຄຳ</string>
+    <string name="dictionary_occurrences">ບ່ອນທີ່ປາກົດ</string>
+    <string name="dictionary_root">ຮາກຄຳ</string>
+    <string name="dictionary_definition">ຄວາມໝາຍ</string>
+    <string name="dictionary_kjv_usage">ການໃຊ້ໃນ KJV</string>
+    <string name="qa_edit_question_title">ແກ້ໄຂຄຳຖາມ</string>
+    <string name="qa_delete_question">ລຶບຄຳຖາມ</string>
+    <string name="qa_submitted_by">ສົ່ງໂດຍ %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">ຢຸດ</string>
+    <string name="qa_action_approve">ອະນຸມັດ</string>
+    <string name="cd_edit">ແກ້ໄຂ</string>
+    <string name="cd_deny">ປະຕິເສດ</string>
+    <string name="qa_badge_live">ສົດ</string>
+    <string name="qa_badge_approved">✓ ອະນຸມັດແລ້ວ</string>
+    <string name="qa_badge_denied">ປະຕິເສດແລ້ວ</string>
+    <string name="qa_badge_answered">ຕອບແລ້ວ</string>
+    <string name="schedule_drawer_item_count">%1$d ລາຍການ</string>
+    <string name="presentation_slide_desc">ສະໄລ້ %1$d</string>
+    <string name="presentation_slide_live">▶ ສົດ</string>
+    <string name="tab_media">ສື່</string>
+    <string name="tab_present">ສະແດງ</string>
+    <string name="tab_more">ເພີ່ມເຕີມ</string>
+    <string name="songs_count">%1$d ເພງ</string>
+    <string name="bible_chapters_count">%1$d ບົດ</string>
+    <string name="status_version_line">ເຊີບເວີ: %1$s · ມືຖື: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">ຂໍ້ຄວາມ</string>
+    <string name="announce_type_countdown">ນັບຖອຍຫຼັງ</string>
+    <string name="announce_type_count_up">ນັບຂຶ້ນ</string>
+    <string name="announce_type_clock">ໂມງ</string>
+    <string name="announce_type_countdown_to_time">ນັບຖອຍຫຼັງຫາເວລາ</string>
+    <string name="announce_anim_none">ບໍ່ມີ</string>
+    <string name="announce_anim_fade">ຄ່ອຍໆປາກົດ</string>
+    <string name="announce_anim_slide_up">ເລື່ອນຂຶ້ນ</string>
+    <string name="announce_anim_slide_down">ເລື່ອນລົງ</string>
+    <string name="announce_anim_slide_left">ເລື່ອນຈາກຊ້າຍ</string>
+    <string name="announce_anim_slide_right">ເລື່ອນຈາກຂວາ</string>
+    <string name="announce_duration_seconds">%1$s ວິ</string>
+    <string name="dictionary_ref_book">ປຶ້ມ</string>
+    <string name="dictionary_ref_chapter">ບົດ</string>
+    <string name="dictionary_ref_verse">ຂໍ້</string>
+    <string name="dictionary_ref_clear">ລ້າງຕົວກັ່ນຕອງການອ້າງອີງ</string>
+    <string name="dictionary_appears_in">ປາກົດໃນ</string>
+    <string name="dictionary_appears_in_count">%1$s ຈາກ %2$s</string>
+    <string name="settings_active_server">ເຊີບເວີທີ່ໃຊ້ຢູ່</string>
+    <string name="contact_us_title">ຕິດຕໍ່ພວກເຮົາ</string>
+    <string name="contact_type_label">ປະເພດ</string>
+    <string name="contact_type_feature">ຂໍຄຸນສົມບັດໃໝ່</string>
+    <string name="contact_type_feedback">ຄຳຕິຊົມ</string>
+    <string name="contact_type_testimonial">ຄຳຢັ້ງຢືນ</string>
+    <string name="contact_type_bug">ລາຍງານຂໍ້ຜິດພາດ</string>
+    <string name="contact_name_label">ຊື່</string>
+    <string name="contact_email_label">ອີເມວ (ບໍ່ບັງຄັບ)</string>
+    <string name="contact_message_label">ຂໍ້ຄວາມ</string>
+    <string name="contact_send">ສົ່ງ</string>
+    <string name="contact_sending">ກຳລັງສົ່ງ…</string>
+    <string name="contact_sent">ສົ່ງຂໍ້ຄວາມແລ້ວ. ຂອບໃຈ!</string>
+    <string name="contact_error">ສົ່ງບໍ່ສຳເລັດ. ກະລຸນາລອງໃໝ່.</string>
+    <string name="contact_rate_limited_browser">ເພື່ອຄວາມປອດໄພ ກະລຸນາສົ່ງໃຫ້ສຳເລັດໃນບຣາວເຊີຂອງທ່ານ.</string>
+    <string name="contact_network_error">ບໍ່ສາມາດຕິດຕໍ່ເຊີບເວີໄດ້. ກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່.</string>
+    <string name="contact_open_browser">ເປີດໃນບຣາວເຊີ</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">ຍັງບໍ່ໄດ້ເປີດເພງ</string>
+    <string name="songs_pane_empty_body">ເລືອກເພງທາງຊ້າຍ ແລ້ວເນື້ອເພງຈະປາກົດຢູ່ນີ້.</string>
+    <string name="more_pane_empty_title">ຍັງບໍ່ໄດ້ເປີດເຄື່ອງມື</string>
+    <string name="more_pane_empty_body">ເລືອກເຄື່ອງມືທາງຊ້າຍ ແລ້ວມັນຈະເປີດຢູ່ນີ້.</string>
+    <string name="library_pane_empty_title">ບໍ່ມີລາຍການທີ່ກຳລັງແກ້ໄຂ</string>
+    <string name="library_pane_empty_body">ແກ້ໄຂລາຍການທາງຊ້າຍ ຫຼື ເພີ່ມລາຍການໃໝ່ ແລ້ວມັນຈະເປີດຢູ່ນີ້.</string>
+    <string name="bible_pane_empty_title">ຍັງບໍ່ໄດ້ເປີດບົດ</string>
+    <string name="bible_pane_empty_body">ເລືອກປຶ້ມ ແລ້ວເລືອກບົດ ຂໍ້ພຣະຄຳພີຈະປາກົດຢູ່ນີ້.</string>
+    <string name="bible_chapters_overline">ບົດ</string>
+</resources>

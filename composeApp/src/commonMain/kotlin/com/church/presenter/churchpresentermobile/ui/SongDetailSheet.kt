@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -17,7 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -128,28 +132,36 @@ fun SongDetailScreen(
                                 }
                             }
                         }
-                        val versesState = rememberLazyListState()
-                        LazyColumn(
-                            state = versesState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .alpha(if (isProjecting) 1f else 0.6f)
-                                .verticalScrollbar(versesState),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            contentPadding = PaddingValues(
-                                start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp
-                            )
-                        ) {
-                            itemsIndexed(detail.allVerses) { index, verse ->
-                                VerseCard(
-                                    verse = verse,
-                                    index = index,
-                                    label = sectionLabels.getOrElse(index) { (index + 1).toString() },
-                                    isSelected = isProjecting && selectedVerseIndex == index,
-                                    isProjecting = isProjecting,
-                                    showChords = showChords,
-                                    onClick = { onVerseSelected(index) }
+                        val versesState = rememberLazyGridState()
+                        // Measured here rather than passed a two-pane flag: the
+                        // count follows the width this pane actually got, so the
+                        // same screen is one column on a phone, one in a narrow
+                        // split and two in a roomy one.
+                        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(verseColumns(maxWidth)),
+                                state = versesState,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .alpha(if (isProjecting) 1f else 0.6f)
+                                    .verticalScrollbar(versesState),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                contentPadding = PaddingValues(
+                                    start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp
                                 )
+                            ) {
+                                itemsIndexed(detail.allVerses) { index, verse ->
+                                    VerseCard(
+                                        verse = verse,
+                                        index = index,
+                                        label = sectionLabels.getOrElse(index) { (index + 1).toString() },
+                                        isSelected = isProjecting && selectedVerseIndex == index,
+                                        isProjecting = isProjecting,
+                                        showChords = showChords,
+                                        onClick = { onVerseSelected(index) }
+                                    )
+                                }
                             }
                         }
                     } else if (!detail.plainText.isNullOrBlank()) {

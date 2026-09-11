@@ -470,4 +470,15 @@
     <string name="contact_rate_limited_browser">Turvalisuse huvides palun lõpeta saatmine oma brauseris.</string>
     <string name="contact_network_error">Serverit ei õnnestunud saavutada. Kontrolli oma internetiühendust ja proovi uuesti.</string>
     <string name="contact_open_browser">Ava brauseris</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Ühtegi laulu pole avatud</string>
+    <string name="songs_pane_empty_body">Valige vasakult laul ja selle salmid ilmuvad siia.</string>
+    <string name="more_pane_empty_title">Ühtegi tööriista pole avatud</string>
+    <string name="more_pane_empty_body">Valige vasakult tööriist ja see avaneb siin.</string>
+    <string name="library_pane_empty_title">Midagi ei redigeerita</string>
+    <string name="library_pane_empty_body">Muutke vasakul olevat kirjet või lisage uus — see avaneb siin.</string>
+    <string name="bible_pane_empty_title">Ühtegi peatükki pole avatud</string>
+    <string name="bible_pane_empty_body">Valige raamat, siis peatükk — selle salmid ilmuvad siia.</string>
+    <string name="bible_chapters_overline">Peatükk</string>
 </resources>
