@@ -439,5 +439,15 @@
     <string name="contact_rate_limited_browser">Қауіпсіздік үшін жіберуді браузерде аяқтаңыз.</string>
     <string name="contact_network_error">Серверге қосылу мүмкін болмады. Интернет байланысын тексеріп, қайталап көріңіз.</string>
     <string name="contact_open_browser">Браузерде ашу</string>
-</resources>
 
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Ешқандай ән ашылмаған</string>
+    <string name="songs_pane_empty_body">Сол жақтан ән таңдаңыз — оның шумақтары осында шығады.</string>
+    <string name="more_pane_empty_title">Ешқандай құрал ашылмаған</string>
+    <string name="more_pane_empty_body">Сол жақтан құрал таңдаңыз — ол осында ашылады.</string>
+    <string name="library_pane_empty_title">Ештеңе өңделмеуде</string>
+    <string name="library_pane_empty_body">Сол жақтағы жазбаны өңдеңіз немесе жаңасын қосыңыз — ол осында ашылады.</string>
+    <string name="bible_pane_empty_title">Ешқандай тарау ашылмаған</string>
+    <string name="bible_pane_empty_body">Кітапты, содан кейін тарауды таңдаңыз — оның аяттары осында шығады.</string>
+    <string name="bible_chapters_overline">Тарау</string>
+</resources>

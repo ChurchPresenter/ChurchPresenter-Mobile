@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">タイトル</string>
+    <string name="songs_table_header_book">賛美歌集</string>
+    <string name="songs_table_header_tune">曲名</string>
+    <string name="songs_table_search_placeholder">番号またはタイトルで検索…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">利用できる賛美歌がありません</string>
+    <string name="songs_table_no_match">フィルターに一致する賛美歌がありません</string>
+    <string name="songs_table_retry">再試行</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">すべての賛美歌集</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">設定を開く</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">設定</string>
+    <string name="settings_server_section">サーバー</string>
+    <string name="settings_host_label">ホスト / IP アドレス</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">ポート</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API キー（任意）</string>
+    <string name="settings_api_key_placeholder">不要な場合は空欄のままにしてください</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_cancel">キャンセル</string>
+    <string name="settings_invalid_port">ポートは 1 から 65535 の間の数字である必要があります</string>
+    <string name="settings_host_empty">ホストを空欄にはできません</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">外観</string>
+    <string name="settings_theme_system">システム</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">賛美歌</string>
+    <string name="tab_bible">聖書</string>
+    <string name="tab_pictures">画像</string>
+    <string name="tab_presentation">プレゼン</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  聖書 — 近日公開</string>
+    <string name="pictures_coming_soon">🖼  画像 — 近日公開</string>
+    <string name="presentation_coming_soon">📽  プレゼン — 近日公開</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">利用できるプレゼンテーションがありません</string>
+    <string name="presentation_loading_error">プレゼンテーションを読み込めませんでした</string>
+    <string name="presentation_retry">再試行</string>
+    <string name="presentation_slides">枚</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">利用できる画像がありません</string>
+    <string name="pictures_loading_error">画像を読み込めませんでした</string>
+    <string name="pictures_retry">再試行</string>
+    <string name="pictures_photos">枚</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">書名を検索…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">利用できる聖書の書がありません</string>
+    <string name="bible_no_match">検索に一致する書がありません</string>
+    <string name="bible_chapter_label">章</string>
+    <string name="bible_chapters_title">章</string>
+    <string name="bible_no_verses">利用できる節がありません</string>
+    <string name="bible_back">← 戻る</string>
+    <string name="bible_loading_error">読み込めませんでした</string>
+    <string name="bible_retry">再試行</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">式次第</string>
+    <string name="schedule_drawer_refresh">式次第を更新</string>
+    <string name="schedule_drawer_empty">式次第に項目がありません</string>
+    <string name="schedule_drawer_error">エラー: %1$s</string>
+    <string name="schedule_drawer_open">式次第を開く</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">式次第に追加</string>
+    <string name="song_detail_schedule_request_sent">リクエスト送信済み ✓</string>
+    <string name="song_detail_project_to_screen">画面に表示</string>
+    <string name="song_detail_stop_projecting">表示を停止</string>
+    <string name="song_detail_fab_actions">操作</string>
+    <string name="song_detail_fab_close_actions">操作を閉じる</string>
+    <string name="song_detail_projecting_badge">▶  表示中</string>
+    <string name="song_detail_no_lyrics">歌詞がありません</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">式次第に追加</string>
+    <string name="bible_detail_schedule_request_sent">リクエスト送信済み ✓</string>
+    <string name="bible_detail_project_to_screen">画面に表示</string>
+    <string name="bible_detail_stop_projecting">表示を停止</string>
+    <string name="bible_detail_fab_actions">操作</string>
+    <string name="bible_detail_fab_close_actions">操作を閉じる</string>
+    <string name="bible_detail_projecting_badge">▶  表示中</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">式次第に追加</string>
+    <string name="pictures_schedule_request_sent">リクエスト送信済み ✓</string>
+    <string name="pictures_project_to_screen">画面に表示</string>
+    <string name="pictures_stop_projecting">表示を停止</string>
+    <string name="pictures_pick_from_device">端末から選択</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">式次第に追加</string>
+    <string name="action_project_to_screen">画面に表示</string>
+    <string name="action_stop_projecting">表示を停止</string>
+    <string name="pictures_uploading">アップロード中…</string>
+    <string name="upload_overlay_subtitle">お待ちください。アプリを閉じないでください</string>
+    <string name="upload_overlay_photo_counter">写真 %1$d / %2$d</string>
+    <string name="toast_pictures_added_to_schedule">画像を式次第に追加しました</string>
+    <string name="toast_pictures_failed_to_add_schedule">画像を式次第に追加できませんでした: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">式次第に追加</string>
+    <string name="presentation_schedule_request_sent">リクエスト送信済み ✓</string>
+    <string name="presentation_project_to_screen">画面に表示</string>
+    <string name="presentation_stop_projecting">表示を停止</string>
+    <string name="presentation_upload_file">プレゼンをアップロード</string>
+    <string name="presentation_uploading">アップロード中…</string>
+    <string name="toast_presentation_added_to_schedule">プレゼンを式次第に追加しました</string>
+    <string name="toast_presentation_failed_to_add_schedule">プレゼンを式次第に追加できませんでした: %1$s</string>
+    <string name="toast_failed_to_select_presentation">プレゼンを選択できませんでした: %1$s</string>
+    <string name="toast_upload_unsupported">このサーバーはアップロードに対応していません。パソコンの ChurchPresenter を最新版に更新してください。</string>
+    <string name="toast_upload_file_too_large">ファイルがサーバーの上限を超えています。より小さいファイルをお試しください。</string>
+    <string name="toast_upload_server_error">サーバーがアップロードを拒否しました: %1$s</string>
+    <string name="toast_upload_failed">アップロードに失敗しました: %1$s</string>
+    <string name="toast_upload_reload_failed">アップロードしましたが、一覧を再読み込みできませんでした: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">賛美歌を画面に表示しました</string>
+    <string name="toast_request_failed">リクエストに失敗しました</string>
+    <string name="toast_no_song_selected">賛美歌が選択されていません</string>
+    <string name="toast_song_added_to_schedule">「%1$s」を式次第に追加しました</string>
+    <string name="toast_failed_to_project">賛美歌を表示できませんでした: %1$s</string>
+    <string name="toast_failed_to_add_schedule">式次第に追加できませんでした: %1$s</string>
+    <string name="toast_request_denied">リクエストが拒否されました</string>
+    <string name="toast_session_blocked">セッションがブロックされています — これ以上のリクエストは受け付けられません</string>
+    <string name="toast_request_rejected">サーバーがリクエストを拒否しました (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">リクエストが拒否されました: %1$s</string>
+    <string name="toast_bible_live">聖書箇所を画面に表示しました</string>
+    <string name="toast_bible_added_to_schedule">「%1$s」を式次第に追加しました</string>
+    <string name="toast_failed_to_project_bible">表示できませんでした: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">式次第に追加できませんでした: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ サーバーを %1$s:%2$s に設定しました</string>
+    <string name="qr_scan_button">QR コードをスキャン</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">サーバー証明書を信頼する</string>
+    <string name="cert_setup_subtitle">一度だけ設定が必要です</string>
+    <string name="cert_setup_intro">ChurchPresenter は安全な通信のために独自の HTTPS 証明書を使用します。端末が接続を信頼するように、一度だけインストールする必要があります。</string>
+    <string name="cert_setup_scan_title">証明書の QR コードをスキャン</string>
+    <string name="cert_setup_scan_desktop_hint">パソコンの ChurchPresenter で: 設定 → サーバー →「Download Cert」を押すと QR コードが表示されます。</string>
+    <string name="cert_setup_scan_button">QR コードをスキャン</string>
+    <string name="cert_setup_scan_or_divider">または保存済みのアドレスを使用</string>
+    <string name="cert_setup_url_scanned">✓ URL をスキャンしました</string>
+    <string name="cert_setup_url_label">証明書の URL</string>
+    <string name="cert_setup_open_button">証明書の URL を開く</string>
+    <string name="cert_setup_step2_ios_title">iOS — プロファイルをインストール</string>
+    <string name="cert_setup_step2_ios_body">Safari が構成プロファイルのダウンロードを求めます。「許可」をタップし、設定 → 一般 → VPN とデバイス管理 に進み、ChurchPresenter をタップしてインストールしてください。</string>
+    <string name="cert_setup_step3_ios_title">iOS — 証明書を信頼する</string>
+    <string name="cert_setup_step3_ios_body">設定 → 一般 → 情報 → 証明書信頼設定 → ChurchPresenter CA の完全な信頼を有効にしてください。</string>
+    <string name="cert_setup_step2_android_title">Android — 証明書をインストール</string>
+    <string name="cert_setup_step2_android_body">Chrome が .crt ファイルをダウンロードします。ダウンロード通知からタップし、「CA 証明書」を選んで「ChurchPresenter」などの名前を付けてください。</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠「不明なソースからインストールできません」と表示された場合</string>
+    <string name="cert_setup_android_unknown_sources_body">ブラウザにファイルのインストールが許可されていないと、Android がインストールをブロックすることがあります。設定 → アプリ →［お使いのブラウザ］→ 不明なアプリのインストール に進み、「この提供元を許可」を有効にしてください。ここに戻ってもう一度ファイルをタップします。</string>
+    <string name="cert_setup_fingerprint_title">フィンガープリントを確認（推奨）</string>
+    <string name="cert_setup_fingerprint_body">このフィンガープリントを、パソコンの ChurchPresenter の 設定 → サーバー → Certificate SHA-256 に表示されるものと比べてください。一致している必要があります。</string>
+    <string name="cert_setup_fingerprint_unavailable">フィンガープリントを表示するには、まずサーバーに接続してください</string>
+    <string name="cert_setup_done_button">完了 — 証明書をインストールしました</string>
+    <string name="cert_setup_skip_button">今はスキップ</string>
+    <string name="cert_setup_skip_note">このガイドには設定からいつでも戻れます。</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">パソコンに接続</string>
+    <string name="connect_setup_subtitle">一度だけ設定が必要です</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile はローカルネットワーク上のパソコンで動作する ChurchPresenter アプリに接続します。パソコンの QR コードをスキャンすると接続が自動で設定されます。</string>
+    <string name="connect_setup_step1_title">パソコンで ChurchPresenter を開く</string>
+    <string name="connect_setup_step1_body">パソコンで ChurchPresenter デスクトップアプリを起動し、この端末と同じ Wi-Fi ネットワークで動作していることを確認してください。</string>
+    <string name="connect_setup_step2_title">接続用の QR コードを表示</string>
+    <string name="connect_setup_step2_body">デスクトップアプリで 設定 → モバイル に進み、「Show QR Code」を押してください。接続情報を含む QR コードが画面に表示されます。</string>
+    <string name="connect_setup_step3_title">下の QR コードをスキャン</string>
+    <string name="connect_setup_step3_body">下のボタンをタップしてカメラを開き、パソコンに表示された QR コードをスキャンしてください。接続は自動で設定されます。</string>
+    <string name="connect_setup_scan_button">QR コードをスキャン</string>
+    <string name="connect_setup_connected">✓ %1$s:%2$s に接続しました</string>
+    <string name="connect_setup_done_button">完了 — 接続しました</string>
+    <string name="connect_setup_skip_button">今はスキップ</string>
+    <string name="connect_setup_skip_note">QR コードは設定からいつでもスキャンできます。</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">お名前（Q&amp;A 用）</string>
+    <string name="settings_display_name_placeholder">空欄にすると端末 ID を使用します</string>
+    <string name="settings_privacy_section">プライバシー</string>
+    <string name="settings_telemetry_label">利用状況とクラッシュデータを共有</string>
+    <string name="settings_telemetry_description">不具合の発見と修正に役立ちます。オフにすると解析とクラッシュレポートの送信を停止します。</string>
+    <string name="tab_qa_admin">Q&amp;A</string>
+    <string name="qa_admin_session_active">セッション実行中</string>
+    <string name="qa_admin_session_stopped">セッション停止中</string>
+    <string name="qa_admin_incoming_tab">受信 (%1$d)</string>
+    <string name="qa_admin_finished_tab">完了 (%1$d)</string>
+    <string name="qa_admin_no_incoming">受信した質問はありません</string>
+    <string name="qa_admin_no_finished">完了した質問はありません</string>
+    <string name="qa_admin_approve">承認</string>
+    <string name="qa_admin_deny">却下</string>
+    <string name="qa_admin_go_live">今すぐ表示</string>
+    <string name="qa_admin_done">完了にする</string>
+    <string name="qa_admin_clear_display">画面をクリア</string>
+    <string name="qa_admin_now_live">表示中:</string>
+    <string name="qa_admin_edit_hint">質問の文面を編集…</string>
+    <string name="qa_admin_add_question">質問を追加</string>
+    <string name="qa_admin_add_question_hint">質問を入力…</string>
+    <string name="qa_admin_save">保存</string>
+    <string name="qa_admin_cancel">キャンセル</string>
+    <string name="qa_admin_error_retry">再試行</string>
+    <string name="action_clear_display">画面をクリア</string>
+    <string name="action_hold_display">画面を固定</string>
+    <string name="action_multi_select">複数選択</string>
+    <string name="bible_multi_select_count">%1$d 件選択中</string>
+    <string name="connect_setup_no_camera_note">この端末でカメラが検出されませんでした。接続情報を手動で入力してください:</string>
+    <string name="connect_setup_manual_entry_toggle">代わりに手動で入力</string>
+    <string name="connect_setup_scan_instead_toggle">代わりに QR コードをスキャン</string>
+    <string name="connect_setup_manual_apply_button">適用</string>
+    <string name="settings_active_url_label">現在の接続先:</string>
+    <string name="settings_reset_to_default">既定値に戻す</string>
+    <string name="settings_draft_url_label">保存後の接続先:</string>
+    <string name="settings_check_status">サーバーの状態を確認</string>
+    <string name="settings_developer_section">開発者</string>
+    <string name="settings_send_test_error">Sentry にテストエラーを送信</string>
+    <string name="settings_test_error_sent">✓ テストエラーを Sentry に送信しました</string>
+    <string name="settings_check_status_description">サーバーの状態を確認</string>
+    <string name="settings_status_recheck">再確認</string>
+    <string name="settings_status_server_version">サーバー: %1$s</string>
+    <string name="settings_status_mobile_version">モバイル: %1$s</string>
+    <string name="settings_status_api_key_enabled">API キー: 有効</string>
+    <string name="settings_status_api_key_none">API キー: なし</string>
+    <string name="settings_status_endpoints">エンドポイント</string>
+    <string name="settings_status_bibles">聖書</string>
+    <string name="settings_status_songbooks">賛美歌集</string>
+    <string name="settings_status_none">なし</string>
+    <string name="status_connecting">サーバーに接続中…</string>
+    <string name="status_connected">サーバーに接続しました</string>
+    <string name="status_continue">続行</string>
+    <string name="status_retry">再試行</string>
+    <string name="status_open_settings">設定を開く</string>
+    <string name="status_continue_anyway">このまま続行</string>
+    <string name="status_limited_functionality">機能が制限されています</string>
+    <string name="status_server_version">サーバーのバージョン: %1$s</string>
+    <string name="status_issues_detected">接続中のサーバーで次の問題が見つかりました:</string>
+    <string name="status_endpoint_unavailable">このバージョンのサーバーには状態エンドポイントがまだありません — 完全な情報を取得するにはパソコンの ChurchPresenter を更新してください。</string>
+    <string name="status_error_title">サーバーに接続できませんでした</string>
+    <string name="status_permissions_title">この端末の権限</string>
+    <string name="status_permission_present">プレゼンの操作</string>
+    <string name="status_permission_schedule">式次第への追加</string>
+    <string name="status_permission_upload">ファイルのアップロード</string>
+    <string name="status_permission_blocked">— ブロック中</string>
+    <string name="status_info_bibles">利用できる聖書</string>
+    <string name="status_info_songbooks">利用できる賛美歌集</string>
+    <string name="status_info_features">有効な機能</string>
+    <string name="status_warn_no_api_key_title">API キーが設定されていません</string>
+    <string name="status_warn_no_api_key_body">サーバーに API キーが設定されていません。保護されたエンドポイントがリクエストを拒否する場合があります。ChurchPresenter のサーバー設定で API キーを有効にすることを検討してください。</string>
+    <string name="status_warn_no_bibles_title">利用できる聖書訳がありません</string>
+    <string name="status_warn_no_bibles_body">サーバーに聖書訳が読み込まれていません。聖書タブは空になります。パソコンの ChurchPresenter アプリで訳を追加してください。</string>
+    <string name="status_warn_no_songbooks_title">利用できる賛美歌集がありません</string>
+    <string name="status_warn_no_songbooks_body">サーバーに賛美歌集が読み込まれていません。賛美歌タブは空になります。パソコンの ChurchPresenter アプリで賛美歌集をインポートしてください。</string>
+    <string name="status_warn_present_blocked_title">プレゼンの操作がブロックされています</string>
+    <string name="status_warn_present_blocked_body">この端末にはプレゼンの操作（表示、クリア、スライド選択）が許可されていません。サーバー管理者にこの端末へ Presenter 権限を付与するよう依頼してください。</string>
+    <string name="status_warn_schedule_blocked_title">式次第の編集がブロックされています</string>
+    <string name="status_warn_schedule_blocked_body">この端末には式次第への項目追加が許可されていません。サーバー管理者にこの端末へ Schedule 権限を付与するよう依頼してください。</string>
+    <string name="status_warn_upload_blocked_title">ファイルのアップロードがブロックされています</string>
+    <string name="status_warn_upload_blocked_body">この端末にはプレゼンや画像のアップロードが許可されていません。サーバー管理者にこの端末へ Upload 権限を付与するよう依頼してください。</string>
+    <string name="upload_blocked_toast">この端末ではファイルのアップロードが無効です。サーバー管理者に Upload 権限の付与を依頼してください。</string>
+    <string name="status_warn_unknown_version_title">認識できないサーバーバージョン</string>
+    <string name="status_warn_unknown_version_body">サーバーはバージョン「%1$s」と報告しました。このアプリの一部の機能はこのバージョンと互換性がない可能性があります。</string>
+    <string name="status_warn_missing_endpoint_title">API エンドポイントがありません: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">サーバーは「%1$s」エンドポイントを公開していません。これに依存する機能は利用できません。</string>
+    <string name="media_title">メディア</string>
+    <string name="media_no_media_loaded">メディアが読み込まれていません</string>
+    <string name="media_playing">再生中</string>
+    <string name="media_playing_on_desktop">パソコンで再生中</string>
+    <string name="media_local_ready">ローカルファイル · 表示できます</string>
+    <string name="media_pick_to_upload">アップロードするファイルを選択</string>
+    <string name="media_source_network_url">ネットワーク URL</string>
+    <string name="media_source_upload">スマホからアップロード</string>
+    <string name="media_subtitle_url">%1$s · ネットワーク URL</string>
+    <string name="media_subtitle_empty">メディアを送るには下にネットワーク URL を貼り付けてください</string>
+    <string name="media_on_screen">画面表示中</string>
+    <string name="media_cd_stop">停止</string>
+    <string name="media_cd_back10">10 秒戻る</string>
+    <string name="media_cd_forward10">10 秒進む</string>
+    <string name="media_cd_play">再生</string>
+    <string name="media_cd_pause">一時停止</string>
+    <string name="media_cd_mute">ミュート</string>
+    <string name="media_add_to_schedule">式次第に追加</string>
+    <string name="media_go_live">今すぐ表示</string>
+    <string name="media_clear_screen">画面をクリア</string>
+    <string name="media_source_label">ソース</string>
+    <string name="media_will_send">送信するもの: %1$s</string>
+    <string name="media_target_uploaded">アップロード済みファイル · %1$s</string>
+    <string name="media_target_loaded">パソコンで読み込み済み · %1$s</string>
+    <string name="media_target_url">ネットワーク URL</string>
+    <string name="media_target_none">メディアを送るには下からソースを選んでください</string>
+    <string name="media_load_label">メディアを読み込む</string>
+    <string name="media_uploading_percent">アップロード中… %1$d%%</string>
+    <string name="media_choose_file">動画または音声ファイルを選択</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">パソコン側でアップロードが無効です</string>
+    <string name="media_uploads_disabled_hint">パソコンアプリのサーバー設定で「Allow file uploads from mobile devices」を有効にしてください。</string>
+    <string name="media_playing_generic">メディア</string>
+    <string name="more_photos_title">写真</string>
+    <string name="more_photos_subtitle">画像フォルダーを閲覧して表示</string>
+    <string name="more_qa_title">Q&amp;A</string>
+    <string name="more_qa_subtitle">参加者の質問を確認して表示</string>
+    <string name="more_dictionary_title">辞書</string>
+    <string name="more_dictionary_subtitle">ストロング のヘブライ語・ギリシャ語辞典</string>
+    <string name="more_announcements_title">お知らせ</string>
+    <string name="more_announcements_subtitle">テキスト、時計、カウントダウン</string>
+    <string name="more_web_title">ウェブ</string>
+    <string name="more_web_subtitle">ウェブページを画面に表示</string>
+    <string name="strongs_dictionary_title">ストロング辞典</string>
+    <string name="web_title">ウェブ</string>
+    <string name="announcements_title">お知らせ</string>
+    <string name="action_clear">クリア</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_go_live">今すぐ表示</string>
+    <string name="label_add_to_schedule">式次第に追加</string>
+    <string name="label_live">ライブ</string>
+    <string name="cd_delete">削除</string>
+    <string name="cd_close">閉じる</string>
+    <string name="cd_select">選択</string>
+    <string name="cd_cast">キャスト</string>
+    <string name="cd_back">戻る</string>
+    <string name="cd_settings">設定</string>
+    <string name="cd_schedule">式次第</string>
+    <string name="overline_on_screen_preview">画面プレビュー</string>
+    <string name="announcements_text_placeholder">お知らせの文面…</string>
+    <string name="overline_duration">表示時間</string>
+    <string name="overline_target_time">目標時刻</string>
+    <string name="overline_animation">アニメーション</string>
+    <string name="stepper_hrs">時</string>
+    <string name="stepper_min">分</string>
+    <string name="stepper_sec">秒</string>
+    <string name="stepper_hour">時</string>
+    <string name="stepper_font_size">文字サイズ</string>
+    <string name="swatch_text">文字</string>
+    <string name="swatch_background">背景</string>
+    <string name="announcements_clock_desc">現在時刻をリアルタイムで表示します。</string>
+    <string name="announcements_count_up_desc">表示を開始するとゼロからカウントアップします。</string>
+    <string name="announcements_animation_duration_label">アニメーションの長さ</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">保存済み</string>
+    <string name="announcements_add_new">+ 新規</string>
+    <string name="announcements_no_saved">保存されたお知らせはまだありません。作成して「+ 新規」をタップしてください。</string>
+    <string name="color_picker_title">色を選択</string>
+    <string name="color_picker_use">この色を使う</string>
+    <string name="color_slider_hue">色相</string>
+    <string name="color_slider_saturation">彩度</string>
+    <string name="color_slider_brightness">明度</string>
+    <string name="cd_custom_color">カスタムカラー</string>
+    <string name="announcements_preview_placeholder">お知らせの内容</string>
+    <string name="web_bookmarks_label">ブックマーク</string>
+    <string name="web_add_bookmark">+ 追加</string>
+    <string name="web_no_bookmarks">ブックマークはまだありません。URL を入力して「+ 追加」をタップしてください。</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">番号、単語、意味で検索…</string>
+    <string name="dictionary_filter_all">すべて</string>
+    <string name="dictionary_filter_hebrew">ヘブライ語</string>
+    <string name="dictionary_filter_greek">ギリシャ語</string>
+    <string name="dictionary_no_entries">項目が見つかりません</string>
+    <string name="dictionary_uses">用例</string>
+    <string name="dictionary_occurrences_count">%1$s回</string>
+    <string name="dictionary_part_of_speech">品詞</string>
+    <string name="dictionary_occurrences">出現箇所</string>
+    <string name="dictionary_root">語根</string>
+    <string name="dictionary_definition">語義</string>
+    <string name="dictionary_kjv_usage">KJV での訳語</string>
+    <string name="qa_edit_question_title">質問を編集</string>
+    <string name="qa_delete_question">質問を削除</string>
+    <string name="qa_submitted_by">投稿者: %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">停止</string>
+    <string name="qa_action_approve">承認</string>
+    <string name="cd_edit">編集</string>
+    <string name="cd_deny">却下</string>
+    <string name="qa_badge_live">ライブ</string>
+    <string name="qa_badge_approved">✓ 承認済み</string>
+    <string name="qa_badge_denied">却下済み</string>
+    <string name="qa_badge_answered">回答済み</string>
+    <string name="schedule_drawer_item_count">%1$d 件</string>
+    <string name="presentation_slide_desc">スライド %1$d</string>
+    <string name="presentation_slide_live">▶ ライブ</string>
+    <string name="tab_media">メディア</string>
+    <string name="tab_present">表示</string>
+    <string name="tab_more">その他</string>
+    <string name="songs_count">%1$d 曲</string>
+    <string name="bible_chapters_count">%1$d 章</string>
+    <string name="status_version_line">サーバー: %1$s · モバイル: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">テキスト</string>
+    <string name="announce_type_countdown">カウントダウン</string>
+    <string name="announce_type_count_up">カウントアップ</string>
+    <string name="announce_type_clock">時計</string>
+    <string name="announce_type_countdown_to_time">指定時刻までカウントダウン</string>
+    <string name="announce_anim_none">なし</string>
+    <string name="announce_anim_fade">フェード</string>
+    <string name="announce_anim_slide_up">上へスライド</string>
+    <string name="announce_anim_slide_down">下へスライド</string>
+    <string name="announce_anim_slide_left">左からスライド</string>
+    <string name="announce_anim_slide_right">右からスライド</string>
+    <string name="announce_duration_seconds">%1$s 秒</string>
+    <string name="dictionary_ref_book">書</string>
+    <string name="dictionary_ref_chapter">章</string>
+    <string name="dictionary_ref_verse">節</string>
+    <string name="dictionary_ref_clear">参照フィルターをクリア</string>
+    <string name="dictionary_appears_in">出現箇所</string>
+    <string name="dictionary_appears_in_count">%2$s 件中 %1$s 件</string>
+    <string name="settings_active_server">使用中のサーバー</string>
+    <string name="contact_us_title">お問い合わせ</string>
+    <string name="contact_type_label">種類</string>
+    <string name="contact_type_feature">機能のリクエスト</string>
+    <string name="contact_type_feedback">フィードバック</string>
+    <string name="contact_type_testimonial">推薦の声</string>
+    <string name="contact_type_bug">不具合の報告</string>
+    <string name="contact_name_label">お名前</string>
+    <string name="contact_email_label">メールアドレス（任意）</string>
+    <string name="contact_message_label">メッセージ</string>
+    <string name="contact_send">送信</string>
+    <string name="contact_sending">送信中…</string>
+    <string name="contact_sent">送信しました。ありがとうございます！</string>
+    <string name="contact_error">送信できませんでした。もう一度お試しください。</string>
+    <string name="contact_rate_limited_browser">セキュリティのため、ブラウザで送信を完了してください。</string>
+    <string name="contact_network_error">サーバーに接続できませんでした。インターネット接続を確認してもう一度お試しください。</string>
+    <string name="contact_open_browser">ブラウザで開く</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">開いている賛美歌はありません</string>
+    <string name="songs_pane_empty_body">左で賛美歌を選ぶと、その節がここに表示されます。</string>
+    <string name="more_pane_empty_title">開いているツールはありません</string>
+    <string name="more_pane_empty_body">左でツールを選ぶと、ここに開きます。</string>
+    <string name="library_pane_empty_title">編集中のものはありません</string>
+    <string name="library_pane_empty_body">左の項目を編集するか、新しく追加すると、ここに開きます。</string>
+    <string name="bible_pane_empty_title">開いている章はありません</string>
+    <string name="bible_pane_empty_body">書を選び、次に章を選ぶと、その節がここに表示されます。</string>
+    <string name="bible_chapters_overline">章</string>
+</resources>

@@ -13,14 +13,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.outlined.Cast
-import androidx.compose.material.icons.outlined.DesktopWindows
-import androidx.compose.material.icons.outlined.LibraryMusic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,35 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.tab_bible
-import churchpresentermobile.composeapp.generated.resources.tab_library
-import churchpresentermobile.composeapp.generated.resources.tab_media
-import churchpresentermobile.composeapp.generated.resources.tab_more
-import churchpresentermobile.composeapp.generated.resources.tab_present
-import churchpresentermobile.composeapp.generated.resources.tab_songs
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-
-private data class TabSpec(val tab: AppTab, val label: StringResource, val icon: ImageVector)
-
-private val tabSpecs = listOf(
-    TabSpec(AppTab.PRESENT, Res.string.tab_present, Icons.Outlined.Cast),
-    TabSpec(AppTab.SONGS, Res.string.tab_songs, Icons.Outlined.MusicNote),
-    TabSpec(AppTab.BIBLE, Res.string.tab_bible, Icons.AutoMirrored.Outlined.MenuBook),
-    TabSpec(AppTab.MEDIA, Res.string.tab_media, Icons.Outlined.PlayCircleOutline),
-    TabSpec(AppTab.PRESENTATION, Res.string.tab_present, Icons.Outlined.DesktopWindows),
-    TabSpec(AppTab.LIBRARY, Res.string.tab_library, Icons.Outlined.LibraryMusic),
-    TabSpec(AppTab.MORE, Res.string.tab_more, Icons.Filled.MoreHoriz),
-)
 
 /**
  * Persistent bottom navigation bar for the redesign.

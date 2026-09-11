@@ -78,8 +78,67 @@ fun BibleDetailScreen(
     onAddToSchedule: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalAppColors.current
     if (selectedChapter != null) {
+        BibleVersesPane(
+            book = book,
+            selectedChapter = selectedChapter,
+            verses = verses,
+            isLoading = isLoading,
+            isProjecting = isProjecting,
+            isHolding = isHolding,
+            scheduleAdded = scheduleAdded,
+            selectedVerseIndices = selectedVerseIndices,
+            projectedVerseIndex = projectedVerseIndex,
+            isMultiSelectMode = isMultiSelectMode,
+            onToggleMultiSelect = onToggleMultiSelect,
+            onChapterSelect = onChapterSelect,
+            onVerseToggleSelection = onVerseToggleSelection,
+            onToggleProjecting = onToggleProjecting,
+            onToggleHold = onToggleHold,
+            onClearDisplay = onClearDisplay,
+            onAddToSchedule = onAddToSchedule,
+            modifier = modifier,
+        )
+    } else {
+        ChaptersGrid(
+            book            = book,
+            onChapterSelect = onChapterSelect,
+            modifier        = modifier
+        )
+    }
+}
+
+/**
+ * The verses of the open chapter, with the swipe-between-chapters pager and the
+ * action stack over them.
+ *
+ * Split out of [BibleDetailScreen] because the tablet lays the same three levels
+ * out at once — books, chapters, verses — and needs the verses on their own,
+ * without the chapter grid that the phone shows *instead of* them.
+ */
+@Composable
+internal fun BibleVersesPane(
+    book: BibleBook,
+    selectedChapter: Int,
+    verses: List<BibleVerse>,
+    isProjecting: Boolean,
+    scheduleAdded: Boolean,
+    selectedVerseIndices: Set<Int>,
+    projectedVerseIndex: Int?,
+    onChapterSelect: (Int) -> Unit,
+    onVerseToggleSelection: (Int) -> Unit,
+    onToggleProjecting: () -> Unit,
+    onAddToSchedule: () -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+    isHolding: Boolean = false,
+    isMultiSelectMode: Boolean = false,
+    onToggleMultiSelect: () -> Unit = {},
+    onToggleHold: () -> Unit = {},
+    onClearDisplay: () -> Unit = {},
+) {
+    val colors = LocalAppColors.current
+    run {
         val totalChapters = if (book.totalChapters > 0) book.totalChapters else 150
         val pagerState = rememberPagerState(
             initialPage = (selectedChapter - 1).coerceIn(0, totalChapters - 1)
@@ -148,27 +207,36 @@ fun BibleDetailScreen(
                 onToggleMultiSelect = onToggleMultiSelect,
             )
         }
-    } else {
-        ChaptersGrid(
-            book            = book,
-            onChapterSelect = onChapterSelect,
-            modifier        = modifier
-        )
     }
 }
 
 
+/**
+ * The chapter numbers of [book].
+ *
+ * `internal` because the tablet puts it in a pane of its own beside the books
+ * and the verses, where the phone shows it instead of them.
+ *
+ * @param selectedChapter Drawn as the open chapter. Null on a phone, where
+ *   picking a chapter replaces this grid and there is nothing to mark.
+ * @param columns How many chapters per row. Stated by the caller rather than
+ *   derived from the width: the phone's four and the tablet pane's two are both
+ *   design decisions, and an adaptive minimum that produced two in a 180dp pane
+ *   also produced five on a large phone, where four is what the design says.
+ */
 @Composable
-private fun ChaptersGrid(
+internal fun ChaptersGrid(
     book: BibleBook,
     onChapterSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selectedChapter: Int? = null,
+    columns: Int = 4,
 ) {
     val colors = LocalAppColors.current
     val count = if (book.totalChapters > 0) book.totalChapters else 150
     val gridState = rememberLazyGridState()
     LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
+        columns = GridCells.Fixed(columns),
         state = gridState,
         modifier = modifier
             .fillMaxSize()
@@ -181,21 +249,27 @@ private fun ChaptersGrid(
     ) {
         items(count) { index ->
             val chapter = index + 1
+            val isSelected = chapter == selectedChapter
+            val shape = RoundedCornerShape(10.dp)
             Box(
                 modifier = Modifier
                     .height(52.dp)
                     .testTag(UiTags.bibleChapter(chapter))
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(colors.surface)
-                    .border(1.dp, colors.borderSubtle, RoundedCornerShape(10.dp))
+                    .clip(shape)
+                    .background(if (isSelected) colors.accentTint else colors.surface)
+                    .border(
+                        width = if (isSelected) 1.5.dp else 1.dp,
+                        color = if (isSelected) colors.accent else colors.borderSubtle,
+                        shape = shape,
+                    )
                     .clickable { onChapterSelect(chapter) },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "$chapter",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colors.text
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isSelected) colors.accent else colors.text
                 )
             }
         }

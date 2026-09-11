@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Başlık</string>
+    <string name="songs_table_header_book">İlahi kitabı</string>
+    <string name="songs_table_header_tune">Ezgi</string>
+    <string name="songs_table_search_placeholder"># veya başlıkla ara…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Kullanılabilir ilahi yok</string>
+    <string name="songs_table_no_match">Hiçbir ilahi filtreyle eşleşmiyor</string>
+    <string name="songs_table_retry">Tekrar dene</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Tüm ilahi kitapları</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Ayarları aç</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_server_section">Sunucu</string>
+    <string name="settings_host_label">Ana bilgisayar / IP adresi</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Bağlantı noktası</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API anahtarı (isteğe bağlı)</string>
+    <string name="settings_api_key_placeholder">Gerekmiyorsa boş bırakın</string>
+    <string name="settings_save">Kaydet</string>
+    <string name="settings_cancel">İptal</string>
+    <string name="settings_invalid_port">Bağlantı noktası 1 ile 65535 arasında bir sayı olmalıdır</string>
+    <string name="settings_host_empty">Ana bilgisayar boş olamaz</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Görünüm</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Açık</string>
+    <string name="settings_theme_dark">Koyu</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">İlahiler</string>
+    <string name="tab_bible">Kutsal Kitap</string>
+    <string name="tab_pictures">Resimler</string>
+    <string name="tab_presentation">Sunum</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Kutsal Kitap — yakında</string>
+    <string name="pictures_coming_soon">🖼  Resimler — yakında</string>
+    <string name="presentation_coming_soon">📽  Sunum — yakında</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Kullanılabilir sunum yok</string>
+    <string name="presentation_loading_error">Sunumlar yüklenemedi</string>
+    <string name="presentation_retry">Tekrar dene</string>
+    <string name="presentation_slides">slayt</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Kullanılabilir resim yok</string>
+    <string name="pictures_loading_error">Resimler yüklenemedi</string>
+    <string name="pictures_retry">Tekrar dene</string>
+    <string name="pictures_photos">fotoğraf</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Kitaplarda ara…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Kullanılabilir Kutsal Kitap bölümü yok</string>
+    <string name="bible_no_match">Hiçbir kitap aramayla eşleşmiyor</string>
+    <string name="bible_chapter_label">Bölüm</string>
+    <string name="bible_chapters_title">Bölümler</string>
+    <string name="bible_no_verses">Kullanılabilir ayet yok</string>
+    <string name="bible_back">← Geri</string>
+    <string name="bible_loading_error">Yüklenemedi</string>
+    <string name="bible_retry">Tekrar dene</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Program</string>
+    <string name="schedule_drawer_refresh">Programı yenile</string>
+    <string name="schedule_drawer_empty">Programda öğe yok</string>
+    <string name="schedule_drawer_error">Hata: %1$s</string>
+    <string name="schedule_drawer_open">Programı aç</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Programa ekle</string>
+    <string name="song_detail_schedule_request_sent">İstek gönderildi ✓</string>
+    <string name="song_detail_project_to_screen">Ekranda göster</string>
+    <string name="song_detail_stop_projecting">Göstermeyi durdur</string>
+    <string name="song_detail_fab_actions">İşlemler</string>
+    <string name="song_detail_fab_close_actions">İşlemleri kapat</string>
+    <string name="song_detail_projecting_badge">▶  Gösteriliyor</string>
+    <string name="song_detail_no_lyrics">Kullanılabilir söz yok</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Programa ekle</string>
+    <string name="bible_detail_schedule_request_sent">İstek gönderildi ✓</string>
+    <string name="bible_detail_project_to_screen">Ekranda göster</string>
+    <string name="bible_detail_stop_projecting">Göstermeyi durdur</string>
+    <string name="bible_detail_fab_actions">İşlemler</string>
+    <string name="bible_detail_fab_close_actions">İşlemleri kapat</string>
+    <string name="bible_detail_projecting_badge">▶  Gösteriliyor</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Programa ekle</string>
+    <string name="pictures_schedule_request_sent">İstek gönderildi ✓</string>
+    <string name="pictures_project_to_screen">Ekranda göster</string>
+    <string name="pictures_stop_projecting">Göstermeyi durdur</string>
+    <string name="pictures_pick_from_device">Cihazdan seç</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Programa ekle</string>
+    <string name="action_project_to_screen">Ekranda göster</string>
+    <string name="action_stop_projecting">Göstermeyi durdur</string>
+    <string name="pictures_uploading">Yükleniyor…</string>
+    <string name="upload_overlay_subtitle">Lütfen bekleyin, uygulamayı kapatmayın</string>
+    <string name="upload_overlay_photo_counter">Fotoğraf %1$d / %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Resim programa eklendi</string>
+    <string name="toast_pictures_failed_to_add_schedule">Resim programa eklenemedi: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Programa ekle</string>
+    <string name="presentation_schedule_request_sent">İstek gönderildi ✓</string>
+    <string name="presentation_project_to_screen">Ekranda göster</string>
+    <string name="presentation_stop_projecting">Göstermeyi durdur</string>
+    <string name="presentation_upload_file">Sunum yükle</string>
+    <string name="presentation_uploading">Yükleniyor…</string>
+    <string name="toast_presentation_added_to_schedule">Sunum programa eklendi</string>
+    <string name="toast_presentation_failed_to_add_schedule">Sunum programa eklenemedi: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Sunum seçilemedi: %1$s</string>
+    <string name="toast_upload_unsupported">Bu sunucu yüklemeyi desteklemiyor. Bilgisayarınızdaki ChurchPresenter'ı en son sürüme güncelleyin.</string>
+    <string name="toast_upload_file_too_large">Dosya sunucunun kabul edebileceğinden büyük. Daha küçük bir dosya deneyin.</string>
+    <string name="toast_upload_server_error">Sunucu yüklemeyi reddetti: %1$s</string>
+    <string name="toast_upload_failed">Yükleme başarısız: %1$s</string>
+    <string name="toast_upload_reload_failed">Yüklendi ancak liste yenilenemedi: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">İlahi şimdi ekranda</string>
+    <string name="toast_request_failed">İstek başarısız oldu</string>
+    <string name="toast_no_song_selected">Hiçbir ilahi seçilmedi</string>
+    <string name="toast_song_added_to_schedule">“%1$s” programa eklendi</string>
+    <string name="toast_failed_to_project">İlahi gösterilemedi: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Programa eklenemedi: %1$s</string>
+    <string name="toast_request_denied">İstek reddedildi</string>
+    <string name="toast_session_blocked">Oturum engellendi — başka istek kabul edilmeyecek</string>
+    <string name="toast_request_rejected">İstek sunucu tarafından reddedildi (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">İstek reddedildi: %1$s</string>
+    <string name="toast_bible_live">Kutsal Kitap bölümü şimdi ekranda</string>
+    <string name="toast_bible_added_to_schedule">“%1$s” programa eklendi</string>
+    <string name="toast_failed_to_project_bible">Gösterilemedi: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Programa eklenemedi: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Sunucu %1$s:%2$s olarak ayarlandı</string>
+    <string name="qr_scan_button">QR kodu tara</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Sunucu sertifikasına güven</string>
+    <string name="cert_setup_subtitle">Tek seferlik kurulum gerekiyor</string>
+    <string name="cert_setup_intro">ChurchPresenter güvenli iletişim için özel bir HTTPS sertifikası kullanır. Cihazınızın bağlantıya güvenmesi için bunu bir kez kurmanız gerekir.</string>
+    <string name="cert_setup_scan_title">Sertifikanın QR kodunu tarayın</string>
+    <string name="cert_setup_scan_desktop_hint">Bilgisayardaki ChurchPresenter'da: Ayarlar → Sunucu → QR kodu göstermek için “Download Cert” düğmesine basın.</string>
+    <string name="cert_setup_scan_button">QR kodu tara</string>
+    <string name="cert_setup_scan_or_divider">veya kayıtlı adresi kullan</string>
+    <string name="cert_setup_url_scanned">✓ URL tarandı</string>
+    <string name="cert_setup_url_label">Sertifika URL'si</string>
+    <string name="cert_setup_open_button">Sertifika URL'sini aç</string>
+    <string name="cert_setup_step2_ios_title">iOS — Profili yükleyin</string>
+    <string name="cert_setup_step2_ios_body">Safari bir yapılandırma profili indirmek isteyecek. İzin Ver'e dokunun, ardından Ayarlar → Genel → VPN ve Cihaz Yönetimi'ne gidin, ChurchPresenter'a dokunun ve yükleyin.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Sertifikaya güvenin</string>
+    <string name="cert_setup_step3_ios_body">Ayarlar → Genel → Hakkında → Sertifika Güven Ayarları → ChurchPresenter CA için tam güveni açın.</string>
+    <string name="cert_setup_step2_android_title">Android — Sertifikayı yükleyin</string>
+    <string name="cert_setup_step2_android_body">Chrome .crt dosyasını indirir. İndirme bildiriminden dosyaya dokunun, “CA Sertifikası”nı seçin ve “ChurchPresenter” gibi bir ad verin.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ “Bilinmeyen kaynaklardan yüklenemiyor” mu?</string>
+    <string name="cert_setup_android_unknown_sources_body">Tarayıcınızın dosya yüklemesine izin verilmiyorsa Android kurulumu engelleyebilir. Ayarlar → Uygulamalar → [tarayıcınız] → Bilinmeyen uygulamaları yükle bölümüne gidin ve “Bu kaynağa izin ver”i açın. Buraya dönün ve dosyaya tekrar dokunun.</string>
+    <string name="cert_setup_fingerprint_title">Parmak izini doğrulayın (önerilir)</string>
+    <string name="cert_setup_fingerprint_body">Bu parmak izini bilgisayardaki ChurchPresenter'ın Ayarlar → Sunucu → Certificate SHA-256 bölümünde gösterdiğiyle karşılaştırın. Eşleşmelidirler.</string>
+    <string name="cert_setup_fingerprint_unavailable">Parmak izini görmek için önce sunucuya bağlanın</string>
+    <string name="cert_setup_done_button">Tamam — sertifika yüklendi</string>
+    <string name="cert_setup_skip_button">Şimdilik atla</string>
+    <string name="cert_setup_skip_note">Bu kılavuza istediğiniz zaman Ayarlar'dan dönebilirsiniz.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Bilgisayara bağlan</string>
+    <string name="connect_setup_subtitle">Tek seferlik kurulum gerekiyor</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile, yerel ağınızdaki bilgisayarda çalışan ChurchPresenter uygulamasına bağlanır. Bağlantıyı otomatik yapılandırmak için bilgisayardaki QR kodu tarayın.</string>
+    <string name="connect_setup_step1_title">Bilgisayarınızda ChurchPresenter'ı açın</string>
+    <string name="connect_setup_step1_body">ChurchPresenter masaüstü uygulamasını başlatın ve bu cihazla aynı Wi-Fi ağında çalıştığından emin olun.</string>
+    <string name="connect_setup_step2_title">Bağlantı QR kodunu gösterin</string>
+    <string name="connect_setup_step2_body">Masaüstü uygulamasında Ayarlar → Mobil bölümüne gidin ve “Show QR Code”a basın. Bağlantı bilgilerini içeren bir QR kod ekranda görünecek.</string>
+    <string name="connect_setup_step3_title">Aşağıdaki QR kodu tarayın</string>
+    <string name="connect_setup_step3_body">Kamerayı açmak ve bilgisayarda gösterilen QR kodu taramak için aşağıdaki düğmeye dokunun. Bağlantı otomatik olarak yapılandırılacak.</string>
+    <string name="connect_setup_scan_button">QR kodu tara</string>
+    <string name="connect_setup_connected">✓ %1$s:%2$s adresine bağlanıldı</string>
+    <string name="connect_setup_done_button">Tamam — bağlanıldı</string>
+    <string name="connect_setup_skip_button">Şimdilik atla</string>
+    <string name="connect_setup_skip_note">QR kodu istediğiniz zaman Ayarlar'dan tarayabilirsiniz.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Adınız (Soru-Cevap için)</string>
+    <string name="settings_display_name_placeholder">Cihaz kimliğini kullanmak için boş bırakın</string>
+    <string name="settings_privacy_section">Gizlilik</string>
+    <string name="settings_telemetry_label">Kullanım ve çökme verilerini paylaş</string>
+    <string name="settings_telemetry_description">Hataları bulup düzeltmemize yardımcı olur. Analiz ve çökme raporlarını göndermeyi durdurmak için kapatın.</string>
+    <string name="tab_qa_admin">Soru-Cevap</string>
+    <string name="qa_admin_session_active">Oturum etkin</string>
+    <string name="qa_admin_session_stopped">Oturum durduruldu</string>
+    <string name="qa_admin_incoming_tab">Gelen (%1$d)</string>
+    <string name="qa_admin_finished_tab">Tamamlanan (%1$d)</string>
+    <string name="qa_admin_no_incoming">Gelen soru yok</string>
+    <string name="qa_admin_no_finished">Tamamlanan soru yok</string>
+    <string name="qa_admin_approve">Onayla</string>
+    <string name="qa_admin_deny">Reddet</string>
+    <string name="qa_admin_go_live">Şimdi göster</string>
+    <string name="qa_admin_done">Tamamlandı olarak işaretle</string>
+    <string name="qa_admin_clear_display">Ekranı temizle</string>
+    <string name="qa_admin_now_live">Gösteriliyor:</string>
+    <string name="qa_admin_edit_hint">Soru metnini düzenle…</string>
+    <string name="qa_admin_add_question">Soru ekle</string>
+    <string name="qa_admin_add_question_hint">Sorunuzu yazın…</string>
+    <string name="qa_admin_save">Kaydet</string>
+    <string name="qa_admin_cancel">İptal</string>
+    <string name="qa_admin_error_retry">Tekrar dene</string>
+    <string name="action_clear_display">Ekranı temizle</string>
+    <string name="action_hold_display">Ekranı dondur</string>
+    <string name="action_multi_select">Birden fazla seç</string>
+    <string name="bible_multi_select_count">%1$d seçildi</string>
+    <string name="connect_setup_no_camera_note">Bu cihazda kamera bulunamadı. Bağlantı bilgilerini elle girin:</string>
+    <string name="connect_setup_manual_entry_toggle">Bunun yerine elle gir</string>
+    <string name="connect_setup_scan_instead_toggle">Bunun yerine QR kodu tara</string>
+    <string name="connect_setup_manual_apply_button">Uygula</string>
+    <string name="settings_active_url_label">Şu anda bağlanılan:</string>
+    <string name="settings_reset_to_default">Varsayılana sıfırla</string>
+    <string name="settings_draft_url_label">Kaydettikten sonra bağlanılacak:</string>
+    <string name="settings_check_status">Sunucu durumunu kontrol et</string>
+    <string name="settings_developer_section">Geliştirici</string>
+    <string name="settings_send_test_error">Sentry'ye test hatası gönder</string>
+    <string name="settings_test_error_sent">✓ Test hatası Sentry'ye gönderildi</string>
+    <string name="settings_check_status_description">Sunucu durumunu kontrol et</string>
+    <string name="settings_status_recheck">Yeniden kontrol et</string>
+    <string name="settings_status_server_version">Sunucu: %1$s</string>
+    <string name="settings_status_mobile_version">Mobil: %1$s</string>
+    <string name="settings_status_api_key_enabled">API anahtarı: etkin</string>
+    <string name="settings_status_api_key_none">API anahtarı: yok</string>
+    <string name="settings_status_endpoints">Uç noktalar</string>
+    <string name="settings_status_bibles">Kutsal Kitaplar</string>
+    <string name="settings_status_songbooks">İlahi kitapları</string>
+    <string name="settings_status_none">yok</string>
+    <string name="status_connecting">Sunucuya bağlanılıyor…</string>
+    <string name="status_connected">Sunucuya bağlanıldı</string>
+    <string name="status_continue">Devam et</string>
+    <string name="status_retry">Tekrar dene</string>
+    <string name="status_open_settings">Ayarları aç</string>
+    <string name="status_continue_anyway">Yine de devam et</string>
+    <string name="status_limited_functionality">Sınırlı işlevsellik</string>
+    <string name="status_server_version">Sunucu sürümü: %1$s</string>
+    <string name="status_issues_detected">Bağlı sunucuda aşağıdaki sorunlar tespit edildi:</string>
+    <string name="status_endpoint_unavailable">Durum uç noktası bu sunucu sürümünde henüz yok — tam raporlama için bilgisayardaki ChurchPresenter'ı güncelleyin.</string>
+    <string name="status_error_title">Sunucuya ulaşılamadı</string>
+    <string name="status_permissions_title">Bu cihazın izinleri</string>
+    <string name="status_permission_present">Sunumu yönetme</string>
+    <string name="status_permission_schedule">Programa ekleme</string>
+    <string name="status_permission_upload">Dosya yükleme</string>
+    <string name="status_permission_blocked">— engellendi</string>
+    <string name="status_info_bibles">Kullanılabilir Kutsal Kitaplar</string>
+    <string name="status_info_songbooks">Kullanılabilir ilahi kitapları</string>
+    <string name="status_info_features">Etkin özellikler</string>
+    <string name="status_warn_no_api_key_title">API anahtarı yapılandırılmamış</string>
+    <string name="status_warn_no_api_key_body">Sunucuda API anahtarı ayarlanmamış. Bazı korumalı uç noktalar istekleri reddedebilir. ChurchPresenter sunucu ayarlarında bir API anahtarı etkinleştirmeyi düşünün.</string>
+    <string name="status_warn_no_bibles_title">Kullanılabilir Kutsal Kitap çevirisi yok</string>
+    <string name="status_warn_no_bibles_body">Sunucuda yüklü Kutsal Kitap çevirisi yok. Kutsal Kitap sekmesi boş olacak. Bilgisayardaki ChurchPresenter uygulamasında bir çeviri ekleyin.</string>
+    <string name="status_warn_no_songbooks_title">Kullanılabilir ilahi kitabı yok</string>
+    <string name="status_warn_no_songbooks_body">Sunucuda yüklü ilahi kitabı yok. İlahiler sekmesi boş olacak. Bilgisayardaki ChurchPresenter uygulamasında bir ilahi kitabı içe aktarın.</string>
+    <string name="status_warn_present_blocked_title">Sunum denetimi engellendi</string>
+    <string name="status_warn_present_blocked_body">Bu cihazın sunumu yönetmesine (gösterme, temizleme, slayt seçme) izin verilmiyor. Sunucu yöneticisinden bu cihaza Presenter izni vermesini isteyin.</string>
+    <string name="status_warn_schedule_blocked_title">Program düzenleme engellendi</string>
+    <string name="status_warn_schedule_blocked_body">Bu cihazın programa öğe eklemesine izin verilmiyor. Sunucu yöneticisinden bu cihaza Schedule izni vermesini isteyin.</string>
+    <string name="status_warn_upload_blocked_title">Dosya yükleme engellendi</string>
+    <string name="status_warn_upload_blocked_body">Bu cihazın sunum veya resim yüklemesine izin verilmiyor. Sunucu yöneticisinden bu cihaza Upload izni vermesini isteyin.</string>
+    <string name="upload_blocked_toast">Bu cihaz için dosya yükleme devre dışı. Sunucu yöneticisinden Upload izni vermesini isteyin.</string>
+    <string name="status_warn_unknown_version_title">Tanınmayan sunucu sürümü</string>
+    <string name="status_warn_unknown_version_body">Sunucu “%1$s” sürümünü bildirdi. Bu uygulamanın bazı özellikleri bu sürümle uyumlu olmayabilir.</string>
+    <string name="status_warn_missing_endpoint_title">Eksik API uç noktası: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Sunucu “%1$s” uç noktasını sunmuyor. Buna dayanan özellikler kullanılamayacak.</string>
+    <string name="media_title">Medya</string>
+    <string name="media_no_media_loaded">Yüklü medya yok</string>
+    <string name="media_playing">Oynatılıyor</string>
+    <string name="media_playing_on_desktop">Bilgisayarda oynatılıyor</string>
+    <string name="media_local_ready">Yerel dosya · göstermeye hazır</string>
+    <string name="media_pick_to_upload">Yüklenecek bir dosya seçin</string>
+    <string name="media_source_network_url">Ağ URL'si</string>
+    <string name="media_source_upload">Telefondan yükle</string>
+    <string name="media_subtitle_url">%1$s · Ağ URL'si</string>
+    <string name="media_subtitle_empty">Medya göndermek için aşağıya bir ağ URL'si yapıştırın</string>
+    <string name="media_on_screen">EKRANDA</string>
+    <string name="media_cd_stop">Durdur</string>
+    <string name="media_cd_back10">10 saniye geri</string>
+    <string name="media_cd_forward10">10 saniye ileri</string>
+    <string name="media_cd_play">Oynat</string>
+    <string name="media_cd_pause">Duraklat</string>
+    <string name="media_cd_mute">Sessize al</string>
+    <string name="media_add_to_schedule">Programa ekle</string>
+    <string name="media_go_live">Şimdi göster</string>
+    <string name="media_clear_screen">Ekranı temizle</string>
+    <string name="media_source_label">KAYNAK</string>
+    <string name="media_will_send">Gönderilecek: %1$s</string>
+    <string name="media_target_uploaded">Yüklenen dosya · %1$s</string>
+    <string name="media_target_loaded">Bilgisayarda yüklü · %1$s</string>
+    <string name="media_target_url">Ağ URL'si</string>
+    <string name="media_target_none">Medya göndermek için aşağıdan bir kaynak seçin</string>
+    <string name="media_load_label">MEDYA YÜKLE</string>
+    <string name="media_uploading_percent">Yükleniyor… %%%1$d</string>
+    <string name="media_choose_file">Bir video veya ses dosyası seçin</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Yüklemeler bilgisayarda kapalı</string>
+    <string name="media_uploads_disabled_hint">Bilgisayar uygulamasının Sunucu ayarlarında “Allow file uploads from mobile devices” seçeneğini etkinleştirin.</string>
+    <string name="media_playing_generic">medya</string>
+    <string name="more_photos_title">Fotoğraflar</string>
+    <string name="more_photos_subtitle">Resim klasörlerine göz atın ve gösterin</string>
+    <string name="more_qa_title">Soru-Cevap</string>
+    <string name="more_qa_subtitle">Dinleyici sorularını inceleyin ve gösterin</string>
+    <string name="more_dictionary_title">Sözlük</string>
+    <string name="more_dictionary_subtitle">Strong'un İbranice ve Yunanca sözlüğü</string>
+    <string name="more_announcements_title">Duyurular</string>
+    <string name="more_announcements_subtitle">Metin, saat ve geri sayım</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Ekranda bir web sayfası göster</string>
+    <string name="strongs_dictionary_title">Strong Sözlüğü</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Duyurular</string>
+    <string name="action_clear">Temizle</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_go_live">Şimdi göster</string>
+    <string name="label_add_to_schedule">Programa ekle</string>
+    <string name="label_live">Canlı</string>
+    <string name="cd_delete">Sil</string>
+    <string name="cd_close">Kapat</string>
+    <string name="cd_select">Seç</string>
+    <string name="cd_cast">Yayınla</string>
+    <string name="cd_back">Geri</string>
+    <string name="cd_settings">Ayarlar</string>
+    <string name="cd_schedule">Program</string>
+    <string name="overline_on_screen_preview">Ekran önizlemesi</string>
+    <string name="announcements_text_placeholder">Duyuru metni…</string>
+    <string name="overline_duration">Süre</string>
+    <string name="overline_target_time">Hedef saat</string>
+    <string name="overline_animation">Animasyon</string>
+    <string name="stepper_hrs">Sa</string>
+    <string name="stepper_min">Dk</string>
+    <string name="stepper_sec">Sn</string>
+    <string name="stepper_hour">Saat</string>
+    <string name="stepper_font_size">Yazı boyutu</string>
+    <string name="swatch_text">Metin</string>
+    <string name="swatch_background">Arka plan</string>
+    <string name="announcements_clock_desc">Geçerli saati canlı gösterir.</string>
+    <string name="announcements_count_up_desc">Gösterime girdiğinde sıfırdan yukarı sayar.</string>
+    <string name="announcements_animation_duration_label">ANİMASYON SÜRESİ</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">KAYITLI</string>
+    <string name="announcements_add_new">+ Yeni</string>
+    <string name="announcements_no_saved">Henüz kayıtlı duyuru yok. Bir tane oluşturup “+ Yeni”ye dokunun.</string>
+    <string name="color_picker_title">Bir renk seçin</string>
+    <string name="color_picker_use">Rengi kullan</string>
+    <string name="color_slider_hue">Ton</string>
+    <string name="color_slider_saturation">Doygunluk</string>
+    <string name="color_slider_brightness">Parlaklık</string>
+    <string name="cd_custom_color">Özel renk</string>
+    <string name="announcements_preview_placeholder">Duyurunuz</string>
+    <string name="web_bookmarks_label">YER İMLERİ</string>
+    <string name="web_add_bookmark">+ Ekle</string>
+    <string name="web_no_bookmarks">Henüz yer imi yok. Bir URL girin ve “+ Ekle”ye dokunun.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Numara, kelime veya anlam ara…</string>
+    <string name="dictionary_filter_all">Tümü</string>
+    <string name="dictionary_filter_hebrew">İbranice</string>
+    <string name="dictionary_filter_greek">Yunanca</string>
+    <string name="dictionary_no_entries">Kayıt bulunamadı</string>
+    <string name="dictionary_uses">KULLANIM</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Söz türü</string>
+    <string name="dictionary_occurrences">Geçtiği yerler</string>
+    <string name="dictionary_root">Kök</string>
+    <string name="dictionary_definition">Tanım</string>
+    <string name="dictionary_kjv_usage">KJV kullanımı</string>
+    <string name="qa_edit_question_title">Soruyu düzenle</string>
+    <string name="qa_delete_question">Soruyu sil</string>
+    <string name="qa_submitted_by">Gönderen: %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Durdur</string>
+    <string name="qa_action_approve">Onayla</string>
+    <string name="cd_edit">Düzenle</string>
+    <string name="cd_deny">Reddet</string>
+    <string name="qa_badge_live">CANLI</string>
+    <string name="qa_badge_approved">✓ Onaylandı</string>
+    <string name="qa_badge_denied">Reddedildi</string>
+    <string name="qa_badge_answered">Yanıtlandı</string>
+    <string name="schedule_drawer_item_count">%1$d öğe</string>
+    <string name="presentation_slide_desc">Slayt %1$d</string>
+    <string name="presentation_slide_live">▶ CANLI</string>
+    <string name="tab_media">Medya</string>
+    <string name="tab_present">Göster</string>
+    <string name="tab_more">Daha fazla</string>
+    <string name="songs_count">%1$d ilahi</string>
+    <string name="bible_chapters_count">%1$d böl.</string>
+    <string name="status_version_line">Sunucu: %1$s · Mobil: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Metin</string>
+    <string name="announce_type_countdown">Geri sayım</string>
+    <string name="announce_type_count_up">İleri sayım</string>
+    <string name="announce_type_clock">Saat</string>
+    <string name="announce_type_countdown_to_time">Belirli saate geri sayım</string>
+    <string name="announce_anim_none">Yok</string>
+    <string name="announce_anim_fade">Solma</string>
+    <string name="announce_anim_slide_up">Yukarı kaydır</string>
+    <string name="announce_anim_slide_down">Aşağı kaydır</string>
+    <string name="announce_anim_slide_left">Soldan kaydır</string>
+    <string name="announce_anim_slide_right">Sağdan kaydır</string>
+    <string name="announce_duration_seconds">%1$s sn</string>
+    <string name="dictionary_ref_book">Kitap</string>
+    <string name="dictionary_ref_chapter">Bölüm</string>
+    <string name="dictionary_ref_verse">Ayet</string>
+    <string name="dictionary_ref_clear">Referans filtresini temizle</string>
+    <string name="dictionary_appears_in">Şurada geçer</string>
+    <string name="dictionary_appears_in_count">%1$s / %2$s</string>
+    <string name="settings_active_server">Etkin sunucu</string>
+    <string name="contact_us_title">Bize ulaşın</string>
+    <string name="contact_type_label">Tür</string>
+    <string name="contact_type_feature">Özellik isteği</string>
+    <string name="contact_type_feedback">Geri bildirim</string>
+    <string name="contact_type_testimonial">Görüş</string>
+    <string name="contact_type_bug">Hata bildirimi</string>
+    <string name="contact_name_label">Ad</string>
+    <string name="contact_email_label">E-posta (isteğe bağlı)</string>
+    <string name="contact_message_label">Mesaj</string>
+    <string name="contact_send">Gönder</string>
+    <string name="contact_sending">Gönderiliyor…</string>
+    <string name="contact_sent">Mesaj gönderildi. Teşekkürler!</string>
+    <string name="contact_error">Gönderilemedi. Lütfen tekrar deneyin.</string>
+    <string name="contact_rate_limited_browser">Güvenlik için lütfen göndermeyi tarayıcınızda tamamlayın.</string>
+    <string name="contact_network_error">Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="contact_open_browser">Tarayıcıda aç</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Açık ilahi yok</string>
+    <string name="songs_pane_empty_body">Soldan bir ilahi seçin, kıtaları burada görünsün.</string>
+    <string name="more_pane_empty_title">Açık araç yok</string>
+    <string name="more_pane_empty_body">Soldan bir araç seçin, burada açılsın.</string>
+    <string name="library_pane_empty_title">Düzenlenen bir şey yok</string>
+    <string name="library_pane_empty_body">Soldan bir öğeyi düzenleyin veya yeni bir tane ekleyin, burada açılsın.</string>
+    <string name="bible_pane_empty_title">Açık bölüm yok</string>
+    <string name="bible_pane_empty_body">Bir kitap, ardından bir bölüm seçin, ayetleri burada görünsün.</string>
+    <string name="bible_chapters_overline">Bölüm</string>
+</resources>

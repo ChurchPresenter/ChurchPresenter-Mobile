@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Naslov</string>
+    <string name="songs_table_header_book">Pjesmarica</string>
+    <string name="songs_table_header_tune">Napjev</string>
+    <string name="songs_table_search_placeholder">Traži po # ili naslovu…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Nema dostupnih pjesama</string>
+    <string name="songs_table_no_match">Nijedna pjesma ne odgovara filtru</string>
+    <string name="songs_table_retry">Pokušaj ponovno</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Sve pjesmarice</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Otvori postavke</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Postavke</string>
+    <string name="settings_server_section">Poslužitelj</string>
+    <string name="settings_host_label">Poslužitelj / IP adresa</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">API ključ (neobavezno)</string>
+    <string name="settings_api_key_placeholder">Ostavite prazno ako nije potrebno</string>
+    <string name="settings_save">Spremi</string>
+    <string name="settings_cancel">Odustani</string>
+    <string name="settings_invalid_port">Port mora biti broj između 1 i 65535</string>
+    <string name="settings_host_empty">Poslužitelj ne smije biti prazan</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Izgled</string>
+    <string name="settings_theme_system">Sustav</string>
+    <string name="settings_theme_light">Svijetlo</string>
+    <string name="settings_theme_dark">Tamno</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Pjesme</string>
+    <string name="tab_bible">Biblija</string>
+    <string name="tab_pictures">Slike</string>
+    <string name="tab_presentation">Prezentacija</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Biblija — uskoro</string>
+    <string name="pictures_coming_soon">🖼  Slike — uskoro</string>
+    <string name="presentation_coming_soon">📽  Prezentacija — uskoro</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Nema dostupnih prezentacija</string>
+    <string name="presentation_loading_error">Učitavanje prezentacija nije uspjelo</string>
+    <string name="presentation_retry">Pokušaj ponovno</string>
+    <string name="presentation_slides">slajdova</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Nema dostupnih slika</string>
+    <string name="pictures_loading_error">Učitavanje slika nije uspjelo</string>
+    <string name="pictures_retry">Pokušaj ponovno</string>
+    <string name="pictures_photos">fotografija</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Traži knjige…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Nema dostupnih biblijskih knjiga</string>
+    <string name="bible_no_match">Nijedna knjiga ne odgovara pretrazi</string>
+    <string name="bible_chapter_label">Poglavlje</string>
+    <string name="bible_chapters_title">Poglavlja</string>
+    <string name="bible_no_verses">Nema dostupnih redaka</string>
+    <string name="bible_back">← Natrag</string>
+    <string name="bible_loading_error">Učitavanje nije uspjelo</string>
+    <string name="bible_retry">Pokušaj ponovno</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Raspored</string>
+    <string name="schedule_drawer_refresh">Osvježi raspored</string>
+    <string name="schedule_drawer_empty">Nema stavki u rasporedu</string>
+    <string name="schedule_drawer_error">Greška: %1$s</string>
+    <string name="schedule_drawer_open">Otvori raspored</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Dodaj u raspored</string>
+    <string name="song_detail_schedule_request_sent">Zahtjev poslan ✓</string>
+    <string name="song_detail_project_to_screen">Prikaži na zaslonu</string>
+    <string name="song_detail_stop_projecting">Prekini prikaz</string>
+    <string name="song_detail_fab_actions">Radnje</string>
+    <string name="song_detail_fab_close_actions">Zatvori radnje</string>
+    <string name="song_detail_projecting_badge">▶  Prikazuje se</string>
+    <string name="song_detail_no_lyrics">Nema dostupnog teksta</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Dodaj u raspored</string>
+    <string name="bible_detail_schedule_request_sent">Zahtjev poslan ✓</string>
+    <string name="bible_detail_project_to_screen">Prikaži na zaslonu</string>
+    <string name="bible_detail_stop_projecting">Prekini prikaz</string>
+    <string name="bible_detail_fab_actions">Radnje</string>
+    <string name="bible_detail_fab_close_actions">Zatvori radnje</string>
+    <string name="bible_detail_projecting_badge">▶  Prikazuje se</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Dodaj u raspored</string>
+    <string name="pictures_schedule_request_sent">Zahtjev poslan ✓</string>
+    <string name="pictures_project_to_screen">Prikaži na zaslonu</string>
+    <string name="pictures_stop_projecting">Prekini prikaz</string>
+    <string name="pictures_pick_from_device">Odaberi s uređaja</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Dodaj u raspored</string>
+    <string name="action_project_to_screen">Prikaži na zaslonu</string>
+    <string name="action_stop_projecting">Prekini prikaz</string>
+    <string name="pictures_uploading">Prenosi se…</string>
+    <string name="upload_overlay_subtitle">Pričekajte, nemojte zatvarati aplikaciju</string>
+    <string name="upload_overlay_photo_counter">Slika %1$d od %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Slika je dodana u raspored</string>
+    <string name="toast_pictures_failed_to_add_schedule">Dodavanje slike u raspored nije uspjelo: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Dodaj u raspored</string>
+    <string name="presentation_schedule_request_sent">Zahtjev poslan ✓</string>
+    <string name="presentation_project_to_screen">Prikaži na zaslonu</string>
+    <string name="presentation_stop_projecting">Prekini prikaz</string>
+    <string name="presentation_upload_file">Prenesi prezentaciju</string>
+    <string name="presentation_uploading">Prenosi se…</string>
+    <string name="toast_presentation_added_to_schedule">Prezentacija je dodana u raspored</string>
+    <string name="toast_presentation_failed_to_add_schedule">Dodavanje prezentacije u raspored nije uspjelo: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Odabir prezentacije nije uspio: %1$s</string>
+    <string name="toast_upload_unsupported">Ovaj poslužitelj ne podržava prijenos. Ažurirajte ChurchPresenter na računalu na najnoviju verziju.</string>
+    <string name="toast_upload_file_too_large">Datoteka je prevelika za poslužitelj. Pokušajte s manjom datotekom.</string>
+    <string name="toast_upload_server_error">Poslužitelj je odbio prijenos: %1$s</string>
+    <string name="toast_upload_failed">Prijenos nije uspio: %1$s</string>
+    <string name="toast_upload_reload_failed">Preneseno, ali ponovno učitavanje popisa nije uspjelo: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Pjesma je sada na zaslonu</string>
+    <string name="toast_request_failed">Zahtjev nije uspio</string>
+    <string name="toast_no_song_selected">Nijedna pjesma nije odabrana</string>
+    <string name="toast_song_added_to_schedule">„%1$s” dodana u raspored</string>
+    <string name="toast_failed_to_project">Prikaz pjesme nije uspio: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Dodavanje u raspored nije uspjelo: %1$s</string>
+    <string name="toast_request_denied">Zahtjev je odbijen</string>
+    <string name="toast_session_blocked">Sesija je blokirana — daljnji zahtjevi neće biti prihvaćeni</string>
+    <string name="toast_request_rejected">Poslužitelj je odbio zahtjev (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Zahtjev je odbijen: %1$s</string>
+    <string name="toast_bible_live">Biblijski odlomak je sada na zaslonu</string>
+    <string name="toast_bible_added_to_schedule">„%1$s” dodan u raspored</string>
+    <string name="toast_failed_to_project_bible">Prikaz nije uspio: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Dodavanje u raspored nije uspjelo: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Poslužitelj postavljen na %1$s:%2$s</string>
+    <string name="qr_scan_button">Skeniraj QR kod</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Vjeruj certifikatu poslužitelja</string>
+    <string name="cert_setup_subtitle">Potrebno je jednokratno postavljanje</string>
+    <string name="cert_setup_intro">ChurchPresenter koristi privatni HTTPS certifikat za sigurnu komunikaciju. Morate ga jednom instalirati kako bi vaš uređaj vjerovao vezi.</string>
+    <string name="cert_setup_scan_title">Skenirajte QR kod certifikata</string>
+    <string name="cert_setup_scan_desktop_hint">U ChurchPresenteru na računalu: Postavke → Poslužitelj → pritisnite „Download Cert” za prikaz QR koda.</string>
+    <string name="cert_setup_scan_button">Skeniraj QR kod</string>
+    <string name="cert_setup_scan_or_divider">ili upotrijebi spremljenu adresu</string>
+    <string name="cert_setup_url_scanned">✓ URL skeniran</string>
+    <string name="cert_setup_url_label">URL certifikata</string>
+    <string name="cert_setup_open_button">Otvori URL certifikata</string>
+    <string name="cert_setup_step2_ios_title">iOS — Instalirajte profil</string>
+    <string name="cert_setup_step2_ios_body">Safari će zatražiti preuzimanje konfiguracijskog profila. Dodirnite Dopusti, zatim idite na Postavke → Općenito → VPN i upravljanje uređajem, dodirnite ChurchPresenter i instalirajte.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Vjerujte certifikatu</string>
+    <string name="cert_setup_step3_ios_body">Postavke → Općenito → Informacije → Postavke pouzdanosti certifikata → uključite puno povjerenje za ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Instalirajte certifikat</string>
+    <string name="cert_setup_step2_android_body">Chrome preuzima .crt datoteku. Dodirnite je u obavijesti o preuzimanju, odaberite „CA certifikat” i dajte joj naziv poput „ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ „Nije moguće instalirati iz nepoznatih izvora”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android može blokirati instalaciju ako preglednik nema dopuštenje instalirati datoteke. Idite na Postavke → Aplikacije → [vaš preglednik] → Instaliranje nepoznatih aplikacija i uključite „Dopusti iz ovog izvora”. Vratite se ovamo i ponovno dodirnite datoteku.</string>
+    <string name="cert_setup_fingerprint_title">Provjerite otisak (preporučeno)</string>
+    <string name="cert_setup_fingerprint_body">Usporedite ovaj otisak s onim koji ChurchPresenter na računalu prikazuje pod Postavke → Poslužitelj → Certificate SHA-256. Moraju se podudarati.</string>
+    <string name="cert_setup_fingerprint_unavailable">Najprije se povežite s poslužiteljem da biste vidjeli otisak</string>
+    <string name="cert_setup_done_button">Gotovo — certifikat instaliran</string>
+    <string name="cert_setup_skip_button">Preskoči zasad</string>
+    <string name="cert_setup_skip_note">Ovom vodiču možete se vratiti u bilo kojem trenutku iz Postavki.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Poveži se s računalom</string>
+    <string name="connect_setup_subtitle">Potrebno je jednokratno postavljanje</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile povezuje se s aplikacijom ChurchPresenter na računalu u vašoj lokalnoj mreži. Skenirajte QR kod s računala kako bi se veza automatski postavila.</string>
+    <string name="connect_setup_step1_title">Otvorite ChurchPresenter na računalu</string>
+    <string name="connect_setup_step1_body">Pokrenite aplikaciju ChurchPresenter na računalu i provjerite da radi na istoj Wi-Fi mreži kao i ovaj uređaj.</string>
+    <string name="connect_setup_step2_title">Prikažite QR kod za povezivanje</string>
+    <string name="connect_setup_step2_body">U aplikaciji na računalu idite na Postavke → Mobilni uređaj i pritisnite „Show QR Code”. Na zaslonu će se pojaviti QR kod s podacima za povezivanje.</string>
+    <string name="connect_setup_step3_title">Skenirajte QR kod ispod</string>
+    <string name="connect_setup_step3_body">Dodirnite gumb ispod da biste otvorili kameru i skenirali QR kod prikazan na računalu. Veza će se postaviti automatski.</string>
+    <string name="connect_setup_scan_button">Skeniraj QR kod</string>
+    <string name="connect_setup_connected">✓ Povezano s %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Gotovo — povezano</string>
+    <string name="connect_setup_skip_button">Preskoči zasad</string>
+    <string name="connect_setup_skip_note">QR kod možete skenirati u bilo kojem trenutku iz Postavki.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Vaše ime (za pitanja i odgovore)</string>
+    <string name="settings_display_name_placeholder">Ostavite prazno za korištenje ID-a uređaja</string>
+    <string name="settings_privacy_section">Privatnost</string>
+    <string name="settings_telemetry_label">Dijeli podatke o korištenju i rušenjima</string>
+    <string name="settings_telemetry_description">Pomaže nam pronaći i ispraviti greške. Isključite da biste prestali slati analitiku i izvješća o rušenjima.</string>
+    <string name="tab_qa_admin">Pitanja</string>
+    <string name="qa_admin_session_active">Sesija je aktivna</string>
+    <string name="qa_admin_session_stopped">Sesija je zaustavljena</string>
+    <string name="qa_admin_incoming_tab">Pristigla (%1$d)</string>
+    <string name="qa_admin_finished_tab">Završena (%1$d)</string>
+    <string name="qa_admin_no_incoming">Nema pristiglih pitanja</string>
+    <string name="qa_admin_no_finished">Nema završenih pitanja</string>
+    <string name="qa_admin_approve">Odobri</string>
+    <string name="qa_admin_deny">Odbij</string>
+    <string name="qa_admin_go_live">Prikaži odmah</string>
+    <string name="qa_admin_done">Označi kao gotovo</string>
+    <string name="qa_admin_clear_display">Očisti zaslon</string>
+    <string name="qa_admin_now_live">Prikazuje se:</string>
+    <string name="qa_admin_edit_hint">Uredi tekst pitanja…</string>
+    <string name="qa_admin_add_question">Dodaj pitanje</string>
+    <string name="qa_admin_add_question_hint">Upišite svoje pitanje…</string>
+    <string name="qa_admin_save">Spremi</string>
+    <string name="qa_admin_cancel">Odustani</string>
+    <string name="qa_admin_error_retry">Pokušaj ponovno</string>
+    <string name="action_clear_display">Očisti zaslon</string>
+    <string name="action_hold_display">Zamrzni zaslon</string>
+    <string name="action_multi_select">Odaberi više</string>
+    <string name="bible_multi_select_count">Odabrano: %1$d</string>
+    <string name="connect_setup_no_camera_note">Na ovom uređaju nije pronađena kamera. Unesite podatke za povezivanje ručno:</string>
+    <string name="connect_setup_manual_entry_toggle">Unesi ručno</string>
+    <string name="connect_setup_scan_instead_toggle">Skeniraj QR kod</string>
+    <string name="connect_setup_manual_apply_button">Primijeni</string>
+    <string name="settings_active_url_label">Trenutno se povezuje s:</string>
+    <string name="settings_reset_to_default">Vrati na zadano</string>
+    <string name="settings_draft_url_label">Nakon spremanja povezat će se s:</string>
+    <string name="settings_check_status">Provjeri status poslužitelja</string>
+    <string name="settings_developer_section">Razvojni programer</string>
+    <string name="settings_send_test_error">Pošalji testnu grešku u Sentry</string>
+    <string name="settings_test_error_sent">✓ Testna greška poslana u Sentry</string>
+    <string name="settings_check_status_description">Provjeri status poslužitelja</string>
+    <string name="settings_status_recheck">Provjeri ponovno</string>
+    <string name="settings_status_server_version">Poslužitelj: %1$s</string>
+    <string name="settings_status_mobile_version">Mobilni: %1$s</string>
+    <string name="settings_status_api_key_enabled">API ključ: uključen</string>
+    <string name="settings_status_api_key_none">API ključ: nema</string>
+    <string name="settings_status_endpoints">Krajnje točke</string>
+    <string name="settings_status_bibles">Biblije</string>
+    <string name="settings_status_songbooks">Pjesmarice</string>
+    <string name="settings_status_none">nema</string>
+    <string name="status_connecting">Povezivanje s poslužiteljem…</string>
+    <string name="status_connected">Poslužitelj povezan</string>
+    <string name="status_continue">Nastavi</string>
+    <string name="status_retry">Pokušaj ponovno</string>
+    <string name="status_open_settings">Otvori postavke</string>
+    <string name="status_continue_anyway">Ipak nastavi</string>
+    <string name="status_limited_functionality">Ograničena funkcionalnost</string>
+    <string name="status_server_version">Verzija poslužitelja: %1$s</string>
+    <string name="status_issues_detected">Na povezanom poslužitelju otkriveni su sljedeći problemi:</string>
+    <string name="status_endpoint_unavailable">Krajnja točka statusa još nije dostupna u ovoj verziji poslužitelja — ažurirajte ChurchPresenter na računalu za potpuno izvješćivanje.</string>
+    <string name="status_error_title">Nije moguće doći do poslužitelja</string>
+    <string name="status_permissions_title">Dopuštenja ovog uređaja</string>
+    <string name="status_permission_present">Upravljanje prezentacijom</string>
+    <string name="status_permission_schedule">Dodavanje u raspored</string>
+    <string name="status_permission_upload">Prijenos datoteka</string>
+    <string name="status_permission_blocked">— blokirano</string>
+    <string name="status_info_bibles">Dostupne Biblije</string>
+    <string name="status_info_songbooks">Dostupne pjesmarice</string>
+    <string name="status_info_features">Uključene značajke</string>
+    <string name="status_warn_no_api_key_title">API ključ nije konfiguriran</string>
+    <string name="status_warn_no_api_key_body">Poslužitelj nema postavljen API ključ. Neke zaštićene krajnje točke mogu odbiti zahtjeve. Razmislite o uključivanju API ključa u postavkama poslužitelja ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Nema dostupnih biblijskih prijevoda</string>
+    <string name="status_warn_no_bibles_body">Poslužitelj nema učitanih biblijskih prijevoda. Kartica Biblija bit će prazna. Dodajte prijevod u aplikaciji ChurchPresenter na računalu.</string>
+    <string name="status_warn_no_songbooks_title">Nema dostupnih pjesmarica</string>
+    <string name="status_warn_no_songbooks_body">Poslužitelj nema učitanih pjesmarica. Kartica Pjesme bit će prazna. Uvezite pjesmaricu u aplikaciji ChurchPresenter na računalu.</string>
+    <string name="status_warn_present_blocked_title">Upravljanje prezentacijom blokirano</string>
+    <string name="status_warn_present_blocked_body">Ovaj uređaj nema dopuštenje upravljati prezentacijom (prikaz, brisanje, odabir slajdova). Zatražite od administratora poslužitelja dopuštenje Presenter za ovaj uređaj.</string>
+    <string name="status_warn_schedule_blocked_title">Uređivanje rasporeda blokirano</string>
+    <string name="status_warn_schedule_blocked_body">Ovaj uređaj nema dopuštenje dodavati stavke u raspored. Zatražite od administratora poslužitelja dopuštenje Schedule za ovaj uređaj.</string>
+    <string name="status_warn_upload_blocked_title">Prijenos datoteka blokiran</string>
+    <string name="status_warn_upload_blocked_body">Ovaj uređaj nema dopuštenje prenositi prezentacije ili slike. Zatražite od administratora poslužitelja dopuštenje Upload za ovaj uređaj.</string>
+    <string name="upload_blocked_toast">Prijenos datoteka je onemogućen za ovaj uređaj. Zatražite od administratora poslužitelja dopuštenje Upload.</string>
+    <string name="status_warn_unknown_version_title">Neprepoznata verzija poslužitelja</string>
+    <string name="status_warn_unknown_version_body">Poslužitelj je prijavio verziju „%1$s”. Neke značajke ove aplikacije možda nisu kompatibilne s tom verzijom.</string>
+    <string name="status_warn_missing_endpoint_title">Nedostaje API krajnja točka: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Poslužitelj ne nudi krajnju točku „%1$s”. Značajke koje o njoj ovise neće biti dostupne.</string>
+    <string name="media_title">Mediji</string>
+    <string name="media_no_media_loaded">Nijedan medij nije učitan</string>
+    <string name="media_playing">Reproducira se</string>
+    <string name="media_playing_on_desktop">Reproducira se na računalu</string>
+    <string name="media_local_ready">Lokalna datoteka · spremna za prikaz</string>
+    <string name="media_pick_to_upload">Odaberite datoteku za prijenos</string>
+    <string name="media_source_network_url">Mrežni URL</string>
+    <string name="media_source_upload">Prijenos s telefona</string>
+    <string name="media_subtitle_url">%1$s · Mrežni URL</string>
+    <string name="media_subtitle_empty">Zalijepite mrežni URL ispod za slanje medija</string>
+    <string name="media_on_screen">NA ZASLONU</string>
+    <string name="media_cd_stop">Zaustavi</string>
+    <string name="media_cd_back10">Natrag 10 sekundi</string>
+    <string name="media_cd_forward10">Naprijed 10 sekundi</string>
+    <string name="media_cd_play">Reproduciraj</string>
+    <string name="media_cd_pause">Pauziraj</string>
+    <string name="media_cd_mute">Isključi zvuk</string>
+    <string name="media_add_to_schedule">Dodaj u raspored</string>
+    <string name="media_go_live">Prikaži odmah</string>
+    <string name="media_clear_screen">Očisti zaslon</string>
+    <string name="media_source_label">IZVOR</string>
+    <string name="media_will_send">Poslat će se: %1$s</string>
+    <string name="media_target_uploaded">Prenesena datoteka · %1$s</string>
+    <string name="media_target_loaded">Učitano na računalu · %1$s</string>
+    <string name="media_target_url">Mrežni URL</string>
+    <string name="media_target_none">Odaberite izvor ispod za slanje medija</string>
+    <string name="media_load_label">UČITAJ MEDIJ</string>
+    <string name="media_uploading_percent">Prijenos… %1$d%%</string>
+    <string name="media_choose_file">Odaberite video ili audio datoteku</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Prijenosi su isključeni na računalu</string>
+    <string name="media_uploads_disabled_hint">Uključite „Allow file uploads from mobile devices” u postavkama poslužitelja aplikacije na računalu.</string>
+    <string name="media_playing_generic">medij</string>
+    <string name="more_photos_title">Fotografije</string>
+    <string name="more_photos_subtitle">Pregledavajte i prikazujte mape sa slikama</string>
+    <string name="more_qa_title">Pitanja</string>
+    <string name="more_qa_subtitle">Pregledajte i prikažite pitanja publike</string>
+    <string name="more_dictionary_title">Rječnik</string>
+    <string name="more_dictionary_subtitle">Strongov hebrejski i grčki leksikon</string>
+    <string name="more_announcements_title">Obavijesti</string>
+    <string name="more_announcements_subtitle">Tekst, satovi i odbrojavanja</string>
+    <string name="more_web_title">Web</string>
+    <string name="more_web_subtitle">Prikaži web stranicu na zaslonu</string>
+    <string name="strongs_dictionary_title">Strongov rječnik</string>
+    <string name="web_title">Web</string>
+    <string name="announcements_title">Obavijesti</string>
+    <string name="action_clear">Očisti</string>
+    <string name="action_cancel">Odustani</string>
+    <string name="action_go_live">Prikaži odmah</string>
+    <string name="label_add_to_schedule">Dodaj u raspored</string>
+    <string name="label_live">Uživo</string>
+    <string name="cd_delete">Izbriši</string>
+    <string name="cd_close">Zatvori</string>
+    <string name="cd_select">Odaberi</string>
+    <string name="cd_cast">Emitiraj</string>
+    <string name="cd_back">Natrag</string>
+    <string name="cd_settings">Postavke</string>
+    <string name="cd_schedule">Raspored</string>
+    <string name="overline_on_screen_preview">Pregled na zaslonu</string>
+    <string name="announcements_text_placeholder">Tekst obavijesti…</string>
+    <string name="overline_duration">Trajanje</string>
+    <string name="overline_target_time">Ciljno vrijeme</string>
+    <string name="overline_animation">Animacija</string>
+    <string name="stepper_hrs">Sati</string>
+    <string name="stepper_min">Min</string>
+    <string name="stepper_sec">Sek</string>
+    <string name="stepper_hour">Sat</string>
+    <string name="stepper_font_size">Veličina slova</string>
+    <string name="swatch_text">Tekst</string>
+    <string name="swatch_background">Pozadina</string>
+    <string name="announcements_clock_desc">Prikazuje trenutno vrijeme uživo.</string>
+    <string name="announcements_count_up_desc">Broji od nule prema gore kad krene prikaz.</string>
+    <string name="announcements_animation_duration_label">TRAJANJE ANIMACIJE</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">SPREMLJENE</string>
+    <string name="announcements_add_new">+ Nova</string>
+    <string name="announcements_no_saved">Još nema spremljenih obavijesti. Sastavite jednu i dodirnite „+ Nova”.</string>
+    <string name="color_picker_title">Odaberite boju</string>
+    <string name="color_picker_use">Upotrijebi boju</string>
+    <string name="color_slider_hue">Nijansa</string>
+    <string name="color_slider_saturation">Zasićenje</string>
+    <string name="color_slider_brightness">Svjetlina</string>
+    <string name="cd_custom_color">Prilagođena boja</string>
+    <string name="announcements_preview_placeholder">Vaša obavijest</string>
+    <string name="web_bookmarks_label">OZNAKE</string>
+    <string name="web_add_bookmark">+ Dodaj</string>
+    <string name="web_no_bookmarks">Još nema oznaka. Unesite URL i dodirnite „+ Dodaj”.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Traži broj, riječ ili značenje…</string>
+    <string name="dictionary_filter_all">Sve</string>
+    <string name="dictionary_filter_hebrew">Hebrejski</string>
+    <string name="dictionary_filter_greek">Grčki</string>
+    <string name="dictionary_no_entries">Nema pronađenih unosa</string>
+    <string name="dictionary_uses">UPOTREBA</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Vrsta riječi</string>
+    <string name="dictionary_occurrences">Pojavljivanja</string>
+    <string name="dictionary_root">Korijen</string>
+    <string name="dictionary_definition">Definicija</string>
+    <string name="dictionary_kjv_usage">KJV upotreba</string>
+    <string name="qa_edit_question_title">Uredi pitanje</string>
+    <string name="qa_delete_question">Izbriši pitanje</string>
+    <string name="qa_submitted_by">Poslao/la %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Zaustavi</string>
+    <string name="qa_action_approve">Odobri</string>
+    <string name="cd_edit">Uredi</string>
+    <string name="cd_deny">Odbij</string>
+    <string name="qa_badge_live">UŽIVO</string>
+    <string name="qa_badge_approved">✓ Odobreno</string>
+    <string name="qa_badge_denied">Odbijeno</string>
+    <string name="qa_badge_answered">Odgovoreno</string>
+    <string name="schedule_drawer_item_count">%1$d stavki</string>
+    <string name="presentation_slide_desc">Slajd %1$d</string>
+    <string name="presentation_slide_live">▶ UŽIVO</string>
+    <string name="tab_media">Mediji</string>
+    <string name="tab_present">Prikaz</string>
+    <string name="tab_more">Više</string>
+    <string name="songs_count">%1$d pjesama</string>
+    <string name="bible_chapters_count">%1$d pogl.</string>
+    <string name="status_version_line">Poslužitelj: %1$s · Mobilni: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Tekst</string>
+    <string name="announce_type_countdown">Odbrojavanje</string>
+    <string name="announce_type_count_up">Brojanje prema gore</string>
+    <string name="announce_type_clock">Sat</string>
+    <string name="announce_type_countdown_to_time">Odbrojavanje do vremena</string>
+    <string name="announce_anim_none">Bez</string>
+    <string name="announce_anim_fade">Prijelaz</string>
+    <string name="announce_anim_slide_up">Klizanje prema gore</string>
+    <string name="announce_anim_slide_down">Klizanje prema dolje</string>
+    <string name="announce_anim_slide_left">Klizanje slijeva</string>
+    <string name="announce_anim_slide_right">Klizanje zdesna</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Knjiga</string>
+    <string name="dictionary_ref_chapter">Poglavlje</string>
+    <string name="dictionary_ref_verse">Redak</string>
+    <string name="dictionary_ref_clear">Očisti filtar reference</string>
+    <string name="dictionary_appears_in">Pojavljuje se u</string>
+    <string name="dictionary_appears_in_count">%1$s od %2$s</string>
+    <string name="settings_active_server">Aktivni poslužitelj</string>
+    <string name="contact_us_title">Kontaktirajte nas</string>
+    <string name="contact_type_label">Vrsta</string>
+    <string name="contact_type_feature">Zahtjev za značajku</string>
+    <string name="contact_type_feedback">Povratna informacija</string>
+    <string name="contact_type_testimonial">Preporuka</string>
+    <string name="contact_type_bug">Prijava greške</string>
+    <string name="contact_name_label">Ime</string>
+    <string name="contact_email_label">E-pošta (neobavezno)</string>
+    <string name="contact_message_label">Poruka</string>
+    <string name="contact_send">Pošalji</string>
+    <string name="contact_sending">Šalje se…</string>
+    <string name="contact_sent">Poruka poslana. Hvala!</string>
+    <string name="contact_error">Slanje nije uspjelo. Pokušajte ponovno.</string>
+    <string name="contact_rate_limited_browser">Iz sigurnosnih razloga dovršite slanje u pregledniku.</string>
+    <string name="contact_network_error">Nije moguće doći do poslužitelja. Provjerite internetsku vezu i pokušajte ponovno.</string>
+    <string name="contact_open_browser">Otvori u pregledniku</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Nijedna pjesma nije otvorena</string>
+    <string name="songs_pane_empty_body">Odaberite pjesmu slijeva i njezine kitice pojavit će se ovdje.</string>
+    <string name="more_pane_empty_title">Nijedan alat nije otvoren</string>
+    <string name="more_pane_empty_body">Odaberite alat slijeva i otvorit će se ovdje.</string>
+    <string name="library_pane_empty_title">Ništa se ne uređuje</string>
+    <string name="library_pane_empty_body">Uredite stavku slijeva ili dodajte novu i otvorit će se ovdje.</string>
+    <string name="bible_pane_empty_title">Nijedno poglavlje nije otvoreno</string>
+    <string name="bible_pane_empty_body">Odaberite knjigu, zatim poglavlje, i njegovi redci pojavit će se ovdje.</string>
+    <string name="bible_chapters_overline">Poglavlje</string>
+</resources>

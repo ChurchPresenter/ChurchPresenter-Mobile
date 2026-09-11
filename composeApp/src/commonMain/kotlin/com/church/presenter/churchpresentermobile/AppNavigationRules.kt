@@ -100,3 +100,31 @@ internal fun deepLinkOpensSettings(showingConnectSetup: Boolean): Boolean = !sho
 /** Whether re-tapping [tab] should return the More tab to its launcher grid. */
 internal fun tapReturnsToMoreLauncher(tab: AppTab, selected: AppTab): Boolean =
     tab == AppTab.MORE && selected == AppTab.MORE
+
+/**
+ * Whether [tab] hangs its own header over its panes, leaving the shell nothing
+ * to draw across the top.
+ *
+ * Only true in a two-pane layout, and only for the tabs converted to it: a split
+ * tab's two panes want two different headers — the tab's own on the list, the
+ * open item's on the detail — and one bar spanning both can be neither. Tabs
+ * still to be split keep the single bar, so this list grows one tab at a time
+ * rather than the shell having to know which of the two shapes each tab is in.
+ */
+internal fun tabDrawsOwnHeader(tab: AppTab, twoPane: Boolean): Boolean =
+    twoPane && tab in TABS_WITH_PANE_HEADERS
+
+/**
+ * The tabs that lay themselves out in panes.
+ *
+ * Everything but [AppTab.PRESENTATION], which the tablet design does not cover —
+ * it keeps the single bar and the one-screen layout until it does.
+ */
+private val TABS_WITH_PANE_HEADERS = setOf(
+    AppTab.PRESENT,
+    AppTab.SONGS,
+    AppTab.BIBLE,
+    AppTab.MEDIA,
+    AppTab.MORE,
+    AppTab.LIBRARY,
+)

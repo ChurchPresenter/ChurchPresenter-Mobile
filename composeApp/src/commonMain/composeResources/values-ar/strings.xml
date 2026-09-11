@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">العنوان</string>
+    <string name="songs_table_header_book">كتاب الترانيم</string>
+    <string name="songs_table_header_tune">اللحن</string>
+    <string name="songs_table_search_placeholder">ابحث بالرقم أو العنوان…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">لا توجد ترانيم متاحة</string>
+    <string name="songs_table_no_match">لا توجد ترنيمة تطابق عامل التصفية</string>
+    <string name="songs_table_retry">إعادة المحاولة</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">كل كتب الترانيم</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">فتح الإعدادات</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_server_section">الخادم</string>
+    <string name="settings_host_label">المضيف / عنوان IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">المنفذ</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">مفتاح API (اختياري)</string>
+    <string name="settings_api_key_placeholder">اتركه فارغًا إن لم يكن مطلوبًا</string>
+    <string name="settings_save">حفظ</string>
+    <string name="settings_cancel">إلغاء</string>
+    <string name="settings_invalid_port">يجب أن يكون المنفذ رقمًا بين 1 و65535</string>
+    <string name="settings_host_empty">لا يمكن ترك المضيف فارغًا</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">المظهر</string>
+    <string name="settings_theme_system">النظام</string>
+    <string name="settings_theme_light">فاتح</string>
+    <string name="settings_theme_dark">داكن</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">الترانيم</string>
+    <string name="tab_bible">الكتاب المقدس</string>
+    <string name="tab_pictures">الصور</string>
+    <string name="tab_presentation">العرض</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  الكتاب المقدس — قريبًا</string>
+    <string name="pictures_coming_soon">🖼  الصور — قريبًا</string>
+    <string name="presentation_coming_soon">📽  العرض — قريبًا</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">لا توجد عروض متاحة</string>
+    <string name="presentation_loading_error">تعذّر تحميل العروض</string>
+    <string name="presentation_retry">إعادة المحاولة</string>
+    <string name="presentation_slides">شريحة</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">لا توجد صور متاحة</string>
+    <string name="pictures_loading_error">تعذّر تحميل الصور</string>
+    <string name="pictures_retry">إعادة المحاولة</string>
+    <string name="pictures_photos">صورة</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">ابحث في الأسفار…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">لا توجد أسفار متاحة</string>
+    <string name="bible_no_match">لا يوجد سفر يطابق البحث</string>
+    <string name="bible_chapter_label">الإصحاح</string>
+    <string name="bible_chapters_title">الإصحاحات</string>
+    <string name="bible_no_verses">لا توجد آيات متاحة</string>
+    <string name="bible_back">→ رجوع</string>
+    <string name="bible_loading_error">تعذّر التحميل</string>
+    <string name="bible_retry">إعادة المحاولة</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">البرنامج</string>
+    <string name="schedule_drawer_refresh">تحديث البرنامج</string>
+    <string name="schedule_drawer_empty">لا توجد عناصر في البرنامج</string>
+    <string name="schedule_drawer_error">خطأ: %1$s</string>
+    <string name="schedule_drawer_open">فتح البرنامج</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="song_detail_schedule_request_sent">تم إرسال الطلب ✓</string>
+    <string name="song_detail_project_to_screen">اعرض على الشاشة</string>
+    <string name="song_detail_stop_projecting">أوقف العرض</string>
+    <string name="song_detail_fab_actions">الإجراءات</string>
+    <string name="song_detail_fab_close_actions">إغلاق الإجراءات</string>
+    <string name="song_detail_projecting_badge">▶  قيد العرض</string>
+    <string name="song_detail_no_lyrics">لا توجد كلمات متاحة</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="bible_detail_schedule_request_sent">تم إرسال الطلب ✓</string>
+    <string name="bible_detail_project_to_screen">اعرض على الشاشة</string>
+    <string name="bible_detail_stop_projecting">أوقف العرض</string>
+    <string name="bible_detail_fab_actions">الإجراءات</string>
+    <string name="bible_detail_fab_close_actions">إغلاق الإجراءات</string>
+    <string name="bible_detail_projecting_badge">▶  قيد العرض</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="pictures_schedule_request_sent">تم إرسال الطلب ✓</string>
+    <string name="pictures_project_to_screen">اعرض على الشاشة</string>
+    <string name="pictures_stop_projecting">أوقف العرض</string>
+    <string name="pictures_pick_from_device">اختر من الجهاز</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="action_project_to_screen">اعرض على الشاشة</string>
+    <string name="action_stop_projecting">أوقف العرض</string>
+    <string name="pictures_uploading">جارٍ الرفع…</string>
+    <string name="upload_overlay_subtitle">يُرجى الانتظار وعدم إغلاق التطبيق</string>
+    <string name="upload_overlay_photo_counter">الصورة %1$d من %2$d</string>
+    <string name="toast_pictures_added_to_schedule">تمت إضافة الصورة إلى البرنامج</string>
+    <string name="toast_pictures_failed_to_add_schedule">تعذّرت إضافة الصورة إلى البرنامج: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="presentation_schedule_request_sent">تم إرسال الطلب ✓</string>
+    <string name="presentation_project_to_screen">اعرض على الشاشة</string>
+    <string name="presentation_stop_projecting">أوقف العرض</string>
+    <string name="presentation_upload_file">ارفع عرضًا</string>
+    <string name="presentation_uploading">جارٍ الرفع…</string>
+    <string name="toast_presentation_added_to_schedule">تمت إضافة العرض إلى البرنامج</string>
+    <string name="toast_presentation_failed_to_add_schedule">تعذّرت إضافة العرض إلى البرنامج: %1$s</string>
+    <string name="toast_failed_to_select_presentation">تعذّر اختيار العرض: %1$s</string>
+    <string name="toast_upload_unsupported">هذا الخادم لا يدعم الرفع. حدّث ChurchPresenter على الحاسوب إلى أحدث إصدار.</string>
+    <string name="toast_upload_file_too_large">الملف أكبر مما يقبله الخادم. جرّب ملفًا أصغر.</string>
+    <string name="toast_upload_server_error">رفض الخادم عملية الرفع: %1$s</string>
+    <string name="toast_upload_failed">فشل الرفع: %1$s</string>
+    <string name="toast_upload_reload_failed">تم الرفع، لكن تعذّر إعادة تحميل القائمة: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">الترنيمة معروضة الآن على الشاشة</string>
+    <string name="toast_request_failed">فشل الطلب</string>
+    <string name="toast_no_song_selected">لم يتم اختيار أي ترنيمة</string>
+    <string name="toast_song_added_to_schedule">تمت إضافة «%1$s» إلى البرنامج</string>
+    <string name="toast_failed_to_project">تعذّر عرض الترنيمة: %1$s</string>
+    <string name="toast_failed_to_add_schedule">تعذّرت الإضافة إلى البرنامج: %1$s</string>
+    <string name="toast_request_denied">تم رفض الطلب</string>
+    <string name="toast_session_blocked">الجلسة محظورة — لن تُقبل أي طلبات أخرى</string>
+    <string name="toast_request_rejected">رفض الخادم الطلب (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">تم رفض الطلب: %1$s</string>
+    <string name="toast_bible_live">المقطع الكتابي معروض الآن على الشاشة</string>
+    <string name="toast_bible_added_to_schedule">تمت إضافة «%1$s» إلى البرنامج</string>
+    <string name="toast_failed_to_project_bible">تعذّر العرض: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">تعذّرت الإضافة إلى البرنامج: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ تم ضبط الخادم على %1$s:%2$s</string>
+    <string name="qr_scan_button">امسح رمز QR</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">الوثوق بشهادة الخادم</string>
+    <string name="cert_setup_subtitle">مطلوب إعداد لمرة واحدة</string>
+    <string name="cert_setup_intro">يستخدم ChurchPresenter شهادة HTTPS خاصة لتأمين الاتصال. عليك تثبيتها مرة واحدة ليثق جهازك بهذا الاتصال.</string>
+    <string name="cert_setup_scan_title">امسح رمز QR الخاص بالشهادة</string>
+    <string name="cert_setup_scan_desktop_hint">في ChurchPresenter على الحاسوب: الإعدادات ← الخادم ← اضغط «Download Cert» لإظهار رمز QR.</string>
+    <string name="cert_setup_scan_button">امسح رمز QR</string>
+    <string name="cert_setup_scan_or_divider">أو استخدم العنوان المحفوظ</string>
+    <string name="cert_setup_url_scanned">✓ تم مسح الرابط</string>
+    <string name="cert_setup_url_label">رابط الشهادة</string>
+    <string name="cert_setup_open_button">افتح رابط الشهادة</string>
+    <string name="cert_setup_step2_ios_title">iOS — ثبّت ملف التعريف</string>
+    <string name="cert_setup_step2_ios_body">سيطلب Safari تنزيل ملف تعريف الإعداد. اضغط «سماح»، ثم انتقل إلى الإعدادات ← عام ← VPN وإدارة الجهاز، واضغط ChurchPresenter وثبّته.</string>
+    <string name="cert_setup_step3_ios_title">iOS — ثق بالشهادة</string>
+    <string name="cert_setup_step3_ios_body">الإعدادات ← عام ← حول ← إعدادات الثقة بالشهادات ← فعّل الثقة الكاملة لـ ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — ثبّت الشهادة</string>
+    <string name="cert_setup_step2_android_body">ينزّل Chrome ملف ‎.crt. اضغط عليه من إشعار التنزيل، واختر «شهادة CA» وسمّه باسم مثل «ChurchPresenter».</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ ظهرت رسالة «تعذّر التثبيت من مصادر غير معروفة»؟</string>
+    <string name="cert_setup_android_unknown_sources_body">قد يحظر Android التثبيت إذا لم يكن متصفحك مسموحًا له بتثبيت الملفات. انتقل إلى الإعدادات ← التطبيقات ← [متصفحك] ← تثبيت تطبيقات غير معروفة، ثم فعّل «السماح من هذا المصدر». ارجع إلى هنا واضغط الملف مرة أخرى.</string>
+    <string name="cert_setup_fingerprint_title">تحقّق من البصمة (موصى به)</string>
+    <string name="cert_setup_fingerprint_body">قارن هذه البصمة بما يعرضه ChurchPresenter على الحاسوب في الإعدادات ← الخادم ← Certificate SHA-256. يجب أن تتطابقا.</string>
+    <string name="cert_setup_fingerprint_unavailable">اتصل بالخادم أولًا لرؤية البصمة</string>
+    <string name="cert_setup_done_button">تم — تم تثبيت الشهادة</string>
+    <string name="cert_setup_skip_button">تخطَّ الآن</string>
+    <string name="cert_setup_skip_note">يمكنك العودة إلى هذا الدليل في أي وقت من الإعدادات.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">الاتصال بالحاسوب</string>
+    <string name="connect_setup_subtitle">مطلوب إعداد لمرة واحدة</string>
+    <string name="connect_setup_intro">يتصل ChurchPresenter Mobile بتطبيق ChurchPresenter على الحاسوب في شبكتك المحلية. امسح رمز QR من الحاسوب لضبط الاتصال تلقائيًا.</string>
+    <string name="connect_setup_step1_title">افتح ChurchPresenter على حاسوبك</string>
+    <string name="connect_setup_step1_body">شغّل تطبيق ChurchPresenter على الحاسوب وتأكد أنه يعمل على شبكة Wi-Fi نفسها التي يستخدمها هذا الجهاز.</string>
+    <string name="connect_setup_step2_title">أظهر رمز QR للاتصال</string>
+    <string name="connect_setup_step2_body">في تطبيق الحاسوب انتقل إلى الإعدادات ← الجوال واضغط «Show QR Code». سيظهر على الشاشة رمز QR يحمل تفاصيل الاتصال.</string>
+    <string name="connect_setup_step3_title">امسح رمز QR أدناه</string>
+    <string name="connect_setup_step3_body">اضغط الزر أدناه لفتح الكاميرا ومسح رمز QR المعروض على الحاسوب. سيُضبط الاتصال تلقائيًا.</string>
+    <string name="connect_setup_scan_button">امسح رمز QR</string>
+    <string name="connect_setup_connected">✓ تم الاتصال بـ %1$s:%2$s</string>
+    <string name="connect_setup_done_button">تم — تم الاتصال</string>
+    <string name="connect_setup_skip_button">تخطَّ الآن</string>
+    <string name="connect_setup_skip_note">يمكنك مسح رمز QR في أي وقت من الإعدادات.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">اسمك (لقسم الأسئلة والأجوبة)</string>
+    <string name="settings_display_name_placeholder">اتركه فارغًا لاستخدام معرّف الجهاز</string>
+    <string name="settings_privacy_section">الخصوصية</string>
+    <string name="settings_telemetry_label">مشاركة بيانات الاستخدام والأعطال</string>
+    <string name="settings_telemetry_description">يساعدنا على اكتشاف الأخطاء وإصلاحها. أوقفه لإيقاف إرسال التحليلات وتقارير الأعطال.</string>
+    <string name="tab_qa_admin">أسئلة وأجوبة</string>
+    <string name="qa_admin_session_active">الجلسة نشطة</string>
+    <string name="qa_admin_session_stopped">الجلسة متوقفة</string>
+    <string name="qa_admin_incoming_tab">الواردة (%1$d)</string>
+    <string name="qa_admin_finished_tab">المنتهية (%1$d)</string>
+    <string name="qa_admin_no_incoming">لا توجد أسئلة واردة</string>
+    <string name="qa_admin_no_finished">لا توجد أسئلة منتهية</string>
+    <string name="qa_admin_approve">موافقة</string>
+    <string name="qa_admin_deny">رفض</string>
+    <string name="qa_admin_go_live">اعرض الآن</string>
+    <string name="qa_admin_done">وضع علامة منتهٍ</string>
+    <string name="qa_admin_clear_display">امسح الشاشة</string>
+    <string name="qa_admin_now_live">قيد العرض:</string>
+    <string name="qa_admin_edit_hint">عدّل نص السؤال…</string>
+    <string name="qa_admin_add_question">أضف سؤالًا</string>
+    <string name="qa_admin_add_question_hint">اكتب سؤالك…</string>
+    <string name="qa_admin_save">حفظ</string>
+    <string name="qa_admin_cancel">إلغاء</string>
+    <string name="qa_admin_error_retry">إعادة المحاولة</string>
+    <string name="action_clear_display">امسح الشاشة</string>
+    <string name="action_hold_display">تثبيت الشاشة</string>
+    <string name="action_multi_select">تحديد متعدد</string>
+    <string name="bible_multi_select_count">%1$d محدّدة</string>
+    <string name="connect_setup_no_camera_note">لم يتم العثور على كاميرا في هذا الجهاز. أدخل تفاصيل الاتصال يدويًا:</string>
+    <string name="connect_setup_manual_entry_toggle">أدخل يدويًا بدلًا من ذلك</string>
+    <string name="connect_setup_scan_instead_toggle">امسح رمز QR بدلًا من ذلك</string>
+    <string name="connect_setup_manual_apply_button">تطبيق</string>
+    <string name="settings_active_url_label">يتصل حاليًا بـ:</string>
+    <string name="settings_reset_to_default">إعادة التعيين إلى الافتراضي</string>
+    <string name="settings_draft_url_label">سيتصل بعد الحفظ بـ:</string>
+    <string name="settings_check_status">تحقّق من حالة الخادم</string>
+    <string name="settings_developer_section">المطوّر</string>
+    <string name="settings_send_test_error">أرسل خطأ اختبار إلى Sentry</string>
+    <string name="settings_test_error_sent">✓ تم إرسال خطأ الاختبار إلى Sentry</string>
+    <string name="settings_check_status_description">تحقّق من حالة الخادم</string>
+    <string name="settings_status_recheck">إعادة الفحص</string>
+    <string name="settings_status_server_version">الخادم: %1$s</string>
+    <string name="settings_status_mobile_version">الجوال: %1$s</string>
+    <string name="settings_status_api_key_enabled">مفتاح API: مُفعّل</string>
+    <string name="settings_status_api_key_none">مفتاح API: لا يوجد</string>
+    <string name="settings_status_endpoints">نقاط النهاية</string>
+    <string name="settings_status_bibles">نسخ الكتاب المقدس</string>
+    <string name="settings_status_songbooks">كتب الترانيم</string>
+    <string name="settings_status_none">لا شيء</string>
+    <string name="status_connecting">جارٍ الاتصال بالخادم…</string>
+    <string name="status_connected">تم الاتصال بالخادم</string>
+    <string name="status_continue">متابعة</string>
+    <string name="status_retry">إعادة المحاولة</string>
+    <string name="status_open_settings">فتح الإعدادات</string>
+    <string name="status_continue_anyway">متابعة على أي حال</string>
+    <string name="status_limited_functionality">وظائف محدودة</string>
+    <string name="status_server_version">إصدار الخادم: %1$s</string>
+    <string name="status_issues_detected">تم اكتشاف المشكلات التالية على الخادم المتصل:</string>
+    <string name="status_endpoint_unavailable">نقطة نهاية الحالة غير متوفرة بعد في هذا الإصدار من الخادم — حدّث ChurchPresenter على الحاسوب للحصول على تقرير كامل.</string>
+    <string name="status_error_title">تعذّر الوصول إلى الخادم</string>
+    <string name="status_permissions_title">أذونات هذا الجهاز</string>
+    <string name="status_permission_present">التحكم في العرض</string>
+    <string name="status_permission_schedule">الإضافة إلى البرنامج</string>
+    <string name="status_permission_upload">رفع الملفات</string>
+    <string name="status_permission_blocked">— محظور</string>
+    <string name="status_info_bibles">نسخ الكتاب المقدس المتاحة</string>
+    <string name="status_info_songbooks">كتب الترانيم المتاحة</string>
+    <string name="status_info_features">الميزات المفعّلة</string>
+    <string name="status_warn_no_api_key_title">لم يتم ضبط مفتاح API</string>
+    <string name="status_warn_no_api_key_body">لم يُضبط مفتاح API على الخادم. قد ترفض بعض نقاط النهاية المحمية الطلبات. فكّر في تفعيل مفتاح API في إعدادات خادم ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">لا تتوفر ترجمات للكتاب المقدس</string>
+    <string name="status_warn_no_bibles_body">لم يُحمَّل على الخادم أي ترجمة للكتاب المقدس. سيكون تبويب الكتاب المقدس فارغًا. أضف ترجمة في تطبيق ChurchPresenter على الحاسوب.</string>
+    <string name="status_warn_no_songbooks_title">لا تتوفر كتب ترانيم</string>
+    <string name="status_warn_no_songbooks_body">لم يُحمَّل على الخادم أي كتاب ترانيم. سيكون تبويب الترانيم فارغًا. استورد كتاب ترانيم في تطبيق ChurchPresenter على الحاسوب.</string>
+    <string name="status_warn_present_blocked_title">التحكم في العرض محظور</string>
+    <string name="status_warn_present_blocked_body">هذا الجهاز غير مسموح له بالتحكم في العرض (العرض، المسح، اختيار الشرائح). اطلب من مسؤول الخادم منح هذا الجهاز صلاحية Presenter.</string>
+    <string name="status_warn_schedule_blocked_title">تعديل البرنامج محظور</string>
+    <string name="status_warn_schedule_blocked_body">هذا الجهاز غير مسموح له بإضافة عناصر إلى البرنامج. اطلب من مسؤول الخادم منح هذا الجهاز صلاحية Schedule.</string>
+    <string name="status_warn_upload_blocked_title">رفع الملفات محظور</string>
+    <string name="status_warn_upload_blocked_body">هذا الجهاز غير مسموح له برفع العروض أو الصور. اطلب من مسؤول الخادم منح هذا الجهاز صلاحية Upload.</string>
+    <string name="upload_blocked_toast">رفع الملفات معطّل لهذا الجهاز. اطلب من مسؤول الخادم منح صلاحية Upload.</string>
+    <string name="status_warn_unknown_version_title">إصدار خادم غير معروف</string>
+    <string name="status_warn_unknown_version_body">أبلغ الخادم عن الإصدار «%1$s». قد لا تتوافق بعض ميزات هذا التطبيق مع هذا الإصدار.</string>
+    <string name="status_warn_missing_endpoint_title">نقطة نهاية API مفقودة: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">لا يوفّر الخادم نقطة النهاية «%1$s». لن تتوفر الميزات التي تعتمد عليها.</string>
+    <string name="media_title">الوسائط</string>
+    <string name="media_no_media_loaded">لم يتم تحميل أي وسائط</string>
+    <string name="media_playing">قيد التشغيل</string>
+    <string name="media_playing_on_desktop">قيد التشغيل على الحاسوب</string>
+    <string name="media_local_ready">ملف محلي · جاهز للعرض</string>
+    <string name="media_pick_to_upload">اختر ملفًا لرفعه</string>
+    <string name="media_source_network_url">رابط شبكة</string>
+    <string name="media_source_upload">ارفع من الهاتف</string>
+    <string name="media_subtitle_url">%1$s · رابط شبكة</string>
+    <string name="media_subtitle_empty">الصق رابط شبكة أدناه لإرسال الوسائط</string>
+    <string name="media_on_screen">على الشاشة</string>
+    <string name="media_cd_stop">إيقاف</string>
+    <string name="media_cd_back10">إرجاع 10 ثوانٍ</string>
+    <string name="media_cd_forward10">تقديم 10 ثوانٍ</string>
+    <string name="media_cd_play">تشغيل</string>
+    <string name="media_cd_pause">إيقاف مؤقت</string>
+    <string name="media_cd_mute">كتم الصوت</string>
+    <string name="media_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="media_go_live">اعرض الآن</string>
+    <string name="media_clear_screen">امسح الشاشة</string>
+    <string name="media_source_label">المصدر</string>
+    <string name="media_will_send">سيتم إرسال: %1$s</string>
+    <string name="media_target_uploaded">ملف مرفوع · %1$s</string>
+    <string name="media_target_loaded">محمّل على الحاسوب · %1$s</string>
+    <string name="media_target_url">رابط شبكة</string>
+    <string name="media_target_none">اختر مصدرًا أدناه لإرسال الوسائط</string>
+    <string name="media_load_label">تحميل الوسائط</string>
+    <string name="media_uploading_percent">جارٍ الرفع… %1$d%%</string>
+    <string name="media_choose_file">اختر ملف فيديو أو صوت</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">الرفع معطّل على الحاسوب</string>
+    <string name="media_uploads_disabled_hint">فعّل «Allow file uploads from mobile devices» في إعدادات الخادم بتطبيق الحاسوب.</string>
+    <string name="media_playing_generic">وسائط</string>
+    <string name="more_photos_title">الصور</string>
+    <string name="more_photos_subtitle">تصفّح مجلدات الصور واعرضها</string>
+    <string name="more_qa_title">أسئلة وأجوبة</string>
+    <string name="more_qa_subtitle">راجع أسئلة الحضور واعرضها</string>
+    <string name="more_dictionary_title">القاموس</string>
+    <string name="more_dictionary_subtitle">معجم سترونغ العبري واليوناني</string>
+    <string name="more_announcements_title">الإعلانات</string>
+    <string name="more_announcements_subtitle">نصوص وساعات وعدّادات تنازلية</string>
+    <string name="more_web_title">الويب</string>
+    <string name="more_web_subtitle">اعرض صفحة ويب على الشاشة</string>
+    <string name="strongs_dictionary_title">قاموس سترونغ</string>
+    <string name="web_title">الويب</string>
+    <string name="announcements_title">الإعلانات</string>
+    <string name="action_clear">مسح</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_go_live">اعرض الآن</string>
+    <string name="label_add_to_schedule">أضف إلى البرنامج</string>
+    <string name="label_live">مباشر</string>
+    <string name="cd_delete">حذف</string>
+    <string name="cd_close">إغلاق</string>
+    <string name="cd_select">تحديد</string>
+    <string name="cd_cast">بث</string>
+    <string name="cd_back">رجوع</string>
+    <string name="cd_settings">الإعدادات</string>
+    <string name="cd_schedule">البرنامج</string>
+    <string name="overline_on_screen_preview">معاينة الشاشة</string>
+    <string name="announcements_text_placeholder">نص الإعلان…</string>
+    <string name="overline_duration">المدة</string>
+    <string name="overline_target_time">الوقت المستهدف</string>
+    <string name="overline_animation">الحركة</string>
+    <string name="stepper_hrs">ساعة</string>
+    <string name="stepper_min">دقيقة</string>
+    <string name="stepper_sec">ثانية</string>
+    <string name="stepper_hour">ساعة</string>
+    <string name="stepper_font_size">حجم الخط</string>
+    <string name="swatch_text">النص</string>
+    <string name="swatch_background">الخلفية</string>
+    <string name="announcements_clock_desc">يعرض الوقت الحالي مباشرةً.</string>
+    <string name="announcements_count_up_desc">يعدّ تصاعديًا من الصفر عند بدء العرض.</string>
+    <string name="announcements_animation_duration_label">مدة الحركة</string>
+    <string name="animation_duration_ms">%1$d م.ث</string>
+    <string name="announcements_saved_label">المحفوظة</string>
+    <string name="announcements_add_new">+ جديد</string>
+    <string name="announcements_no_saved">لا توجد إعلانات محفوظة بعد. اكتب واحدًا ثم اضغط «+ جديد».</string>
+    <string name="color_picker_title">اختر لونًا</string>
+    <string name="color_picker_use">استخدم اللون</string>
+    <string name="color_slider_hue">درجة اللون</string>
+    <string name="color_slider_saturation">التشبّع</string>
+    <string name="color_slider_brightness">السطوع</string>
+    <string name="cd_custom_color">لون مخصّص</string>
+    <string name="announcements_preview_placeholder">إعلانك</string>
+    <string name="web_bookmarks_label">الإشارات المرجعية</string>
+    <string name="web_add_bookmark">+ إضافة</string>
+    <string name="web_no_bookmarks">لا توجد إشارات مرجعية بعد. أدخل رابطًا ثم اضغط «+ إضافة».</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">ابحث برقم أو كلمة أو معنى…</string>
+    <string name="dictionary_filter_all">الكل</string>
+    <string name="dictionary_filter_hebrew">عبري</string>
+    <string name="dictionary_filter_greek">يوناني</string>
+    <string name="dictionary_no_entries">لم يتم العثور على مدخلات</string>
+    <string name="dictionary_uses">الاستخدام</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">نوع الكلمة</string>
+    <string name="dictionary_occurrences">مواضع الورود</string>
+    <string name="dictionary_root">الجذر</string>
+    <string name="dictionary_definition">التعريف</string>
+    <string name="dictionary_kjv_usage">استخدام KJV</string>
+    <string name="qa_edit_question_title">تعديل السؤال</string>
+    <string name="qa_delete_question">حذف السؤال</string>
+    <string name="qa_submitted_by">أرسله %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">إيقاف</string>
+    <string name="qa_action_approve">موافقة</string>
+    <string name="cd_edit">تعديل</string>
+    <string name="cd_deny">رفض</string>
+    <string name="qa_badge_live">مباشر</string>
+    <string name="qa_badge_approved">✓ تمت الموافقة</string>
+    <string name="qa_badge_denied">مرفوض</string>
+    <string name="qa_badge_answered">تمت الإجابة</string>
+    <string name="schedule_drawer_item_count">%1$d عنصرًا</string>
+    <string name="presentation_slide_desc">الشريحة %1$d</string>
+    <string name="presentation_slide_live">▶ مباشر</string>
+    <string name="tab_media">الوسائط</string>
+    <string name="tab_present">العرض</string>
+    <string name="tab_more">المزيد</string>
+    <string name="songs_count">%1$d ترنيمة</string>
+    <string name="bible_chapters_count">%1$d إصحاح</string>
+    <string name="status_version_line">الخادم: %1$s · الجوال: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">نص</string>
+    <string name="announce_type_countdown">عدّ تنازلي</string>
+    <string name="announce_type_count_up">عدّ تصاعدي</string>
+    <string name="announce_type_clock">ساعة</string>
+    <string name="announce_type_countdown_to_time">عدّ تنازلي حتى وقت محدّد</string>
+    <string name="announce_anim_none">بدون</string>
+    <string name="announce_anim_fade">تلاشٍ</string>
+    <string name="announce_anim_slide_up">انزلاق لأعلى</string>
+    <string name="announce_anim_slide_down">انزلاق لأسفل</string>
+    <string name="announce_anim_slide_left">انزلاق من اليسار</string>
+    <string name="announce_anim_slide_right">انزلاق من اليمين</string>
+    <string name="announce_duration_seconds">%1$s ث</string>
+    <string name="dictionary_ref_book">السفر</string>
+    <string name="dictionary_ref_chapter">الإصحاح</string>
+    <string name="dictionary_ref_verse">الآية</string>
+    <string name="dictionary_ref_clear">مسح مرشّح المرجع</string>
+    <string name="dictionary_appears_in">يرد في</string>
+    <string name="dictionary_appears_in_count">%1$s من %2$s</string>
+    <string name="settings_active_server">الخادم النشط</string>
+    <string name="contact_us_title">اتصل بنا</string>
+    <string name="contact_type_label">النوع</string>
+    <string name="contact_type_feature">طلب ميزة</string>
+    <string name="contact_type_feedback">ملاحظات</string>
+    <string name="contact_type_testimonial">شهادة</string>
+    <string name="contact_type_bug">بلاغ عن خلل</string>
+    <string name="contact_name_label">الاسم</string>
+    <string name="contact_email_label">البريد الإلكتروني (اختياري)</string>
+    <string name="contact_message_label">الرسالة</string>
+    <string name="contact_send">إرسال</string>
+    <string name="contact_sending">جارٍ الإرسال…</string>
+    <string name="contact_sent">تم إرسال الرسالة. شكرًا لك!</string>
+    <string name="contact_error">تعذّر الإرسال. يُرجى المحاولة مرة أخرى.</string>
+    <string name="contact_rate_limited_browser">لدواعٍ أمنية، يُرجى إكمال الإرسال في متصفحك.</string>
+    <string name="contact_network_error">تعذّر الوصول إلى الخادم. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="contact_open_browser">افتح في المتصفح</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">لا توجد ترنيمة مفتوحة</string>
+    <string name="songs_pane_empty_body">اختر ترنيمة من القائمة وستظهر مقاطعها هنا.</string>
+    <string name="more_pane_empty_title">لا توجد أداة مفتوحة</string>
+    <string name="more_pane_empty_body">اختر أداة من القائمة وستُفتح هنا.</string>
+    <string name="library_pane_empty_title">لا شيء قيد التحرير</string>
+    <string name="library_pane_empty_body">عدّل عنصرًا من القائمة، أو أضف عنصرًا جديدًا، وسيُفتح هنا.</string>
+    <string name="bible_pane_empty_title">لا يوجد إصحاح مفتوح</string>
+    <string name="bible_pane_empty_body">اختر سفرًا ثم إصحاحًا، وستظهر آياته هنا.</string>
+    <string name="bible_chapters_overline">الإصحاح</string>
+</resources>

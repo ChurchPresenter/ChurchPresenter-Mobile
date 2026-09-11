@@ -4,16 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -107,6 +105,12 @@ fun StandaloneControllerScreen(
     settings: AppSettings,
     photos: PhotoLibrary? = null,
     modifier: Modifier = Modifier,
+    /** Put the live surface and the deck side by side rather than in one column. */
+    twoPane: Boolean = false,
+    /** Opens the schedule drawer. Only used in [twoPane], which owns its header. */
+    onMenu: (() -> Unit)? = null,
+    /** Opens settings. Only used in [twoPane], which owns its header. */
+    onSettings: (() -> Unit)? = null,
     /** Supplied by tests only; the screen owns its own otherwise. */
     providedViewModel: StandaloneViewModel? = null,
 ) {
@@ -134,7 +138,6 @@ fun StandaloneControllerScreen(
     if (showOutputs) {
         OutputTargetsSheet(sinks = sinks, onDismiss = { showOutputs = false })
     }
-
     if (showLook) {
         LookSheet(
             theme = theme,
@@ -152,101 +155,126 @@ fun StandaloneControllerScreen(
         )
     }
 
-    // Two parts: everything that can scroll, and the handful of controls that must never
-    // scroll away. The preview, the section list and the two pickers together overflow a phone
-    // screen, which used to squash Prev/Next and Blank/Live into the bottom edge — the controls
-    // an operator reaches for without looking, mid-service.
-    Column(modifier = modifier.fillMaxSize().background(colors.background)) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = AppDimens.space16),
-            verticalArrangement = Arrangement.spacedBy(AppDimens.space14),
-        ) {
-            OutputChip(sinks, onClick = { showOutputs = true }, modifier = Modifier.testTag(StandaloneTags.OUTPUT_CHIP))
+    // ── The pieces, each named once ──────────────────────────────────────────
+    // The phone stacks them in one scrolling column; the tablet puts the live
+    // surface and its controls on the left and the deck and its look on the
+    // right. Writing either arrangement out twice is how one of them ends up a
+    // release behind the other.
+    val outputChip: @Composable () -> Unit =
+        { OutputChip(sinks, { showOutputs = true }, Modifier.testTag(StandaloneTags.OUTPUT_CHIP)) }
+    val preview: @Composable () -> Unit =
+        { SlidePreview(slide, deck.slides.size, index, Modifier.testTag(StandaloneTags.PREVIEW)) }
+    val sections: @Composable () -> Unit = {
+        if (deck.isEmpty) EmptyDeckHint(Modifier.testTag(StandaloneTags.EMPTY_DECK))
+        else SectionList(deck.title, deck.slides, index, viewModel::showSlide)
+    }
+    val controls: @Composable ColumnScope.() -> Unit = {
+        TransportRow(
+            canStepBack = index > 0,
+            canStepForward = index < deck.slides.lastIndex,
+            onPrevious = viewModel::previous,
+            onNext = viewModel::next,
+        )
+        StateRow(
+            isBlank = isBlank,
+            isLive = isLive,
+            hasContent = deck.slides.isNotEmpty(),
+            onToggleBlank = viewModel::toggleBlank,
+            onClear = viewModel::clear,
+        ) { viewModel.setLive(!isLive) }
+    }
+    val lookControls: @Composable ColumnScope.() -> Unit = {
+        BackdropControls(
+            backdrop = backdrop,
+            backdropPhotos = backdropPhotos,
+            backdropUrl = backdropUrl,
+            canUsePhotoBackdrop = canUsePhotoBackdrop,
+            urlFor = { photos?.urlFor(it) },
+            onBackdropChange = viewModel::setBackdrop,
+            onPickImage = viewModel::setImageBackdrop,
+            onOpenLook = { showLook = true },
+        )
+    }
 
-            SlidePreview(slide, deck.slides.size, index, Modifier.testTag(StandaloneTags.PREVIEW))
+    if (twoPane) {
+        StandaloneTwoPane(
+            onMenu = onMenu,
+            onSettings = onSettings,
+            outputChip = outputChip,
+            preview = preview,
+            controls = controls,
+            sections = sections,
+            lookControls = lookControls,
+            modifier = modifier,
+        )
+        return
+    }
 
-            if (deck.isEmpty) {
-                EmptyDeckHint(Modifier.testTag(StandaloneTags.EMPTY_DECK))
-            } else {
-                SectionList(
-                    title = deck.title,
-                    slides = deck.slides,
-                    selectedIndex = index,
-                    onSelect = viewModel::showSlide,
-                )
-            }
+    StandaloneOnePane(
+        outputChip = outputChip,
+        preview = preview,
+        controls = controls,
+        sections = sections,
+        lookControls = lookControls,
+        modifier = modifier,
+    )
+}
 
-            // The gradient's colours live behind here, with the rest of the look — off the live
-            // surface, so nothing pushes Next and Blank further down the screen.
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                OverlineRow(stringResource(Res.string.standalone_backdrop), modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(Res.string.standalone_look),
-                    color = colors.accent,
-                    fontSize = 12.sp,
-                    modifier = Modifier.testTag(StandaloneTags.LOOK).clickable { showLook = true },
-                )
-            }
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.standalone_backdrop_gradient),
-                    stringResource(Res.string.standalone_backdrop_image),
-                    stringResource(Res.string.standalone_backdrop_black),
-                ),
-                selectedIndex = BACKDROPS.indexOf(backdrop).coerceAtLeast(0),
-                onSelect = { viewModel.setBackdrop(BACKDROPS[it]) },
-                optionTag = { StandaloneTags.backdrop(it) },
-            )
+/**
+ * The backdrop picker and the way into the look sheet.
+ *
+ * Deliberately below the live surface and off the controls: the colours behind
+ * the words are set once, before a service, and nothing here should push Next
+ * and Blank further from the thumb that reaches for them mid-verse.
+ */
+@Composable
+private fun ColumnScope.BackdropControls(
+    backdrop: SlideBackdrop,
+    backdropPhotos: List<StoredPhoto>,
+    backdropUrl: String?,
+    canUsePhotoBackdrop: Boolean,
+    urlFor: (String) -> String?,
+    onBackdropChange: (SlideBackdrop) -> Unit,
+    onPickImage: (StoredPhoto) -> Unit,
+    onOpenLook: () -> Unit,
+) {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        OverlineRow(stringResource(Res.string.standalone_backdrop), modifier = Modifier.weight(1f))
+        Text(
+            text = stringResource(Res.string.standalone_look),
+            color = colors.accent,
+            fontSize = 12.sp,
+            modifier = Modifier.testTag(StandaloneTags.LOOK).clickable { onOpenLook() },
+        )
+    }
+    SegmentedControl(
+        options = listOf(
+            stringResource(Res.string.standalone_backdrop_gradient),
+            stringResource(Res.string.standalone_backdrop_image),
+            stringResource(Res.string.standalone_backdrop_black),
+        ),
+        selectedIndex = BACKDROPS.indexOf(backdrop).coerceAtLeast(0),
+        onSelect = { onBackdropChange(BACKDROPS[it]) },
+        optionTag = { StandaloneTags.backdrop(it) },
+    )
 
-            // Choosing IMAGE is only half the instruction — it needs a photo, and
-            // without one the audience page falls back to the gradient, so the
-            // option looked broken. The strip appears only for IMAGE so the
-            // controls stay as short as they were for the other two.
-            if (backdrop == SlideBackdrop.IMAGE) {
-                BackdropPhotoStrip(
-                    photos = backdropPhotos,
-                    selectedUrl = backdropUrl,
-                    canUse = canUsePhotoBackdrop,
-                    urlFor = { photos?.urlFor(it) },
-                    onPick = { viewModel.setImageBackdrop(it) },
-                )
-            }
-
-            Spacer(Modifier.height(AppDimens.space8))
-        }
-
-        HorizontalDivider(color = colors.borderSubtle)
-
-        Column(
-            modifier = Modifier.padding(
-                horizontal = AppDimens.space16,
-                vertical = AppDimens.space12,
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppDimens.space14),
-        ) {
-            TransportRow(
-                canStepBack = index > 0,
-                canStepForward = index < deck.slides.lastIndex,
-                onPrevious = viewModel::previous,
-                onNext = viewModel::next,
-            )
-
-            StateRow(
-                isBlank = isBlank,
-                isLive = isLive,
-                hasContent = deck.slides.isNotEmpty(),
-                onToggleBlank = viewModel::toggleBlank,
-                onClear = viewModel::clear,
-                onToggleLive = { viewModel.setLive(!isLive) },
-            )
-        }
+    // Choosing IMAGE is only half the instruction — it needs a photo, and
+    // without one the audience page falls back to the gradient, so the
+    // option looked broken. The strip appears only for IMAGE so the
+    // controls stay as short as they were for the other two.
+    if (backdrop == SlideBackdrop.IMAGE) {
+        BackdropPhotoStrip(
+            photos = backdropPhotos,
+            selectedUrl = backdropUrl,
+            canUse = canUsePhotoBackdrop,
+            urlFor = urlFor,
+            onPick = onPickImage,
+        )
     }
 }
 

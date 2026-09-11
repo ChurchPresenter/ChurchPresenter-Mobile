@@ -439,5 +439,15 @@
     <string name="contact_rate_limited_browser">Bitte schließen Sie das Senden aus Sicherheitsgründen in Ihrem Browser ab.</string>
     <string name="contact_network_error">Server nicht erreichbar. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.</string>
     <string name="contact_open_browser">Im Browser öffnen</string>
-</resources>
 
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Kein Lied geöffnet</string>
+    <string name="songs_pane_empty_body">Wählen Sie links ein Lied — seine Strophen erscheinen hier.</string>
+    <string name="more_pane_empty_title">Kein Werkzeug geöffnet</string>
+    <string name="more_pane_empty_body">Wählen Sie links ein Werkzeug — es öffnet sich hier.</string>
+    <string name="library_pane_empty_title">Nichts in Bearbeitung</string>
+    <string name="library_pane_empty_body">Bearbeiten Sie links einen Eintrag oder fügen Sie einen neuen hinzu — er öffnet sich hier.</string>
+    <string name="bible_pane_empty_title">Kein Kapitel geöffnet</string>
+    <string name="bible_pane_empty_body">Wählen Sie ein Buch, dann ein Kapitel — seine Verse erscheinen hier.</string>
+    <string name="bible_chapters_overline">Kapitel</string>
+</resources>

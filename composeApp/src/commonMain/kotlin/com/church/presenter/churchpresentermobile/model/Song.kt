@@ -21,7 +21,25 @@ data class Song(
      * Not in any JSON payload; like [bookName] it is populated in code.
      */
     val localId: String? = null,
-)
+) {
+    /**
+     * What tells this song apart from every other one in a list.
+     *
+     * Number and songbook are NOT that, though they were used as it: a library
+     * can hold several songs with no number, or with the same number in the same
+     * book, and comparing on that pair marks all of them as the open one. On a
+     * phone the list disappears the moment a song opens, so nobody could see it;
+     * beside a detail pane the whole run lights up at once.
+     *
+     * Prefers the ids that really are unique — the local library's UUID, then the
+     * desktop's row id — and falls back to the old pair only for a song carrying
+     * neither, where it is no worse than what it replaces.
+     */
+    val identity: String
+        get() = localId
+            ?: id.takeIf { it >= 0 }?.let { "id:$it" }
+            ?: "num:$number/${bookName.orEmpty()}"
+}
 
 // ── Project / schedule-add request models ─────────────────────────────────────
 

@@ -294,6 +294,32 @@ composeApp/src/
 - Ktor uses `HttpClientJs` engine
 - May have CORS restrictions — ensure backend allows cross-origin requests
 
+## Static analysis (detekt)
+
+### NEVER add a detekt baseline entry — fix the finding
+
+`config/detekt/baseline.xml` exempts findings that predate the gate. It is a
+record of debt, not a place to put new debt.
+
+- 🚫 **NEVER** add an entry to the baseline, and never run
+  `./gradlew :composeApp:detektBaseline` to make a build green. A regenerated
+  baseline silently absorbs every new finding along with the one you were
+  looking at.
+- ⚠️ **A baseline entry is keyed on the full function signature.** Adding a
+  parameter to a baselined function therefore "un-baselines" it, and the old
+  finding reappears as if it were new. That is not licence to re-baseline it:
+  fix it, or leave the function at least no longer than you found it.
+- ✅ **ALWAYS** fix the finding instead. `LongMethod` on a Compose coordinator
+  is nearly always real — extract the layout into a private composable, the
+  effects into a named one, and the screen reads better for it. See
+  `BibleScreen`, whose two arrangements and four effects each became their own
+  function.
+- ✅ **A file over the `TooManyFunctions` threshold usually wants splitting**,
+  not exempting — the two Present layouts moved to `StandaloneLayouts.kt` and
+  the tab specs to `TabSpec.kt`, and both files are easier to find things in.
+- 📉 **The number only ever goes down.** If a change removes entries, say so;
+  if it cannot avoid adding one, that is a conversation, not a commit.
+
 ## Testing Notes
 
 ### Coverage: NEVER lower the bar to meet the code — **ASK FIRST**

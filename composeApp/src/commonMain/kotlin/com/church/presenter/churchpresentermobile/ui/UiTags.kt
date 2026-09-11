@@ -281,6 +281,15 @@ internal object UiTags {
     fun tab(tab: AppTab) = "tab:${tab.name.lowercase()}"
 
     /**
+     * The side rail's brand mark.
+     *
+     * Tagged because it is the one thing on screen that says which layout is
+     * showing: the tab entries carry the same [tab] tags in both, so nothing else
+     * tells a rail apart from a bottom strip.
+     */
+    const val NAV_RAIL_BRAND = "navRail:brand"
+
+    /**
      * One row of the More launcher, by the destination it opens.
      *
      * The list differs by mode, and its labels are `stringResource`s, so neither

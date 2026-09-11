@@ -133,9 +133,12 @@ private fun TaglineDot(color: Color) {
  * Latin cross rendered from the design's exact vector path
  * (`M24 0h8v28h24v8H32v76H24V36H0V28h24V0z`, viewBox 56×112), filled with a
  * vertical gradient [brush].
+ *
+ * `internal` rather than private so the side rail's brand mark is the same
+ * vector as the splash's, drawn with a solid accent instead of the gradient.
  */
 @Composable
-private fun CrossIcon(brush: Brush, modifier: Modifier = Modifier) {
+internal fun CrossIcon(brush: Brush, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {
         val path = Path().apply {
             moveTo(24f, 0f)

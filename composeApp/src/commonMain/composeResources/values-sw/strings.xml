@@ -1,0 +1,453 @@
+<resources>
+    <!-- Songs Table -->
+    <string name="songs_table_header_number">#</string>
+    <string name="songs_table_header_title">Kichwa</string>
+    <string name="songs_table_header_book">Kitabu cha nyimbo</string>
+    <string name="songs_table_header_tune">Wimbo</string>
+    <string name="songs_table_search_placeholder">Tafuta kwa # au kichwa…</string>
+    <string name="songs_table_clear_search">✕</string>
+    <string name="songs_table_no_songs">Hakuna nyimbo zinazopatikana</string>
+    <string name="songs_table_no_match">Hakuna wimbo unaolingana na kichujio</string>
+    <string name="songs_table_retry">Jaribu tena</string>
+
+    <!-- Book Filter -->
+    <string name="book_filter_all_books">Vitabu vyote vya nyimbo</string>
+    <string name="book_filter_dropdown_arrow"> ▾</string>
+
+    <!-- Top Bar -->
+    <string name="app_title">Church Presenter</string>
+    <string name="settings_button_description">Fungua mipangilio</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Mipangilio</string>
+    <string name="settings_server_section">Seva</string>
+    <string name="settings_host_label">Mwenyeji / Anwani ya IP</string>
+    <string name="settings_host_placeholder">192.168.1.10</string>
+    <string name="settings_port_label">Mlango</string>
+    <string name="settings_port_placeholder">8765</string>
+    <string name="settings_api_key_label">Ufunguo wa API (si lazima)</string>
+    <string name="settings_api_key_placeholder">Acha wazi ikiwa hauhitajiki</string>
+    <string name="settings_save">Hifadhi</string>
+    <string name="settings_cancel">Ghairi</string>
+    <string name="settings_invalid_port">Mlango lazima uwe nambari kati ya 1 na 65535</string>
+    <string name="settings_host_empty">Mwenyeji hawezi kuwa tupu</string>
+
+    <!-- Theme -->
+    <string name="settings_appearance_section">Mwonekano</string>
+    <string name="settings_theme_system">Mfumo</string>
+    <string name="settings_theme_light">Nuru</string>
+    <string name="settings_theme_dark">Giza</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_songs">Nyimbo</string>
+    <string name="tab_bible">Biblia</string>
+    <string name="tab_pictures">Picha</string>
+    <string name="tab_presentation">Wasilisho</string>
+
+    <!-- Placeholder Screens -->
+    <string name="bible_coming_soon">📖  Biblia — inakuja hivi karibuni</string>
+    <string name="pictures_coming_soon">🖼  Picha — zinakuja hivi karibuni</string>
+    <string name="presentation_coming_soon">📽  Wasilisho — linakuja hivi karibuni</string>
+
+    <!-- Presentation Screen -->
+    <string name="presentation_no_items">Hakuna mawasilisho yanayopatikana</string>
+    <string name="presentation_loading_error">Imeshindwa kupakia mawasilisho</string>
+    <string name="presentation_retry">Jaribu tena</string>
+    <string name="presentation_slides">slaidi</string>
+
+    <!-- Pictures Screen -->
+    <string name="pictures_no_items">Hakuna picha zinazopatikana</string>
+    <string name="pictures_loading_error">Imeshindwa kupakia picha</string>
+    <string name="pictures_retry">Jaribu tena</string>
+    <string name="pictures_photos">picha</string>
+
+    <!-- Bible Screen -->
+    <string name="bible_search_placeholder">Tafuta vitabu…</string>
+    <string name="bible_search_clear">✕</string>
+    <string name="bible_no_books">Hakuna vitabu vya Biblia vinavyopatikana</string>
+    <string name="bible_no_match">Hakuna kitabu kinacholingana na utafutaji</string>
+    <string name="bible_chapter_label">Sura</string>
+    <string name="bible_chapters_title">Sura</string>
+    <string name="bible_no_verses">Hakuna mistari inayopatikana</string>
+    <string name="bible_back">← Rudi</string>
+    <string name="bible_loading_error">Imeshindwa kupakia</string>
+    <string name="bible_retry">Jaribu tena</string>
+
+    <!-- Schedule Drawer -->
+    <string name="schedule_drawer_title">Ratiba</string>
+    <string name="schedule_drawer_refresh">Onyesha upya ratiba</string>
+    <string name="schedule_drawer_empty">Hakuna vipengee kwenye ratiba</string>
+    <string name="schedule_drawer_error">Hitilafu: %1$s</string>
+    <string name="schedule_drawer_open">Fungua ratiba</string>
+
+    <!-- Song Detail -->
+    <string name="song_detail_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="song_detail_schedule_request_sent">Ombi limetumwa ✓</string>
+    <string name="song_detail_project_to_screen">Onyesha skrini</string>
+    <string name="song_detail_stop_projecting">Simamisha kuonyesha</string>
+    <string name="song_detail_fab_actions">Vitendo</string>
+    <string name="song_detail_fab_close_actions">Funga vitendo</string>
+    <string name="song_detail_projecting_badge">▶  Inaonyeshwa</string>
+    <string name="song_detail_no_lyrics">Hakuna maneno yanayopatikana</string>
+
+    <!-- Bible Detail FAB -->
+    <string name="bible_detail_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="bible_detail_schedule_request_sent">Ombi limetumwa ✓</string>
+    <string name="bible_detail_project_to_screen">Onyesha skrini</string>
+    <string name="bible_detail_stop_projecting">Simamisha kuonyesha</string>
+    <string name="bible_detail_fab_actions">Vitendo</string>
+    <string name="bible_detail_fab_close_actions">Funga vitendo</string>
+    <string name="bible_detail_projecting_badge">▶  Inaonyeshwa</string>
+
+    <!-- Pictures FAB -->
+    <string name="pictures_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="pictures_schedule_request_sent">Ombi limetumwa ✓</string>
+    <string name="pictures_project_to_screen">Onyesha skrini</string>
+    <string name="pictures_stop_projecting">Simamisha kuonyesha</string>
+    <string name="pictures_pick_from_device">Chagua kutoka kifaa</string>
+
+    <!-- Shared action FAB labels -->
+    <string name="action_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="action_project_to_screen">Onyesha skrini</string>
+    <string name="action_stop_projecting">Simamisha kuonyesha</string>
+    <string name="pictures_uploading">Inapakia…</string>
+    <string name="upload_overlay_subtitle">Tafadhali subiri, usifunge programu</string>
+    <string name="upload_overlay_photo_counter">Picha %1$d kati ya %2$d</string>
+    <string name="toast_pictures_added_to_schedule">Picha imeongezwa kwenye ratiba</string>
+    <string name="toast_pictures_failed_to_add_schedule">Imeshindwa kuongeza picha kwenye ratiba: %1$s</string>
+
+    <!-- Presentation FAB -->
+    <string name="presentation_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="presentation_schedule_request_sent">Ombi limetumwa ✓</string>
+    <string name="presentation_project_to_screen">Onyesha skrini</string>
+    <string name="presentation_stop_projecting">Simamisha kuonyesha</string>
+    <string name="presentation_upload_file">Pakia wasilisho</string>
+    <string name="presentation_uploading">Inapakia…</string>
+    <string name="toast_presentation_added_to_schedule">Wasilisho limeongezwa kwenye ratiba</string>
+    <string name="toast_presentation_failed_to_add_schedule">Imeshindwa kuongeza wasilisho kwenye ratiba: %1$s</string>
+    <string name="toast_failed_to_select_presentation">Imeshindwa kuchagua wasilisho: %1$s</string>
+    <string name="toast_upload_unsupported">Seva hii haiungi mkono upakiaji. Sasisha ChurchPresenter kwenye kompyuta hadi toleo jipya zaidi.</string>
+    <string name="toast_upload_file_too_large">Faili ni kubwa mno kwa seva kukubali. Jaribu faili ndogo zaidi.</string>
+    <string name="toast_upload_server_error">Seva imekataa upakiaji: %1$s</string>
+    <string name="toast_upload_failed">Upakiaji umeshindwa: %1$s</string>
+    <string name="toast_upload_reload_failed">Imepakiwa, lakini imeshindwa kupakia upya orodha: %1$s</string>
+
+    <!-- Toast / Snackbar Messages -->
+    <string name="toast_song_live">Wimbo sasa uko skrini</string>
+    <string name="toast_request_failed">Ombi limeshindwa</string>
+    <string name="toast_no_song_selected">Hakuna wimbo uliochaguliwa</string>
+    <string name="toast_song_added_to_schedule">“%1$s” umeongezwa kwenye ratiba</string>
+    <string name="toast_failed_to_project">Imeshindwa kuonyesha wimbo: %1$s</string>
+    <string name="toast_failed_to_add_schedule">Imeshindwa kuongeza kwenye ratiba: %1$s</string>
+    <string name="toast_request_denied">Ombi limekataliwa</string>
+    <string name="toast_session_blocked">Kipindi kimezuiwa — hakuna maombi mengine yatakayokubaliwa</string>
+    <string name="toast_request_rejected">Ombi limekataliwa na seva (HTTP %1$s)</string>
+    <string name="toast_request_rejected_reason">Ombi limekataliwa: %1$s</string>
+    <string name="toast_bible_live">Fungu la Biblia sasa liko skrini</string>
+    <string name="toast_bible_added_to_schedule">“%1$s” limeongezwa kwenye ratiba</string>
+    <string name="toast_failed_to_project_bible">Imeshindwa kuonyesha: %1$s</string>
+    <string name="toast_failed_to_add_bible_schedule">Imeshindwa kuongeza kwenye ratiba: %1$s</string>
+
+    <!-- Deep link / QR code connect -->
+    <string name="deep_link_connected">✓ Seva imewekwa kuwa %1$s:%2$s</string>
+    <string name="qr_scan_button">Changanua msimbo wa QR</string>
+
+    <!-- Certificate Setup Screen -->
+    <string name="cert_setup_title">Amini cheti cha seva</string>
+    <string name="cert_setup_subtitle">Usanidi wa mara moja unahitajika</string>
+    <string name="cert_setup_intro">ChurchPresenter hutumia cheti cha HTTPS cha faragha kwa mawasiliano salama. Unahitaji kukisakinisha mara moja ili kifaa chako kiamini muunganisho huu.</string>
+    <string name="cert_setup_scan_title">Changanua msimbo wa QR wa cheti</string>
+    <string name="cert_setup_scan_desktop_hint">Katika ChurchPresenter kwenye kompyuta: Mipangilio → Seva → bonyeza “Download Cert” ili kuonyesha msimbo wa QR.</string>
+    <string name="cert_setup_scan_button">Changanua msimbo wa QR</string>
+    <string name="cert_setup_scan_or_divider">au tumia anwani iliyohifadhiwa</string>
+    <string name="cert_setup_url_scanned">✓ URL imechanganuliwa</string>
+    <string name="cert_setup_url_label">URL ya cheti</string>
+    <string name="cert_setup_open_button">Fungua URL ya cheti</string>
+    <string name="cert_setup_step2_ios_title">iOS — Sakinisha wasifu</string>
+    <string name="cert_setup_step2_ios_body">Safari itaomba kupakua wasifu wa usanidi. Gusa Ruhusu, kisha nenda Mipangilio → Jumla → VPN na Usimamizi wa Kifaa, gusa ChurchPresenter na usakinishe.</string>
+    <string name="cert_setup_step3_ios_title">iOS — Amini cheti</string>
+    <string name="cert_setup_step3_ios_body">Mipangilio → Jumla → Kuhusu → Mipangilio ya Uaminifu wa Cheti → washa uaminifu kamili kwa ChurchPresenter CA.</string>
+    <string name="cert_setup_step2_android_title">Android — Sakinisha cheti</string>
+    <string name="cert_setup_step2_android_body">Chrome hupakua faili ya .crt. Igusa kutoka arifa ya upakuaji, chagua “Cheti cha CA” na uipe jina kama “ChurchPresenter”.</string>
+    <string name="cert_setup_android_unknown_sources_title">⚠ “Haiwezi kusakinisha kutoka vyanzo visivyojulikana”?</string>
+    <string name="cert_setup_android_unknown_sources_body">Android inaweza kuzuia usakinishaji ikiwa kivinjari chako hakiruhusiwi kusakinisha faili. Nenda Mipangilio → Programu → [kivinjari chako] → Sakinisha programu zisizojulikana, kisha washa “Ruhusu kutoka chanzo hiki”. Rudi hapa na ugusa faili tena.</string>
+    <string name="cert_setup_fingerprint_title">Thibitisha alama ya kidole (inapendekezwa)</string>
+    <string name="cert_setup_fingerprint_body">Linganisha alama hii na ile ChurchPresenter kwenye kompyuta inavyoonyesha kwenye Mipangilio → Seva → Certificate SHA-256. Lazima zilingane.</string>
+    <string name="cert_setup_fingerprint_unavailable">Unganisha kwenye seva kwanza ili kuona alama ya kidole</string>
+    <string name="cert_setup_done_button">Imekamilika — cheti kimesakinishwa</string>
+    <string name="cert_setup_skip_button">Ruka kwa sasa</string>
+    <string name="cert_setup_skip_note">Unaweza kurudi kwenye mwongozo huu wakati wowote kutoka Mipangilio.</string>
+
+    <!-- Connect Setup Screen -->
+    <string name="connect_setup_title">Unganisha kwenye kompyuta</string>
+    <string name="connect_setup_subtitle">Usanidi wa mara moja unahitajika</string>
+    <string name="connect_setup_intro">ChurchPresenter Mobile huunganisha na programu ya ChurchPresenter kwenye kompyuta katika mtandao wako wa ndani. Changanua msimbo wa QR kutoka kompyuta ili muunganisho usanidiwe kiotomatiki.</string>
+    <string name="connect_setup_step1_title">Fungua ChurchPresenter kwenye kompyuta yako</string>
+    <string name="connect_setup_step1_body">Zindua programu ya ChurchPresenter kwenye kompyuta na hakikisha inafanya kazi kwenye mtandao ule ule wa Wi-Fi kama kifaa hiki.</string>
+    <string name="connect_setup_step2_title">Onyesha msimbo wa QR wa muunganisho</string>
+    <string name="connect_setup_step2_body">Katika programu ya kompyuta nenda Mipangilio → Simu na ubonyeze “Show QR Code”. Msimbo wa QR wenye maelezo ya muunganisho utaonekana skrini.</string>
+    <string name="connect_setup_step3_title">Changanua msimbo wa QR hapa chini</string>
+    <string name="connect_setup_step3_body">Gusa kitufe hapa chini ili kufungua kamera na kuchanganua msimbo wa QR unaoonyeshwa kwenye kompyuta. Muunganisho utasanidiwa kiotomatiki.</string>
+    <string name="connect_setup_scan_button">Changanua msimbo wa QR</string>
+    <string name="connect_setup_connected">✓ Imeunganishwa na %1$s:%2$s</string>
+    <string name="connect_setup_done_button">Imekamilika — imeunganishwa</string>
+    <string name="connect_setup_skip_button">Ruka kwa sasa</string>
+    <string name="connect_setup_skip_note">Unaweza kuchanganua msimbo wa QR wakati wowote kutoka Mipangilio.</string>
+
+    <!-- Added translations -->
+    <string name="settings_display_name_label">Jina lako (kwa Maswali na Majibu)</string>
+    <string name="settings_display_name_placeholder">Acha wazi ili kutumia kitambulisho cha kifaa</string>
+    <string name="settings_privacy_section">Faragha</string>
+    <string name="settings_telemetry_label">Shiriki data ya matumizi na hitilafu</string>
+    <string name="settings_telemetry_description">Hutusaidia kupata na kurekebisha hitilafu. Zima ili kuacha kutuma uchanganuzi na ripoti za hitilafu.</string>
+    <string name="tab_qa_admin">Maswali</string>
+    <string name="qa_admin_session_active">Kipindi kinaendelea</string>
+    <string name="qa_admin_session_stopped">Kipindi kimesimamishwa</string>
+    <string name="qa_admin_incoming_tab">Yanayoingia (%1$d)</string>
+    <string name="qa_admin_finished_tab">Yaliyomalizika (%1$d)</string>
+    <string name="qa_admin_no_incoming">Hakuna maswali yanayoingia</string>
+    <string name="qa_admin_no_finished">Hakuna maswali yaliyomalizika</string>
+    <string name="qa_admin_approve">Idhinisha</string>
+    <string name="qa_admin_deny">Kataa</string>
+    <string name="qa_admin_go_live">Onyesha sasa</string>
+    <string name="qa_admin_done">Weka alama kuwa limekamilika</string>
+    <string name="qa_admin_clear_display">Futa skrini</string>
+    <string name="qa_admin_now_live">Inaonyeshwa:</string>
+    <string name="qa_admin_edit_hint">Hariri maandishi ya swali…</string>
+    <string name="qa_admin_add_question">Ongeza swali</string>
+    <string name="qa_admin_add_question_hint">Andika swali lako…</string>
+    <string name="qa_admin_save">Hifadhi</string>
+    <string name="qa_admin_cancel">Ghairi</string>
+    <string name="qa_admin_error_retry">Jaribu tena</string>
+    <string name="action_clear_display">Futa skrini</string>
+    <string name="action_hold_display">Gandisha skrini</string>
+    <string name="action_multi_select">Chagua nyingi</string>
+    <string name="bible_multi_select_count">%1$d zimechaguliwa</string>
+    <string name="connect_setup_no_camera_note">Hakuna kamera iliyogunduliwa kwenye kifaa hiki. Weka maelezo ya muunganisho mwenyewe:</string>
+    <string name="connect_setup_manual_entry_toggle">Weka mwenyewe badala yake</string>
+    <string name="connect_setup_scan_instead_toggle">Changanua msimbo wa QR badala yake</string>
+    <string name="connect_setup_manual_apply_button">Tumia</string>
+    <string name="settings_active_url_label">Kwa sasa inaunganisha na:</string>
+    <string name="settings_reset_to_default">Rudisha chaguo-msingi</string>
+    <string name="settings_draft_url_label">Itaunganisha baada ya kuhifadhi:</string>
+    <string name="settings_check_status">Angalia hali ya seva</string>
+    <string name="settings_developer_section">Msanidi</string>
+    <string name="settings_send_test_error">Tuma hitilafu ya majaribio kwa Sentry</string>
+    <string name="settings_test_error_sent">✓ Hitilafu ya majaribio imetumwa kwa Sentry</string>
+    <string name="settings_check_status_description">Angalia hali ya seva</string>
+    <string name="settings_status_recheck">Angalia tena</string>
+    <string name="settings_status_server_version">Seva: %1$s</string>
+    <string name="settings_status_mobile_version">Simu: %1$s</string>
+    <string name="settings_status_api_key_enabled">Ufunguo wa API: umewashwa</string>
+    <string name="settings_status_api_key_none">Ufunguo wa API: hakuna</string>
+    <string name="settings_status_endpoints">Vituo</string>
+    <string name="settings_status_bibles">Biblia</string>
+    <string name="settings_status_songbooks">Vitabu vya nyimbo</string>
+    <string name="settings_status_none">hakuna</string>
+    <string name="status_connecting">Inaunganisha na seva…</string>
+    <string name="status_connected">Seva imeunganishwa</string>
+    <string name="status_continue">Endelea</string>
+    <string name="status_retry">Jaribu tena</string>
+    <string name="status_open_settings">Fungua mipangilio</string>
+    <string name="status_continue_anyway">Endelea hata hivyo</string>
+    <string name="status_limited_functionality">Utendaji mdogo</string>
+    <string name="status_server_version">Toleo la seva: %1$s</string>
+    <string name="status_issues_detected">Matatizo yafuatayo yamegunduliwa kwenye seva iliyounganishwa:</string>
+    <string name="status_endpoint_unavailable">Kituo cha hali bado hakipatikani kwenye toleo hili la seva — sasisha ChurchPresenter kwenye kompyuta kwa ripoti kamili.</string>
+    <string name="status_error_title">Haikuweza kufikia seva</string>
+    <string name="status_permissions_title">Ruhusa za kifaa hiki</string>
+    <string name="status_permission_present">Kudhibiti wasilisho</string>
+    <string name="status_permission_schedule">Kuongeza kwenye ratiba</string>
+    <string name="status_permission_upload">Kupakia faili</string>
+    <string name="status_permission_blocked">— imezuiwa</string>
+    <string name="status_info_bibles">Biblia zinazopatikana</string>
+    <string name="status_info_songbooks">Vitabu vya nyimbo vinavyopatikana</string>
+    <string name="status_info_features">Vipengele vilivyowashwa</string>
+    <string name="status_warn_no_api_key_title">Ufunguo wa API haujasanidiwa</string>
+    <string name="status_warn_no_api_key_body">Seva haina ufunguo wa API uliowekwa. Baadhi ya vituo vilivyolindwa vinaweza kukataa maombi. Fikiria kuwasha ufunguo wa API katika mipangilio ya seva ya ChurchPresenter.</string>
+    <string name="status_warn_no_bibles_title">Hakuna tafsiri za Biblia zinazopatikana</string>
+    <string name="status_warn_no_bibles_body">Seva haina tafsiri za Biblia zilizopakiwa. Kichupo cha Biblia kitakuwa tupu. Ongeza tafsiri katika programu ya ChurchPresenter kwenye kompyuta.</string>
+    <string name="status_warn_no_songbooks_title">Hakuna vitabu vya nyimbo vinavyopatikana</string>
+    <string name="status_warn_no_songbooks_body">Seva haina vitabu vya nyimbo vilivyopakiwa. Kichupo cha Nyimbo kitakuwa tupu. Ingiza kitabu cha nyimbo katika programu ya ChurchPresenter kwenye kompyuta.</string>
+    <string name="status_warn_present_blocked_title">Udhibiti wa wasilisho umezuiwa</string>
+    <string name="status_warn_present_blocked_body">Kifaa hiki hakiruhusiwi kudhibiti wasilisho (kuonyesha, kufuta, kuchagua slaidi). Muombe msimamizi wa seva ampe kifaa hiki ruhusa ya Presenter.</string>
+    <string name="status_warn_schedule_blocked_title">Uhariri wa ratiba umezuiwa</string>
+    <string name="status_warn_schedule_blocked_body">Kifaa hiki hakiruhusiwi kuongeza vipengee kwenye ratiba. Muombe msimamizi wa seva ampe kifaa hiki ruhusa ya Schedule.</string>
+    <string name="status_warn_upload_blocked_title">Upakiaji wa faili umezuiwa</string>
+    <string name="status_warn_upload_blocked_body">Kifaa hiki hakiruhusiwi kupakia mawasilisho au picha. Muombe msimamizi wa seva ampe kifaa hiki ruhusa ya Upload.</string>
+    <string name="upload_blocked_toast">Upakiaji wa faili umezimwa kwa kifaa hiki. Muombe msimamizi wa seva atoe ruhusa ya Upload.</string>
+    <string name="status_warn_unknown_version_title">Toleo la seva halijatambuliwa</string>
+    <string name="status_warn_unknown_version_body">Seva imeripoti toleo “%1$s”. Baadhi ya vipengele vya programu hii vinaweza visiendane na toleo hilo.</string>
+    <string name="status_warn_missing_endpoint_title">Kituo cha API kinakosekana: %1$s</string>
+    <string name="status_warn_missing_endpoint_body">Seva haitoi kituo “%1$s”. Vipengele vinavyotegemea kituo hicho havitapatikana.</string>
+    <string name="media_title">Media</string>
+    <string name="media_no_media_loaded">Hakuna media iliyopakiwa</string>
+    <string name="media_playing">Inachezwa</string>
+    <string name="media_playing_on_desktop">Inachezwa kwenye kompyuta</string>
+    <string name="media_local_ready">Faili ya ndani · tayari kuonyeshwa</string>
+    <string name="media_pick_to_upload">Chagua faili ya kupakia</string>
+    <string name="media_source_network_url">URL ya mtandao</string>
+    <string name="media_source_upload">Pakia kutoka simu</string>
+    <string name="media_subtitle_url">%1$s · URL ya mtandao</string>
+    <string name="media_subtitle_empty">Bandika URL ya mtandao hapa chini ili kutuma media</string>
+    <string name="media_on_screen">SKRINI</string>
+    <string name="media_cd_stop">Simamisha</string>
+    <string name="media_cd_back10">Rudi sekunde 10</string>
+    <string name="media_cd_forward10">Sogeza mbele sekunde 10</string>
+    <string name="media_cd_play">Cheza</string>
+    <string name="media_cd_pause">Sitisha</string>
+    <string name="media_cd_mute">Zima sauti</string>
+    <string name="media_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="media_go_live">Onyesha sasa</string>
+    <string name="media_clear_screen">Futa skrini</string>
+    <string name="media_source_label">CHANZO</string>
+    <string name="media_will_send">Itatuma: %1$s</string>
+    <string name="media_target_uploaded">Faili iliyopakiwa · %1$s</string>
+    <string name="media_target_loaded">Imepakiwa kwenye kompyuta · %1$s</string>
+    <string name="media_target_url">URL ya mtandao</string>
+    <string name="media_target_none">Chagua chanzo hapa chini ili kutuma media</string>
+    <string name="media_load_label">PAKIA MEDIA</string>
+    <string name="media_uploading_percent">Inapakia… %1$d%%</string>
+    <string name="media_choose_file">Chagua faili ya video au sauti</string>
+    <string name="media_url_placeholder">https://stream.church.local/…</string>
+    <string name="media_uploads_disabled">Upakiaji umezimwa kwenye kompyuta</string>
+    <string name="media_uploads_disabled_hint">Washa “Allow file uploads from mobile devices” katika mipangilio ya Seva ya programu ya kompyuta.</string>
+    <string name="media_playing_generic">media</string>
+    <string name="more_photos_title">Picha</string>
+    <string name="more_photos_subtitle">Vinjari na uonyeshe folda za picha</string>
+    <string name="more_qa_title">Maswali</string>
+    <string name="more_qa_subtitle">Kagua na uonyeshe maswali ya hadhira</string>
+    <string name="more_dictionary_title">Kamusi</string>
+    <string name="more_dictionary_subtitle">Kamusi ya Kiebrania na Kiyunani ya Strong</string>
+    <string name="more_announcements_title">Matangazo</string>
+    <string name="more_announcements_subtitle">Maandishi, saa na vipima muda</string>
+    <string name="more_web_title">Wavuti</string>
+    <string name="more_web_subtitle">Onyesha ukurasa wa wavuti skrini</string>
+    <string name="strongs_dictionary_title">Kamusi ya Strong</string>
+    <string name="web_title">Wavuti</string>
+    <string name="announcements_title">Matangazo</string>
+    <string name="action_clear">Futa</string>
+    <string name="action_cancel">Ghairi</string>
+    <string name="action_go_live">Onyesha sasa</string>
+    <string name="label_add_to_schedule">Ongeza kwenye ratiba</string>
+    <string name="label_live">Moja kwa moja</string>
+    <string name="cd_delete">Futa</string>
+    <string name="cd_close">Funga</string>
+    <string name="cd_select">Chagua</string>
+    <string name="cd_cast">Tuma</string>
+    <string name="cd_back">Rudi</string>
+    <string name="cd_settings">Mipangilio</string>
+    <string name="cd_schedule">Ratiba</string>
+    <string name="overline_on_screen_preview">Onyesho la awali skrini</string>
+    <string name="announcements_text_placeholder">Maandishi ya tangazo…</string>
+    <string name="overline_duration">Muda</string>
+    <string name="overline_target_time">Saa lengwa</string>
+    <string name="overline_animation">Uhuishaji</string>
+    <string name="stepper_hrs">Saa</string>
+    <string name="stepper_min">Dak</string>
+    <string name="stepper_sec">Sek</string>
+    <string name="stepper_hour">Saa</string>
+    <string name="stepper_font_size">Ukubwa wa fonti</string>
+    <string name="swatch_text">Maandishi</string>
+    <string name="swatch_background">Mandharinyuma</string>
+    <string name="announcements_clock_desc">Huonyesha saa ya sasa moja kwa moja.</string>
+    <string name="announcements_count_up_desc">Huhesabu kutoka sifuri kupanda inapoanza kuonyeshwa.</string>
+    <string name="announcements_animation_duration_label">MUDA WA UHUISHAJI</string>
+    <string name="animation_duration_ms">%1$d ms</string>
+    <string name="announcements_saved_label">YALIYOHIFADHIWA</string>
+    <string name="announcements_add_new">+ Mpya</string>
+    <string name="announcements_no_saved">Bado hakuna matangazo yaliyohifadhiwa. Tunga moja kisha gusa “+ Mpya”.</string>
+    <string name="color_picker_title">Chagua rangi</string>
+    <string name="color_picker_use">Tumia rangi</string>
+    <string name="color_slider_hue">Kivuli</string>
+    <string name="color_slider_saturation">Ukolezi</string>
+    <string name="color_slider_brightness">Mng'ao</string>
+    <string name="cd_custom_color">Rangi maalum</string>
+    <string name="announcements_preview_placeholder">Tangazo lako</string>
+    <string name="web_bookmarks_label">ALAMISHO</string>
+    <string name="web_add_bookmark">+ Ongeza</string>
+    <string name="web_no_bookmarks">Bado hakuna alamisho. Weka URL kisha gusa “+ Ongeza”.</string>
+    <string name="web_url_placeholder">example.org</string>
+    <string name="dictionary_search_placeholder">Tafuta nambari, neno au maana…</string>
+    <string name="dictionary_filter_all">Zote</string>
+    <string name="dictionary_filter_hebrew">Kiebrania</string>
+    <string name="dictionary_filter_greek">Kiyunani</string>
+    <string name="dictionary_no_entries">Hakuna ingizo lililopatikana</string>
+    <string name="dictionary_uses">MATUMIZI</string>
+    <string name="dictionary_occurrences_count">%1$s×</string>
+    <string name="dictionary_part_of_speech">Aina ya neno</string>
+    <string name="dictionary_occurrences">Mahali linapotokea</string>
+    <string name="dictionary_root">Shina</string>
+    <string name="dictionary_definition">Fasili</string>
+    <string name="dictionary_kjv_usage">Matumizi ya KJV</string>
+    <string name="qa_edit_question_title">Hariri swali</string>
+    <string name="qa_delete_question">Futa swali</string>
+    <string name="qa_submitted_by">Limetumwa na %1$s</string>
+    <string name="qa_char_counter">%1$d / 200</string>
+    <string name="qa_upvotes_count">%1$d</string>
+    <string name="qa_action_stop">Simamisha</string>
+    <string name="qa_action_approve">Idhinisha</string>
+    <string name="cd_edit">Hariri</string>
+    <string name="cd_deny">Kataa</string>
+    <string name="qa_badge_live">MOJA KWA MOJA</string>
+    <string name="qa_badge_approved">✓ Limeidhinishwa</string>
+    <string name="qa_badge_denied">Limekataliwa</string>
+    <string name="qa_badge_answered">Limejibiwa</string>
+    <string name="schedule_drawer_item_count">Vipengee %1$d</string>
+    <string name="presentation_slide_desc">Slaidi %1$d</string>
+    <string name="presentation_slide_live">▶ MOJA KWA MOJA</string>
+    <string name="tab_media">Media</string>
+    <string name="tab_present">Onyesha</string>
+    <string name="tab_more">Zaidi</string>
+    <string name="songs_count">Nyimbo %1$d</string>
+    <string name="bible_chapters_count">Sura %1$d</string>
+    <string name="status_version_line">Seva: %1$s · Simu: %2$s</string>
+
+    <!-- Announcement type & animation labels -->
+    <string name="announce_type_text">Maandishi</string>
+    <string name="announce_type_countdown">Kuhesabu kushuka</string>
+    <string name="announce_type_count_up">Kuhesabu kupanda</string>
+    <string name="announce_type_clock">Saa</string>
+    <string name="announce_type_countdown_to_time">Kuhesabu kushuka hadi saa</string>
+    <string name="announce_anim_none">Hakuna</string>
+    <string name="announce_anim_fade">Fifia</string>
+    <string name="announce_anim_slide_up">Teleza juu</string>
+    <string name="announce_anim_slide_down">Teleza chini</string>
+    <string name="announce_anim_slide_left">Teleza kutoka kushoto</string>
+    <string name="announce_anim_slide_right">Teleza kutoka kulia</string>
+    <string name="announce_duration_seconds">%1$s s</string>
+    <string name="dictionary_ref_book">Kitabu</string>
+    <string name="dictionary_ref_chapter">Sura</string>
+    <string name="dictionary_ref_verse">Mstari</string>
+    <string name="dictionary_ref_clear">Futa kichujio cha marejeo</string>
+    <string name="dictionary_appears_in">Linatokea katika</string>
+    <string name="dictionary_appears_in_count">%1$s kati ya %2$s</string>
+    <string name="settings_active_server">Seva inayotumika</string>
+    <string name="contact_us_title">Wasiliana nasi</string>
+    <string name="contact_type_label">Aina</string>
+    <string name="contact_type_feature">Ombi la kipengele</string>
+    <string name="contact_type_feedback">Maoni</string>
+    <string name="contact_type_testimonial">Ushuhuda</string>
+    <string name="contact_type_bug">Ripoti ya hitilafu</string>
+    <string name="contact_name_label">Jina</string>
+    <string name="contact_email_label">Barua pepe (si lazima)</string>
+    <string name="contact_message_label">Ujumbe</string>
+    <string name="contact_send">Tuma</string>
+    <string name="contact_sending">Inatuma…</string>
+    <string name="contact_sent">Ujumbe umetumwa. Asante!</string>
+    <string name="contact_error">Haikuweza kutuma. Tafadhali jaribu tena.</string>
+    <string name="contact_rate_limited_browser">Kwa usalama, tafadhali maliza kutuma katika kivinjari chako.</string>
+    <string name="contact_network_error">Haikuweza kufikia seva. Angalia muunganisho wako wa intaneti kisha ujaribu tena.</string>
+    <string name="contact_open_browser">Fungua katika kivinjari</string>
+
+    <!-- Tablet two-pane layout -->
+    <string name="songs_pane_empty_title">Hakuna wimbo uliofunguliwa</string>
+    <string name="songs_pane_empty_body">Chagua wimbo upande wa kushoto na beti zake zitaonekana hapa.</string>
+    <string name="more_pane_empty_title">Hakuna zana iliyofunguliwa</string>
+    <string name="more_pane_empty_body">Chagua zana upande wa kushoto nayo itafunguka hapa.</string>
+    <string name="library_pane_empty_title">Hakuna kinachohaririwa</string>
+    <string name="library_pane_empty_body">Hariri kipengee upande wa kushoto, au ongeza kipya, nacho kitafunguka hapa.</string>
+    <string name="bible_pane_empty_title">Hakuna sura iliyofunguliwa</string>
+    <string name="bible_pane_empty_body">Chagua kitabu, kisha sura, na mistari yake itaonekana hapa.</string>
+    <string name="bible_chapters_overline">Sura</string>
+</resources>

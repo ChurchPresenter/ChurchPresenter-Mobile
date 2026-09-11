@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -277,16 +278,25 @@ private fun OutputChordChart(
 /** Chords are drawn smaller than the words they sit over. */
 private const val CHORD_RATIO = 0.55f
 
-/** The desktop resolves the same three names to the same three alignments. */
+/**
+ * The desktop resolves the same three names to the same three alignments.
+ *
+ * Absolute Left/Right rather than Start/End, and deliberately so: this is the
+ * one place in the app where mirroring would be wrong. The operator picked a
+ * side for the words on the hall screen, and that side is a property of the
+ * slide — it must not flip because the phone driving it happens to be set to
+ * Arabic. Everything that is app *chrome* uses start/end and does mirror.
+ */
 private fun SlideTextAlign.toTextAlign(): TextAlign = when (this) {
-    SlideTextAlign.LEFT -> TextAlign.Start
-    SlideTextAlign.RIGHT -> TextAlign.End
+    SlideTextAlign.LEFT -> TextAlign.Left
+    SlideTextAlign.RIGHT -> TextAlign.Right
     SlideTextAlign.CENTER -> TextAlign.Center
 }
 
+/** Absolute for the same reason [toTextAlign] is. */
 private fun SlideTextAlign.toHorizontalAlignment(): Alignment.Horizontal = when (this) {
-    SlideTextAlign.LEFT -> Alignment.Start
-    SlideTextAlign.RIGHT -> Alignment.End
+    SlideTextAlign.LEFT -> AbsoluteAlignment.Left
+    SlideTextAlign.RIGHT -> AbsoluteAlignment.Right
     SlideTextAlign.CENTER -> Alignment.CenterHorizontally
 }
 

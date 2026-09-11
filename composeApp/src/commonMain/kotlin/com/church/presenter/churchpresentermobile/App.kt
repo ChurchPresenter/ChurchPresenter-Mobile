@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -29,27 +31,22 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.announcements_title
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
 import churchpresentermobile.composeapp.generated.resources.deep_link_connected
 import churchpresentermobile.composeapp.generated.resources.media_title
-import churchpresentermobile.composeapp.generated.resources.contact_us_title
-import churchpresentermobile.composeapp.generated.resources.more_notices_title
-import churchpresentermobile.composeapp.generated.resources.more_photos_title
-import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.tab_more
 import churchpresentermobile.composeapp.generated.resources.tab_presentation
-import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
 import churchpresentermobile.composeapp.generated.resources.tab_songs
-import churchpresentermobile.composeapp.generated.resources.web_title
 import coil3.request.crossfade
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
@@ -84,6 +81,11 @@ import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.BottomTabBar
 import com.church.presenter.churchpresentermobile.ui.DictionaryScreen
 import com.church.presenter.churchpresentermobile.ui.MoreScreen
+import com.church.presenter.churchpresentermobile.ui.MoreTwoPane
+import com.church.presenter.churchpresentermobile.ui.moreDestinationTitle
+import com.church.presenter.churchpresentermobile.ui.NavRail
+import com.church.presenter.churchpresentermobile.ui.usesNavRail
+import com.church.presenter.churchpresentermobile.ui.usesTwoPaneLayout
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
@@ -102,6 +104,7 @@ import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
 import com.church.presenter.churchpresentermobile.ui.library.AnnouncementEditorScreen
 import com.church.presenter.churchpresentermobile.ui.library.LibraryScreen
+import com.church.presenter.churchpresentermobile.ui.library.LibraryTwoPane
 import com.church.presenter.churchpresentermobile.ui.library.SongEditorScreen
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -507,12 +510,30 @@ fun App(
     // and adds the local controller and library.
     val tabs = AppTab.forMode(appMode)
 
+    // ── Phone shape or tablet shape ───────────────────────────────────────
+    // Read from the window rather than asked of the platform, so a window that
+    // changes size — a foldable opening, a desktop browser being dragged wider,
+    // an iPad entering Split View — moves between the two without a restart.
+    val windowWidthDp = with(LocalDensity.current) {
+        LocalWindowInfo.current.containerSize.width.toDp()
+    }
+    val useRail = usesNavRail(windowWidthDp)
+    val twoPane = usesTwoPaneLayout(windowWidthDp)
+
     // Seed the initial tab from any pending shortcut/quick-action so that
     // rememberPagerState starts on the correct page immediately.  Without this,
     // the snapshotFlow's first emission (settledPage == 0) races against the
     // LaunchedEffect(shortcutTab) and can reset navigation back to Songs.
     val initialTab = TabNavigationHandler.requestedTab.value ?: AppTab.SONGS
     var selectedTab by rememberSaveable { mutableStateOf(initialTab) }
+
+    // Selecting a tab, hoisted because both strips do it: the phone's bottom bar
+    // and the tablet's rail must agree on what a tap means, including the
+    // re-tap that backs More out of a sub-screen.
+    val selectTab: (AppTab) -> Unit = { tab ->
+        if (tapReturnsToMoreLauncher(tab, selectedTab)) moreDestination = null
+        selectedTab = tab
+    }
 
     // Applying a drawer tap, hoisted out of the drawer's own lambda so the
     // assignments read at a sane indent. Where the tap *goes* is decided by
@@ -647,8 +668,10 @@ fun App(
     val inBibleDetail = selectedTab == AppTab.BIBLE && bibleBook != null
     val inMoreDetail = selectedTab == AppTab.MORE && moreDestination != null
 
-    // System back inside a More sub-screen returns to the More launcher grid.
-    AppBackHandler(enabled = inMoreDetail) { moreDestination = null }
+    // System back inside a More sub-screen returns to the More launcher grid. Not
+    // in two panes, where the launcher never went away: back would empty the
+    // right-hand pane, which is not what the gesture means anywhere else.
+    AppBackHandler(enabled = inMoreDetail && !twoPane) { moreDestination = null }
 
     // Log More sub-screen views
     LaunchedEffect(moreDestination) {
@@ -841,100 +864,90 @@ fun App(
                 )
             }
         ) {
+            // The screen's own header, hoisted out of `topBar` because the two
+            // layouts hang it in different places: across the top of the window on a
+            // phone, and inside the content column on a tablet, where the rail owns
+            // the left edge and a full-width bar would run over it.
+            val appHeader: @Composable () -> Unit = {
+                val chapterLabel = stringResource(Res.string.bible_chapter_label)
+                val appTitle = stringResource(Res.string.app_title)
+                val bibleTitle = stringResource(Res.string.tab_bible)
+                when {
+                    inSongDetail -> ScreenHeader(
+                        title = songDetailTitle!!,
+                        subtitle = songDetailBookName?.takeIf { it.isNotBlank() },
+                        largeTitle = false,
+                        onBack = { songNavigateBack?.invoke() }
+                    )
+                    inBibleDetail -> ScreenHeader(
+                        title = if (bibleChapter != null)
+                            "${bibleBook!!.displayName} · $chapterLabel $bibleChapter"
+                        else bibleBook!!.displayName,
+                        subtitle = if (bibleChapter == null) "Select a chapter" else null,
+                        largeTitle = bibleChapter != null,
+                        onBack = { bibleNavigateBack?.invoke() }
+                    )
+                    inMoreDetail -> ScreenHeader(
+                        title = moreDestinationTitle(moreDestination, appMode),
+                        onBack = { moreDestination = null },
+                        // Q&A keeps the settings gear; the dictionary header (screen 11) has none.
+                        onSettings = if (moreDestination == MoreDestination.QA) ({ showSettings = true }) else null
+                    )
+                    else -> when (selectedTab) {
+                        AppTab.SONGS -> ScreenHeader(
+                            title = stringResource(Res.string.tab_songs),
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true }
+                        )
+                        AppTab.BIBLE -> ScreenHeader(
+                            title = bibleTitle,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true }
+                        )
+                        AppTab.MEDIA -> ScreenHeader(
+                            title = stringResource(Res.string.media_title),
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true }
+                        )
+                        AppTab.PRESENTATION -> ScreenHeader(
+                            title = stringResource(Res.string.tab_presentation),
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true }
+                        )
+                        AppTab.MORE -> ScreenHeader(
+                            title = stringResource(Res.string.tab_more),
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true }
+                        )
+                        else -> ScreenHeader(
+                            title = appTitle,
+                            largeTitle = false,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true }
+                        )
+                    }
+                }
+            }
+
             Scaffold(
                 containerColor = MaterialTheme.colorScheme.background,
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                topBar = {
-                    val chapterLabel = stringResource(Res.string.bible_chapter_label)
-                    val appTitle = stringResource(Res.string.app_title)
-                    val bibleTitle = stringResource(Res.string.tab_bible)
-                    val qaTitle = stringResource(Res.string.tab_qa_admin)
-                    when {
-                        inSongDetail -> ScreenHeader(
-                            title = songDetailTitle!!,
-                            subtitle = songDetailBookName?.takeIf { it.isNotBlank() },
-                            largeTitle = false,
-                            onBack = { songNavigateBack?.invoke() }
-                        )
-                        inBibleDetail -> ScreenHeader(
-                            title = if (bibleChapter != null)
-                                "${bibleBook!!.displayName} · $chapterLabel $bibleChapter"
-                            else bibleBook!!.displayName,
-                            subtitle = if (bibleChapter == null) "Select a chapter" else null,
-                            largeTitle = bibleChapter != null,
-                            onBack = { bibleNavigateBack?.invoke() }
-                        )
-                        inMoreDetail -> ScreenHeader(
-                            title = when (moreDestination) {
-                                MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)
-                                MoreDestination.QA -> qaTitle
-                                MoreDestination.DICTIONARY -> stringResource(Res.string.strongs_dictionary_title)
-                                MoreDestination.ANNOUNCEMENTS ->
-                                    if (appMode == AppMode.STANDALONE) stringResource(Res.string.more_notices_title)
-                                    else stringResource(Res.string.announcements_title)
-                                MoreDestination.WEB -> stringResource(Res.string.web_title)
-                                MoreDestination.CONTACT -> stringResource(Res.string.contact_us_title)
-                                null -> ""
-                            },
-                            onBack = { moreDestination = null },
-                            // Q&A keeps the settings gear; the dictionary header (screen 11) has none.
-                            onSettings = if (moreDestination == MoreDestination.QA) ({ showSettings = true }) else null
-                        )
-                        else -> when (selectedTab) {
-                            AppTab.SONGS -> ScreenHeader(
-                                title = stringResource(Res.string.tab_songs),
-                                onMenu = { coroutineScope.launch { drawerState.open() } },
-                                onSettings = { showSettings = true }
-                            )
-                            AppTab.BIBLE -> ScreenHeader(
-                                title = bibleTitle,
-                                onMenu = { coroutineScope.launch { drawerState.open() } },
-                                onSettings = { showSettings = true }
-                            )
-                            AppTab.MEDIA -> ScreenHeader(
-                                title = stringResource(Res.string.media_title),
-                                onMenu = { coroutineScope.launch { drawerState.open() } },
-                                onSettings = { showSettings = true }
-                            )
-                            AppTab.PRESENTATION -> ScreenHeader(
-                                title = stringResource(Res.string.tab_presentation),
-                                onMenu = { coroutineScope.launch { drawerState.open() } },
-                                onSettings = { showSettings = true }
-                            )
-                            AppTab.MORE -> ScreenHeader(
-                                title = stringResource(Res.string.tab_more),
-                                onMenu = { coroutineScope.launch { drawerState.open() } },
-                                onSettings = { showSettings = true }
-                            )
-                            else -> ScreenHeader(
-                                title = appTitle,
-                                largeTitle = false,
-                                onMenu = { coroutineScope.launch { drawerState.open() } },
-                                onSettings = { showSettings = true }
-                            )
-                        }
-                    }
-                },
+                topBar = { if (!useRail) appHeader() },
                 bottomBar = {
-                    BottomTabBar(
-                        selectedTab = selectedTab,
-                        tabs = tabs,
-                        onTabSelected = { tab ->
-                            // Re-tapping the active More tab returns to its launcher grid.
-                            if (tapReturnsToMoreLauncher(tab, selectedTab)) moreDestination = null
-                            selectedTab = tab
-                        }
-                    )
+                    if (!useRail) {
+                        BottomTabBar(
+                            selectedTab = selectedTab,
+                            tabs = tabs,
+                            onTabSelected = selectTab,
+                        )
+                    }
                 }
             ) { innerPadding ->
-                // Swipe-between-tabs — swiping is locked while inside a detail screen
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = !inSongDetail && !inBibleDetail && !inMoreDetail,
-                    modifier = Modifier.fillMaxSize().padding(innerPadding),
-                    beyondViewportPageCount = 0  // only compose the visible page
-                ) { page ->
-                    when (tabs.getOrNull(page) ?: tabs.first()) {
+                // One tab's screen. Hoisted so the phone's pager and the tablet's
+                // single pane draw it from the same place — two copies of this
+                // `when` would drift the first time a screen gained an argument.
+                val renderTab: @Composable (AppTab) -> Unit = { tab ->
+                    when (tab) {
                         // The standalone live controller. Given the engine and the
                         // sink registry directly — they are collaborators, not
                         // ViewModels, so the screen still owns its own ViewModel.
@@ -942,6 +955,9 @@ fun App(
                             engine = standaloneEngine,
                             registry = sinkRegistry,
                             settings = appSettings,
+                            twoPane = twoPane,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true },
                             // The same library the Photos screen fills, so a photo
                             // added there can be chosen as the backdrop here.
                             photos = photoLibrary,
@@ -952,6 +968,9 @@ fun App(
                             appSettings = appSettings,
                             isDemoMode = isDemoMode,
                             settingsSaveToken = settingsSaveToken,
+                            twoPane = twoPane,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true },
                             onDetailChanged = { title, bookName ->
                                 songDetailTitle = title
                                 songDetailBookName = bookName
@@ -973,6 +992,9 @@ fun App(
                             appSettings = appSettings,
                             isDemoMode = isDemoMode,
                             settingsSaveToken = settingsSaveToken,
+                            twoPane = twoPane,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true },
                             onNavigationChanged = { book, chapter ->
                                 bibleBook = book
                                 bibleChapter = chapter
@@ -995,6 +1017,9 @@ fun App(
                             viewModel = mediaViewModel,
                             canUploadFiles = canUploadFiles,
                             maxUploadMb = maxMediaUploadMb,
+                            twoPane = twoPane,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onSettings = { showSettings = true },
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.PRESENTATION -> PresentationScreen(
@@ -1008,107 +1033,183 @@ fun App(
                             providedViewModel = presentationsViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
-                        AppTab.MORE -> when (moreDestination) {
-                            // Standalone has no desktop folders to browse, so
-                            // Photos means this device's own pictures.
-                            MoreDestination.PICTURES if appMode == AppMode.STANDALONE ->
-                                LocalPhotosScreen(
-                                    library = photoLibrary,
-                                    presenter = standaloneEngine,
+                        AppTab.MORE -> {
+                            // The open tool, named once: the phone shows it *instead of*
+                            // the launcher and the tablet shows it *beside* one, and these
+                            // six screens each take their own collaborators to build.
+                            val moreTool: @Composable () -> Unit = {
+                                when (moreDestination) {
+                                    // Standalone has no desktop folders to browse, so
+                                    // Photos means this device's own pictures.
+                                    MoreDestination.PICTURES if appMode == AppMode.STANDALONE ->
+                                        LocalPhotosScreen(
+                                            library = photoLibrary,
+                                            presenter = standaloneEngine,
+                                            modifier = Modifier.fillMaxSize(),
+                                        )
+                                    MoreDestination.PICTURES -> PicturesScreen(
+                                        appSettings = appSettings,
+                                        isDemoMode = isDemoMode,
+                                        settingsSaveToken = settingsSaveToken,
+                                        imageLoader = imageLoader,
+                                        pendingNavFolderId = pendingPictureFolderId,
+                                        pendingNavImageIndex = pendingPictureImageIndex,
+                                        onPendingNavHandled = {
+                                            pendingPictureFolderId   = null
+                                            pendingPictureImageIndex = null
+                                        },
+                                        onScheduleRefresh = { scheduleRefreshToken++ },
+                                        canUploadFiles = canUploadFiles,
+                                        providedViewModel = picturesViewModel,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    MoreDestination.QA -> QAAdminScreen(
+                                        viewModel = qaViewModel,
+                                        settingsSaveToken = settingsSaveToken,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    MoreDestination.DICTIONARY -> DictionaryScreen(
+                                        viewModel = dictionaryViewModel,
+                                        settingsSaveToken = settingsSaveToken,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    // Standalone has no desktop schedule to add to, so this
+                                    // is the local notices list: a notice written in the
+                                    // Library, put on this device's own outputs.
+                                    MoreDestination.ANNOUNCEMENTS if appMode == AppMode.STANDALONE ->
+                                        LocalNoticesScreen(
+                                            repository = libraryRepository,
+                                            presenter = standaloneEngine,
+                                            hasOutput = sinkStatuses.any { it.isAttached },
+                                            modifier = Modifier.fillMaxSize(),
+                                        )
+                                    MoreDestination.ANNOUNCEMENTS -> AnnouncementsScreen(
+                                        viewModel = announcementsViewModel,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    // Standalone has no desktop to hand a link to, so the
+                                    // page goes on this device's own outputs.
+                                    MoreDestination.WEB if appMode == AppMode.STANDALONE ->
+                                        LocalWebScreen(
+                                            presenter = standaloneEngine,
+                                            // Collected, not read: hasAttachedSink is a plain getter, so
+                                            // plugging a screen in never cleared the "no output" warning.
+                                            hasOutput = sinkStatuses.any { it.isAttached },
+                                            modifier = Modifier.fillMaxSize(),
+                                        )
+                                    MoreDestination.CONTACT -> ContactScreen(
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    MoreDestination.WEB -> WebScreen(
+                                        viewModel = webViewModel,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    null -> Unit
+                                }
+                            }
+
+                            if (twoPane) {
+                                MoreTwoPane(
+                                    mode = appMode,
+                                    selected = moreDestination,
+                                    onSelect = { moreDestination = it },
+                                    tool = moreTool,
+                                    onMenu = { coroutineScope.launch { drawerState.open() } },
+                                    onSettings = { showSettings = true },
                                     modifier = Modifier.fillMaxSize(),
                                 )
-                            MoreDestination.PICTURES -> PicturesScreen(
-                                appSettings = appSettings,
-                                isDemoMode = isDemoMode,
-                                settingsSaveToken = settingsSaveToken,
-                                imageLoader = imageLoader,
-                                pendingNavFolderId = pendingPictureFolderId,
-                                pendingNavImageIndex = pendingPictureImageIndex,
-                                onPendingNavHandled = {
-                                    pendingPictureFolderId   = null
-                                    pendingPictureImageIndex = null
-                                },
-                                onScheduleRefresh = { scheduleRefreshToken++ },
-                                canUploadFiles = canUploadFiles,
-                                providedViewModel = picturesViewModel,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            MoreDestination.QA -> QAAdminScreen(
-                                viewModel = qaViewModel,
-                                settingsSaveToken = settingsSaveToken,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            MoreDestination.DICTIONARY -> DictionaryScreen(
-                                viewModel = dictionaryViewModel,
-                                settingsSaveToken = settingsSaveToken,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            // Standalone has no desktop schedule to add to, so this
-                            // is the local notices list: a notice written in the
-                            // Library, put on this device's own outputs.
-                            MoreDestination.ANNOUNCEMENTS if appMode == AppMode.STANDALONE ->
-                                LocalNoticesScreen(
+                            } else if (moreDestination == null) {
+                                MoreScreen(
+                                    mode = appMode,
+                                    onSelect = { moreDestination = it },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                moreTool()
+                            }
+                        }
+                        AppTab.LIBRARY -> {
+                            // Whichever editor is open, or null for none. Null is
+                            // what the tablet's right-hand pane shows as "nothing
+                            // being edited" and what the phone shows as the list.
+                            val libraryEditor: (@Composable () -> Unit)? = when {
+                                editingSongId != null || creatingSong -> ({
+                                    SongEditorScreen(
+                                        repository = libraryRepository,
+                                        songId = editingSongId,
+                                        onClose = { editingSongId = null; creatingSong = false },
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                })
+                                editingAnnouncementId != null || creatingAnnouncement -> ({
+                                    AnnouncementEditorScreen(
+                                        repository = libraryRepository,
+                                        announcementId = editingAnnouncementId,
+                                        onClose = { editingAnnouncementId = null; creatingAnnouncement = false },
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                })
+                                else -> null
+                            }
+                            val libraryList: @Composable () -> Unit = {
+                                LibraryScreen(
                                     repository = libraryRepository,
-                                    presenter = standaloneEngine,
-                                    hasOutput = sinkStatuses.any { it.isAttached },
+                                    bibles = bibleRepository,
+                                    settings = appSettings,
+                                    sender = projectionRouter,
+                                    onEditSong = { id ->
+                                        editingSongId = id
+                                        creatingSong = id == null
+                                    },
+                                    onEditAnnouncement = { id ->
+                                        editingAnnouncementId = id
+                                        creatingAnnouncement = id == null
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
+                            if (twoPane) {
+                                LibraryTwoPane(
+                                    list = libraryList,
+                                    editor = libraryEditor,
+                                    onMenu = { coroutineScope.launch { drawerState.open() } },
+                                    onSettings = { showSettings = true },
                                     modifier = Modifier.fillMaxSize(),
                                 )
-                            MoreDestination.ANNOUNCEMENTS -> AnnouncementsScreen(
-                                viewModel = announcementsViewModel,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            // Standalone has no desktop to hand a link to, so the
-                            // page goes on this device's own outputs.
-                            MoreDestination.WEB if appMode == AppMode.STANDALONE ->
-                                LocalWebScreen(
-                                    presenter = standaloneEngine,
-                                    // Collected, not read: hasAttachedSink is a plain getter, so
-                                    // plugging a screen in never cleared the "no output" warning.
-                                    hasOutput = sinkStatuses.any { it.isAttached },
-                                    modifier = Modifier.fillMaxSize(),
-                                )
-                            MoreDestination.CONTACT -> ContactScreen(
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            MoreDestination.WEB -> WebScreen(
-                                viewModel = webViewModel,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            null -> MoreScreen(
-                                mode = appMode,
-                                onSelect = { moreDestination = it },
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            } else {
+                                (libraryEditor ?: libraryList)()
+                            }
                         }
-                        AppTab.LIBRARY -> when {
-                            editingSongId != null || creatingSong -> SongEditorScreen(
-                                repository = libraryRepository,
-                                songId = editingSongId,
-                                onClose = { editingSongId = null; creatingSong = false },
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            editingAnnouncementId != null || creatingAnnouncement -> AnnouncementEditorScreen(
-                                repository = libraryRepository,
-                                announcementId = editingAnnouncementId,
-                                onClose = { editingAnnouncementId = null; creatingAnnouncement = false },
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            else -> LibraryScreen(
-                                repository = libraryRepository,
-                                bibles = bibleRepository,
-                                settings = appSettings,
-                                sender = projectionRouter,
-                                onEditSong = { id ->
-                                    editingSongId = id
-                                    creatingSong = id == null
-                                },
-                                onEditAnnouncement = { id ->
-                                    editingAnnouncementId = id
-                                    creatingAnnouncement = id == null
-                                },
-                                modifier = Modifier.fillMaxSize()
-                            )
+                    }
+                }
+
+                if (useRail) {
+                    Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                        NavRail(
+                            selectedTab = selectedTab,
+                            tabs = tabs,
+                            onTabSelected = selectTab,
+                        )
+                        Column(modifier = Modifier.weight(1f).fillMaxSize()) {
+                            // A split tab hangs a header over each of its panes,
+                            // so the shell stands back. Tabs that have not been
+                            // split yet still get the one bar across the top.
+                            if (!tabDrawsOwnHeader(selectedTab, twoPane)) appHeader()
+                            Box(modifier = Modifier.weight(1f)) { renderTab(selectedTab) }
                         }
+                    }
+                } else {
+                    // Swipe-between-tabs — swiping is locked while inside a detail
+                    // screen. There is no pager beside a rail: with the tabs off the
+                    // bottom edge a horizontal swipe belongs to the content.
+                    HorizontalPager(
+                        state = pagerState,
+                        userScrollEnabled = !inSongDetail && !inBibleDetail && !inMoreDetail,
+                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        beyondViewportPageCount = 0  // only compose the visible page
+                    ) { page ->
+                        renderTab(tabs.getOrNull(page) ?: tabs.first())
                     }
                 }
             }
