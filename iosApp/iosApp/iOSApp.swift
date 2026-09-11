@@ -78,15 +78,14 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         // 1b. Bridge iOS Analytics to Kotlin
         IosAnalyticsBridge.shared.reporter = SwiftAnalyticsReporter()
 
-        // 2. Track launches and show the App Store review prompt at milestones
+        // 2. Track launches and show the App Store review prompt at milestones.
+        //    No scene is connected yet at this point in the launch, so the
+        //    request itself waits for the first didBecomeActive (see below).
         let defaults = UserDefaults.standard
         let openCount = defaults.integer(forKey: AppConstants.appOpenCountKey) + 1
         defaults.set(openCount, forKey: AppConstants.appOpenCountKey)
-        if openCount == 3 || openCount == 10 || (openCount > 10 && openCount % 20 == 0) {
-            if let scene = UIApplication.shared.connectedScenes
-                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                AppStore.requestReview(in: scene)
-            }
+        if AppDelegate.shouldRequestReview(openCount: openCount) {
+            requestReviewWhenActive()
         }
 
         // 3. Check App Store for a newer version (delayed to not block launch)
@@ -228,6 +227,39 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         // (e.g. update FCM token if needed).
         Messaging.messaging().appDidReceiveMessage(userInfo)
         completionHandler(.newData)
+    }
+
+    // MARK: - App Store review prompt
+
+    /// Same milestone rule as `AppReview.shouldRequest` on Android:
+    /// 3rd open, 10th open, then every 20th open after that.
+    static func shouldRequestReview(openCount: Int) -> Bool {
+        openCount == 3 || openCount == 10 || (openCount > 10 && openCount % 20 == 0)
+    }
+
+    private var reviewObserver: NSObjectProtocol?
+
+    /// `AppStore.requestReview(in:)` needs a foreground-active window scene, and
+    /// none exists inside `didFinishLaunchingWithOptions` — so wait for the app
+    /// to become active once, then ask. StoreKit rate-limits the sheet itself,
+    /// so it is safe to call on every launch that hits a milestone.
+    private func requestReviewWhenActive() {
+        reviewObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            if let observer = self?.reviewObserver {
+                NotificationCenter.default.removeObserver(observer)
+                self?.reviewObserver = nil
+            }
+            Task { @MainActor in
+                guard let scene = UIApplication.shared.connectedScenes
+                    .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+                else { return }
+                AppStore.requestReview(in: scene)
+            }
+        }
     }
 
     // MARK: - App Store update check

@@ -133,12 +133,16 @@ PODS:
   - PromisesObjC (2.4.0)
   - PromisesSwift (2.4.0):
     - PromisesObjC (= 2.4.0)
+  - Sentry (8.58.4):
+    - Sentry/Core (= 8.58.4)
+  - Sentry/Core (8.58.4)
 
 DEPENDENCIES:
   - FirebaseAnalytics (~> 11.8)
   - FirebaseCrashlytics (~> 11.8)
   - FirebaseMessaging (~> 11.8)
   - FirebaseRemoteConfig (~> 11.8)
+  - Sentry (~> 8.0)
 
 SPEC REPOS:
   trunk:
@@ -161,6 +165,7 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - PromisesSwift
+    - Sentry
 
 SPEC CHECKSUMS:
   FirebaseABTesting: 5e9d432834aebf27ab72100d37af44dfbe8d82f7
@@ -182,7 +187,8 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
+  Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
 
-PODFILE CHECKSUM: ae320d8009b3a4a0f7f9ec26aec889314bf890d2
+PODFILE CHECKSUM: e94bf7a482ffb298f8591f69dfac87547ee3dbd9
 
 COCOAPODS: 1.16.2
