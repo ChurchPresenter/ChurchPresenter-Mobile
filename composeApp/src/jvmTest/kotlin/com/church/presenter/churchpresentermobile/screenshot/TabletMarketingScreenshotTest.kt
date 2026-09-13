@@ -243,16 +243,18 @@ class TabletMarketingScreenshotTest {
         tab = AppTab.LIBRARY,
         tabs = AppTab.forMode(AppMode.STANDALONE),
         // The editor's slide preview is blank until a section is edited, and a
-        // blank black panel is most of the pane. "Retype" the first verse as it
-        // already is — the words do not change, the preview fills in — then
-        // put the form back at the top for the picture.
+        // blank black panel is most of the pane. So edit the first verse and
+        // edit it straight back: a text field only reports a change when the
+        // words differ, so retyping them as they are would report nothing. The
+        // words end up as they were and the preview shows them. Then put the
+        // form back at the top for the picture.
         prepare = {
             val firstVerse = MarketingContent.librarySongs.first().sections.first().text
             editorForm().performScrollToNode(hasTestTag(LibraryTags.verse(0)))
+            onNode(hasTestTag(LibraryTags.verse(0))).performTextReplacement("$firstVerse ")
             onNode(hasTestTag(LibraryTags.verse(0))).performTextReplacement(firstVerse)
             editorForm().performScrollToNode(hasTestTag(LibraryTags.FIELD_TITLE))
         },
-        until = { onAllNodes(hasText("Amazing Grace · Verse 1")).fetchSemanticsNodes().isNotEmpty() },
     ) {
         val repository = libraryOf(
             songs = MarketingContent.librarySongs,

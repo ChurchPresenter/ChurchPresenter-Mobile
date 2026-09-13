@@ -28,16 +28,19 @@ jobs:
     name: Build IPA & Upload to TestFlight
     runs-on: macos-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          # Full history needed so we can push the version-bump commit back
-          fetch-depth: 0
 
-      - name: Bump iOS build and version numbers
+      # The build number is this workflow's run number, not a commit. `main`
+      # only takes pull requests now, so the bump-and-push this used to do is
+      # rejected — and a commit was never what App Store Connect needed, only
+      # a build number higher than the last upload. The run number is exactly
+      # that: up by one per run, never repeated. The values in Config.xcconfig
+      # are what a local Xcode build gets and are left alone.
+      - name: Set iOS build and version numbers
         id: bump_version
         run: |
           CONFIG="iosApp/Configuration/Config.xcconfig"
@@ -45,11 +48,16 @@ jobs:
           BUILD=$(grep '^CURRENT_PROJECT_VERSION=' "$CONFIG" | sed 's/CURRENT_PROJECT_VERSION=//')
           VERSION=$(grep '^MARKETING_VERSION=' "$CONFIG" | sed 's/MARKETING_VERSION=//')
 
-          NEW_BUILD=$((BUILD + 1))
+          NEW_BUILD=${{ github.run_number }}
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)
-          PATCH=$(echo "$VERSION" | cut -d. -f3)
-          NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_BUILD}"
+
+          if [ "$NEW_BUILD" -le "$BUILD" ]; then
+            echo "❌ Run number $NEW_BUILD is not above CURRENT_PROJECT_VERSION in $CONFIG ($BUILD);"
+            echo "   App Store Connect would reject it. Lower the checked-in value or wait for a later run."
+            exit 1
+          fi
 
           sed -i '' "s/^CURRENT_PROJECT_VERSION=.*/CURRENT_PROJECT_VERSION=${NEW_BUILD}/" "$CONFIG"
           sed -i '' "s/^MARKETING_VERSION=.*/MARKETING_VERSION=${NEW_VERSION}/" "$CONFIG"
@@ -57,14 +65,6 @@ jobs:
           echo "new_build=${NEW_BUILD}"   >> "$GITHUB_OUTPUT"
           echo "new_version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
           echo "✅ iOS build: $BUILD → $NEW_BUILD | version: $VERSION → $NEW_VERSION"
-
-      - name: Commit and push version bump
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add iosApp/Configuration/Config.xcconfig
-          git commit -m "chore(ios): bump to ${{ steps.bump_version.outputs.new_version }} (build ${{ steps.bump_version.outputs.new_build }}) [skip ci]"
-          git push
 
       # iOS 26 SDK (Xcode 26) required for App Store Connect uploads from April 28 2026.
       - name: Select Xcode 26

@@ -122,18 +122,18 @@ internal object MarketingContent {
 
     /** The desktop's catalogue, as the tablet's Songs list pane shows it: the same hymns as [librarySongs]. */
     val songs: List<Song> = listOf(
-        Song(id = 1, number = "1", title = "Amazing Grace", author = "John Newton", bookName = "Hymns"),
-        Song(id = 2, number = "23", title = "Be Thou My Vision", author = "Mary E. Byrne", bookName = "Hymns"),
-        Song(id = 3, number = "104", title = "How Great Thou Art", author = "Stuart K. Hine", bookName = "Hymns"),
-        Song(id = 4, number = "88", title = "Great Is Thy Faithfulness", author = "Thomas O. Chisholm", bookName = "Hymns"),
-        Song(id = 5, number = "7", title = "In Christ Alone", author = "Keith Getty", bookName = "Modern"),
-        Song(id = 6, number = "56", title = "It Is Well With My Soul", author = "Horatio Spafford", bookName = "Hymns"),
-        Song(id = 7, number = "12", title = "Holy, Holy, Holy", author = "Reginald Heber", bookName = "Hymns"),
-        Song(id = 8, number = "77", title = "Come Thou Fount", author = "Robert Robinson", bookName = "Hymns"),
-        Song(id = 9, number = "31", title = "Be Still, My Soul", author = "Katharina von Schlegel", bookName = "Hymns"),
-        Song(id = 10, number = "45", title = "Rock of Ages", author = "Augustus Toplady", bookName = "Hymns"),
-        Song(id = 11, number = "19", title = "10,000 Reasons", author = "Matt Redman", bookName = "Modern"),
-        Song(id = 12, number = "63", title = "Crown Him with Many Crowns", author = "Matthew Bridges", bookName = "Hymns"),
+        song(1, "1", "Amazing Grace", "John Newton", "Hymns"),
+        song(2, "23", "Be Thou My Vision", "Mary E. Byrne", "Hymns"),
+        song(3, "104", "How Great Thou Art", "Stuart K. Hine", "Hymns"),
+        song(4, "88", "Great Is Thy Faithfulness", "Thomas O. Chisholm", "Hymns"),
+        song(5, "7", "In Christ Alone", "Keith Getty", "Modern"),
+        song(6, "56", "It Is Well With My Soul", "Horatio Spafford", "Hymns"),
+        song(7, "12", "Holy, Holy, Holy", "Reginald Heber", "Hymns"),
+        song(8, "77", "Come Thou Fount", "Robert Robinson", "Hymns"),
+        song(9, "31", "Be Still, My Soul", "Katharina von Schlegel", "Hymns"),
+        song(10, "45", "Rock of Ages", "Augustus Toplady", "Hymns"),
+        song(11, "19", "10,000 Reasons", "Matt Redman", "Modern"),
+        song(12, "63", "Crown Him with Many Crowns", "Matthew Bridges", "Hymns"),
     )
 
     /**
@@ -158,9 +158,13 @@ internal object MarketingContent {
         ),
         localSong("s2", "23", "Be Thou My Vision", "Mary E. Byrne", "Be thou my vision, O Lord of my heart"),
         localSong("s3", "104", "How Great Thou Art", "Stuart K. Hine", "O Lord my God, when I in awesome wonder"),
-        localSong("s4", "88", "Great Is Thy Faithfulness", "Thomas O. Chisholm", "Great is thy faithfulness, O God my Father"),
+        localSong(
+            "s4", "88", "Great Is Thy Faithfulness", "Thomas O. Chisholm", "Great is thy faithfulness, O God my Father",
+        ),
         localSong("s5", "7", "In Christ Alone", "Keith Getty", "In Christ alone my hope is found"),
-        localSong("s6", "56", "It Is Well With My Soul", "Horatio Spafford", "When peace like a river attendeth my way"),
+        localSong(
+            "s6", "56", "It Is Well With My Soul", "Horatio Spafford", "When peace like a river attendeth my way",
+        ),
         localSong("s7", "12", "Holy, Holy, Holy", "Reginald Heber", "Holy, holy, holy! Lord God Almighty!"),
         localSong("s8", "77", "Come Thou Fount", "Robert Robinson", "Come thou fount of every blessing"),
     )
@@ -175,7 +179,7 @@ internal object MarketingContent {
         strongs("H430", "elohim", "el-o-heem", "gods in the ordinary sense; God, the supreme God", 2606),
         strongs("H7965", "shalom", "shaw-lome", "safe; well, happy, friendly; welfare, health, prosperity, peace", 237),
         strongs("H2617", "chesed", "kheh-sed", "kindness; by implication piety, favour, mercy, loving-kindness", 248),
-        strongs("H8085", "shama", "shaw-mah", "to hear intelligently; often with implication of attention, obedience", 1159),
+        strongs("H8085", "shama", "shaw-mah", "to hear intelligently; often with implication of attention", 1159),
         strongs("G26", "agape", "ag-ah-pay", "love, affection, benevolence", 116),
         strongs("G3056", "logos", "log-os", "something said; a word, a topic, reasoning, the Divine Expression", 330),
         strongs("G5485", "charis", "khar-ece", "graciousness; the divine influence upon the heart; gratitude", 156),
@@ -217,6 +221,9 @@ internal object MarketingContent {
 
     private fun verse(label: String, vararg lines: String) =
         SongVerse(label = label, lines = lines.toList())
+
+    private fun song(id: Int, number: String, title: String, author: String, book: String) =
+        Song(id = id, number = number, title = title, author = author, bookName = book)
 
     private fun localSong(id: String, number: String, title: String, author: String, firstLine: String) =
         LocalSong(

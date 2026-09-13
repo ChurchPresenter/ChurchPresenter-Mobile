@@ -273,19 +273,29 @@ Before submitting to production, verify everything in Play Console is complete:
 
 ## Versioning
 
-Every new release **must** increment `versionCode`. `versionName` is the
-human-readable version shown to users.
+Every new release **must** carry a `versionCode` higher than the previous
+upload. `versionName` is the human-readable version shown to users.
 
-Edit in `composeApp/build.gradle.kts`:
+The **Android Play Store Upload** workflow sets both itself, from its own
+run number: `versionCode = <run number>` and `versionName = <major>.<minor>.<run number>`,
+with major and minor read from `composeApp/build.gradle.kts`. Nothing is
+committed — `main` only accepts pull requests, and Play only needs the number
+to go up, which the run number does on its own. So there is no bump to make
+before a release; the numbers checked in are what a local build gets.
+
+To move to a new major or minor version, change `versionName` in
+`composeApp/build.gradle.kts` through a pull request:
 
 ```kotlin
 defaultConfig {
-    versionCode = 2        // ← must be higher than the previous upload
-    versionName = "1.1"    // ← shown on the Play Store
+    versionCode = 21         // local builds only; releases use the run number
+    versionName = "1.1.0"    // releases keep the 1.1 and replace the patch
 }
 ```
 
-Commit the version bump before triggering the release build.
+The workflow refuses to run if its run number is not above the checked-in
+`versionCode`, so that value can be raised past the run counter to reserve
+a range, but never above it.
 
 ---
 
@@ -294,7 +304,7 @@ Commit the version bump before triggering the release build.
 | Problem | Solution |
 |---------|----------|
 | "You need to publish to at least one testing track" | Complete all store listing required fields first, then upload to internal testing |
-| "Version code already used" | Increment `versionCode` in `build.gradle.kts` and rebuild |
+| "Version code already used" | A re-run reuses its run number; trigger a fresh run instead of re-running the failed one |
 | "APK/AAB not signed correctly" | Re-run `push_github_secrets.sh` to refresh the Android keystore secret |
 | "Target API level too low" | Ensure `targetSdk` in `libs.versions.toml` meets the current year's Play Store requirement |
 | Service account gets 403 | Make sure the service account was granted **Release to testing tracks** permission in Play Console (not just Google Cloud IAM) |
