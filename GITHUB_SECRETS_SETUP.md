@@ -4,12 +4,11 @@ This document explains every GitHub Actions secret required to produce signed
 Android (AAB / APK) and iOS (IPA) release builds and upload them directly to
 the stores from the following workflows:
 
-| Workflow                      | Purpose                                  |
-|-------------------------------|------------------------------------------|
-| **Android Release Build**     | Builds a signed AAB / APK artifact       |
-| **Android Play Store Upload** | Builds + uploads directly to Google Play |
-| **iOS Release Build**         | Builds a signed IPA artifact             |
-| **iOS TestFlight Upload**     | Builds + uploads directly to TestFlight  |
+| Workflow                  | Purpose                                                              |
+|---------------------------|----------------------------------------------------------------------|
+| **Android Release Build** | Builds a signed AAB / APK artifact                                   |
+| **iOS Release Build**     | Builds a signed IPA artifact                                         |
+| **Store Release**         | Builds + uploads to Google Play and TestFlight, one version for both |
 
 ---
 
@@ -103,7 +102,7 @@ base64 -b 0 -i /path/to/signing-repo/mobile/google-services.json | pbcopy
 
 ### `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`
 The raw JSON key for the Google Play service account that GitHub Actions uses to
-upload AABs directly to Play Store.  Used by the **Android Play Store Upload** workflow.
+upload AABs directly to Play Store.  Used by the **Store Release** workflow.
 
 **How to create:**
 1. Play Console → **Setup → API access** → link to a Google Cloud project
@@ -248,7 +247,7 @@ base64 -b 0 -i /path/to/signing-repo/mobile/ios/GoogleService-Info.plist | pbcop
 
 ## App Store Connect API secrets (iOS TestFlight upload)
 
-Required only for the **iOS TestFlight Upload** workflow.
+Required only for the **Store Release** workflow (its TestFlight job).
 
 ### `APP_STORE_CONNECT_KEY_ID`
 The 10-character ID of an App Store Connect API key with **App Manager** role.
@@ -279,9 +278,8 @@ gh secret set APP_STORE_CONNECT_PRIVATE_KEY \
 | Goal | Workflow to run |
 |---|---|
 | Signed IPA to download | **iOS Release Build** (ad-hoc or app-store) |
-| Upload directly to TestFlight | **iOS TestFlight Upload** |
 | Signed AAB / APK to download | **Android Release Build** |
-| Upload directly to Google Play | **Android Play Store Upload** |
+| Upload to TestFlight and Google Play (same version) | **Store Release** |
 
 1. Go to the **Actions** tab in GitHub
 2. Select the desired workflow

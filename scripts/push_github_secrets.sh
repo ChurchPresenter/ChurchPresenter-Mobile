@@ -118,7 +118,7 @@ if [ ! -f "$GS_JSON" ]; then
 fi
 push_secret_file "GOOGLE_SERVICES_JSON_BASE64" "$GS_JSON"
 
-# Google Play service account JSON (required for android-play-store.yml)
+# Google Play service account JSON (required for store-release.yml)
 PLAY_SA_JSON="$MOBILE/play-store-service-account.json"
 if [ -f "$PLAY_SA_JSON" ]; then
   gh secret set "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" --repo "$REPO_SLUG" < "$PLAY_SA_JSON"
@@ -206,7 +206,7 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# App Store Connect API (required for ios-testflight.yml)
+# App Store Connect API (required for store-release.yml)
 # ---------------------------------------------------------------------------
 echo "🔐  Setting App Store Connect API secrets…"
 
