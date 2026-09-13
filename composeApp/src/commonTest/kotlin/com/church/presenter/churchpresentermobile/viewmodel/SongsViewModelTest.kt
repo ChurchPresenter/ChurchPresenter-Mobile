@@ -331,9 +331,19 @@ class SongsViewModelTest {
         )
     }
 
+    /**
+     * Opens the first song and waits for the load to *finish*, not merely for
+     * the detail to appear. The ViewModel writes `_songDetail` and then
+     * `_isLoadingDetail = false` back-to-back on the Ktor worker thread, and a
+     * test woken by the first write can read the flag before the second lands —
+     * which made `assertFalse(isLoadingDetail)` fail intermittently on the JVM.
+     * The flag is set eagerly by the unconfined launch, so it is already true
+     * when `openSongDetail` returns and awaiting `false` cannot return early.
+     */
     private suspend fun SongsViewModel.openFirstSong() {
         val song = songs.first { it.isNotEmpty() }.first()
         openSongDetail(song)
+        isLoadingDetail.first { !it }
         songDetail.first { it != null }
     }
 
