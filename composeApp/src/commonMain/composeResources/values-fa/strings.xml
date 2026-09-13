@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">بابی باز نیست</string>
     <string name="bible_pane_empty_body">ابتدا کتاب و سپس باب را انتخاب کنید تا آیه‌هایش اینجا نمایان شود.</string>
     <string name="bible_chapters_overline">باب</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">کنترل از راه دور یا مستقل</string>
+    <string name="settings_section_server_subtitle">میزبان، درگاه و کلید API</string>
+    <string name="settings_section_computer_subtitle">محل کپی شدن سرودها و کتاب‌مقدس‌ها</string>
+    <string name="settings_device_section">دستگاه</string>
+    <string name="settings_section_device_subtitle">نامی که روی رایانه نمایش داده می‌شود</string>
+    <string name="settings_section_appearance_subtitle">پوسته</string>
+    <string name="settings_diagnostics_section">عیب‌یابی</string>
+    <string name="settings_section_diagnostics_subtitle">وضعیت سرور و داده‌های استفاده</string>
+    <string name="settings_about_section">درباره</string>
+    <string name="settings_section_about_subtitle">نسخه و حق نشر</string>
+    <string name="settings_this_device">این دستگاه</string>
+    <string name="settings_display_name_hint">به پرسش‌هایی که از زبانه پرسش‌ها می‌فرستید پیوست می‌شود.</string>
+    <string name="settings_theme_title">پوسته</string>
+    <string name="settings_connection_status_label">وضعیت</string>
+    <string name="settings_connection_checking">در حال بررسی…</string>
+    <string name="settings_connection_connected">متصل</string>
+    <string name="settings_connection_limited">محدود</string>
+    <string name="settings_connection_unreachable">در دسترس نیست</string>
+    <string name="settings_connection_rejected">رد شد</string>
+    <string name="settings_connection_wrong_server">ChurchPresenter نیست</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">نسخه برنامه</string>
+    <string name="settings_server_version">نسخه سرور</string>
+    <string name="settings_status_address_label">نشانی</string>
+    <string name="mode_diagram_tablet">تبلت</string>
+    <string name="mode_diagram_computer">رایانه</string>
+    <string name="mode_diagram_screen">صفحه</string>
+    <string name="mode_diagram_tv">تلویزیون / صفحه</string>
 </resources>

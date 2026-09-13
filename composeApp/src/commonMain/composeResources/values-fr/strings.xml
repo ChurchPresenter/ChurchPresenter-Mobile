@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Aucun chapitre ouvert</string>
     <string name="bible_pane_empty_body">Choisissez un livre, puis un chapitre : ses versets apparaîtront ici.</string>
     <string name="bible_chapters_overline">Chapitre</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Télécommande ou autonome</string>
+    <string name="settings_section_server_subtitle">Hôte, port et clé API</string>
+    <string name="settings_section_computer_subtitle">D'où sont copiés les chants et les Bibles</string>
+    <string name="settings_device_section">Appareil</string>
+    <string name="settings_section_device_subtitle">Nom affiché sur l'ordinateur</string>
+    <string name="settings_section_appearance_subtitle">Thème</string>
+    <string name="settings_diagnostics_section">Diagnostic</string>
+    <string name="settings_section_diagnostics_subtitle">État du serveur et données d'utilisation</string>
+    <string name="settings_about_section">À propos</string>
+    <string name="settings_section_about_subtitle">Version et copyright</string>
+    <string name="settings_this_device">Cet appareil</string>
+    <string name="settings_display_name_hint">Joint aux questions envoyées depuis l'onglet Questions.</string>
+    <string name="settings_theme_title">Thème</string>
+    <string name="settings_connection_status_label">État</string>
+    <string name="settings_connection_checking">Vérification…</string>
+    <string name="settings_connection_connected">Connecté</string>
+    <string name="settings_connection_limited">Limité</string>
+    <string name="settings_connection_unreachable">Injoignable</string>
+    <string name="settings_connection_rejected">Refusé</string>
+    <string name="settings_connection_wrong_server">Pas ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Version de l'app</string>
+    <string name="settings_server_version">Version du serveur</string>
+    <string name="settings_status_address_label">Adresse</string>
+    <string name="mode_diagram_tablet">Tablette</string>
+    <string name="mode_diagram_computer">Ordinateur</string>
+    <string name="mode_diagram_screen">Écran</string>
+    <string name="mode_diagram_tv">TV / Écran</string>
 </resources>

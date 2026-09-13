@@ -481,4 +481,34 @@
     <string name="bible_pane_empty_title">Ühtegi peatükki pole avatud</string>
     <string name="bible_pane_empty_body">Valige raamat, siis peatükk — selle salmid ilmuvad siia.</string>
     <string name="bible_chapters_overline">Peatükk</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Kaugjuhtimine või iseseisev</string>
+    <string name="settings_section_server_subtitle">Host, port ja API võti</string>
+    <string name="settings_section_computer_subtitle">Kust laule ja Piibleid kopeeritakse</string>
+    <string name="settings_device_section">Seade</string>
+    <string name="settings_section_device_subtitle">Arvutis kuvatav nimi</string>
+    <string name="settings_section_appearance_subtitle">Teema</string>
+    <string name="settings_diagnostics_section">Diagnostika</string>
+    <string name="settings_section_diagnostics_subtitle">Serveri olek ja kasutusandmed</string>
+    <string name="settings_about_section">Teave</string>
+    <string name="settings_section_about_subtitle">Versioon ja autoriõigus</string>
+    <string name="settings_this_device">See seade</string>
+    <string name="settings_display_name_hint">Lisatakse küsimustele, mille saadad vahekaardilt Küsimused.</string>
+    <string name="settings_theme_title">Teema</string>
+    <string name="settings_connection_status_label">Olek</string>
+    <string name="settings_connection_checking">Kontrollimine…</string>
+    <string name="settings_connection_connected">Ühendatud</string>
+    <string name="settings_connection_limited">Piiratud</string>
+    <string name="settings_connection_unreachable">Kättesaamatu</string>
+    <string name="settings_connection_rejected">Tagasi lükatud</string>
+    <string name="settings_connection_wrong_server">Pole ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Rakenduse versioon</string>
+    <string name="settings_server_version">Serveri versioon</string>
+    <string name="settings_status_address_label">Aadress</string>
+    <string name="mode_diagram_tablet">Tahvelarvuti</string>
+    <string name="mode_diagram_computer">Arvuti</string>
+    <string name="mode_diagram_screen">Ekraan</string>
+    <string name="mode_diagram_tv">TV / ekraan</string>
 </resources>

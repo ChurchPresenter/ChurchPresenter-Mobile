@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Inget kapitel öppet</string>
     <string name="bible_pane_empty_body">Välj en bok och sedan ett kapitel så visas dess verser här.</string>
     <string name="bible_chapters_overline">Kapitel</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Fjärrkontroll eller fristående</string>
+    <string name="settings_section_server_subtitle">Värd, port och API-nyckel</string>
+    <string name="settings_section_computer_subtitle">Varifrån sånger och biblar kopieras</string>
+    <string name="settings_device_section">Enhet</string>
+    <string name="settings_section_device_subtitle">Namn som visas på datorn</string>
+    <string name="settings_section_appearance_subtitle">Tema</string>
+    <string name="settings_diagnostics_section">Diagnostik</string>
+    <string name="settings_section_diagnostics_subtitle">Serverstatus och användningsdata</string>
+    <string name="settings_about_section">Om</string>
+    <string name="settings_section_about_subtitle">Version och upphovsrätt</string>
+    <string name="settings_this_device">Den här enheten</string>
+    <string name="settings_display_name_hint">Bifogas frågor du skickar från fliken Frågor.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_connection_status_label">Status</string>
+    <string name="settings_connection_checking">Kontrollerar…</string>
+    <string name="settings_connection_connected">Ansluten</string>
+    <string name="settings_connection_limited">Begränsad</string>
+    <string name="settings_connection_unreachable">Kan inte nås</string>
+    <string name="settings_connection_rejected">Avvisad</string>
+    <string name="settings_connection_wrong_server">Inte ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Appversion</string>
+    <string name="settings_server_version">Serverversion</string>
+    <string name="settings_status_address_label">Adress</string>
+    <string name="mode_diagram_tablet">Surfplatta</string>
+    <string name="mode_diagram_computer">Dator</string>
+    <string name="mode_diagram_screen">Skärm</string>
+    <string name="mode_diagram_tv">TV / skärm</string>
 </resources>

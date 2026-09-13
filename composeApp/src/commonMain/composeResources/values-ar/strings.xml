@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">لا يوجد إصحاح مفتوح</string>
     <string name="bible_pane_empty_body">اختر سفرًا ثم إصحاحًا، وستظهر آياته هنا.</string>
     <string name="bible_chapters_overline">الإصحاح</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">تحكم عن بُعد أو مستقل</string>
+    <string name="settings_section_server_subtitle">المضيف والمنفذ ومفتاح API</string>
+    <string name="settings_section_computer_subtitle">من أين تُنسخ الترانيم والأناجيل</string>
+    <string name="settings_device_section">الجهاز</string>
+    <string name="settings_section_device_subtitle">الاسم الظاهر على الحاسوب</string>
+    <string name="settings_section_appearance_subtitle">السمة</string>
+    <string name="settings_diagnostics_section">التشخيص</string>
+    <string name="settings_section_diagnostics_subtitle">حالة الخادم وبيانات الاستخدام</string>
+    <string name="settings_about_section">حول</string>
+    <string name="settings_section_about_subtitle">الإصدار وحقوق النشر</string>
+    <string name="settings_this_device">هذا الجهاز</string>
+    <string name="settings_display_name_hint">يُرفق بالأسئلة التي ترسلها من تبويب الأسئلة.</string>
+    <string name="settings_theme_title">السمة</string>
+    <string name="settings_connection_status_label">الحالة</string>
+    <string name="settings_connection_checking">جارٍ التحقق…</string>
+    <string name="settings_connection_connected">متصل</string>
+    <string name="settings_connection_limited">محدود</string>
+    <string name="settings_connection_unreachable">غير قابل للوصول</string>
+    <string name="settings_connection_rejected">مرفوض</string>
+    <string name="settings_connection_wrong_server">ليس ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">إصدار التطبيق</string>
+    <string name="settings_server_version">إصدار الخادم</string>
+    <string name="settings_status_address_label">العنوان</string>
+    <string name="mode_diagram_tablet">جهاز لوحي</string>
+    <string name="mode_diagram_computer">حاسوب</string>
+    <string name="mode_diagram_screen">شاشة</string>
+    <string name="mode_diagram_tv">تلفاز / شاشة</string>
 </resources>

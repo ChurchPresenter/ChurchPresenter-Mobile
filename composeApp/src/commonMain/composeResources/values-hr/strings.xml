@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Nijedno poglavlje nije otvoreno</string>
     <string name="bible_pane_empty_body">Odaberite knjigu, zatim poglavlje, i njegovi redci pojavit će se ovdje.</string>
     <string name="bible_chapters_overline">Poglavlje</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Daljinsko upravljanje ili samostalno</string>
+    <string name="settings_section_server_subtitle">Host, port i API ključ</string>
+    <string name="settings_section_computer_subtitle">Odakle se kopiraju pjesme i Biblije</string>
+    <string name="settings_device_section">Uređaj</string>
+    <string name="settings_section_device_subtitle">Naziv prikazan na računalu</string>
+    <string name="settings_section_appearance_subtitle">Tema</string>
+    <string name="settings_diagnostics_section">Dijagnostika</string>
+    <string name="settings_section_diagnostics_subtitle">Stanje poslužitelja i podaci o korištenju</string>
+    <string name="settings_about_section">O aplikaciji</string>
+    <string name="settings_section_about_subtitle">Verzija i autorska prava</string>
+    <string name="settings_this_device">Ovaj uređaj</string>
+    <string name="settings_display_name_hint">Prilaže se pitanjima poslanima s kartice Pitanja.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_connection_status_label">Stanje</string>
+    <string name="settings_connection_checking">Provjera…</string>
+    <string name="settings_connection_connected">Povezano</string>
+    <string name="settings_connection_limited">Ograničeno</string>
+    <string name="settings_connection_unreachable">Nedostupan</string>
+    <string name="settings_connection_rejected">Odbijeno</string>
+    <string name="settings_connection_wrong_server">Nije ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Verzija aplikacije</string>
+    <string name="settings_server_version">Verzija poslužitelja</string>
+    <string name="settings_status_address_label">Adresa</string>
+    <string name="mode_diagram_tablet">Tablet</string>
+    <string name="mode_diagram_computer">Računalo</string>
+    <string name="mode_diagram_screen">Zaslon</string>
+    <string name="mode_diagram_tv">TV / zaslon</string>
 </resources>

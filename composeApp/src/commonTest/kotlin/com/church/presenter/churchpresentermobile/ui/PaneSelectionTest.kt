@@ -7,6 +7,9 @@ import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.MoreDestination
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.testTag
+import com.church.presenter.churchpresentermobile.ui.library.LibraryTwoPane
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -140,4 +143,51 @@ class PaneSelectionTest {
     }
 
     private val genesis = BibleBook(name = "Genesis", chapterTotal = 50)
+
+    // ── Library: the editor beside the list ──────────────────────────────
+
+    @Test
+    fun theLibraryPaneWithNothingOpenSaysSo() = runComposeUiTest {
+        // An empty right-hand pane must read as "nothing open yet", not as a
+        // list that failed to load.
+        showScreen {
+            LibraryTwoPane(
+                list = { Text("the list", Modifier.testTag("test:list")) },
+                editor = null,
+                onMenu = {},
+                onSettings = {},
+            )
+        }
+
+        assertTrue(exists("test:list"))
+        assertTrue(exists(UiTags.HEADER_MENU))
+        assertTrue(exists(UiTags.HEADER_SETTINGS))
+    }
+
+    @Test
+    fun theLibraryPaneShowsTheEditorItIsGiven() = runComposeUiTest {
+        showScreen {
+            LibraryTwoPane(
+                list = { Text("the list", Modifier.testTag("test:list")) },
+                editor = { Text("the editor", Modifier.testTag("test:editor")) },
+            )
+        }
+
+        assertTrue(exists("test:editor"))
+        // Beside a rail the shell draws the corners; the pane header has none.
+        assertFalse(exists(UiTags.HEADER_MENU))
+        assertFalse(exists(UiTags.HEADER_SETTINGS))
+    }
+
+    @Test
+    fun theLibraryPaneHeaderOpensTheDrawer() = runComposeUiTest {
+        var opened = 0
+        showScreen {
+            LibraryTwoPane(list = {}, editor = null, onMenu = { opened++ })
+        }
+
+        click(UiTags.HEADER_MENU)
+
+        assertEquals(1, opened)
+    }
 }

@@ -55,14 +55,14 @@ class SettingsServerTest {
 
     @Test
     fun theDeviceNameFieldIsOffered() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DEVICE)
 
         assertTrue(exists(UiTags.SETTINGS_DEVICE_NAME))
     }
 
     @Test
     fun theQaNameFieldIsOffered() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DEVICE)
 
         assertTrue(exists(UiTags.SETTINGS_DISPLAY_NAME))
     }
@@ -143,7 +143,7 @@ class SettingsServerTest {
     @Test
     fun savingPersistsTheDeviceName() = runComposeUiTest {
         val settings = storedSettings()
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DEVICE)
 
         type(UiTags.SETTINGS_DEVICE_NAME, "Sound desk")
         click(UiTags.SETTINGS_SAVE)
@@ -154,7 +154,7 @@ class SettingsServerTest {
     @Test
     fun savingPersistsTheQaName() = runComposeUiTest {
         val settings = storedSettings()
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DEVICE)
 
         type(UiTags.SETTINGS_DISPLAY_NAME, "Sam")
         click(UiTags.SETTINGS_SAVE)
@@ -187,7 +187,7 @@ class SettingsServerTest {
     @Test
     fun savingTrimsTheDeviceName() = runComposeUiTest {
         val settings = storedSettings()
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DEVICE)
 
         type(UiTags.SETTINGS_DEVICE_NAME, "  Sound desk  ")
         click(UiTags.SETTINGS_SAVE)
@@ -451,9 +451,10 @@ class SettingsServerTest {
         // Neither name is a reachability field, so a typo in the port must not
         // discard the name the operator just set.
         val settings = storedSettings()
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DEVICE)
 
         type(UiTags.SETTINGS_DEVICE_NAME, "Sound desk")
+        switchTo(SettingsSection.SERVER)
         type(UiTags.SETTINGS_PORT, "nope")
         click(UiTags.SETTINGS_SAVE)
 
@@ -467,7 +468,7 @@ class SettingsServerTest {
         var dismissed = 0
         showSettings(storedSettings(), onDismiss = { dismissed++ })
 
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertEquals(1, dismissed)
     }
@@ -478,7 +479,7 @@ class SettingsServerTest {
         showSettings(settings)
 
         type(UiTags.SETTINGS_HOST, "10.0.0.9")
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertEquals("192.168.1.50", settings.host)
     }
@@ -488,7 +489,7 @@ class SettingsServerTest {
         var saved = 0
         showSettings(storedSettings(), onSaved = { saved++ })
 
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertEquals(0, saved)
     }
@@ -500,7 +501,7 @@ class SettingsServerTest {
         showSettings(settings, viewModel = vm)
 
         type(UiTags.SETTINGS_HOST, "10.0.0.9")
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertEquals("192.168.1.50", vm.host.value)
     }
@@ -513,7 +514,7 @@ class SettingsServerTest {
         type(UiTags.SETTINGS_HOST, "")
         click(UiTags.SETTINGS_SAVE)
 
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertNull(vm.hostError.value)
     }

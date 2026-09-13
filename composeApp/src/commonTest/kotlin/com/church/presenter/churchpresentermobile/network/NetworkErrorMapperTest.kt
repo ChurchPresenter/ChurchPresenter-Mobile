@@ -467,4 +467,102 @@ class NetworkErrorMapperTest {
         assertEquals("The desktop app reported an error.", ApiException(502).toFriendlyNetworkMessage())
         assertEquals("The desktop app reported an error.", ApiException(599).toFriendlyNetworkMessage())
     }
+
+    // ── The rest of the words a failure can come wrapped in ──────────────
+
+    private val ssl = "SSL error: could not establish a secure connection. Check server settings."
+    private val unreachable = "Server not reachable. Check the IP address and port."
+    private val badAddress = "Invalid server address. Check the IP address."
+    private val timedOut = "Connection timed out. Make sure the server is running."
+
+    @Test
+    fun aRequestTimeoutStatusIsExplained() {
+        assertEquals("The server took too long to respond.", ApiException(408).toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun aRefusedKeyIsExplainedForBothStatusCodes() {
+        assertEquals(ApiException(401).toFriendlyNetworkMessage(), ApiException(403).toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun anExceptionWithNoMessageIsStillAConnectionError() {
+        assertEquals("Connection error", Exception().toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun everyDarwinCertificateWordingIsAnSslError() {
+        listOf("Code=-1200 x", "a TLS failure", "the SSL handshake", "no secure connection").forEach {
+            assertEquals(ssl, Exception("Exception in http request: $it").toFriendlyNetworkMessage(), it)
+        }
+    }
+
+    @Test
+    fun darwinOfflineIsNoNetwork() {
+        val offline = Exception("Exception in http request: device is offline")
+        assertEquals("No network connection.", offline.toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun darwinHostnameTroubleIsABadAddress() {
+        listOf("Code=-1003 x", "hostname could not be found").forEach {
+            assertEquals(badAddress, Exception("Exception in http request: $it").toFriendlyNetworkMessage(), it)
+        }
+    }
+
+    @Test
+    fun darwinTimeoutWordingIsATimeout() {
+        assertEquals(timedOut, Exception("Exception in http request: the request timed out").toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun anUnknownDarwinErrorShowsItsFirstLineOnly() {
+        val msg = Exception("Exception in http request: something odd\nwith a second line").toFriendlyNetworkMessage()
+        assertEquals("something odd", msg)
+    }
+
+    @Test
+    fun everyAndroidCertificateWordingIsAnSslError() {
+        listOf("Handshake failed", "PKIX path building failed", "Trust anchor for certification path not found",
+            "CertPathValidatorException: x").forEach {
+            assertEquals(ssl, Exception(it).toFriendlyNetworkMessage(), it)
+        }
+    }
+
+    @Test
+    fun everyAndroidUnreachableWordingIsUnreachable() {
+        listOf("Connection refused", "ECONNREFUSED", "Connection reset by peer", "ECONNRESET",
+            "Software caused connection abort", "Broken pipe", "Network is unreachable", "EHOSTUNREACH",
+            "No route to host").forEach {
+            assertEquals(unreachable, Exception(it).toFriendlyNetworkMessage(), it)
+        }
+    }
+
+    @Test
+    fun everyAndroidResolutionWordingIsABadAddress() {
+        listOf("Unable to resolve host \"x\"", "java.nio.channels.UnresolvedAddressException").forEach {
+            assertEquals(badAddress, Exception(it).toFriendlyNetworkMessage(), it)
+        }
+    }
+
+    @Test
+    fun everyAndroidTimeoutWordingIsATimeout() {
+        listOf("java.net.SocketTimeoutException", "read timeout").forEach {
+            assertEquals(timedOut, Exception(it).toFriendlyNetworkMessage(), it)
+        }
+    }
+
+    @Test
+    fun networkOnMainThreadAsksForARestart() {
+        assertEquals(
+            "Network error (internal). Please restart the app.",
+            Exception("android.os.NetworkOnMainThreadException").toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
+    fun anUnknownMessageIsCappedAt120Characters() {
+        val long = "x".repeat(300)
+        assertEquals(120, Exception(long).toFriendlyNetworkMessage().length)
+    }
 }

@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Není otevřená žádná kapitola</string>
     <string name="bible_pane_empty_body">Vyberte knihu, pak kapitolu a její verše se zobrazí zde.</string>
     <string name="bible_chapters_overline">Kapitola</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Dálkové ovládání nebo samostatně</string>
+    <string name="settings_section_server_subtitle">Host, port a klíč API</string>
+    <string name="settings_section_computer_subtitle">Odkud se kopírují písně a Bible</string>
+    <string name="settings_device_section">Zařízení</string>
+    <string name="settings_section_device_subtitle">Název zobrazený na počítači</string>
+    <string name="settings_section_appearance_subtitle">Motiv</string>
+    <string name="settings_diagnostics_section">Diagnostika</string>
+    <string name="settings_section_diagnostics_subtitle">Stav serveru a data o používání</string>
+    <string name="settings_about_section">O aplikaci</string>
+    <string name="settings_section_about_subtitle">Verze a autorská práva</string>
+    <string name="settings_this_device">Toto zařízení</string>
+    <string name="settings_display_name_hint">Připojí se k otázkám odeslaným z karty Otázky.</string>
+    <string name="settings_theme_title">Motiv</string>
+    <string name="settings_connection_status_label">Stav</string>
+    <string name="settings_connection_checking">Kontroluje se…</string>
+    <string name="settings_connection_connected">Připojeno</string>
+    <string name="settings_connection_limited">Omezeno</string>
+    <string name="settings_connection_unreachable">Nedostupný</string>
+    <string name="settings_connection_rejected">Odmítnuto</string>
+    <string name="settings_connection_wrong_server">Není ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Verze aplikace</string>
+    <string name="settings_server_version">Verze serveru</string>
+    <string name="settings_status_address_label">Adresa</string>
+    <string name="mode_diagram_tablet">Tablet</string>
+    <string name="mode_diagram_computer">Počítač</string>
+    <string name="mode_diagram_screen">Obrazovka</string>
+    <string name="mode_diagram_tv">TV / obrazovka</string>
 </resources>

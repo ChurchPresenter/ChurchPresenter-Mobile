@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">未打开任何章</string>
     <string name="bible_pane_empty_body">先选择书卷，再选择章，经文将显示在这里。</string>
     <string name="bible_chapters_overline">章</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">遥控或独立模式</string>
+    <string name="settings_section_server_subtitle">主机、端口和 API 密钥</string>
+    <string name="settings_section_computer_subtitle">歌曲和圣经的复制来源</string>
+    <string name="settings_device_section">设备</string>
+    <string name="settings_section_device_subtitle">在电脑上显示的名称</string>
+    <string name="settings_section_appearance_subtitle">主题</string>
+    <string name="settings_diagnostics_section">诊断</string>
+    <string name="settings_section_diagnostics_subtitle">服务器状态和使用数据</string>
+    <string name="settings_about_section">关于</string>
+    <string name="settings_section_about_subtitle">版本和版权</string>
+    <string name="settings_this_device">本设备</string>
+    <string name="settings_display_name_hint">附加到从问答标签页发送的问题。</string>
+    <string name="settings_theme_title">主题</string>
+    <string name="settings_connection_status_label">状态</string>
+    <string name="settings_connection_checking">正在检查…</string>
+    <string name="settings_connection_connected">已连接</string>
+    <string name="settings_connection_limited">受限</string>
+    <string name="settings_connection_unreachable">无法访问</string>
+    <string name="settings_connection_rejected">被拒绝</string>
+    <string name="settings_connection_wrong_server">不是 ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">应用版本</string>
+    <string name="settings_server_version">服务器版本</string>
+    <string name="settings_status_address_label">地址</string>
+    <string name="mode_diagram_tablet">平板</string>
+    <string name="mode_diagram_computer">电脑</string>
+    <string name="mode_diagram_screen">屏幕</string>
+    <string name="mode_diagram_tv">电视 / 屏幕</string>
 </resources>

@@ -30,7 +30,7 @@ class SettingsPreferencesTest {
 
     @Test
     fun allThreeAppearanceChoicesAreOffered() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.APPEARANCE)
 
         assertTrue(exists(UiTags.settingsTheme(0)))
         assertTrue(exists(UiTags.settingsTheme(1)))
@@ -41,7 +41,7 @@ class SettingsPreferencesTest {
     fun theSavedThemeIsTheOneSelected() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.DARK
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.APPEARANCE)
 
         tagged(UiTags.settingsTheme(2)).assertIsSelected()
     }
@@ -50,7 +50,7 @@ class SettingsPreferencesTest {
     fun theOtherThemesAreNotSelected() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.DARK
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.APPEARANCE)
 
         tagged(UiTags.settingsTheme(0)).assertIsNotSelected()
         tagged(UiTags.settingsTheme(1)).assertIsNotSelected()
@@ -60,7 +60,7 @@ class SettingsPreferencesTest {
     fun systemIsSelectedByDefault() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.APPEARANCE)
 
         tagged(UiTags.settingsTheme(0)).assertIsSelected()
     }
@@ -69,7 +69,7 @@ class SettingsPreferencesTest {
     fun pickingLightSelectsLight() = runComposeUiTest {
         val settings = storedSettings()
         val vm = SettingsViewModel(settings)
-        showSettings(settings, viewModel = vm)
+        showSettings(settings, viewModel = vm, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(1))
 
@@ -80,7 +80,7 @@ class SettingsPreferencesTest {
     fun pickingDarkSelectsDark() = runComposeUiTest {
         val settings = storedSettings()
         val vm = SettingsViewModel(settings)
-        showSettings(settings, viewModel = vm)
+        showSettings(settings, viewModel = vm, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
 
@@ -89,7 +89,7 @@ class SettingsPreferencesTest {
 
     @Test
     fun theChosenThemeIsMarkedSelected() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(1))
 
@@ -98,7 +98,7 @@ class SettingsPreferencesTest {
 
     @Test
     fun choosingAThemeDeselectsTheOldOne() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
 
@@ -109,7 +109,7 @@ class SettingsPreferencesTest {
     fun aThemeIsNotPersistedUntilSaved() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
 
@@ -120,7 +120,7 @@ class SettingsPreferencesTest {
     fun savingPersistsTheTheme() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
         click(UiTags.SETTINGS_SAVE)
@@ -133,10 +133,10 @@ class SettingsPreferencesTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
         val vm = SettingsViewModel(settings)
-        showSettings(settings, viewModel = vm)
+        showSettings(settings, viewModel = vm, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertEquals(ThemeMode.SYSTEM, vm.themeMode.value)
     }
@@ -147,9 +147,10 @@ class SettingsPreferencesTest {
         // whole save is refused, theme included.
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
+        switchTo(SettingsSection.SERVER)
         type(UiTags.SETTINGS_HOST, "")
         click(UiTags.SETTINGS_SAVE)
 
@@ -160,7 +161,7 @@ class SettingsPreferencesTest {
 
     @Test
     fun theTelemetrySwitchIsOffered() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DIAGNOSTICS)
 
         assertTrue(exists(UiTags.SETTINGS_TELEMETRY))
     }
@@ -169,7 +170,7 @@ class SettingsPreferencesTest {
     fun theSwitchShowsTelemetryIsOn() = runComposeUiTest {
         val settings = storedSettings()
         settings.isTelemetryEnabled = true
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DIAGNOSTICS)
 
         tagged(UiTags.SETTINGS_TELEMETRY).assertIsOn()
     }
@@ -178,7 +179,7 @@ class SettingsPreferencesTest {
     fun theSwitchShowsTelemetryIsOff() = runComposeUiTest {
         val settings = storedSettings()
         settings.isTelemetryEnabled = false
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DIAGNOSTICS)
 
         tagged(UiTags.SETTINGS_TELEMETRY).assertIsOff()
     }
@@ -188,7 +189,7 @@ class SettingsPreferencesTest {
         // No Save tap: nobody should have to agree twice to stop being tracked.
         val settings = storedSettings()
         settings.isTelemetryEnabled = true
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TELEMETRY)
 
@@ -199,7 +200,7 @@ class SettingsPreferencesTest {
     fun turningTelemetryOnAppliesImmediately() = runComposeUiTest {
         val settings = storedSettings()
         settings.isTelemetryEnabled = false
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TELEMETRY)
 
@@ -210,7 +211,7 @@ class SettingsPreferencesTest {
     fun theSwitchFollowsTheChange() = runComposeUiTest {
         val settings = storedSettings()
         settings.isTelemetryEnabled = false
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TELEMETRY)
 
@@ -223,10 +224,10 @@ class SettingsPreferencesTest {
         // draft fields, not to a privacy decision already acted on.
         val settings = storedSettings()
         settings.isTelemetryEnabled = true
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TELEMETRY)
-        click(UiTags.SETTINGS_CANCEL)
+        cancelSheet()
 
         assertFalse(settings.isTelemetryEnabled)
     }
@@ -235,9 +236,10 @@ class SettingsPreferencesTest {
     fun aBadHostDoesNotBlockATelemetryChange() = runComposeUiTest {
         val settings = storedSettings()
         settings.isTelemetryEnabled = true
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.SERVER)
 
         type(UiTags.SETTINGS_HOST, "")
+        switchTo(SettingsSection.DIAGNOSTICS)
         click(UiTags.SETTINGS_TELEMETRY)
 
         assertFalse(settings.isTelemetryEnabled)
@@ -248,7 +250,7 @@ class SettingsPreferencesTest {
     @Test
     fun contactIsOffered() = runComposeUiTest {
         // Settings is where people look for a way to reach support.
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.ABOUT)
 
         assertTrue(exists(UiTags.SETTINGS_CONTACT))
     }
@@ -256,7 +258,7 @@ class SettingsPreferencesTest {
     @Test
     fun contactOpensTheForm() = runComposeUiTest {
         var contacted = 0
-        showSettings(storedSettings(), onContact = { contacted++ })
+        showSettings(storedSettings(), onContact = { contacted++ }, section = SettingsSection.ABOUT)
 
         click(UiTags.SETTINGS_CONTACT)
 
@@ -266,7 +268,7 @@ class SettingsPreferencesTest {
     @Test
     fun contactDoesNotSaveTheSheet() = runComposeUiTest {
         var saved = 0
-        showSettings(storedSettings(), onSaved = { saved++ })
+        showSettings(storedSettings(), onSaved = { saved++ }, section = SettingsSection.ABOUT)
 
         click(UiTags.SETTINGS_CONTACT)
 
@@ -276,7 +278,7 @@ class SettingsPreferencesTest {
     @Test
     fun contactDoesNotCloseTheSheet() = runComposeUiTest {
         var dismissed = 0
-        showSettings(storedSettings(), onDismiss = { dismissed++ })
+        showSettings(storedSettings(), onDismiss = { dismissed++ }, section = SettingsSection.ABOUT)
 
         click(UiTags.SETTINGS_CONTACT)
 
@@ -287,21 +289,21 @@ class SettingsPreferencesTest {
 
     @Test
     fun theTestErrorButtonIsOfferedInADebugBuild() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DIAGNOSTICS)
 
         assertTrue(exists(UiTags.SETTINGS_TEST_ERROR))
     }
 
     @Test
     fun nothingIsSentUntilTheButtonIsPressed() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DIAGNOSTICS)
 
         assertFalse(exists(UiTags.SETTINGS_TEST_ERROR_SENT))
     }
 
     @Test
     fun sendingATestErrorIsConfirmedOnScreen() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TEST_ERROR)
 
@@ -311,7 +313,7 @@ class SettingsPreferencesTest {
     @Test
     fun sendingATestErrorDoesNotSaveTheSheet() = runComposeUiTest {
         var saved = 0
-        showSettings(storedSettings(), onSaved = { saved++ })
+        showSettings(storedSettings(), onSaved = { saved++ }, section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TEST_ERROR)
 
@@ -321,7 +323,7 @@ class SettingsPreferencesTest {
     @Test
     fun sendingATestErrorDoesNotCloseTheSheet() = runComposeUiTest {
         var dismissed = 0
-        showSettings(storedSettings(), onDismiss = { dismissed++ })
+        showSettings(storedSettings(), onDismiss = { dismissed++ }, section = SettingsSection.DIAGNOSTICS)
 
         click(UiTags.SETTINGS_TEST_ERROR)
 
@@ -330,7 +332,7 @@ class SettingsPreferencesTest {
 
     @Test
     fun theConfirmationStaysAfterASecondSend() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DIAGNOSTICS)
         click(UiTags.SETTINGS_TEST_ERROR)
 
         click(UiTags.SETTINGS_TEST_ERROR)

@@ -32,13 +32,10 @@
     <ID>LongMethod:ScheduleDrawer.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ScheduleDrawerContent( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, scheduleRefreshToken: Int = 0, onItemClick: (ScheduleItem) -&gt; Unit = {}, onClose: () -&gt; Unit = {}, providedViewModel: ScheduleViewModel? = null, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:ServerEventService.kt$ServerEventService$override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result&lt;Unit&gt;</ID>
     <ID>LongMethod:ServerEventService.kt$ServerEventService$suspend fun listen()</ID>
-    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ServerStatusDialog( statusViewModel: StatusViewModel, onDismiss: () -&gt; Unit, )</ID>
-    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( appSettings: AppSettings, onDismiss: () -&gt; Unit, onSaved: () -&gt; Unit, /** Opens the contact form. Settings is where people look for a way to reach support. */ onContact: () -&gt; Unit, /** * Supplied by tests only, matching the seam [SongsScreen] and [BibleScreen] * already use. The app leaves both null and gets its own instances; a test * cannot, because this screen is a `Dialog` with no ViewModelStoreOwner of * its own to scope them to. */ providedViewModel: SettingsViewModel? = null, providedStatusViewModel: StatusViewModel? = null, )</ID>
     <ID>LongMethod:SongDetailSheet.kt$@Composable fun SongDetailScreen( detail: SongDetail?, isLoading: Boolean, error: String?, selectedVerseIndex: Int?, isProjecting: Boolean, scheduleAdded: Boolean, onVerseSelected: (Int) -&gt; Unit, onToggleProjecting: () -&gt; Unit, /** Null hides the schedule button — standalone has no desktop schedule. */ onAddToSchedule: (() -&gt; Unit)? = null, onClearDisplay: (() -&gt; Unit)? = null, /** Draw the words as a chord chart. Off shows them cleaned of markup. */ showChords: Boolean = false, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:SongEditorScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SongEditorScreen( repository: LibraryRepository, songId: String?, onClose: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:SongSyncSection.kt$@Composable internal fun SongSyncSection( repository: LibraryRepository, settings: AppSettings, sender: WsSender, onDone: () -&gt; Unit, /** Supplied by tests only; the sheet owns its own otherwise. */ providedViewModel: LibrarySyncViewModel? = null, )</ID>
     <ID>LongMethod:StandaloneOutputScreen.kt$@Composable fun StandaloneOutputScreen( slide: Slide, modifier: Modifier = Modifier, )</ID>
-    <ID>LongMethod:StatusScreen.kt$@Composable private fun WarningsContent( appVersion: String?, warnings: List&lt;StatusWarning&gt;, permissions: DevicePermissions, bibles: List&lt;String&gt;, songbooks: List&lt;String&gt;, features: List&lt;String&gt;, onContinue: () -&gt; Unit, onOpenSettings: () -&gt; Unit, )</ID>
     <ID>LongParameterList:SpbParser.kt$SpbParser$( chapters: MutableMap&lt;Int, MutableList&lt;BibleVerse&gt;&gt;, chaptersSeen: MutableMap&lt;Int, MutableSet&lt;Int&gt;&gt;, book: Int, chapter: Int, number: Int, text: String, )</ID>
     <ID>LoopWithTooManyJumpStatements:BibleSyncService.kt$BibleSyncService$for</ID>
     <ID>LoopWithTooManyJumpStatements:ServerEventService.kt$ServerEventService$for</ID>
@@ -304,7 +301,6 @@
     <ID>MaxLineLength:ServerEventService.kt$ServerEventService$Logger.e(TAG, "sendAction — attempt ${attempt + 1} FAILED type=$type: ${lastException?.message}", lastException)</ID>
     <ID>MaxLineLength:ServerEventService.kt$ServerEventService$throw ApiException(httpStatus = 408, reason = "No response from server — approval timed out")</ID>
     <ID>MaxLineLength:ServiceOrder.kt$ServiceOrder$repository.library.map { data -&gt; data.setlists.firstOrNull { it.id == CURRENT_SERVICE_SETLIST_ID }?.entries.orEmpty() }</ID>
-    <ID>MaxLineLength:SettingsScreen.kt$Text(stringResource(Res.string.settings_telemetry_label), color = colors.text, fontSize = 14.sp)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$stringResource(Res.string.settings_status_server_version, status.appVersion)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$text</ID>
     <ID>MaxLineLength:SettingsViewModel.kt$SettingsViewModel$Logger.d(TAG, "SettingsViewModel init — loaded from storage: host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl}")</ID>
@@ -322,10 +318,6 @@
     <ID>MaxLineLength:SongsViewModel.kt$SongsViewModel$Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")</ID>
     <ID>MaxLineLength:SongsViewModel.kt$SongsViewModel$_toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddSchedule(e.recordNetworkError(TAG, "addSongToSchedule")) }</ID>
     <ID>MaxLineLength:SongsViewModel.kt$SongsViewModel$_toastEvent.value = e.toToastEvent { ToastEvent.FailedToProject(e.recordNetworkError(TAG, "toggleProjecting/projectSong")) }</ID>
-    <ID>MaxLineLength:StatusScreen.kt$PermissionRow(label = stringResource(Res.string.status_permission_schedule), granted = permissions.canAddToSchedule)</ID>
-    <ID>MaxLineLength:StatusScreen.kt$PermissionRow(label = stringResource(Res.string.status_permission_upload), granted = permissions.canUploadFiles)</ID>
-    <ID>MaxLineLength:StatusScreen.kt$Text(stringResource(Res.string.status_info_bibles), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.text)</ID>
-    <ID>MaxLineLength:StatusScreen.kt$Text(stringResource(Res.string.status_info_songbooks), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.text)</ID>
     <ID>MaxLineLength:StatusService.kt$StatusService$Logger.d(TAG, "fetchStatus — parsed: version=${status.appVersion} (header=$headerVersion) bibles=${status.bibles.size} songbooks=${status.songbooks.size} features=${status.features}")</ID>
     <ID>MaxLineLength:StatusViewModelTest.kt$StatusViewModelTest$if</ID>
     <ID>MaxLineLength:WebScreen.kt$FauxLine(0.60f)</ID>
@@ -414,11 +406,6 @@
     <ID>UnusedImports:MediaScreen.kt$import churchpresentermobile.composeapp.generated.resources.media_load_label</ID>
     <ID>UnusedImports:OutputTargetsSheet.kt$import androidx.compose.foundation.clickable</ID>
     <ID>UnusedImports:OutputTargetsSheet.kt$import androidx.compose.foundation.layout.Box</ID>
-    <ID>UnusedImports:SettingsScreen.kt$import androidx.compose.foundation.layout.Box</ID>
-    <ID>UnusedImports:SettingsScreen.kt$import androidx.compose.material.icons.filled.Visibility</ID>
-    <ID>UnusedImports:SettingsScreen.kt$import androidx.compose.material.icons.filled.VisibilityOff</ID>
-    <ID>UnusedImports:SettingsScreen.kt$import churchpresentermobile.composeapp.generated.resources.settings_active_url_label</ID>
-    <ID>UnusedImports:SettingsScreen.kt$import churchpresentermobile.composeapp.generated.resources.settings_check_status_description</ID>
     <ID>UnusedImports:SongDetailSheet.kt$import androidx.compose.foundation.layout.ExperimentalLayoutApi</ID>
     <ID>UnusedImports:SongsListScreen.kt$import androidx.compose.ui.text.style.TextAlign</ID>
     <ID>UnusedImports:StandaloneOutputScreen.kt$import androidx.compose.ui.text.font.FontWeight</ID>

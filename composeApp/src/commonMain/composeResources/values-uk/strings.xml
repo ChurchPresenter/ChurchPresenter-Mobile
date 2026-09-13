@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Розділ не відкрито</string>
     <string name="bible_pane_empty_body">Оберіть книгу, потім розділ — його вірші з’являться тут.</string>
     <string name="bible_chapters_overline">Розділ</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Пульт або автономно</string>
+    <string name="settings_section_server_subtitle">Хост, порт і ключ API</string>
+    <string name="settings_section_computer_subtitle">Звідки копіюються пісні та Біблії</string>
+    <string name="settings_device_section">Пристрій</string>
+    <string name="settings_section_device_subtitle">Ім'я, що показується на комп'ютері</string>
+    <string name="settings_section_appearance_subtitle">Тема</string>
+    <string name="settings_diagnostics_section">Діагностика</string>
+    <string name="settings_section_diagnostics_subtitle">Стан сервера та дані використання</string>
+    <string name="settings_about_section">Про застосунок</string>
+    <string name="settings_section_about_subtitle">Версія та авторські права</string>
+    <string name="settings_this_device">Цей пристрій</string>
+    <string name="settings_display_name_hint">Додається до запитань, надісланих із вкладки «Запитання».</string>
+    <string name="settings_theme_title">Тема</string>
+    <string name="settings_connection_status_label">Стан</string>
+    <string name="settings_connection_checking">Перевірка…</string>
+    <string name="settings_connection_connected">Підключено</string>
+    <string name="settings_connection_limited">Обмежено</string>
+    <string name="settings_connection_unreachable">Недоступний</string>
+    <string name="settings_connection_rejected">Відхилено</string>
+    <string name="settings_connection_wrong_server">Не ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Версія застосунку</string>
+    <string name="settings_server_version">Версія сервера</string>
+    <string name="settings_status_address_label">Адреса</string>
+    <string name="mode_diagram_tablet">Планшет</string>
+    <string name="mode_diagram_computer">Комп'ютер</string>
+    <string name="mode_diagram_screen">Екран</string>
+    <string name="mode_diagram_tv">ТВ / екран</string>
 </resources>

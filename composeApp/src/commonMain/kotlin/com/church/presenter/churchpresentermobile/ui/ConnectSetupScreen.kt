@@ -73,6 +73,7 @@ import churchpresentermobile.composeapp.generated.resources.settings_api_key_pla
 import churchpresentermobile.composeapp.generated.resources.settings_invalid_port
 import churchpresentermobile.composeapp.generated.resources.settings_port_label
 import churchpresentermobile.composeapp.generated.resources.settings_port_placeholder
+import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import org.jetbrains.compose.resources.stringResource
 
@@ -229,22 +230,13 @@ fun ConnectSetupScreen(
 
                 if (!showManualEntry) {
                     QrScanButton(
+                        // The same parse the settings sheet's scanner and the
+                        // OS-level link use, so a code that works in one place
+                        // works in all of them.
                         onScanned = { url ->
-                            if (url.lowercase().startsWith("churchpresenter://connect")) {
-                                val query = url.substringAfter("?", "")
-                                val params = query.split("&").mapNotNull { pair ->
-                                    val idx = pair.indexOf('=')
-                                    if (idx < 0) null else pair.substring(0, idx).lowercase() to pair.substring(idx + 1)
-                                }.toMap()
-                                val host = params["host"]?.trim()?.takeIf { it.isNotBlank() }
-                                val port = params["port"]?.trim()?.toIntOrNull()
-                                if (host != null && port != null && port in 1..65535) {
-                                    appSettings.host = host
-                                    appSettings.port = port
-                                    params["apikey"]?.trim()?.let { appSettings.apiKey = it }
-                                    scannedHost = host
-                                    scannedPort = port
-                                }
+                            if (DeepLinkHandler.handle(url, appSettings)) {
+                                scannedHost = appSettings.host
+                                scannedPort = appSettings.port
                             }
                         },
                         modifier = Modifier.fillMaxWidth()

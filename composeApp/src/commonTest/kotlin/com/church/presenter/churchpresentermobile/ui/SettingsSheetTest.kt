@@ -151,6 +151,8 @@ class SettingsSheetTest {
         type(UiTags.SETTINGS_HOST, "10.0.0.9")
         type(UiTags.SETTINGS_PORT, "9100")
         type(UiTags.SETTINGS_API_KEY, "s3cret")
+        // The names live on their own page; the draft carries across the move.
+        switchTo(SettingsSection.DEVICE)
         type(UiTags.SETTINGS_DEVICE_NAME, "Sound desk")
         type(UiTags.SETTINGS_DISPLAY_NAME, "Sam")
         click(UiTags.SETTINGS_SAVE)
@@ -214,7 +216,7 @@ class SettingsSheetTest {
     @Test
     fun clearingTheDeviceNameGoesBackToTheOsName() = runComposeUiTest {
         val settings = storedSettings(customDeviceName = "Sound desk")
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DEVICE)
 
         type(UiTags.SETTINGS_DEVICE_NAME, "")
         click(UiTags.SETTINGS_SAVE)
@@ -225,7 +227,7 @@ class SettingsSheetTest {
     @Test
     fun clearingTheQaNameRemovesIt() = runComposeUiTest {
         val settings = storedSettings(displayName = "Sam")
-        showSettings(settings)
+        showSettings(settings, section = SettingsSection.DEVICE)
 
         type(UiTags.SETTINGS_DISPLAY_NAME, "")
         click(UiTags.SETTINGS_SAVE)
@@ -244,7 +246,8 @@ class SettingsSheetTest {
 
     @Test
     fun theSheetOffersCancel() = runComposeUiTest {
-        showSettings(storedSettings())
+        // On the menu, where a phone opens; a page offers the way back instead.
+        showSettings(storedSettings(), section = null)
 
         assertTrue(exists(UiTags.SETTINGS_CANCEL))
     }
@@ -261,14 +264,14 @@ class SettingsSheetTest {
 
     @Test
     fun theSheetOffersAppearance() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.APPEARANCE)
 
         assertTrue(exists(UiTags.settingsTheme(0)))
     }
 
     @Test
     fun theSheetOffersPrivacy() = runComposeUiTest {
-        showSettings(storedSettings())
+        showSettings(storedSettings(), section = SettingsSection.DIAGNOSTICS)
 
         assertTrue(exists(UiTags.SETTINGS_TELEMETRY))
     }
@@ -295,8 +298,11 @@ class SettingsSheetTest {
         showSettings(settings)
 
         type(UiTags.SETTINGS_HOST, "10.0.0.9")
+        switchTo(SettingsSection.APPEARANCE)
         click(UiTags.settingsTheme(1))
+        switchTo(SettingsSection.DIAGNOSTICS)
         click(UiTags.SETTINGS_TEST_ERROR)
+        switchTo(SettingsSection.DEVICE)
         type(UiTags.SETTINGS_DISPLAY_NAME, "Sam")
         click(UiTags.SETTINGS_SAVE)
 

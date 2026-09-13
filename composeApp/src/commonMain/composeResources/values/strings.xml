@@ -55,6 +55,33 @@
     <string name="settings_telemetry_label">Share usage &amp; crash data</string>
     <string name="settings_telemetry_description">Helps us find and fix bugs. Turn off to stop sending analytics and crash reports.</string>
 
+    <!-- Settings sections — the menu on a phone, the list beside the form on a
+         tablet. Each entry names a section and says what it holds. English-only
+         for now; other locales fall back to this until translated. -->
+    <string name="settings_section_mode_subtitle">Remote control or standalone</string>
+    <string name="settings_section_server_subtitle">Host, port and API key</string>
+    <string name="settings_section_computer_subtitle">Where songs and Bibles are copied from</string>
+    <string name="settings_device_section">Device</string>
+    <string name="settings_section_device_subtitle">Name shown on the computer</string>
+    <string name="settings_section_appearance_subtitle">Theme</string>
+    <string name="settings_diagnostics_section">Diagnostics</string>
+    <string name="settings_section_diagnostics_subtitle">Server status and usage data</string>
+    <string name="settings_about_section">About</string>
+    <string name="settings_section_about_subtitle">Version and copyright</string>
+    <string name="settings_this_device">This device</string>
+    <string name="settings_display_name_hint">Attached to questions you send from the Q&amp;A tab.</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_connection_status_label">Status</string>
+    <string name="settings_connection_checking">Checking…</string>
+    <string name="settings_connection_connected">Connected</string>
+    <string name="settings_connection_limited">Limited</string>
+    <string name="settings_connection_unreachable">Unreachable</string>
+    <string name="settings_connection_rejected">Rejected</string>
+    <string name="settings_connection_wrong_server">Not ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">App version</string>
+    <string name="settings_server_version">Server version</string>
+
     <!-- Navigation Tabs -->
     <string name="tab_songs">Songs</string>
     <string name="tab_bible">Bible</string>
@@ -273,6 +300,7 @@
     <string name="settings_status_bibles">Bibles</string>
     <string name="settings_status_songbooks">Songbooks</string>
     <string name="settings_status_none">none</string>
+    <string name="settings_status_address_label">Address</string>
 
     <!-- Status Screen -->
     <string name="status_connecting">Connecting to server…</string>
@@ -526,6 +554,11 @@
     <string name="mode_standalone_body">This phone is the presenter. Project straight to a TV or screen — no computer needed.</string>
     <string name="mode_continue">Continue</string>
     <string name="mode_section_title">Mode</string>
+    <!-- Labels of the boxes in the tablet mode picker's signal-path diagrams. -->
+    <string name="mode_diagram_tablet">Tablet</string>
+    <string name="mode_diagram_computer">Computer</string>
+    <string name="mode_diagram_screen">Screen</string>
+    <string name="mode_diagram_tv">TV / Screen</string>
     <string name="mode_switch_confirm_title">Switch to standalone?</string>
     <string name="mode_switch_confirm_body">Projection will go to your own screens instead of the computer.</string>
     <string name="mode_switch_to_remote_title">Switch to remote control?</string>

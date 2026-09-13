@@ -23,6 +23,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.RadialGradientShader
+import androidx.compose.ui.graphics.LinearGradientShader
+import com.church.presenter.churchpresentermobile.ui.theme.SplashField
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,11 +44,93 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
-@Composable
-fun SplashScreen(onComplete: () -> Unit) {
-    val colors = LocalAppColors.current
+/**
+ * The sizes the splash is drawn at. The design draws the tablet's cross, title
+ * and tagline about one-and-a-half times the phone's; the gradient field
+ * behind them is the screen's own size on both.
+ */
+private class SplashMetrics(
+    val crossWidth: Dp,
+    val title: TextUnit,
+    val tagline: TextUnit,
+    val taglineTracking: TextUnit,
+    val gapAfterCross: Dp,
+    val gapAfterTitle: Dp,
+) {
+    /** The cross is drawn from a 56×112 path, so it is always twice as tall as wide. */
+    val crossHeight: Dp get() = crossWidth * 2
 
-    // Start fully visible — no blank frame before the animation begins
+    companion object {
+        val Phone = SplashMetrics(
+            crossWidth = 56.dp, title = 28.sp, tagline = 12.sp, taglineTracking = 0.1.em,
+            gapAfterCross = 36.dp, gapAfterTitle = 14.dp,
+        )
+        val Tablet = SplashMetrics(
+            crossWidth = 86.dp, title = 54.sp, tagline = 15.sp, taglineTracking = 0.22.em,
+            gapAfterCross = 52.dp, gapAfterTitle = 22.dp,
+        )
+    }
+}
+
+/** Where the ambient wash is centred, as fractions of the screen: the design's `at 50% 34%`. */
+private const val AMBIENT_CENTER_Y = 0.34f
+
+/** The ambient ellipse's radii as fractions of the screen: the design's `115% 78%`. */
+private const val AMBIENT_RADIUS_X = 1.15f
+private const val AMBIENT_RADIUS_Y = 0.78f
+
+/** Where the core glow sits: the design's `circle at 50% 40%`. */
+private const val CORE_CENTER_Y = 0.40f
+
+/** How many screen heights the ambient rect spans, so the squash cannot uncover an edge. */
+private const val AMBIENT_COVER = 3f
+
+/**
+ * Draws the three-layer gradient field behind the splash.
+ *
+ * Compose's radial gradient is a circle, and the ambient wash is an ellipse,
+ * so that layer is drawn as a circle under a vertical squash. The core glow's
+ * radius is the distance to the farthest corner, which is what CSS gives a
+ * `circle` with no size — so the glow spans the screen rather than a box.
+ */
+private fun Modifier.splashField(field: SplashField): Modifier = drawBehind {
+    val ambientCenter = Offset(size.width / 2, size.height * AMBIENT_CENTER_Y)
+    val ambientRadius = size.width * AMBIENT_RADIUS_X
+    val squash = (size.height * AMBIENT_RADIUS_Y) / ambientRadius
+    scale(scaleX = 1f, scaleY = squash, pivot = ambientCenter) {
+        // Under the squash the rect has to be taller than the screen to still
+        // cover it; a screen height either side is more than enough.
+        drawRect(
+            brush = ShaderBrush(
+                RadialGradientShader(ambientCenter, ambientRadius, field.ambient.colors, field.ambient.stops),
+            ),
+            topLeft = Offset(0f, -size.height / squash),
+            size = Size(size.width, size.height * AMBIENT_COVER / squash),
+        )
+    }
+    val coreCenter = Offset(size.width / 2, size.height * CORE_CENTER_Y)
+    val farthest = maxOf(
+        (coreCenter - Offset(0f, 0f)).getDistance(),
+        (coreCenter - Offset(size.width, 0f)).getDistance(),
+        (coreCenter - Offset(0f, size.height)).getDistance(),
+        (coreCenter - Offset(size.width, size.height)).getDistance(),
+    )
+    drawRect(brush = ShaderBrush(RadialGradientShader(coreCenter, farthest, field.core.colors, field.core.stops)))
+    drawRect(
+        brush = ShaderBrush(
+            LinearGradientShader(Offset.Zero, Offset(0f, size.height), field.wash.colors, field.wash.stops),
+        ),
+    )
+}
+
+/**
+ * @param twoPane The tablet's sizes, see [usesTwoPaneLayout]. The field behind
+ *   the cross needs no such flag: it is drawn to whatever size the screen is.
+ */
+@Composable
+fun SplashScreen(onComplete: () -> Unit, twoPane: Boolean = false) {
+    val colors = LocalAppColors.current
+    val m = if (twoPane) SplashMetrics.Tablet else SplashMetrics.Phone
     val alpha = remember { Animatable(1f) }
     val scale = remember { Animatable(0.82f) }
 
@@ -54,7 +144,8 @@ fun SplashScreen(onComplete: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colors.splashBackground),
+            .background(colors.splashBackground)
+            .splashField(colors.splashField),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -66,65 +157,52 @@ fun SplashScreen(onComplete: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Cross with radial glow behind it
-            Box(contentAlignment = Alignment.Center) {
-                Box(
-                    modifier = Modifier
-                        .size(260.dp)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(colors.splashGlow, Color.Transparent),
-                                radius = 320f
-                            )
-                        )
-                )
-                CrossIcon(
-                    brush = colors.crossBrush,
-                    modifier = Modifier.size(width = 64.dp, height = 128.dp)
-                )
-            }
+            CrossIcon(
+                brush = colors.crossBrush,
+                modifier = Modifier.size(width = m.crossWidth, height = m.crossHeight)
+            )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(m.gapAfterCross))
 
             Text(
                 text = stringResource(Res.string.app_title),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.7).sp,
+                fontSize = m.title,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = (-0.035).em,
                 color = colors.splashTitle
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(m.gapAfterTitle))
 
             // Tagline: three per-word colors with dot separators
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TaglineWord("WORSHIP", colors.taglineWorship)
-                TaglineDot(colors.taglineDot)
-                TaglineWord("PRESENT", colors.taglinePresent)
-                TaglineDot(colors.taglineDot)
-                TaglineWord("CONNECT", colors.taglineConnect)
+                TaglineWord("WORSHIP", colors.taglineWorship, m)
+                TaglineDot(colors.taglineDot, m)
+                TaglineWord("PRESENT", colors.taglinePresent, m)
+                TaglineDot(colors.taglineDot, m)
+                TaglineWord("CONNECT", colors.taglineConnect, m)
             }
         }
     }
 }
 
 @Composable
-private fun TaglineWord(text: String, color: Color) {
+private fun TaglineWord(text: String, color: Color, m: SplashMetrics) {
     Text(
         text = text,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
-        letterSpacing = 0.1.em,
+        fontSize = m.tagline,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = m.taglineTracking,
         color = color
     )
 }
 
 @Composable
-private fun TaglineDot(color: Color) {
+private fun TaglineDot(color: Color, m: SplashMetrics) {
     Text(
         text = "  ·  ",
-        fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontSize = m.tagline,
+        fontWeight = FontWeight.Bold,
         color = color
     )
 }

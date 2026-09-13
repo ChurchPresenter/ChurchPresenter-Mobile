@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Açık bölüm yok</string>
     <string name="bible_pane_empty_body">Bir kitap, ardından bir bölüm seçin, ayetleri burada görünsün.</string>
     <string name="bible_chapters_overline">Bölüm</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Uzaktan kumanda veya bağımsız</string>
+    <string name="settings_section_server_subtitle">Sunucu, port ve API anahtarı</string>
+    <string name="settings_section_computer_subtitle">Şarkıların ve Kutsal Kitapların kopyalandığı yer</string>
+    <string name="settings_device_section">Cihaz</string>
+    <string name="settings_section_device_subtitle">Bilgisayarda gösterilen ad</string>
+    <string name="settings_section_appearance_subtitle">Tema</string>
+    <string name="settings_diagnostics_section">Tanılama</string>
+    <string name="settings_section_diagnostics_subtitle">Sunucu durumu ve kullanım verileri</string>
+    <string name="settings_about_section">Hakkında</string>
+    <string name="settings_section_about_subtitle">Sürüm ve telif hakkı</string>
+    <string name="settings_this_device">Bu cihaz</string>
+    <string name="settings_display_name_hint">Soru-Cevap sekmesinden gönderdiğiniz sorulara eklenir.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_connection_status_label">Durum</string>
+    <string name="settings_connection_checking">Kontrol ediliyor…</string>
+    <string name="settings_connection_connected">Bağlı</string>
+    <string name="settings_connection_limited">Sınırlı</string>
+    <string name="settings_connection_unreachable">Ulaşılamıyor</string>
+    <string name="settings_connection_rejected">Reddedildi</string>
+    <string name="settings_connection_wrong_server">ChurchPresenter değil</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Uygulama sürümü</string>
+    <string name="settings_server_version">Sunucu sürümü</string>
+    <string name="settings_status_address_label">Adres</string>
+    <string name="mode_diagram_tablet">Tablet</string>
+    <string name="mode_diagram_computer">Bilgisayar</string>
+    <string name="mode_diagram_screen">Ekran</string>
+    <string name="mode_diagram_tv">TV / Ekran</string>
 </resources>

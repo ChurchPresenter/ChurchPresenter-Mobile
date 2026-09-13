@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Раздзел не адкрыты</string>
     <string name="bible_pane_empty_body">Абярыце кнігу, потым раздзел — яго вершы з’явяцца тут.</string>
     <string name="bible_chapters_overline">Раздзел</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Пульт або аўтаномна</string>
+    <string name="settings_section_server_subtitle">Хост, порт і ключ API</string>
+    <string name="settings_section_computer_subtitle">Адкуль капіруюцца песні і Бібліі</string>
+    <string name="settings_device_section">Прылада</string>
+    <string name="settings_section_device_subtitle">Імя, якое паказваецца на камп'ютары</string>
+    <string name="settings_section_appearance_subtitle">Тэма</string>
+    <string name="settings_diagnostics_section">Дыягностыка</string>
+    <string name="settings_section_diagnostics_subtitle">Стан сервера і даныя выкарыстання</string>
+    <string name="settings_about_section">Пра праграму</string>
+    <string name="settings_section_about_subtitle">Версія і аўтарскія правы</string>
+    <string name="settings_this_device">Гэтая прылада</string>
+    <string name="settings_display_name_hint">Дадаецца да пытанняў, адпраўленых з укладкі «Пытанні».</string>
+    <string name="settings_theme_title">Тэма</string>
+    <string name="settings_connection_status_label">Стан</string>
+    <string name="settings_connection_checking">Праверка…</string>
+    <string name="settings_connection_connected">Падключана</string>
+    <string name="settings_connection_limited">Абмежавана</string>
+    <string name="settings_connection_unreachable">Недаступны</string>
+    <string name="settings_connection_rejected">Адхілена</string>
+    <string name="settings_connection_wrong_server">Не ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Версія праграмы</string>
+    <string name="settings_server_version">Версія сервера</string>
+    <string name="settings_status_address_label">Адрас</string>
+    <string name="mode_diagram_tablet">Планшэт</string>
+    <string name="mode_diagram_computer">Камп'ютар</string>
+    <string name="mode_diagram_screen">Экран</string>
+    <string name="mode_diagram_tv">ТБ / экран</string>
 </resources>

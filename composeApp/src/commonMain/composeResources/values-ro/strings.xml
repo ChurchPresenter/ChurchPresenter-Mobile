@@ -481,4 +481,34 @@
     <string name="bible_pane_empty_title">Niciun capitol deschis</string>
     <string name="bible_pane_empty_body">Alegeți o carte, apoi un capitol, iar versetele lui apar aici.</string>
     <string name="bible_chapters_overline">Capitol</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Telecomandă sau autonom</string>
+    <string name="settings_section_server_subtitle">Gazdă, port și cheie API</string>
+    <string name="settings_section_computer_subtitle">De unde se copiază cântările și Bibliile</string>
+    <string name="settings_device_section">Dispozitiv</string>
+    <string name="settings_section_device_subtitle">Numele afișat pe computer</string>
+    <string name="settings_section_appearance_subtitle">Temă</string>
+    <string name="settings_diagnostics_section">Diagnosticare</string>
+    <string name="settings_section_diagnostics_subtitle">Starea serverului și date de utilizare</string>
+    <string name="settings_about_section">Despre</string>
+    <string name="settings_section_about_subtitle">Versiune și drepturi de autor</string>
+    <string name="settings_this_device">Acest dispozitiv</string>
+    <string name="settings_display_name_hint">Atașat întrebărilor trimise din fila Întrebări.</string>
+    <string name="settings_theme_title">Temă</string>
+    <string name="settings_connection_status_label">Stare</string>
+    <string name="settings_connection_checking">Se verifică…</string>
+    <string name="settings_connection_connected">Conectat</string>
+    <string name="settings_connection_limited">Limitat</string>
+    <string name="settings_connection_unreachable">Inaccesibil</string>
+    <string name="settings_connection_rejected">Respins</string>
+    <string name="settings_connection_wrong_server">Nu este ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Versiunea aplicației</string>
+    <string name="settings_server_version">Versiunea serverului</string>
+    <string name="settings_status_address_label">Adresă</string>
+    <string name="mode_diagram_tablet">Tabletă</string>
+    <string name="mode_diagram_computer">Computer</string>
+    <string name="mode_diagram_screen">Ecran</string>
+    <string name="mode_diagram_tv">TV / ecran</string>
 </resources>

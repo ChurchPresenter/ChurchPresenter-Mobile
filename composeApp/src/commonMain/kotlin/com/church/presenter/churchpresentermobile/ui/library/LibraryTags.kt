@@ -57,6 +57,15 @@ internal object LibraryTags {
     const val KEEP_EDITING = "editor:keepEditing"
 
     // ── Copying songs from the computer ──────────────────────────────────
+    // ── The clear-content sheet ──────────────────────────────────────────
+    const val CLEAR_SONGS = "clear:songs"
+    const val CLEAR_BIBLES = "clear:bibles"
+    const val CLEAR_ALL = "clear:all"
+    const val CLEAR_NONE = "clear:none"
+    const val CLEAR_OUTCOME = "clear:outcome"
+    const val CLEAR_CONFIRM = "clear:confirm"
+    const val CLEAR_CANCEL = "clear:cancel"
+
     const val SYNC_PROGRESS = "sync:progress"
     const val SYNC_PROGRESS_LABEL = "sync:progress:label"
     const val SYNC_CURRENT_TITLE = "sync:progress:title"

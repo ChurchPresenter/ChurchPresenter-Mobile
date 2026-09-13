@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">ยังไม่ได้เปิดบท</string>
     <string name="bible_pane_empty_body">เลือกหนังสือ แล้วเลือกบท ข้อพระคัมภีร์จะปรากฏที่นี่</string>
     <string name="bible_chapters_overline">บท</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">รีโมตคอนโทรลหรือแบบสแตนด์อโลน</string>
+    <string name="settings_section_server_subtitle">โฮสต์ พอร์ต และคีย์ API</string>
+    <string name="settings_section_computer_subtitle">แหล่งที่คัดลอกเพลงและพระคัมภีร์</string>
+    <string name="settings_device_section">อุปกรณ์</string>
+    <string name="settings_section_device_subtitle">ชื่อที่แสดงบนคอมพิวเตอร์</string>
+    <string name="settings_section_appearance_subtitle">ธีม</string>
+    <string name="settings_diagnostics_section">การวินิจฉัย</string>
+    <string name="settings_section_diagnostics_subtitle">สถานะเซิร์ฟเวอร์และข้อมูลการใช้งาน</string>
+    <string name="settings_about_section">เกี่ยวกับ</string>
+    <string name="settings_section_about_subtitle">เวอร์ชันและลิขสิทธิ์</string>
+    <string name="settings_this_device">อุปกรณ์นี้</string>
+    <string name="settings_display_name_hint">แนบไปกับคำถามที่คุณส่งจากแท็บถาม-ตอบ</string>
+    <string name="settings_theme_title">ธีม</string>
+    <string name="settings_connection_status_label">สถานะ</string>
+    <string name="settings_connection_checking">กำลังตรวจสอบ…</string>
+    <string name="settings_connection_connected">เชื่อมต่อแล้ว</string>
+    <string name="settings_connection_limited">จำกัด</string>
+    <string name="settings_connection_unreachable">เข้าถึงไม่ได้</string>
+    <string name="settings_connection_rejected">ถูกปฏิเสธ</string>
+    <string name="settings_connection_wrong_server">ไม่ใช่ ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">เวอร์ชันแอป</string>
+    <string name="settings_server_version">เวอร์ชันเซิร์ฟเวอร์</string>
+    <string name="settings_status_address_label">ที่อยู่</string>
+    <string name="mode_diagram_tablet">แท็บเล็ต</string>
+    <string name="mode_diagram_computer">คอมพิวเตอร์</string>
+    <string name="mode_diagram_screen">หน้าจอ</string>
+    <string name="mode_diagram_tv">ทีวี / หน้าจอ</string>
 </resources>
