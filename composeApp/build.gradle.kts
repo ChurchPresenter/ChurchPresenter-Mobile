@@ -588,8 +588,9 @@ val screenshotTestPackage = "com.church.presenter.churchpresentermobile.screensh
 // The store/website images are produced by the same machinery but are NOT a
 // test: nothing diffs them, and they are meant to change whenever the app
 // looks better. Kept out of every run including screenshotTest, and produced
-// on demand by `marketingScreenshots` below.
-val marketingTestClass = "com.church.presenter.churchpresentermobile.screenshot.MarketingScreenshotTest"
+// on demand by `marketingScreenshots` below. A pattern, not a class: the phone
+// set and the tablet set are two classes, and a third device would be a third.
+val marketingTestClass = "com.church.presenter.churchpresentermobile.screenshot.*MarketingScreenshotTest"
 
 // configureEach on the supertype rather than tasks.named: the Android unit-test
 // tasks are not registered yet at this point in configuration, so naming
@@ -682,9 +683,12 @@ tasks.register<Test>("screenshotTest") {
 //
 //   ./gradlew :composeApp:marketingScreenshots
 //
-// Writes composeApp/marketing/<screen>__light.png and __dark.png — one image
-// per screen at 1080x2340, which is a real phone screenshot's shape and the
-// resolution the App Store and Play both want.
+// Writes composeApp/marketing/<device>/<screen>__light.png and __dark.png —
+// one image per screen per device, at the device's own resolution:
+//
+//   phone/   1080x2340  the iPhone and Play phone slots
+//   tablet/  2560x1600  Play's 7" and 10" tablet slots (landscape)
+//   ipad/    2732x2048  App Store Connect's 13" iPad slot (landscape)
 //
 // Always records and never verifies: these are pictures of the app, not
 // golden files. Nothing compares them, so a redesign simply produces better
@@ -692,7 +696,7 @@ tasks.register<Test>("screenshotTest") {
 // ---------------------------------------------------------------------------
 tasks.register<Test>("marketingScreenshots") {
     group = "documentation"
-    description = "Renders one store/website image per screen into composeApp/marketing/."
+    description = "Renders one store/website image per screen and device into composeApp/marketing/."
 
     val jvmTestCompilation = kotlin.targets.getByName("jvm").compilations.getByName("test")
     testClassesDirs = jvmTestCompilation.output.classesDirs

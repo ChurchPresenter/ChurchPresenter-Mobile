@@ -197,8 +197,10 @@ Select: **All or most functionality is accessible without special access**
 
 ### Option A — Automated (GitHub Actions → Play Store directly)
 
-The `android-play-store.yml` workflow builds a signed AAB and uploads it
-straight to the **internal testing** track.
+The `store-release.yml` workflow (**Store Release** in the Actions tab)
+builds a signed AAB and uploads it straight to the chosen track. The same run
+also builds and uploads the iOS app to TestFlight, with the same version
+number, unless its checkbox is cleared.
 
 **One-time setup — create a Play Store service account:**
 
@@ -220,9 +222,10 @@ gh secret set GOOGLE_PLAY_SERVICE_ACCOUNT_JSON \
 ```
 
 7. Trigger the workflow:
-   - Go to **Actions → Android Play Store Upload**
+   - Go to **Actions → Store Release**
    - Click **Run workflow**
    - Choose track: `internal` (recommended first) or `beta` / `production`
+   - Untick **Upload to TestFlight** for an Android-only release
 
 ### Option B — Manual upload
 
@@ -273,19 +276,33 @@ Before submitting to production, verify everything in Play Console is complete:
 
 ## Versioning
 
-Every new release **must** increment `versionCode`. `versionName` is the
-human-readable version shown to users.
+Every new release **must** carry a `versionCode` higher than the previous
+upload. `versionName` is the human-readable version shown to users.
 
-Edit in `composeApp/build.gradle.kts`:
+The **Store Release** workflow sets both itself, and gives iOS the very same
+numbers: `versionCode` (and the iOS build number) is `BUILD_NUMBER_OFFSET +
+<run number>`, and `versionName` (and `MARKETING_VERSION`) is
+`<major>.<minor>.<that number>`, with major and minor read from
+`composeApp/build.gradle.kts`. Nothing is committed — `main` only accepts pull
+requests, and Play only needs the number to go up, which the run number does
+on its own. So there is no bump to make before a release; the numbers checked
+in are what a local build gets.
+
+To move to a new major or minor version, change `versionName` in
+`composeApp/build.gradle.kts` **and** `MARKETING_VERSION` in
+`iosApp/Configuration/Config.xcconfig` to the same major.minor through a pull
+request — the workflow refuses to run while they disagree:
 
 ```kotlin
 defaultConfig {
-    versionCode = 2        // ← must be higher than the previous upload
-    versionName = "1.1"    // ← shown on the Play Store
+    versionCode = 21         // local builds only; releases use the run number
+    versionName = "1.1.0"    // releases keep the 1.1 and replace the patch
 }
 ```
 
-Commit the version bump before triggering the release build.
+The workflow also refuses to run if its number is not above the checked-in
+`versionCode` or `CURRENT_PROJECT_VERSION`; raise `BUILD_NUMBER_OFFSET` in
+`store-release.yml` if that ever happens, never lower it.
 
 ---
 
@@ -294,7 +311,7 @@ Commit the version bump before triggering the release build.
 | Problem | Solution |
 |---------|----------|
 | "You need to publish to at least one testing track" | Complete all store listing required fields first, then upload to internal testing |
-| "Version code already used" | Increment `versionCode` in `build.gradle.kts` and rebuild |
+| "Version code already used" | A re-run reuses its run number; trigger a fresh run instead of re-running the failed one |
 | "APK/AAB not signed correctly" | Re-run `push_github_secrets.sh` to refresh the Android keystore secret |
 | "Target API level too low" | Ensure `targetSdk` in `libs.versions.toml` meets the current year's Play Store requirement |
 | Service account gets 403 | Make sure the service account was granted **Release to testing tracks** permission in Play Console (not just Google Cloud IAM) |

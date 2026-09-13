@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -9,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -28,6 +30,8 @@ import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.ui.BottomTabBar
+import com.church.presenter.churchpresentermobile.ui.GearButton
+import com.church.presenter.churchpresentermobile.ui.NavRail
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import io.github.takahirom.roborazzi.captureRoboImage
 
@@ -90,8 +94,16 @@ internal object Screenshots {
     // content tweak that makes a nicer marketing shot does not fail the test
     // gate, and so nothing here has to be reviewed as a golden.
 
-    /** Where the store/website images go, relative to the module directory. */
+    /**
+     * Where the store/website images go, relative to the module directory.
+     * One folder per device under it — `phone/`, `tablet/`, `ipad/` — because
+     * each store slot wants its own shape and a flat folder of three shapes is
+     * three listings' worth of files to pick through.
+     */
     const val MARKETING_DIR: String = "marketing"
+
+    /** The phone images' folder under [MARKETING_DIR]. */
+    const val PHONE_DIR: String = "phone"
 
     /**
      * Pixels per dp for a store image.
@@ -109,6 +121,40 @@ internal object Screenshots {
 
     /** The tablet frame: 2520x3360 at [STORE_DENSITY]. */
     val STORE_TABLET_HEIGHT: Dp = 1120.dp
+}
+
+/**
+ * The tablets a listing wants pictures of, each at its own real screen.
+ *
+ * Landscape, every one: the two-pane layouts need [TwoPaneMinWidth][com.church.presenter.churchpresentermobile.ui.TwoPaneMinWidth]
+ * (1000dp), which a 10"-and-up tablet only clears on its long side. A portrait
+ * tablet image would show the phone's one-column layout beside a rail — true,
+ * but not what a tablet screenshot is on the listing to show.
+ *
+ * Rendered at 2x, which is what these panels actually are, so the dp frame is
+ * the device's own point size and the PNG is its native resolution.
+ */
+internal enum class StoreTablet(
+    /** Folder under [Screenshots.MARKETING_DIR]. */
+    val dir: String,
+    /** The window in dp; the store image is this at [density]. */
+    val size: DpSize,
+    val density: Float = 2f,
+) {
+    /**
+     * Play's 10" tablet slot: 2560x1600, the Pixel Tablet's panel. Play's only
+     * rule for tablet screenshots is a side between 320 and 3840px and no
+     * side more than twice the other, so the same images serve its 7" slot.
+     */
+    TABLET("tablet", DpSize(1280.dp, 800.dp)),
+
+    /**
+     * App Store Connect's 13" iPad slot: 2732x2048, the 12.9" iPad Pro's
+     * screen in landscape, which the 13" slot still accepts. This is also
+     * the size the tablet design was drawn at, so it is the one the layouts
+     * fit best.
+     */
+    IPAD("ipad", DpSize(1366.dp, 1024.dp)),
 }
 
 /**
@@ -247,7 +293,7 @@ private fun goldenPath(name: String, theme: ThemeMode): String {
 }
 
 /**
- * Captures one screen as a **store/website image** — `marketing/<name>__<theme>.png`.
+ * Captures one screen as a **phone store/website image** — `marketing/phone/<name>__<theme>.png`.
  *
  * Not a golden and not diffed. The differences from [screenshot] are the ones
  * that matter to a listing page rather than to a test:
@@ -309,7 +355,85 @@ internal fun marketingShot(
             }
             until?.let { waitUntil(timeoutMillis = CONTENT_TIMEOUT_MS) { it() } }
             onRoot().captureRoboImage(
-                "${Screenshots.MARKETING_DIR}/${name}__${theme.suffix}.png",
+                "${Screenshots.MARKETING_DIR}/${Screenshots.PHONE_DIR}/${name}__${theme.suffix}.png",
+            )
+        }
+    }
+}
+
+/**
+ * Captures one screen as a **tablet store image**, once per [StoreTablet] and
+ * theme — `marketing/<device>/<name>__<theme>.png`.
+ *
+ * The phone frame ([marketingShot]) puts the app's header over the content
+ * and the tab strip under it. Beside a rail neither exists: the tabs are the
+ * rail down the left, the hamburger is the rail's top-left, the gear is the
+ * window's top-right, and each pane hangs its own header — exactly as
+ * `App.kt` lays out a window past [usesNavRail][com.church.presenter.churchpresentermobile.ui.usesNavRail].
+ * So this frame is the rail and the gear, and [content] is the two-pane
+ * composable the tab renders inside them. With [tab] null there is no chrome
+ * at all: that is the projector, not the tablet.
+ *
+ * [prepare] runs on the composed screen before [until] and the capture, for
+ * the state a screen only reaches by being used — a field focused so its
+ * preview fills in. It runs once per image, since each is a fresh window.
+ */
+@OptIn(ExperimentalTestApi::class)
+internal fun tabletShot(
+    name: String,
+    tab: AppTab?,
+    tabs: List<AppTab> = AppTab.forMode(AppMode.REMOTE),
+    devices: List<StoreTablet> = StoreTablet.entries,
+    themes: List<ThemeMode> = listOf(ThemeMode.LIGHT, ThemeMode.DARK),
+    prepare: (ComposeUiTest.() -> Unit)? = null,
+    until: (ComposeUiTest.() -> Boolean)? = null,
+    content: @Composable () -> Unit,
+) {
+    devices.forEach { device ->
+        val widthPx = (device.size.width.value * device.density).toInt()
+        val heightPx = (device.size.height.value * device.density).toInt()
+        themes.forEach { theme ->
+            runDesktopComposeUiTest(width = widthPx, height = heightPx) {
+                setContent {
+                    CompositionLocalProvider(LocalDensity provides Density(device.density)) {
+                        AppTheme(themeMode = theme) {
+                            Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+                                if (tab == null) {
+                                    Box(Modifier.fillMaxSize().padding(padding)) { content() }
+                                } else {
+                                    TabletShell(tab = tab, tabs = tabs, modifier = Modifier.padding(padding)) {
+                                        content()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                prepare?.invoke(this)
+                until?.let { waitUntil(timeoutMillis = CONTENT_TIMEOUT_MS) { it() } }
+                onRoot().captureRoboImage(
+                    "${Screenshots.MARKETING_DIR}/${device.dir}/${name}__${theme.suffix}.png",
+                )
+            }
+        }
+    }
+}
+
+/** The rail on the left and the one gear at the top-right, around a tab's panes — `App.kt`'s rail branch. */
+@Composable
+private fun TabletShell(
+    tab: AppTab,
+    tabs: List<AppTab>,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Row(modifier = modifier.fillMaxSize()) {
+        NavRail(selectedTab = tab, onTabSelected = {}, tabs = tabs, onMenu = {})
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+            content()
+            GearButton(
+                onClick = {},
+                modifier = Modifier.align(Alignment.TopEnd).padding(top = 14.dp, end = 20.dp),
             )
         }
     }

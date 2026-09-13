@@ -11,7 +11,7 @@ name: Android Debug APK
 #   • needs only GOOGLE_SERVICES_JSON_BASE64, not the release keystore secrets
 #
 # For a signed, shippable build use "Android Release Build" (android-release.yml);
-# for the Play internal-testing track use "Android Play Store" (android-play-store.yml).
+# for the Play internal-testing track use "Store Release" (store-release.yml).
 #
 # The APK is published as a GitHub **prerelease** rather than a workflow artifact,
 # so testers can download it from the Releases page without a GitHub login and

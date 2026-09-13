@@ -31,7 +31,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.test.Test
 
 /**
- * Store and website images — one per screen, in light and dark.
+ * Phone store and website images — one per screen, in light and dark, into
+ * `composeApp/marketing/phone/`. [TabletMarketingScreenshotTest] is the same
+ * set for the tablet and iPad slots.
  *
  * NOT part of the test gate. `screenshotTest` never runs this class and nothing
  * diffs what it produces; it fills `composeApp/marketing/` with pictures for an

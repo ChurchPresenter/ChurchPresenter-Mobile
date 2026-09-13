@@ -231,8 +231,10 @@ Control your ChurchPresenter desktop from your iPhone over Wi-Fi:
 
 ### Option A — Automated (GitHub Actions → TestFlight directly)
 
-The `ios-testflight.yml` workflow builds a signed IPA and uploads it straight
-to **TestFlight** without any manual steps.
+The `store-release.yml` workflow (**Store Release** in the Actions tab)
+builds a signed IPA and uploads it straight to **TestFlight** without any
+manual steps. The same run also builds and uploads the Android app to Google
+Play, with the same version number, unless its checkbox is cleared.
 
 **One-time setup — create an App Store Connect API key:**
 
@@ -268,8 +270,9 @@ gh secret set APP_STORE_CONNECT_PRIVATE_KEY --repo <org>/<repo> < ~/Downloads/Au
 ```
 
 6. Trigger the workflow:
-   - Go to **Actions → iOS TestFlight Upload**
+   - Go to **Actions → Store Release**
    - Click **Run workflow**
+   - Untick **Upload to Google Play** for an iOS-only release
 
 The build typically appears in TestFlight within 5–15 minutes of the workflow completing.
 
@@ -317,16 +320,24 @@ Review typically takes **24–48 hours** for a new app.
 Every new build uploaded to App Store Connect must have a higher **Build Number**
 even if the **Version** stays the same.
 
-Edit in `composeApp/build.gradle.kts`:
+The **Store Release** workflow sets both itself, and gives Android the very
+same numbers: the build number (`CURRENT_PROJECT_VERSION`, and Android's
+`versionCode`) is `BUILD_NUMBER_OFFSET + <run number>`, and the version
+(`MARKETING_VERSION`, and Android's `versionName`) is
+`<major>.<minor>.<that number>`. Nothing is committed — `main` only accepts
+pull requests, and App Store Connect only needs the number to go up. There is
+no bump to make before a release; the values in
+`iosApp/Configuration/Config.xcconfig` are what a local Xcode build gets.
 
-```kotlin
-defaultConfig {
-    versionCode = 2        // ← Build Number in App Store Connect
-    versionName = "1.1"    // ← Version string shown on the App Store
-}
+To move to a new major or minor version, change `MARKETING_VERSION` in
+`iosApp/Configuration/Config.xcconfig` **and** `versionName` in
+`composeApp/build.gradle.kts` to the same major.minor through a pull request —
+the workflow refuses to run while they disagree:
+
 ```
-
-Commit the bump before triggering the release build.
+CURRENT_PROJECT_VERSION=20    // local builds only; releases use the run number
+MARKETING_VERSION=1.1.0       // releases keep the 1.1 and replace the patch
+```
 
 ---
 
