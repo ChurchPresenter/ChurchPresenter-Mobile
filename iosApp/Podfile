@@ -6,6 +6,10 @@ target 'iosApp' do
   pod 'FirebaseAnalytics',    '~> 11.8'
   pod 'FirebaseCrashlytics',  '~> 11.8'
   pod 'FirebaseMessaging',    '~> 11.8'
+  # In-App Messaging: the display component that shows console campaigns.
+  # Android has firebase-inappmessaging-display; without this iOS never
+  # fetched or drew a single campaign.
+  pod 'FirebaseInAppMessaging', '~> 11.8-beta'
   pod 'FirebaseRemoteConfig', '~> 11.8'
   pod 'Sentry',               '~> 8.0'
 end
