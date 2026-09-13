@@ -545,7 +545,12 @@ private fun ColorSlider(label: String, value: Float, accent: Color, tag: String,
 }
 
 /** Converts a [Color] to [hue(0..360), saturation(0..1), value(0..1)]. */
-private fun rgbToHsv(c: Color): FloatArray {
+/**
+ * Hue (0–360), saturation and value (0–1) of [c] — the wheel's coordinates.
+ * `internal` so the six sectors of the hue arithmetic can be pinned down as
+ * numbers rather than by dragging a swatch.
+ */
+internal fun rgbToHsv(c: Color): FloatArray {
     val r = c.red; val g = c.green; val b = c.blue
     val max = maxOf(r, g, b); val min = minOf(r, g, b); val d = max - min
     var h = when {
@@ -664,11 +669,11 @@ private fun Stepper(
     modifier: Modifier = Modifier,
     step: Int = 1,
     /** Names this stepper's two buttons and its value for a UI test. */
-    tag: String? = null,
+    tag: String,
     onChange: (Int) -> Unit,
 ) {
     val colors = LocalAppColors.current
-    Column(modifier.then(tag?.let { Modifier.testTag(it) } ?: Modifier)) {
+    Column(modifier.testTag(tag)) {
         Overline(label)
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -678,31 +683,29 @@ private fun Stepper(
                 .background(colors.inputBg)
                 .padding(horizontal = 8.dp, vertical = 6.dp),
         ) {
-            StepBtn("−", tag?.let { UiTags.stepperDown(it) }) { onChange((value - step).coerceAtLeast(min)) }
+            StepBtn("−", UiTags.stepperDown(tag)) { onChange((value - step).coerceAtLeast(min)) }
             Text(
                 value.toString(),
                 color = colors.text,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f)
-                    .then(tag?.let { Modifier.testTag(UiTags.stepperValue(it)) } ?: Modifier),
+                modifier = Modifier.weight(1f).testTag(UiTags.stepperValue(tag)),
             )
-            StepBtn("+", tag?.let { UiTags.stepperUp(it) }) { onChange((value + step).coerceAtMost(max)) }
+            StepBtn("+", UiTags.stepperUp(tag)) { onChange((value + step).coerceAtMost(max)) }
         }
     }
 }
 
 @Composable
-private fun StepBtn(sym: String, tag: String? = null, onClick: () -> Unit) {
+private fun StepBtn(sym: String, tag: String, onClick: () -> Unit) {
     val colors = LocalAppColors.current
     Box(
         modifier = Modifier
             .size(32.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colors.surface)
-            .then(tag?.let { Modifier.testTag(it) } ?: Modifier)
+            .testTag(tag)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(sym, color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.Bold) }

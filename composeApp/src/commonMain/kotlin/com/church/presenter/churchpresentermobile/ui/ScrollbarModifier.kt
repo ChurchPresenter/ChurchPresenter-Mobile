@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.MaterialTheme
@@ -110,6 +111,41 @@ fun Modifier.verticalScrollbar(
         val scrollProgress = ((firstRow2 + firstOffset / avgRowH) /
                 (totalRows - visibleRows).coerceAtLeast(1f)).coerceIn(0f, 1f)
         val thumbTop = scrollProgress * (viewportH - thumbH)
+
+        drawRoundRect(
+            color        = thumbColor,
+            topLeft      = Offset(thumbX(layoutDirection, size.width, width.toPx()), thumbTop),
+            size         = Size(width.toPx(), thumbH),
+            cornerRadius = CornerRadius(width.toPx() / 2)
+        )
+    }
+}
+
+/**
+ * Draws a thin vertical scroll-thumb on the trailing edge of a plain
+ * `verticalScroll` column — a form, a status screen, anything that is a
+ * `Column` rather than a lazy list.
+ *
+ * Put it **before** `verticalScroll` in the chain: this modifier draws over
+ * the node it is on, and after `verticalScroll` that node is the whole
+ * content, so the thumb would scroll away with it instead of staying in the
+ * viewport. Nothing is drawn while the content fits.
+ */
+fun Modifier.verticalScrollbar(
+    state: ScrollState,
+    width: Dp = 4.dp,
+    minThumbHeight: Dp = 32.dp,
+): Modifier = composed {
+    val thumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
+    drawWithContent {
+        drawContent()
+        val maxScroll = state.maxValue.toFloat()
+        val viewportH = size.height
+        if (maxScroll <= 0f || viewportH == 0f) return@drawWithContent
+
+        val contentH = viewportH + maxScroll
+        val thumbH = max(viewportH * (viewportH / contentH), minThumbHeight.toPx())
+        val thumbTop = (state.value / maxScroll).coerceIn(0f, 1f) * (viewportH - thumbH)
 
         drawRoundRect(
             color        = thumbColor,

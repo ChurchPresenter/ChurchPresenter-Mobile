@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">எந்த அதிகாரமும் திறக்கப்படவில்லை</string>
     <string name="bible_pane_empty_body">ஒரு புத்தகத்தையும் பிறகு ஓர் அதிகாரத்தையும் தேர்ந்தெடுங்கள், அதன் வசனங்கள் இங்கே தோன்றும்.</string>
     <string name="bible_chapters_overline">அதிகாரம்</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">தொலைக்கட்டுப்பாடு அல்லது தனித்து</string>
+    <string name="settings_section_server_subtitle">ஹோஸ்ட், போர்ட் மற்றும் API சாவி</string>
+    <string name="settings_section_computer_subtitle">பாடல்களும் வேதாகமங்களும் நகலெடுக்கப்படும் இடம்</string>
+    <string name="settings_device_section">சாதனம்</string>
+    <string name="settings_section_device_subtitle">கணினியில் காட்டப்படும் பெயர்</string>
+    <string name="settings_section_appearance_subtitle">தீம்</string>
+    <string name="settings_diagnostics_section">கண்டறிதல்</string>
+    <string name="settings_section_diagnostics_subtitle">சேவையக நிலை மற்றும் பயன்பாட்டுத் தரவு</string>
+    <string name="settings_about_section">பற்றி</string>
+    <string name="settings_section_about_subtitle">பதிப்பு மற்றும் பதிப்புரிமை</string>
+    <string name="settings_this_device">இந்தச் சாதனம்</string>
+    <string name="settings_display_name_hint">கேள்விகள் தாவலில் இருந்து அனுப்பும் கேள்விகளுடன் இணைக்கப்படும்.</string>
+    <string name="settings_theme_title">தீம்</string>
+    <string name="settings_connection_status_label">நிலை</string>
+    <string name="settings_connection_checking">சரிபார்க்கிறது…</string>
+    <string name="settings_connection_connected">இணைக்கப்பட்டது</string>
+    <string name="settings_connection_limited">வரையறுக்கப்பட்டது</string>
+    <string name="settings_connection_unreachable">அணுக முடியவில்லை</string>
+    <string name="settings_connection_rejected">நிராகரிக்கப்பட்டது</string>
+    <string name="settings_connection_wrong_server">ChurchPresenter அல்ல</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">ஆப் பதிப்பு</string>
+    <string name="settings_server_version">சேவையகப் பதிப்பு</string>
+    <string name="settings_status_address_label">முகவரி</string>
+    <string name="mode_diagram_tablet">டேப்லெட்</string>
+    <string name="mode_diagram_computer">கணினி</string>
+    <string name="mode_diagram_screen">திரை</string>
+    <string name="mode_diagram_tv">டிவி / திரை</string>
 </resources>

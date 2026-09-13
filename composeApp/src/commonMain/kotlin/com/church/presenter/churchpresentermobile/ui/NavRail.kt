@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.app_title
+import churchpresentermobile.composeapp.generated.resources.cd_schedule
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -49,12 +52,18 @@ import org.jetbrains.compose.resources.stringResource
  * [UiTags.tab] tags, so a test names a tab the same way in either layout. Only
  * one of the two is ever composed — see [usesNavRail].
  */
+/**
+ * @param onMenu Opens the schedule drawer. Drawn as the hamburger at the rail's
+ *   top-left — the window's corner, where a phone has it too — rather than in
+ *   each pane's header, so it is in one place whichever tab is open.
+ */
 @Composable
 fun NavRail(
     selectedTab: AppTab,
     onTabSelected: (AppTab) -> Unit,
     modifier: Modifier = Modifier,
     tabs: List<AppTab> = AppTab.forMode(AppMode.REMOTE),
+    onMenu: (() -> Unit)? = null,
 ) {
     val colors = LocalAppColors.current
     // Preserve the caller's order rather than tabSpecs' declaration order, so the
@@ -76,6 +85,18 @@ fun NavRail(
                 .navigationBarsPadding()
                 .padding(horizontal = 14.dp, vertical = 22.dp),
         ) {
+            if (onMenu != null) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = stringResource(Res.string.cd_schedule),
+                    tint = colors.text,
+                    modifier = Modifier
+                        .padding(start = 10.dp, bottom = 22.dp)
+                        .size(22.dp)
+                        .testTag(UiTags.HEADER_MENU)
+                        .clickable(onClick = onMenu),
+                )
+            }
             BrandMark(modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 22.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

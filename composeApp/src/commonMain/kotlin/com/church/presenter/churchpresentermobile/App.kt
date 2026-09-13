@@ -84,6 +84,11 @@ import com.church.presenter.churchpresentermobile.ui.MoreScreen
 import com.church.presenter.churchpresentermobile.ui.MoreTwoPane
 import com.church.presenter.churchpresentermobile.ui.moreDestinationTitle
 import com.church.presenter.churchpresentermobile.ui.NavRail
+import com.church.presenter.churchpresentermobile.ui.GearButton
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.Alignment
+import com.church.presenter.churchpresentermobile.ui.UiTags
 import com.church.presenter.churchpresentermobile.ui.usesNavRail
 import com.church.presenter.churchpresentermobile.ui.usesTwoPaneLayout
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
@@ -588,6 +593,13 @@ fun App(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
+    // What a pane's header shows in its corners. Beside a rail, nothing: the
+    // hamburger is at the rail's top-left and the gear at the window's
+    // top-right, drawn once by the shell, so every pane header on a tablet
+    // starts and ends with its title.
+    val paneMenu: (() -> Unit)? = if (useRail) null else ({ coroutineScope.launch { drawerState.open() } })
+    val paneSettings: (() -> Unit)? = if (useRail) null else ({ showSettings = true })
+
     // ── Shortcut / Quick-Action tab navigation ────────────────────────────
     // TabNavigationHandler.navigateTo() is called from Android shortcut intents
     // and iOS Quick-Action callbacks. Consume once so it doesn't re-fire.
@@ -738,7 +750,7 @@ fun App(
 
     AppTheme(themeMode = themeMode) {
         if (showSplash) {
-            SplashScreen(onComplete = {
+            SplashScreen(twoPane = twoPane, onComplete = {
                 showSplash = false
                 when {
                     // First launch on a phone: ask how they want to present before
@@ -758,6 +770,7 @@ fun App(
         if (showModePicker) {
             ModePickerScreen(
                 initialMode = appMode,
+                twoPane = twoPane,
                 onModeChosen = { chosen ->
                     AppModeHolder.set(appSettings, chosen)
                     appSettings.isModeChosen = true
@@ -782,6 +795,7 @@ fun App(
                 viewModel      = statusViewModel,
                 onContinue     = { showStatusScreen = false },
                 onOpenSettings = { showStatusScreen = false; showSettings = true },
+                twoPane        = twoPane,
             )
             return@AppTheme
         }
@@ -891,39 +905,39 @@ fun App(
                         title = moreDestinationTitle(moreDestination, appMode),
                         onBack = { moreDestination = null },
                         // Q&A keeps the settings gear; the dictionary header (screen 11) has none.
-                        onSettings = if (moreDestination == MoreDestination.QA) ({ showSettings = true }) else null
+                        onSettings = if (moreDestination == MoreDestination.QA) paneSettings else null
                     )
                     else -> when (selectedTab) {
                         AppTab.SONGS -> ScreenHeader(
                             title = stringResource(Res.string.tab_songs),
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true }
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
                         )
                         AppTab.BIBLE -> ScreenHeader(
                             title = bibleTitle,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true }
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
                         )
                         AppTab.MEDIA -> ScreenHeader(
                             title = stringResource(Res.string.media_title),
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true }
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
                         )
                         AppTab.PRESENTATION -> ScreenHeader(
                             title = stringResource(Res.string.tab_presentation),
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true }
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
                         )
                         AppTab.MORE -> ScreenHeader(
                             title = stringResource(Res.string.tab_more),
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true }
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
                         )
                         else -> ScreenHeader(
                             title = appTitle,
                             largeTitle = false,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true }
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
                         )
                     }
                 }
@@ -956,8 +970,8 @@ fun App(
                             registry = sinkRegistry,
                             settings = appSettings,
                             twoPane = twoPane,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true },
+                            onMenu = paneMenu,
+                            onSettings = paneSettings,
                             // The same library the Photos screen fills, so a photo
                             // added there can be chosen as the backdrop here.
                             photos = photoLibrary,
@@ -969,8 +983,8 @@ fun App(
                             isDemoMode = isDemoMode,
                             settingsSaveToken = settingsSaveToken,
                             twoPane = twoPane,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true },
+                            onMenu = paneMenu,
+                            onSettings = paneSettings,
                             onDetailChanged = { title, bookName ->
                                 songDetailTitle = title
                                 songDetailBookName = bookName
@@ -993,8 +1007,8 @@ fun App(
                             isDemoMode = isDemoMode,
                             settingsSaveToken = settingsSaveToken,
                             twoPane = twoPane,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true },
+                            onMenu = paneMenu,
+                            onSettings = paneSettings,
                             onNavigationChanged = { book, chapter ->
                                 bibleBook = book
                                 bibleChapter = chapter
@@ -1018,8 +1032,8 @@ fun App(
                             canUploadFiles = canUploadFiles,
                             maxUploadMb = maxMediaUploadMb,
                             twoPane = twoPane,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
-                            onSettings = { showSettings = true },
+                            onMenu = paneMenu,
+                            onSettings = paneSettings,
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.PRESENTATION -> PresentationScreen(
@@ -1114,8 +1128,8 @@ fun App(
                                     selected = moreDestination,
                                     onSelect = { moreDestination = it },
                                     tool = moreTool,
-                                    onMenu = { coroutineScope.launch { drawerState.open() } },
-                                    onSettings = { showSettings = true },
+                                    onMenu = paneMenu,
+                                    onSettings = paneSettings,
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             } else if (moreDestination == null) {
@@ -1173,8 +1187,8 @@ fun App(
                                 LibraryTwoPane(
                                     list = libraryList,
                                     editor = libraryEditor,
-                                    onMenu = { coroutineScope.launch { drawerState.open() } },
-                                    onSettings = { showSettings = true },
+                                    onMenu = paneMenu,
+                                    onSettings = paneSettings,
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             } else {
@@ -1190,13 +1204,26 @@ fun App(
                             selectedTab = selectedTab,
                             tabs = tabs,
                             onTabSelected = selectTab,
+                            onMenu = { coroutineScope.launch { drawerState.open() } },
                         )
-                        Column(modifier = Modifier.weight(1f).fillMaxSize()) {
-                            // A split tab hangs a header over each of its panes,
-                            // so the shell stands back. Tabs that have not been
-                            // split yet still get the one bar across the top.
-                            if (!tabDrawsOwnHeader(selectedTab, twoPane)) appHeader()
-                            Box(modifier = Modifier.weight(1f)) { renderTab(selectedTab) }
+                        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                // A split tab hangs a header over each of its panes,
+                                // so the shell stands back. Tabs that have not been
+                                // split yet still get the one bar across the top.
+                                if (!tabDrawsOwnHeader(selectedTab, twoPane)) appHeader()
+                                Box(modifier = Modifier.weight(1f)) { renderTab(selectedTab) }
+                            }
+                            // The one gear for the whole window, in its top-right
+                            // corner, over whichever header happens to be there.
+                            GearButton(
+                                onClick = { showSettings = true },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .statusBarsPadding()
+                                    .padding(top = 14.dp, end = 20.dp)
+                                    .testTag(UiTags.HEADER_SETTINGS),
+                            )
                         }
                     }
                 } else {
@@ -1235,7 +1262,8 @@ fun App(
                             showSettings = false
                             showConnectSetup = true
                         }
-                    }
+                    },
+                    twoPane = twoPane,
                 )
             }
         } // end ModalNavigationDrawer

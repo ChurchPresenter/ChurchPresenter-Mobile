@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import com.church.presenter.churchpresentermobile.model.AppMode
+
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 
@@ -352,6 +354,8 @@ internal object UiTags {
 
     // ── The settings sheet ───────────────────────────────────────────────
     const val SETTINGS_CANCEL = "settings:cancel"
+    const val SETTINGS_BACK = "settings:back"
+    const val SETTINGS_CONNECTION = "settings:connection"
     const val SETTINGS_SAVE = "settings:save"
     const val SETTINGS_ACTIVE_URL = "settings:activeUrl"
     const val SETTINGS_RESET = "settings:reset"
@@ -375,6 +379,14 @@ internal object UiTags {
 
     /** One segment of the mode control (Remote / Standalone). */
     fun settingsMode(index: Int) = "settings:mode:$index"
+
+    /** One entry of the tablet's section list beside the form. */
+    fun settingsSection(section: SettingsSection) = "settings:section:${section.name.lowercase()}"
+
+    // ── The first-run mode picker ────────────────────────────────────────
+    /** One mode's card, on a phone or a tablet. */
+    fun modeCard(mode: AppMode) = "modePicker:${mode.name.lowercase()}"
+    const val MODE_CONTINUE = "modePicker:continue"
 
     const val MODE_SWITCH_CONFIRM = "settings:modeSwitch:confirm"
     const val MODE_SWITCH_CANCEL = "settings:modeSwitch:cancel"

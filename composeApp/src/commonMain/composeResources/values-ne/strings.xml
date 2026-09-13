@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">कुनै अध्याय खुलेको छैन</string>
     <string name="bible_pane_empty_body">पहिले पुस्तक, त्यसपछि अध्याय छान्नुहोस्, त्यसका पद यहाँ देखिनेछन्।</string>
     <string name="bible_chapters_overline">अध्याय</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">रिमोट कन्ट्रोल वा स्ट्यान्डअलोन</string>
+    <string name="settings_section_server_subtitle">होस्ट, पोर्ट र API कुञ्जी</string>
+    <string name="settings_section_computer_subtitle">गीत र बाइबल कहाँबाट प्रतिलिपि हुन्छन्</string>
+    <string name="settings_device_section">यन्त्र</string>
+    <string name="settings_section_device_subtitle">कम्प्युटरमा देखिने नाम</string>
+    <string name="settings_section_appearance_subtitle">थिम</string>
+    <string name="settings_diagnostics_section">निदान</string>
+    <string name="settings_section_diagnostics_subtitle">सर्भर स्थिति र प्रयोग डेटा</string>
+    <string name="settings_about_section">बारेमा</string>
+    <string name="settings_section_about_subtitle">संस्करण र प्रतिलिपि अधिकार</string>
+    <string name="settings_this_device">यो यन्त्र</string>
+    <string name="settings_display_name_hint">प्रश्न ट्याबबाट पठाइएका प्रश्नहरूसँग जोडिन्छ।</string>
+    <string name="settings_theme_title">थिम</string>
+    <string name="settings_connection_status_label">स्थिति</string>
+    <string name="settings_connection_checking">जाँच गर्दै…</string>
+    <string name="settings_connection_connected">जडान भयो</string>
+    <string name="settings_connection_limited">सीमित</string>
+    <string name="settings_connection_unreachable">पहुँच बाहिर</string>
+    <string name="settings_connection_rejected">अस्वीकृत</string>
+    <string name="settings_connection_wrong_server">ChurchPresenter होइन</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">एप संस्करण</string>
+    <string name="settings_server_version">सर्भर संस्करण</string>
+    <string name="settings_status_address_label">ठेगाना</string>
+    <string name="mode_diagram_tablet">ट्याब्लेट</string>
+    <string name="mode_diagram_computer">कम्प्युटर</string>
+    <string name="mode_diagram_screen">स्क्रिन</string>
+    <string name="mode_diagram_tv">टिभी / स्क्रिन</string>
 </resources>

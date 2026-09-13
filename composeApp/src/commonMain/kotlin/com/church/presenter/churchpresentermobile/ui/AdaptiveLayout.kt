@@ -76,6 +76,30 @@ internal val BibleBooksPaneWidth: Dp = 280.dp
 internal val BibleChaptersPaneWidth: Dp = 180.dp
 
 
+/**
+ * Widest the startup status screen's content grows; beyond it the column is
+ * centred. The design draws it at 1000px on a 1366px tablet, with the same
+ * content a phone shows stacked — so the phone layout is simply this column at
+ * a width where nothing sits beside anything.
+ */
+internal val StatusContentMaxWidth: Dp = 1000.dp
+
+/**
+ * Fixed width of the permissions column on the Limited Functionality screen,
+ * beside the two-column grid of issues. Buttons go under the permissions, where
+ * they sit on a phone too.
+ */
+internal val StatusPermissionsPaneWidth: Dp = 400.dp
+
+/** Widest the connected screen's two summary cards, and the Continue under them, grow. */
+internal val StatusSummaryMaxWidth: Dp = 920.dp
+
+/** Widest the Retry / Open Settings pair grows on a connection-error screen. */
+internal val StatusActionsMaxWidth: Dp = 640.dp
+
+/** Fixed width of the Settings section list; the fields take what is left. */
+internal val SettingsSectionPaneWidth: Dp = 330.dp
+
 /** Width of the side rail. Matches the design's 216px at iPad-Pro scale. */
 internal val NavRailWidth: Dp = 216.dp
 

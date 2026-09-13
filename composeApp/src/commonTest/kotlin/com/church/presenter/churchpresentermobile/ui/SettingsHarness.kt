@@ -90,9 +90,42 @@ internal val restrictedDesktop = """
      "permissions":{"canPresent":false,"canAddToSchedule":false,"canUploadFiles":false}}
 """.trimIndent()
 
+/**
+ * A desktop too old to have the status endpoint, identified through `/songs`.
+ *
+ * The one connected-and-fine answer that carries no content lists: the app
+ * knows the desktop is ChurchPresenter and nothing else, so the screen has
+ * permissions to show and no Bibles or song books to list beside them.
+ */
+internal fun olderDesktopStatusVm(settings: AppSettings): StatusViewModel =
+    StatusViewModel(settings) {
+        StatusService(
+            baseUrl = it.apiBaseUrl,
+            apiKey = it.apiKey,
+            deviceId = it.deviceId,
+            client = mockClient { path ->
+                if (path.endsWith("/status")) respond("nope", HttpStatusCode.NotFound)
+                else respond("""{"song-book":[]}""", HttpStatusCode.OK)
+            },
+        )
+    }
+
+/** Content and features to report, but this device may not present — warnings *and* information. */
+internal val restrictedWithContent = """
+    {"appVersion":"1.4.2","endpoints":["songs","bible","schedule"],
+     "bibles":["KJV"],"songbooks":["Hymns"],"features":["qa"],
+     "permissions":{"canPresent":false,"canAddToSchedule":true,"canUploadFiles":true}}
+""".trimIndent()
+
 /** Something answered, but it is not ChurchPresenter. */
 internal const val NOT_CHURCH_PRESENTER = """{"message":"hello from nginx"}"""
 
+/**
+ * Opens the sheet on [section]'s page — the server page unless told otherwise,
+ * since that is where most of these tests type. Pass null to start on the
+ * menu, as the app does on a phone; [openSection] and [backToMenu] then move
+ * between pages the way an operator would.
+ */
 @OptIn(ExperimentalTestApi::class)
 internal fun ComposeUiTest.showSettings(
     settings: AppSettings,
@@ -101,6 +134,8 @@ internal fun ComposeUiTest.showSettings(
     onDismiss: () -> Unit = {},
     onSaved: () -> Unit = {},
     onContact: () -> Unit = {},
+    section: SettingsSection? = SettingsSection.SERVER,
+    twoPane: Boolean = false,
 ) = showScreen {
     SettingsScreen(
         appSettings = settings,
@@ -109,5 +144,33 @@ internal fun ComposeUiTest.showSettings(
         onContact = onContact,
         providedViewModel = viewModel,
         providedStatusViewModel = status,
+        twoPane = twoPane,
+        initialSection = section,
     )
+}
+
+/** Taps [section] in the menu (or, on a tablet, in the list beside the page). */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.openSection(section: SettingsSection) = click(UiTags.settingsSection(section))
+
+/** Taps the back arrow on a phone's page, returning to the menu. */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.backToMenu() = click(UiTags.SETTINGS_BACK)
+
+/** Leaves the page showing for the menu and opens [section] instead. */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.switchTo(section: SettingsSection) {
+    backToMenu()
+    openSection(section)
+}
+
+/**
+ * Cancels the sheet from wherever it is. Cancel is on the menu's header; a
+ * phone's page has the way back to the menu instead, so from a page this is
+ * two taps — the same two the operator makes.
+ */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.cancelSheet() {
+    if (exists(UiTags.SETTINGS_BACK)) backToMenu()
+    click(UiTags.SETTINGS_CANCEL)
 }

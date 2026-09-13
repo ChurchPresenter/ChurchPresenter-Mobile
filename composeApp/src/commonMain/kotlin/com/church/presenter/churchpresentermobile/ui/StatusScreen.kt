@@ -3,16 +3,21 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,12 +47,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.util.appVersion
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -106,12 +112,16 @@ import org.jetbrains.compose.resources.stringResource
  * @param viewModel      The [StatusViewModel] that owns the network call.
  * @param onContinue     Called when the user (or the auto-advance timer) dismisses the screen.
  * @param onOpenSettings Called when the user taps "Open Settings" from the error state.
+ * @param twoPane        Lay the cards out side by side rather than stacked — the
+ *   tablet arrangement, see [usesTwoPaneLayout]. The content is the same either
+ *   way; only where it sits changes.
  */
 @Composable
 fun StatusScreen(
     viewModel: StatusViewModel,
     onContinue: () -> Unit,
     onOpenSettings: () -> Unit,
+    twoPane: Boolean = false,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -127,60 +137,86 @@ fun StatusScreen(
         }
     }
 
-    Scaffold { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            when (val state = uiState) {
-                is StatusUiState.Loading -> LoadingContent(onOpenSettings = onOpenSettings)
-                is StatusUiState.Error   -> ErrorContent(
-                    title          = stringResource(Res.string.status_error_title),
-                    message        = state.message,
-                    onRetry        = { viewModel.recheck() },
+    val metrics = if (twoPane) StatusMetrics.Tablet else StatusMetrics.Phone
+    CompositionLocalProvider(LocalStatusMetrics provides metrics) {
+        Scaffold { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                StatusContent(
+                    state = uiState,
+                    onRetry = { viewModel.recheck() },
+                    onContinue = onContinue,
+                    onOpenSettings = onOpenSettings,
+                    sideBySide = twoPane,
+                )
+            }
+        }
+    }
+}
+
+/** One of the five states, as its own content. */
+@Composable
+private fun StatusContent(
+    state: StatusUiState,
+    onRetry: () -> Unit,
+    onContinue: () -> Unit,
+    onOpenSettings: () -> Unit,
+    sideBySide: Boolean,
+) {
+    when (state) {
+        is StatusUiState.Loading -> LoadingContent(onOpenSettings = onOpenSettings)
+        is StatusUiState.Error   -> ErrorContent(
+            title          = stringResource(Res.string.status_error_title),
+            message        = state.message,
+            onRetry        = onRetry,
+            onContinue     = onContinue,
+            onOpenSettings = onOpenSettings,
+            sideBySide     = sideBySide,
+        )
+        is StatusUiState.Unauthorized -> ErrorContent(
+            title          = stringResource(Res.string.status_unauthorized_title),
+            message        = stringResource(Res.string.status_unauthorized_body),
+            onRetry        = onRetry,
+            onContinue     = onContinue,
+            onOpenSettings = onOpenSettings,
+            sideBySide     = sideBySide,
+        )
+        is StatusUiState.NotChurchPresenter -> ErrorContent(
+            title          = stringResource(Res.string.status_not_churchpresenter_title),
+            message        = stringResource(Res.string.status_not_churchpresenter_body),
+            onRetry        = onRetry,
+            onContinue     = onContinue,
+            onOpenSettings = onOpenSettings,
+            sideBySide     = sideBySide,
+        )
+        is StatusUiState.Success -> {
+            if (state.warnings.isEmpty()) {
+                AllGoodContent(
+                    permissions       = state.status.permissions,
+                    serverVersion     = state.status.appVersion,
+                    bibles            = state.status.bibles,
+                    songbooks         = state.status.songbooks,
+                    endpointAvailable = state.status.endpointAvailable,
+                    onContinue        = onContinue,
+                    sideBySide        = sideBySide,
+                )
+            } else {
+                WarningsContent(
+                    appVersion     = state.status.appVersion,
+                    warnings       = state.warnings,
+                    permissions    = state.status.permissions,
+                    bibles         = state.status.bibles,
+                    songbooks      = state.status.songbooks,
+                    features       = state.status.features,
                     onContinue     = onContinue,
                     onOpenSettings = onOpenSettings,
+                    sideBySide     = sideBySide,
                 )
-                is StatusUiState.Unauthorized -> ErrorContent(
-                    title          = stringResource(Res.string.status_unauthorized_title),
-                    message        = stringResource(Res.string.status_unauthorized_body),
-                    onRetry        = { viewModel.recheck() },
-                    onContinue     = onContinue,
-                    onOpenSettings = onOpenSettings,
-                )
-                is StatusUiState.NotChurchPresenter -> ErrorContent(
-                    title          = stringResource(Res.string.status_not_churchpresenter_title),
-                    message        = stringResource(Res.string.status_not_churchpresenter_body),
-                    onRetry        = { viewModel.recheck() },
-                    onContinue     = onContinue,
-                    onOpenSettings = onOpenSettings,
-                )
-                is StatusUiState.Success -> {
-                    if (state.warnings.isEmpty()) {
-                        AllGoodContent(
-                            permissions       = state.status.permissions,
-                            serverVersion     = state.status.appVersion,
-                            bibles            = state.status.bibles,
-                            songbooks         = state.status.songbooks,
-                            endpointAvailable = state.status.endpointAvailable,
-                            onContinue        = onContinue,
-                        )
-                    } else {
-                        WarningsContent(
-                            appVersion     = state.status.appVersion,
-                            warnings       = state.warnings,
-                            permissions    = state.status.permissions,
-                            bibles         = state.status.bibles,
-                            songbooks      = state.status.songbooks,
-                            features       = state.status.features,
-                            onContinue     = onContinue,
-                            onOpenSettings = onOpenSettings,
-                        )
-                    }
-                }
             }
         }
     }
@@ -219,104 +255,211 @@ private fun LoadingContent(onOpenSettings: () -> Unit) {
     }
 }
 
+/**
+ * The hero at the top of a connected or limited screen: an icon in a tinted
+ * circle, the title, and a line of small print under it.
+ */
 @Composable
-private fun AllGoodContent(
-    permissions: DevicePermissions = DevicePermissions(),
-    serverVersion: String? = null,
-    bibles: List<String> = emptyList(),
-    songbooks: List<String> = emptyList(),
-    endpointAvailable: Boolean = true,
-    onContinue: () -> Unit = {},
+private fun StatusHeading(
+    icon: ImageVector,
+    circle: Color,
+    tint: Color,
+    title: String,
+    subtitle: String?,
 ) {
     val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(m.hero.circle)
+                .clip(CircleShape)
+                .background(circle),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(m.hero.glyph),
+            )
+        }
+        Spacer(Modifier.height(m.hero.gapAfterIcon))
+        Text(
+            text = title,
+            fontSize = m.hero.title,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = (-0.025).em,
+            color = colors.text,
+            textAlign = TextAlign.Center,
+        )
+        if (subtitle != null) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = subtitle,
+                fontSize = m.hero.subtitle,
+                color = colors.muted,
+            )
+        }
+    }
+}
+
+/**
+ * @param sideBySide The permissions and the content summary as two cards in a
+ *   row rather than one under the other. Both cards are the same composables
+ *   either way; the row only appears where there is room for it.
+ */
+@Composable
+private fun AllGoodContent(
+    permissions: DevicePermissions,
+    serverVersion: String?,
+    bibles: List<String>,
+    songbooks: List<String>,
+    endpointAvailable: Boolean,
+    onContinue: () -> Unit,
+    sideBySide: Boolean,
+) {
+    val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    val hasContent = bibles.isNotEmpty() || songbooks.isNotEmpty()
+    val scroll = rememberScrollState()
+    // The scroll — and its thumb — span the window; only the content is capped,
+    // so the thumb sits at the screen's edge rather than over the cards.
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .testTag(UiTags.STATUS_ALL_GOOD)
-            .verticalScroll(rememberScrollState()),
+            .verticalScrollbar(scroll)
+            .verticalScroll(scroll),
     ) {
-        Spacer(Modifier.height(24.dp))
-        // 72×72 accent-tint circle + checkmark
-        Box(
-            modifier = Modifier
-                .size(72.dp)
-                .clip(CircleShape)
-                .background(colors.accentTint),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = null,
+        CappedColumn {
+            Spacer(Modifier.height(24.dp))
+            StatusHeading(
+                icon = Icons.Filled.Check,
+                circle = colors.accentTint,
                 tint = colors.accent,
-                modifier = Modifier.size(36.dp),
+                title = stringResource(Res.string.status_connected),
+                subtitle = stringResource(Res.string.status_version_line, serverVersion ?: "—", appVersion),
             )
+            if (!endpointAvailable) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(Res.string.status_endpoint_unavailable),
+                    fontSize = m.hero.subtitle,
+                    color = colors.muted,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Spacer(Modifier.height(m.hero.gapAfter))
+            if (sideBySide) {
+                Row(
+                    modifier = Modifier.widthIn(max = StatusSummaryMaxWidth).height(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    PermissionsSummaryCard(permissions, modifier = Modifier.weight(1f).fillMaxHeight())
+                    if (hasContent) {
+                        ContentSummaryCard(
+                            bibles = bibles,
+                            songbooks = songbooks,
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                    }
+                }
+                Spacer(Modifier.height(22.dp))
+                // The design's tablet Continue is the accent-filled bar the warnings
+                // screen already uses, rather than the phone's outlined one.
+                PrimaryButton(
+                    label = stringResource(Res.string.status_continue),
+                    icon = Icons.Filled.CheckCircle,
+                    onClick = onContinue,
+                    modifier = Modifier.widthIn(max = StatusSummaryMaxWidth).testTag(UiTags.STATUS_CONTINUE),
+                )
+            } else {
+                PermissionsSummaryCard(permissions)
+                if (hasContent) {
+                    Spacer(Modifier.height(12.dp))
+                    ContentSummaryCard(bibles = bibles, songbooks = songbooks)
+                }
+                Spacer(Modifier.height(20.dp))
+                OutlineActionButton(
+                    modifier = Modifier.testTag(UiTags.STATUS_CONTINUE),
+                    label = stringResource(Res.string.status_continue),
+                    icon = Icons.Filled.CheckCircle,
+                    onClick = onContinue,
+                )
+            }
+            Spacer(Modifier.height(24.dp))
         }
-        Spacer(Modifier.height(20.dp))
-        Text(
-            text = stringResource(Res.string.status_connected),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = (-0.025).em,
-            color = colors.text,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = stringResource(Res.string.status_version_line, serverVersion ?: "—", appVersion),
-            fontSize = 13.sp,
-            color = colors.muted,
-        )
-        if (!endpointAvailable) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.status_endpoint_unavailable),
-                fontSize = 12.sp,
-                color = colors.muted,
-                textAlign = TextAlign.Center,
-            )
-        }
-        Spacer(Modifier.height(28.dp))
-        PermissionsSummaryCard(permissions)
-        if (bibles.isNotEmpty() || songbooks.isNotEmpty()) {
-            Spacer(Modifier.height(12.dp))
-            ContentSummaryCard(bibles = bibles, songbooks = songbooks)
-        }
-        Spacer(Modifier.height(20.dp))
-        OutlineActionButton(
-            modifier = Modifier.testTag(UiTags.STATUS_CONTINUE),
-            label = stringResource(Res.string.status_continue),
-            icon = Icons.Filled.CheckCircle,
-            onClick = onContinue,
-        )
-        Spacer(Modifier.height(24.dp))
     }
+}
+
+/**
+ * The readable column every state's content sits in, centred in whatever is
+ * wider. Capped on every window, not only a tablet's: a phone is narrower than
+ * the cap, so nothing changes there, and a wide browser window gets a column
+ * instead of cards stretched across it.
+ */
+@Composable
+private fun CappedColumn(content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.widthIn(max = StatusContentMaxWidth),
+        content = content,
+    )
 }
 
 @Composable
-private fun ContentSummaryCard(bibles: List<String>, songbooks: List<String>) {
+private fun ContentSummaryCard(
+    bibles: List<String>,
+    songbooks: List<String>,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
-            .background(colors.surface)
-            .border(1.dp, colors.borderSubtle, androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
-            .padding(horizontal = 18.dp, vertical = 16.dp)
-    ) {
+    val m = LocalStatusMetrics.current
+    SummaryCard(modifier) {
         if (bibles.isNotEmpty()) {
-            Text(stringResource(Res.string.status_info_bibles), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.text)
-            Spacer(Modifier.height(6.dp))
-            bibles.forEach { Text(it, fontSize = 13.sp, color = colors.muted) }
+            Text(
+                stringResource(Res.string.status_info_bibles),
+                fontSize = m.card.title, fontWeight = FontWeight.SemiBold, color = colors.text,
+            )
+            Spacer(Modifier.height(m.card.titleGap))
+            bibles.forEach { Text(it, fontSize = m.row.text, color = colors.muted, lineHeight = m.row.lineHeight) }
         }
         if (songbooks.isNotEmpty()) {
-            if (bibles.isNotEmpty()) Spacer(Modifier.height(12.dp))
-            Text(stringResource(Res.string.status_info_songbooks), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.text)
-            Spacer(Modifier.height(6.dp))
-            songbooks.forEach { Text(it, fontSize = 13.sp, color = colors.muted) }
+            if (bibles.isNotEmpty()) Spacer(Modifier.height(m.card.groupGap))
+            Text(
+                stringResource(Res.string.status_info_songbooks),
+                fontSize = m.card.title, fontWeight = FontWeight.SemiBold, color = colors.text,
+            )
+            Spacer(Modifier.height(m.card.titleGap))
+            songbooks.forEach { Text(it, fontSize = m.row.text, color = colors.muted, lineHeight = m.row.lineHeight) }
         }
     }
 }
 
+/** The bordered surface both summary cards sit on. */
+@Composable
+private fun SummaryCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    val shape = RoundedCornerShape(m.card.radius)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(colors.surface)
+            .border(1.dp, colors.borderSubtle, shape)
+            .padding(horizontal = m.card.paddingHorizontal, vertical = m.card.paddingVertical),
+        content = content,
+    )
+}
+
+/**
+ * @param sideBySide Retry and Open Settings as a pair on one row, capped at
+ *   [StatusActionsMaxWidth], rather than stacked full-width. Two full-width
+ *   buttons across a tablet are a metre of green with a word in the middle.
+ */
 @Composable
 private fun ErrorContent(
     title: String,
@@ -324,55 +467,83 @@ private fun ErrorContent(
     onRetry: () -> Unit,
     onContinue: () -> Unit,
     onOpenSettings: () -> Unit,
+    sideBySide: Boolean,
 ) {
+    val m = LocalStatusMetrics.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.testTag(UiTags.STATUS_ERROR),
+        modifier = Modifier.widthIn(max = StatusContentMaxWidth).testTag(UiTags.STATUS_ERROR),
     ) {
         Icon(
             imageVector = Icons.Filled.Warning,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(56.dp),
+            modifier = Modifier.size(m.hero.errorGlyph),
         )
         Spacer(Modifier.height(16.dp))
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
+            fontSize = m.hero.title,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
         Text(
             text = message,
-            style = MaterialTheme.typography.bodySmall,
+            fontSize = m.hero.subtitle,
+            lineHeight = m.row.lineHeight,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
+            modifier = Modifier.widthIn(max = StatusActionsMaxWidth),
         )
         Spacer(Modifier.height(24.dp))
-        Button(
-            onClick = onRetry,
-            modifier = Modifier.fillMaxWidth().testTag(UiTags.STATUS_RETRY),
-        ) {
-            Text(stringResource(Res.string.status_retry))
+        val retry: @Composable (Modifier) -> Unit = { modifier ->
+            Button(
+                onClick = onRetry,
+                shape = RoundedCornerShape(m.button.radius),
+                modifier = modifier.height(m.button.height).testTag(UiTags.STATUS_RETRY),
+            ) {
+                Text(stringResource(Res.string.status_retry), fontSize = m.button.text)
+            }
         }
-        Spacer(Modifier.height(8.dp))
-        OutlinedButton(
-            onClick = onOpenSettings,
-            modifier = Modifier.fillMaxWidth().testTag(UiTags.STATUS_OPEN_SETTINGS),
-        ) {
-            Text(stringResource(Res.string.status_open_settings))
+        val openSettings: @Composable (Modifier) -> Unit = { modifier ->
+            OutlinedButton(
+                onClick = onOpenSettings,
+                shape = RoundedCornerShape(m.button.radius),
+                modifier = modifier.height(m.button.height).testTag(UiTags.STATUS_OPEN_SETTINGS),
+            ) {
+                Text(stringResource(Res.string.status_open_settings), fontSize = m.button.text)
+            }
+        }
+        if (sideBySide) {
+            Row(
+                modifier = Modifier.widthIn(max = StatusActionsMaxWidth),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                retry(Modifier.weight(1f))
+                openSettings(Modifier.weight(1f))
+            }
+        } else {
+            retry(Modifier.fillMaxWidth())
+            Spacer(Modifier.height(8.dp))
+            openSettings(Modifier.fillMaxWidth())
         }
         Spacer(Modifier.height(8.dp))
         TextButton(
             onClick = onContinue,
             modifier = Modifier.testTag(UiTags.STATUS_CONTINUE),
         ) {
-            Text(stringResource(Res.string.status_continue_anyway))
+            Text(stringResource(Res.string.status_continue_anyway), fontSize = m.button.text)
         }
     }
 }
 
+/**
+ * @param sideBySide The permissions card and the buttons in a fixed-width
+ *   column on the left, the issues in a two-column grid filling the right —
+ *   rather than everything in one stack. The same cards; only the arrangement
+ *   and the number of columns change.
+ */
 @Composable
 private fun WarningsContent(
     appVersion: String?,
@@ -383,231 +554,275 @@ private fun WarningsContent(
     features: List<String>,
     onContinue: () -> Unit,
     onOpenSettings: () -> Unit,
+    sideBySide: Boolean,
 ) {
     val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    val scroll = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .testTag(UiTags.STATUS_WARNINGS)
-            .verticalScroll(rememberScrollState()),
+            .verticalScrollbar(scroll)
+            .verticalScroll(scroll),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(16.dp))
-        // Lilac warning triangle inside a tinted circle
-        Box(
-            modifier = Modifier
-                .size(72.dp)
-                .clip(CircleShape)
-                .background(colors.warningTint),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Warning,
-                contentDescription = null,
+        CappedColumn {
+            Spacer(Modifier.height(16.dp))
+            StatusHeading(
+                icon = Icons.Filled.Warning,
+                circle = colors.warningTint,
                 tint = colors.warning,
-                modifier = Modifier.size(36.dp),
+                title = stringResource(Res.string.status_limited_functionality),
+                subtitle = appVersion?.let { stringResource(Res.string.status_server_version, it) },
             )
+            Spacer(Modifier.height(m.hero.gapAfter))
+            if (sideBySide) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(26.dp)) {
+                    Column(modifier = Modifier.width(StatusPermissionsPaneWidth)) {
+                        PermissionsSummaryCard(permissions)
+                        Spacer(Modifier.height(20.dp))
+                        WarningsActions(onContinue = onContinue, onOpenSettings = onOpenSettings)
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        WarningsList(warnings, bibles, songbooks, features, columns = 2)
+                    }
+                }
+            } else {
+                PermissionsSummaryCard(permissions)
+                Spacer(Modifier.height(20.dp))
+                WarningsList(warnings, bibles, songbooks, features, columns = 1)
+                Spacer(Modifier.height(16.dp))
+                WarningsActions(onContinue = onContinue, onOpenSettings = onOpenSettings)
+            }
+            Spacer(Modifier.height(16.dp))
         }
-        Spacer(Modifier.height(16.dp))
-        Text(
-            text = stringResource(Res.string.status_limited_functionality),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = (-0.025).em,
-            color = colors.text,
-            textAlign = TextAlign.Center,
-        )
-        if (appVersion != null) {
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = stringResource(Res.string.status_server_version, appVersion),
-                fontSize = 13.sp,
-                color = colors.muted,
-            )
-        }
-        Spacer(Modifier.height(24.dp))
-        PermissionsSummaryCard(permissions)
-        Spacer(Modifier.height(20.dp))
-        Text(
-            text = stringResource(Res.string.status_issues_detected),
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center,
-            color = colors.muted,
-            lineHeight = (13 * 1.5).sp,
-        )
-        Spacer(Modifier.height(12.dp))
-        warnings.forEach { warning ->
-            WarningCard(warning)
-            Spacer(Modifier.height(8.dp))
-        }
-        if (bibles.isNotEmpty()) {
-            InfoCard(
-                icon  = Icons.Filled.Info,
-                title = stringResource(Res.string.status_info_bibles),
-                body  = bibles.joinToString(", "),
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-        if (songbooks.isNotEmpty()) {
-            InfoCard(
-                icon  = Icons.Filled.Info,
-                title = stringResource(Res.string.status_info_songbooks),
-                body  = songbooks.joinToString(", "),
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-        if (features.isNotEmpty()) {
-            InfoCard(
-                icon  = Icons.Filled.Info,
-                title = stringResource(Res.string.status_info_features),
-                body  = features.joinToString(", "),
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-        Spacer(Modifier.height(16.dp))
-        // Primary Continue + subtle Open Settings, in the redesign palette
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .testTag(UiTags.STATUS_CONTINUE)
-                .clip(RoundedCornerShape(13.dp))
-                .background(colors.accent)
-                .clickable(onClick = onContinue),
-            contentAlignment = Alignment.Center,
+    }
+}
+
+/**
+ * The "issues detected" line, one card per warning, and the informational
+ * cards after them.
+ *
+ * @param columns How many warning cards share a row. One on a phone; two in the
+ *   tablet's right-hand pane, where the cards in a row are stretched to the
+ *   same height so the grid reads as a grid.
+ */
+@Composable
+private fun WarningsList(
+    warnings: List<StatusWarning>,
+    bibles: List<String>,
+    songbooks: List<String>,
+    features: List<String>,
+    columns: Int,
+) {
+    val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    Text(
+        text = stringResource(Res.string.status_issues_detected),
+        fontSize = m.row.text,
+        textAlign = if (columns > 1) TextAlign.Start else TextAlign.Center,
+        color = colors.muted,
+        lineHeight = m.row.lineHeight,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(12.dp))
+    warnings.chunked(columns).forEach { row ->
+        Row(
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+            horizontalArrangement = Arrangement.spacedBy(m.noticeGap),
         ) {
-            Text(
-                stringResource(Res.string.status_continue),
-                color = colors.onAccent,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
+            // A lone last card takes the whole row, like the cards above it.
+            row.forEach { warning -> WarningCard(warning, modifier = Modifier.weight(1f).fillMaxHeight()) }
         }
-        Spacer(Modifier.height(6.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .testTag(UiTags.STATUS_OPEN_SETTINGS)
-                .clip(RoundedCornerShape(13.dp))
-                .clickable(onClick = onOpenSettings),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                stringResource(Res.string.status_open_settings),
-                color = colors.muted,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-            )
+        Spacer(Modifier.height(m.noticeGap))
+    }
+    if (bibles.isNotEmpty()) {
+        InfoCard(
+            icon  = Icons.Filled.Info,
+            title = stringResource(Res.string.status_info_bibles),
+            body  = bibles.joinToString(", "),
+        )
+        Spacer(Modifier.height(m.noticeGap))
+    }
+    if (songbooks.isNotEmpty()) {
+        InfoCard(
+            icon  = Icons.Filled.Info,
+            title = stringResource(Res.string.status_info_songbooks),
+            body  = songbooks.joinToString(", "),
+        )
+        Spacer(Modifier.height(m.noticeGap))
+    }
+    if (features.isNotEmpty()) {
+        InfoCard(
+            icon  = Icons.Filled.Info,
+            title = stringResource(Res.string.status_info_features),
+            body  = features.joinToString(", "),
+        )
+        Spacer(Modifier.height(m.noticeGap))
+    }
+}
+
+/** Primary Continue + subtle Open Settings, in the redesign palette. */
+@Composable
+private fun WarningsActions(onContinue: () -> Unit, onOpenSettings: () -> Unit) {
+    val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    PrimaryButton(
+        label = stringResource(Res.string.status_continue),
+        onClick = onContinue,
+        modifier = Modifier.testTag(UiTags.STATUS_CONTINUE),
+    )
+    Spacer(Modifier.height(if (m.button.outlineQuiet) 12.dp else 6.dp))
+    val shape = RoundedCornerShape(m.button.radius)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(m.button.height)
+            .testTag(UiTags.STATUS_OPEN_SETTINGS)
+            .clip(shape)
+            .then(if (m.button.outlineQuiet) Modifier.border(1.dp, colors.borderSubtle, shape) else Modifier)
+            .clickable(onClick = onOpenSettings),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            stringResource(Res.string.status_open_settings),
+            color = if (m.button.outlineQuiet) colors.text else colors.muted,
+            fontSize = m.button.text,
+            fontWeight = FontWeight.Medium,
+        )
+    }
+}
+
+/** The accent-filled bar that is this screen's primary action. */
+@Composable
+private fun PrimaryButton(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+) {
+    val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(m.button.height)
+            .clip(RoundedCornerShape(m.button.radius))
+            .background(colors.accent)
+            .clickable(onClick = onClick),
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (icon != null) {
+            Icon(icon, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(m.row.icon))
         }
-        Spacer(Modifier.height(16.dp))
+        Text(label, color = colors.onAccent, fontSize = m.button.text, fontWeight = FontWeight.SemiBold)
     }
 }
 
 @Composable
-private fun WarningCard(warning: StatusWarning) {
+private fun WarningCard(warning: StatusWarning, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     val (icon, title, body) = warningDetails(warning)
+    NoticeCard(icon = icon, title = title, body = body, tint = colors.danger, modifier = modifier)
+}
+
+@Composable
+private fun InfoCard(icon: ImageVector, title: String, body: String) {
+    val colors = LocalAppColors.current
+    NoticeCard(icon = icon, title = title, body = body, tint = colors.amber)
+}
+
+/** Line height of a notice's body, as a multiple of its type size — the design's 1.55. */
+private const val NOTICE_LINE_HEIGHT = 1.55f
+
+/** A tinted, bordered notice: an icon, a bold title, and a line or two under it. */
+@Composable
+private fun NoticeCard(
+    icon: ImageVector,
+    title: String,
+    body: String,
+    tint: Color,
+    modifier: Modifier = Modifier,
+) {
+    val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
+    val shape = RoundedCornerShape(m.notice.radius)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(colors.danger.copy(alpha = 0.10f))
-            .border(1.dp, colors.danger.copy(alpha = 0.30f), RoundedCornerShape(14.dp))
-            .padding(14.dp),
+            .clip(shape)
+            .background(tint.copy(alpha = 0.10f))
+            .border(1.dp, tint.copy(alpha = 0.30f), shape)
+            .padding(m.notice.padding),
         verticalAlignment = Alignment.Top,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = colors.danger,
-            modifier = Modifier.size(20.dp),
+            tint = tint,
+            modifier = Modifier.size(m.notice.icon),
         )
         Spacer(Modifier.width(12.dp))
         Column {
-            Text(title, color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(2.dp))
-            Text(body, color = colors.muted, fontSize = 12.sp, lineHeight = (12 * 1.5).sp)
+            Text(title, color = colors.text, fontSize = m.notice.title, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(m.notice.titleGap))
+            Text(body, color = colors.muted, fontSize = m.notice.body, lineHeight = m.notice.body * NOTICE_LINE_HEIGHT)
         }
     }
 }
 
 @Composable
-private fun PermissionsSummaryCard(permissions: DevicePermissions) {
+private fun PermissionsSummaryCard(permissions: DevicePermissions, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
-            .background(colors.surface)
-            .border(1.dp, colors.borderSubtle, androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
-            .padding(horizontal = 18.dp, vertical = 16.dp)
-    ) {
+    val m = LocalStatusMetrics.current
+    SummaryCard(modifier) {
         Text(
             text = stringResource(Res.string.status_permissions_title),
-            fontSize = 13.sp,
+            fontSize = m.card.title,
             fontWeight = FontWeight.SemiBold,
             color = colors.text,
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(m.card.titleGap))
         PermissionRow(label = stringResource(Res.string.status_permission_present),  granted = permissions.canPresent)
-        Spacer(Modifier.height(10.dp))
-        PermissionRow(label = stringResource(Res.string.status_permission_schedule), granted = permissions.canAddToSchedule)
-        Spacer(Modifier.height(10.dp))
-        PermissionRow(label = stringResource(Res.string.status_permission_upload),   granted = permissions.canUploadFiles)
+        Spacer(Modifier.height(m.row.gap))
+        PermissionRow(
+            label = stringResource(Res.string.status_permission_schedule),
+            granted = permissions.canAddToSchedule,
+        )
+        Spacer(Modifier.height(m.row.gap))
+        PermissionRow(
+            label = stringResource(Res.string.status_permission_upload),
+            granted = permissions.canUploadFiles,
+        )
     }
 }
 
 @Composable
 private fun PermissionRow(label: String, granted: Boolean) {
     val colors = LocalAppColors.current
+    val m = LocalStatusMetrics.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = if (granted) Icons.Filled.CheckCircle else Icons.Filled.Warning,
             contentDescription = null,
             tint = if (granted) colors.accent else colors.danger,
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(m.row.icon),
         )
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(m.row.iconGap))
         Text(
             text = label,
-            fontSize = 13.sp,
+            fontSize = m.row.text,
             color = if (granted) colors.text else colors.danger,
             modifier = Modifier.weight(1f),
         )
         Text(
             text = if (granted) "true" else "false",
-            fontSize = 12.sp,
+            fontSize = m.row.value,
             fontWeight = FontWeight.SemiBold,
             color = if (granted) colors.accent else colors.danger,
         )
-    }
-}
-
-@Composable
-private fun InfoCard(icon: ImageVector, title: String, body: String) {
-    val colors = LocalAppColors.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(colors.amber.copy(alpha = 0.10f))
-            .border(1.dp, colors.amber.copy(alpha = 0.30f), RoundedCornerShape(14.dp))
-            .padding(14.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = colors.amber,
-            modifier = Modifier.size(20.dp),
-        )
-        Spacer(Modifier.width(12.dp))
-        Column {
-            Text(title, color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(2.dp))
-            Text(body, color = colors.muted, fontSize = 12.sp, lineHeight = (12 * 1.5).sp)
-        }
     }
 }
 

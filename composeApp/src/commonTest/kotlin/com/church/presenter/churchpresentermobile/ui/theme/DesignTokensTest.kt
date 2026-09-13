@@ -53,7 +53,6 @@ class DesignTokensTest {
         "taglineConnect" to c.taglineConnect,
         "taglineDot" to c.taglineDot,
         "splashTitle" to c.splashTitle,
-        "splashGlow" to c.splashGlow,
         "scheduleSongFg" to c.scheduleSongFg,
         "scheduleSongBg" to c.scheduleSongBg,
         "scheduleBibleFg" to c.scheduleBibleFg,

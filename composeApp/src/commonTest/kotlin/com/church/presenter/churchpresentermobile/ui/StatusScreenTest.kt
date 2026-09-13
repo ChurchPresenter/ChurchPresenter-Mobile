@@ -143,6 +143,27 @@ class StatusScreenTest {
         assertTrue(isShowing("Hymns"))
     }
 
+    @Test
+    fun anOlderDesktopIsAllGoodWithNothingToList() = runComposeUiTest {
+        // Too old for the status endpoint, so no content to list and a note
+        // saying why — but reached and identified, which is what matters.
+        showStatus(olderDesktopStatusVm(AppSettings(InMemorySettingsStorage())))
+
+        awaitThat { exists(UiTags.STATUS_ALL_GOOD) }
+        assertFalse(isShowing("KJV"))
+    }
+
+    @Test
+    fun aRestrictedDesktopStillListsWhatItHas() = runComposeUiTest {
+        // The warning about the permission sits above the content it does have.
+        showStatus(statusVm(restrictedWithContent))
+
+        awaitThat { exists(UiTags.STATUS_WARNINGS) }
+        assertTrue(isShowing("KJV"))
+        assertTrue(isShowing("Hymns"))
+        assertTrue(isShowing("qa"))
+    }
+
     // ── Reachable, but restricted ────────────────────────────────────────
 
     @Test

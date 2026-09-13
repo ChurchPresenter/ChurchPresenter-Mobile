@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Nav atvērta neviena nodaļa</string>
     <string name="bible_pane_empty_body">Izvēlieties grāmatu, pēc tam nodaļu, un tās panti parādīsies šeit.</string>
     <string name="bible_chapters_overline">Nodaļa</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Tālvadība vai autonoms</string>
+    <string name="settings_section_server_subtitle">Resursdators, ports un API atslēga</string>
+    <string name="settings_section_computer_subtitle">No kurienes kopē dziesmas un Bībeles</string>
+    <string name="settings_device_section">Ierīce</string>
+    <string name="settings_section_device_subtitle">Datorā rādītais nosaukums</string>
+    <string name="settings_section_appearance_subtitle">Motīvs</string>
+    <string name="settings_diagnostics_section">Diagnostika</string>
+    <string name="settings_section_diagnostics_subtitle">Servera statuss un lietošanas dati</string>
+    <string name="settings_about_section">Par</string>
+    <string name="settings_section_about_subtitle">Versija un autortiesības</string>
+    <string name="settings_this_device">Šī ierīce</string>
+    <string name="settings_display_name_hint">Pievieno jautājumiem, ko sūtāt no cilnes Jautājumi.</string>
+    <string name="settings_theme_title">Motīvs</string>
+    <string name="settings_connection_status_label">Statuss</string>
+    <string name="settings_connection_checking">Pārbauda…</string>
+    <string name="settings_connection_connected">Savienots</string>
+    <string name="settings_connection_limited">Ierobežots</string>
+    <string name="settings_connection_unreachable">Nav sasniedzams</string>
+    <string name="settings_connection_rejected">Noraidīts</string>
+    <string name="settings_connection_wrong_server">Nav ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Lietotnes versija</string>
+    <string name="settings_server_version">Servera versija</string>
+    <string name="settings_status_address_label">Adrese</string>
+    <string name="mode_diagram_tablet">Planšete</string>
+    <string name="mode_diagram_computer">Dators</string>
+    <string name="mode_diagram_screen">Ekrāns</string>
+    <string name="mode_diagram_tv">TV / ekrāns</string>
 </resources>

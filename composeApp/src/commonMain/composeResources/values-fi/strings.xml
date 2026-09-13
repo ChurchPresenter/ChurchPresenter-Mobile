@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Ei avattua lukua</string>
     <string name="bible_pane_empty_body">Valitse kirja ja sitten luku, niin sen jakeet näkyvät tässä.</string>
     <string name="bible_chapters_overline">Luku</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Kauko-ohjaus tai itsenäinen</string>
+    <string name="settings_section_server_subtitle">Isäntä, portti ja API-avain</string>
+    <string name="settings_section_computer_subtitle">Mistä laulut ja Raamatut kopioidaan</string>
+    <string name="settings_device_section">Laite</string>
+    <string name="settings_section_device_subtitle">Tietokoneella näytettävä nimi</string>
+    <string name="settings_section_appearance_subtitle">Teema</string>
+    <string name="settings_diagnostics_section">Diagnostiikka</string>
+    <string name="settings_section_diagnostics_subtitle">Palvelimen tila ja käyttötiedot</string>
+    <string name="settings_about_section">Tietoja</string>
+    <string name="settings_section_about_subtitle">Versio ja tekijänoikeus</string>
+    <string name="settings_this_device">Tämä laite</string>
+    <string name="settings_display_name_hint">Liitetään Kysymykset-välilehdeltä lähetettyihin kysymyksiin.</string>
+    <string name="settings_theme_title">Teema</string>
+    <string name="settings_connection_status_label">Tila</string>
+    <string name="settings_connection_checking">Tarkistetaan…</string>
+    <string name="settings_connection_connected">Yhdistetty</string>
+    <string name="settings_connection_limited">Rajoitettu</string>
+    <string name="settings_connection_unreachable">Ei tavoitettavissa</string>
+    <string name="settings_connection_rejected">Hylätty</string>
+    <string name="settings_connection_wrong_server">Ei ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Sovelluksen versio</string>
+    <string name="settings_server_version">Palvelimen versio</string>
+    <string name="settings_status_address_label">Osoite</string>
+    <string name="mode_diagram_tablet">Tabletti</string>
+    <string name="mode_diagram_computer">Tietokone</string>
+    <string name="mode_diagram_screen">Näyttö</string>
+    <string name="mode_diagram_tv">TV / näyttö</string>
 </resources>

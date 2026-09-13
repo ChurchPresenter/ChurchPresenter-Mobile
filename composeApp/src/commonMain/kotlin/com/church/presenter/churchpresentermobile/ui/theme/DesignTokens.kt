@@ -15,6 +15,28 @@ import androidx.compose.ui.unit.dp
  * precise dark/light value without going through Material's [androidx.compose.material3.ColorScheme],
  * which cannot express the semi-transparent surface/border layers this design relies on.
  */
+/**
+ * One gradient layer of the splash's field: its colours, and where each sits
+ * between the centre (0f) and the edge (1f).
+ */
+@Immutable
+data class SplashLayer(val stops: List<Float>, val colors: List<Color>)
+
+/**
+ * The three gradient layers behind the splash.
+ *
+ * The design draws the splash as a *field*, not a tile: an elliptical ambient
+ * wash the size of the screen, a soft circular glow at the cross, and a
+ * vertical wash over both. Nothing has an edge to show, whatever the screen's
+ * size or density.
+ */
+@Immutable
+data class SplashField(
+    val ambient: SplashLayer,
+    val core: SplashLayer,
+    val wash: SplashLayer,
+)
+
 @Immutable
 data class AppColors(
     val isDark: Boolean,
@@ -64,7 +86,7 @@ data class AppColors(
     val taglineConnect: Color,
     val taglineDot: Color,
     val splashTitle: Color,
-    val splashGlow: Color,
+    val splashField: SplashField,
     // Schedule item type colors
     val scheduleSongFg: Color,
     val scheduleSongBg: Color,
@@ -108,7 +130,23 @@ private val DarkAppColors = AppColors(
     taglineConnect = Color(0xFFE0B968),
     taglineDot = Color(0xFF3F3F46),
     splashTitle = Color(0xFFFAFAFA),
-    splashGlow = Color(0x2E86EFAC),       // rgba(134,239,172,.18)
+    splashField = SplashField(
+        // radial-gradient(115% 78% at 50% 34%, #1b3a29 0%, #12241b 32%, #0c1411 58%, #080b0a 100%)
+        ambient = SplashLayer(
+            stops = listOf(0f, 0.32f, 0.58f, 1f),
+            colors = listOf(Color(0xFF1B3A29), Color(0xFF12241B), Color(0xFF0C1411), Color(0xFF080B0A)),
+        ),
+        // radial-gradient(circle at 50% 40%, accent .30 0%, .14 30%, .05 52%, transparent 72%)
+        core = SplashLayer(
+            stops = listOf(0f, 0.30f, 0.52f, 0.72f),
+            colors = listOf(Color(0x4D86EFAC), Color(0x246EE7A7), Color(0x0D4EBE8C), Color.Transparent),
+        ),
+        // linear-gradient(180deg, accent .05 0%, transparent 42%, black .28 100%)
+        wash = SplashLayer(
+            stops = listOf(0f, 0.42f, 1f),
+            colors = listOf(Color(0x0D86EFAC), Color.Transparent, Color(0x47000000)),
+        ),
+    ),
     scheduleSongFg = Color(0xFF818CF8),
     scheduleSongBg = Color(0xFF1E1B4B),
     scheduleBibleFg = Color(0xFF60A5FA),
@@ -153,7 +191,23 @@ private val LightAppColors = AppColors(
     taglineConnect = Color(0xFFB4781E),
     taglineDot = Color(0x591E3A8A),       // rgba(30,58,138,.35)
     splashTitle = Color(0xFF1E3A8A),
-    splashGlow = Color(0x66FFFFFF),       // soft neutral halo (drop-shadow lift)
+    splashField = SplashField(
+        // radial-gradient(118% 80% at 50% 30%, #ffffff 0%, #e8f0fb 26%, #d2e0f6 56%, #c0d2f0 100%)
+        ambient = SplashLayer(
+            stops = listOf(0f, 0.26f, 0.56f, 1f),
+            colors = listOf(Color(0xFFFFFFFF), Color(0xFFE8F0FB), Color(0xFFD2E0F6), Color(0xFFC0D2F0)),
+        ),
+        // radial-gradient(circle at 50% 40%, white .95, (232,241,255,.6) 32%, (190,214,248,.22) 56%, transparent 76%)
+        core = SplashLayer(
+            stops = listOf(0f, 0.32f, 0.56f, 0.76f),
+            colors = listOf(Color(0xF2FFFFFF), Color(0x99E8F1FF), Color(0x38BED6F8), Color.Transparent),
+        ),
+        // linear-gradient(180deg, white .55 0%, transparent 46%, (150,180,230,.18) 100%)
+        wash = SplashLayer(
+            stops = listOf(0f, 0.46f, 1f),
+            colors = listOf(Color(0x8CFFFFFF), Color.Transparent, Color(0x2E96B4E6)),
+        ),
+    ),
     scheduleSongFg = Color(0xFF6366F1),
     scheduleSongBg = Color(0xFFE0E7FF),
     scheduleBibleFg = Color(0xFF2563EB),

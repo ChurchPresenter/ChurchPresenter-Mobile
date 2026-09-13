@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Ешқандай тарау ашылмаған</string>
     <string name="bible_pane_empty_body">Кітапты, содан кейін тарауды таңдаңыз — оның аяттары осында шығады.</string>
     <string name="bible_chapters_overline">Тарау</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Қашықтан басқару немесе автономды</string>
+    <string name="settings_section_server_subtitle">Хост, порт және API кілті</string>
+    <string name="settings_section_computer_subtitle">Әндер мен Киелі кітаптар қайдан көшіріледі</string>
+    <string name="settings_device_section">Құрылғы</string>
+    <string name="settings_section_device_subtitle">Компьютерде көрсетілетін атау</string>
+    <string name="settings_section_appearance_subtitle">Тақырып</string>
+    <string name="settings_diagnostics_section">Диагностика</string>
+    <string name="settings_section_diagnostics_subtitle">Сервер күйі және пайдалану деректері</string>
+    <string name="settings_about_section">Қолданба туралы</string>
+    <string name="settings_section_about_subtitle">Нұсқа және авторлық құқық</string>
+    <string name="settings_this_device">Осы құрылғы</string>
+    <string name="settings_display_name_hint">Сұрақтар қойындысынан жіберілген сұрақтарға тіркеледі.</string>
+    <string name="settings_theme_title">Тақырып</string>
+    <string name="settings_connection_status_label">Күй</string>
+    <string name="settings_connection_checking">Тексерілуде…</string>
+    <string name="settings_connection_connected">Қосылды</string>
+    <string name="settings_connection_limited">Шектеулі</string>
+    <string name="settings_connection_unreachable">Қолжетімсіз</string>
+    <string name="settings_connection_rejected">Қабылданбады</string>
+    <string name="settings_connection_wrong_server">ChurchPresenter емес</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Қолданба нұсқасы</string>
+    <string name="settings_server_version">Сервер нұсқасы</string>
+    <string name="settings_status_address_label">Мекенжай</string>
+    <string name="mode_diagram_tablet">Планшет</string>
+    <string name="mode_diagram_computer">Компьютер</string>
+    <string name="mode_diagram_screen">Экран</string>
+    <string name="mode_diagram_tv">ТД / экран</string>
 </resources>

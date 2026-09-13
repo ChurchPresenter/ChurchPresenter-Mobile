@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">कोई अध्याय खुला नहीं</string>
     <string name="bible_pane_empty_body">पहले पुस्तक, फिर अध्याय चुनें, उसके पद यहाँ दिखेंगे।</string>
     <string name="bible_chapters_overline">अध्याय</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">रिमोट कंट्रोल या स्टैंडअलोन</string>
+    <string name="settings_section_server_subtitle">होस्ट, पोर्ट और API कुंजी</string>
+    <string name="settings_section_computer_subtitle">गीत और बाइबल कहाँ से कॉपी होते हैं</string>
+    <string name="settings_device_section">डिवाइस</string>
+    <string name="settings_section_device_subtitle">कंप्यूटर पर दिखने वाला नाम</string>
+    <string name="settings_section_appearance_subtitle">थीम</string>
+    <string name="settings_diagnostics_section">निदान</string>
+    <string name="settings_section_diagnostics_subtitle">सर्वर स्थिति और उपयोग डेटा</string>
+    <string name="settings_about_section">परिचय</string>
+    <string name="settings_section_about_subtitle">संस्करण और कॉपीराइट</string>
+    <string name="settings_this_device">यह डिवाइस</string>
+    <string name="settings_display_name_hint">प्रश्न टैब से भेजे गए प्रश्नों के साथ जुड़ता है।</string>
+    <string name="settings_theme_title">थीम</string>
+    <string name="settings_connection_status_label">स्थिति</string>
+    <string name="settings_connection_checking">जाँच हो रही है…</string>
+    <string name="settings_connection_connected">जुड़ा हुआ</string>
+    <string name="settings_connection_limited">सीमित</string>
+    <string name="settings_connection_unreachable">पहुँच से बाहर</string>
+    <string name="settings_connection_rejected">अस्वीकृत</string>
+    <string name="settings_connection_wrong_server">ChurchPresenter नहीं</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">ऐप संस्करण</string>
+    <string name="settings_server_version">सर्वर संस्करण</string>
+    <string name="settings_status_address_label">पता</string>
+    <string name="mode_diagram_tablet">टैबलेट</string>
+    <string name="mode_diagram_computer">कंप्यूटर</string>
+    <string name="mode_diagram_screen">स्क्रीन</string>
+    <string name="mode_diagram_tv">टीवी / स्क्रीन</string>
 </resources>

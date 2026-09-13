@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Hakuna sura iliyofunguliwa</string>
     <string name="bible_pane_empty_body">Chagua kitabu, kisha sura, na mistari yake itaonekana hapa.</string>
     <string name="bible_chapters_overline">Sura</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Kidhibiti cha mbali au kujitegemea</string>
+    <string name="settings_section_server_subtitle">Mwenyeji, mlango na ufunguo wa API</string>
+    <string name="settings_section_computer_subtitle">Mahali nyimbo na Biblia zinakonakiliwa</string>
+    <string name="settings_device_section">Kifaa</string>
+    <string name="settings_section_device_subtitle">Jina linaloonyeshwa kwenye kompyuta</string>
+    <string name="settings_section_appearance_subtitle">Mandhari</string>
+    <string name="settings_diagnostics_section">Uchunguzi</string>
+    <string name="settings_section_diagnostics_subtitle">Hali ya seva na data ya matumizi</string>
+    <string name="settings_about_section">Kuhusu</string>
+    <string name="settings_section_about_subtitle">Toleo na hakimiliki</string>
+    <string name="settings_this_device">Kifaa hiki</string>
+    <string name="settings_display_name_hint">Huambatishwa kwa maswali unayotuma kutoka kichupo cha Maswali.</string>
+    <string name="settings_theme_title">Mandhari</string>
+    <string name="settings_connection_status_label">Hali</string>
+    <string name="settings_connection_checking">Inakagua…</string>
+    <string name="settings_connection_connected">Imeunganishwa</string>
+    <string name="settings_connection_limited">Imezuiliwa</string>
+    <string name="settings_connection_unreachable">Haifikiki</string>
+    <string name="settings_connection_rejected">Imekataliwa</string>
+    <string name="settings_connection_wrong_server">Si ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Toleo la programu</string>
+    <string name="settings_server_version">Toleo la seva</string>
+    <string name="settings_status_address_label">Anwani</string>
+    <string name="mode_diagram_tablet">Kompyuta kibao</string>
+    <string name="mode_diagram_computer">Kompyuta</string>
+    <string name="mode_diagram_screen">Skrini</string>
+    <string name="mode_diagram_tv">TV / Skrini</string>
 </resources>

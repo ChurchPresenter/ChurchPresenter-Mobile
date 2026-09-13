@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -129,6 +130,7 @@ fun ClearContentSheet(
                         ClearOutcome.EVERYTHING -> stringResource(Res.string.library_clear_done_all)
                     },
                     tint = colors.accent,
+                    modifier = Modifier.testTag(LibraryTags.CLEAR_OUTCOME),
                 )
             }
 
@@ -137,6 +139,7 @@ fun ClearContentSheet(
                     text = stringResource(Res.string.library_clear_none),
                     color = colors.muted,
                     fontSize = 12.sp,
+                    modifier = Modifier.testTag(LibraryTags.CLEAR_NONE),
                 )
             }
 
@@ -146,6 +149,7 @@ fun ClearContentSheet(
                     detail = stringResource(Res.string.library_clear_songs_detail, content.songCount),
                     enabled = !isClearing,
                     onClick = { pending = PendingClear.SONGS },
+                    tag = LibraryTags.CLEAR_SONGS,
                 )
             }
 
@@ -159,6 +163,7 @@ fun ClearContentSheet(
                     ),
                     enabled = !isClearing,
                     onClick = { pending = PendingClear.BIBLES },
+                    tag = LibraryTags.CLEAR_BIBLES,
                 )
             }
 
@@ -168,6 +173,7 @@ fun ClearContentSheet(
                     detail = stringResource(Res.string.library_clear_all_detail),
                     enabled = !isClearing,
                     onClick = { pending = PendingClear.EVERYTHING },
+                    tag = LibraryTags.CLEAR_ALL,
                 )
             }
 
@@ -209,10 +215,17 @@ private fun ClearRow(
     detail: String,
     enabled: Boolean,
     onClick: () -> Unit,
+    tag: String,
 ) {
     val colors = LocalAppColors.current
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        SheetButton(label = label, isDestructive = true, enabled = enabled, onClick = onClick)
+        SheetButton(
+            label = label,
+            isDestructive = true,
+            enabled = enabled,
+            onClick = onClick,
+            modifier = Modifier.testTag(tag),
+        )
         Text(text = detail, color = colors.muted, fontSize = 11.sp)
     }
 }
@@ -229,10 +242,14 @@ private fun ClearConfirmDialog(
         title = { Text(title) },
         text = { Text(body) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.library_clear_action)) }
+            TextButton(onClick = onConfirm, modifier = Modifier.testTag(LibraryTags.CLEAR_CONFIRM)) {
+                Text(stringResource(Res.string.library_clear_action))
+            }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.editor_cancel)) }
+            TextButton(onClick = onDismiss, modifier = Modifier.testTag(LibraryTags.CLEAR_CANCEL)) {
+                Text(stringResource(Res.string.editor_cancel))
+            }
         },
     )
 }

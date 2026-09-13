@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Tidak ada pasal terbuka</string>
     <string name="bible_pane_empty_body">Pilih kitab, lalu pasal, dan ayat-ayatnya akan muncul di sini.</string>
     <string name="bible_chapters_overline">Pasal</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Kendali jarak jauh atau mandiri</string>
+    <string name="settings_section_server_subtitle">Host, port, dan kunci API</string>
+    <string name="settings_section_computer_subtitle">Sumber salinan lagu dan Alkitab</string>
+    <string name="settings_device_section">Perangkat</string>
+    <string name="settings_section_device_subtitle">Nama yang ditampilkan di komputer</string>
+    <string name="settings_section_appearance_subtitle">Tema</string>
+    <string name="settings_diagnostics_section">Diagnostik</string>
+    <string name="settings_section_diagnostics_subtitle">Status server dan data penggunaan</string>
+    <string name="settings_about_section">Tentang</string>
+    <string name="settings_section_about_subtitle">Versi dan hak cipta</string>
+    <string name="settings_this_device">Perangkat ini</string>
+    <string name="settings_display_name_hint">Dilampirkan pada pertanyaan yang Anda kirim dari tab Tanya Jawab.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_connection_status_label">Status</string>
+    <string name="settings_connection_checking">Memeriksa…</string>
+    <string name="settings_connection_connected">Terhubung</string>
+    <string name="settings_connection_limited">Terbatas</string>
+    <string name="settings_connection_unreachable">Tidak terjangkau</string>
+    <string name="settings_connection_rejected">Ditolak</string>
+    <string name="settings_connection_wrong_server">Bukan ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Versi aplikasi</string>
+    <string name="settings_server_version">Versi server</string>
+    <string name="settings_status_address_label">Alamat</string>
+    <string name="mode_diagram_tablet">Tablet</string>
+    <string name="mode_diagram_computer">Komputer</string>
+    <string name="mode_diagram_screen">Layar</string>
+    <string name="mode_diagram_tv">TV / Layar</string>
 </resources>

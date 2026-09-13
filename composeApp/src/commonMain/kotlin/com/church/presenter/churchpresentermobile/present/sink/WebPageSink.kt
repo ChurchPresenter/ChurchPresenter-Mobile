@@ -14,9 +14,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -123,7 +125,10 @@ class WebPageSink(
             lastEnvelope?.let { instance.publish(json.encodeToString(it)) }
             clientWatcher = scope.launch {
                 instance.clientCount.collect { count ->
-                    _status.value = _status.value.copy(clientCount = count)
+                    // An atomic update, not a read-copy-write: the watcher runs on
+                    // its own dispatcher, and a copy taken before detach() reset the
+                    // status would otherwise put the dead server's address back.
+                    _status.update { it.copy(clientCount = count) }
                 }
             }
             Logger.d(TAG, "serving on $url")
@@ -136,7 +141,9 @@ class WebPageSink(
     override suspend fun detach() {
         onBaseUrl(null)
         PresentationKeepAlive.stop()
-        clientWatcher?.cancel()
+        // Joined, not just cancelled: a collector still mid-update after this
+        // returns would write over the reset below.
+        clientWatcher?.cancelAndJoin()
         clientWatcher = null
         server?.stop()
         server = null

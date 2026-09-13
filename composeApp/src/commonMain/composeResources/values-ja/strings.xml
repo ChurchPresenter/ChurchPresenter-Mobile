@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">開いている章はありません</string>
     <string name="bible_pane_empty_body">書を選び、次に章を選ぶと、その節がここに表示されます。</string>
     <string name="bible_chapters_overline">章</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">リモート操作またはスタンドアロン</string>
+    <string name="settings_section_server_subtitle">ホスト、ポート、APIキー</string>
+    <string name="settings_section_computer_subtitle">曲と聖書のコピー元</string>
+    <string name="settings_device_section">デバイス</string>
+    <string name="settings_section_device_subtitle">コンピューターに表示される名前</string>
+    <string name="settings_section_appearance_subtitle">テーマ</string>
+    <string name="settings_diagnostics_section">診断</string>
+    <string name="settings_section_diagnostics_subtitle">サーバーの状態と使用状況データ</string>
+    <string name="settings_about_section">情報</string>
+    <string name="settings_section_about_subtitle">バージョンと著作権</string>
+    <string name="settings_this_device">このデバイス</string>
+    <string name="settings_display_name_hint">Q&amp;Aタブから送る質問に添えられます。</string>
+    <string name="settings_theme_title">テーマ</string>
+    <string name="settings_connection_status_label">状態</string>
+    <string name="settings_connection_checking">確認中…</string>
+    <string name="settings_connection_connected">接続済み</string>
+    <string name="settings_connection_limited">制限あり</string>
+    <string name="settings_connection_unreachable">到達不能</string>
+    <string name="settings_connection_rejected">拒否されました</string>
+    <string name="settings_connection_wrong_server">ChurchPresenterではありません</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">アプリのバージョン</string>
+    <string name="settings_server_version">サーバーのバージョン</string>
+    <string name="settings_status_address_label">アドレス</string>
+    <string name="mode_diagram_tablet">タブレット</string>
+    <string name="mode_diagram_computer">コンピューター</string>
+    <string name="mode_diagram_screen">スクリーン</string>
+    <string name="mode_diagram_tv">テレビ / スクリーン</string>
 </resources>

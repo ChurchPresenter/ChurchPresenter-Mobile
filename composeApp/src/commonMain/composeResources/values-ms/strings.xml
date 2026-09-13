@@ -450,4 +450,34 @@
     <string name="bible_pane_empty_title">Tiada pasal dibuka</string>
     <string name="bible_pane_empty_body">Pilih kitab, kemudian pasal, dan ayatnya akan muncul di sini.</string>
     <string name="bible_chapters_overline">Pasal</string>
+
+    <!-- Settings sections, connection summary, mode-picker diagrams -->
+    <string name="settings_section_mode_subtitle">Kawalan jauh atau berdiri sendiri</string>
+    <string name="settings_section_server_subtitle">Hos, port dan kunci API</string>
+    <string name="settings_section_computer_subtitle">Dari mana lagu dan Alkitab disalin</string>
+    <string name="settings_device_section">Peranti</string>
+    <string name="settings_section_device_subtitle">Nama yang dipaparkan di komputer</string>
+    <string name="settings_section_appearance_subtitle">Tema</string>
+    <string name="settings_diagnostics_section">Diagnostik</string>
+    <string name="settings_section_diagnostics_subtitle">Status pelayan dan data penggunaan</string>
+    <string name="settings_about_section">Perihal</string>
+    <string name="settings_section_about_subtitle">Versi dan hak cipta</string>
+    <string name="settings_this_device">Peranti ini</string>
+    <string name="settings_display_name_hint">Dilampirkan pada soalan yang anda hantar dari tab Soal Jawab.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_connection_status_label">Status</string>
+    <string name="settings_connection_checking">Menyemak…</string>
+    <string name="settings_connection_connected">Disambungkan</string>
+    <string name="settings_connection_limited">Terhad</string>
+    <string name="settings_connection_unreachable">Tidak dapat dicapai</string>
+    <string name="settings_connection_rejected">Ditolak</string>
+    <string name="settings_connection_wrong_server">Bukan ChurchPresenter</string>
+    <string name="settings_about_copyright">© 2026 Church Presenter</string>
+    <string name="settings_app_version">Versi aplikasi</string>
+    <string name="settings_server_version">Versi pelayan</string>
+    <string name="settings_status_address_label">Alamat</string>
+    <string name="mode_diagram_tablet">Tablet</string>
+    <string name="mode_diagram_computer">Komputer</string>
+    <string name="mode_diagram_screen">Skrin</string>
+    <string name="mode_diagram_tv">TV / Skrin</string>
 </resources>
