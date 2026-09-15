@@ -1,0 +1,18 @@
+#!/bin/sh
+# Refuse commits made directly on a protected branch.
+# Bypass deliberately with: git commit --no-verify
+
+protected="main master"
+branch=$(git symbolic-ref --short -q HEAD) || exit 0   # detached HEAD (rebase, bisect) — allow
+
+for p in $protected; do
+    if [ "$branch" = "$p" ]; then
+        echo "pre-commit: refusing to commit directly on '$branch'." >&2
+        echo "  Create a branch first:  git switch -c my-change" >&2
+        echo "  To move work you already staged, that branch keeps it." >&2
+        echo "  Override (rarely correct):  git commit --no-verify" >&2
+        exit 1
+    fi
+done
+
+exit 0
