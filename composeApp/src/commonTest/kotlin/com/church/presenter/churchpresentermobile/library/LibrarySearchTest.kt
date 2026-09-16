@@ -167,7 +167,11 @@ class LibrarySearchTest {
 
     @Test
     fun `an exact number match ignores a zero-padded stored number`() {
-        val order = ranked("12", hymn("Contains 12 in the words", body = "we sang 12 times"), hymn("Blessed Assurance", number = "012"))
+        val order = ranked(
+            "12",
+            hymn("Contains 12 in the words", body = "we sang 12 times"),
+            hymn("Blessed Assurance", number = "012"),
+        )
 
         assertEquals("Blessed Assurance", order.first())
     }
