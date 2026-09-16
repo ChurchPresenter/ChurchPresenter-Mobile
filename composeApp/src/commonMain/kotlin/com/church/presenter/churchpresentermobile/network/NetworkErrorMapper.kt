@@ -203,11 +203,22 @@ private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
     "could not be found",
     "Code=-1004",   // NSURLError could not connect to host
     "Code=-1009",   // NSURLError not connected to internet
+    // NSURLErrorNetworkConnectionLost — the socket was severed mid-request
+    // (Wi-Fi handoff, router restart, phone walking out of range). The
+    // Android equivalents ("Connection reset", "unexpected end of stream")
+    // were already covered above; this was the missing iOS side of the same
+    // condition and, by volume, the single largest source of false reports.
+    "Code=-1005",
+    "network connection was lost",
     "offline",
     // Internal sentinel exceptions thrown by ServerEventService when the
-    // server is unreachable — expected connectivity conditions, not bugs.
+    // server is unreachable, or when a pending action is torn down because
+    // the app was backgrounded/reconnecting — expected conditions, not bugs.
     "WebSocket not connected",
     "WebSocket connection",
+    "WebSocket session ended",
+    "Paused",
+    "Reconnecting",
     // WebSocket upgrade answered by a plain HTTP response (proxy / captive portal
     // / server not speaking WS) — e.g. "Expected HTTP 101 response but was 504".
     "Expected HTTP 101",
@@ -257,6 +268,9 @@ fun Throwable.toFriendlyNetworkMessage(): String {
             inner.contains("Code=-1009") ||
             inner.contains("offline", ignoreCase = true) ->
                 "No network connection."
+            inner.contains("Code=-1005") ||
+            inner.contains("network connection was lost", ignoreCase = true) ->
+                "Connection lost. Check your Wi-Fi and the server."
             inner.contains("Code=-1004") ||
             inner.contains("Could not connect", ignoreCase = true) ->
                 "Server not reachable. Check the IP address and port."
