@@ -84,6 +84,36 @@ class SongsViewModelTest {
     }
 
     @Test
+    fun `searching without leading zeros still matches a padded number`() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage())
+        val ws = FakeWsSender()
+        val paddedCatalogueJson = """
+            {"song-book":[{"book-name":"Hymns","song-total":1,"songs":[
+              {"id":1,"number":"0012","title":"Some Hymn"}
+            ]}]}
+        """.trimIndent()
+        val reader = SongService(settings, ws, mockClient { respond(paddedCatalogueJson) })
+        val vm = SongsViewModel(
+            appSettings = settings,
+            eventService = ServerEventService(settings),
+            isDemoMode = false,
+            sender = ws,
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
+        )
+        try {
+            vm.songs.first { it.isNotEmpty() }
+
+            vm.setSearchQuery("12")
+            val res = vm.songs.first { it.isNotEmpty() }
+
+            assertTrue(res.any { it.number == "0012" })
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
     fun searchByTitleMatchesContains() = runVmTest {
         val vm = demoVm()
         advanceUntilIdle()

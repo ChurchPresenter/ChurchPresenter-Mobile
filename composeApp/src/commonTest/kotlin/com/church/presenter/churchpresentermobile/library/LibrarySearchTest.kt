@@ -166,6 +166,17 @@ class LibrarySearchTest {
     }
 
     @Test
+    fun `an exact number match ignores a zero-padded stored number`() {
+        val order = ranked(
+            "12",
+            hymn("Contains 12 in the words", body = "we sang 12 times"),
+            hymn("Blessed Assurance", number = "012"),
+        )
+
+        assertEquals("Blessed Assurance", order.first())
+    }
+
+    @Test
     fun `a number prefix beats a title match`() {
         val order = ranked("4", hymn("Four Seasons"), hymn("Amazing Grace", number = "42"))
 
@@ -224,6 +235,13 @@ class LibrarySearchTest {
         assertEquals(listOf("Amazing Grace"), ranked("AMAZING", hymn("Amazing Grace")))
         assertEquals(listOf("Amazing Grace"), ranked("NEWTON", hymn("Amazing Grace", author = "John Newton")))
         assertEquals(listOf("Amazing Grace"), ranked("HYMNS", hymn("Amazing Grace", book = "Hymns")))
+    }
+
+    @Test
+    fun `a number prefix matches a zero-padded stored number`() {
+        val order = ranked("4", hymn("Four Seasons"), hymn("Amazing Grace", number = "042"))
+
+        assertEquals("Amazing Grace", order.first())
     }
 
     @Test
