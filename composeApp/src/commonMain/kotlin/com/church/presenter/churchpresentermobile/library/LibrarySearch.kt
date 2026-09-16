@@ -52,9 +52,17 @@ object LibrarySearch {
         val number = song.number.lowercase()
         val title = song.title.lowercase()
 
+        // A song's number may be zero-padded ("012"), but an operator types "12" —
+        // compare numerically when the query is a number so the padding is invisible.
+        val queryNum = q.toIntOrNull()
+        val numberNum = number.toIntOrNull()
+        val numericExact = queryNum != null && numberNum != null && queryNum == numberNum
+        val numericPrefix = queryNum != null && numberNum != null &&
+            numberNum.toString().startsWith(queryNum.toString())
+
         return when {
-            number.isNotEmpty() && number == q -> EXACT_NUMBER
-            number.isNotEmpty() && number.startsWith(q) -> NUMBER_PREFIX
+            number.isNotEmpty() && (number == q || numericExact) -> EXACT_NUMBER
+            number.isNotEmpty() && (number.startsWith(q) || numericPrefix) -> NUMBER_PREFIX
             title == q -> TITLE_EXACT
             title.startsWith(q) -> TITLE_PREFIX
             title.contains(q) -> TITLE_CONTAINS

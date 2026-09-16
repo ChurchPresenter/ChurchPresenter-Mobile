@@ -168,9 +168,16 @@ class SongsViewModel(
         songs
             .filter { song -> book == null || song.bookName == book }
             .filter { song ->
+                val trimmedQuery = query.trim()
                 if (query.isBlank()) true
-                else song.number.startsWith(query.trim(), ignoreCase = true) ||
-                        song.title.contains(query.trim(), ignoreCase = true)
+                else {
+                    val numericMatch = trimmedQuery.toIntOrNull()?.let { queryNum ->
+                        song.number.toIntOrNull()?.toString()?.startsWith(queryNum.toString()) == true
+                    } == true
+                    numericMatch ||
+                        song.number.startsWith(trimmedQuery, ignoreCase = true) ||
+                        song.title.contains(trimmedQuery, ignoreCase = true)
+                }
             }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
