@@ -24,6 +24,9 @@ object AppUpdate {
 
     private const val TAG = "AppUpdate"
 
+    /** Package name of the Play Store app, as reported by `PackageManager.getInstallerPackageName`. */
+    private const val PLAY_STORE_PACKAGE = "com.android.vending"
+
     /**
      * Install error codes that simply mean "this build can't talk to the Play
      * Store" — normal for sideloaded/emulator/non-Play installs. Not real bugs,
@@ -32,6 +35,10 @@ object AppUpdate {
     private val EXPECTED_NO_PLAY_ERRORS = setOf(
         InstallErrorCode.ERROR_PLAY_STORE_NOT_FOUND,
         InstallErrorCode.ERROR_APP_NOT_OWNED,
+        // A transient device state (low battery, low disk space) refusing the
+        // background install — the operator's phone, not our code. See
+        // CHURCH-PRESENTER-MOBILE-1K.
+        InstallErrorCode.ERROR_INSTALL_NOT_ALLOWED,
     )
 
     /**
@@ -43,6 +50,19 @@ object AppUpdate {
         activity: ComponentActivity,
         launcher: ActivityResultLauncher<IntentSenderRequest>
     ) {
+        // Play Core binds to a Play Store service on its own HandlerThread as soon
+        // as appUpdateInfo() is called. On a device with no real Play Store to bind
+        // to — every sideloaded APK from the release workflow (see TESTING.md) and
+        // every emulator — that bind can fail as an uncaught exception on that
+        // thread ("Failed to bind to the service"), which crashes the app before
+        // any Task success/failure callback ever runs, so EXPECTED_NO_PLAY_ERRORS
+        // above never gets a chance to see it. See CHURCH-PRESENTER-MOBILE-1D/1J.
+        val installer = activity.packageManager.getInstallerPackageName(activity.packageName)
+        if (installer != PLAY_STORE_PACKAGE) {
+            Logger.d(TAG, "Skipping update check — not installed via Play Store (installer=$installer)")
+            return
+        }
+
         val manager = AppUpdateManagerFactory.create(activity)
         manager.appUpdateInfo
             .addOnSuccessListener { info ->

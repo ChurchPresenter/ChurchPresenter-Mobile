@@ -285,6 +285,33 @@ class NetworkErrorMapperTest {
     }
 
     @Test
+    fun iosNetworkConnectionLostIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-H, continued: after -1003 and -1005 were both
+        // filed under the same grouped issue, -1005 (NSURLErrorNetworkConnectionLost
+        // — the socket severed mid-request, e.g. a Wi-Fi handoff) turned out to be
+        // the larger share by far: 805 events across 41 users, none of them matched
+        // by any existing marker.
+        val raw = "Exception in http request: Error Domain=NSURLErrorDomain Code=-1005 " +
+            "\"The network connection was lost.\""
+        assertTrue(Exception(raw).isExpectedConnectivityError())
+        assertFalse(Exception(raw).shouldReportAsNonFatal())
+        assertEquals("Connection lost. Check your Wi-Fi and the server.", Exception(raw).toFriendlyNetworkMessage())
+    }
+
+    @Test
+    fun serverEventServicePauseSentinelIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-1H: ServerEventService.pause() completes any
+        // in-flight sendAction() with Exception("Paused") when the app is
+        // backgrounded mid-request. That is the app's own lifecycle, not a bug,
+        // but it reached CrashReporting.recordException because no marker
+        // recognised it (network_tag=SongsViewModel, network_error_msg=Paused).
+        assertTrue(Exception("Paused").isExpectedConnectivityError())
+        assertFalse(Exception("Paused").shouldReportAsNonFatal())
+        assertTrue(Exception("Reconnecting").isExpectedConnectivityError())
+        assertTrue(Exception("WebSocket session ended").isExpectedConnectivityError())
+    }
+
+    @Test
     fun aGatewayTimeoutIsNotTheDesktopsFault() {
         // CHURCH-PRESENTER-MOBILE-A/B/9/14/15: 189 events across five services.
         // Every one came from a phone on cellular with a 192.168.x.x server

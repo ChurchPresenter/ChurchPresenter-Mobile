@@ -48,6 +48,14 @@ class AppUpdateTest {
     private val launcher = mockk<ActivityResultLauncher<IntentSenderRequest>>(relaxed = true)
     private val manager = mockk<AppUpdateManager>(relaxed = true)
 
+    init {
+        // Every scenario below is exercising what happens once Play Core is
+        // asked — installer detection itself is covered separately below.
+        every {
+            activity.packageManager.getInstallerPackageName(activity.packageName)
+        } returns "com.android.vending"
+    }
+
     /** Play answers with an update in the given state. */
     private fun playAnswers(availability: Int, flexibleAllowed: Boolean = true) {
         val info = mockk<AppUpdateInfo> {
@@ -165,6 +173,37 @@ class AppUpdateTest {
         check()
 
         verify(exactly = 0) { CrashReporting.recordException(any()) }
+    }
+
+    @Test
+    fun `a device state blocking install is not reported as a crash`() {
+        // Low battery or low disk space refusing the background install —
+        // CHURCH-PRESENTER-MOBILE-1K. The operator's phone, not our code.
+        mockkObject(CrashReporting)
+        playFails(installError(InstallErrorCode.ERROR_INSTALL_NOT_ALLOWED))
+
+        check()
+
+        verify(exactly = 0) { CrashReporting.recordException(any()) }
+    }
+
+    // ── When the install itself didn't come from Play ────────────────────
+
+    @Test
+    fun `a sideloaded install never asks Play Core at all`() {
+        // CHURCH-PRESENTER-MOBILE-1D/1J: Play Core binds to a Play Store service
+        // on its own thread as soon as appUpdateInfo() is called, and that bind
+        // can crash the app on a sideloaded APK or emulator before any Task
+        // callback runs — before EXPECTED_NO_PLAY_ERRORS ever gets a chance to
+        // see it. The only reliable fix is to never make the call.
+        every {
+            activity.packageManager.getInstallerPackageName(activity.packageName)
+        } returns null
+        mockkStatic(AppUpdateManagerFactory::class)
+
+        check()
+
+        verify(exactly = 0) { AppUpdateManagerFactory.create(any()) }
     }
 
     @Test
