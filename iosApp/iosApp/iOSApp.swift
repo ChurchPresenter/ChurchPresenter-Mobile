@@ -67,9 +67,14 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             AppDelegate.startSentry()
         }
 
-        // 1. Initialise Firebase (Crashlytics auto-starts here)
+        // 1. Initialise Firebase (Analytics only — Crashlytics collection stays
+        //    off below so its native crash handler never races Sentry's for
+        //    the same mach exception port; that race is what crashed
+        //    Crashlytics' own handler in CHURCH-PRESENTER-MOBILE-1P). Sentry
+        //    is the sole crash reporter; `log`/`setCustomKey`/etc. calls below
+        //    still reach Crashlytics but are inert no-ops with collection off.
         FirebaseApp.configure()
-        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(telemetryEnabled)
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
         FirebaseAnalytics.Analytics.setAnalyticsCollectionEnabled(telemetryEnabled)
 
         // 1a. Bridge iOS Crashlytics to Kotlin
@@ -387,11 +392,12 @@ class SwiftCrashlyticsReporter: NSObject, IosCrashlyticsReporter {
         }
     }
 
-    /// Toggles crash reporting per the user's privacy preference. Crashlytics has a
-    /// native runtime flag; Sentry doesn't, so it's closed when disabling and
-    /// re-started (if not already running) when re-enabling.
+    /// Toggles crash reporting per the user's privacy preference. Crashlytics
+    /// collection stays off regardless (see the `didFinishLaunchingWithOptions`
+    /// comment); Sentry doesn't have a native runtime flag, so it's closed when
+    /// disabling and re-started (if not already running) when re-enabling.
     func setEnabled(enabled: Bool) {
-        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(enabled)
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
         if enabled {
             if !SentrySDK.isEnabled {
                 AppDelegate.startSentry()
