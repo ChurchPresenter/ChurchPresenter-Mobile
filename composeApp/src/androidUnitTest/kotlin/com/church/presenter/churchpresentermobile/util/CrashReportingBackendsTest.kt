@@ -88,10 +88,12 @@ class CrashReportingBackendsTest {
     // ── The privacy switch ───────────────────────────────────────────────
 
     @Test
-    fun `initialising turns Crashlytics collection on`() {
+    fun `initialising leaves Crashlytics collection off`() {
+        // Sentry is the sole crash reporter; Crashlytics collection stays off
+        // so its native crash handler never races Sentry's (CHURCH-PRESENTER-MOBILE-1P).
         CrashReporting.init()
 
-        verify { crashlytics.setCrashlyticsCollectionEnabled(true) }
+        verify { crashlytics.setCrashlyticsCollectionEnabled(false) }
     }
 
     @Test
@@ -111,14 +113,15 @@ class CrashReportingBackendsTest {
     }
 
     @Test
-    fun `turning reporting back on restarts Sentry`() {
+    fun `turning reporting back on restarts Sentry but leaves Crashlytics off`() {
         // Closed is closed: without re-initialising, a user who toggled the
         // setting off and on again would silently never report anything more.
+        // Crashlytics collection stays off regardless (CHURCH-PRESENTER-MOBILE-1P).
         initSettingsContext(RecordingContext())
 
         CrashReporting.setEnabled(true)
 
-        verify { crashlytics.setCrashlyticsCollectionEnabled(true) }
+        verify { crashlytics.setCrashlyticsCollectionEnabled(false) }
         verify { SentryAndroid.init(any(), any<Sentry.OptionsConfiguration<SentryAndroidOptions>>()) }
     }
 
@@ -229,7 +232,7 @@ class CrashReportingBackendsTest {
 
         CrashReporting.setEnabled(true)
 
-        verify { crashlytics.setCrashlyticsCollectionEnabled(true) }
+        verify { crashlytics.setCrashlyticsCollectionEnabled(false) }
     }
 
     @Test

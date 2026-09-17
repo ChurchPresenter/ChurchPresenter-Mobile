@@ -9,13 +9,16 @@ import io.sentry.android.core.SentryAndroid
 import io.sentry.protocol.User
 
 /**
- * Reports to both Firebase Crashlytics and Sentry so existing dashboards keep
- * working while Sentry (already used by the desktop app) becomes the primary
- * cross-platform crash backend.
+ * Sentry is the sole crash reporter; Crashlytics collection stays off so its
+ * own native crash handler never races Sentry's for the same crash (this is
+ * what caused CHURCH-PRESENTER-MOBILE-1P on iOS, where both installed a mach
+ * exception handler). The `log`/`setCustomKey`/etc. calls below still reach
+ * Crashlytics, but with collection disabled they're inert no-ops — kept in
+ * place only so re-enabling collection later needs no call-site changes.
  */
 actual object CrashReporting {
     actual fun init() {
-        runCatching { FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true) }
+        runCatching { FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false) }
     }
 
     /**
@@ -53,13 +56,13 @@ actual object CrashReporting {
     }
 
     /**
-     * Toggles crash reporting per the user's privacy preference. Firebase Crashlytics
-     * has a native runtime flag; Sentry doesn't, so we [Sentry.close] it when disabling
-     * and re-run [initSentry] (using the context stashed by [getAppContext]) when
-     * re-enabling.
+     * Toggles crash reporting per the user's privacy preference. Crashlytics
+     * collection stays off regardless (see the class doc); Sentry doesn't have
+     * a native runtime flag, so we [Sentry.close] it when disabling and re-run
+     * [initSentry] (using the context stashed by [getAppContext]) when re-enabling.
      */
     actual fun setEnabled(enabled: Boolean) {
-        runCatching { FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled) }
+        runCatching { FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false) }
         if (enabled) {
             runCatching { getAppContext()?.let { initSentry(it) } }
         } else {

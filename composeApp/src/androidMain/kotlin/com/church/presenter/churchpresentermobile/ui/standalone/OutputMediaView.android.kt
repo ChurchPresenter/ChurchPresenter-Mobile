@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.ui.standalone
 
 import android.graphics.Color
 import android.media.MediaPlayer
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.VideoView
@@ -26,6 +27,15 @@ actual fun OutputWebView(url: String, modifier: Modifier) {
                 settings.allowContentAccess = false
                 settings.mediaPlaybackRequiresUserGesture = false
                 setBackgroundColor(Color.BLACK)
+                // This is a projector output surface, never an input control. Left
+                // focusable, Android's focus-search cascade can enter it while it
+                // sits inside the Pager/LazyColumn preview slot, and Compose's
+                // beyond-bounds search transiently disposing it mid-cascade crashes
+                // with a "pending composition has not been applied" runtime error
+                // (CHURCH-PRESENTER-MOBILE-1Q).
+                isFocusable = false
+                isFocusableInTouchMode = false
+                descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
             }
         },
         update = { view -> if (url.isNotBlank() && view.url != url) view.loadUrl(url) },
@@ -46,6 +56,10 @@ actual fun OutputVideoView(url: String, modifier: Modifier) {
         factory = { context ->
             VideoView(context).apply {
                 setBackgroundColor(Color.BLACK)
+                // See the matching note in OutputWebView: this is output-only and
+                // must never enter Android's focus-search cascade (CHURCH-PRESENTER-MOBILE-1Q).
+                isFocusable = false
+                isFocusableInTouchMode = false
                 setOnPreparedListener { player: MediaPlayer ->
                     player.isLooping = true
                     // The desk owns the sound; an unmuted projector is a surprise
