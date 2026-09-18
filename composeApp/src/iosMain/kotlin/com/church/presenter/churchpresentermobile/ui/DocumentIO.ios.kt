@@ -4,10 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
+import platform.Foundation.NSData
 import platform.Foundation.NSString
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.create
 import platform.Foundation.stringWithContentsOfFile
 import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
@@ -101,22 +105,43 @@ actual fun TextDocumentExporter(
             encoding = NSUTF8StringEncoding,
             error = null,
         )
-        if (!written) {
-            Logger.e(TAG, "could not write export to $path")
-            onError("Could not prepare that file")
-            return@content
-        }
+        shareWritten(written, path, onError)
+    }
+}
 
-        val url = NSURL.fileURLWithPath(path)
-        val controller = UIActivityViewController(activityItems = listOf(url), applicationActivities = null)
-        val root = rootViewController()
-        if (root == null) {
-            onError("Could not open the share sheet")
-        } else {
-            // Required on iPad, where an unanchored sheet crashes.
-            controller.popoverPresentationController?.sourceView = root.view
-            root.presentViewController(controller, animated = true, completion = null)
+/** The bytes go through NSData; the share sheet is the same one the text export uses. */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+actual fun BinaryDocumentExporter(
+    onError: (String) -> Unit,
+    content: @Composable (share: (bytes: ByteArray, suggestedName: String, mimeType: String) -> Unit) -> Unit,
+) {
+    content { bytes, suggestedName, _ ->
+        val path = NSTemporaryDirectory() + suggestedName
+        val data = bytes.usePinned { pinned ->
+            NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())
         }
+        shareWritten(data.writeToFile(path, atomically = true), path, onError)
+    }
+}
+
+/** Raises the share sheet for the file at [path], or reports why it cannot. */
+private fun shareWritten(written: Boolean, path: String, onError: (String) -> Unit) {
+    if (!written) {
+        Logger.e(TAG, "could not write export to $path")
+        onError("Could not prepare that file")
+        return
+    }
+
+    val url = NSURL.fileURLWithPath(path)
+    val controller = UIActivityViewController(activityItems = listOf(url), applicationActivities = null)
+    val root = rootViewController()
+    if (root == null) {
+        onError("Could not open the share sheet")
+    } else {
+        // Required on iPad, where an unanchored sheet crashes.
+        controller.popoverPresentationController?.sourceView = root.view
+        root.presentViewController(controller, animated = true, completion = null)
     }
 }
 

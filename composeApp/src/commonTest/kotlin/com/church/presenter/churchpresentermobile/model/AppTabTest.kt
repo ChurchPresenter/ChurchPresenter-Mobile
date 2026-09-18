@@ -65,8 +65,9 @@ class AppTabTest {
     // ── More destinations ────────────────────────────────────────────────
 
     @Test
-    fun `remote keeps every More destination`() {
-        assertEquals(MoreDestination.entries.toList(), MoreDestination.forMode(AppMode.REMOTE))
+    fun `remote keeps every More destination but the report`() {
+        // The CCLI report is about what this device projected, which in remote mode is nothing.
+        assertEquals(MoreDestination.entries - MoreDestination.REPORT, MoreDestination.forMode(AppMode.REMOTE))
     }
 
     @Test
@@ -79,11 +80,15 @@ class AppTabTest {
         // remote composer writes to the desktop's schedule, while standalone
         // gets the local notices list. It is here because the Library stopped
         // projecting — going live needs a surface of its own.
+        //
+        // REPORT is the CCLI report of what this device put on a screen, which
+        // only standalone has: in remote mode the desktop projects and reports.
         assertEquals(
             listOf(
                 MoreDestination.PICTURES,
                 MoreDestination.ANNOUNCEMENTS,
                 MoreDestination.WEB,
+                MoreDestination.REPORT,
                 MoreDestination.CONTACT,
             ),
             MoreDestination.forMode(AppMode.STANDALONE),

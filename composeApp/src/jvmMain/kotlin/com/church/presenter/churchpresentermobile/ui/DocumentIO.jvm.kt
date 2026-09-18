@@ -18,3 +18,11 @@ actual fun TextDocumentExporter(
 ) {
     content { _, _ -> }
 }
+
+@Composable
+actual fun BinaryDocumentExporter(
+    onError: (String) -> Unit,
+    content: @Composable (share: (bytes: ByteArray, suggestedName: String, mimeType: String) -> Unit) -> Unit,
+) {
+    content { _, _, _ -> }
+}

@@ -48,8 +48,13 @@ internal val ListPaneWidth: Dp = 380.dp
  * single-pane window. An adaptive minimum suits these — unlike the verse grid,
  * a tile is a fixed-size thing and more of them per row is simply better use of
  * the space.
+ *
+ * 300 rather than the 210 it once was: at 210 the tablet's 480 pane split into
+ * two ~215 columns where every subtitle wrapped to three lines and
+ * "Announcements" broke in two. At 300 that pane is one column and a landscape
+ * phone gets two, both wide enough for a subtitle on one or two lines.
  */
-internal val MoreTileMinWidth: Dp = 210.dp
+internal val MoreTileMinWidth: Dp = 300.dp
 
 /** Fixed width of the More launcher pane; the open tool takes what is left. */
 internal val MoreTilePaneWidth: Dp = 480.dp

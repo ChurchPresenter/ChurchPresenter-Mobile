@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import android.content.Context
 import android.content.Intent
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -86,22 +87,45 @@ actual fun TextDocumentExporter(
     val context = LocalContext.current
 
     content { text, suggestedName ->
-        runCatching {
-            // Written to the app's cache and shared through the existing
-            // FileProvider, so no storage permission is involved.
-            val outDir = File(context.cacheDir, "exports").apply { mkdirs() }
-            val file = File(outDir, suggestedName).apply { writeText(text) }
-
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "application/json"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_TITLE, suggestedName)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            context.startActivity(
-                Intent.createChooser(intent, suggestedName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        }.onFailure { onError(it.message ?: "Could not share that file") }
+        shareFile(context, text.encodeToByteArray(), suggestedName, "application/json", onError)
     }
+}
+
+@Composable
+actual fun BinaryDocumentExporter(
+    onError: (String) -> Unit,
+    content: @Composable (share: (bytes: ByteArray, suggestedName: String, mimeType: String) -> Unit) -> Unit,
+) {
+    val context = LocalContext.current
+
+    content { bytes, suggestedName, mimeType -> shareFile(context, bytes, suggestedName, mimeType, onError) }
+}
+
+/**
+ * Writes [bytes] to the app's cache and raises the share sheet for it.
+ *
+ * Shared through the existing FileProvider, so no storage permission is involved.
+ */
+private fun shareFile(
+    context: Context,
+    bytes: ByteArray,
+    suggestedName: String,
+    mimeType: String,
+    onError: (String) -> Unit,
+) {
+    runCatching {
+        val outDir = File(context.cacheDir, "exports").apply { mkdirs() }
+        val file = File(outDir, suggestedName).apply { writeBytes(bytes) }
+
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = mimeType
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_TITLE, suggestedName)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(
+            Intent.createChooser(intent, suggestedName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }.onFailure { onError(it.message ?: "Could not share that file") }
 }
