@@ -65,6 +65,7 @@ internal fun moreScreenName(destination: MoreDestination?): String? = when (dest
     MoreDestination.DICTIONARY -> AnalyticsScreen.DICTIONARY
     MoreDestination.ANNOUNCEMENTS -> AnalyticsScreen.ANNOUNCEMENTS
     MoreDestination.WEB -> AnalyticsScreen.WEB
+    MoreDestination.REPORT -> AnalyticsScreen.CCLI_REPORT
     MoreDestination.CONTACT -> null
     null -> null
 }

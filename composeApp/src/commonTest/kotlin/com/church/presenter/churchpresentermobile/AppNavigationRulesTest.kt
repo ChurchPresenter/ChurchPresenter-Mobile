@@ -284,6 +284,11 @@ class AppNavigationRulesTest {
     }
 
     @Test
+    fun `the CCLI report reports itself`() {
+        assertEquals(AnalyticsScreen.CCLI_REPORT, moreScreenName(MoreDestination.REPORT))
+    }
+
+    @Test
     fun `the announcements screen reports itself`() {
         assertEquals(AnalyticsScreen.ANNOUNCEMENTS, moreScreenName(MoreDestination.ANNOUNCEMENTS))
     }

@@ -24,6 +24,7 @@ ktor = "3.0.0"
 qrose = "1.1.2"
 kotlinxSerialization = "1.6.2"
 kotlinxCoroutines = "1.10.2"
+kotlinxDatetime = "0.7.1"    # local-date bucketing for the standalone CCLI report
 detekt = "1.23.8"   # matches the desktop app, which shares config/detekt/detekt.yml
 jacoco = "0.8.15"   # 0.8.13+ reads Java 24 class files; matches the desktop app
 mockk = "1.14.2"    # android unit tests only — mocks the final framework classes android.jar stubs out
@@ -81,6 +82,7 @@ ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.re
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry-android" }
 
 [plugins]

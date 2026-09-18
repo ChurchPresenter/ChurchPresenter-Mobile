@@ -41,6 +41,8 @@ enum class MoreDestination {
     DICTIONARY,
     ANNOUNCEMENTS,
     WEB,
+    /** Standalone-only: the CCLI report of what this device has projected. */
+    REPORT,
     CONTACT;
 
     companion object {
@@ -61,13 +63,16 @@ enum class MoreDestination {
          * Library onto this device's own outputs. The Library keeps notices; this
          * is where one goes live, so browsing the library cannot project by
          * accident.
+         *
+         * The CCLI report is standalone-only for the mirror-image reason: in
+         * remote mode the desktop is what projects, and it keeps its own report.
          */
         fun forMode(mode: AppMode): List<MoreDestination> = when (mode) {
             // CONTACT is in both: it posts to a public endpoint on the
             // internet, so it needs no desktop, and a user who hits a problem in
             // standalone is exactly the one with something to report.
             AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
-            AppMode.STANDALONE -> listOf(PICTURES, ANNOUNCEMENTS, WEB, CONTACT)
+            AppMode.STANDALONE -> listOf(PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
         }
     }
 }

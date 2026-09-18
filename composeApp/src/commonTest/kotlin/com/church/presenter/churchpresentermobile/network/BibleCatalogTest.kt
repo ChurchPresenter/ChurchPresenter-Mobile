@@ -51,6 +51,17 @@ class BibleCatalogTest {
     }
 
     @Test
+    fun standaloneNamesTheTranslationItIsReadingAndRemoteDoesNot() {
+        // The CCLI report credits verses to a translation; only a downloaded one has a
+        // name this side of the network.
+        val standalone = MutableStateFlow(AppMode.STANDALONE)
+        val remote = MutableStateFlow(AppMode.REMOTE)
+        assertEquals("King James Version", BibleCatalog(standalone, FakeReader(), installed()).activeBibleName)
+        assertEquals("", BibleCatalog(remote, FakeReader(), installed()).activeBibleName)
+        assertEquals("", BibleCatalog(standalone, FakeReader(), empty()).activeBibleName)
+    }
+
+    @Test
     fun standaloneReadsTheDeviceAndNeverAsks() = runTest {
         val reader = FakeReader()
         val catalog = BibleCatalog(MutableStateFlow(AppMode.STANDALONE), reader, installed())
