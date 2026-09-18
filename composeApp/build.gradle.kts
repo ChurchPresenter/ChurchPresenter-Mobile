@@ -369,9 +369,9 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 // complexity 78.2, method 85.2, class 91.5.
 val coverageFloors = mapOf(
     "INSTRUCTION" to "0.85",
-    "BRANCH" to "0.79",
+    "BRANCH" to "0.80",
     "LINE" to "0.85",
-    "COMPLEXITY" to "0.77",
+    "COMPLEXITY" to "0.79",
     "METHOD" to "0.85",
     "CLASS" to "0.85",
 )
@@ -910,6 +910,8 @@ kotlin {
             // QR generation for the standalone display URL (QrScanButton only scans).
             implementation(libs.qrose)
             implementation(libs.kotlinx.serialization)
+            // Calendar maths for the CCLI report: local-date ranges, month buckets, labels.
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

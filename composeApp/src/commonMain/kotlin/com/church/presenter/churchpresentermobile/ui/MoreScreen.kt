@@ -5,22 +5,25 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Image
@@ -37,6 +40,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -60,6 +65,8 @@ import churchpresentermobile.composeapp.generated.resources.more_photos_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_photos_title
 import churchpresentermobile.composeapp.generated.resources.more_qa_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_qa_title
+import churchpresentermobile.composeapp.generated.resources.more_report_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_report_title
 import churchpresentermobile.composeapp.generated.resources.more_web_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_web_title
 import com.church.presenter.churchpresentermobile.model.AppMode
@@ -113,31 +120,56 @@ fun MoreScreen(
             Icons.Outlined.Campaign,
         ),
         MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
+        // Standalone only: what this device itself has projected, for licence reporting.
+        MoreEntry(
+            MoreDestination.REPORT,
+            stringResource(Res.string.more_report_title),
+            stringResource(Res.string.more_report_subtitle),
+            Icons.Outlined.BarChart,
+        ),
         MoreEntry(MoreDestination.CONTACT, stringResource(Res.string.more_contact_title), stringResource(Res.string.more_contact_subtitle), Icons.Outlined.MailOutline),
     ).filter { it.destination in available }
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = MoreTileMinWidth),
-        modifier = modifier.fillMaxSize().background(colors.background),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(9.dp),
-        horizontalArrangement = Arrangement.spacedBy(9.dp),
-    ) {
-        items(entries, key = { it.destination }) { entry ->
-            MoreRow(
-                entry = entry,
-                isSelected = entry.destination == selected,
-                onClick = { onSelect(entry.destination) },
-            )
+    // Laid out by hand rather than with LazyVerticalGrid: a lazy grid sizes each
+    // tile to its own text, so one subtitle wrapping to a second line made its
+    // tile taller than the rest of its row. Seven tiles need no laziness, and a
+    // Row can size itself to its tallest child.
+    BoxWithConstraints(modifier = modifier.fillMaxSize().background(colors.background)) {
+        val columns = ((maxWidth - MoreGridPadding * 2 + MoreGridGap) / (MoreTileMinWidth + MoreGridGap))
+            .toInt().coerceAtLeast(1)
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(MoreGridPadding),
+            verticalArrangement = Arrangement.spacedBy(MoreGridGap),
+        ) {
+            entries.chunked(columns).forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.spacedBy(MoreGridGap),
+                ) {
+                    row.forEach { entry ->
+                        MoreRow(
+                            entry = entry,
+                            isSelected = entry.destination == selected,
+                            onClick = { onSelect(entry.destination) },
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                    }
+                    // A short last row keeps its tiles the width of the others.
+                    repeat(columns - row.size) { Spacer(modifier = Modifier.weight(1f)) }
+                }
+            }
         }
     }
 }
 
+private val MoreGridPadding: Dp = 16.dp
+private val MoreGridGap: Dp = 9.dp
+
 @Composable
-private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit) {
+private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     val shape = RoundedCornerShape(14.dp)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .testTag(UiTags.moreRow(entry.destination))
             .fillMaxWidth()
             .clip(shape)
@@ -162,8 +194,23 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit) 
             Icon(entry.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(20.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(entry.title, color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(entry.subtitle, color = colors.muted, fontSize = 12.sp)
+            Text(
+                text = entry.title,
+                color = colors.text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            // Two lines at most: the row is as tall as its tallest tile, so a
+            // subtitle may wrap, but a third line would be a tile of mostly text.
+            Text(
+                text = entry.subtitle,
+                color = colors.muted,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -195,6 +242,7 @@ fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
             if (mode == AppMode.STANDALONE) stringResource(Res.string.more_notices_title)
             else stringResource(Res.string.announcements_title)
         MoreDestination.WEB -> stringResource(Res.string.web_title)
+        MoreDestination.REPORT -> stringResource(Res.string.more_report_title)
         MoreDestination.CONTACT -> stringResource(Res.string.contact_us_title)
         null -> ""
     }

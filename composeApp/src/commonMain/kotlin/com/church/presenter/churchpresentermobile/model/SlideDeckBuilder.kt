@@ -37,6 +37,13 @@ object SlideDeckBuilder {
             .ifEmpty {
                 splitStanzas(detail.plainText).mapIndexed { i, text -> text to (i + 1).toString() }
             }
+        val credit = SongCredit(
+            id = song.localId.orEmpty(),
+            number = number,
+            title = title,
+            author = (detail.author ?: song.author).orEmpty(),
+            songbook = book.orEmpty(),
+        )
 
         val slides = bodies.mapIndexed { index, (text, label) ->
             Slide(
@@ -49,6 +56,7 @@ object SlideDeckBuilder {
                 sourceId = listOfNotNull(book, number).joinToString(":").ifBlank { null },
                 index = index,
                 total = bodies.size,
+                songCredit = credit,
             )
         }
 
@@ -72,6 +80,14 @@ object SlideDeckBuilder {
         // and the heading in the detail sheet cannot drift apart.
         val usable = LocalSongAdapter.usableSections(song.sections)
         val labels = LocalSongAdapter.sectionLabels(usable)
+        val credit = SongCredit(
+            id = song.id,
+            number = song.number,
+            title = song.title,
+            author = song.author.orEmpty(),
+            songbook = song.bookName.orEmpty(),
+            ccliNumber = SongCredit.ccliNumberIn(song.copyright),
+        )
 
         val slides = usable.mapIndexed { index, section ->
             val label = labels[index]
@@ -84,6 +100,7 @@ object SlideDeckBuilder {
                 sourceId = song.id,
                 index = index,
                 total = usable.size,
+                songCredit = credit,
             )
         }
 
@@ -97,12 +114,16 @@ object SlideDeckBuilder {
      * which is how the operator projects a passage rather than a whole chapter.
      * An unknown or empty selection falls back to the full chapter — better to
      * offer too much than to hand the operator an empty deck mid-service.
+     *
+     * @param bibleName The translation the words are from, for the CCLI report. Empty when
+     *   the caller does not know, which is the case for a desktop's text.
      */
     fun fromBibleChapter(
         book: BibleBook,
         chapter: Int,
         verses: List<BibleVerse>,
         selectedVerses: Set<Int> = emptySet(),
+        bibleName: String = "",
     ): SlideDeck {
         val bookName = book.displayName
         val included = verses
@@ -120,6 +141,12 @@ object SlideDeckBuilder {
                 sourceId = "$bookName:$chapter:${verse.number}",
                 index = index,
                 total = included.size,
+                verseCredit = VerseCredit(
+                    bibleName = bibleName,
+                    bookName = bookName,
+                    chapter = chapter,
+                    verse = verse.number,
+                ),
             )
         }
 

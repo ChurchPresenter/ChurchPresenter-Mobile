@@ -21,3 +21,11 @@ actual fun TextDocumentExporter(
 ) {
     content { _, _ -> onError("Exporting files is not available in the browser") }
 }
+
+@Composable
+actual fun BinaryDocumentExporter(
+    onError: (String) -> Unit,
+    content: @Composable (share: (bytes: ByteArray, suggestedName: String, mimeType: String) -> Unit) -> Unit,
+) {
+    content { _, _, _ -> onError("Exporting files is not available in the browser") }
+}

@@ -130,9 +130,9 @@ class LibrarySyncViewModel(
                         .groupingBy { it }
                         .eachCount()
                     val names = counts.keys.sorted()
-                    _books.value = names
                     _bookCounts.value = counts
                     _selectedBooks.value = names.toSet()
+                    _books.value = names
                     Logger.d(TAG, "loadBooks — ${names.size} songbooks offered")
                 }
                 .onFailure {
@@ -208,10 +208,10 @@ class LibrarySyncViewModel(
             .getOrDefault(LibrarySyncState.NEVER)
 
     private fun writeState(state: LibrarySyncState) {
-        _state.value = state
         runCatching {
             settings.librarySyncStateJson = json.encodeToString(LibrarySyncState.serializer(), state)
         }.onFailure { Logger.e(TAG, "could not save sync state: ${it.message}") }
+        _state.value = state
     }
 
     override fun onCleared() {

@@ -54,9 +54,11 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.library.PlayLogRepository
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
+import com.church.presenter.churchpresentermobile.present.PlayRecorder
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.present.sink.WebPageSink
@@ -102,6 +104,7 @@ import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SongsTable
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.CcliReportScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
 import com.church.presenter.churchpresentermobile.ui.ContactScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
@@ -255,6 +258,17 @@ fun App(
     }
     val projectionRouter = remember(standaloneEngine) {
         ProjectionRouter(AppModeHolder.mode, eventService, standaloneEngine)
+    }
+    // What this device has projected, for the CCLI report. Its own file, so a
+    // play never rewrites the library and the library never rewrites the log.
+    val playLogRepository = remember {
+        PlayLogRepository(now = { Clock.System.now().toEpochMilliseconds() }).also { it.load() }
+    }
+    // Counts a song or verse only while it is on an attached screen — the
+    // recorder watches the engine and the sinks together, so a rehearsal with
+    // nothing plugged in never reaches the report.
+    LaunchedEffect(standaloneEngine, sinkRegistry, playLogRepository) {
+        PlayRecorder(standaloneEngine.currentSlide, sinkRegistry.statuses, playLogRepository).run()
     }
 
     // ── Output sinks ──────────────────────────────────────────────────────
@@ -1111,6 +1125,11 @@ fun App(
                                             hasOutput = sinkStatuses.any { it.isAttached },
                                             modifier = Modifier.fillMaxSize(),
                                         )
+                                    // Standalone only: what this device itself has projected.
+                                    MoreDestination.REPORT -> CcliReportScreen(
+                                        repository = playLogRepository,
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
                                     MoreDestination.CONTACT -> ContactScreen(
                                         modifier = Modifier.fillMaxSize()
                                     )

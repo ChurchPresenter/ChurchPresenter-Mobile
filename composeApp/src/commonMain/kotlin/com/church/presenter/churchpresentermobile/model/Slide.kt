@@ -167,6 +167,8 @@ const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
  * @property gradientTop Top colour of the gradient backdrop as `#RRGGBB`.
  * @property gradientBottom Bottom colour of the gradient backdrop as `#RRGGBB`.
  * @property total Number of slides in the owning [SlideDeck].
+ * @property songCredit The song this slide belongs to, for the CCLI report. Only on song slides.
+ * @property verseCredit The verse this slide is, for the CCLI report. Only on Bible slides.
  */
 @Serializable
 data class Slide(
@@ -190,6 +192,8 @@ data class Slide(
     val sourceId: String? = null,
     val index: Int = 0,
     val total: Int = 0,
+    val songCredit: SongCredit? = null,
+    val verseCredit: VerseCredit? = null,
 ) {
     /** True when the renderer should show nothing but the backdrop. */
     val isHidden: Boolean get() = isBlank || !isLive

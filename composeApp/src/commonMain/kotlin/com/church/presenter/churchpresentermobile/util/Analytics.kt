@@ -97,6 +97,7 @@ object AnalyticsScreen {
     const val STANDALONE         = "Standalone Present"
     const val MODE_PICKER        = "Mode Picker"
     const val LIBRARY            = "Library"
+    const val CCLI_REPORT        = "CCLI Report"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────
