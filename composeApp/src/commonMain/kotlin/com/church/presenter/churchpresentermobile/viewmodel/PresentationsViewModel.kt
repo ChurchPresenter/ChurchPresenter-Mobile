@@ -16,10 +16,12 @@ import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 private const val TAG = "PresentationsViewModel"
@@ -48,6 +50,7 @@ class PresentationsViewModel(
     private val serviceFactory: (AppSettings) -> PresentationService = { PresentationService(it, eventService) },
 ) : ViewModel() {
     private var presentationService = serviceFactory(appSettings)
+    private var loadJob: Job? = null
 
     private val _presentations = MutableStateFlow<List<Presentation>>(emptyList())
     val presentations: StateFlow<List<Presentation>> = _presentations.asStateFlow()
@@ -121,7 +124,8 @@ class PresentationsViewModel(
             return
         }
         Logger.d(TAG, "loadPresentations — url=${appSettings.apiBaseUrl}")
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
             try {
@@ -132,7 +136,7 @@ class PresentationsViewModel(
                         _error.value = "Failed to load presentations: ${e.recordNetworkError(TAG, "loadPresentations")}"
                     }
             } finally {
-                _isLoading.value = false
+                if (isActive) _isLoading.value = false
             }
         }
     }

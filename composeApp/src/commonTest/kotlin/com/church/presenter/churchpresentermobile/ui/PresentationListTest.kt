@@ -1,10 +1,15 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.runComposeUiTest
+import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.network.WsMessageType
+import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -436,9 +441,24 @@ class PresentationListTest {
     fun savingSettingsReloadsTheList() = runComposeUiTest {
         val desktop = FakeDeckDesktop()
         val vm = desktop.viewModel()
-        showPresentations(vm, settingsSaveToken = 1)
+        var token by mutableStateOf(0)
+        showScreen {
+            PresentationScreen(
+                appSettings = AppSettings(InMemorySettingsStorage()),
+                settingsSaveToken = token,
+                imageLoader = offlineImageLoader(),
+                pendingNavPresentationId = null,
+                onPendingNavHandled = {},
+                onScheduleRefresh = {},
+                canUploadFiles = true,
+                providedViewModel = vm,
+            )
+        }
+        awaitThat { desktop.listRequests.size == 1 }
 
-        awaitThat { desktop.listRequests.size >= 2 }
+        token = 1
+
+        awaitThat { desktop.listRequests.size == 2 }
     }
 
     @Test
