@@ -381,7 +381,7 @@ class BibleViewModel(
             Logger.d(TAG, "selectChapter — DEMO MODE, serving demo verses")
             val verses = DemoData.getVerses(book.displayName, chapter)
             _verses.value = verses
-            val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses)
+            val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses, bibleName = catalog.activeBibleName)
             loadedDeck = deck
             presenter?.loadDeck(deck)
             val targets = pendingInitialVerseNumbers
@@ -401,7 +401,9 @@ class BibleViewModel(
                 catalog.chapter(bookNumber, chapter)
                     .onSuccess { verses ->
                         _verses.value = verses
-                        val deck = SlideDeckBuilder.fromBibleChapter(book, chapter, verses)
+                        val deck = SlideDeckBuilder.fromBibleChapter(
+                            book, chapter, verses, bibleName = catalog.activeBibleName,
+                        )
                         loadedDeck = deck
                         presenter?.loadDeck(deck)
                         // Auto-select verses requested by schedule navigation, if any

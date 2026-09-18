@@ -910,6 +910,8 @@ kotlin {
             // QR generation for the standalone display URL (QrScanButton only scans).
             implementation(libs.qrose)
             implementation(libs.kotlinx.serialization)
+            // Calendar maths for the CCLI report: local-date ranges, month buckets, labels.
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

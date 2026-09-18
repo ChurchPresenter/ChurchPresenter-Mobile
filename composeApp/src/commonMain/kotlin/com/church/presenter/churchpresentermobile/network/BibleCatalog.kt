@@ -97,6 +97,15 @@ class BibleCatalog(
         return Result.success(fallback)
     }
 
+    /**
+     * The name of the translation the text is coming from, for the CCLI report.
+     *
+     * Only known when the words are this device's own: a desktop names its translation on
+     * its side and does not send it with a chapter, so remote reads report an empty name.
+     */
+    val activeBibleName: String
+        get() = if (isLocal) bibles?.index?.value?.active?.title.orEmpty() else ""
+
     /** Books straight out of the index, so drawing the list never parses a module. */
     private fun localBooks(): List<BibleBook> =
         bibles?.index?.value?.active?.books.orEmpty().map(::toBibleBook)

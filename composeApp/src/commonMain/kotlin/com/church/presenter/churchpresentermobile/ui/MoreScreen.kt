@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Image
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -60,6 +62,8 @@ import churchpresentermobile.composeapp.generated.resources.more_photos_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_photos_title
 import churchpresentermobile.composeapp.generated.resources.more_qa_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_qa_title
+import churchpresentermobile.composeapp.generated.resources.more_report_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_report_title
 import churchpresentermobile.composeapp.generated.resources.more_web_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_web_title
 import com.church.presenter.churchpresentermobile.model.AppMode
@@ -113,6 +117,13 @@ fun MoreScreen(
             Icons.Outlined.Campaign,
         ),
         MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
+        // Standalone only: what this device itself has projected, for licence reporting.
+        MoreEntry(
+            MoreDestination.REPORT,
+            stringResource(Res.string.more_report_title),
+            stringResource(Res.string.more_report_subtitle),
+            Icons.Outlined.BarChart,
+        ),
         MoreEntry(MoreDestination.CONTACT, stringResource(Res.string.more_contact_title), stringResource(Res.string.more_contact_subtitle), Icons.Outlined.MailOutline),
     ).filter { it.destination in available }
     LazyVerticalGrid(
@@ -162,8 +173,23 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit) 
             Icon(entry.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(20.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(entry.title, color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(entry.subtitle, color = colors.muted, fontSize = 12.sp)
+            Text(
+                text = entry.title,
+                color = colors.text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            // One line each, so a long subtitle cannot make its tile taller than
+            // the rest of its row in the tablet's grid.
+            Text(
+                text = entry.subtitle,
+                color = colors.muted,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -195,6 +221,7 @@ fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
             if (mode == AppMode.STANDALONE) stringResource(Res.string.more_notices_title)
             else stringResource(Res.string.announcements_title)
         MoreDestination.WEB -> stringResource(Res.string.web_title)
+        MoreDestination.REPORT -> stringResource(Res.string.more_report_title)
         MoreDestination.CONTACT -> stringResource(Res.string.contact_us_title)
         null -> ""
     }

@@ -18,8 +18,10 @@ class MoreDestinationTest {
     private val standalone = MoreDestination.forMode(AppMode.STANDALONE)
 
     @Test
-    fun remoteOffersEveryDestination() {
-        assertEquals(MoreDestination.entries.toSet(), remote.toSet())
+    fun remoteOffersEveryDestinationButTheReport() {
+        // The report counts what *this device* projected; in remote mode the
+        // desktop does the projecting and keeps its own.
+        assertEquals(MoreDestination.entries.toSet() - MoreDestination.REPORT, remote.toSet())
     }
 
     @Test
@@ -29,10 +31,16 @@ class MoreDestinationTest {
     }
 
     @Test
-    fun everyStandaloneDestinationIsAlsoARemoteOne() {
-        // Standalone is a subset; a destination unique to it would have no remote
-        // equivalent and no way to be reached from the usual mode.
-        assertTrue(remote.containsAll(standalone), "standalone-only: ${standalone - remote.toSet()}")
+    fun onlyTheReportIsUniqueToStandalone() {
+        // Everything else standalone offers has a remote counterpart. The report is
+        // the one screen about this device's own output, which remote does not have.
+        assertEquals(listOf(MoreDestination.REPORT), standalone - remote.toSet())
+    }
+
+    @Test
+    fun theReportIsStandaloneOnly() {
+        assertTrue(MoreDestination.REPORT in standalone)
+        assertFalse(MoreDestination.REPORT in remote, "remote mode projects from the desktop, which reports itself")
     }
 
     @Test

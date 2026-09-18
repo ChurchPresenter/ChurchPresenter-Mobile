@@ -34,3 +34,18 @@ expect fun TextDocumentExporter(
     onError: (String) -> Unit,
     content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,
 )
+
+/**
+ * Saves [bytes] as a file the user can keep or send on — the same share sheet
+ * as [TextDocumentExporter], for a file that is not text.
+ *
+ * The CCLI exports go through this: a `.csv` is text but is not JSON, which
+ * is what the text exporter labels everything, and an `.xlsx` is a zip.
+ *
+ * @param mimeType What the file is, so the share sheet offers the right apps.
+ */
+@Composable
+expect fun BinaryDocumentExporter(
+    onError: (String) -> Unit,
+    content: @Composable (share: (bytes: ByteArray, suggestedName: String, mimeType: String) -> Unit) -> Unit,
+)
