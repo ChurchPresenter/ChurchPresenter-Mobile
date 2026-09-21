@@ -116,7 +116,11 @@ class EnrollService(
         }
         when (response.status) {
             HttpStatusCode.Forbidden -> throw EnrollDenied()
-            else -> if (!response.status.isSuccess()) throw RelayFailure.Rejected(response.status.value, response.bodyAsText().take(MAX_ERROR_CHARS))
+            HttpStatusCode.Conflict -> if (response.bodyAsText().contains(SYNC_OFF_ERROR)) throw EnrollSyncOff()
+            else -> Unit
+        }
+        if (!response.status.isSuccess()) {
+            throw RelayFailure.Rejected(response.status.value, response.bodyAsText().take(MAX_ERROR_CHARS))
         }
         val reply = json.decodeFromString(EnrollReply.serializer(), response.bodyAsText())
         val relay = Sanitize.relayUrl(reply.relayUrl) ?: throw RelayFailure.Rejected(response.status.value, "relay url")
@@ -126,8 +130,12 @@ class EnrollService(
 
     private companion object {
         const val MAX_ERROR_CHARS = 200
+        const val SYNC_OFF_ERROR = "\"sync_off\""
     }
 }
 
 /** The operator said no. */
 class EnrollDenied : Exception("enrollment denied")
+
+/** The desktop's calendar sync switch is off, so it has nothing to enroll this phone into. */
+class EnrollSyncOff : Exception("calendar sync is off on the desktop")

@@ -49,6 +49,14 @@ class EnrollServiceTest {
     }
 
     @Test
+    fun aDesktopWithSyncOffIsToldApartFromARefusal() = runTest {
+        val off = service(HttpStatusCode.Conflict, """{"error":"sync_off"}""").enroll("Phone", "123456")
+        assertTrue(off.exceptionOrNull() is EnrollSyncOff)
+        val otherConflict = service(HttpStatusCode.Conflict, """{"error":"busy"}""").enroll("Phone", "123456")
+        assertTrue(otherConflict.exceptionOrNull() is RelayFailure.Rejected)
+    }
+
+    @Test
     fun aReplyPointingAtAnUnsafeRelayIsRefused() = runTest {
         val plain = service(HttpStatusCode.OK, """{"relayUrl":"http://evil.example","instanceId":"inst-1"}""")
         assertTrue(plain.enroll("Phone", "123456").exceptionOrNull() is RelayFailure.Rejected)

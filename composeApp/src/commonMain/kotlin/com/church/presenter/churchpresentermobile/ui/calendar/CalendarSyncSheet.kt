@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.calendar_cancel
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_denied
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_desktop_off
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_done
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_enroll
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_enroll_needs_desktop
@@ -81,7 +82,7 @@ internal fun CalendarSyncSheet(
 private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: Boolean, actions: SyncActions) {
     val colors = LocalAppColors.current
     when (flow) {
-        EnrollFlow.Idle, EnrollFlow.Denied, is EnrollFlow.Failed -> {
+        EnrollFlow.Idle, EnrollFlow.Denied, EnrollFlow.SyncOff, is EnrollFlow.Failed -> {
             if (status is SyncStatus.Unauthorized) {
                 Text(stringResource(Res.string.calendar_sync_status_unauthorized), color = colors.danger, fontSize = 13.sp)
                 Spacer(Modifier.height(8.dp))
@@ -90,6 +91,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             Spacer(Modifier.height(12.dp))
             when (flow) {
                 EnrollFlow.Denied -> HintText(stringResource(Res.string.calendar_sync_denied))
+                EnrollFlow.SyncOff -> HintText(stringResource(Res.string.calendar_sync_desktop_off))
                 is EnrollFlow.Failed -> HintText(
                     if (flow.message.isEmpty()) stringResource(Res.string.calendar_sync_qr_invalid) else stringResource(Res.string.calendar_sync_failed, flow.message),
                 )

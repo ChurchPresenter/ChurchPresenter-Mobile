@@ -220,18 +220,22 @@ class CalendarViewModelTest {
     }
 
     @Test
-    fun aRefusedEnrollmentIsDeniedAndAFailedOneSaysWhy() = runVmTestUnconfined {
+    fun aRefusedEnrollmentIsDeniedASwitchedOffDesktopSaysSoAndAFailedOneSaysWhy() = runVmTestUnconfined {
         val refusing = HttpClient(MockEngine { respond("", HttpStatusCode.Forbidden) })
         val denied = viewModel(enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), refusing))
+        val switchedOff = HttpClient(MockEngine { respond("""{"error":"sync_off"}""", HttpStatusCode.Conflict) })
+        val off = viewModel(enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), switchedOff))
         val broken = HttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
         val failed = viewModel(enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), broken))
         try {
             denied.startEnrollment()
             assertEquals(EnrollFlow.Denied, denied.enrollment.first { it !is EnrollFlow.WaitingForApproval })
+            off.startEnrollment()
+            assertEquals(EnrollFlow.SyncOff, off.enrollment.first { it !is EnrollFlow.WaitingForApproval })
             failed.startEnrollment()
             assertIs<EnrollFlow.Failed>(failed.enrollment.first { it !is EnrollFlow.WaitingForApproval })
         } finally {
-            tearDown(denied, failed)
+            tearDown(denied, off, failed)
         }
     }
 

@@ -1021,6 +1021,7 @@
     <string name="calendar_sync_scan_body">The computer is showing a QR code. Scan it to finish.</string>
     <string name="calendar_sync_scan_button">Scan the computer’s QR code</string>
     <string name="calendar_sync_denied">The computer said no.</string>
+    <string name="calendar_sync_desktop_off">Calendar sync is switched off on the church computer. Turn it on there under Calendar → Settings → Defaults, then try again.</string>
     <string name="calendar_sync_failed">Could not enroll: %1$s</string>
     <string name="calendar_sync_qr_invalid">That was not an enrollment code from ChurchPresenter.</string>
     <string name="calendar_sync_done">This phone now syncs the calendar.</string>

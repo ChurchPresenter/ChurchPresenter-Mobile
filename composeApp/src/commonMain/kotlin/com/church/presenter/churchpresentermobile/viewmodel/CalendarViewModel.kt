@@ -28,6 +28,7 @@ import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncStat
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncTrigger
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollDenied
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollService
+import com.church.presenter.churchpresentermobile.calendar.sync.EnrollSyncOff
 import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -48,6 +49,8 @@ sealed class EnrollFlow {
     data object ScanQr : EnrollFlow()
     data object Done : EnrollFlow()
     data object Denied : EnrollFlow()
+    /** The church computer has calendar sync switched off; somebody there has to turn it on first. */
+    data object SyncOff : EnrollFlow()
     data class Failed(val message: String) : EnrollFlow()
 }
 
@@ -136,7 +139,11 @@ class CalendarViewModel(
             service.enroll(deviceName(), code)
                 .onSuccess { _enrollment.value = EnrollFlow.ScanQr }
                 .onFailure { e ->
-                    _enrollment.value = if (e is EnrollDenied) EnrollFlow.Denied else EnrollFlow.Failed(e.message.orEmpty())
+                    _enrollment.value = when (e) {
+                        is EnrollDenied -> EnrollFlow.Denied
+                        is EnrollSyncOff -> EnrollFlow.SyncOff
+                        else -> EnrollFlow.Failed(e.message.orEmpty())
+                    }
                 }
         }
     }

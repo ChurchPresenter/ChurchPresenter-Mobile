@@ -83,8 +83,12 @@ class AppTabTest {
         //
         // REPORT is the CCLI report of what this device put on a screen, which
         // only standalone has: in remote mode the desktop projects and reports.
+        //
+        // CALENDAR plans against this device's own calendar.json; the desktop
+        // only enters through the relay, which standalone can enroll with too.
         assertEquals(
             listOf(
+                MoreDestination.CALENDAR,
                 MoreDestination.PICTURES,
                 MoreDestination.ANNOUNCEMENTS,
                 MoreDestination.WEB,
