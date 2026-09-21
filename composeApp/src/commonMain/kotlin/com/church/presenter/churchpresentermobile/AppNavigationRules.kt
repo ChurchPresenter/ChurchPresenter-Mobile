@@ -60,6 +60,7 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
  * own data, and the launcher grid itself is already covered by the More tab.
  */
 internal fun moreScreenName(destination: MoreDestination?): String? = when (destination) {
+    MoreDestination.CALENDAR -> AnalyticsScreen.CALENDAR
     MoreDestination.PICTURES -> AnalyticsScreen.PICTURES
     MoreDestination.QA -> AnalyticsScreen.QA_ADMIN
     MoreDestination.DICTIONARY -> AnalyticsScreen.DICTIONARY

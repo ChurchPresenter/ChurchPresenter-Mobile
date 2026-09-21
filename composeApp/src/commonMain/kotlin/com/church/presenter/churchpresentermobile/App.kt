@@ -82,6 +82,8 @@ import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.BottomTabBar
 import com.church.presenter.churchpresentermobile.ui.DictionaryScreen
+import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
+import com.church.presenter.churchpresentermobile.ui.calendar.CalendarScreen
 import com.church.presenter.churchpresentermobile.ui.MoreScreen
 import com.church.presenter.churchpresentermobile.ui.MoreTwoPane
 import com.church.presenter.churchpresentermobile.ui.moreDestinationTitle
@@ -240,6 +242,9 @@ fun App(
     val libraryRepository = remember {
         LibraryRepository(now = { Clock.System.now().toEpochMilliseconds() })
     }
+    // Planned services. Its own file, like the Bible library, so a plan is never rewritten by a
+    // song edit and can be synced with a desktop on its own.
+    val calendarRepository = remember { CalendarRepository() }
     // Translations copied onto this device. Separate from the song library because a Bible is
     // megabytes and that document is rewritten whole on every song edit.
     val bibleRepository = remember {
@@ -915,6 +920,10 @@ fun App(
                         largeTitle = bibleChapter != null,
                         onBack = { bibleNavigateBack?.invoke() }
                     )
+                    // The calendar draws its own header: the month view carries Today,
+                    // and the run of show inside it carries the service's name and its
+                    // Armed switch, neither of which the shell's bar has room for.
+                    inMoreDetail && moreDestination == MoreDestination.CALENDAR -> Unit
                     inMoreDetail -> ScreenHeader(
                         title = moreDestinationTitle(moreDestination, appMode),
                         onBack = { moreDestination = null },
@@ -1067,6 +1076,18 @@ fun App(
                             // six screens each take their own collaborators to build.
                             val moreTool: @Composable () -> Unit = {
                                 when (moreDestination) {
+                                    // Works in both modes: the plan lives on this device, and
+                                    // the picker reads songs and verses from wherever the
+                                    // catalogs currently do.
+                                    MoreDestination.CALENDAR -> CalendarScreen(
+                                        repository = calendarRepository,
+                                        songCatalog = songCatalog,
+                                        bibleCatalog = bibleCatalog,
+                                        settings = appSettings,
+                                        twoPane = twoPane,
+                                        onBack = if (twoPane) null else ({ moreDestination = null }),
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
                                     // Standalone has no desktop folders to browse, so
                                     // Photos means this device's own pictures.
                                     MoreDestination.PICTURES if appMode == AppMode.STANDALONE ->

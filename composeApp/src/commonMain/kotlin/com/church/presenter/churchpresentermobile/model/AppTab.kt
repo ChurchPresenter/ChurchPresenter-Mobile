@@ -36,6 +36,8 @@ enum class AppTab {
 
 /** Secondary destinations reached from the [AppTab.MORE] launcher. */
 enum class MoreDestination {
+    /** Planned services on a month grid, each with a run of show. Works with or without a desktop. */
+    CALENDAR,
     PICTURES,
     QA,
     DICTIONARY,
@@ -71,8 +73,8 @@ enum class MoreDestination {
             // CONTACT is in both: it posts to a public endpoint on the
             // internet, so it needs no desktop, and a user who hits a problem in
             // standalone is exactly the one with something to report.
-            AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
-            AppMode.STANDALONE -> listOf(PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
+            AppMode.REMOTE -> listOf(CALENDAR, PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
+            AppMode.STANDALONE -> listOf(CALENDAR, PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
         }
     }
 }

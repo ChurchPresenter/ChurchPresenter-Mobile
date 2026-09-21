@@ -72,6 +72,11 @@ import churchpresentermobile.composeapp.generated.resources.more_web_title
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import androidx.compose.material.icons.outlined.CalendarMonth
+import churchpresentermobile.composeapp.generated.resources.more_calendar_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_calendar_title
+import churchpresentermobile.composeapp.generated.resources.more_new_badge
+import androidx.compose.ui.unit.em
 import org.jetbrains.compose.resources.stringResource
 
 private data class MoreEntry(
@@ -79,6 +84,8 @@ private data class MoreEntry(
     val title: String,
     val subtitle: String,
     val icon: ImageVector,
+    /** A small tag after the title — `New` on a tool that has just arrived. */
+    val badge: String? = null,
 )
 
 /**
@@ -107,6 +114,13 @@ fun MoreScreen(
     val colors = LocalAppColors.current
     val available = MoreDestination.forMode(mode)
     val entries = listOf(
+        MoreEntry(
+            MoreDestination.CALENDAR,
+            stringResource(Res.string.more_calendar_title),
+            stringResource(Res.string.more_calendar_subtitle),
+            Icons.Outlined.CalendarMonth,
+            badge = stringResource(Res.string.more_new_badge),
+        ),
         MoreEntry(MoreDestination.PICTURES, stringResource(Res.string.more_photos_title), stringResource(Res.string.more_photos_subtitle), Icons.Outlined.Image),
         MoreEntry(MoreDestination.QA, stringResource(Res.string.more_qa_title), stringResource(Res.string.more_qa_subtitle), Icons.Outlined.ChatBubbleOutline),
         MoreEntry(MoreDestination.DICTIONARY, stringResource(Res.string.more_dictionary_title), stringResource(Res.string.more_dictionary_subtitle), Icons.AutoMirrored.Outlined.MenuBook),
@@ -194,14 +208,30 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, 
             Icon(entry.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(20.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = entry.title,
-                color = colors.text,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = entry.title,
+                    color = colors.text,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                if (entry.badge != null) {
+                    Text(
+                        text = entry.badge.uppercase(),
+                        color = colors.accent,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.08.em,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(colors.accentTint)
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                    )
+                }
+            }
             // Two lines at most: the row is as tall as its tallest tile, so a
             // subtitle may wrap, but a third line would be a tile of mostly text.
             Text(
@@ -235,6 +265,7 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, 
 @Composable
 fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
     when (destination) {
+        MoreDestination.CALENDAR -> stringResource(Res.string.more_calendar_title)
         MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)
         MoreDestination.QA -> stringResource(Res.string.tab_qa_admin)
         MoreDestination.DICTIONARY -> stringResource(Res.string.strongs_dictionary_title)

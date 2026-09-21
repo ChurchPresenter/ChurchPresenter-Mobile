@@ -28,6 +28,7 @@ private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
 private const val KEY_SAVED_THEMES = "saved_themes"
+private const val KEY_CALENDAR_SYNC = "calendar_sync"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -120,6 +121,11 @@ class AppSettings(
     var slideThemeJson: String
         get() = storage.getString(KEY_SLIDE_THEME, "{}")
         set(value) { storage.putString(KEY_SLIDE_THEME, value) }
+
+    /** JSON of this phone's calendar relay enrollment; "{}" until enrolled. */
+    var calendarSyncJson: String
+        get() = storage.getString(KEY_CALENDAR_SYNC, "{}")
+        set(value) { storage.putString(KEY_CALENDAR_SYNC, value) }
 
     /** JSON array of the user's saved looks, as {name, theme} entries. Defaults to "[]". */
     var savedThemesJson: String
