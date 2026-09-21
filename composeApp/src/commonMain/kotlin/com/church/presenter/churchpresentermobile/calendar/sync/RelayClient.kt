@@ -32,25 +32,42 @@ sealed class RelayFailure(message: String) : Exception(message) {
     /** The record moved on since our copy; pull and reapply. */
     class Conflict : RelayFailure("record changed since last sync")
 
+    /** The relay did not accept the client key; fetch a fresh one and try again. */
+    class ClientKey : RelayFailure("relay refused the client key")
+
     class Rejected(status: Int, detail: String) : RelayFailure("relay rejected the request ($status): $detail")
 }
 
 /** This phone's half of the relay protocol. */
 class RelayClient(
     private val state: CalendarSyncState,
+    private val clientKey: suspend () -> String,
     private val client: HttpClient = createHttpClient(),
 ) {
     private val base = "${state.relayUrl.trimEnd('/')}/i/${state.instanceId}"
 
+    /** Tells the relay where a silent "changed" push reaches this phone. */
+    suspend fun registerPushToken(pushToken: String) {
+        val key = clientKey()
+        val response = client.put("$base/devices/me/push") {
+            auth(key)
+            contentType(ContentType.Application.Json)
+            setBody(json.encodeToString(PushTokenBody.serializer(), PushTokenBody(pushToken)))
+        }
+        checked(response)
+    }
+
     suspend fun changes(since: Long): ChangesResponse {
-        val response = client.get("$base/changes?since=$since") { auth() }
+        val key = clientKey()
+        val response = client.get("$base/changes?since=$since") { auth(key) }
         return json.decodeFromString(ChangesResponse.serializer(), checked(response).bodyAsText())
     }
 
     /** Writes one record; [ifRev] is the revision our copy came from, 0 for a service the relay has never seen. */
     suspend fun putRecord(record: SealedRecord, ifRev: Long): Long {
+        val key = clientKey()
         val response = client.put("$base/records/${record.id}") {
-            auth()
+            auth(key)
             header(HttpHeaders.IfMatch, ifRev.toString())
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(SealedRecord.serializer(), record))
@@ -59,23 +76,29 @@ class RelayClient(
     }
 
     suspend fun deleteRecord(id: String): Long {
-        val response = client.delete("$base/records/$id") { auth() }
+        val key = clientKey()
+        val response = client.delete("$base/records/$id") { auth(key) }
         return json.decodeFromString(WriteResponse.serializer(), checked(response).bodyAsText()).rev
     }
 
-    private fun HttpRequestBuilder.auth() {
+    private fun HttpRequestBuilder.auth(clientKey: String) {
         header(HttpHeaders.Authorization, "Bearer ${state.deviceToken}")
         header(HttpHeaders.Accept, ContentType.Application.Json.toString())
+        if (clientKey.isNotBlank()) header(CLIENT_KEY_HEADER, clientKey)
     }
 
     private suspend fun checked(response: HttpResponse): HttpResponse = when (response.status) {
-        HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden -> throw RelayFailure.Unauthorized()
+        HttpStatusCode.Unauthorized ->
+            if (response.bodyAsText().contains(CLIENT_KEY_ERROR)) throw RelayFailure.ClientKey() else throw RelayFailure.Unauthorized()
+        HttpStatusCode.Forbidden -> throw RelayFailure.Unauthorized()
         HttpStatusCode.Conflict, HttpStatusCode.PreconditionFailed -> throw RelayFailure.Conflict()
         else -> if (response.status.isSuccess()) response else throw RelayFailure.Rejected(response.status.value, response.bodyAsText().take(MAX_ERROR_CHARS))
     }
 
     private companion object {
         const val MAX_ERROR_CHARS = 200
+        const val CLIENT_KEY_HEADER = "X-Client-Key"
+        const val CLIENT_KEY_ERROR = "\"client_key\""
     }
 }
 

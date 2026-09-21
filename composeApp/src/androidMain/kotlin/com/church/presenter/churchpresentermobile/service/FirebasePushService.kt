@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.core.content.edit
 import androidx.core.app.NotificationCompat
 import com.church.presenter.churchpresentermobile.MainActivity
+import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncTrigger
 import com.church.presenter.churchpresentermobile.R
 import com.church.presenter.churchpresentermobile.util.Logger
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -30,6 +31,11 @@ open class FirebasePushService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Logger.d(TAG, "FCM message from ${message.from}")
+        // The calendar relay's silent nudge: nothing to show, just something to fetch.
+        if (CalendarSyncTrigger.matches(message.data)) {
+            CalendarSyncTrigger.requested()
+            return
+        }
 
         showNotification(
             title = notificationTitle(

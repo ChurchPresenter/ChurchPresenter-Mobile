@@ -25,6 +25,7 @@ import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncEngine
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncState
+import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncTrigger
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollDenied
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollService
 import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
@@ -103,6 +104,7 @@ class CalendarViewModel(
         loadPickerSources()
         if (sync?.isEnrolled == true) {
             viewModelScope.launch { sync.sync() }
+            viewModelScope.launch { CalendarSyncTrigger.requests.collect { sync.sync() } }
             // Every local edit is pushed shortly after it settles; the relay is what makes a
             // plan reach the other phones and, on Sunday, the desktop.
             viewModelScope.launch {

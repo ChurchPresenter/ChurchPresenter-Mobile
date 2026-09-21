@@ -31,7 +31,9 @@ class CalendarSyncEngine(
     private val repository: CalendarRepository,
     private val state: () -> CalendarSyncState,
     private val saveState: (CalendarSyncState) -> Unit,
-    private val clientFor: (CalendarSyncState) -> RelayClient = { RelayClient(it) },
+    private val clientKeys: ClientKeySource,
+    private val pushToken: () -> String = { "" },
+    private val clientFor: (CalendarSyncState, suspend () -> String) -> RelayClient = { s, k -> RelayClient(s, k) },
 ) {
     private val _status = MutableStateFlow<SyncStatus>(if (state().isEnrolled) SyncStatus.Synced("", 0, 0) else SyncStatus.NotEnrolled)
     val status: StateFlow<SyncStatus> = _status.asStateFlow()
@@ -59,10 +61,14 @@ class CalendarSyncEngine(
         }
         _status.value = SyncStatus.Syncing
         try {
-            val client = clientFor(current)
-            val pushed = push(client, sealing)
-            val pulled = pull(client, sealing, current, pushed)
-            _status.value = SyncStatus.Synced(nowIso(), pulled, pushed.size)
+            val client = clientFor(current, clientKeys::current)
+            try {
+                round(client, sealing, current)
+            } catch (_: RelayFailure.ClientKey) {
+                // The key rotated under us: fetch the new one and go once more.
+                if (clientKeys.refresh() == null) throw RelayFailure.ClientKey()
+                round(client, sealing, state())
+            }
             true
         } catch (e: RelayFailure.Unauthorized) {
             _status.value = SyncStatus.Unauthorized
@@ -76,6 +82,21 @@ class CalendarSyncEngine(
             _status.value = SyncStatus.Failed(e.message.orEmpty())
             false
         }
+    }
+
+    private suspend fun round(client: RelayClient, sealing: Sealing, current: CalendarSyncState) {
+        registerPushIfChanged(client, current)
+        val pushed = push(client, sealing)
+        val pulled = pull(client, sealing, state(), pushed)
+        _status.value = SyncStatus.Synced(nowIso(), pulled, pushed.size)
+    }
+
+    private suspend fun registerPushIfChanged(client: RelayClient, current: CalendarSyncState) {
+        val token = pushToken()
+        if (token.isBlank() || token == current.registeredPushToken) return
+        runCatching { client.registerPushToken(token) }
+            .onSuccess { saveState(state().copy(registeredPushToken = token)) }
+            .onFailure { Logger.e(TAG, "push token not registered: ${it.message}") }
     }
 
     /** Replays local edits and deletes. A stale write is dropped here and the pull below brings the winner. */

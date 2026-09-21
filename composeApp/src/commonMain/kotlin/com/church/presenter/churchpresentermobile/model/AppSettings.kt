@@ -29,6 +29,8 @@ private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
 private const val KEY_SAVED_THEMES = "saved_themes"
 private const val KEY_CALENDAR_SYNC = "calendar_sync"
+private const val KEY_RELAY_CLIENT_KEY = "relay_client_key"
+private const val KEY_RELAY_CLIENT_KEY_AT = "relay_client_key_at"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -121,6 +123,15 @@ class AppSettings(
     var slideThemeJson: String
         get() = storage.getString(KEY_SLIDE_THEME, "{}")
         set(value) { storage.putString(KEY_SLIDE_THEME, value) }
+
+    /** The calendar relay's shared client key as last fetched from the website, and when. */
+    var relayClientKey: String
+        get() = storage.getString(KEY_RELAY_CLIENT_KEY, "")
+        set(value) { storage.putString(KEY_RELAY_CLIENT_KEY, value) }
+
+    var relayClientKeyFetchedAt: Long
+        get() = storage.getString(KEY_RELAY_CLIENT_KEY_AT, "0").toLongOrNull() ?: 0L
+        set(value) { storage.putString(KEY_RELAY_CLIENT_KEY_AT, value.toString()) }
 
     /** JSON of this phone's calendar relay enrollment; "{}" until enrolled. */
     var calendarSyncJson: String

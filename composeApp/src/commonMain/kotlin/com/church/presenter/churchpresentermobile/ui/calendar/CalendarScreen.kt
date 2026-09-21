@@ -55,6 +55,7 @@ import com.church.presenter.churchpresentermobile.calendar.storedDate
 import com.church.presenter.churchpresentermobile.calendar.today
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncEngine
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncState
+import com.church.presenter.churchpresentermobile.calendar.sync.ClientKeySource
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollService
 import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -97,7 +98,13 @@ fun CalendarScreen(
             repository = repository,
             songCatalog = songCatalog,
             bibleCatalog = bibleCatalog,
-            sync = CalendarSyncEngine(repository, syncState, saveSync),
+            sync = CalendarSyncEngine(
+                repository = repository,
+                state = syncState,
+                saveState = saveSync,
+                clientKeys = ClientKeySource(settings),
+                pushToken = { settings.fcmToken },
+            ),
             enrollService = EnrollService(settings),
             deviceName = { settings.reportedDeviceName },
             saveEnrollment = saveSync,

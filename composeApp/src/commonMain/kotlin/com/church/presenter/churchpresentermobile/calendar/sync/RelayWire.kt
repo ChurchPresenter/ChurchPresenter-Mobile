@@ -40,6 +40,9 @@ data class EnrollBody(val deviceName: String, val code: String)
 @Serializable
 data class EnrollReply(val relayUrl: String, val instanceId: String)
 
+@Serializable
+data class PushTokenBody(val pushToken: String)
+
 /** The record id the desktop seals its preset index under. */
 const val PRESETS_RECORD = "presets"
 
@@ -55,6 +58,8 @@ data class CalendarSyncState(
     val instanceKey: String = "",
     val cursor: Long = 0L,
     val lastSyncAt: String = "",
+    /** The push token the relay last accepted, so it is re-sent only when it changes. */
+    val registeredPushToken: String = "",
 ) {
     val isEnrolled: Boolean
         get() = relayUrl.isNotBlank() && instanceId.isNotBlank() && deviceToken.isNotBlank() && instanceKey.isNotBlank()
