@@ -724,6 +724,8 @@ class PresentationsViewModelTest {
         try {
             vm.uploadPresentationFile(file())
             vm.toastEvent.first { it != null }
+            // The toast is posted before the spinner is cleared, so await the state asserted on.
+            vm.isUploading.first { !it }
 
             assertFalse(vm.isUploading.value)
             assertNull(vm.uploadProgress.value)
