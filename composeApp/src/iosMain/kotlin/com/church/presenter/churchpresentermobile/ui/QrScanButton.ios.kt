@@ -44,6 +44,9 @@ import platform.AVFoundation.requestAccessForMediaType
 import platform.darwin.NSObject
 import platform.UIKit.UIColor
 import platform.UIKit.UIView
+import platform.darwin.DISPATCH_QUEUE_PRIORITY_DEFAULT
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_global_queue
 import platform.darwin.dispatch_get_main_queue
 
 /**
@@ -168,7 +171,12 @@ private fun buildCameraView(
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill
     view.layer.addSublayer(layer)
 
-    session.startRunning()
+    // startRunning() blocks until the capture graph is built; Apple requires it
+    // off the main thread. Calling it here (inside the UIKitView factory, during
+    // composition) stalled the frame and crashed with an unhandled exception.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT.toLong(), 0UL)) {
+        session.startRunning()
+    }
     return view
 }
 
