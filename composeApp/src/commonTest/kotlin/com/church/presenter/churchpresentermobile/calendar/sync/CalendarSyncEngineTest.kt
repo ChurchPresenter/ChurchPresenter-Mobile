@@ -42,6 +42,8 @@ class CalendarSyncEngineTest {
         val records = LinkedHashMap<String, SealedRecord>()
         val tombstones = ArrayList<RemoteTombstone>()
         var presetsBox = ""
+        /** Records per `changes` page; a smaller number than the records held makes the relay answer `more`. */
+        var pageSize = Int.MAX_VALUE
         var clientKey = "clientkeyclientkey01"
         var deviceToken = enrolled.deviceToken
         var pushTokens = ArrayList<String>()
@@ -59,7 +61,15 @@ class CalendarSyncEngineTest {
             return when {
                 path == "changes" -> {
                     val since = request.url.parameters["since"]!!.toLong()
-                    val page = ChangesResponse(rev, records.values.filter { it.rev > since }, tombstones, presetsBox)
+                    val newer = records.values.filter { it.rev > since }.sortedBy { it.rev }
+                    val more = newer.size > pageSize
+                    val page = ChangesResponse(
+                        rev = if (more) newer[pageSize - 1].rev else rev,
+                        records = newer.take(pageSize),
+                        tombstones = tombstones,
+                        presetsBox = presetsBox,
+                        more = more,
+                    )
                     respond(json.encodeToString(ChangesResponse.serializer(), page), HttpStatusCode.OK)
                 }
                 path.startsWith("records/") && request.method == HttpMethod.Put -> {
@@ -225,6 +235,20 @@ class CalendarSyncEngineTest {
         val engine = engine()
         assertFalse(engine.sync())
         assertEquals(SyncStatus.Unauthorized, engine.status.value)
+    }
+
+    @Test
+    fun aFullPageIsFollowedUntilTheRelayHasNothingMore() = runTest {
+        relay.desktopWrote(service("svc-1", "One"))
+        relay.desktopWrote(service("svc-2", "Two"))
+        relay.desktopWrote(service("svc-3", "Three"))
+        relay.pageSize = 2
+        val engine = engine()
+        assertTrue(engine.sync())
+        assertEquals(listOf("GET changes", "GET changes"), relay.calls)
+        assertEquals("One", repository.service("svc-1")!!.name)
+        assertEquals("Three", repository.service("svc-3")!!.name)
+        assertEquals(relay.rev, state.cursor, "the cursor ends on the relay's revision, not short of it")
     }
 
     @Test

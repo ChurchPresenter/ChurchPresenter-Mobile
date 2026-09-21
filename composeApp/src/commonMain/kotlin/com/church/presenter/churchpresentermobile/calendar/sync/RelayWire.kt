@@ -23,10 +23,13 @@ data class PresetIndex(val presets: List<PresetSummary> = emptyList())
 
 @Serializable
 data class ChangesResponse(
+    /** The revision this page is complete up to; the cursor for the next call, whether or not [more]. */
     val rev: Long,
     val records: List<SealedRecord> = emptyList(),
     val tombstones: List<RemoteTombstone> = emptyList(),
     val presetsBox: String = "",
+    /** A full page: call again from [rev] for the rest. A client that ignores this skips rows. */
+    val more: Boolean = false,
 )
 
 @Serializable

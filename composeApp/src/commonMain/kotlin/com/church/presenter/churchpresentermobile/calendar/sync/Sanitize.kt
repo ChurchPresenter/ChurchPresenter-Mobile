@@ -32,7 +32,6 @@ object Sanitize {
     private const val HORIZON_DAYS = 2 * 366
     private const val PRESETS_MAX = 500
 
-    private val CONTROL_OR_FORMAT = Regex("[\\p{Cc}\\p{Cf}]")
     private val SPACES = Regex("\\s+")
     private val HEX_COLOR = Regex("^#[0-9A-Fa-f]{6}$")
     private val ID = Regex("^[A-Za-z0-9_.:-]{1,$ID_CHARS}$")
@@ -43,9 +42,9 @@ object Sanitize {
     /** How many records one pull is allowed to hand this phone. */
     const val RECORDS_PER_PULL = 2_000
 
-    /** Control and format characters (including bidi overrides) removed, whitespace collapsed, capped. */
+    /** Control characters and the invisible ones that disguise text removed, whitespace collapsed, capped. */
     fun text(value: String, max: Int): String =
-        CONTROL_OR_FORMAT.replace(value, "").replace(SPACES, " ").trim().take(max)
+        stripDisguising(value).replace(SPACES, " ").trim().take(max)
 
     fun isId(value: String): Boolean = ID.matches(value)
 
@@ -134,3 +133,29 @@ object Sanitize {
     private const val DEFAULT_MINISTRY = "Ministry"
     private const val DEFAULT_PRESET = "Preset"
 }
+
+/**
+ * Control characters plus bidi marks/overrides/isolates, zero-width space, word joiner, BOM,
+ * invisible operators and tag characters. Deliberately NOT every format character: the
+ * zero-width joiner and non-joiner (U+200D, U+200C) are part of how Persian, Hindi, Nepali and
+ * other scripts, and emoji sequences, are spelled. Written as a scan, not a regex, so the same
+ * rule holds on every target (the desktop applies the same one).
+ */
+private fun stripDisguising(value: String): String = buildString(value.length) {
+    var i = 0
+    while (i < value.length) {
+        val c = value[i]
+        // U+E0000..E007F, the tag block, is the surrogate pair DB 40 / DC 00..7F.
+        if (c == '\uDB40' && i + 1 < value.length && value[i + 1] in '\uDC00'..'\uDC7F') {
+            i += 2
+            continue
+        }
+        if (!isDisguising(c)) append(c)
+        i++
+    }
+}
+
+private fun isDisguising(c: Char): Boolean =
+    c.category == CharCategory.CONTROL ||
+        c == '\u200B' || c == '\u200E' || c == '\u200F' || c == '\u061C' || c == '\u180E' || c == '\uFEFF' ||
+        c in '\u202A'..'\u202E' || c in '\u2060'..'\u2069' || c in '\uFFF9'..'\uFFFB'

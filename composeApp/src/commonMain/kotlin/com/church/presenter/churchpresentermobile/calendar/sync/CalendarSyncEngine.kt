@@ -12,6 +12,9 @@ import kotlinx.coroutines.sync.withLock
 
 private const val TAG = "CalendarSync"
 
+/** 2,000 rows a page: far beyond what the relay holds, so this only stops a runaway. */
+private const val MAX_PULL_PAGES = 50
+
 /** Where this phone stands with the relay. */
 sealed class SyncStatus {
     data object NotEnrolled : SyncStatus()
@@ -122,7 +125,13 @@ class CalendarSyncEngine(
         return done
     }
 
-    private suspend fun pull(client: RelayClient, sealing: Sealing, current: CalendarSyncState, pushed: Set<String>): Int {
+    private suspend fun pull(
+        client: RelayClient,
+        sealing: Sealing,
+        current: CalendarSyncState,
+        pushed: Set<String>,
+        page: Int = 1,
+    ): Int {
         val changes = client.changes(current.cursor)
         if (changes.rev < current.cursor) throw RelayFailure.Rejected(0, "revision went backwards")
         val accepted = HashMap<String, PlannedService>()
@@ -150,7 +159,13 @@ class CalendarSyncEngine(
         val stillPending = repository.document.value.pendingPush - pushed
         val applied = accepted.filterKeys { it !in stillPending }
         repository.applySync(accepted = applied, removed = removed, presets = presets, pushedIds = emptySet(), deletedIds = emptySet())
-        saveState(current.copy(cursor = changes.rev, lastSyncAt = nowIso()))
-        return applied.size + removed.size
+        val next = current.copy(cursor = changes.rev, lastSyncAt = nowIso())
+        saveState(next)
+        val count = applied.size + removed.size
+        if (!changes.more) return count
+        // A full page: the rest is behind it. Stopping here would leave the cursor short, which is safe,
+        // but the phone would look up to date until the next round.
+        if (page >= MAX_PULL_PAGES) throw RelayFailure.Rejected(0, "relay has more changes than one round will read")
+        return count + pull(client, sealing, next, pushed, page + 1)
     }
 }

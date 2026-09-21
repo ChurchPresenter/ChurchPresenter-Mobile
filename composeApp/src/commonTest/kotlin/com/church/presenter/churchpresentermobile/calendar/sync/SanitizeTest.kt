@@ -27,6 +27,22 @@ class SanitizeTest {
     )
 
     @Test
+    fun textKeepsTheJoinersPersianHindiAndEmojiNeed() {
+        val persian = "می\u200Cخواهم"
+        val family = "👨\u200D👩\u200D👧"
+        val conjunct = "क्\u200Dष"
+        assertEquals(persian, Sanitize.text(persian, 100))
+        assertEquals(family, Sanitize.text(family, 100))
+        assertEquals(conjunct, Sanitize.text(conjunct, 100))
+    }
+
+    @Test
+    fun textStripsTheInvisibleCharactersThatDisguiseText() {
+        assertEquals("abcdefg", Sanitize.text("a\u202Eb\u200Bc\u2060d\uFEFFe\u2066f\u200Eg", 100))
+        assertEquals("xy", Sanitize.text("x\uDB40\uDC41y", 100), "a tag character leaves no half a surrogate pair behind")
+    }
+
+    @Test
     fun textStripsControlAndFormatCharactersAndCaps() {
         assertEquals("Hello World", Sanitize.text("‮Hel\u0000lo\t \n World​", 100))
         assertEquals("abcde", Sanitize.text("abcdefgh", 5))
