@@ -39,7 +39,11 @@ class SanitizeTest {
     @Test
     fun textStripsTheInvisibleCharactersThatDisguiseText() {
         assertEquals("abcdefg", Sanitize.text("a\u202Eb\u200Bc\u2060d\uFEFFe\u2066f\u200Eg", 100))
-        assertEquals("xy", Sanitize.text("x\uDB40\uDC41y", 100), "a tag character leaves no half a surrogate pair behind")
+        assertEquals(
+            "xy",
+            Sanitize.text("x\uDB40\uDC41y", 100),
+            "a tag character leaves no half a surrogate pair behind",
+        )
     }
 
     @Test
