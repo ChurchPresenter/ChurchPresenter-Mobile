@@ -31,6 +31,7 @@ object Sanitize {
     private const val RETENTION_DAYS = 90
     private const val HORIZON_DAYS = 2 * 366
     private const val PRESETS_MAX = 500
+    private const val BOOKS_IN_BIBLE = 66
 
     private val SPACES = Regex("\\s+")
     private val HEX_COLOR = Regex("^#[0-9A-Fa-f]{6}$")
@@ -109,7 +110,11 @@ object Sanitize {
             songbook = text(row.songbook, TITLE_CHARS),
             number = text(row.number, ID_CHARS),
         )
-        is PlanRow.Bible -> row.copy(title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_REFERENCE }, preview = text(row.preview, DETAIL_CHARS))
+        is PlanRow.Bible -> row.copy(
+            title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_REFERENCE },
+            preview = text(row.preview, DETAIL_CHARS),
+            bookId = if (row.bookId in 1..BOOKS_IN_BIBLE) row.bookId else 0,
+        )
         is PlanRow.Ministry -> row.copy(title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_MINISTRY }, detail = text(row.detail, DETAIL_CHARS))
         is PlanRow.Preset -> row.copy(
             title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_PRESET },

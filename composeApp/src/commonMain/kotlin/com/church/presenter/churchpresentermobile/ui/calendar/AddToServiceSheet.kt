@@ -346,7 +346,7 @@ internal class PickerState {
         PickedRow(PlanRow.Preset(id = newId(), title = picked.name, presetId = picked.id, kind = picked.kind), seconds = null)
 
     fun bibleRow(reference: ParsedReference, newId: () -> String) =
-        PickedRow(PlanRow.Bible(id = newId(), title = reference.text), seconds = null)
+        PickedRow(PlanRow.Bible(id = newId(), title = reference.text, bookId = reference.book.number), seconds = null)
 
     /** What the primary button would add right now, or null when nothing is ready. */
     fun pendingRow(tab: PickerTab, query: String, reference: ParsedReference?, newId: () -> String): PickedRow? = when (tab) {
@@ -370,7 +370,10 @@ internal class PickerState {
         if (pickedBook != null && pickedChapter != null) {
             val reference = ParsedReference(pickedBook, pickedChapter, verseFrom, verseTo)
             val firstWords = verseFrom?.let { preview?.firstWords?.get(it) }.orEmpty().take(PREVIEW_CHARS)
-            return PickedRow(PlanRow.Bible(id = newId(), title = reference.text, preview = firstWords), seconds = null)
+            return PickedRow(
+                PlanRow.Bible(id = newId(), title = reference.text, preview = firstWords, bookId = pickedBook.number),
+                seconds = null,
+            )
         }
         return typed?.let { bibleRow(it, newId) }
     }

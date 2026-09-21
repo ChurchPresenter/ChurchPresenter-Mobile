@@ -139,7 +139,13 @@ sealed class PlanRow {
     /** A passage, as typed or picked: `Psalms 100:1-5`. The desktop resolves the text. */
     @Serializable
     @SerialName("bible")
-    data class Bible(override val id: String, override val title: String, val preview: String = "") : PlanRow()
+    data class Bible(
+        override val id: String,
+        override val title: String,
+        val preview: String = "",
+        /** The canonical book number, 1..66, the same in every translation; 0 when only the name is known. */
+        val bookId: Int = 0,
+    ) : PlanRow()
 
     /** Something that happens up front and not on screen — a solo, a testimony, a prayer. */
     @Serializable

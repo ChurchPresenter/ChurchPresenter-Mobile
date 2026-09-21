@@ -82,7 +82,8 @@ class SanitizeTest {
             add(PlanRow.Section("r1", "Duplicate id"))
             add(PlanRow.Song("bad id", "Dropped"))
             add(PlanRow.Song("r2", "", songbook = "Hymns"))
-            add(PlanRow.Bible("r3", "John 3:16", preview = "x".repeat(500)))
+            add(PlanRow.Bible("r3", "John 3:16", preview = "x".repeat(500), bookId = 43))
+            add(PlanRow.Bible("r4", "Nowhere 1:1", bookId = 999))
             repeat(300) { add(PlanRow.Ministry("m$it", "Filler")) }
         }
         val clean = Sanitize.service(service(*rows.toTypedArray()), now = today)!!
@@ -92,6 +93,8 @@ class SanitizeTest {
         assertEquals(SectionPalette.DEFAULT, section.color)
         assertEquals("Song", (clean.rows[1] as PlanRow.Song).title)
         assertEquals(200, (clean.rows[2] as PlanRow.Bible).preview.length)
+        assertEquals(43, (clean.rows[2] as PlanRow.Bible).bookId)
+        assertEquals(0, (clean.rows[3] as PlanRow.Bible).bookId)
         assertEquals(1, clean.rows.count { it.id == "r1" })
         assertTrue(clean.rows.none { it.title == "Dropped" })
     }
