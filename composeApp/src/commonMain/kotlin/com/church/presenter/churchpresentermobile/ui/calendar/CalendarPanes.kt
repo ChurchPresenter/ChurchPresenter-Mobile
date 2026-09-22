@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.church.presenter.churchpresentermobile.calendar.YearMonthRef
 import com.church.presenter.churchpresentermobile.calendar.monthTitle
@@ -98,7 +99,8 @@ internal fun CalendarTwoPane(
                             service = service,
                             selected = service.id == shown?.id,
                             onClick = { viewModel.openService(service.id) },
-                            modifier = Modifier.width(ServiceCardWidth),
+                            modifier = Modifier.width(ServiceCardWidth)
+                                .testTag(CalendarTags.serviceCard(service.id)),
                         )
                     }
                 }

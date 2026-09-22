@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -113,10 +114,15 @@ internal fun TimingPanel(
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         TimingRow(stringResource(Res.string.calendar_starts)) {
             val cued = draft.startOffsetMinutes == null && !draft.followsPrevious
-            TimingChip(stringResource(Res.string.calendar_chip_cued), cued, enabled) {
+            TimingChip(stringResource(Res.string.calendar_chip_cued), cued, enabled, CalendarTags.TIMING_CUED) {
                 onChange(draft.copy(startOffsetMinutes = null, followsPrevious = false))
             }
-            TimingChip(stringResource(Res.string.calendar_chip_after_prev), draft.followsPrevious, enabled) {
+            TimingChip(
+                stringResource(Res.string.calendar_chip_after_prev),
+                draft.followsPrevious,
+                enabled,
+                CalendarTags.TIMING_AFTER_PREVIOUS,
+            ) {
                 onChange(draft.copy(startOffsetMinutes = null, followsPrevious = true))
             }
             START_OFFSETS_MINUTES.forEach { minutes ->
@@ -124,16 +130,27 @@ internal fun TimingPanel(
                     stringResource(Res.string.calendar_chip_minus_minutes, minutes),
                     draft.startOffsetMinutes == -minutes,
                     enabled,
+                    CalendarTags.timingEarly(minutes),
                 ) {
                     onChange(draft.copy(startOffsetMinutes = -minutes, followsPrevious = false))
                 }
             }
-            TimingChip(stringResource(Res.string.calendar_chip_on_time), draft.startOffsetMinutes == 0, enabled) {
+            TimingChip(
+                stringResource(Res.string.calendar_chip_on_time),
+                draft.startOffsetMinutes == 0,
+                enabled,
+                CalendarTags.TIMING_ON_TIME,
+            ) {
                 onChange(draft.copy(startOffsetMinutes = 0, followsPrevious = false))
             }
         }
         TimingRow(stringResource(Res.string.calendar_runs)) {
-            TimingChip(stringResource(Res.string.calendar_chip_its_own), draft.runSeconds == null, enabled) {
+            TimingChip(
+                stringResource(Res.string.calendar_chip_its_own),
+                draft.runSeconds == null,
+                enabled,
+                CalendarTags.TIMING_OWN_LENGTH,
+            ) {
                 onChange(draft.copy(runSeconds = null))
             }
             RUN_CHOICES_MINUTES.forEach { minutes ->
@@ -142,7 +159,12 @@ internal fun TimingPanel(
                 } else {
                     stringResource(Res.string.calendar_chip_minutes, minutes)
                 }
-                TimingChip(label, draft.runSeconds == minutes * SECONDS_PER_MINUTE, enabled) {
+                TimingChip(
+                    label,
+                    draft.runSeconds == minutes * SECONDS_PER_MINUTE,
+                    enabled,
+                    CalendarTags.timingRuns(minutes),
+                ) {
                     onChange(draft.copy(runSeconds = minutes * SECONDS_PER_MINUTE))
                 }
             }
@@ -152,24 +174,43 @@ internal fun TimingPanel(
                 stringResource(Res.string.calendar_chip_once),
                 draft.repeats == 1,
                 enabled,
+                CalendarTags.TIMING_ONCE,
             ) { onChange(draft.copy(repeats = 1)) }
             TimingChip(
                 stringResource(Res.string.calendar_chip_loop),
                 draft.repeats == 0,
                 enabled,
+                CalendarTags.TIMING_LOOP,
             ) { onChange(draft.copy(repeats = 0)) }
             REPEAT_CHOICES.forEach { n ->
-                TimingChip(n.toString(), draft.repeats == n, enabled) { onChange(draft.copy(repeats = n)) }
+                TimingChip(n.toString(), draft.repeats == n, enabled, CalendarTags.timingRepeats(n)) {
+                    onChange(draft.copy(repeats = n))
+                }
             }
         }
         TimingRow(stringResource(Res.string.calendar_at_end)) {
-            TimingChip(stringResource(Res.string.calendar_chip_hold), draft.atEnd == RowEnd.HOLD, enabled) {
+            TimingChip(
+                stringResource(Res.string.calendar_chip_hold),
+                draft.atEnd == RowEnd.HOLD,
+                enabled,
+                CalendarTags.TIMING_HOLD,
+            ) {
                 onChange(draft.copy(atEnd = RowEnd.HOLD))
             }
-            TimingChip(stringResource(Res.string.calendar_chip_next_item), draft.atEnd == RowEnd.NEXT, enabled) {
+            TimingChip(
+                stringResource(Res.string.calendar_chip_next_item),
+                draft.atEnd == RowEnd.NEXT,
+                enabled,
+                CalendarTags.TIMING_NEXT,
+            ) {
                 onChange(draft.copy(atEnd = RowEnd.NEXT))
             }
-            TimingChip(stringResource(Res.string.calendar_chip_blank), draft.atEnd == RowEnd.BLANK, enabled) {
+            TimingChip(
+                stringResource(Res.string.calendar_chip_blank),
+                draft.atEnd == RowEnd.BLANK,
+                enabled,
+                CalendarTags.TIMING_BLANK,
+            ) {
                 onChange(draft.copy(atEnd = RowEnd.BLANK))
             }
         }
@@ -201,8 +242,14 @@ private fun TimingRow(label: String, chips: @Composable () -> Unit) {
 }
 
 @Composable
-private fun TimingChip(label: String, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
-    CalendarChip(label = label, selected = selected, onClick = { if (enabled) onClick() }, dim = true)
+private fun TimingChip(label: String, selected: Boolean, enabled: Boolean, tag: String, onClick: () -> Unit) {
+    CalendarChip(
+        label = label,
+        selected = selected,
+        onClick = { if (enabled) onClick() },
+        dim = true,
+        modifier = Modifier.testTag(tag),
+    )
 }
 
 /** `Starts when cued · uses the item’s own length · then holds`. */

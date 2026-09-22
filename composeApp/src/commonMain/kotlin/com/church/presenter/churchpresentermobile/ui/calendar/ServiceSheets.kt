@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -128,8 +129,14 @@ internal fun CalendarSheet(onDismiss: () -> Unit, content: @Composable () -> Uni
     }
 }
 
+/**
+ * The new/edit service form, without the sheet around it.
+ *
+ * `internal` so each state can be driven in a test: a modal sheet is its own window, and a test
+ * that reached for the screen behind it would find none of this.
+ */
 @Composable
-private fun ServiceForm(
+internal fun ServiceForm(
     title: String,
     subtitle: String,
     initialName: String,
@@ -150,14 +157,20 @@ private fun ServiceForm(
 
     SheetTitle(title, onClose = onDismiss, subtitle = subtitle)
     Spacer(Modifier.height(14.dp))
-    CompactField(stringResource(Res.string.calendar_name), name, { name = it }, highlighted = true)
+    CompactField(
+        stringResource(Res.string.calendar_name),
+        name,
+        { name = it },
+        highlighted = true,
+        modifier = Modifier.testTag(CalendarTags.SERVICE_NAME),
+    )
     Spacer(Modifier.height(12.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         CompactField(
             label = stringResource(Res.string.calendar_start_time),
             value = startText,
             onValueChange = { startText = it },
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(CalendarTags.SERVICE_START),
             highlighted = parsedStart == null,
         )
         Column(modifier = Modifier.weight(WIDER_COLUMN)) {
@@ -171,6 +184,7 @@ private fun ServiceForm(
                 ),
                 selected = kindIndex,
                 onSelect = { kindIndex = it },
+                tagFor = CalendarTags::serviceKind,
             )
         }
     }
@@ -184,6 +198,7 @@ private fun ServiceForm(
                 subtitle = stringResource(Res.string.calendar_blank_service_hint),
                 selected = templateId == null,
                 onClick = { templateId = null },
+                modifier = Modifier.testTag(CalendarTags.SERVICE_BLANK),
             )
             templates.forEach { template ->
                 ChoiceCard(
@@ -195,6 +210,7 @@ private fun ServiceForm(
                     ),
                     selected = templateId == template.id,
                     onClick = { templateId = template.id },
+                    modifier = Modifier.testTag(CalendarTags.template(template.id)),
                 )
             }
         }
@@ -207,12 +223,13 @@ private fun ServiceForm(
                 icon = Icons.Outlined.Delete,
                 contentDescription = stringResource(Res.string.calendar_delete_service),
                 onClick = onDelete,
+                modifier = Modifier.testTag(CalendarTags.SERVICE_DELETE),
             )
         }
         CalendarSecondaryButton(
             stringResource(Res.string.calendar_cancel),
             onClick = onDismiss,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(CalendarTags.SERVICE_CANCEL),
         )
         CalendarPrimaryButton(
             label = confirmLabel,
@@ -221,7 +238,7 @@ private fun ServiceForm(
                 val start = parsedStart ?: return@CalendarPrimaryButton
                 onConfirm(ServiceDraft(name.trim(), storedTime(start), ServiceKind.entries[kindIndex].id, templateId))
             },
-            modifier = Modifier.weight(WIDER_COLUMN),
+            modifier = Modifier.weight(WIDER_COLUMN).testTag(CalendarTags.SERVICE_CONFIRM),
         )
     }
 }

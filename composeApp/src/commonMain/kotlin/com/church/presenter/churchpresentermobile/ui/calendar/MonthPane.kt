@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -71,6 +72,7 @@ internal fun MonthGrid(
                 Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 stringResource(Res.string.calendar_prev_month),
                 onPrevious,
+                Modifier.testTag(CalendarTags.MONTH_PREVIOUS),
             )
             Text(
                 text = monthTitle(month),
@@ -84,6 +86,7 @@ internal fun MonthGrid(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 stringResource(Res.string.calendar_next_month),
                 onNext,
+                Modifier.testTag(CalendarTags.MONTH_NEXT),
             )
         }
         Spacer(Modifier.height(8.dp))
@@ -113,7 +116,7 @@ internal fun MonthGrid(
                             .map { ServiceKind.byId(it.kind).colorHex }
                             .take(MAX_DOTS),
                         onClick = { onSelect(date) },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).testTag(CalendarTags.day(storedDate(date))),
                     )
                 }
             }
@@ -122,10 +125,15 @@ internal fun MonthGrid(
 }
 
 @Composable
-private fun NavButton(icon: ImageVector, description: String, onClick: () -> Unit) {
+private fun NavButton(
+    icon: ImageVector,
+    description: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(30.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colors.surface)

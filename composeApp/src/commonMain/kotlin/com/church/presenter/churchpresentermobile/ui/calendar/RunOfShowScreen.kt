@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.lazy.rememberLazyListState
 import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.background
@@ -118,8 +119,14 @@ internal fun RunOfShowScreen(
                         onRemove = if (inline) ({ actions.rows.onRemove(clocked.row.id) }) else null,
                     )
                     when (val row = clocked.row) {
-                        is PlanRow.Section -> SectionRow(row, rowActions)
-                        else -> ItemRow(clocked, service.startTime, rowActions)
+                        is PlanRow.Section ->
+                            SectionRow(row, rowActions, Modifier.testTag(CalendarTags.row(row.id)))
+                        else -> ItemRow(
+                            clocked,
+                            service.startTime,
+                            rowActions,
+                            Modifier.testTag(CalendarTags.row(clocked.row.id)),
+                        )
                     }
                 }
             }
@@ -183,7 +190,7 @@ private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: ()
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(Res.string.cd_back),
                 tint = colors.accent,
-                modifier = Modifier.size(22.dp).clickable(onClick = onBack),
+                modifier = Modifier.size(22.dp).testTag(CalendarTags.RUN_BACK).clickable(onClick = onBack),
             )
             Spacer(Modifier.width(14.dp))
         }
@@ -208,6 +215,7 @@ private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: ()
         Switch(
             checked = service.armed,
             onCheckedChange = onArmed,
+            modifier = Modifier.testTag(CalendarTags.RUN_ARMED),
             colors = SwitchDefaults.colors(checkedTrackColor = colors.accent, checkedThumbColor = colors.onAccent),
         )
     }
@@ -236,12 +244,14 @@ private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit, onLoad: (() -> U
             icon = Icons.Filled.Add,
             contentDescription = stringResource(Res.string.calendar_add_item),
             onClick = onAdd,
+            modifier = Modifier.testTag(CalendarTags.RUN_ADD),
         )
         CalendarSecondaryButton(
             label = null,
             icon = Icons.Outlined.ContentCopy,
             contentDescription = stringResource(Res.string.calendar_copy_service),
             onClick = onCopy,
+            modifier = Modifier.testTag(CalendarTags.RUN_COPY),
         )
         Box(modifier = Modifier.weight(1f)) {
             CalendarPrimaryButton(
@@ -249,7 +259,7 @@ private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit, onLoad: (() -> U
                 icon = Icons.Outlined.FileDownload,
                 onClick = { onLoad?.invoke() },
                 enabled = onLoad != null,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.RUN_LOAD),
             )
         }
     }

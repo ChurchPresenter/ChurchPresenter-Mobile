@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -104,6 +105,7 @@ internal fun LazyListScope.songItems(
             selected = selected?.identity == song.identity,
             onSelect = { onSelect(song) },
             onAdd = { onAdd(song) },
+            modifier = Modifier.testTag(CalendarTags.song(songLabel(song))),
         )
     }
 }
@@ -147,11 +149,24 @@ internal fun BibleTab(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                shown.forEach { CalendarChip(it.name, selected = false, onClick = { onBook(it) }, dim = true) }
+                shown.forEach { book ->
+                    CalendarChip(
+                        book.name,
+                        selected = false,
+                        onClick = { onBook(book) },
+                        dim = true,
+                        modifier = Modifier.testTag(CalendarTags.book(book.number)),
+                    )
+                }
             }
         } else {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                CalendarChip(book.name, selected = true, onClick = { onBook(book) })
+                CalendarChip(
+                    book.name,
+                    selected = true,
+                    onClick = { onBook(book) },
+                    modifier = Modifier.testTag(CalendarTags.book(book.number)),
+                )
                 if (chapter != null) CalendarChip(chapter.toString(), selected = true, onClick = { onChapter(chapter) })
                 Text(
                     text = stringResource(Res.string.calendar_tap_verse_hint),
@@ -162,11 +177,11 @@ internal fun BibleTab(
                 )
             }
             if (chapter == null) {
-                NumberGrid(count = book.chapters, from = null, to = null, onTap = onChapter)
+                NumberGrid(book.chapters, null, null, CalendarTags::chapter, onChapter)
             } else if (verseCount != null) {
-                NumberGrid(count = verseCount, from = verseFrom, to = verseTo, onTap = onVerse)
+                NumberGrid(verseCount, verseFrom, verseTo, CalendarTags::verse, onVerse)
             } else {
-                NumberGrid(count = MAX_VERSES_SHOWN, from = verseFrom, to = verseTo, onTap = onVerse)
+                NumberGrid(MAX_VERSES_SHOWN, verseFrom, verseTo, CalendarTags::verse, onVerse)
             }
         }
     }
@@ -174,7 +189,7 @@ internal fun BibleTab(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun NumberGrid(count: Int, from: Int?, to: Int?, onTap: (Int) -> Unit) {
+private fun NumberGrid(count: Int, from: Int?, to: Int?, tagFor: (Int) -> String, onTap: (Int) -> Unit) {
     val colors = LocalAppColors.current
     FlowRow(
         maxItemsInEachRow = VERSE_COLUMNS,
@@ -186,6 +201,7 @@ private fun NumberGrid(count: Int, from: Int?, to: Int?, onTap: (Int) -> Unit) {
             Box(
                 modifier = Modifier
                     .weight(1f)
+                    .testTag(tagFor(n))
                     .clip(RoundedCornerShape(9.dp))
                     .background(if (inRange) colors.accentTint else colors.surface)
                     .border(1.dp, if (inRange) colors.accent else colors.borderSubtle, RoundedCornerShape(9.dp))
@@ -216,14 +232,26 @@ internal fun MinistryTab(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CompactField(stringResource(Res.string.calendar_what_happens), what, onWhat, highlighted = true)
-        CompactField(stringResource(Res.string.calendar_who_or_note), who, onWho)
+        CompactField(
+            stringResource(Res.string.calendar_what_happens),
+            what,
+            onWhat,
+            highlighted = true,
+            modifier = Modifier.testTag(CalendarTags.MINISTRY_WHAT),
+        )
+        CompactField(
+            stringResource(Res.string.calendar_who_or_note),
+            who,
+            onWho,
+            modifier = Modifier.testTag(CalendarTags.MINISTRY_WHO),
+        )
         CompactField(
             stringResource(Res.string.calendar_duration),
             duration,
             onDuration,
             placeholder = "3:30",
             keyboardType = KeyboardType.Number,
+            modifier = Modifier.testTag(CalendarTags.MINISTRY_DURATION),
         )
         if (what.isNotBlank()) {
             CalendarCard {
@@ -262,6 +290,7 @@ internal fun LazyListScope.presetItems(
             title = preset.name,
             subtitle = preset.detail,
             selected = selected?.id == preset.id,
+            modifier = Modifier.testTag(CalendarTags.preset(preset.id)),
             onSelect = { onSelect(preset) },
             onAdd = { onAdd(preset) },
         )

@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,6 +51,21 @@ internal fun RowEditorSheet(
     onRemove: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    CalendarSheet(onDismiss) {
+        RowEditorContent(service, row, onSave, onMove, onRemove, onDismiss)
+    }
+}
+
+/** The editor without the sheet around it, so each row kind's form can be driven in a test. */
+@Composable
+internal fun RowEditorContent(
+    service: PlannedService,
+    row: PlanRow,
+    onSave: (RowEdit) -> Unit,
+    onMove: (delta: Int) -> Unit,
+    onRemove: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     val colors = LocalAppColors.current
     var title by remember { mutableStateOf(row.title) }
     var detail by remember { mutableStateOf((row as? PlanRow.Ministry)?.detail.orEmpty()) }
@@ -63,85 +79,99 @@ internal fun RowEditorSheet(
     val index = service.rows.indexOfFirst { it.id == row.id }
     val editable = row is PlanRow.Section || row is PlanRow.Ministry || row is PlanRow.Bible
 
-    CalendarSheet(onDismiss) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            KindBadge(row.kindKey, size = 30.dp)
-            SheetTitle(
-                row.title,
-                onClose = onDismiss,
-                subtitle = rowSubtitle(row).ifEmpty { null },
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Spacer(Modifier.height(14.dp))
-        if (editable) {
-            CompactField(stringResource(Res.string.calendar_name), title, { title = it }, highlighted = true)
-            Spacer(Modifier.height(12.dp))
-        }
-        if (row is PlanRow.Ministry) {
-            CompactField(stringResource(Res.string.calendar_who_or_note), detail, { detail = it })
-            Spacer(Modifier.height(12.dp))
-        }
-        if (row is PlanRow.Section) {
-            SwatchRow(color = color, onColor = { color = it })
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(Res.string.calendar_section_hint), color = colors.muted, fontSize = 12.sp)
-        } else {
-            CompactField(
-                stringResource(Res.string.calendar_duration),
-                durationText,
-                { durationText = it },
-                placeholder = "4:30",
-            )
-            Spacer(Modifier.height(12.dp))
-            TimingPanel(
-                draft = timing.copy(runSeconds = parseDuration(durationText)),
-                onChange = { draft ->
-                    timing = draft
-                    durationText = draft.runSeconds?.let(::formatDuration).orEmpty()
-                },
-                serviceStart = service.startTime,
-            )
-        }
-        Spacer(Modifier.height(18.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            CalendarSecondaryButton(
-                label = null,
-                icon = Icons.Filled.KeyboardArrowUp,
-                contentDescription = stringResource(Res.string.calendar_move_up),
-                onClick = { if (index > 0) onMove(-1) },
-            )
-            CalendarSecondaryButton(
-                label = null,
-                icon = Icons.Filled.KeyboardArrowDown,
-                contentDescription = stringResource(Res.string.calendar_move_down),
-                onClick = { if (index in 0 until service.rows.lastIndex) onMove(1) },
-            )
-            CalendarSecondaryButton(
-                label = null,
-                icon = Icons.Outlined.Delete,
-                contentDescription = stringResource(Res.string.calendar_remove_row),
-                onClick = onRemove,
-            )
-            CalendarPrimaryButton(
-                label = stringResource(Res.string.calendar_save_row),
-                onClick = {
-                    val edited = when (row) {
-                        is PlanRow.Section -> row.copy(title = title.trim().ifEmpty { row.title }, color = color)
-                        is PlanRow.Ministry -> row.copy(
-                            title = title.trim().ifEmpty { row.title },
-                            detail = detail.trim(),
-                        )
-                        is PlanRow.Bible -> row.copy(title = title.trim().ifEmpty { row.title })
-                        else -> row
-                    }
-                    val seconds = if (row is PlanRow.Section) null else parseDuration(durationText)
-                    val rowTiming =
-                        if (row is PlanRow.Section) RowTiming.DEFAULT else timing.toTiming(service.startTime)
-                    onSave(RowEdit(edited, seconds, rowTiming))
-                },
-                modifier = Modifier.weight(1f),
-            )
-        }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        KindBadge(row.kindKey, size = 30.dp)
+        SheetTitle(
+            row.title,
+            onClose = onDismiss,
+            subtitle = rowSubtitle(row).ifEmpty { null },
+            modifier = Modifier.weight(1f),
+        )
     }
+    Spacer(Modifier.height(14.dp))
+    if (editable) {
+        CompactField(
+            stringResource(Res.string.calendar_name),
+            title,
+            { title = it },
+            highlighted = true,
+            modifier = Modifier.testTag(CalendarTags.ROW_NAME),
+        )
+        Spacer(Modifier.height(12.dp))
+    }
+    if (row is PlanRow.Ministry) {
+        CompactField(
+            stringResource(Res.string.calendar_who_or_note),
+            detail,
+            { detail = it },
+            modifier = Modifier.testTag(CalendarTags.ROW_DETAIL),
+        )
+        Spacer(Modifier.height(12.dp))
+    }
+    if (row is PlanRow.Section) {
+        SwatchRow(color = color, onColor = { color = it })
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(Res.string.calendar_section_hint), color = colors.muted, fontSize = 12.sp)
+    } else {
+        CompactField(
+            stringResource(Res.string.calendar_duration),
+            durationText,
+            { durationText = it },
+            placeholder = "4:30",
+            modifier = Modifier.testTag(CalendarTags.ROW_DURATION),
+        )
+        Spacer(Modifier.height(12.dp))
+        TimingPanel(
+            draft = timing.copy(runSeconds = parseDuration(durationText)),
+            onChange = { draft ->
+                timing = draft
+                durationText = draft.runSeconds?.let(::formatDuration).orEmpty()
+            },
+            serviceStart = service.startTime,
+        )
+    }
+    Spacer(Modifier.height(18.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        CalendarSecondaryButton(
+            label = null,
+            icon = Icons.Filled.KeyboardArrowUp,
+            contentDescription = stringResource(Res.string.calendar_move_up),
+            onClick = { if (index > 0) onMove(-1) },
+            modifier = Modifier.testTag(CalendarTags.ROW_UP),
+        )
+        CalendarSecondaryButton(
+            label = null,
+            icon = Icons.Filled.KeyboardArrowDown,
+            contentDescription = stringResource(Res.string.calendar_move_down),
+            onClick = { if (index in 0 until service.rows.lastIndex) onMove(1) },
+            modifier = Modifier.testTag(CalendarTags.ROW_DOWN),
+        )
+        CalendarSecondaryButton(
+            label = null,
+            icon = Icons.Outlined.Delete,
+            contentDescription = stringResource(Res.string.calendar_remove_row),
+            onClick = onRemove,
+            modifier = Modifier.testTag(CalendarTags.ROW_REMOVE),
+        )
+        CalendarPrimaryButton(
+            label = stringResource(Res.string.calendar_save_row),
+            onClick = {
+                val edited = when (row) {
+                    is PlanRow.Section -> row.copy(title = title.trim().ifEmpty { row.title }, color = color)
+                    is PlanRow.Ministry -> row.copy(
+                        title = title.trim().ifEmpty { row.title },
+                        detail = detail.trim(),
+                    )
+                    is PlanRow.Bible -> row.copy(title = title.trim().ifEmpty { row.title })
+                    else -> row
+                }
+                val seconds = if (row is PlanRow.Section) null else parseDuration(durationText)
+                val rowTiming =
+                    if (row is PlanRow.Section) RowTiming.DEFAULT else timing.toTiming(service.startTime)
+                onSave(RowEdit(edited, seconds, rowTiming))
+            },
+            modifier = Modifier.weight(1f).testTag(CalendarTags.ROW_SAVE),
+        )
+    }
+
 }

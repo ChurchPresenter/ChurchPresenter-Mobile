@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,7 +61,12 @@ internal fun DayServices(
         } else {
             CalendarOverline(dayOverline(date), trailing = serviceCountText(services.size))
             services.forEach { service ->
-                ServiceCard(service, selected = service.id == selectedId, onClick = { onOpen(service) })
+                ServiceCard(
+                    service,
+                    selected = service.id == selectedId,
+                    onClick = { onOpen(service) },
+                    modifier = Modifier.testTag(CalendarTags.serviceCard(service.id)),
+                )
             }
         }
     }
@@ -148,14 +154,14 @@ private fun EmptyDay(date: LocalDate, onAdd: () -> Unit, onCopyLast: (() -> Unit
         CalendarPrimaryButton(
             stringResource(Res.string.calendar_add_service),
             onClick = onAdd,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(CalendarTags.DAY_ADD),
         )
         if (onCopyLast != null) {
             Spacer(Modifier.height(8.dp))
             CalendarSecondaryButton(
                 label = stringResource(Res.string.calendar_copy_last, dayName(date.dayOfWeek)),
                 onClick = onCopyLast,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.DAY_COPY_LAST),
             )
         }
         Spacer(Modifier.height(20.dp))
@@ -169,6 +175,6 @@ internal fun AddServiceBar(onAdd: () -> Unit, modifier: Modifier = Modifier) {
         label = stringResource(Res.string.calendar_add_service),
         icon = Icons.Filled.Add,
         onClick = onAdd,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().testTag(CalendarTags.DAY_ADD),
     )
 }

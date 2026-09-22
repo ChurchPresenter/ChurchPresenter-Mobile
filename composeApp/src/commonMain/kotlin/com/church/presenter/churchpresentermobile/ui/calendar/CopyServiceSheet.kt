@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -60,6 +61,12 @@ internal class CopyChoice(val rule: RepeatRule, val count: Int, val includeRows:
 /** "Copy Sunday Morning": into next week, or repeating weekly, fortnightly or monthly. */
 @Composable
 internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> Unit, onDismiss: () -> Unit) {
+    CalendarSheet(onDismiss) { CopyServiceContent(service, onCopy, onDismiss) }
+}
+
+/** The copy form without the sheet around it, so its repeat rules can be driven in a test. */
+@Composable
+internal fun CopyServiceContent(service: PlannedService, onCopy: (CopyChoice) -> Unit, onDismiss: () -> Unit) {
     val colors = LocalAppColors.current
     var rule by remember { mutableStateOf(RepeatRule.WEEKLY) }
     var countText by remember { mutableStateOf(DEFAULT_COUNT.toString()) }
@@ -70,65 +77,67 @@ internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> U
     val dates = from?.let { repeatDates(it, rule, count) }.orEmpty()
     val cueCount = service.rows.count { it is PlanRow.Ref && it.kind == RowKind.CUE }
 
-    CalendarSheet(onDismiss) {
-        SheetTitle(
-            title = stringResource(Res.string.calendar_copy_title, service.name),
-            subtitle = "${from?.let(::shortDate) ?: service.date} · ${itemCountText(service.rows)}",
-            onClose = onDismiss,
-        )
-        Spacer(Modifier.height(14.dp))
-        CalendarOverline(stringResource(Res.string.calendar_repeat))
-        Spacer(Modifier.height(6.dp))
-        SegmentRow(
-            options = listOf(
-                stringResource(Res.string.calendar_repeat_once),
-                stringResource(Res.string.calendar_repeat_weekly),
-                stringResource(Res.string.calendar_repeat_fortnightly),
-                stringResource(Res.string.calendar_repeat_monthly),
-            ),
-            selected = RepeatRule.entries.indexOf(rule),
-            onSelect = { rule = RepeatRule.entries[it] },
-        )
-        if (rule != RepeatRule.ONCE) {
-            Spacer(Modifier.height(12.dp))
-            HowManyTimesRow(countText, onCount = { countText = it })
-        }
+    SheetTitle(
+        title = stringResource(Res.string.calendar_copy_title, service.name),
+        subtitle = "${from?.let(::shortDate) ?: service.date} · ${itemCountText(service.rows)}",
+        onClose = onDismiss,
+    )
+    Spacer(Modifier.height(14.dp))
+    CalendarOverline(stringResource(Res.string.calendar_repeat))
+    Spacer(Modifier.height(6.dp))
+    SegmentRow(
+        options = listOf(
+            stringResource(Res.string.calendar_repeat_once),
+            stringResource(Res.string.calendar_repeat_weekly),
+            stringResource(Res.string.calendar_repeat_fortnightly),
+            stringResource(Res.string.calendar_repeat_monthly),
+        ),
+        selected = RepeatRule.entries.indexOf(rule),
+        onSelect = { rule = RepeatRule.entries[it] },
+        tagFor = CalendarTags::repeatRule,
+    )
+    if (rule != RepeatRule.ONCE) {
         Spacer(Modifier.height(12.dp))
-        DatesPreview(dates)
-        Spacer(Modifier.height(14.dp))
-        CalendarOverline(stringResource(Res.string.calendar_include))
-        Spacer(Modifier.height(6.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        HowManyTimesRow(countText, onCount = { countText = it })
+    }
+    Spacer(Modifier.height(12.dp))
+    DatesPreview(dates)
+    Spacer(Modifier.height(14.dp))
+    CalendarOverline(stringResource(Res.string.calendar_include))
+    Spacer(Modifier.height(6.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        CheckCard(
+            title = stringResource(Res.string.calendar_include_rows),
+            subtitle = stringResource(Res.string.calendar_include_rows_hint, service.rows.size),
+            checked = includeRows,
+            onToggle = { includeRows = !includeRows },
+            modifier = Modifier.testTag(CalendarTags.COPY_INCLUDE_ROWS),
+        )
+        // Only where there is automation to carry: a service with no cues has nothing to ask.
+        if (cueCount > 0) {
             CheckCard(
-                title = stringResource(Res.string.calendar_include_rows),
-                subtitle = stringResource(Res.string.calendar_include_rows_hint, service.rows.size),
-                checked = includeRows,
-                onToggle = { includeRows = !includeRows },
-            )
-            // Only where there is automation to carry: a service with no cues has nothing to ask.
-            if (cueCount > 0) {
-                CheckCard(
-                    title = stringResource(Res.string.calendar_include_cues),
-                    subtitle = stringResource(Res.string.calendar_include_cues_hint, cueCount),
-                    checked = includeCues,
-                    onToggle = { includeCues = !includeCues },
-                )
-            }
-        }
-        Spacer(Modifier.height(18.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            CalendarSecondaryButton(
-                stringResource(Res.string.calendar_cancel),
-                onClick = onDismiss,
-                modifier = Modifier.weight(1f),
-            )
-            CalendarPrimaryButton(
-                label = stringResource(Res.string.calendar_create_n, dates.size),
-                onClick = { onCopy(CopyChoice(rule, count, includeRows, includeCues)) },
-                modifier = Modifier.weight(CONFIRM_WIDTH),
+                title = stringResource(Res.string.calendar_include_cues),
+                subtitle = stringResource(Res.string.calendar_include_cues_hint, cueCount),
+                checked = includeCues,
+                onToggle = { includeCues = !includeCues },
+                modifier = Modifier.testTag(CalendarTags.COPY_INCLUDE_CUES),
             )
         }
     }
+    Spacer(Modifier.height(18.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        CalendarSecondaryButton(
+            stringResource(Res.string.calendar_cancel),
+            onClick = onDismiss,
+            modifier = Modifier.weight(1f).testTag(CalendarTags.COPY_CANCEL),
+        )
+        CalendarPrimaryButton(
+            label = stringResource(Res.string.calendar_create_n, dates.size),
+            onClick = { onCopy(CopyChoice(rule, count, includeRows, includeCues)) },
+            modifier = Modifier.weight(CONFIRM_WIDTH).testTag(CalendarTags.COPY_CONFIRM),
+        )
+    }
+
 }
 
 /** How many copies, asked only when the repeat makes more than one. */
@@ -148,7 +157,7 @@ private fun HowManyTimesRow(countText: String, onCount: (String) -> Unit) {
             value = countText,
             onValueChange = { onCount(it.filter { c -> c.isDigit() }.take(COUNT_DIGITS)) },
             keyboardType = KeyboardType.Number,
-            modifier = Modifier.width(COUNT_FIELD_WIDTH),
+            modifier = Modifier.width(COUNT_FIELD_WIDTH).testTag(CalendarTags.COPY_COUNT),
         )
     }
 }

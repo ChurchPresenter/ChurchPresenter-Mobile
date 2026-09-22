@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -115,7 +116,10 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             }
             Spacer(Modifier.height(8.dp))
             // The usual way in: an invite the church computer shows, scanned from anywhere.
-            QrScanButton(onScanned = actions.onScanned, modifier = Modifier.fillMaxWidth())
+            QrScanButton(
+                onScanned = actions.onScanned,
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_SCAN),
+            )
             Spacer(Modifier.height(10.dp))
             HintText(stringResource(Res.string.calendar_sync_or_ask))
             if (!canReachDesktop) HintText(stringResource(Res.string.calendar_sync_enroll_needs_desktop))
@@ -126,7 +130,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
                 ),
                 onClick = actions.onEnroll,
                 enabled = canReachDesktop && hasCameraAvailable(),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_ENROLL),
             )
         }
         is EnrollFlow.WaitingForApproval -> {
@@ -148,7 +152,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             CalendarSecondaryButton(
                 stringResource(Res.string.calendar_cancel),
                 onClick = actions.onReset,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_CANCEL),
             )
         }
         EnrollFlow.ScanQr -> {
@@ -156,12 +160,15 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             Spacer(Modifier.height(6.dp))
             Text(stringResource(Res.string.calendar_sync_scan_body), color = colors.secondary, fontSize = 13.sp)
             Spacer(Modifier.height(14.dp))
-            QrScanButton(onScanned = actions.onScanned, modifier = Modifier.fillMaxWidth())
+            QrScanButton(
+                onScanned = actions.onScanned,
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_SCAN),
+            )
             Spacer(Modifier.height(8.dp))
             CalendarSecondaryButton(
                 stringResource(Res.string.calendar_cancel),
                 onClick = actions.onReset,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_CANCEL),
             )
         }
         EnrollFlow.Done -> {
@@ -193,9 +200,13 @@ private fun EnrolledPanel(status: SyncStatus, actions: SyncActions) {
         CalendarPrimaryButton(
             stringResource(Res.string.calendar_sync_now),
             onClick = actions.onSyncNow,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).testTag(CalendarTags.SYNC_NOW),
         )
-        CalendarSecondaryButton(stringResource(Res.string.calendar_sync_leave), onClick = actions.onLeave)
+        CalendarSecondaryButton(
+            stringResource(Res.string.calendar_sync_leave),
+            onClick = actions.onLeave,
+            modifier = Modifier.testTag(CalendarTags.SYNC_LEAVE),
+        )
     }
 }
 

@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.lazy.rememberLazyListState
 import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.horizontalScroll
@@ -147,6 +148,7 @@ internal fun AddToServiceContent(
         SearchField(
             value = query,
             onValueChange = { query = it },
+            modifier = Modifier.testTag(CalendarTags.PICKER_SEARCH),
             placeholder = stringResource(
                 when (tab) {
                     PickerTab.BIBLE -> Res.string.calendar_filter_books_or_reference
@@ -168,7 +170,13 @@ internal fun AddToServiceContent(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (reference != null && tab != PickerTab.BIBLE) {
-                item { ReferenceCard(reference, onAdd = { add(picker.bibleRow(reference, newRowId)) }) }
+                item {
+                    ReferenceCard(
+                        reference,
+                        onAdd = { add(picker.bibleRow(reference, newRowId)) },
+                        modifier = Modifier.testTag(CalendarTags.PICKER_REFERENCE),
+                    )
+                }
             }
             pickerBody(
                 tab = tab,
@@ -200,7 +208,7 @@ internal fun AddToServiceContent(
             label = addLabel(tab, pending),
             onClick = { add(pending) },
             enabled = pending != null,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(CalendarTags.PICKER_ADD),
         )
         Spacer(Modifier.height(12.dp))
         Spacer(Modifier.navigationBarsPadding())
@@ -233,7 +241,12 @@ private fun PickerTabRow(tab: PickerTab, onTab: (PickerTab) -> Unit) {
                     PickerTab.PRESETS -> Res.string.calendar_tab_presets
                 },
             )
-            CalendarChip(label, selected = entry == tab, onClick = { onTab(entry) })
+            CalendarChip(
+                label,
+                selected = entry == tab,
+                onClick = { onTab(entry) },
+                modifier = Modifier.testTag(CalendarTags.tab(entry)),
+            )
         }
     }
 }
@@ -306,8 +319,9 @@ private fun LazyListScope.pickerBody(
 }
 
 @Composable
-private fun ReferenceCard(reference: ParsedReference, onAdd: () -> Unit) {
+private fun ReferenceCard(reference: ParsedReference, onAdd: () -> Unit, modifier: Modifier = Modifier) {
     PickerCard(
+        modifier = modifier,
         kind = RowKind.BIBLE,
         title = reference.text,
         subtitle = "",

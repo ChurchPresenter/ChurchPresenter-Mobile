@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,6 +57,7 @@ internal fun SheetTitle(title: String, onClose: () -> Unit, modifier: Modifier =
                 .size(30.dp)
                 .clip(RoundedCornerShape(15.dp))
                 .background(colors.surfaceStrong)
+                .testTag(CalendarTags.SHEET_CLOSE)
                 .clickable(onClick = onClose),
             contentAlignment = Alignment.Center,
         ) {
@@ -110,7 +112,13 @@ internal fun CompactField(
 
 /** A row of equal-width segments, one lit — the service type and repeat choosers. */
 @Composable
-internal fun SegmentRow(options: List<String>, selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+internal fun SegmentRow(
+    options: List<String>,
+    selected: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    tagFor: ((Int) -> String)? = null,
+) {
     val colors = LocalAppColors.current
     Row(
         modifier = modifier
@@ -128,6 +136,7 @@ internal fun SegmentRow(options: List<String>, selected: Int, onSelect: (Int) ->
                     .weight(1f)
                     .clip(RoundedCornerShape(7.dp))
                     .background(if (active) colors.accent else colors.background.copy(alpha = 0f))
+                    .then(tagFor?.let { Modifier.testTag(it(index)) } ?: Modifier)
                     .clickable { onSelect(index) }
                     .padding(vertical = 8.dp),
                 contentAlignment = Alignment.Center,
