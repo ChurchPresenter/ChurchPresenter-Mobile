@@ -68,7 +68,12 @@ internal fun DayServices(
 
 /** A service in the day's list: a color bar for its kind, its name, and when and how long. */
 @Composable
-internal fun ServiceCard(service: PlannedService, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun ServiceCard(
+    service: PlannedService,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     CalendarCard(modifier = modifier, selected = selected, onClick = onClick) {
         Box(
@@ -113,7 +118,12 @@ private fun EmptyDay(date: LocalDate, onAdd: () -> Unit, onCopyLast: (() -> Unit
             modifier = Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(colors.surfaceStrong),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.CalendarMonth, contentDescription = null, tint = colors.muted, modifier = Modifier.size(22.dp))
+            Icon(
+                Icons.Outlined.CalendarMonth,
+                contentDescription = null,
+                tint = colors.muted,
+                modifier = Modifier.size(22.dp),
+            )
         }
         Spacer(Modifier.height(14.dp))
         Text(
@@ -124,9 +134,18 @@ private fun EmptyDay(date: LocalDate, onAdd: () -> Unit, onCopyLast: (() -> Unit
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(6.dp))
-        Text(stringResource(Res.string.calendar_empty_hint), color = colors.muted, fontSize = 12.sp, textAlign = TextAlign.Center)
+        Text(
+            stringResource(Res.string.calendar_empty_hint),
+            color = colors.muted,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+        )
         Spacer(Modifier.height(18.dp))
-        CalendarPrimaryButton(stringResource(Res.string.calendar_add_service), onClick = onAdd, modifier = Modifier.fillMaxWidth())
+        CalendarPrimaryButton(
+            stringResource(Res.string.calendar_add_service),
+            onClick = onAdd,
+            modifier = Modifier.fillMaxWidth(),
+        )
         if (onCopyLast != null) {
             Spacer(Modifier.height(8.dp))
             CalendarSecondaryButton(

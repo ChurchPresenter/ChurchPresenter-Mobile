@@ -65,7 +65,12 @@ internal fun RowEditorSheet(
     CalendarSheet(onDismiss) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             KindBadge(row.kindKey, size = 30.dp)
-            SheetTitle(row.title, onClose = onDismiss, subtitle = rowSubtitle(row).ifEmpty { null }, modifier = Modifier.weight(1f))
+            SheetTitle(
+                row.title,
+                onClose = onDismiss,
+                subtitle = rowSubtitle(row).ifEmpty { null },
+                modifier = Modifier.weight(1f),
+            )
         }
         Spacer(Modifier.height(14.dp))
         if (editable) {
@@ -81,7 +86,12 @@ internal fun RowEditorSheet(
             Spacer(Modifier.height(8.dp))
             Text(stringResource(Res.string.calendar_section_hint), color = colors.muted, fontSize = 12.sp)
         } else {
-            CompactField(stringResource(Res.string.calendar_duration), durationText, { durationText = it }, placeholder = "4:30")
+            CompactField(
+                stringResource(Res.string.calendar_duration),
+                durationText,
+                { durationText = it },
+                placeholder = "4:30",
+            )
             Spacer(Modifier.height(12.dp))
             TimingPanel(
                 draft = timing.copy(runSeconds = parseDuration(durationText)),
@@ -117,7 +127,10 @@ internal fun RowEditorSheet(
                 onClick = {
                     val edited = when (row) {
                         is PlanRow.Section -> row.copy(title = title.trim().ifEmpty { row.title }, color = color)
-                        is PlanRow.Ministry -> row.copy(title = title.trim().ifEmpty { row.title }, detail = detail.trim())
+                        is PlanRow.Ministry -> row.copy(
+                            title = title.trim().ifEmpty { row.title },
+                            detail = detail.trim(),
+                        )
                         is PlanRow.Bible -> row.copy(title = title.trim().ifEmpty { row.title })
                         else -> row
                     }

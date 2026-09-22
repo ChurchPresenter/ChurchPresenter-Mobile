@@ -189,7 +189,11 @@ private fun ServiceForm(
             templates.forEach { template ->
                 ChoiceCard(
                     title = template.name,
-                    subtitle = stringResource(Res.string.calendar_template_hint, clockText(template.startTime), itemCountText(template.rows)),
+                    subtitle = stringResource(
+                        Res.string.calendar_template_hint,
+                        clockText(template.startTime),
+                        itemCountText(template.rows),
+                    ),
                     selected = templateId == template.id,
                     onClick = { templateId = template.id },
                 )
@@ -206,7 +210,11 @@ private fun ServiceForm(
                 onClick = onDelete,
             )
         }
-        CalendarSecondaryButton(stringResource(Res.string.calendar_cancel), onClick = onDismiss, modifier = Modifier.weight(1f))
+        CalendarSecondaryButton(
+            stringResource(Res.string.calendar_cancel),
+            onClick = onDismiss,
+            modifier = Modifier.weight(1f),
+        )
         CalendarPrimaryButton(
             label = confirmLabel,
             enabled = valid,

@@ -41,7 +41,14 @@ internal fun SheetTitle(title: String, onClose: () -> Unit, modifier: Modifier =
     val colors = LocalAppColors.current
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, color = colors.text, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                title,
+                color = colors.text,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             if (subtitle != null) MutedText(subtitle)
         }
         Box(
@@ -52,7 +59,12 @@ internal fun SheetTitle(title: String, onClose: () -> Unit, modifier: Modifier =
                 .clickable(onClick = onClose),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.calendar_close), tint = colors.secondary, modifier = Modifier.size(16.dp))
+            Icon(
+                Icons.Outlined.Close,
+                contentDescription = stringResource(Res.string.calendar_close),
+                tint = colors.secondary,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }
@@ -134,7 +146,13 @@ internal fun SegmentRow(options: List<String>, selected: Int, onSelect: (Int) ->
 
 /** A selectable card with a radio dot, a title and a line under it — "Start from" options. */
 @Composable
-internal fun ChoiceCard(title: String, subtitle: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun ChoiceCard(
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     CalendarCard(modifier = modifier, selected = selected, onClick = onClick) {
         Box(
@@ -155,7 +173,13 @@ internal fun ChoiceCard(title: String, subtitle: String, selected: Boolean, onCl
 
 /** A tick box row — the copy sheet's "Include" choices. */
 @Composable
-internal fun CheckCard(title: String, subtitle: String, checked: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
+internal fun CheckCard(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = LocalAppColors.current
     CalendarCard(modifier = modifier, onClick = onToggle) {
         Box(

@@ -199,10 +199,22 @@ private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: ()
             Spacer(Modifier.width(14.dp))
         }
         Column(modifier = Modifier.weight(1f).clickable(onClick = onEdit)) {
-            Text(service.name, color = colors.text, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                service.name,
+                color = colors.text,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             MutedText(runSubtitle(service))
         }
-        Text(stringResource(Res.string.calendar_armed), color = colors.muted, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        Text(
+            stringResource(Res.string.calendar_armed),
+            color = colors.muted,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
         Spacer(Modifier.width(8.dp))
         Switch(
             checked = service.armed,
@@ -230,7 +242,12 @@ private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit, onLoad: (() -> U
         modifier = Modifier.fillMaxWidth().padding(horizontal = PagePadding, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        CalendarSecondaryButton(label = null, icon = Icons.Filled.Add, contentDescription = stringResource(Res.string.calendar_add_item), onClick = onAdd)
+        CalendarSecondaryButton(
+            label = null,
+            icon = Icons.Filled.Add,
+            contentDescription = stringResource(Res.string.calendar_add_item),
+            onClick = onAdd,
+        )
         CalendarSecondaryButton(
             label = null,
             icon = Icons.Outlined.ContentCopy,

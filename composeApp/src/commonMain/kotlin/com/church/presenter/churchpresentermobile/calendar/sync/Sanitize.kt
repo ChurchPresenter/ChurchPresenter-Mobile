@@ -74,8 +74,14 @@ object Sanitize {
             name = text(service.name, NAME_CHARS).ifEmpty { DEFAULT_NAME },
             kind = ServiceKind.byId(service.kind).id,
             rows = rows,
-            plannedSeconds = service.plannedSeconds.filterKeys { it in ids }.mapValues { (_, s) -> s.coerceIn(0, MAX_SECONDS) },
-            timing = service.timing.filterKeys { it in ids }.mapValues { (_, t) -> timing(t) }.filterValues { !it.isDefault() },
+            plannedSeconds = service.plannedSeconds.filterKeys { it in ids }.mapValues { (
+                _,
+                s,
+            ) -> s.coerceIn(0, MAX_SECONDS) },
+            timing = service.timing.filterKeys { it in ids }.mapValues { (
+                _,
+                t,
+            ) -> timing(t) }.filterValues { !it.isDefault() },
             seriesId = service.seriesId.takeIf(::isId).orEmpty(),
             updatedAt = instant(service.updatedAt),
             rev = service.rev.coerceAtLeast(0L),
@@ -97,7 +103,11 @@ object Sanitize {
     fun presets(presets: List<PresetSummary>): List<PresetSummary> = presets
         .filter { isId(it.id) }
         .take(PRESETS_MAX)
-        .map { it.copy(name = text(it.name, TITLE_CHARS).ifEmpty { DEFAULT_PRESET }, kind = text(it.kind, ID_CHARS), detail = text(it.detail, DETAIL_CHARS)) }
+        .map { it.copy(
+            name = text(it.name, TITLE_CHARS).ifEmpty { DEFAULT_PRESET },
+            kind = text(it.kind, ID_CHARS),
+            detail = text(it.detail, DETAIL_CHARS),
+        ) }
 
     private fun row(row: PlanRow): PlanRow = when (row) {
         is PlanRow.Section -> row.copy(
@@ -115,13 +125,20 @@ object Sanitize {
             preview = text(row.preview, DETAIL_CHARS),
             bookId = if (row.bookId in 1..BOOKS_IN_BIBLE) row.bookId else 0,
         )
-        is PlanRow.Ministry -> row.copy(title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_MINISTRY }, detail = text(row.detail, DETAIL_CHARS))
+        is PlanRow.Ministry -> row.copy(
+            title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_MINISTRY },
+            detail = text(row.detail, DETAIL_CHARS),
+        )
         is PlanRow.Preset -> row.copy(
             title = text(row.title, TITLE_CHARS).ifEmpty { DEFAULT_PRESET },
             presetId = text(row.presetId, ID_CHARS),
             kind = text(row.kind, ID_CHARS),
         )
-        is PlanRow.Ref -> row.copy(title = text(row.title, TITLE_CHARS), kind = text(row.kind, ID_CHARS), subtitle = text(row.subtitle, DETAIL_CHARS))
+        is PlanRow.Ref -> row.copy(
+            title = text(row.title, TITLE_CHARS),
+            kind = text(row.kind, ID_CHARS),
+            subtitle = text(row.subtitle, DETAIL_CHARS),
+        )
     }
 
     private fun timing(timing: RowTiming): RowTiming = RowTiming(

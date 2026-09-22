@@ -163,9 +163,24 @@ private fun InlineRowActions(actions: RowActions) {
     val colors = LocalAppColors.current
     if (actions.onMoveUp == null && actions.onMoveDown == null && actions.onRemove == null) return
     Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically) {
-        SmallIconButton(Icons.Filled.KeyboardArrowUp, stringResource(Res.string.calendar_move_up), actions.onMoveUp, colors.muted)
-        SmallIconButton(Icons.Filled.KeyboardArrowDown, stringResource(Res.string.calendar_move_down), actions.onMoveDown, colors.muted)
-        SmallIconButton(Icons.Outlined.Close, stringResource(Res.string.calendar_remove_row), actions.onRemove, colors.danger)
+        SmallIconButton(
+            Icons.Filled.KeyboardArrowUp,
+            stringResource(Res.string.calendar_move_up),
+            actions.onMoveUp,
+            colors.muted,
+        )
+        SmallIconButton(
+            Icons.Filled.KeyboardArrowDown,
+            stringResource(Res.string.calendar_move_down),
+            actions.onMoveDown,
+            colors.muted,
+        )
+        SmallIconButton(
+            Icons.Outlined.Close,
+            stringResource(Res.string.calendar_remove_row),
+            actions.onRemove,
+            colors.danger,
+        )
     }
 }
 
@@ -184,7 +199,12 @@ private fun SmallIconButton(
             .clickable(enabled = onClick != null) { onClick?.invoke() },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = description, tint = if (onClick == null) colors.dim else tint, modifier = Modifier.size(16.dp))
+        Icon(
+            icon,
+            contentDescription = description,
+            tint = if (onClick == null) colors.dim else tint,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 

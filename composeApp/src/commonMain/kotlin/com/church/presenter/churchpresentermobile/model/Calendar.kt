@@ -124,7 +124,11 @@ sealed class PlanRow {
     /** A heading that divides the run of show; never goes on screen. */
     @Serializable
     @SerialName("section")
-    data class Section(override val id: String, override val title: String, val color: String = SectionPalette.DEFAULT) : PlanRow()
+    data class Section(
+        override val id: String,
+        override val title: String,
+        val color: String = SectionPalette.DEFAULT,
+    ) : PlanRow()
 
     @Serializable
     @SerialName("song")

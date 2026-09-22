@@ -67,7 +67,11 @@ internal fun MonthGrid(
     val byDate = services.groupBy { it.date }
     Column(modifier = modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            NavButton(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(Res.string.calendar_prev_month), onPrevious)
+            NavButton(
+                Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                stringResource(Res.string.calendar_prev_month),
+                onPrevious,
+            )
             Text(
                 text = monthTitle(month),
                 color = colors.text,
@@ -76,7 +80,11 @@ internal fun MonthGrid(
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
             )
-            NavButton(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(Res.string.calendar_next_month), onNext)
+            NavButton(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                stringResource(Res.string.calendar_next_month),
+                onNext,
+            )
         }
         Spacer(Modifier.height(8.dp))
         Row(modifier = Modifier.fillMaxWidth()) {

@@ -140,7 +140,13 @@ class CalendarSyncEngine(
                 .onFailure { if (it !is RelayFailure.Conflict) throw it }
             deleted += id
         }
-        repository.applySync(accepted = emptyMap(), removed = emptySet(), presets = null, pushedIds = done, deletedIds = deleted)
+        repository.applySync(
+            accepted = emptyMap(),
+            removed = emptySet(),
+            presets = null,
+            pushedIds = done,
+            deletedIds = deleted,
+        )
         return done
     }
 
@@ -182,7 +188,13 @@ class CalendarSyncEngine(
         // back stamped by the relay and replaces our unstamped copy.
         val stillPending = repository.document.value.pendingPush - pushed
         val applied = accepted.filterKeys { it !in stillPending }
-        repository.applySync(accepted = applied, removed = removed, presets = presets, pushedIds = emptySet(), deletedIds = emptySet())
+        repository.applySync(
+            accepted = applied,
+            removed = removed,
+            presets = presets,
+            pushedIds = emptySet(),
+            deletedIds = emptySet(),
+        )
         val next = current.copy(cursor = changes.rev, lastSyncAt = nowIso())
         saveState(next)
         val count = applied.size + removed.size

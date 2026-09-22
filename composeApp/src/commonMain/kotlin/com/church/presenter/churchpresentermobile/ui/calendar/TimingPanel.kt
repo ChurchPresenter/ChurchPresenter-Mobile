@@ -115,7 +115,11 @@ internal fun TimingPanel(
                 onChange(draft.copy(startOffsetMinutes = null, followsPrevious = true))
             }
             START_OFFSETS_MINUTES.forEach { minutes ->
-                TimingChip(stringResource(Res.string.calendar_chip_minus_minutes, minutes), draft.startOffsetMinutes == -minutes, enabled) {
+                TimingChip(
+                    stringResource(Res.string.calendar_chip_minus_minutes, minutes),
+                    draft.startOffsetMinutes == -minutes,
+                    enabled,
+                ) {
                     onChange(draft.copy(startOffsetMinutes = -minutes, followsPrevious = false))
                 }
             }
@@ -139,8 +143,16 @@ internal fun TimingPanel(
             }
         }
         TimingRow(stringResource(Res.string.calendar_repeats)) {
-            TimingChip(stringResource(Res.string.calendar_chip_once), draft.repeats == 1, enabled) { onChange(draft.copy(repeats = 1)) }
-            TimingChip(stringResource(Res.string.calendar_chip_loop), draft.repeats == 0, enabled) { onChange(draft.copy(repeats = 0)) }
+            TimingChip(
+                stringResource(Res.string.calendar_chip_once),
+                draft.repeats == 1,
+                enabled,
+            ) { onChange(draft.copy(repeats = 1)) }
+            TimingChip(
+                stringResource(Res.string.calendar_chip_loop),
+                draft.repeats == 0,
+                enabled,
+            ) { onChange(draft.copy(repeats = 0)) }
             REPEAT_CHOICES.forEach { n ->
                 TimingChip(n.toString(), draft.repeats == n, enabled) { onChange(draft.copy(repeats = n)) }
             }

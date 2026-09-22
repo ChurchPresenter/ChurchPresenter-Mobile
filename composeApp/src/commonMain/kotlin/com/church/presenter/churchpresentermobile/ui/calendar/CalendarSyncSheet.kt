@@ -72,7 +72,12 @@ internal fun CalendarSyncSheet(
         SheetTitle(stringResource(Res.string.calendar_sync_title), onClose = onDismiss)
         Spacer(Modifier.height(12.dp))
         when {
-            status is SyncStatus.NotEnrolled || status is SyncStatus.Unauthorized -> EnrollPanel(status, flow, canReachDesktop, actions)
+            status is SyncStatus.NotEnrolled || status is SyncStatus.Unauthorized -> EnrollPanel(
+                status,
+                flow,
+                canReachDesktop,
+                actions,
+            )
             else -> EnrolledPanel(status, actions)
         }
         Spacer(Modifier.height(8.dp))
@@ -85,7 +90,11 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
     when (flow) {
         EnrollFlow.Idle, EnrollFlow.Denied, EnrollFlow.SyncOff, is EnrollFlow.Failed -> {
             if (status is SyncStatus.Unauthorized) {
-                Text(stringResource(Res.string.calendar_sync_status_unauthorized), color = colors.danger, fontSize = 13.sp)
+                Text(
+                    stringResource(Res.string.calendar_sync_status_unauthorized),
+                    color = colors.danger,
+                    fontSize = 13.sp,
+                )
                 Spacer(Modifier.height(8.dp))
             }
             Text(stringResource(Res.string.calendar_sync_intro), color = colors.secondary, fontSize = 13.sp)
@@ -128,7 +137,11 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(16.dp))
-            CalendarSecondaryButton(stringResource(Res.string.calendar_cancel), onClick = actions.onReset, modifier = Modifier.fillMaxWidth())
+            CalendarSecondaryButton(
+                stringResource(Res.string.calendar_cancel),
+                onClick = actions.onReset,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
         EnrollFlow.ScanQr -> {
             TitleText(stringResource(Res.string.calendar_sync_scan_title), size = 16)
@@ -137,10 +150,19 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             Spacer(Modifier.height(14.dp))
             QrScanButton(onScanned = actions.onScanned, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
-            CalendarSecondaryButton(stringResource(Res.string.calendar_cancel), onClick = actions.onReset, modifier = Modifier.fillMaxWidth())
+            CalendarSecondaryButton(
+                stringResource(Res.string.calendar_cancel),
+                onClick = actions.onReset,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
         EnrollFlow.Done -> {
-            Text(stringResource(Res.string.calendar_sync_done), color = colors.accent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                stringResource(Res.string.calendar_sync_done),
+                color = colors.accent,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
 }
@@ -149,7 +171,10 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
 private fun EnrolledPanel(status: SyncStatus, actions: SyncActions) {
     val colors = LocalAppColors.current
     val (line, color) = when (status) {
-        is SyncStatus.Synced -> stringResource(Res.string.calendar_sync_status_synced, status.at.take(TIME_CHARS).replace('T', ' ')) to colors.accent
+        is SyncStatus.Synced -> stringResource(
+            Res.string.calendar_sync_status_synced,
+            status.at.take(TIME_CHARS).replace('T', ' '),
+        ) to colors.accent
         SyncStatus.Syncing -> stringResource(Res.string.calendar_sync_status_syncing) to colors.muted
         is SyncStatus.Failed -> stringResource(Res.string.calendar_sync_status_failed, status.message) to colors.danger
         else -> "" to colors.muted
@@ -157,7 +182,11 @@ private fun EnrolledPanel(status: SyncStatus, actions: SyncActions) {
     Text(line, color = color, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
     Spacer(Modifier.height(14.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-        CalendarPrimaryButton(stringResource(Res.string.calendar_sync_now), onClick = actions.onSyncNow, modifier = Modifier.weight(1f))
+        CalendarPrimaryButton(
+            stringResource(Res.string.calendar_sync_now),
+            onClick = actions.onSyncNow,
+            modifier = Modifier.weight(1f),
+        )
         CalendarSecondaryButton(stringResource(Res.string.calendar_sync_leave), onClick = actions.onLeave)
     }
 }

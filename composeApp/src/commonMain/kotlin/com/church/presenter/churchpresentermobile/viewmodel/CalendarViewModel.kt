@@ -284,7 +284,12 @@ class CalendarViewModel(
         repository.saveService(service.withRow(row, seconds, timing))
     }
 
-    fun updateRow(serviceId: String, row: PlanRow, seconds: Int?, timing: RowTiming) = addRow(serviceId, row, seconds, timing)
+    fun updateRow(
+        serviceId: String,
+        row: PlanRow,
+        seconds: Int?,
+        timing: RowTiming,
+    ) = addRow(serviceId, row, seconds, timing)
 
     fun removeRow(serviceId: String, rowId: String) {
         val service = repository.service(serviceId) ?: return

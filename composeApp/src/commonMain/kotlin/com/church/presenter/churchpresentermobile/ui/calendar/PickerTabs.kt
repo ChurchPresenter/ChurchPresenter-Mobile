@@ -83,7 +83,12 @@ internal fun PickerCard(
                 .clickable(onClick = onAdd),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.calendar_tap_add), tint = colors.accent, modifier = Modifier.size(16.dp))
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = stringResource(Res.string.calendar_tap_add),
+                tint = colors.accent,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }
@@ -148,7 +153,10 @@ internal fun BibleTab(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (book == null) {
             val shown = books.filter { query.isBlank() || findBook(query, listOf(it)) != null }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
                 shown.forEach { CalendarChip(it.name, selected = false, onClick = { onBook(it) }, dim = true) }
             }
         } else {
@@ -195,7 +203,12 @@ private fun NumberGrid(count: Int, from: Int?, to: Int?, onTap: (Int) -> Unit) {
                     .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(n.toString(), color = if (inRange) colors.accent else colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    n.toString(),
+                    color = if (inRange) colors.accent else colors.text,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
         }
     }
@@ -226,7 +239,12 @@ internal fun SectionTab(
                 CalendarCard(selected = name.equals(query.trim(), ignoreCase = true), onClick = { onPick(name, hex) }) {
                     ColorDot(hex, size = 10.dp)
                     TitleText(name, size = 14, modifier = Modifier.weight(1f))
-                    Icon(Icons.Filled.Add, contentDescription = null, tint = LocalAppColors.current.accent, modifier = Modifier.size(16.dp))
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = null,
+                        tint = LocalAppColors.current.accent,
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
             }
         }
@@ -245,7 +263,11 @@ internal fun SwatchRow(color: String, onColor: (String) -> Unit, modifier: Modif
                     .size(24.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(colorOf(hex))
-                    .border(2.dp, if (hex == color) LocalAppColors.current.text else colorOf(hex), RoundedCornerShape(12.dp))
+                    .border(
+                        2.dp,
+                        if (hex == color) LocalAppColors.current.text else colorOf(hex),
+                        RoundedCornerShape(12.dp),
+                    )
                     .clickable { onColor(hex) },
             )
         }
@@ -266,7 +288,13 @@ internal fun MinistryTab(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         CompactField(stringResource(Res.string.calendar_what_happens), what, onWhat, highlighted = true)
         CompactField(stringResource(Res.string.calendar_who_or_note), who, onWho)
-        CompactField(stringResource(Res.string.calendar_duration), duration, onDuration, placeholder = "3:30", keyboardType = KeyboardType.Number)
+        CompactField(
+            stringResource(Res.string.calendar_duration),
+            duration,
+            onDuration,
+            placeholder = "3:30",
+            keyboardType = KeyboardType.Number,
+        )
         if (what.isNotBlank()) {
             CalendarCard {
                 KindBadge(RowKind.MINISTRY, size = 28.dp)

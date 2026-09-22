@@ -208,13 +208,19 @@ internal fun AddToServiceContent(
 @Composable
 private fun addLabel(tab: PickerTab, pending: PickedRow?): String = when {
     tab == PickerTab.SECTION -> stringResource(Res.string.calendar_add_section)
-    pending is PickedRow && tab == PickerTab.MINISTRY -> stringResource(Res.string.calendar_add_named, pending.row.title)
+    pending is PickedRow && tab == PickerTab.MINISTRY -> stringResource(
+        Res.string.calendar_add_named,
+        pending.row.title,
+    )
     else -> stringResource(Res.string.calendar_add_to_service)
 }
 
 @Composable
 private fun PickerTabRow(tab: PickerTab, onTab: (PickerTab) -> Unit) {
-    Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
         PickerTab.entries.forEach { entry ->
             val label = stringResource(
                 when (entry) {
@@ -291,7 +297,14 @@ private fun LazyListScope.pickerBody(
 
 @Composable
 private fun ReferenceCard(reference: ParsedReference, onAdd: () -> Unit) {
-    PickerCard(kind = RowKind.BIBLE, title = reference.text, subtitle = "", selected = true, onSelect = onAdd, onAdd = onAdd)
+    PickerCard(
+        kind = RowKind.BIBLE,
+        title = reference.text,
+        subtitle = "",
+        selected = true,
+        onSelect = onAdd,
+        onAdd = onAdd,
+    )
 }
 
 /** Everything the picker has half-chosen: the lit song, the book/chapter/verses, the fields typed. */
@@ -353,7 +366,10 @@ internal class PickerState {
     )
 
     fun presetRow(picked: PresetSummary, newId: () -> String) =
-        PickedRow(PlanRow.Preset(id = newId(), title = picked.name, presetId = picked.id, kind = picked.kind), seconds = null)
+        PickedRow(
+            PlanRow.Preset(id = newId(), title = picked.name, presetId = picked.id, kind = picked.kind),
+            seconds = null,
+        )
 
     fun bibleRow(reference: ParsedReference, newId: () -> String) =
         PickedRow(PlanRow.Bible(id = newId(), title = reference.text, bookId = reference.book.number), seconds = null)
@@ -366,7 +382,11 @@ internal class PickerState {
         newId: () -> String,
         durations: SongDurations = SongDurations.NONE,
     ): PickedRow? = when (tab) {
-        PickerTab.SONGS -> song?.let { songRow(it, newId, durations.secondsFor(it)) } ?: reference?.let { bibleRow(it, newId) }
+        PickerTab.SONGS -> song?.let { songRow(
+            it,
+            newId,
+            durations.secondsFor(it),
+        ) } ?: reference?.let { bibleRow(it, newId) }
         PickerTab.PRESETS -> preset?.let { presetRow(it, newId) }
         PickerTab.BIBLE -> pendingPassage(reference, newId)
         PickerTab.SECTION -> query.trim().takeIf { it.isNotEmpty() }?.let {

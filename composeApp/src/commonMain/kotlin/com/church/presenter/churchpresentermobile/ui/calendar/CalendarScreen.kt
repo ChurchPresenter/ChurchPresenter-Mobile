@@ -171,8 +171,19 @@ fun CalendarScreen(
                     synced = syncStatus is SyncStatus.Synced || syncStatus is SyncStatus.Syncing,
                     onSettings = onSettings,
                 )
-                Column(modifier = Modifier.padding(horizontal = PagePadding), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                    MonthGrid(month, selectedDate, today(), monthServices, viewModel::select, viewModel::showPreviousMonth, viewModel::showNextMonth)
+                Column(
+                    modifier = Modifier.padding(horizontal = PagePadding),
+                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                ) {
+                    MonthGrid(
+                        month,
+                        selectedDate,
+                        today(),
+                        monthServices,
+                        viewModel::select,
+                        viewModel::showPreviousMonth,
+                        viewModel::showNextMonth,
+                    )
                     ServiceTypesLegend(monthServices)
                     Spacer(Modifier.height(8.dp))
                 }
@@ -198,7 +209,14 @@ fun CalendarScreen(
                 }
                 HorizontalDivider(color = LocalAppColors.current.borderSubtle)
                 if (shown != null) {
-                    RunOfShowScreen(shown, sources, viewModel::newRowId, runActions(shown), modifier = Modifier.weight(1f), inline = true)
+                    RunOfShowScreen(
+                        shown,
+                        sources,
+                        viewModel::newRowId,
+                        runActions(shown),
+                        modifier = Modifier.weight(1f),
+                        inline = true,
+                    )
                 } else {
                     Box(modifier = Modifier.weight(1f).padding(PagePadding)) {
                         DayServices(
@@ -215,7 +233,14 @@ fun CalendarScreen(
         }
     } else if (openService != null) {
         AppBackHandler(enabled = true) { viewModel.closeService() }
-        RunOfShowScreen(openService, sources, viewModel::newRowId, runActions(openService), modifier = modifier, onBack = viewModel::closeService)
+        RunOfShowScreen(
+            openService,
+            sources,
+            viewModel::newRowId,
+            runActions(openService),
+            modifier = modifier,
+            onBack = viewModel::closeService,
+        )
     } else {
         Column(modifier = modifier.fillMaxSize().background(LocalAppColors.current.background)) {
             MonthHeader(
@@ -236,7 +261,15 @@ fun CalendarScreen(
                     .padding(horizontal = PagePadding),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                MonthGrid(month, selectedDate, today(), monthServices, viewModel::select, viewModel::showPreviousMonth, viewModel::showNextMonth)
+                MonthGrid(
+                    month,
+                    selectedDate,
+                    today(),
+                    monthServices,
+                    viewModel::select,
+                    viewModel::showPreviousMonth,
+                    viewModel::showNextMonth,
+                )
                 DayServices(
                     date = selectedDate,
                     services = dayServices,
@@ -319,7 +352,12 @@ private fun MonthHeader(
             Spacer(Modifier.width(14.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(stringResource(Res.string.calendar_title), color = colors.text, fontSize = if (compact) 18.sp else 22.sp, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(Res.string.calendar_title),
+                color = colors.text,
+                fontSize = if (compact) 18.sp else 22.sp,
+                fontWeight = FontWeight.Bold,
+            )
             MutedText(stringResource(Res.string.calendar_month_summary, serviceCountText(serviceCount), monthName))
         }
         CalendarSecondaryButton(stringResource(Res.string.calendar_today), onClick = onToday)

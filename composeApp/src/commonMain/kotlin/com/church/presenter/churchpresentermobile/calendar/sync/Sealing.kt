@@ -31,7 +31,10 @@ class Sealing private constructor(private val key: AES.GCM.Key, private val inst
     }
 
     suspend fun seal(service: PlannedService): SealedRecord {
-        val plain = json.encodeToString(PlannedService.serializer(), service.copy(updatedAt = "", rev = 0L)).encodeToByteArray()
+        val plain = json.encodeToString(
+            PlannedService.serializer(),
+            service.copy(updatedAt = "", rev = 0L),
+        ).encodeToByteArray()
         return SealedRecord(
             id = service.id,
             keepUntil = keepUntil(service.date),
@@ -44,7 +47,10 @@ class Sealing private constructor(private val key: AES.GCM.Key, private val inst
     /** The service inside a record, with the relay's stamps, or null when it does not open cleanly. */
     suspend fun open(record: SealedRecord): PlannedService? {
         val bytes = openBytes(record.box, record.id) ?: return null
-        val service = runCatching { json.decodeFromString(PlannedService.serializer(), bytes.decodeToString()) }.getOrNull()
+        val service = runCatching { json.decodeFromString(
+            PlannedService.serializer(),
+            bytes.decodeToString(),
+        ) }.getOrNull()
             ?: return null
         if (service.id != record.id) return null
         return service.copy(updatedAt = record.updatedAt, rev = record.rev)

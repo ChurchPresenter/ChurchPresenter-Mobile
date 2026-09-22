@@ -122,7 +122,10 @@ internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> U
                 if (dates.size == 1) stringResource(Res.string.calendar_creates_one) else stringResource(Res.string.calendar_creates_other, dates.size),
             )
             dates.forEachIndexed { index, date ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text("${index + 1}", color = colors.muted, fontSize = 12.sp, modifier = Modifier.width(16.dp))
                     Text(longDate(date), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                 }
@@ -149,7 +152,11 @@ internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> U
         }
         Spacer(Modifier.height(18.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            CalendarSecondaryButton(stringResource(Res.string.calendar_cancel), onClick = onDismiss, modifier = Modifier.weight(1f))
+            CalendarSecondaryButton(
+                stringResource(Res.string.calendar_cancel),
+                onClick = onDismiss,
+                modifier = Modifier.weight(1f),
+            )
             CalendarPrimaryButton(
                 label = stringResource(Res.string.calendar_create_n, dates.size),
                 onClick = { onCopy(CopyChoice(rule, count, includeRows, includeCues)) },
