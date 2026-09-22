@@ -46,6 +46,10 @@ data class EnrollReply(val relayUrl: String, val instanceId: String)
 @Serializable
 data class PushTokenBody(val pushToken: String)
 
+/** `PUT /devices/me/name` -- this phone's name for the desktop's list, sealed under its device id. */
+@Serializable
+data class DeviceNameBody(val nameBox: String)
+
 /** The record id the desktop seals its preset index under. */
 const val PRESETS_RECORD = "presets"
 
@@ -78,6 +82,10 @@ data class CalendarSyncState(
     val lastSyncAt: String = "",
     /** The push token the relay last accepted, so it is re-sent only when it changes. */
     val registeredPushToken: String = "",
+    /** This phone's id at the relay -- what its name is sealed under. Empty for an old enrollment. */
+    val deviceId: String = "",
+    /** The name the relay last accepted, so it is re-sent only when it changes. */
+    val registeredName: String = "",
 ) {
     val isEnrolled: Boolean
         get() = relayUrl.isNotBlank() && instanceId.isNotBlank() && deviceToken.isNotBlank() && instanceKey.isNotBlank()
@@ -105,7 +113,14 @@ data class CalendarSyncState(
             val instance = params["instance"].orEmpty().takeIf(Sanitize::isId) ?: return null
             val token = Sanitize.secret(params["token"].orEmpty()) ?: return null
             val key = Sanitize.secret(params["key"].orEmpty()) ?: return null
-            return CalendarSyncState(relayUrl = relay, instanceId = instance, deviceToken = token, instanceKey = key)
+            val device = params["device"].orEmpty().takeIf(Sanitize::isId).orEmpty()
+            return CalendarSyncState(
+                relayUrl = relay,
+                instanceId = instance,
+                deviceToken = token,
+                instanceKey = key,
+                deviceId = device,
+            )
         }
     }
 }

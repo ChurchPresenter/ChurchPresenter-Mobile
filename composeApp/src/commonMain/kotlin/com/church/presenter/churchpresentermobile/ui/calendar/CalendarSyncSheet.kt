@@ -23,6 +23,7 @@ import churchpresentermobile.composeapp.generated.resources.calendar_sync_deskto
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_done
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_enroll
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_enroll_needs_desktop
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_or_ask
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_failed
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_intro
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_leave
@@ -97,9 +98,14 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
                 )
                 else -> Unit
             }
-            if (!canReachDesktop) HintText(stringResource(Res.string.calendar_sync_enroll_needs_desktop))
             Spacer(Modifier.height(8.dp))
-            CalendarPrimaryButton(
+            // The usual way in: an invite the church computer shows, scanned from anywhere.
+            QrScanButton(onScanned = actions.onScanned, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(10.dp))
+            HintText(stringResource(Res.string.calendar_sync_or_ask))
+            if (!canReachDesktop) HintText(stringResource(Res.string.calendar_sync_enroll_needs_desktop))
+            Spacer(Modifier.height(6.dp))
+            CalendarSecondaryButton(
                 label = stringResource(if (flow == EnrollFlow.Idle) Res.string.calendar_sync_enroll else Res.string.calendar_try_again),
                 onClick = actions.onEnroll,
                 enabled = canReachDesktop && hasCameraAvailable(),

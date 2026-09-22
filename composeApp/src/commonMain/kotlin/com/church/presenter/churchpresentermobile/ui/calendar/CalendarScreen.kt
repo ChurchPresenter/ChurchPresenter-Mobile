@@ -106,6 +106,7 @@ fun CalendarScreen(
                 saveState = saveSync,
                 clientKeys = ClientKeySource(settings),
                 pushToken = { settings.fcmToken },
+                deviceName = { settings.reportedDeviceName },
                 catalogStore = catalogStore,
             ),
             enrollService = EnrollService(settings),

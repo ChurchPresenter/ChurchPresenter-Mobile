@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 private const val TAG = "CalendarSync"
+private const val NAME_CHARS = 120
 
 /** 2,000 rows a page: far beyond what the relay holds, so this only stops a runaway. */
 private const val MAX_PULL_PAGES = 50
@@ -36,6 +37,8 @@ class CalendarSyncEngine(
     private val saveState: (CalendarSyncState) -> Unit,
     private val clientKeys: ClientKeySource,
     private val pushToken: () -> String = { "" },
+    /** What this phone calls itself, for the desktop's list of who is enrolled. */
+    private val deviceName: () -> String = { "" },
     private val clientFor: (CalendarSyncState, suspend () -> String) -> RelayClient = { s, k -> RelayClient(s, k) },
     /** Where the desktop's songbooks land when they arrive through the relay. */
     private val catalogStore: SongCatalogStore? = null,
@@ -91,6 +94,7 @@ class CalendarSyncEngine(
 
     private suspend fun round(client: RelayClient, sealing: Sealing, current: CalendarSyncState) {
         registerPushIfChanged(client, current)
+        registerNameIfChanged(client, sealing, current)
         val pushed = push(client, sealing)
         val pulled = pull(client, sealing, state(), pushed)
         _status.value = SyncStatus.Synced(nowIso(), pulled, pushed.size)
@@ -102,6 +106,19 @@ class CalendarSyncEngine(
         runCatching { client.registerPushToken(token) }
             .onSuccess { saveState(state().copy(registeredPushToken = token)) }
             .onFailure { Logger.e(TAG, "push token not registered: ${it.message}") }
+    }
+
+    /**
+     * A phone enrolled from an invite has no name at the relay until it says one. Sent once, and
+     * again only when the name changes; a phone enrolled the old way has no device id to seal
+     * under and keeps the name the desktop gave it.
+     */
+    private suspend fun registerNameIfChanged(client: RelayClient, sealing: Sealing, current: CalendarSyncState) {
+        val name = deviceName().trim().take(NAME_CHARS)
+        if (current.deviceId.isEmpty() || name.isEmpty() || name == current.registeredName) return
+        runCatching { client.registerName(sealing.sealText(name, current.deviceId)) }
+            .onSuccess { saveState(state().copy(registeredName = name)) }
+            .onFailure { Logger.e(TAG, "name not registered: ${it.message}") }
     }
 
     /** Replays local edits and deletes. A stale write is dropped here and the pull below brings the winner. */

@@ -1013,8 +1013,9 @@
     <string name="calendar_close">Close</string>
     <string name="calendar_sync_title">Sync with the church computer</string>
     <string name="calendar_sync_intro">Plan here all week. Your changes reach the church computer when it starts, and every enrolled phone sees the same plan.</string>
-    <string name="calendar_sync_enroll">Enroll this phone</string>
-    <string name="calendar_sync_enroll_needs_desktop">Connect to the church computer first — Settings → Server. Enrolling is approved there.</string>
+    <string name="calendar_sync_enroll">Ask over the church WiFi instead</string>
+    <string name="calendar_sync_or_ask">Ask whoever runs the church computer for an invite: Calendar → Settings → Defaults → Invite a phone. Or, on the church WiFi:</string>
+    <string name="calendar_sync_enroll_needs_desktop">Connect to the church computer first — Settings → Server. Asking is approved there.</string>
     <string name="calendar_sync_waiting_title">Waiting for the computer</string>
     <string name="calendar_sync_waiting_body">Ask whoever is at the church computer to allow this phone. They should see this code:</string>
     <string name="calendar_sync_scan_title">Almost there</string>

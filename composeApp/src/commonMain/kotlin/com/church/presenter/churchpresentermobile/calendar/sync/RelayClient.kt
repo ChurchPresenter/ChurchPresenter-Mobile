@@ -57,6 +57,17 @@ class RelayClient(
         checked(response)
     }
 
+    /** Tells the relay what this phone calls itself, sealed so only the desktop can read it. */
+    suspend fun registerName(nameBox: String) {
+        val key = clientKey()
+        val response = client.put("$base/devices/me/name") {
+            auth(key)
+            contentType(ContentType.Application.Json)
+            setBody(json.encodeToString(DeviceNameBody.serializer(), DeviceNameBody(nameBox)))
+        }
+        checked(response)
+    }
+
     suspend fun changes(since: Long): ChangesResponse {
         val key = clientKey()
         val response = client.get("$base/changes?since=$since") { auth(key) }

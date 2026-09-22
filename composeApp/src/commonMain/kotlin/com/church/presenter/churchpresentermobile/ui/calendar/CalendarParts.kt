@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -134,6 +135,8 @@ internal fun CalendarPrimaryButton(
 }
 
 /** A bordered surface button for the secondary action beside a primary one. */
+private const val DISABLED_ALPHA = 0.45f
+
 @Composable
 internal fun CalendarSecondaryButton(
     label: String?,
@@ -141,6 +144,7 @@ internal fun CalendarSecondaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     contentDescription: String? = null,
+    enabled: Boolean = true,
 ) {
     val colors = LocalAppColors.current
     Row(
@@ -149,7 +153,8 @@ internal fun CalendarSecondaryButton(
             .clip(ButtonShape)
             .background(colors.surface)
             .border(1.dp, colors.border, ButtonShape)
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
+            .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .padding(horizontal = if (label == null) 15.dp else 18.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
