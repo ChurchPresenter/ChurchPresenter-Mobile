@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.CloudDone
 import androidx.compose.material.icons.outlined.CloudOff
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ import churchpresentermobile.composeapp.generated.resources.calendar_sync_cd
 import churchpresentermobile.composeapp.generated.resources.calendar_title
 import churchpresentermobile.composeapp.generated.resources.calendar_today
 import churchpresentermobile.composeapp.generated.resources.cd_back
+import churchpresentermobile.composeapp.generated.resources.cd_settings
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.calendar.longDate
 import com.church.presenter.churchpresentermobile.calendar.monthTitle
@@ -91,6 +93,7 @@ fun CalendarScreen(
     twoPane: Boolean,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    onSettings: (() -> Unit)? = null,
     onLoadIntoSchedule: ((PlannedService) -> Unit)? = null,
 ) {
     val viewModel: CalendarViewModel = viewModel(key = "calendar") {
@@ -152,7 +155,12 @@ fun CalendarScreen(
 
     if (twoPane) {
         Row(modifier = modifier.fillMaxSize().background(LocalAppColors.current.background)) {
-            Column(modifier = Modifier.width(MonthPaneWidth).fillMaxHeight().verticalScroll(rememberScrollState())) {
+            val monthScroll = rememberScrollState()
+            Column(
+                modifier = Modifier.width(MonthPaneWidth).fillMaxHeight()
+                    .verticalScrollbar(monthScroll)
+                    .verticalScroll(monthScroll),
+            ) {
                 MonthHeader(
                     serviceCount = monthServices.size,
                     monthName = monthTitle(month),
@@ -161,6 +169,7 @@ fun CalendarScreen(
                     compact = true,
                     onSync = { syncSheet = true },
                     synced = syncStatus is SyncStatus.Synced || syncStatus is SyncStatus.Syncing,
+                    onSettings = onSettings,
                 )
                 Column(modifier = Modifier.padding(horizontal = PagePadding), verticalArrangement = Arrangement.spacedBy(18.dp)) {
                     MonthGrid(month, selectedDate, today(), monthServices, viewModel::select, viewModel::showPreviousMonth, viewModel::showNextMonth)
@@ -217,9 +226,14 @@ fun CalendarScreen(
                 compact = false,
                 onSync = { syncSheet = true },
                 synced = syncStatus is SyncStatus.Synced || syncStatus is SyncStatus.Syncing,
+                onSettings = onSettings,
             )
+            val scroll = rememberScrollState()
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = PagePadding),
+                modifier = Modifier.weight(1f)
+                    .verticalScrollbar(scroll)
+                    .verticalScroll(scroll)
+                    .padding(horizontal = PagePadding),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 MonthGrid(month, selectedDate, today(), monthServices, viewModel::select, viewModel::showPreviousMonth, viewModel::showNextMonth)
@@ -237,7 +251,11 @@ fun CalendarScreen(
             // An empty day already offers Add service in its body; a second one under it is noise.
             if (dayServices.isNotEmpty()) {
                 HorizontalDivider(color = LocalAppColors.current.borderSubtle)
-                AddServiceBar(onAdd = { newServiceSheet = true }, modifier = Modifier.padding(PagePadding).navigationBarsPadding())
+                // The tab bar under this already clears the system navigation bar.
+                AddServiceBar(
+                    onAdd = { newServiceSheet = true },
+                    modifier = Modifier.padding(horizontal = PagePadding, vertical = 10.dp),
+                )
             }
         }
     }
@@ -281,6 +299,7 @@ private fun MonthHeader(
     compact: Boolean,
     onSync: () -> Unit,
     synced: Boolean,
+    onSettings: (() -> Unit)?,
 ) {
     val colors = LocalAppColors.current
     Row(
@@ -311,6 +330,15 @@ private fun MonthHeader(
             contentDescription = stringResource(Res.string.calendar_sync_cd),
             onClick = onSync,
         )
+        if (onSettings != null) {
+            Spacer(Modifier.width(8.dp))
+            CalendarSecondaryButton(
+                label = null,
+                icon = Icons.Outlined.Settings,
+                contentDescription = stringResource(Res.string.cd_settings),
+                onClick = onSettings,
+            )
+        }
     }
 }
 

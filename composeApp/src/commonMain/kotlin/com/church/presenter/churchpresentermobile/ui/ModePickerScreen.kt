@@ -2,6 +2,9 @@ package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.background
 import churchpresentermobile.composeapp.generated.resources.mode_diagram_tv
+import churchpresentermobile.composeapp.generated.resources.mode_diagram_cloud
+import churchpresentermobile.composeapp.generated.resources.mode_calendar_body
+import churchpresentermobile.composeapp.generated.resources.mode_calendar_title
 import churchpresentermobile.composeapp.generated.resources.mode_diagram_tablet
 import churchpresentermobile.composeapp.generated.resources.mode_diagram_screen
 import churchpresentermobile.composeapp.generated.resources.mode_diagram_computer
@@ -30,6 +33,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.SettingsRemote
@@ -125,6 +129,15 @@ fun ModePickerScreen(
             selected = selected == AppMode.STANDALONE,
             onClick = { selected = AppMode.STANDALONE },
             modifier = Modifier.testTag(UiTags.modeCard(AppMode.STANDALONE)),
+        )
+        Box(Modifier.size(AppDimens.space12))
+        ModeCard(
+            title = stringResource(Res.string.mode_calendar_title),
+            body = stringResource(Res.string.mode_calendar_body),
+            icon = Icons.Filled.CalendarMonth,
+            selected = selected == AppMode.CALENDAR,
+            onClick = { selected = AppMode.CALENDAR },
+            modifier = Modifier.testTag(UiTags.modeCard(AppMode.CALENDAR)),
         )
 
         Box(
@@ -262,6 +275,20 @@ private fun TabletModePicker(
                 DiagramBox(stringResource(Res.string.mode_diagram_tablet), accent, width = 54.dp, height = 88.dp)
                 DiagramArrow(accent)
                 DiagramBox(stringResource(Res.string.mode_diagram_tv), accent, width = 140.dp, height = 84.dp)
+            }
+            TabletModeCard(
+                title = stringResource(Res.string.mode_calendar_title),
+                body = stringResource(Res.string.mode_calendar_body),
+                icon = Icons.Filled.CalendarMonth,
+                selected = selected == AppMode.CALENDAR,
+                onClick = { onSelect(AppMode.CALENDAR) },
+                modifier = Modifier.weight(1f).fillMaxHeight().testTag(UiTags.modeCard(AppMode.CALENDAR)),
+            ) { accent ->
+                DiagramBox(stringResource(Res.string.mode_diagram_tablet), accent, width = 54.dp, height = 88.dp)
+                DiagramArrow(accent)
+                DiagramBox(stringResource(Res.string.mode_diagram_cloud), accent, width = 84.dp, height = 60.dp)
+                DiagramArrow(accent)
+                DiagramBox(stringResource(Res.string.mode_diagram_computer), accent, width = 96.dp, height = 72.dp)
             }
         }
         Row(modifier = Modifier.fillMaxWidth().padding(top = 32.dp), horizontalArrangement = Arrangement.End) {

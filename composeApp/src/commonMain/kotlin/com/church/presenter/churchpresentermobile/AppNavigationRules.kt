@@ -50,6 +50,7 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
     AppTab.BIBLE -> AnalyticsScreen.BIBLE_BOOKS
     AppTab.MEDIA -> AnalyticsScreen.MEDIA
     AppTab.PRESENTATION -> AnalyticsScreen.PRESENTATIONS
+    AppTab.CALENDAR -> AnalyticsScreen.CALENDAR
     AppTab.MORE -> AnalyticsScreen.MORE
 }
 
@@ -129,4 +130,5 @@ private val TABS_WITH_PANE_HEADERS = setOf(
     AppTab.MEDIA,
     AppTab.MORE,
     AppTab.LIBRARY,
+    AppTab.CALENDAR,
 )

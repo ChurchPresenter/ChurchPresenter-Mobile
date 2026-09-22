@@ -182,9 +182,10 @@ class CalendarSyncEngineTest {
         val relayHttp = HttpClient(MockEngine { request -> relay.handle(this, request) })
         val book = CatalogRecord("Hymnal", songs = listOf(CatalogSong("42", "Here I Am to Worship", 270)))
         val json = Json { encodeDefaults = true; explicitNulls = false }
-        val box = sealing().sealText(json.encodeToString(CatalogRecord.serializer(), book), "catalog:Hymnal")
+        val box = sealing().sealText(json.encodeToString(CatalogRecord.serializer(), book), "catalog:Hymnal-cf49adf4")
         relay.rev += 1
-        relay.records["catalog:Hymnal"] = SealedRecord("catalog:Hymnal", "2028-12-20", box, rev = relay.rev)
+        val hymnalId = "catalog:Hymnal-cf49adf4"
+        relay.records[hymnalId] = SealedRecord(hymnalId, "2028-12-20", box, rev = relay.rev)
         relay.desktopWrote(service("svc-1", "Sunday"))
         val engine = CalendarSyncEngine(
             repository,
@@ -198,12 +199,12 @@ class CalendarSyncEngineTest {
         assertTrue(engine.sync())
 
         assertEquals(listOf("svc-1"), repository.document.value.services.map { it.id })
-        assertEquals(setOf("catalog:Hymnal"), catalogStore.records.value.keys)
+        assertEquals(setOf("catalog:Hymnal-cf49adf4"), catalogStore.records.value.keys)
         assertEquals(270, catalogStore.durations().secondsFor(catalogStore.songs().single()))
         assertEquals(1, assertIs<SyncStatus.Synced>(engine.status.value).pulled)
 
         relay.rev += 1
-        relay.tombstones += RemoteTombstone("catalog:Hymnal", "2026-09-21T00:00:00Z")
+        relay.tombstones += RemoteTombstone("catalog:Hymnal-cf49adf4", "2026-09-21T00:00:00Z")
         assertTrue(engine.sync())
         assertTrue(catalogStore.isEmpty)
         assertEquals(listOf("svc-1"), repository.document.value.services.map { it.id })

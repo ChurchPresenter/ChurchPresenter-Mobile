@@ -58,7 +58,7 @@
     <!-- Settings sections — the menu on a phone, the list beside the form on a
          tablet. Each entry names a section and says what it holds. English-only
          for now; other locales fall back to this until translated. -->
-    <string name="settings_section_mode_subtitle">Remote control or standalone</string>
+    <string name="settings_section_mode_subtitle">Remote control, standalone or calendar</string>
     <string name="settings_section_server_subtitle">Host, port and API key</string>
     <string name="settings_section_computer_subtitle">Where songs and Bibles are copied from</string>
     <string name="settings_device_section">Device</string>
@@ -520,6 +520,7 @@
     <string name="tab_media">Media</string>
     <string name="tab_present">Present</string>
     <string name="tab_more">More</string>
+    <string name="tab_calendar">Calendar</string>
 
     <!-- Count / summary labels -->
     <string name="songs_count">%1$d songs</string>
@@ -552,6 +553,8 @@
     <string name="mode_remote_body">Drive ChurchPresenter running on a computer. The computer shows the slides.</string>
     <string name="mode_standalone_title">Standalone</string>
     <string name="mode_standalone_body">This phone is the presenter. Project straight to a TV or screen — no computer needed.</string>
+    <string name="mode_calendar_title">Calendar</string>
+    <string name="mode_calendar_body">Plan services on this phone. Nothing is projected; plans reach the church computer over the cloud.</string>
     <string name="mode_continue">Continue</string>
     <string name="mode_section_title">Mode</string>
     <!-- Labels of the boxes in the tablet mode picker's signal-path diagrams. -->
@@ -559,10 +562,13 @@
     <string name="mode_diagram_computer">Computer</string>
     <string name="mode_diagram_screen">Screen</string>
     <string name="mode_diagram_tv">TV / Screen</string>
+    <string name="mode_diagram_cloud">Cloud</string>
     <string name="mode_switch_confirm_title">Switch to standalone?</string>
     <string name="mode_switch_confirm_body">Projection will go to your own screens instead of the computer.</string>
     <string name="mode_switch_to_remote_title">Switch to remote control?</string>
     <string name="mode_switch_to_remote_body">Projection will go back to ChurchPresenter on your computer.</string>
+    <string name="mode_switch_to_calendar_title">Switch to calendar?</string>
+    <string name="mode_switch_to_calendar_body">Nothing will be projected. This phone will only plan services.</string>
     <string name="mode_switch_confirm_action">Switch</string>
     <string name="mode_switch_cancel">Cancel</string>
 

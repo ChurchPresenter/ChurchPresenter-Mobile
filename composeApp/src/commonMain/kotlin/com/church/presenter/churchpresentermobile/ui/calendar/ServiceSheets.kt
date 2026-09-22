@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -114,10 +115,12 @@ internal fun CalendarSheet(onDismiss: () -> Unit, content: @Composable () -> Uni
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = LocalAppColors.current.sheetBackground,
     ) {
+        val scroll = rememberScrollState()
         Column(
             modifier = Modifier
                 .padding(horizontal = PagePadding)
-                .verticalScroll(rememberScrollState()),
+                .verticalScrollbar(scroll)
+                .verticalScroll(scroll),
         ) {
             content()
             Spacer(Modifier.height(16.dp))

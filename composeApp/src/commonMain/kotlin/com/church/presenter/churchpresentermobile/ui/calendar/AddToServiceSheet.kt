@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -159,7 +161,12 @@ internal fun AddToServiceContent(
         Spacer(Modifier.height(10.dp))
         // The timing panel scrolls with the list rather than sitting under it: with the keyboard
         // up, a fixed panel left the list a few pixels tall. Only the Add button stays pinned.
-        LazyColumn(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.weight(1f).verticalScrollbar(listState),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             if (reference != null && tab != PickerTab.BIBLE) {
                 item { ReferenceCard(reference, onAdd = { add(picker.bibleRow(reference, newRowId)) }) }
             }

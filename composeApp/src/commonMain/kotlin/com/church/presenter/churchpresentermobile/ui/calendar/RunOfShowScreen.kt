@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -112,8 +113,10 @@ internal fun RunOfShowScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
             )
         } else {
+            val listState = rememberLazyListState()
             LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
+                state = listState,
+                modifier = Modifier.weight(1f).fillMaxWidth().verticalScrollbar(listState),
                 contentPadding = PaddingValues(horizontal = PagePadding, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -224,7 +227,7 @@ internal fun runSubtitle(service: PlannedService): String {
 @Composable
 private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit, onLoad: (() -> Unit)?) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = PagePadding, vertical = 10.dp).navigationBarsPadding(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = PagePadding, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         CalendarSecondaryButton(label = null, icon = Icons.Filled.Add, contentDescription = stringResource(Res.string.calendar_add_item), onClick = onAdd)

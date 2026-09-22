@@ -24,21 +24,21 @@ class SongCatalogStoreTest {
     @Test
     fun theLanCopyReplacesEverythingAndComesBackAfterARestart() {
         store.replaceAll(listOf(hymnal, praise))
-        assertEquals(setOf("catalog:Hymnal", "catalog:Songs_of_Praise"), store.records.value.keys)
+        assertEquals(setOf("catalog:Hymnal-cf49adf4", "catalog:Songs_of_Praise-45987dd6"), store.records.value.keys)
 
         store.replaceAll(listOf(praise))
-        assertEquals(setOf("catalog:Songs_of_Praise"), SongCatalogStore(storage).load().keys)
+        assertEquals(setOf("catalog:Songs_of_Praise-45987dd6"), SongCatalogStore(storage).load().keys)
     }
 
     @Test
     fun aRelayPullMergesRecordByRecordAndTombstonesRemove() {
         store.replaceAll(listOf(hymnal))
 
-        store.merge(put = mapOf("catalog:Songs_of_Praise" to praise), removed = emptySet())
+        store.merge(put = mapOf("catalog:Songs_of_Praise-45987dd6" to praise), removed = emptySet())
         assertEquals(2, store.records.value.size)
 
-        store.merge(put = emptyMap(), removed = setOf("catalog:Hymnal"))
-        assertEquals(setOf("catalog:Songs_of_Praise"), store.records.value.keys)
+        store.merge(put = emptyMap(), removed = setOf("catalog:Hymnal-cf49adf4"))
+        assertEquals(setOf("catalog:Songs_of_Praise-45987dd6"), store.records.value.keys)
     }
 
     @Test

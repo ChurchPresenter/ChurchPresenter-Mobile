@@ -620,7 +620,11 @@ fun App(
     // hamburger is at the rail's top-left and the gear at the window's
     // top-right, drawn once by the shell, so every pane header on a tablet
     // starts and ends with its title.
-    val paneMenu: (() -> Unit)? = if (useRail) null else ({ coroutineScope.launch { drawerState.open() } })
+    // Calendar mode has no drawer either: the remote one is the desktop's schedule
+    // and the standalone one is this device's running order, and it has neither.
+    val hasDrawer = appMode != AppMode.CALENDAR
+    val paneMenu: (() -> Unit)? =
+        if (useRail || !hasDrawer) null else ({ coroutineScope.launch { drawerState.open() } })
     val paneSettings: (() -> Unit)? = if (useRail) null else ({ showSettings = true })
 
     // ── Shortcut / Quick-Action tab navigation ────────────────────────────
@@ -779,8 +783,9 @@ fun App(
                     // First launch on a phone: ask how they want to present before
                     // asking them to find a server they may not need.
                     supportsStandalone && !appSettings.isModeChosen -> showModePicker = true
-                    // Standalone has no server to connect to or check.
-                    appMode == AppMode.STANDALONE -> Unit
+                    // Standalone has no server to connect to or check; calendar mode
+                    // talks to nothing but the relay.
+                    appMode != AppMode.REMOTE -> Unit
                     // On first launch skip the status check — show the connect-setup
                     // screen directly so the user configures the server first.
                     // On subsequent launches go straight to the status check as usual.
@@ -845,8 +850,10 @@ fun App(
         }
         ModalNavigationDrawer(
             drawerState = drawerState,
+            gesturesEnabled = hasDrawer,
             scrimColor = LocalAppColors.current.scrim,
             drawerContent = {
+                if (!hasDrawer) return@ModalNavigationDrawer
                 // Standalone's running order is this device's own list, so it gets
                 // the same drawer rather than a second idea of "today" somewhere
                 // else — and, being local, it is editable in place.
@@ -928,6 +935,7 @@ fun App(
                     // and the run of show inside it carries the service's name and its
                     // Armed switch, neither of which the shell's bar has room for.
                     inMoreDetail && moreDestination == MoreDestination.CALENDAR -> Unit
+                    selectedTab == AppTab.CALENDAR -> Unit
                     inMoreDetail -> ScreenHeader(
                         title = moreDestinationTitle(moreDestination, appMode),
                         onBack = { moreDestination = null },
@@ -1073,6 +1081,19 @@ fun App(
                             canUploadFiles = canUploadFiles,
                             providedViewModel = presentationsViewModel,
                             modifier = Modifier.fillMaxSize()
+                        )
+                        // Calendar mode's whole app. The same screen More opens in the
+                        // other modes, given the gear instead of a Back arrow because
+                        // there is nothing behind it to go back to.
+                        AppTab.CALENDAR -> CalendarScreen(
+                            repository = calendarRepository,
+                            catalogStore = songCatalogStore,
+                            songCatalog = songCatalog,
+                            bibleCatalog = bibleCatalog,
+                            settings = appSettings,
+                            twoPane = twoPane,
+                            onSettings = { showSettings = true },
+                            modifier = Modifier.fillMaxSize(),
                         )
                         AppTab.MORE -> {
                             // The open tool, named once: the phone shows it *instead of*
@@ -1249,7 +1270,7 @@ fun App(
                             selectedTab = selectedTab,
                             tabs = tabs,
                             onTabSelected = selectTab,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onMenu = if (hasDrawer) ({ coroutineScope.launch { drawerState.open() } }) else null,
                         )
                         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
                             Column(modifier = Modifier.fillMaxSize()) {
@@ -1260,8 +1281,10 @@ fun App(
                                 Box(modifier = Modifier.weight(1f)) { renderTab(selectedTab) }
                             }
                             // The one gear for the whole window, in its top-right
-                            // corner, over whichever header happens to be there.
-                            GearButton(
+                            // corner, over whichever header happens to be there. The
+                            // calendar's right pane keeps Add service there, so that
+                            // tab draws the gear in its own header instead.
+                            if (selectedTab != AppTab.CALENDAR) GearButton(
                                 onClick = { showSettings = true },
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)

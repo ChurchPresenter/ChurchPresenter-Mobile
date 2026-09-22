@@ -54,10 +54,18 @@
                 android:name="google_analytics_automatic_screen_reporting_enabled"
                 android:value="false"/>
 
+        <!--
+            Rotation and window-size changes are handled in place rather than by
+            recreating the Activity: the composition reads the window size itself
+            for the phone/tablet shape, and a recreate threw away every remembered
+            flag — the splash, the connect flow, the open tool — so turning the
+            phone landed on the splash screen.
+        -->
         <activity
                 android:exported="true"
                 android:name=".MainActivity"
                 android:launchMode="singleTask"
+                android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
                 android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

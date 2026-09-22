@@ -104,8 +104,10 @@ class SongCatalogStore(private val storage: FileStore = createFileStore()) {
     val isEmpty: Boolean
         get() = load().isEmpty()
 
+    /** The desktop's id for a book -- an ASCII slug plus a hash of the real name -- built the same way here. */
     private fun recordId(record: CatalogRecord): String {
-        val key = record.songbook.map { if (it.isLetterOrDigit() || it in "_-.") it else '_' }.joinToString("").take(48)
+        val slug = record.songbook.map { if (isSlugChar(it)) it else '_' }.joinToString("").trim('_').take(SLUG_CHARS)
+        val key = (if (slug.isEmpty()) "" else "$slug-") + fnv1a(record.songbook)
         return if (record.part == 0) "$CATALOG_PREFIX$key" else "$CATALOG_PREFIX$key:${record.part}"
     }
 
@@ -129,3 +131,20 @@ class SongCatalogStore(private val storage: FileStore = createFileStore()) {
             .onFailure { Logger.e(TAG, "song-catalog.json write failed: ${it.message}") }
     }
 }
+
+private fun isSlugChar(c: Char): Boolean = c in 'A'..'Z' || c in 'a'..'z' || c in '0'..'9' || c in "_-."
+
+/** FNV-1a over the UTF-8 bytes as eight hex characters; the desktop computes the same. */
+private fun fnv1a(text: String): String {
+    var hash = FNV_OFFSET
+    for (byte in text.encodeToByteArray()) hash = ((hash xor (byte.toLong() and BYTE_MASK)) * FNV_PRIME) and UINT_MASK
+    return hash.toString(HEX).padStart(HEX_CHARS, '0')
+}
+
+private const val SLUG_CHARS = 32
+private const val FNV_OFFSET = 0x811c9dc5L
+private const val FNV_PRIME = 0x01000193L
+private const val BYTE_MASK = 0xffL
+private const val UINT_MASK = 0xffffffffL
+private const val HEX = 16
+private const val HEX_CHARS = 8

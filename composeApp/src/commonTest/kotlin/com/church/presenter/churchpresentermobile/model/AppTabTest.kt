@@ -54,8 +54,9 @@ class AppTabTest {
     }
 
     @Test
-    fun `songs and bible are reachable in both modes`() {
-        AppMode.entries.forEach { mode ->
+    fun `songs and bible are reachable in both presenting modes`() {
+        // Calendar mode presents nothing, so it has neither tab.
+        listOf(AppMode.REMOTE, AppMode.STANDALONE).forEach { mode ->
             val tabs = AppTab.forMode(mode)
             assertTrue(AppTab.SONGS in tabs)
             assertTrue(AppTab.BIBLE in tabs)
