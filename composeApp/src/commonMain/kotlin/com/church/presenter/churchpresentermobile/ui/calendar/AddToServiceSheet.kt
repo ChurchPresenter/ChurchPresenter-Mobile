@@ -78,8 +78,8 @@ internal class PickedRow(val row: PlanRow, val seconds: Int?)
 
 /**
  * "Add to Sunday Morning": songs, passages, sections, ministry items and the desktop's presets,
- * each with the timing panel under it. Adding does not close the sheet — a planner adds a run
- * of things in one sitting.
+ * each with the timing panel under it. Adding closes the sheet: the row lands behind it, and a
+ * sheet that stays open over the plan hides the very thing that just changed.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,7 +102,7 @@ internal fun AddToServiceSheet(
             serviceStart = serviceStart,
             sources = sources,
             newRowId = newRowId,
-            onAdd = onAdd,
+            onAdd = { row, seconds, timing -> onAdd(row, seconds, timing); onDismiss() },
             onDismiss = onDismiss,
             modifier = Modifier.fillMaxHeight(SHEET_HEIGHT_FRACTION),
         )
