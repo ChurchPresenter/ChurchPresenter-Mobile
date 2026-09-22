@@ -49,6 +49,7 @@ import com.church.presenter.churchpresentermobile.model.RowKind
 import com.church.presenter.churchpresentermobile.model.RowTiming
 import com.church.presenter.churchpresentermobile.model.SectionPalette
 import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.model.SongDurations
 import com.church.presenter.churchpresentermobile.ui.SearchField
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.ChapterPreview
@@ -66,6 +67,8 @@ internal class PickerSources(
     val books: List<PickerBook>,
     val presets: List<PresetSummary>,
     val chapterPreview: suspend (PickerBook, Int) -> ChapterPreview?,
+    /** The desktop's measured lengths, so a song arrives in the plan with its usual length filled in. */
+    val durations: SongDurations = SongDurations.NONE,
 )
 
 /** A row the picker has built, with its planned length, ready for [AddToServiceSheet]'s `onAdd`. */
@@ -134,7 +137,7 @@ internal fun AddToServiceContent(
         if (tab == PickerTab.SECTION || tab == PickerTab.MINISTRY) query = ""
     }
 
-    val pending = picker.pendingRow(tab, query, reference, newRowId)
+    val pending = picker.pendingRow(tab, query, reference, newRowId, sources.durations)
 
     Column(modifier = modifier.padding(horizontal = PagePadding)) {
         SheetTitle(stringResource(Res.string.calendar_add_to, serviceName), onClose = onDismiss)
@@ -165,7 +168,7 @@ internal fun AddToServiceContent(
                 query = query,
                 sources = sources,
                 picker = picker,
-                onAddSong = { add(picker.songRow(it, newRowId)) },
+                onAddSong = { add(picker.songRow(it, newRowId, sources.durations.secondsFor(it))) },
                 onAddPreset = { add(picker.presetRow(it, newRowId)) },
                 onPickSection = { name, hex ->
                     add(PickedRow(PlanRow.Section(id = newRowId(), title = name, color = hex), seconds = null))
@@ -331,15 +334,15 @@ internal class PickerState {
         ministryDuration = ""
     }
 
-    fun songRow(picked: Song, newId: () -> String) = PickedRow(
+    fun songRow(picked: Song, newId: () -> String, seconds: Int?) = PickedRow(
         PlanRow.Song(
             id = newId(),
             title = songLabel(picked),
-            songId = picked.identity,
+            songId = picked.desktopSongId,
             songbook = picked.bookName.orEmpty(),
             number = picked.number,
         ),
-        seconds = null,
+        seconds = seconds,
     )
 
     fun presetRow(picked: PresetSummary, newId: () -> String) =
@@ -349,8 +352,14 @@ internal class PickerState {
         PickedRow(PlanRow.Bible(id = newId(), title = reference.text, bookId = reference.book.number), seconds = null)
 
     /** What the primary button would add right now, or null when nothing is ready. */
-    fun pendingRow(tab: PickerTab, query: String, reference: ParsedReference?, newId: () -> String): PickedRow? = when (tab) {
-        PickerTab.SONGS -> song?.let { songRow(it, newId) } ?: reference?.let { bibleRow(it, newId) }
+    fun pendingRow(
+        tab: PickerTab,
+        query: String,
+        reference: ParsedReference?,
+        newId: () -> String,
+        durations: SongDurations = SongDurations.NONE,
+    ): PickedRow? = when (tab) {
+        PickerTab.SONGS -> song?.let { songRow(it, newId, durations.secondsFor(it)) } ?: reference?.let { bibleRow(it, newId) }
         PickerTab.PRESETS -> preset?.let { presetRow(it, newId) }
         PickerTab.BIBLE -> pendingPassage(reference, newId)
         PickerTab.SECTION -> query.trim().takeIf { it.isNotEmpty() }?.let {

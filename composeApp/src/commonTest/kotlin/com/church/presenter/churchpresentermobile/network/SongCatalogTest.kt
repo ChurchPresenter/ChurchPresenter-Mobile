@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.network
 
+import com.church.presenter.churchpresentermobile.calendar.sync.CatalogRecord
+import com.church.presenter.churchpresentermobile.calendar.sync.CatalogSong
+import com.church.presenter.churchpresentermobile.calendar.sync.SongCatalogStore
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.LocalSong
@@ -42,9 +45,11 @@ class SongCatalogTest {
     private class FakeReader(
         val songs: List<Song> = emptyList(),
         val detail: SongDetail = SongDetail(number = "1", title = "Remote song"),
+        val books: Result<List<CatalogRecord>> = Result.success(emptyList()),
     ) : SongReader {
         var detailCalls = 0
         override suspend fun getSongs(): Result<List<Song>> = Result.success(songs)
+        override suspend fun getSongCatalog(): Result<List<CatalogRecord>> = books
         override suspend fun getSongDetail(
             number: String,
             bookName: String?,
@@ -100,6 +105,89 @@ class SongCatalogTest {
 
         assertEquals(1, remote.detailCalls)
         assertEquals("Remote song", loaded.detail.title)
+    }
+
+    // ── Planning ─────────────────────────────────────────────────────────
+
+    private class UnreachableReader : SongReader {
+        override suspend fun getSongs(): Result<List<Song>> = Result.failure(IllegalStateException("no desktop"))
+        override suspend fun getSongDetail(
+            number: String,
+            bookName: String?,
+            songId: Int,
+            title: String?,
+        ): Result<SongDetail> = Result.failure(IllegalStateException("no desktop"))
+    }
+
+    @Test
+    fun planningUsesTheDesktopWhileItAnswers() = runTest {
+        val remote = FakeReader(songs = listOf(Song(number = "1", title = "From the desktop")))
+        val catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), remote, libraryWith(localSong()))
+
+        assertEquals(listOf("From the desktop"), catalog.listForPlanning().map { it.title })
+    }
+
+    @Test
+    fun planningFallsBackToTheLibraryWhenTheDesktopIsOff() = runTest {
+        val catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), UnreachableReader(), libraryWith(localSong()))
+
+        val songs = catalog.listForPlanning()
+
+        assertEquals(listOf("Amazing Grace"), songs.map { it.title })
+        assertEquals("::42", songs.single().desktopSongId)
+    }
+
+    @Test
+    fun planningWithNoDesktopAndNoLibraryIsAnEmptyListNotAnError() = runTest {
+        val catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), UnreachableReader())
+
+        assertEquals(emptyList(), catalog.listForPlanning())
+    }
+
+    // ── Songbooks from the desktop ───────────────────────────────────────
+
+    private val hymnal = CatalogRecord(
+        "Hymnal",
+        songs = listOf(CatalogSong("42", "Amazing Grace", 270), CatalogSong("7", "Unsung")),
+    )
+
+    @Test
+    fun aDesktopThatAnswersAlsoHandsOverItsSongbooksAndTheirLengths() = runTest {
+        val store = SongCatalogStore(InMemoryFileStorage())
+        val remote = FakeReader(
+            songs = listOf(Song(number = "42", title = "Amazing Grace", bookName = "Hymnal")),
+            books = Result.success(listOf(hymnal)),
+        )
+        val catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), remote, catalogStore = store)
+
+        val songs = catalog.listForPlanning()
+
+        assertEquals(listOf("Amazing Grace"), songs.map { it.title })
+        assertEquals(270, catalog.durations().secondsFor(songs.single()))
+        assertEquals(2, store.songs().size)
+    }
+
+    @Test
+    fun withTheDesktopOffPlanningUsesTheSongbooksItSentLast() = runTest {
+        val store = SongCatalogStore(InMemoryFileStorage())
+        store.replaceAll(listOf(hymnal))
+        val catalog =
+            SongCatalog(MutableStateFlow(AppMode.REMOTE), UnreachableReader(), libraryWith(localSong()), store)
+
+        val songs = catalog.listForPlanning()
+
+        val labels = songs.map { "${it.number} - ${it.title}" }.sorted()
+        assertEquals(listOf("7 - Unsung", "42 - Amazing Grace").sorted(), labels)
+        assertEquals("Hymnal::42", songs.first { it.number == "42" }.desktopSongId)
+        assertEquals(270, catalog.durations().secondsFor(songs.first { it.number == "42" }))
+        assertEquals(null, catalog.durations().secondsFor(songs.first { it.number == "7" }))
+    }
+
+    @Test
+    fun nothingRememberedIsNoDurationsNotAnError() = runTest {
+        val catalog = SongCatalog(MutableStateFlow(AppMode.STANDALONE), ForbiddenReader(), libraryWith(localSong()))
+
+        assertEquals(null, catalog.durations().secondsFor(Song(number = "42", title = "Amazing Grace")))
     }
 
     // ── Standalone ───────────────────────────────────────────────────────

@@ -21,6 +21,8 @@ data class Song(
      * Not in any JSON payload; like [bookName] it is populated in code.
      */
     val localId: String? = null,
+    /** The title in the second language of a bilingual song; null otherwise. */
+    val secondaryTitle: String? = null,
 ) {
     /**
      * What tells this song apart from every other one in a list.
@@ -39,6 +41,34 @@ data class Song(
         get() = localId
             ?: id.takeIf { it >= 0 }?.let { "id:$it" }
             ?: "num:$number/${bookName.orEmpty()}"
+
+    /**
+     * The key the desktop names this song by -- `songbook::number`, or `songbook::title` for a
+     * song with no number. What a calendar row carries, so the desktop finds the song in its own
+     * library rather than by title; and what the durations list is keyed by.
+     */
+    val desktopSongId: String
+        get() = if (number.isNotBlank()) "${bookName.orEmpty()}::$number" else "${bookName.orEmpty()}::$title"
+}
+
+/**
+ * The desktop's measured song lengths, looked up the way the desktop matches a song: by its key
+ * (`songbook::number`), then by title when that is unambiguous.
+ */
+class SongDurations(private val byId: Map<String, Int>, private val byTitle: Map<String, List<Int>>) {
+
+    fun secondsFor(song: Song): Int? =
+        byId[song.desktopSongId] ?: byTitle[song.title.trim().lowercase()]?.singleOrNull()
+
+    companion object {
+        val NONE = SongDurations(emptyMap(), emptyMap())
+
+        /** From the catalog: every song that has a length, keyed as the desktop keys it. */
+        fun of(entries: List<Pair<Song, Int>>): SongDurations = SongDurations(
+            byId = entries.associate { (song, seconds) -> song.desktopSongId to seconds },
+            byTitle = entries.groupBy({ (song, _) -> song.title.trim().lowercase() }, { (_, seconds) -> seconds }),
+        )
+    }
 }
 
 // ── Project / schedule-add request models ─────────────────────────────────────

@@ -50,6 +50,12 @@ class Sealing private constructor(private val key: AES.GCM.Key, private val inst
         return service.copy(updatedAt = record.updatedAt, rev = record.rev)
     }
 
+    /** A songbook record from the relay, or null when it does not open cleanly. */
+    suspend fun openCatalog(record: SealedRecord): CatalogRecord? {
+        val bytes = openBytes(record.box, record.id) ?: return null
+        return runCatching { json.decodeFromString(CatalogRecord.serializer(), bytes.decodeToString()) }.getOrNull()
+    }
+
     suspend fun openPresets(box: String): PresetIndex? {
         val bytes = openBytes(box, PRESETS_RECORD) ?: return null
         return runCatching { json.decodeFromString(PresetIndex.serializer(), bytes.decodeToString()) }.getOrNull()

@@ -113,15 +113,18 @@ internal fun LazyListScope.songItems(
     }
 }
 
-internal fun songLabel(song: Song): String =
-    if (song.number.isNotBlank() && song.number != "0") "${song.number} - ${song.title}" else song.title
+internal fun songLabel(song: Song): String {
+    val title = song.secondaryTitle?.takeIf { it.isNotBlank() }?.let { "${song.title} · $it" } ?: song.title
+    return if (song.number.isNotBlank() && song.number != "0") "${song.number} - $title" else title
+}
 
 internal fun filterSongs(songs: List<Song>, query: String): List<Song> {
     val needle = query.trim().lowercase()
     if (needle.isEmpty()) return songs
     return songs.filter { song ->
         song.title.lowercase().contains(needle) || song.number.lowercase().startsWith(needle) ||
-            song.author.orEmpty().lowercase().contains(needle)
+            song.author.orEmpty().lowercase().contains(needle) ||
+            song.secondaryTitle.orEmpty().lowercase().contains(needle)
     }
 }
 

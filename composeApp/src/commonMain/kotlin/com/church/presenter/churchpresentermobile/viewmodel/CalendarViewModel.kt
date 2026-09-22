@@ -21,6 +21,7 @@ import com.church.presenter.churchpresentermobile.model.PlanRow
 import com.church.presenter.churchpresentermobile.model.PlannedService
 import com.church.presenter.churchpresentermobile.model.RowTiming
 import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.model.SongDurations
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncEngine
@@ -96,6 +97,9 @@ class CalendarViewModel(
     private val _songs = MutableStateFlow<List<Song>>(emptyList())
     val songs: StateFlow<List<Song>> = _songs.asStateFlow()
 
+    private val _songDurations = MutableStateFlow(SongDurations.NONE)
+    val songDurations: StateFlow<SongDurations> = _songDurations.asStateFlow()
+
     private val _songsLoading = MutableStateFlow(false)
     val songsLoading: StateFlow<Boolean> = _songsLoading.asStateFlow()
 
@@ -167,7 +171,8 @@ class CalendarViewModel(
         if (songsSource != null) {
             viewModelScope.launch {
                 _songsLoading.value = true
-                songsSource.list().onSuccess { _songs.value = it }
+                _songs.value = songsSource.listForPlanning()
+                _songDurations.value = songsSource.durations()
                 _songsLoading.value = false
             }
         }

@@ -131,6 +131,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
+import com.church.presenter.churchpresentermobile.calendar.sync.SongCatalogStore
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
@@ -245,6 +246,8 @@ fun App(
     // Planned services. Its own file, like the Bible library, so a plan is never rewritten by a
     // song edit and can be synced with a desktop on its own.
     val calendarRepository = remember { CalendarRepository() }
+    // The desktop's songbooks as last received, for planning when no desktop answers.
+    val songCatalogStore = remember { SongCatalogStore() }
     // Translations copied onto this device. Separate from the song library because a Bible is
     // megabytes and that document is rewritten whole on every song edit.
     val bibleRepository = remember {
@@ -372,6 +375,7 @@ fun App(
             mode = AppModeHolder.mode,
             remote = SongService(appSettings, projectionRouter),
             library = libraryRepository,
+            catalogStore = songCatalogStore,
         )
     }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
@@ -1081,6 +1085,7 @@ fun App(
                                     // catalogs currently do.
                                     MoreDestination.CALENDAR -> CalendarScreen(
                                         repository = calendarRepository,
+                                        catalogStore = songCatalogStore,
                                         songCatalog = songCatalog,
                                         bibleCatalog = bibleCatalog,
                                         settings = appSettings,

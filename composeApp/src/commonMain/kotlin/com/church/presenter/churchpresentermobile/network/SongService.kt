@@ -5,6 +5,8 @@ import com.church.presenter.churchpresentermobile.model.ProjectSongRequest
 import com.church.presenter.churchpresentermobile.model.SelectSectionRequest
 import com.church.presenter.churchpresentermobile.model.SelectSongPayload
 import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.calendar.sync.CatalogRecord
+import com.church.presenter.churchpresentermobile.calendar.sync.SongCatalogRecordsResponse
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongItemPayload
 import com.church.presenter.churchpresentermobile.model.SongVerse
@@ -64,6 +66,13 @@ class SongService(
         }.onFailure { e ->
             Logger.e(TAG, "getSongs — FAILED for URL $url: ${e.message}", e)
         }
+    }
+
+    override suspend fun getSongCatalog(): Result<List<CatalogRecord>> = apiRunCatching {
+        val response = client.get("${settings.apiBaseUrl}/${ApiConstants.SONG_CATALOG_ENDPOINT}") { applyApiKey() }
+        val raw = response.bodyAsText()
+        response.ensureSuccess(raw)
+        json.decodeFromString<SongCatalogRecordsResponse>(raw).books
     }
 
     /**

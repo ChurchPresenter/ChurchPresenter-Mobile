@@ -37,6 +37,8 @@ class CalendarSyncEngine(
     private val clientKeys: ClientKeySource,
     private val pushToken: () -> String = { "" },
     private val clientFor: (CalendarSyncState, suspend () -> String) -> RelayClient = { s, k -> RelayClient(s, k) },
+    /** Where the desktop's songbooks land when they arrive through the relay. */
+    private val catalogStore: SongCatalogStore? = null,
 ) {
     private val _status = MutableStateFlow<SyncStatus>(if (state().isEnrolled) SyncStatus.Synced("", 0, 0) else SyncStatus.NotEnrolled)
     val status: StateFlow<SyncStatus> = _status.asStateFlow()
@@ -135,24 +137,29 @@ class CalendarSyncEngine(
         val changes = client.changes(current.cursor)
         if (changes.rev < current.cursor) throw RelayFailure.Rejected(0, "revision went backwards")
         val accepted = HashMap<String, PlannedService>()
+        val catalog = HashMap<String, CatalogRecord>()
         var unreadable = 0
         var rejected = 0
         for (record in changes.records.take(Sanitize.RECORDS_PER_PULL)) {
-            val opened = sealing.open(record)
-            if (opened == null) {
-                unreadable++
-                continue
+            when {
+                record.id.startsWith(CATALOG_PREFIX) ->
+                    sealing.openCatalog(record)?.let { catalog[record.id] = it } ?: unreadable++
+                else -> {
+                    val opened = sealing.open(record)
+                    val service = opened?.let(Sanitize::service)
+                    when {
+                        opened == null -> unreadable++
+                        service == null -> rejected++
+                        else -> accepted[service.id] = service
+                    }
+                }
             }
-            val service = Sanitize.service(opened)
-            if (service == null) {
-                rejected++
-                continue
-            }
-            accepted[service.id] = service
         }
         if (unreadable > 0) Logger.e(TAG, "pull — $unreadable records did not open under this key")
         if (rejected > 0) Logger.e(TAG, "pull — $rejected records were not services this phone keeps")
-        val removed = changes.tombstones.map { it.id }.filter(Sanitize::isId).toSet()
+        val gone = changes.tombstones.map { it.id }.filter(Sanitize::isId).toSet()
+        val removed = gone.filterNot { it.startsWith(CATALOG_PREFIX) }.toSet()
+        catalogStore?.merge(catalog, gone.filter { it.startsWith(CATALOG_PREFIX) }.toSet())
         val presets = changes.presetsBox.takeIf { it.isNotEmpty() }?.let { box -> sealing.openPresets(box)?.presets?.let(Sanitize::presets) }
         // An edit made here while this round ran stays pending; a record we just pushed comes
         // back stamped by the relay and replaces our unstamped copy.

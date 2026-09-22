@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.calendar.sync.CatalogRecord
+import com.church.presenter.churchpresentermobile.calendar.sync.CatalogSong
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -76,6 +78,27 @@ class SongServiceTest {
     }
 
     // ── getSongDetail: request shape ─────────────────────────────────────
+
+    @Test
+    fun getSongCatalogReadsTheDesktopsSongbooks() = runTest {
+        var requested = ""
+        val svc = SongService(AppSettings(InMemorySettingsStorage()), FakeWsSender(), mockClient { path ->
+            requested = path
+            respond(
+                """{"books":[{"songbook":"Hymnal","songs":[{"n":"42","t":"Grace","s":270},{"n":"7","t":"Unsung"}]}]}""",
+            )
+        })
+
+        val books = svc.getSongCatalog().getOrThrow()
+
+        assertTrue(requested.endsWith("/song-catalog"), "requested $requested")
+        assertEquals(
+            listOf(
+                CatalogRecord("Hymnal", songs = listOf(CatalogSong("42", "Grace", 270), CatalogSong("7", "Unsung"))),
+            ),
+            books,
+        )
+    }
 
     @Test
     fun getSongDetailAsksForTheNumberedSong() = runTest {

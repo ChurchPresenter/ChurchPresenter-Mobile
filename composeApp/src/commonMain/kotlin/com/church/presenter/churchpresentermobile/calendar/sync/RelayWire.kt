@@ -49,6 +49,21 @@ data class PushTokenBody(val pushToken: String)
 /** The record id the desktop seals its preset index under. */
 const val PRESETS_RECORD = "presets"
 
+/** The prefix of a song catalog record: `catalog:<songbook>` or `catalog:<songbook>:<part>`. */
+const val CATALOG_PREFIX = "catalog:"
+
+/** One song as the catalog carries it: number, title, its usual length if measured, a second-language title if any. */
+@Serializable
+data class CatalogSong(val n: String, val t: String, val s: Int? = null, val t2: String? = null)
+
+/** One songbook (or one part of a large one) as the desktop keeps it, on the relay and over the LAN alike. */
+@Serializable
+data class CatalogRecord(val songbook: String, val part: Int = 0, val songs: List<CatalogSong> = emptyList())
+
+/** Body of GET /api/song-catalog on the desktop. */
+@Serializable
+data class SongCatalogRecordsResponse(val books: List<CatalogRecord> = emptyList())
+
 /**
  * What this phone holds once enrolled, persisted in settings. [cursor] is the relay revision
  * everything local is in step with.

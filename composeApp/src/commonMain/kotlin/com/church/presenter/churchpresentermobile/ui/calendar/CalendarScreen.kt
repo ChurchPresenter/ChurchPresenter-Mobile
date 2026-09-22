@@ -54,6 +54,7 @@ import com.church.presenter.churchpresentermobile.calendar.parseStoredDate
 import com.church.presenter.churchpresentermobile.calendar.storedDate
 import com.church.presenter.churchpresentermobile.calendar.today
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncEngine
+import com.church.presenter.churchpresentermobile.calendar.sync.SongCatalogStore
 import com.church.presenter.churchpresentermobile.calendar.sync.CalendarSyncState
 import com.church.presenter.churchpresentermobile.calendar.sync.ClientKeySource
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollService
@@ -84,6 +85,7 @@ private val MonthPaneWidth = 320.dp
 fun CalendarScreen(
     repository: CalendarRepository,
     songCatalog: SongCatalog?,
+    catalogStore: SongCatalogStore? = null,
     bibleCatalog: BibleCatalog?,
     settings: AppSettings,
     twoPane: Boolean,
@@ -104,6 +106,7 @@ fun CalendarScreen(
                 saveState = saveSync,
                 clientKeys = ClientKeySource(settings),
                 pushToken = { settings.fcmToken },
+                catalogStore = catalogStore,
             ),
             enrollService = EnrollService(settings),
             deviceName = { settings.reportedDeviceName },
@@ -118,9 +121,10 @@ fun CalendarScreen(
     val selectedDate by viewModel.selectedDate.collectAsState()
     val openId by viewModel.openServiceId.collectAsState()
     val songs by viewModel.songs.collectAsState()
+    val songDurations by viewModel.songDurations.collectAsState()
     val books by viewModel.books.collectAsState()
-    val sources = remember(songs, books, document.presets) {
-        PickerSources(songs, books, document.presets, viewModel::chapterPreview)
+    val sources = remember(songs, songDurations, books, document.presets) {
+        PickerSources(songs, books, document.presets, viewModel::chapterPreview, songDurations)
     }
     val openService = openId?.let { document.serviceById(it) }
     var newServiceSheet by remember { mutableStateOf(false) }
