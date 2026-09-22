@@ -57,7 +57,7 @@ internal fun SheetTitle(title: String, onClose: () -> Unit, modifier: Modifier =
                 .size(30.dp)
                 .clip(RoundedCornerShape(15.dp))
                 .background(colors.surfaceStrong)
-                .testTag(CalendarTags.SHEET_CLOSE)
+                .testTag(SheetTags.SHEET_CLOSE)
                 .clickable(onClick = onClose),
             contentAlignment = Alignment.Center,
         ) {

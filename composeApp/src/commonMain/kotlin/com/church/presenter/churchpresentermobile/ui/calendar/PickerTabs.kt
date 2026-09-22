@@ -105,7 +105,7 @@ internal fun LazyListScope.songItems(
             selected = selected?.identity == song.identity,
             onSelect = { onSelect(song) },
             onAdd = { onAdd(song) },
-            modifier = Modifier.testTag(CalendarTags.song(songLabel(song))),
+            modifier = Modifier.testTag(PickerTags.song(songLabel(song))),
         )
     }
 }
@@ -155,7 +155,7 @@ internal fun BibleTab(
                         selected = false,
                         onClick = { onBook(book) },
                         dim = true,
-                        modifier = Modifier.testTag(CalendarTags.book(book.number)),
+                        modifier = Modifier.testTag(PickerTags.book(book.number)),
                     )
                 }
             }
@@ -165,7 +165,7 @@ internal fun BibleTab(
                     book.name,
                     selected = true,
                     onClick = { onBook(book) },
-                    modifier = Modifier.testTag(CalendarTags.book(book.number)),
+                    modifier = Modifier.testTag(PickerTags.book(book.number)),
                 )
                 if (chapter != null) CalendarChip(chapter.toString(), selected = true, onClick = { onChapter(chapter) })
                 Text(
@@ -177,11 +177,11 @@ internal fun BibleTab(
                 )
             }
             if (chapter == null) {
-                NumberGrid(book.chapters, null, null, CalendarTags::chapter, onChapter)
+                NumberGrid(book.chapters, null, null, PickerTags::chapter, onChapter)
             } else if (verseCount != null) {
-                NumberGrid(verseCount, verseFrom, verseTo, CalendarTags::verse, onVerse)
+                NumberGrid(verseCount, verseFrom, verseTo, PickerTags::verse, onVerse)
             } else {
-                NumberGrid(MAX_VERSES_SHOWN, verseFrom, verseTo, CalendarTags::verse, onVerse)
+                NumberGrid(MAX_VERSES_SHOWN, verseFrom, verseTo, PickerTags::verse, onVerse)
             }
         }
     }
@@ -237,13 +237,13 @@ internal fun MinistryTab(
             what,
             onWhat,
             highlighted = true,
-            modifier = Modifier.testTag(CalendarTags.MINISTRY_WHAT),
+            modifier = Modifier.testTag(PickerTags.MINISTRY_WHAT),
         )
         CompactField(
             stringResource(Res.string.calendar_who_or_note),
             who,
             onWho,
-            modifier = Modifier.testTag(CalendarTags.MINISTRY_WHO),
+            modifier = Modifier.testTag(PickerTags.MINISTRY_WHO),
         )
         CompactField(
             stringResource(Res.string.calendar_duration),
@@ -251,7 +251,7 @@ internal fun MinistryTab(
             onDuration,
             placeholder = "3:30",
             keyboardType = KeyboardType.Number,
-            modifier = Modifier.testTag(CalendarTags.MINISTRY_DURATION),
+            modifier = Modifier.testTag(PickerTags.MINISTRY_DURATION),
         )
         if (what.isNotBlank()) {
             CalendarCard {
@@ -290,7 +290,7 @@ internal fun LazyListScope.presetItems(
             title = preset.name,
             subtitle = preset.detail,
             selected = selected?.id == preset.id,
-            modifier = Modifier.testTag(CalendarTags.preset(preset.id)),
+            modifier = Modifier.testTag(PickerTags.preset(preset.id)),
             onSelect = { onSelect(preset) },
             onAdd = { onAdd(preset) },
         )

@@ -148,7 +148,7 @@ internal fun AddToServiceContent(
         SearchField(
             value = query,
             onValueChange = { query = it },
-            modifier = Modifier.testTag(CalendarTags.PICKER_SEARCH),
+            modifier = Modifier.testTag(PickerTags.PICKER_SEARCH),
             placeholder = stringResource(
                 when (tab) {
                     PickerTab.BIBLE -> Res.string.calendar_filter_books_or_reference
@@ -174,7 +174,7 @@ internal fun AddToServiceContent(
                     ReferenceCard(
                         reference,
                         onAdd = { add(picker.bibleRow(reference, newRowId)) },
-                        modifier = Modifier.testTag(CalendarTags.PICKER_REFERENCE),
+                        modifier = Modifier.testTag(PickerTags.PICKER_REFERENCE),
                     )
                 }
             }
@@ -208,7 +208,7 @@ internal fun AddToServiceContent(
             label = addLabel(tab, pending),
             onClick = { add(pending) },
             enabled = pending != null,
-            modifier = Modifier.fillMaxWidth().testTag(CalendarTags.PICKER_ADD),
+            modifier = Modifier.fillMaxWidth().testTag(PickerTags.PICKER_ADD),
         )
         Spacer(Modifier.height(12.dp))
         Spacer(Modifier.navigationBarsPadding())
@@ -245,7 +245,7 @@ private fun PickerTabRow(tab: PickerTab, onTab: (PickerTab) -> Unit) {
                 label,
                 selected = entry == tab,
                 onClick = { onTab(entry) },
-                modifier = Modifier.testTag(CalendarTags.tab(entry)),
+                modifier = Modifier.testTag(PickerTags.tab(entry)),
             )
         }
     }

@@ -112,113 +112,137 @@ internal fun TimingPanel(
     enabled: Boolean = true,
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        TimingRow(stringResource(Res.string.calendar_starts)) {
-            val cued = draft.startOffsetMinutes == null && !draft.followsPrevious
-            TimingChip(stringResource(Res.string.calendar_chip_cued), cued, enabled, CalendarTags.TIMING_CUED) {
-                onChange(draft.copy(startOffsetMinutes = null, followsPrevious = false))
-            }
-            TimingChip(
-                stringResource(Res.string.calendar_chip_after_prev),
-                draft.followsPrevious,
-                enabled,
-                CalendarTags.TIMING_AFTER_PREVIOUS,
-            ) {
-                onChange(draft.copy(startOffsetMinutes = null, followsPrevious = true))
-            }
-            START_OFFSETS_MINUTES.forEach { minutes ->
-                TimingChip(
-                    stringResource(Res.string.calendar_chip_minus_minutes, minutes),
-                    draft.startOffsetMinutes == -minutes,
-                    enabled,
-                    CalendarTags.timingEarly(minutes),
-                ) {
-                    onChange(draft.copy(startOffsetMinutes = -minutes, followsPrevious = false))
-                }
-            }
-            TimingChip(
-                stringResource(Res.string.calendar_chip_on_time),
-                draft.startOffsetMinutes == 0,
-                enabled,
-                CalendarTags.TIMING_ON_TIME,
-            ) {
-                onChange(draft.copy(startOffsetMinutes = 0, followsPrevious = false))
-            }
-        }
-        TimingRow(stringResource(Res.string.calendar_runs)) {
-            TimingChip(
-                stringResource(Res.string.calendar_chip_its_own),
-                draft.runSeconds == null,
-                enabled,
-                CalendarTags.TIMING_OWN_LENGTH,
-            ) {
-                onChange(draft.copy(runSeconds = null))
-            }
-            RUN_CHOICES_MINUTES.forEach { minutes ->
-                val label = if (minutes == SECONDS_PER_MINUTE) {
-                    stringResource(Res.string.calendar_chip_hour)
-                } else {
-                    stringResource(Res.string.calendar_chip_minutes, minutes)
-                }
-                TimingChip(
-                    label,
-                    draft.runSeconds == minutes * SECONDS_PER_MINUTE,
-                    enabled,
-                    CalendarTags.timingRuns(minutes),
-                ) {
-                    onChange(draft.copy(runSeconds = minutes * SECONDS_PER_MINUTE))
-                }
-            }
-        }
-        TimingRow(stringResource(Res.string.calendar_repeats)) {
-            TimingChip(
-                stringResource(Res.string.calendar_chip_once),
-                draft.repeats == 1,
-                enabled,
-                CalendarTags.TIMING_ONCE,
-            ) { onChange(draft.copy(repeats = 1)) }
-            TimingChip(
-                stringResource(Res.string.calendar_chip_loop),
-                draft.repeats == 0,
-                enabled,
-                CalendarTags.TIMING_LOOP,
-            ) { onChange(draft.copy(repeats = 0)) }
-            REPEAT_CHOICES.forEach { n ->
-                TimingChip(n.toString(), draft.repeats == n, enabled, CalendarTags.timingRepeats(n)) {
-                    onChange(draft.copy(repeats = n))
-                }
-            }
-        }
-        TimingRow(stringResource(Res.string.calendar_at_end)) {
-            TimingChip(
-                stringResource(Res.string.calendar_chip_hold),
-                draft.atEnd == RowEnd.HOLD,
-                enabled,
-                CalendarTags.TIMING_HOLD,
-            ) {
-                onChange(draft.copy(atEnd = RowEnd.HOLD))
-            }
-            TimingChip(
-                stringResource(Res.string.calendar_chip_next_item),
-                draft.atEnd == RowEnd.NEXT,
-                enabled,
-                CalendarTags.TIMING_NEXT,
-            ) {
-                onChange(draft.copy(atEnd = RowEnd.NEXT))
-            }
-            TimingChip(
-                stringResource(Res.string.calendar_chip_blank),
-                draft.atEnd == RowEnd.BLANK,
-                enabled,
-                CalendarTags.TIMING_BLANK,
-            ) {
-                onChange(draft.copy(atEnd = RowEnd.BLANK))
-            }
-        }
+        StartsRow(draft, onChange, enabled)
+        RunsRow(draft, onChange, enabled)
+        RepeatsRow(draft, onChange, enabled)
+        AtEndRow(draft, onChange, enabled)
         Text(
             text = timingSummary(draft, serviceStart),
             color = LocalAppColors.current.muted,
             fontSize = 12.sp,
         )
+    }
+}
+
+/** When the row goes live: on a cue, after the row before it, or at a time of its own. */
+@Composable
+private fun StartsRow(draft: TimingDraft, onChange: (TimingDraft) -> Unit, enabled: Boolean) {
+    TimingRow(stringResource(Res.string.calendar_starts)) {
+        val cued = draft.startOffsetMinutes == null && !draft.followsPrevious
+        TimingChip(stringResource(Res.string.calendar_chip_cued), cued, enabled, PickerTags.TIMING_CUED) {
+            onChange(draft.copy(startOffsetMinutes = null, followsPrevious = false))
+        }
+        TimingChip(
+            stringResource(Res.string.calendar_chip_after_prev),
+            draft.followsPrevious,
+            enabled,
+            PickerTags.TIMING_AFTER_PREVIOUS,
+        ) {
+            onChange(draft.copy(startOffsetMinutes = null, followsPrevious = true))
+        }
+        START_OFFSETS_MINUTES.forEach { minutes ->
+            TimingChip(
+                stringResource(Res.string.calendar_chip_minus_minutes, minutes),
+                draft.startOffsetMinutes == -minutes,
+                enabled,
+                PickerTags.timingEarly(minutes),
+            ) {
+                onChange(draft.copy(startOffsetMinutes = -minutes, followsPrevious = false))
+            }
+        }
+        TimingChip(
+            stringResource(Res.string.calendar_chip_on_time),
+            draft.startOffsetMinutes == 0,
+            enabled,
+            PickerTags.TIMING_ON_TIME,
+        ) {
+            onChange(draft.copy(startOffsetMinutes = 0, followsPrevious = false))
+        }
+    }
+}
+
+/** How long it runs: the item's own length, or one the operator picked. */
+@Composable
+private fun RunsRow(draft: TimingDraft, onChange: (TimingDraft) -> Unit, enabled: Boolean) {
+    TimingRow(stringResource(Res.string.calendar_runs)) {
+        TimingChip(
+            stringResource(Res.string.calendar_chip_its_own),
+            draft.runSeconds == null,
+            enabled,
+            PickerTags.TIMING_OWN_LENGTH,
+        ) {
+            onChange(draft.copy(runSeconds = null))
+        }
+        RUN_CHOICES_MINUTES.forEach { minutes ->
+            val label = if (minutes == SECONDS_PER_MINUTE) {
+                stringResource(Res.string.calendar_chip_hour)
+            } else {
+                stringResource(Res.string.calendar_chip_minutes, minutes)
+            }
+            TimingChip(
+                label,
+                draft.runSeconds == minutes * SECONDS_PER_MINUTE,
+                enabled,
+                PickerTags.timingRuns(minutes),
+            ) {
+                onChange(draft.copy(runSeconds = minutes * SECONDS_PER_MINUTE))
+            }
+        }
+    }
+}
+
+/** How many times over: once, in a loop, or a counted number. */
+@Composable
+private fun RepeatsRow(draft: TimingDraft, onChange: (TimingDraft) -> Unit, enabled: Boolean) {
+    TimingRow(stringResource(Res.string.calendar_repeats)) {
+        TimingChip(
+            stringResource(Res.string.calendar_chip_once),
+            draft.repeats == 1,
+            enabled,
+            PickerTags.TIMING_ONCE,
+        ) { onChange(draft.copy(repeats = 1)) }
+        TimingChip(
+            stringResource(Res.string.calendar_chip_loop),
+            draft.repeats == 0,
+            enabled,
+            PickerTags.TIMING_LOOP,
+        ) { onChange(draft.copy(repeats = 0)) }
+        REPEAT_CHOICES.forEach { n ->
+            TimingChip(n.toString(), draft.repeats == n, enabled, PickerTags.timingRepeats(n)) {
+                onChange(draft.copy(repeats = n))
+            }
+        }
+    }
+}
+
+/** What the screen does when it finishes. */
+@Composable
+private fun AtEndRow(draft: TimingDraft, onChange: (TimingDraft) -> Unit, enabled: Boolean) {
+    TimingRow(stringResource(Res.string.calendar_at_end)) {
+        TimingChip(
+            stringResource(Res.string.calendar_chip_hold),
+            draft.atEnd == RowEnd.HOLD,
+            enabled,
+            PickerTags.TIMING_HOLD,
+        ) {
+            onChange(draft.copy(atEnd = RowEnd.HOLD))
+        }
+        TimingChip(
+            stringResource(Res.string.calendar_chip_next_item),
+            draft.atEnd == RowEnd.NEXT,
+            enabled,
+            PickerTags.TIMING_NEXT,
+        ) {
+            onChange(draft.copy(atEnd = RowEnd.NEXT))
+        }
+        TimingChip(
+            stringResource(Res.string.calendar_chip_blank),
+            draft.atEnd == RowEnd.BLANK,
+            enabled,
+            PickerTags.TIMING_BLANK,
+        ) {
+            onChange(draft.copy(atEnd = RowEnd.BLANK))
+        }
     }
 }
 

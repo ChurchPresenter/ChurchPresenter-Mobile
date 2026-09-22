@@ -34,10 +34,10 @@ class CopyServiceContentTest {
         CopyServiceContent(service = service, onCopy = { choice = it }, onDismiss = { dismissed++ })
     }
 
-    private fun ComposeUiTest.create() = click(CalendarTags.COPY_CONFIRM)
+    private fun ComposeUiTest.create() = click(SheetTags.COPY_CONFIRM)
 
     private fun ComposeUiTest.rule(rule: RepeatRule) =
-        click(CalendarTags.repeatRule(RepeatRule.entries.indexOf(rule)))
+        click(SheetTags.repeatRule(RepeatRule.entries.indexOf(rule)))
 
     @Test
     fun theServiceBeingCopiedIsNamed() = runComposeUiTest {
@@ -98,19 +98,19 @@ class CopyServiceContentTest {
     @Test
     fun howManyTimesIsAskedOnlyWhenItRepeats() = runComposeUiTest {
         show()
-        assertTrue(exists(CalendarTags.COPY_COUNT))
+        assertTrue(exists(SheetTags.COPY_COUNT))
 
         rule(RepeatRule.ONCE)
         waitForIdle()
 
-        assertTrue(!exists(CalendarTags.COPY_COUNT), "once is once; there is no count to ask for")
+        assertTrue(!exists(SheetTags.COPY_COUNT), "once is once; there is no count to ask for")
     }
 
     @Test
     fun theCountIsCarriedThrough() = runComposeUiTest {
         show()
 
-        type(CalendarTags.COPY_COUNT, "5")
+        type(SheetTags.COPY_COUNT, "5")
         waitForIdle()
         create()
 
@@ -121,7 +121,7 @@ class CopyServiceContentTest {
     fun aCountThatIsNotANumberFallsBackToOne() = runComposeUiTest {
         show()
 
-        type(CalendarTags.COPY_COUNT, "")
+        type(SheetTags.COPY_COUNT, "")
         waitForIdle()
         create()
 
@@ -132,7 +132,7 @@ class CopyServiceContentTest {
     fun theRunOfShowCanBeLeftBehind() = runComposeUiTest {
         show()
 
-        click(CalendarTags.COPY_INCLUDE_ROWS)
+        click(SheetTags.COPY_INCLUDE_ROWS)
         waitForIdle()
         create()
 
@@ -146,14 +146,14 @@ class CopyServiceContentTest {
         )
         show(withCue)
 
-        assertTrue(exists(CalendarTags.COPY_INCLUDE_CUES))
+        assertTrue(exists(SheetTags.COPY_INCLUDE_CUES))
     }
 
     @Test
     fun closingCopiesNothing() = runComposeUiTest {
         show()
 
-        click(CalendarTags.COPY_CANCEL)
+        click(SheetTags.COPY_CANCEL)
 
         assertEquals(1, dismissed)
         assertNull(choice)

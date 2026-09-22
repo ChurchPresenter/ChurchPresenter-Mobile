@@ -162,7 +162,7 @@ internal fun ServiceForm(
         name,
         { name = it },
         highlighted = true,
-        modifier = Modifier.testTag(CalendarTags.SERVICE_NAME),
+        modifier = Modifier.testTag(SheetTags.SERVICE_NAME),
     )
     Spacer(Modifier.height(12.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -170,7 +170,7 @@ internal fun ServiceForm(
             label = stringResource(Res.string.calendar_start_time),
             value = startText,
             onValueChange = { startText = it },
-            modifier = Modifier.weight(1f).testTag(CalendarTags.SERVICE_START),
+            modifier = Modifier.weight(1f).testTag(SheetTags.SERVICE_START),
             highlighted = parsedStart == null,
         )
         Column(modifier = Modifier.weight(WIDER_COLUMN)) {
@@ -184,7 +184,7 @@ internal fun ServiceForm(
                 ),
                 selected = kindIndex,
                 onSelect = { kindIndex = it },
-                tagFor = CalendarTags::serviceKind,
+                tagFor = SheetTags::serviceKind,
             )
         }
     }
@@ -198,7 +198,7 @@ internal fun ServiceForm(
                 subtitle = stringResource(Res.string.calendar_blank_service_hint),
                 selected = templateId == null,
                 onClick = { templateId = null },
-                modifier = Modifier.testTag(CalendarTags.SERVICE_BLANK),
+                modifier = Modifier.testTag(SheetTags.SERVICE_BLANK),
             )
             templates.forEach { template ->
                 ChoiceCard(
@@ -210,7 +210,7 @@ internal fun ServiceForm(
                     ),
                     selected = templateId == template.id,
                     onClick = { templateId = template.id },
-                    modifier = Modifier.testTag(CalendarTags.template(template.id)),
+                    modifier = Modifier.testTag(SheetTags.template(template.id)),
                 )
             }
         }
@@ -223,13 +223,13 @@ internal fun ServiceForm(
                 icon = Icons.Outlined.Delete,
                 contentDescription = stringResource(Res.string.calendar_delete_service),
                 onClick = onDelete,
-                modifier = Modifier.testTag(CalendarTags.SERVICE_DELETE),
+                modifier = Modifier.testTag(SheetTags.SERVICE_DELETE),
             )
         }
         CalendarSecondaryButton(
             stringResource(Res.string.calendar_cancel),
             onClick = onDismiss,
-            modifier = Modifier.weight(1f).testTag(CalendarTags.SERVICE_CANCEL),
+            modifier = Modifier.weight(1f).testTag(SheetTags.SERVICE_CANCEL),
         )
         CalendarPrimaryButton(
             label = confirmLabel,
@@ -238,7 +238,7 @@ internal fun ServiceForm(
                 val start = parsedStart ?: return@CalendarPrimaryButton
                 onConfirm(ServiceDraft(name.trim(), storedTime(start), ServiceKind.entries[kindIndex].id, templateId))
             },
-            modifier = Modifier.weight(WIDER_COLUMN).testTag(CalendarTags.SERVICE_CONFIRM),
+            modifier = Modifier.weight(WIDER_COLUMN).testTag(SheetTags.SERVICE_CONFIRM),
         )
     }
 }

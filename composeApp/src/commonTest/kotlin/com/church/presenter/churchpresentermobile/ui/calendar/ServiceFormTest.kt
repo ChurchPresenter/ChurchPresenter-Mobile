@@ -56,7 +56,7 @@ class ServiceFormTest {
         )
     }
 
-    private fun ComposeUiTest.confirm() = click(CalendarTags.SERVICE_CONFIRM)
+    private fun ComposeUiTest.confirm() = click(SheetTags.SERVICE_CONFIRM)
 
     @Test
     fun theFormOpensOnWhatItWasGiven() = runComposeUiTest {
@@ -77,7 +77,7 @@ class ServiceFormTest {
     fun confirmingHandsBackWhatWasTyped() = runComposeUiTest {
         show()
 
-        type(CalendarTags.SERVICE_NAME, "Carol Service")
+        type(SheetTags.SERVICE_NAME, "Carol Service")
         waitForIdle()
         confirm()
 
@@ -89,7 +89,7 @@ class ServiceFormTest {
     fun aTypedTwelveHourTimeIsStoredAsTwentyFour() = runComposeUiTest {
         show()
 
-        type(CalendarTags.SERVICE_START, "6:30 pm")
+        type(SheetTags.SERVICE_START, "6:30 pm")
         waitForIdle()
         confirm()
 
@@ -100,7 +100,7 @@ class ServiceFormTest {
     fun aFourDigitTimeIsAccepted() = runComposeUiTest {
         show()
 
-        type(CalendarTags.SERVICE_START, "1830")
+        type(SheetTags.SERVICE_START, "1830")
         waitForIdle()
         confirm()
 
@@ -111,7 +111,7 @@ class ServiceFormTest {
     fun aNameIsTrimmedBeforeItIsUsed() = runComposeUiTest {
         show()
 
-        type(CalendarTags.SERVICE_NAME, "  Evening Prayer  ")
+        type(SheetTags.SERVICE_NAME, "  Evening Prayer  ")
         waitForIdle()
         confirm()
 
@@ -122,10 +122,10 @@ class ServiceFormTest {
     fun aServiceWithNoNameCannotBeCreated() = runComposeUiTest {
         show()
 
-        type(CalendarTags.SERVICE_NAME, " ")
+        type(SheetTags.SERVICE_NAME, " ")
         waitForIdle()
 
-        onNodeWithTag(CalendarTags.SERVICE_CONFIRM).assertIsNotEnabled()
+        onNodeWithTag(SheetTags.SERVICE_CONFIRM).assertIsNotEnabled()
         assertNull(confirmed, "there is nothing to create until it has a name")
     }
 
@@ -133,10 +133,10 @@ class ServiceFormTest {
     fun aStartTimeNobodyCanReadStopsTheForm() = runComposeUiTest {
         show()
 
-        type(CalendarTags.SERVICE_START, "whenever")
+        type(SheetTags.SERVICE_START, "whenever")
         waitForIdle()
 
-        onNodeWithTag(CalendarTags.SERVICE_CONFIRM).assertIsNotEnabled()
+        onNodeWithTag(SheetTags.SERVICE_CONFIRM).assertIsNotEnabled()
         assertNull(confirmed)
     }
 
@@ -144,7 +144,7 @@ class ServiceFormTest {
     fun theKindCanBeChanged() = runComposeUiTest {
         show()
 
-        click(CalendarTags.serviceKind(1))
+        click(SheetTags.serviceKind(1))
         waitForIdle()
         confirm()
 
@@ -181,7 +181,7 @@ class ServiceFormTest {
     fun choosingATemplateIsCarriedThrough() = runComposeUiTest {
         show(templates = templates)
 
-        click(CalendarTags.template("t1"))
+        click(SheetTags.template("t1"))
         waitForIdle()
         confirm()
 
@@ -193,7 +193,7 @@ class ServiceFormTest {
         show(deletable = true, templates = emptyList())
 
         assertTrue(!isShowing("Standard Sunday"))
-        click(CalendarTags.SERVICE_DELETE)
+        click(SheetTags.SERVICE_DELETE)
 
         assertEquals(1, deleted)
     }
@@ -202,7 +202,7 @@ class ServiceFormTest {
     fun theFormCanBeClosedWithoutCreatingAnything() = runComposeUiTest {
         show()
 
-        click(CalendarTags.SERVICE_CANCEL)
+        click(SheetTags.SERVICE_CANCEL)
 
         assertEquals(1, dismissed)
         assertNull(confirmed)

@@ -217,7 +217,7 @@ class RowEditorContentTest {
     fun theEditorCanBeClosedWithoutSaving() = runComposeUiTest {
         show(song)
 
-        click(CalendarTags.SHEET_CLOSE)
+        click(SheetTags.SHEET_CLOSE)
 
         assertEquals(1, dismissed)
         assertNull(saved)

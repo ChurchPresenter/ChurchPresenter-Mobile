@@ -53,7 +53,7 @@ class CalendarSyncSheetContentTest {
     // The enrol button is disabled without a desktop address, and [click] invokes the semantics
     // action rather than tapping, which a disabled node still carries -- so a test that means
     // "this cannot be pressed" asserts `assertIsNotEnabled` instead of counting callbacks.
-    private fun ComposeUiTest.enroll() = click(CalendarTags.SYNC_ENROLL)
+    private fun ComposeUiTest.enroll() = click(SheetTags.SYNC_ENROLL)
 
     // ── Not enrolled yet ─────────────────────────────────────────────────
 
@@ -63,7 +63,7 @@ class CalendarSyncSheetContentTest {
 
         // The request over the church WiFi. The scan button beside it is a platform control --
         // this runtime has no camera, so it draws nothing here and only a device can show it.
-        assertTrue(exists(CalendarTags.SYNC_ENROLL))
+        assertTrue(exists(SheetTags.SYNC_ENROLL))
     }
 
     @Test
@@ -80,7 +80,7 @@ class CalendarSyncSheetContentTest {
         show(canReachDesktop = false)
 
         // Disabled rather than hidden: the sheet says what to do about it right above.
-        onNodeWithTag(CalendarTags.SYNC_ENROLL).assertIsNotEnabled()
+        onNodeWithTag(SheetTags.SYNC_ENROLL).assertIsNotEnabled()
         assertEquals(0, enrolled)
     }
 
@@ -128,7 +128,7 @@ class CalendarSyncSheetContentTest {
     fun waitingCanBeCancelled() = runComposeUiTest {
         show(flow = EnrollFlow.WaitingForApproval("482913"))
 
-        click(CalendarTags.SYNC_CANCEL)
+        click(SheetTags.SYNC_CANCEL)
 
         assertEquals(1, reset)
     }
@@ -138,15 +138,15 @@ class CalendarSyncSheetContentTest {
         show(flow = EnrollFlow.ScanQr)
 
         // Same here: the scanner is the platform's, so what this runtime can see is the way out.
-        assertTrue(exists(CalendarTags.SYNC_CANCEL))
-        assertTrue(!exists(CalendarTags.SYNC_ENROLL), "there is nothing left to ask for")
+        assertTrue(exists(SheetTags.SYNC_CANCEL))
+        assertTrue(!exists(SheetTags.SYNC_ENROLL), "there is nothing left to ask for")
     }
 
     @Test
     fun scanningCanBeCancelledToo() = runComposeUiTest {
         show(flow = EnrollFlow.ScanQr)
 
-        click(CalendarTags.SYNC_CANCEL)
+        click(SheetTags.SYNC_CANCEL)
 
         assertEquals(1, reset)
     }
@@ -155,8 +155,8 @@ class CalendarSyncSheetContentTest {
     fun aFinishedEnrollmentSaysSoAndOffersNothingMore() = runComposeUiTest {
         show(flow = EnrollFlow.Done)
 
-        assertTrue(!exists(CalendarTags.SYNC_ENROLL), "nothing left to do here")
-        assertTrue(!exists(CalendarTags.SYNC_SCAN))
+        assertTrue(!exists(SheetTags.SYNC_ENROLL), "nothing left to do here")
+        assertTrue(!exists(SheetTags.SYNC_SCAN))
     }
 
     // ── Once enrolled ────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ class CalendarSyncSheetContentTest {
     fun anEnrolledPhoneCanSyncNow() = runComposeUiTest {
         show(status = SyncStatus.Synced("2026-09-20T10:30:00Z", pulled = 2, pushed = 1))
 
-        click(CalendarTags.SYNC_NOW)
+        click(SheetTags.SYNC_NOW)
 
         assertEquals(1, syncedNow)
     }
@@ -174,7 +174,7 @@ class CalendarSyncSheetContentTest {
     fun anEnrolledPhoneCanStopSyncing() = runComposeUiTest {
         show(status = SyncStatus.Synced("2026-09-20T10:30:00Z", pulled = 0, pushed = 0))
 
-        click(CalendarTags.SYNC_LEAVE)
+        click(SheetTags.SYNC_LEAVE)
 
         assertEquals(1, left)
     }
@@ -198,7 +198,7 @@ class CalendarSyncSheetContentTest {
         show(status = SyncStatus.Unauthorized)
 
         // Back to the enrol panel, because there is nothing to sync until it pairs again.
-        assertTrue(exists(CalendarTags.SYNC_ENROLL))
+        assertTrue(exists(SheetTags.SYNC_ENROLL))
         enroll()
         assertEquals(1, enrolled)
     }
@@ -207,7 +207,7 @@ class CalendarSyncSheetContentTest {
     fun theSheetCanBeClosed() = runComposeUiTest {
         show()
 
-        click(CalendarTags.SHEET_CLOSE)
+        click(SheetTags.SHEET_CLOSE)
 
         assertEquals(1, dismissed)
     }

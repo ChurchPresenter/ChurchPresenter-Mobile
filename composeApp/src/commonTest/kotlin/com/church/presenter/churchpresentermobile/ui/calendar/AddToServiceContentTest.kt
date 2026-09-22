@@ -38,9 +38,9 @@ class AddToServiceContentTest {
         )
     }
 
-    private fun ComposeUiTest.search(text: String) = type(CalendarTags.PICKER_SEARCH, text)
+    private fun ComposeUiTest.search(text: String) = type(PickerTags.PICKER_SEARCH, text)
 
-    private fun ComposeUiTest.tab(tab: PickerTab) = click(CalendarTags.tab(tab))
+    private fun ComposeUiTest.tab(tab: PickerTab) = click(PickerTags.tab(tab))
 
     // ── Songs ────────────────────────────────────────────────────────────
 
@@ -73,9 +73,9 @@ class AddToServiceContentTest {
     fun tappingASongAddsIt() = runComposeUiTest {
         show()
 
-        click(CalendarTags.song("42 - ${CalendarFixtures.FIRST_SONG}"))
+        click(PickerTags.song("42 - ${CalendarFixtures.FIRST_SONG}"))
         waitForIdle()
-        click(CalendarTags.PICKER_ADD)
+        click(PickerTags.PICKER_ADD)
         waitForIdle()
 
         val row = assertIs<PlanRow.Song>(added.single().first)
@@ -118,7 +118,7 @@ class AddToServiceContentTest {
         search("John 3:16-17")
         waitForIdle()
 
-        click(CalendarTags.PICKER_ADD)
+        click(PickerTags.PICKER_ADD)
         waitForIdle()
 
         val row = assertIs<PlanRow.Bible>(added.single().first)
@@ -155,7 +155,7 @@ class AddToServiceContentTest {
         tab(PickerTab.BIBLE)
         waitForIdle()
 
-        click(CalendarTags.book(43))
+        click(PickerTags.book(43))
         waitForIdle()
 
         assertTrue(isShowing("21"), "John has 21 chapters")
@@ -178,9 +178,9 @@ class AddToServiceContentTest {
         tab(PickerTab.PRESETS)
         waitForIdle()
 
-        click(CalendarTags.preset("p1"))
+        click(PickerTags.preset("p1"))
         waitForIdle()
-        click(CalendarTags.PICKER_ADD)
+        click(PickerTags.PICKER_ADD)
         waitForIdle()
 
         val row = assertIs<PlanRow.Preset>(added.single().first)
@@ -217,7 +217,7 @@ class AddToServiceContentTest {
 
         search("Communion")
         waitForIdle()
-        click(CalendarTags.PICKER_ADD)
+        click(PickerTags.PICKER_ADD)
         waitForIdle()
 
         assertEquals("Communion", added.single().first.title)
@@ -230,11 +230,11 @@ class AddToServiceContentTest {
         tab(PickerTab.MINISTRY)
         waitForIdle()
 
-        type(CalendarTags.MINISTRY_WHAT, "Notices")
-        type(CalendarTags.MINISTRY_WHO, "Anna")
-        type(CalendarTags.MINISTRY_DURATION, "5:00")
+        type(PickerTags.MINISTRY_WHAT, "Notices")
+        type(PickerTags.MINISTRY_WHO, "Anna")
+        type(PickerTags.MINISTRY_DURATION, "5:00")
         waitForIdle()
-        click(CalendarTags.PICKER_ADD)
+        click(PickerTags.PICKER_ADD)
         waitForIdle()
 
         val row = assertIs<PlanRow.Ministry>(added.single().first)

@@ -118,7 +118,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             // The usual way in: an invite the church computer shows, scanned from anywhere.
             QrScanButton(
                 onScanned = actions.onScanned,
-                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_SCAN),
+                modifier = Modifier.fillMaxWidth().testTag(SheetTags.SYNC_SCAN),
             )
             Spacer(Modifier.height(10.dp))
             HintText(stringResource(Res.string.calendar_sync_or_ask))
@@ -130,7 +130,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
                 ),
                 onClick = actions.onEnroll,
                 enabled = canReachDesktop && hasCameraAvailable(),
-                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_ENROLL),
+                modifier = Modifier.fillMaxWidth().testTag(SheetTags.SYNC_ENROLL),
             )
         }
         is EnrollFlow.WaitingForApproval -> {
@@ -152,7 +152,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             CalendarSecondaryButton(
                 stringResource(Res.string.calendar_cancel),
                 onClick = actions.onReset,
-                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_CANCEL),
+                modifier = Modifier.fillMaxWidth().testTag(SheetTags.SYNC_CANCEL),
             )
         }
         EnrollFlow.ScanQr -> {
@@ -162,13 +162,13 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             Spacer(Modifier.height(14.dp))
             QrScanButton(
                 onScanned = actions.onScanned,
-                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_SCAN),
+                modifier = Modifier.fillMaxWidth().testTag(SheetTags.SYNC_SCAN),
             )
             Spacer(Modifier.height(8.dp))
             CalendarSecondaryButton(
                 stringResource(Res.string.calendar_cancel),
                 onClick = actions.onReset,
-                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.SYNC_CANCEL),
+                modifier = Modifier.fillMaxWidth().testTag(SheetTags.SYNC_CANCEL),
             )
         }
         EnrollFlow.Done -> {
@@ -200,12 +200,12 @@ private fun EnrolledPanel(status: SyncStatus, actions: SyncActions) {
         CalendarPrimaryButton(
             stringResource(Res.string.calendar_sync_now),
             onClick = actions.onSyncNow,
-            modifier = Modifier.weight(1f).testTag(CalendarTags.SYNC_NOW),
+            modifier = Modifier.weight(1f).testTag(SheetTags.SYNC_NOW),
         )
         CalendarSecondaryButton(
             stringResource(Res.string.calendar_sync_leave),
             onClick = actions.onLeave,
-            modifier = Modifier.testTag(CalendarTags.SYNC_LEAVE),
+            modifier = Modifier.testTag(SheetTags.SYNC_LEAVE),
         )
     }
 }

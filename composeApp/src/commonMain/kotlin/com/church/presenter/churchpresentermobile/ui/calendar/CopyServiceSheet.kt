@@ -94,7 +94,7 @@ internal fun CopyServiceContent(service: PlannedService, onCopy: (CopyChoice) ->
         ),
         selected = RepeatRule.entries.indexOf(rule),
         onSelect = { rule = RepeatRule.entries[it] },
-        tagFor = CalendarTags::repeatRule,
+        tagFor = SheetTags::repeatRule,
     )
     if (rule != RepeatRule.ONCE) {
         Spacer(Modifier.height(12.dp))
@@ -111,7 +111,7 @@ internal fun CopyServiceContent(service: PlannedService, onCopy: (CopyChoice) ->
             subtitle = stringResource(Res.string.calendar_include_rows_hint, service.rows.size),
             checked = includeRows,
             onToggle = { includeRows = !includeRows },
-            modifier = Modifier.testTag(CalendarTags.COPY_INCLUDE_ROWS),
+            modifier = Modifier.testTag(SheetTags.COPY_INCLUDE_ROWS),
         )
         // Only where there is automation to carry: a service with no cues has nothing to ask.
         if (cueCount > 0) {
@@ -120,7 +120,7 @@ internal fun CopyServiceContent(service: PlannedService, onCopy: (CopyChoice) ->
                 subtitle = stringResource(Res.string.calendar_include_cues_hint, cueCount),
                 checked = includeCues,
                 onToggle = { includeCues = !includeCues },
-                modifier = Modifier.testTag(CalendarTags.COPY_INCLUDE_CUES),
+                modifier = Modifier.testTag(SheetTags.COPY_INCLUDE_CUES),
             )
         }
     }
@@ -129,12 +129,12 @@ internal fun CopyServiceContent(service: PlannedService, onCopy: (CopyChoice) ->
         CalendarSecondaryButton(
             stringResource(Res.string.calendar_cancel),
             onClick = onDismiss,
-            modifier = Modifier.weight(1f).testTag(CalendarTags.COPY_CANCEL),
+            modifier = Modifier.weight(1f).testTag(SheetTags.COPY_CANCEL),
         )
         CalendarPrimaryButton(
             label = stringResource(Res.string.calendar_create_n, dates.size),
             onClick = { onCopy(CopyChoice(rule, count, includeRows, includeCues)) },
-            modifier = Modifier.weight(CONFIRM_WIDTH).testTag(CalendarTags.COPY_CONFIRM),
+            modifier = Modifier.weight(CONFIRM_WIDTH).testTag(SheetTags.COPY_CONFIRM),
         )
     }
 
@@ -157,7 +157,7 @@ private fun HowManyTimesRow(countText: String, onCount: (String) -> Unit) {
             value = countText,
             onValueChange = { onCount(it.filter { c -> c.isDigit() }.take(COUNT_DIGITS)) },
             keyboardType = KeyboardType.Number,
-            modifier = Modifier.width(COUNT_FIELD_WIDTH).testTag(CalendarTags.COPY_COUNT),
+            modifier = Modifier.width(COUNT_FIELD_WIDTH).testTag(SheetTags.COPY_COUNT),
         )
     }
 }

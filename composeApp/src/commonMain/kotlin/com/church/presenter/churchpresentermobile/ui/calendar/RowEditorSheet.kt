@@ -109,21 +109,16 @@ internal fun RowEditorContent(
         Spacer(Modifier.height(12.dp))
     }
     if (row is PlanRow.Section) {
+        // A heading is a divider, so there is nothing to time -- only a color to give it.
         SwatchRow(color = color, onColor = { color = it })
         Spacer(Modifier.height(8.dp))
         Text(stringResource(Res.string.calendar_section_hint), color = colors.muted, fontSize = 12.sp)
     } else {
-        CompactField(
-            stringResource(Res.string.calendar_duration),
-            durationText,
-            { durationText = it },
-            placeholder = "4:30",
-            modifier = Modifier.testTag(CalendarTags.ROW_DURATION),
-        )
-        Spacer(Modifier.height(12.dp))
-        TimingPanel(
-            draft = timing.copy(runSeconds = parseDuration(durationText)),
-            onChange = { draft ->
+        RowTiming(
+            durationText = durationText,
+            onDuration = { durationText = it },
+            timing = timing,
+            onTiming = { draft ->
                 timing = draft
                 durationText = draft.runSeconds?.let(::formatDuration).orEmpty()
             },
@@ -132,26 +127,11 @@ internal fun RowEditorContent(
     }
     Spacer(Modifier.height(18.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        CalendarSecondaryButton(
-            label = null,
-            icon = Icons.Filled.KeyboardArrowUp,
-            contentDescription = stringResource(Res.string.calendar_move_up),
-            onClick = { if (index > 0) onMove(-1) },
-            modifier = Modifier.testTag(CalendarTags.ROW_UP),
-        )
-        CalendarSecondaryButton(
-            label = null,
-            icon = Icons.Filled.KeyboardArrowDown,
-            contentDescription = stringResource(Res.string.calendar_move_down),
-            onClick = { if (index in 0 until service.rows.lastIndex) onMove(1) },
-            modifier = Modifier.testTag(CalendarTags.ROW_DOWN),
-        )
-        CalendarSecondaryButton(
-            label = null,
-            icon = Icons.Outlined.Delete,
-            contentDescription = stringResource(Res.string.calendar_remove_row),
-            onClick = onRemove,
-            modifier = Modifier.testTag(CalendarTags.ROW_REMOVE),
+        RowPlaceButtons(
+            canMoveUp = index > 0,
+            canMoveDown = index in 0 until service.rows.lastIndex,
+            onMove = onMove,
+            onRemove = onRemove,
         )
         CalendarPrimaryButton(
             label = stringResource(Res.string.calendar_save_row),
@@ -174,4 +154,59 @@ internal fun RowEditorContent(
         )
     }
 
+}
+
+/** How long a row runs, and when it fires: the two the desktop's automation reads. */
+@Composable
+private fun RowTiming(
+    durationText: String,
+    onDuration: (String) -> Unit,
+    timing: TimingDraft,
+    onTiming: (TimingDraft) -> Unit,
+    serviceStart: String,
+) {
+    CompactField(
+        stringResource(Res.string.calendar_duration),
+        durationText,
+        onDuration,
+        placeholder = "4:30",
+        modifier = Modifier.testTag(CalendarTags.ROW_DURATION),
+    )
+    Spacer(Modifier.height(12.dp))
+    TimingPanel(
+        draft = timing.copy(runSeconds = parseDuration(durationText)),
+        onChange = onTiming,
+        serviceStart = serviceStart,
+    )
+}
+
+/** Where the row sits, and whether it stays: up, down and remove, in that order. */
+@Composable
+private fun RowPlaceButtons(
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
+    onMove: (delta: Int) -> Unit,
+    onRemove: () -> Unit,
+) {
+    CalendarSecondaryButton(
+        label = null,
+        icon = Icons.Filled.KeyboardArrowUp,
+        contentDescription = stringResource(Res.string.calendar_move_up),
+        onClick = { if (canMoveUp) onMove(-1) },
+        modifier = Modifier.testTag(CalendarTags.ROW_UP),
+    )
+    CalendarSecondaryButton(
+        label = null,
+        icon = Icons.Filled.KeyboardArrowDown,
+        contentDescription = stringResource(Res.string.calendar_move_down),
+        onClick = { if (canMoveDown) onMove(1) },
+        modifier = Modifier.testTag(CalendarTags.ROW_DOWN),
+    )
+    CalendarSecondaryButton(
+        label = null,
+        icon = Icons.Outlined.Delete,
+        contentDescription = stringResource(Res.string.calendar_remove_row),
+        onClick = onRemove,
+        modifier = Modifier.testTag(CalendarTags.ROW_REMOVE),
+    )
 }
