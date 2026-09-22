@@ -240,24 +240,26 @@ class AppSettings(
         set(value) { storage.putInt(KEY_TELEMETRY_ENABLED, if (value) 1 else 0) }
 
     /**
-     * How the app projects — remote control of a desktop, or standalone presenter.
+     * How the app projects — remote control of a desktop, standalone presenter, or calendar only.
      *
-     * Reads coerce to [AppMode.REMOTE] on platforms that cannot present
-     * ([supportsStandalone] is false), so a settings blob written on a phone can
-     * never leave the web build in a mode it has no sink for. Writes are
-     * coerced the same way, so the stored value never disagrees with what the
-     * app is actually doing.
+     * [AppMode.STANDALONE] coerces to [AppMode.REMOTE] on platforms that cannot present
+     * ([supportsStandalone] is false), so a settings blob written on a phone can never leave the
+     * web build in a mode it has no sink for. [AppMode.CALENDAR] is not coerced: it projects
+     * nothing, so there is no sink it could be missing. Writes are coerced the same way as reads,
+     * so the stored value never disagrees with what the app is actually doing.
      */
     var appMode: AppMode
         get() {
-            if (!supportsStandalone) return AppMode.REMOTE
             val stored = storage.getString(KEY_APP_MODE, AppMode.REMOTE.name)
-            return AppMode.entries.firstOrNull { it.name == stored } ?: AppMode.REMOTE
+            return usable(AppMode.entries.firstOrNull { it.name == stored } ?: AppMode.REMOTE)
         }
         set(value) {
-            val effective = if (supportsStandalone) value else AppMode.REMOTE
-            storage.putString(KEY_APP_MODE, effective.name)
+            storage.putString(KEY_APP_MODE, usable(value).name)
         }
+
+    /** [mode] itself, or remote where this build cannot do what that mode asks. */
+    private fun usable(mode: AppMode): AppMode =
+        if (mode == AppMode.STANDALONE && !supportsStandalone) AppMode.REMOTE else mode
 
     /**
      * True once the user has picked a mode on the setup screen. Existing

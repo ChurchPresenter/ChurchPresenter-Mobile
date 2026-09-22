@@ -103,23 +103,26 @@ data class CalendarSyncState(
          * `churchpresenter://calendar-enroll?relay=…&instance=…&token=…&key=…`.
          */
         fun fromQr(text: String): CalendarSyncState? {
-            val query = text.substringAfter("calendar-enroll?", "").takeIf { it.isNotEmpty() } ?: return null
+            val query = text.substringAfter("calendar-enroll?", "")
             val params = query.split('&').mapNotNull { pair ->
                 val key = pair.substringBefore('=')
                 val value = pair.substringAfter('=', "")
                 if (key.isEmpty()) null else key to value
             }.toMap()
-            val relay = Sanitize.relayUrl(params["relay"].orEmpty()) ?: return null
-            val instance = params["instance"].orEmpty().takeIf(Sanitize::isId) ?: return null
-            val token = Sanitize.secret(params["token"].orEmpty()) ?: return null
-            val key = Sanitize.secret(params["key"].orEmpty()) ?: return null
-            val device = params["device"].orEmpty().takeIf(Sanitize::isId).orEmpty()
+            // Every field or none: a QR missing any one of them is not an enrollment, and a
+            // half-filled state would have this phone talking to the relay with nothing to say.
+            val relay = Sanitize.relayUrl(params["relay"].orEmpty())
+            val instance = params["instance"].orEmpty().takeIf(Sanitize::isId)
+            val token = Sanitize.secret(params["token"].orEmpty())
+            val key = Sanitize.secret(params["key"].orEmpty())
+            val fields = listOf(relay, instance, token, key)
+            if (query.isEmpty() || fields.any { it == null }) return null
             return CalendarSyncState(
-                relayUrl = relay,
-                instanceId = instance,
-                deviceToken = token,
-                instanceKey = key,
-                deviceId = device,
+                relayUrl = relay.orEmpty(),
+                instanceId = instance.orEmpty(),
+                deviceToken = token.orEmpty(),
+                instanceKey = key.orEmpty(),
+                deviceId = params["device"].orEmpty().takeIf(Sanitize::isId).orEmpty(),
             )
         }
     }

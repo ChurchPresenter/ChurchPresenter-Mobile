@@ -109,7 +109,9 @@ internal fun MonthGrid(
                         inMonth = month.contains(date),
                         selected = date == selected,
                         isToday = date == today,
-                        dots = byDate[storedDate(date)].orEmpty().map { ServiceKind.byId(it.kind).colorHex }.take(MAX_DOTS),
+                        dots = byDate[storedDate(date)].orEmpty()
+                            .map { ServiceKind.byId(it.kind).colorHex }
+                            .take(MAX_DOTS),
                         onClick = { onSelect(date) },
                         modifier = Modifier.weight(1f),
                     )
@@ -152,7 +154,13 @@ private fun DayCell(
             .padding(2.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(if (selected) colors.accent else colors.background.copy(alpha = 0f))
-            .then(if (isToday && !selected) Modifier.border(1.dp, colors.accent, RoundedCornerShape(10.dp)) else Modifier)
+            .then(
+                if (isToday && !selected) {
+                    Modifier.border(1.dp, colors.accent, RoundedCornerShape(10.dp))
+                } else {
+                    Modifier
+                },
+            )
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

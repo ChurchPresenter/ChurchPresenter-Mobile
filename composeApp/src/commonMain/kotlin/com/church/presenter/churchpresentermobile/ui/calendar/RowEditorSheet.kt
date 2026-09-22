@@ -36,9 +36,6 @@ import com.church.presenter.churchpresentermobile.model.SectionPalette
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
-/** What the row editor hands back: the row as edited, its length and its timing. */
-internal class RowEdit(val row: PlanRow, val seconds: Int?, val timing: RowTiming)
-
 /**
  * A tapped row: its name where it can be renamed, its length, the timing panel, and the row's
  * place in the order. Desktop-authored rows keep their content read-only; only where and how
@@ -58,7 +55,11 @@ internal fun RowEditorSheet(
     var detail by remember { mutableStateOf((row as? PlanRow.Ministry)?.detail.orEmpty()) }
     var color by remember { mutableStateOf((row as? PlanRow.Section)?.color ?: SectionPalette.DEFAULT) }
     var durationText by remember { mutableStateOf(service.plannedSecondsFor(row.id)?.let(::formatDuration).orEmpty()) }
-    var timing by remember { mutableStateOf(TimingDraft.of(service.timingFor(row.id), service.plannedSecondsFor(row.id), service.startTime)) }
+    var timing by remember {
+        mutableStateOf(
+            TimingDraft.of(service.timingFor(row.id), service.plannedSecondsFor(row.id), service.startTime),
+        )
+    }
     val index = service.rows.indexOfFirst { it.id == row.id }
     val editable = row is PlanRow.Section || row is PlanRow.Ministry || row is PlanRow.Bible
 
@@ -135,7 +136,8 @@ internal fun RowEditorSheet(
                         else -> row
                     }
                     val seconds = if (row is PlanRow.Section) null else parseDuration(durationText)
-                    val rowTiming = if (row is PlanRow.Section) RowTiming.DEFAULT else timing.toTiming(service.startTime)
+                    val rowTiming =
+                        if (row is PlanRow.Section) RowTiming.DEFAULT else timing.toTiming(service.startTime)
                     onSave(RowEdit(edited, seconds, rowTiming))
                 },
                 modifier = Modifier.weight(1f),

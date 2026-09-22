@@ -72,7 +72,11 @@ data class TimingDraft(
 ) {
     fun toTiming(serviceStart: String): RowTiming {
         val startMinutes = minutesOfDay(serviceStart)
-        val startAt = if (startOffsetMinutes != null && startMinutes != null) timeFromMinutes(startMinutes + startOffsetMinutes) else ""
+        val startAt = if (startOffsetMinutes != null && startMinutes != null) {
+            timeFromMinutes(startMinutes + startOffsetMinutes)
+        } else {
+            ""
+        }
         return RowTiming(
             startAt = startAt,
             followsPrevious = followsPrevious && startAt.isEmpty(),
@@ -86,7 +90,8 @@ data class TimingDraft(
             val startMinutes = minutesOfDay(serviceStart)
             val rowMinutes = timing.startAt.takeIf { it.isNotEmpty() }?.let(::minutesOfDay)
             return TimingDraft(
-                startOffsetMinutes = if (rowMinutes != null && startMinutes != null) rowMinutes - startMinutes else null,
+                startOffsetMinutes =
+                    if (rowMinutes != null && startMinutes != null) rowMinutes - startMinutes else null,
                 followsPrevious = timing.followsPrevious,
                 runSeconds = plannedSeconds,
                 repeats = timing.repeats,
@@ -206,7 +211,11 @@ internal fun timingSummary(draft: TimingDraft, serviceStart: String): String {
     val starts = when {
         draft.startOffsetMinutes != null -> {
             val startMinutes = minutesOfDay(serviceStart)
-            val at = if (startMinutes != null) clockText(timeFromMinutes(startMinutes + draft.startOffsetMinutes)) else ""
+            val at = if (startMinutes != null) {
+                clockText(timeFromMinutes(startMinutes + draft.startOffsetMinutes))
+            } else {
+                ""
+            }
             stringResource(Res.string.calendar_sum_starts_at, at)
         }
         draft.followsPrevious -> stringResource(Res.string.calendar_sum_after_prev)

@@ -175,11 +175,13 @@ internal fun AddToServiceContent(
                 query = query,
                 sources = sources,
                 picker = picker,
-                onAddSong = { add(picker.songRow(it, newRowId, sources.durations.secondsFor(it))) },
-                onAddPreset = { add(picker.presetRow(it, newRowId)) },
-                onPickSection = { name, hex ->
-                    add(PickedRow(PlanRow.Section(id = newRowId(), title = name, color = hex), seconds = null))
-                },
+                adds = PickerAdds(
+                    onAddSong = { add(picker.songRow(it, newRowId, sources.durations.secondsFor(it))) },
+                    onAddPreset = { add(picker.presetRow(it, newRowId)) },
+                    onPickSection = { name, hex ->
+                        add(PickedRow(PlanRow.Section(id = newRowId(), title = name, color = hex), seconds = null))
+                    },
+                ),
             )
             if (tab != PickerTab.SECTION) {
                 item {
@@ -236,15 +238,23 @@ private fun PickerTabRow(tab: PickerTab, onTab: (PickerTab) -> Unit) {
     }
 }
 
+/** What a tap on a picker row adds; one bundle, because every tab hands back one of the three. */
+private class PickerAdds(
+    val onAddSong: (Song) -> Unit,
+    val onAddPreset: (PresetSummary) -> Unit,
+    val onPickSection: (String, String) -> Unit,
+)
+
 private fun LazyListScope.pickerBody(
     tab: PickerTab,
     query: String,
     sources: PickerSources,
     picker: PickerState,
-    onAddSong: (Song) -> Unit,
-    onAddPreset: (PresetSummary) -> Unit,
-    onPickSection: (String, String) -> Unit,
+    adds: PickerAdds,
 ) {
+    val onAddSong = adds.onAddSong
+    val onAddPreset = adds.onAddPreset
+    val onPickSection = adds.onPickSection
     when (tab) {
         PickerTab.SONGS -> songItems(
             songs = sources.songs,

@@ -107,7 +107,11 @@ internal fun serviceSummary(service: PlannedService): String {
 
 @Composable
 internal fun serviceCountText(count: Int): String =
-    if (count == 1) stringResource(Res.string.calendar_service_count_one) else stringResource(Res.string.calendar_service_count_other, count)
+    if (count == 1) {
+        stringResource(Res.string.calendar_service_count_one)
+    } else {
+        stringResource(Res.string.calendar_service_count_other, count)
+    }
 
 @Composable
 private fun EmptyDay(date: LocalDate, onAdd: () -> Unit, onCopyLast: (() -> Unit)?) {

@@ -57,24 +57,9 @@ import com.church.presenter.churchpresentermobile.calendar.timeFromMinutes
 import com.church.presenter.churchpresentermobile.calendar.totalSeconds
 import com.church.presenter.churchpresentermobile.model.PlanRow
 import com.church.presenter.churchpresentermobile.model.PlannedService
-import com.church.presenter.churchpresentermobile.model.RowTiming
 import com.church.presenter.churchpresentermobile.ui.EmptyState
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
-
-/** Everything the run of show can do to its service; the screen itself holds no ViewModel. */
-internal class RunOfShowActions(
-    val onArmed: (Boolean) -> Unit,
-    val onAddRow: (PlanRow, Int?, RowTiming) -> Unit,
-    val onUpdateRow: (RowEdit) -> Unit,
-    val onRemoveRow: (String) -> Unit,
-    val onMoveRow: (from: Int, to: Int) -> Unit,
-    val onCopy: (CopyChoice) -> Unit,
-    val onUpdateService: (ServiceDraft) -> Unit,
-    val onDelete: () -> Unit,
-    /** Null until a desktop is there to load into; the button then stays but does nothing. */
-    val onLoadIntoSchedule: (() -> Unit)?,
-)
 
 private enum class OpenSheet { NONE, ADD, COPY, EDIT_SERVICE }
 
@@ -124,9 +109,13 @@ internal fun RunOfShowScreen(
                     val index = service.rows.indexOfFirst { it.id == clocked.row.id }
                     val rowActions = RowActions(
                         onOpen = { editingRowId = clocked.row.id },
-                        onMoveUp = if (inline && index > 0) ({ actions.onMoveRow(index, index - 1) }) else null,
-                        onMoveDown = if (inline && index < service.rows.lastIndex) ({ actions.onMoveRow(index, index + 1) }) else null,
-                        onRemove = if (inline) ({ actions.onRemoveRow(clocked.row.id) }) else null,
+                        onMoveUp = if (inline && index > 0) ({ actions.rows.onMove(index, index - 1) }) else null,
+                        onMoveDown = if (inline && index < service.rows.lastIndex) {
+                            ({ actions.rows.onMove(index, index + 1) })
+                        } else {
+                            null
+                        },
+                        onRemove = if (inline) ({ actions.rows.onRemove(clocked.row.id) }) else null,
                     )
                     when (val row = clocked.row) {
                         is PlanRow.Section -> SectionRow(row, rowActions)
@@ -149,7 +138,7 @@ internal fun RunOfShowScreen(
             serviceStart = service.startTime,
             sources = sources,
             newRowId = newRowId,
-            onAdd = actions.onAddRow,
+            onAdd = actions.rows.onAdd,
             onDismiss = { sheet = OpenSheet.NONE },
         )
         OpenSheet.COPY -> CopyServiceSheet(
@@ -171,9 +160,9 @@ internal fun RunOfShowScreen(
         RowEditorSheet(
             service = service,
             row = editing,
-            onSave = { actions.onUpdateRow(it); editingRowId = null },
-            onMove = { delta -> actions.onMoveRow(index, index + delta) },
-            onRemove = { actions.onRemoveRow(editing.id); editingRowId = null },
+            onSave = { actions.rows.onUpdate(it); editingRowId = null },
+            onMove = { delta -> actions.rows.onMove(index, index + delta) },
+            onRemove = { actions.rows.onRemove(editing.id); editingRowId = null },
             onDismiss = { editingRowId = null },
         )
     }

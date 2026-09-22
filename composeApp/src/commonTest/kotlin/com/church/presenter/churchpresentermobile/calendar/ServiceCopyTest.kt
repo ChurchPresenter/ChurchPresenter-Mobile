@@ -78,14 +78,16 @@ class ServiceCopyTest {
         assertEquals("10:00", template.startTime)
         assertEquals(source.rows, template.rows)
         val allSaints = LocalDate(2026, 11, 1)
-        val service = serviceFromTemplate(template, allSaints, "All Saints", "09:30", "sunday", newId, at = "t")
+        val heading = ServiceHeading("All Saints", "09:30", "sunday")
+        val service = serviceFromTemplate(template, allSaints, heading, newId, at = "t")
         assertEquals("All Saints", service.name)
         assertEquals("09:30", service.startTime)
         assertEquals("2026-11-01", service.date)
         assertEquals(source.rows.map { it.title }, service.rows.map { it.title })
         assertTrue(service.rows.map { it.id }.none { it in source.rows.map { r -> r.id } })
         assertEquals(270, service.plannedSeconds.values.single())
-        val blank = serviceFromTemplate(null, LocalDate(2026, 11, 1), "Blank", "09:30", "sunday", newId, at = "t")
+        val blankHeading = ServiceHeading("Blank", "09:30", "sunday")
+        val blank = serviceFromTemplate(null, LocalDate(2026, 11, 1), blankHeading, newId, at = "t")
         assertTrue(blank.rows.isEmpty())
     }
 

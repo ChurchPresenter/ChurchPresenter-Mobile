@@ -214,7 +214,11 @@ fun SettingsScreen(
         )
     }
     SettingsSheet(
-        sections = settingsSections(hasDesktop = hasDesktop, supportsStandalone = supportsStandalone),
+        sections = settingsSections(
+            hasDesktop = hasDesktop,
+            supportsStandalone = supportsStandalone,
+            canLeaveMode = appMode != AppMode.REMOTE,
+        ),
         status = statusState.takeIf { hasDesktop },
         address = "${appSettings.host}:${appSettings.port}",
         twoPane = twoPane,

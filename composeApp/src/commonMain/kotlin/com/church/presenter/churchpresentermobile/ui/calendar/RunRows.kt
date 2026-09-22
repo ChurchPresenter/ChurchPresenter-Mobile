@@ -55,21 +55,15 @@ import com.church.presenter.churchpresentermobile.model.RowTiming
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
-/** What a row can do from its card: open, or — on a tablet — be moved and removed in place. */
-internal class RowActions(
-    val onOpen: () -> Unit,
-    val onMoveUp: (() -> Unit)? = null,
-    val onMoveDown: (() -> Unit)? = null,
-    val onRemove: (() -> Unit)? = null,
-)
-
 /** A section heading: a drag handle, a color bar and the name in small caps. */
 @Composable
 internal fun SectionRow(row: PlanRow.Section, actions: RowActions, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     val tint = colorOf(row.color)
     Row(
-        modifier = modifier.fillMaxWidth().clickable(onClick = actions.onOpen).padding(vertical = 8.dp, horizontal = 4.dp),
+        modifier = modifier.fillMaxWidth()
+            .clickable(onClick = actions.onOpen)
+            .padding(vertical = 8.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {

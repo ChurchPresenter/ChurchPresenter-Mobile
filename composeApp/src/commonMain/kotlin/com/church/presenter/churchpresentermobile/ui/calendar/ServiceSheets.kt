@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -161,7 +160,7 @@ private fun ServiceForm(
             modifier = Modifier.weight(1f),
             highlighted = parsedStart == null,
         )
-        Column(modifier = Modifier.weight(1.4f)) {
+        Column(modifier = Modifier.weight(WIDER_COLUMN)) {
             CalendarOverline(stringResource(Res.string.calendar_type))
             Spacer(Modifier.height(6.dp))
             SegmentRow(
@@ -222,13 +221,20 @@ private fun ServiceForm(
                 val start = parsedStart ?: return@CalendarPrimaryButton
                 onConfirm(ServiceDraft(name.trim(), storedTime(start), ServiceKind.entries[kindIndex].id, templateId))
             },
-            modifier = Modifier.weight(1.4f),
+            modifier = Modifier.weight(WIDER_COLUMN),
         )
     }
 }
 
+/** The type picker and the confirm button sit a little wider than what they stand beside. */
+private const val WIDER_COLUMN = 1.4f
+
 @Composable
 internal fun itemCountText(rows: List<PlanRow>): String {
     val count = rows.count { it !is PlanRow.Section }
-    return if (count == 1) stringResource(Res.string.calendar_item_count_one) else stringResource(Res.string.calendar_item_count_other, count)
+    return if (count == 1) {
+        stringResource(Res.string.calendar_item_count_one)
+    } else {
+        stringResource(Res.string.calendar_item_count_other, count)
+    }
 }

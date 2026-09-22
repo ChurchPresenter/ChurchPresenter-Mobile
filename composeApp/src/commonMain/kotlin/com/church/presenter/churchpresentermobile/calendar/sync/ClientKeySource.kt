@@ -38,10 +38,9 @@ class ClientKeySource(
     suspend fun refresh(): String? {
         val key = runCatching {
             val response = client.get(CONFIG_URL)
-            if (!response.status.isSuccess()) return null
-            json.decodeFromString(RelayConfig.serializer(), response.bodyAsText()).clientKey
-        }.getOrNull() ?: return null
-        if (!KEY_SHAPE.matches(key)) return null
+            response.takeIf { it.status.isSuccess() }
+                ?.let { json.decodeFromString(RelayConfig.serializer(), it.bodyAsText()).clientKey }
+        }.getOrNull()?.takeIf(KEY_SHAPE::matches) ?: return null
         settings.relayClientKey = key
         settings.relayClientKeyFetchedAt = now()
         return key

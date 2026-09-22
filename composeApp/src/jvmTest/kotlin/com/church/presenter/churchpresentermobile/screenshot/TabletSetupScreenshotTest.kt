@@ -75,6 +75,13 @@ class TabletSetupScreenshotTest {
         ModePickerScreen(onModeChosen = {}, twoPane = true, initialMode = AppMode.STANDALONE)
     }
 
+    @Test
+    fun modePickerCalendar() = tablet("mode-picker-tablet__calendar-selected") {
+        // Three cards across, where the phone stacks them: the tablet picker has to stay readable
+        // with a third signal path drawn beside the other two.
+        ModePickerScreen(onModeChosen = {}, twoPane = true, initialMode = AppMode.CALENDAR)
+    }
+
     // ── Startup status ───────────────────────────────────────────────────
 
     @Test

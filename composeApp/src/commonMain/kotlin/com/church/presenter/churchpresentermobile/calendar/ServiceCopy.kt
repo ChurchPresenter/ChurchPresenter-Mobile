@@ -62,13 +62,14 @@ fun copyService(
     )
 }
 
+/** What a new service is called, when it starts and what kind it is. */
+class ServiceHeading(val name: String, val startTime: String, val kind: String)
+
 /** A new service on [date] from a saved template. */
 fun serviceFromTemplate(
     template: SavedTemplate?,
     date: LocalDate,
-    name: String,
-    startTime: String,
-    kind: String,
+    heading: ServiceHeading,
     newId: () -> String,
     at: String,
 ): PlannedService {
@@ -76,9 +77,9 @@ fun serviceFromTemplate(
     return PlannedService(
         id = newId(),
         date = storedDate(date),
-        name = name,
-        startTime = startTime,
-        kind = kind,
+        name = heading.name,
+        startTime = heading.startTime,
+        kind = heading.kind,
         rows = rekeyed?.rows.orEmpty(),
         plannedSeconds = rekeyed?.seconds.orEmpty(),
         timing = rekeyed?.timing.orEmpty(),

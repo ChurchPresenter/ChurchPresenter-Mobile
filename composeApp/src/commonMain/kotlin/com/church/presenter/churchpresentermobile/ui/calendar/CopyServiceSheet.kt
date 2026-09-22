@@ -91,46 +91,10 @@ internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> U
         )
         if (rule != RepeatRule.ONCE) {
             Spacer(Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(Res.string.calendar_how_many_times),
-                    color = colors.text,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.weight(1f),
-                )
-                CompactField(
-                    label = "",
-                    value = countText,
-                    onValueChange = { countText = it.filter { c -> c.isDigit() }.take(2) },
-                    keyboardType = KeyboardType.Number,
-                    modifier = Modifier.width(72.dp),
-                )
-            }
+            HowManyTimesRow(countText, onCount = { countText = it })
         }
         Spacer(Modifier.height(12.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(CardShape)
-                .background(colors.surface)
-                .border(1.dp, colors.borderSubtle, CardShape)
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            CalendarOverline(
-                if (dates.size == 1) stringResource(Res.string.calendar_creates_one) else stringResource(Res.string.calendar_creates_other, dates.size),
-            )
-            dates.forEachIndexed { index, date ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text("${index + 1}", color = colors.muted, fontSize = 12.sp, modifier = Modifier.width(16.dp))
-                    Text(longDate(date), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                }
-            }
-        }
+        DatesPreview(dates)
         Spacer(Modifier.height(14.dp))
         CalendarOverline(stringResource(Res.string.calendar_include))
         Spacer(Modifier.height(6.dp))
@@ -141,6 +105,7 @@ internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> U
                 checked = includeRows,
                 onToggle = { includeRows = !includeRows },
             )
+            // Only where there is automation to carry: a service with no cues has nothing to ask.
             if (cueCount > 0) {
                 CheckCard(
                     title = stringResource(Res.string.calendar_include_cues),
@@ -160,8 +125,68 @@ internal fun CopyServiceSheet(service: PlannedService, onCopy: (CopyChoice) -> U
             CalendarPrimaryButton(
                 label = stringResource(Res.string.calendar_create_n, dates.size),
                 onClick = { onCopy(CopyChoice(rule, count, includeRows, includeCues)) },
-                modifier = Modifier.weight(1.4f),
+                modifier = Modifier.weight(CONFIRM_WIDTH),
             )
         }
     }
 }
+
+/** How many copies, asked only when the repeat makes more than one. */
+@Composable
+private fun HowManyTimesRow(countText: String, onCount: (String) -> Unit) {
+    val colors = LocalAppColors.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(Res.string.calendar_how_many_times),
+            color = colors.text,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+        )
+        CompactField(
+            label = "",
+            value = countText,
+            onValueChange = { onCount(it.filter { c -> c.isDigit() }.take(COUNT_DIGITS)) },
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.width(COUNT_FIELD_WIDTH),
+        )
+    }
+}
+
+/** The dates this copy would create, numbered, so nobody presses Create to find out. */
+@Composable
+private fun DatesPreview(dates: List<LocalDate>) {
+    val colors = LocalAppColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(CardShape)
+            .background(colors.surface)
+            .border(1.dp, colors.borderSubtle, CardShape)
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        CalendarOverline(
+            if (dates.size == 1) {
+                stringResource(Res.string.calendar_creates_one)
+            } else {
+                stringResource(Res.string.calendar_creates_other, dates.size)
+            },
+        )
+        dates.forEachIndexed { index, date ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("${index + 1}", color = colors.muted, fontSize = 12.sp, modifier = Modifier.width(ORDINAL_WIDTH))
+                Text(longDate(date), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            }
+        }
+    }
+}
+
+/** Create sits wider than Cancel beside it. */
+private const val CONFIRM_WIDTH = 1.4f
+private const val COUNT_DIGITS = 2
+private val COUNT_FIELD_WIDTH = 72.dp
+private val ORDINAL_WIDTH = 16.dp

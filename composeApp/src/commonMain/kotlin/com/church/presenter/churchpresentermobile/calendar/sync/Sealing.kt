@@ -12,6 +12,9 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 private const val KEY_BYTES = 32
+
+/** Base64 encodes four characters per three bytes, so a QR's unpadded key is padded back to a multiple of this. */
+private const val PAD_ROUND = 4
 private const val NONCE_BYTES = 12
 private const val TAG_BITS = 128
 private const val MAX_BOX_CHARS = 256 * 1024
@@ -83,10 +86,11 @@ class Sealing private constructor(private val key: AES.GCM.Key, private val inst
     companion object {
         /** The key as the enrollment QR carries it: URL-safe base64, no padding, 32 bytes. */
         suspend fun fromEncodedKey(encoded: String, instanceId: String): Sealing? {
-            val raw = runCatching { Base64.UrlSafe.decode(encoded.padEnd((encoded.length + 3) / 4 * 4, '=')) }.getOrNull()
-                ?: return null
+            val padded = encoded.padEnd((encoded.length + PAD_ROUND - 1) / PAD_ROUND * PAD_ROUND, '=')
+            val raw = runCatching { Base64.UrlSafe.decode(padded) }.getOrNull() ?: return null
             if (raw.size != KEY_BYTES) return null
-            val key = CryptographyProvider.Default.get(AES.GCM).keyDecoder().decodeFromByteArray(AES.Key.Format.RAW, raw)
+            val key = CryptographyProvider.Default.get(AES.GCM).keyDecoder()
+                .decodeFromByteArray(AES.Key.Format.RAW, raw)
             return Sealing(key, instanceId)
         }
 

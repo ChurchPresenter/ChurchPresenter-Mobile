@@ -15,7 +15,14 @@ data class ParsedReference(val book: PickerBook, val chapter: Int, val verseFrom
         }
 }
 
-private val REFERENCE = Regex("""^\s*((?:[1-3]\s*)?[A-Za-z][A-Za-z .]*?)\s*(\d+)(?:\s*[:.]\s*(\d+)(?:\s*[-–]\s*(\d+))?)?\s*$""")
+private const val GROUP_BOOK = 1
+private const val GROUP_CHAPTER = 2
+private const val GROUP_FROM = 3
+private const val GROUP_TO = 4
+
+private val REFERENCE = Regex(
+    """^\s*((?:[1-3]\s*)?[A-Za-z][A-Za-z .]*?)\s*(\d+)(?:\s*[:.]\s*(\d+)(?:\s*[-–]\s*(\d+))?)?\s*$""",
+)
 
 /**
  * Reads a typed reference against [books]: `Ps 100:1-5`, `1 John 3`, `Genesis 1:1`. Book names
@@ -24,7 +31,11 @@ private val REFERENCE = Regex("""^\s*((?:[1-3]\s*)?[A-Za-z][A-Za-z .]*?)\s*(\d+)
  */
 fun parseReference(text: String, books: List<PickerBook>): ParsedReference? {
     val match = REFERENCE.matchEntire(text) ?: return null
-    val (bookText, chapterText, fromText, toText) = match.destructured
+    val groups = match.groupValues
+    val bookText = groups[GROUP_BOOK]
+    val chapterText = groups[GROUP_CHAPTER]
+    val fromText = groups[GROUP_FROM]
+    val toText = groups[GROUP_TO]
     val book = findBook(bookText, books) ?: return null
     val chapter = chapterText.toIntOrNull()?.takeIf { it in 1..book.chapters } ?: return null
     val from = fromText.toIntOrNull()

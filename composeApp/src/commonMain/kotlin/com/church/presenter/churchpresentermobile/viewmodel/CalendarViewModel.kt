@@ -11,6 +11,7 @@ import com.church.presenter.churchpresentermobile.calendar.copyService
 import com.church.presenter.churchpresentermobile.calendar.nowIso
 import com.church.presenter.churchpresentermobile.calendar.parseStoredDate
 import com.church.presenter.churchpresentermobile.calendar.repeatDates
+import com.church.presenter.churchpresentermobile.calendar.ServiceHeading
 import com.church.presenter.churchpresentermobile.calendar.serviceFromTemplate
 import com.church.presenter.churchpresentermobile.calendar.storedDate
 import com.church.presenter.churchpresentermobile.calendar.templateFrom
@@ -115,7 +116,10 @@ class CalendarViewModel(
             // Every local edit is pushed shortly after it settles; the relay is what makes a
             // plan reach the other phones and, on Sunday, the desktop.
             viewModelScope.launch {
-                document.map { it.pendingPush.size + it.pendingDeletes.size }.filter { it > 0 }.debounce(PUSH_DEBOUNCE_MS).collect {
+                document.map { it.pendingPush.size + it.pendingDeletes.size }
+                    .filter { it > 0 }
+                    .debounce(PUSH_DEBOUNCE_MS)
+                    .collect {
                     sync.sync()
                 }
             }
@@ -227,7 +231,8 @@ class CalendarViewModel(
     /** Adds a service on the selected date and opens it. */
     fun addService(name: String, startTime: String, kind: String, templateId: String?): String {
         val template = templateId?.let { id -> document.value.templates.firstOrNull { it.id == id } }
-        val service = serviceFromTemplate(template, _selectedDate.value, name, startTime, kind, newId, nowIso())
+        val heading = ServiceHeading(name, startTime, kind)
+        val service = serviceFromTemplate(template, _selectedDate.value, heading, newId, nowIso())
         repository.saveService(service)
         _openServiceId.value = service.id
         return service.id

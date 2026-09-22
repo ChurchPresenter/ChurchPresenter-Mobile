@@ -43,7 +43,9 @@ class CalendarSyncEngine(
     /** Where the desktop's songbooks land when they arrive through the relay. */
     private val catalogStore: SongCatalogStore? = null,
 ) {
-    private val _status = MutableStateFlow<SyncStatus>(if (state().isEnrolled) SyncStatus.Synced("", 0, 0) else SyncStatus.NotEnrolled)
+    private val _status = MutableStateFlow<SyncStatus>(
+        if (state().isEnrolled) SyncStatus.Synced("", 0, 0) else SyncStatus.NotEnrolled,
+    )
     val status: StateFlow<SyncStatus> = _status.asStateFlow()
 
     private val lock = Mutex()
@@ -72,20 +74,27 @@ class CalendarSyncEngine(
             val client = clientFor(current, clientKeys::current)
             try {
                 round(client, sealing, current)
-            } catch (_: RelayFailure.ClientKey) {
+            } catch (rotated: RelayFailure.ClientKey) {
                 // The key rotated under us: fetch the new one and go once more.
-                if (clientKeys.refresh() == null) throw RelayFailure.ClientKey()
+                if (clientKeys.refresh() == null) throw rotated
                 round(client, sealing, state())
             }
             true
-        } catch (e: RelayFailure.Unauthorized) {
+        } catch (refused: RelayFailure.Unauthorized) {
+            Logger.e(TAG, "the relay no longer accepts this phone: ${refused.message}")
             _status.value = SyncStatus.Unauthorized
             false
         } catch (e: RelayFailure) {
             Logger.e(TAG, "sync failed: ${e.message}")
             _status.value = SyncStatus.Failed(e.message.orEmpty())
             false
-        } catch (e: Exception) {
+        } catch (e: IllegalStateException) {
+            // Whatever the wire handed us could not be made sense of. A round is background work:
+            // it reports and waits for the next one rather than taking the app down.
+            Logger.e(TAG, "sync failed: ${e.message}", e)
+            _status.value = SyncStatus.Failed(e.message.orEmpty())
+            false
+        } catch (e: IllegalArgumentException) {
             Logger.e(TAG, "sync failed: ${e.message}", e)
             _status.value = SyncStatus.Failed(e.message.orEmpty())
             false
@@ -183,7 +192,8 @@ class CalendarSyncEngine(
         val gone = changes.tombstones.map { it.id }.filter(Sanitize::isId).toSet()
         val removed = gone.filterNot { it.startsWith(CATALOG_PREFIX) }.toSet()
         catalogStore?.merge(catalog, gone.filter { it.startsWith(CATALOG_PREFIX) }.toSet())
-        val presets = changes.presetsBox.takeIf { it.isNotEmpty() }?.let { box -> sealing.openPresets(box)?.presets?.let(Sanitize::presets) }
+        val presets = changes.presetsBox.takeIf { it.isNotEmpty() }
+            ?.let { box -> sealing.openPresets(box)?.presets?.let(Sanitize::presets) }
         // An edit made here while this round ran stays pending; a record we just pushed comes
         // back stamped by the relay and replaces our unstamped copy.
         val stillPending = repository.document.value.pendingPush - pushed

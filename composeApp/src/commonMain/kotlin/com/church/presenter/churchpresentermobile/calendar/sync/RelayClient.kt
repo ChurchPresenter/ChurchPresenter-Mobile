@@ -100,10 +100,19 @@ class RelayClient(
 
     private suspend fun checked(response: HttpResponse): HttpResponse = when (response.status) {
         HttpStatusCode.Unauthorized ->
-            if (response.bodyAsText().contains(CLIENT_KEY_ERROR)) throw RelayFailure.ClientKey() else throw RelayFailure.Unauthorized()
+            if (response.bodyAsText().contains(CLIENT_KEY_ERROR)) {
+                throw RelayFailure.ClientKey()
+            } else {
+                throw RelayFailure.Unauthorized()
+            }
         HttpStatusCode.Forbidden -> throw RelayFailure.Unauthorized()
         HttpStatusCode.Conflict, HttpStatusCode.PreconditionFailed -> throw RelayFailure.Conflict()
-        else -> if (response.status.isSuccess()) response else throw RelayFailure.Rejected(response.status.value, response.bodyAsText().take(MAX_ERROR_CHARS))
+        else ->
+            if (response.status.isSuccess()) {
+                response
+            } else {
+                throw RelayFailure.Rejected(response.status.value, response.bodyAsText().take(MAX_ERROR_CHARS))
+            }
     }
 
     private companion object {
@@ -135,7 +144,8 @@ class EnrollService(
         }
         val reply = json.decodeFromString(EnrollReply.serializer(), response.bodyAsText())
         val relay = Sanitize.relayUrl(reply.relayUrl) ?: throw RelayFailure.Rejected(response.status.value, "relay url")
-        val instance = reply.instanceId.takeIf(Sanitize::isId) ?: throw RelayFailure.Rejected(response.status.value, "instance id")
+        val instance = reply.instanceId.takeIf(Sanitize::isId)
+            ?: throw RelayFailure.Rejected(response.status.value, "instance id")
         EnrollReply(relayUrl = relay, instanceId = instance)
     }
 

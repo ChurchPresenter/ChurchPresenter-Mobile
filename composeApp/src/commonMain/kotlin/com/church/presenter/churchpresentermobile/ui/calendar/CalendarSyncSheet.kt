@@ -1,7 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.calendar
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,15 +45,6 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.EnrollFlow
 import org.jetbrains.compose.resources.stringResource
 
-/** What the sync sheet can ask for; the screen owning the ViewModel answers. */
-internal class SyncActions(
-    val onEnroll: () -> Unit,
-    val onScanned: (String) -> Unit,
-    val onReset: () -> Unit,
-    val onSyncNow: () -> Unit,
-    val onLeave: () -> Unit,
-)
-
 /**
  * Enrolling with the church computer and, once enrolled, how the sync is doing: the code the
  * operator compares with their prompt, then the scanner for the QR the computer shows.
@@ -67,21 +57,33 @@ internal fun CalendarSyncSheet(
     actions: SyncActions,
     onDismiss: () -> Unit,
 ) {
-    val colors = LocalAppColors.current
     CalendarSheet(onDismiss) {
-        SheetTitle(stringResource(Res.string.calendar_sync_title), onClose = onDismiss)
-        Spacer(Modifier.height(12.dp))
-        when {
-            status is SyncStatus.NotEnrolled || status is SyncStatus.Unauthorized -> EnrollPanel(
-                status,
-                flow,
-                canReachDesktop,
-                actions,
-            )
-            else -> EnrolledPanel(status, actions)
-        }
-        Spacer(Modifier.height(8.dp))
+        CalendarSyncSheetContent(status, flow, canReachDesktop, actions, onDismiss)
     }
+}
+
+/**
+ * What the sheet says, without the sheet around it.
+ *
+ * Separate so that each state can be photographed: a modal sheet is its own window and a capture
+ * of the screen behind it shows nothing of what it is covering.
+ */
+@Composable
+internal fun CalendarSyncSheetContent(
+    status: SyncStatus,
+    flow: EnrollFlow,
+    canReachDesktop: Boolean,
+    actions: SyncActions,
+    onDismiss: () -> Unit,
+) {
+    SheetTitle(stringResource(Res.string.calendar_sync_title), onClose = onDismiss)
+    Spacer(Modifier.height(12.dp))
+    when {
+        status is SyncStatus.NotEnrolled || status is SyncStatus.Unauthorized ->
+            EnrollPanel(status, flow, canReachDesktop, actions)
+        else -> EnrolledPanel(status, actions)
+    }
+    Spacer(Modifier.height(8.dp))
 }
 
 @Composable
@@ -103,7 +105,11 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
                 EnrollFlow.Denied -> HintText(stringResource(Res.string.calendar_sync_denied))
                 EnrollFlow.SyncOff -> HintText(stringResource(Res.string.calendar_sync_desktop_off))
                 is EnrollFlow.Failed -> HintText(
-                    if (flow.message.isEmpty()) stringResource(Res.string.calendar_sync_qr_invalid) else stringResource(Res.string.calendar_sync_failed, flow.message),
+                    if (flow.message.isEmpty()) {
+                        stringResource(Res.string.calendar_sync_qr_invalid)
+                    } else {
+                        stringResource(Res.string.calendar_sync_failed, flow.message)
+                    },
                 )
                 else -> Unit
             }
@@ -115,7 +121,9 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
             if (!canReachDesktop) HintText(stringResource(Res.string.calendar_sync_enroll_needs_desktop))
             Spacer(Modifier.height(6.dp))
             CalendarSecondaryButton(
-                label = stringResource(if (flow == EnrollFlow.Idle) Res.string.calendar_sync_enroll else Res.string.calendar_try_again),
+                label = stringResource(
+                    if (flow == EnrollFlow.Idle) Res.string.calendar_sync_enroll else Res.string.calendar_try_again,
+                ),
                 onClick = actions.onEnroll,
                 enabled = canReachDesktop && hasCameraAvailable(),
                 modifier = Modifier.fillMaxWidth(),

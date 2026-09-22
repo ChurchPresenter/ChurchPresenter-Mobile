@@ -190,7 +190,14 @@ internal fun CheckCard(
                 .border(1.dp, if (checked) colors.accent else colors.borderStrong, RoundedCornerShape(6.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            if (checked) Icon(Icons.Filled.Check, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(14.dp))
+            if (checked) {
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = colors.onAccent,
+                    modifier = Modifier.size(14.dp),
+                )
+            }
         }
         Column(modifier = Modifier.weight(1f)) {
             TitleText(title, size = 14)

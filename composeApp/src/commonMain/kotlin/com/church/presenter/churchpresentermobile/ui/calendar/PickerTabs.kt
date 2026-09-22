@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
@@ -33,13 +32,6 @@ import churchpresentermobile.composeapp.generated.resources.calendar_ministry_hi
 import churchpresentermobile.composeapp.generated.resources.calendar_no_matches
 import churchpresentermobile.composeapp.generated.resources.calendar_no_presets
 import churchpresentermobile.composeapp.generated.resources.calendar_no_songs
-import churchpresentermobile.composeapp.generated.resources.calendar_section_closing
-import churchpresentermobile.composeapp.generated.resources.calendar_section_communion
-import churchpresentermobile.composeapp.generated.resources.calendar_section_hint
-import churchpresentermobile.composeapp.generated.resources.calendar_section_pre_service
-import churchpresentermobile.composeapp.generated.resources.calendar_section_response
-import churchpresentermobile.composeapp.generated.resources.calendar_section_word
-import churchpresentermobile.composeapp.generated.resources.calendar_section_worship
 import churchpresentermobile.composeapp.generated.resources.calendar_tap_add
 import churchpresentermobile.composeapp.generated.resources.calendar_tap_verse_hint
 import churchpresentermobile.composeapp.generated.resources.calendar_what_happens
@@ -48,10 +40,8 @@ import com.church.presenter.churchpresentermobile.calendar.PickerBook
 import com.church.presenter.churchpresentermobile.calendar.findBook
 import com.church.presenter.churchpresentermobile.model.PresetSummary
 import com.church.presenter.churchpresentermobile.model.RowKind
-import com.church.presenter.churchpresentermobile.model.SectionPalette
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 private const val VERSE_COLUMNS = 7
@@ -191,7 +181,7 @@ private fun NumberGrid(count: Int, from: Int?, to: Int?, onTap: (Int) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        (1..count).forEach { n ->
+        for (n in 1..count) {
             val inRange = from != null && n >= from && n <= (to ?: from)
             Box(
                 modifier = Modifier
@@ -210,66 +200,6 @@ private fun NumberGrid(count: Int, from: Int?, to: Int?, onTap: (Int) -> Unit) {
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-        }
-    }
-}
-
-private val SECTION_SUGGESTIONS: List<Pair<StringResource, String>> = listOf(
-    Res.string.calendar_section_pre_service to SectionPalette.SKY,
-    Res.string.calendar_section_worship to SectionPalette.BLUE,
-    Res.string.calendar_section_word to SectionPalette.AMBER,
-    Res.string.calendar_section_response to SectionPalette.GREEN,
-    Res.string.calendar_section_communion to SectionPalette.VIOLET,
-    Res.string.calendar_section_closing to SectionPalette.ROSE,
-)
-
-/** The usual section names, each with its color; the search field is the name for a new one. */
-@Composable
-internal fun SectionTab(
-    query: String,
-    color: String,
-    onPick: (name: String, color: String) -> Unit,
-    onColor: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SECTION_SUGGESTIONS.forEach { (nameRes, hex) ->
-            val name = stringResource(nameRes)
-            if (query.isBlank() || name.contains(query.trim(), ignoreCase = true)) {
-                CalendarCard(selected = name.equals(query.trim(), ignoreCase = true), onClick = { onPick(name, hex) }) {
-                    ColorDot(hex, size = 10.dp)
-                    TitleText(name, size = 14, modifier = Modifier.weight(1f))
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = null,
-                        tint = LocalAppColors.current.accent,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
-            }
-        }
-        SwatchRow(color = color, onColor = onColor, modifier = Modifier.padding(top = 4.dp))
-        HintText(stringResource(Res.string.calendar_section_hint))
-    }
-}
-
-/** The section palette as round swatches, the chosen one ringed. */
-@Composable
-internal fun SwatchRow(color: String, onColor: (String) -> Unit, modifier: Modifier = Modifier) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier) {
-        SectionPalette.ALL.forEach { hex ->
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(colorOf(hex))
-                    .border(
-                        2.dp,
-                        if (hex == color) LocalAppColors.current.text else colorOf(hex),
-                        RoundedCornerShape(12.dp),
-                    )
-                    .clickable { onColor(hex) },
-            )
         }
     }
 }

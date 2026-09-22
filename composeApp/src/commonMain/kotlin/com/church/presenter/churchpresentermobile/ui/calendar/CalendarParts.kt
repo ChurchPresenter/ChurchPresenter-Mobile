@@ -137,6 +137,9 @@ internal fun CalendarPrimaryButton(
 /** A bordered surface button for the secondary action beside a primary one. */
 private const val DISABLED_ALPHA = 0.45f
 
+/** A tile's corner is a third of its side, which keeps the squircle looking the same at any size. */
+private const val CORNER_OF_SIZE = 3
+
 @Composable
 internal fun CalendarSecondaryButton(
     label: String?,
@@ -159,8 +162,17 @@ internal fun CalendarSecondaryButton(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (icon != null) Icon(icon, contentDescription = contentDescription, tint = colors.text, modifier = Modifier.size(18.dp))
-        if (label != null) Text(label, color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        if (icon != null) {
+            Icon(
+                icon,
+                contentDescription = contentDescription,
+                tint = colors.text,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        if (label != null) {
+            Text(label, color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        }
     }
 }
 
@@ -171,7 +183,7 @@ internal fun KindBadge(kind: String, modifier: Modifier = Modifier, size: Dp = 3
     Box(
         modifier = modifier
             .size(size)
-            .clip(RoundedCornerShape(size / 3))
+            .clip(RoundedCornerShape(size / CORNER_OF_SIZE))
             .background(look.tint.copy(alpha = 0.18f)),
         contentAlignment = Alignment.Center,
     ) {
