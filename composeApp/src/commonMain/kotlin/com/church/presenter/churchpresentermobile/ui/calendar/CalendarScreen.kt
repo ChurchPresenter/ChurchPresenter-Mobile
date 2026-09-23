@@ -109,7 +109,7 @@ fun CalendarScreen(
 
     val monthServices = document.services.filter { parseStoredDate(it.date)?.let(month::contains) == true }
     val dayServices = document.servicesOn(storedDate(selectedDate))
-    val canCopyLast = viewModel.lastServiceLike(selectedDate) != null
+    val canCopyLast = viewModel.services.lastLike(selectedDate) != null
 
     // The three shapes this screen takes, each its own composable so that what the shell draws
     // reads as a choice between them rather than as one long function with three halves.
@@ -136,7 +136,7 @@ fun CalendarScreen(
             RunOfShowScreen(
                 openService,
                 sources,
-                viewModel::newRowId,
+                viewModel.rows::newId,
                 runActions(openService),
                 modifier = modifier,
                 onBack = viewModel::closeService,
@@ -158,13 +158,13 @@ fun CalendarScreen(
             flow = enrollFlow,
             canReachDesktop = settings.host.isNotBlank(),
             actions = SyncActions(
-                onEnroll = viewModel::startEnrollment,
-                onScanned = viewModel::completeEnrollment,
-                onReset = viewModel::resetEnrollment,
-                onSyncNow = viewModel::syncNow,
-                onLeave = { viewModel.leaveSync(); syncSheet = false },
+                onEnroll = viewModel.pairing::start,
+                onScanned = viewModel.pairing::complete,
+                onReset = viewModel.pairing::reset,
+                onSyncNow = viewModel.pairing::syncNow,
+                onLeave = { viewModel.pairing.leave(); syncSheet = false },
             ),
-            onDismiss = { syncSheet = false; viewModel.resetEnrollment() },
+            onDismiss = { syncSheet = false; viewModel.pairing.reset() },
         )
     }
 
@@ -174,7 +174,7 @@ fun CalendarScreen(
             templates = document.templates,
             defaultName = stringResource(Res.string.calendar_default_service_name),
             onCreate = { draft ->
-                viewModel.addService(draft.name, draft.startTime, draft.kind, draft.templateId)
+                viewModel.services.add(draft.name, draft.startTime, draft.kind, draft.templateId)
                 newServiceSheet = false
             },
             onDismiss = { newServiceSheet = false },
@@ -295,16 +295,16 @@ private fun runOfShowActions(
     onLoadIntoSchedule: ((PlannedService) -> Unit)?,
 ): RunOfShowActions = RunOfShowActions(
     rows = RowListActions(
-        onAdd = { row, seconds, timing -> viewModel.addRow(service.id, row, seconds, timing) },
-        onUpdate = { viewModel.updateRow(service.id, it.row, it.seconds, it.timing) },
-        onRemove = { viewModel.removeRow(service.id, it) },
-        onMove = { from, to -> viewModel.moveRow(service.id, from, to) },
+        onAdd = { row, seconds, timing -> viewModel.rows.add(service.id, row, seconds, timing) },
+        onUpdate = { viewModel.rows.update(service.id, it.row, it.seconds, it.timing) },
+        onRemove = { viewModel.rows.remove(service.id, it) },
+        onMove = { from, to -> viewModel.rows.move(service.id, from, to) },
     ),
-    onArmed = { viewModel.setArmed(service.id, it) },
-    onCopy = { viewModel.copyService(service.id, it.rule, it.count, it.includeRows, it.includeCues) },
+    onArmed = { viewModel.services.setArmed(service.id, it) },
+    onCopy = { viewModel.services.copy(service.id, it.rule, it.count, it.includeRows, it.includeCues) },
     onUpdateService = { draft ->
-        viewModel.updateService(service.copy(name = draft.name, startTime = draft.startTime, kind = draft.kind))
+        viewModel.services.update(service.copy(name = draft.name, startTime = draft.startTime, kind = draft.kind))
     },
-    onDelete = { viewModel.deleteService(service.id) },
+    onDelete = { viewModel.services.delete(service.id) },
     onLoadIntoSchedule = onLoadIntoSchedule?.let { load -> { load(service) } },
 )

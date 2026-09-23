@@ -110,7 +110,7 @@ internal fun CalendarTwoPane(
                 RunOfShowScreen(
                     shown,
                     sources,
-                    viewModel::newRowId,
+                    viewModel.rows::newId,
                     runActions(shown),
                     modifier = Modifier.weight(1f),
                     inline = true,
@@ -199,6 +199,6 @@ private fun MonthGridFor(state: CalendarMonthState, viewModel: CalendarViewModel
 
 /** "Copy last Sunday", or nothing when there is no service to copy. */
 private fun copyLast(state: CalendarMonthState, viewModel: CalendarViewModel): (() -> Unit)? =
-    if (state.canCopyLast) ({ viewModel.copyLastInto(state.selectedDate) }) else null
+    if (state.canCopyLast) ({ viewModel.services.copyLastInto(state.selectedDate) }) else null
 
 private val ServiceCardWidth = 220.dp

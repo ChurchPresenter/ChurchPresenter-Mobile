@@ -77,7 +77,7 @@ class CalendarViewModelTest {
         val vm = viewModel()
         try {
             vm.select(sunday)
-            val id = vm.addService("Sunday Service", "10:00", "sunday", templateId = null)
+            val id = vm.services.add("Sunday Service", "10:00", "sunday", templateId = null)
             assertEquals(id, vm.openServiceId.value)
             val service = vm.servicesOn(sunday).single()
             assertEquals("Sunday Service", service.name)
@@ -98,25 +98,25 @@ class CalendarViewModelTest {
         val vm = viewModel()
         try {
             vm.select(sunday)
-            val id = vm.addService("Sunday", "10:00", "sunday", null)
-            vm.addRow(id, PlanRow.Section("s1", "Worship"), null, RowTiming.DEFAULT)
-            vm.addRow(id, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
-            vm.addRow(id, PlanRow.Ministry("r2", "Sermon"), 1800, RowTiming(startAt = "10:30"))
+            val id = vm.services.add("Sunday", "10:00", "sunday", null)
+            vm.rows.add(id, PlanRow.Section("s1", "Worship"), null, RowTiming.DEFAULT)
+            vm.rows.add(id, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
+            vm.rows.add(id, PlanRow.Ministry("r2", "Sermon"), 1800, RowTiming(startAt = "10:30"))
             var service = repository.service(id)!!
             assertEquals(listOf("s1", "r1", "r2"), service.rows.map { it.id })
             assertEquals(270, service.plannedSecondsFor("r1"))
             assertEquals("10:30", service.timingFor("r2").startAt)
 
-            vm.updateRow(id, PlanRow.Song("r1", "Opening, renamed"), 300, RowTiming(repeats = 2))
+            vm.rows.update(id, PlanRow.Song("r1", "Opening, renamed"), 300, RowTiming(repeats = 2))
             service = repository.service(id)!!
             assertEquals(3, service.rows.size)
             assertEquals("Opening, renamed", service.rows[1].title)
             assertEquals(300, service.plannedSecondsFor("r1"))
 
-            vm.moveRow(id, 2, 1)
+            vm.rows.move(id, 2, 1)
             assertEquals(listOf("s1", "r2", "r1"), repository.service(id)!!.rows.map { it.id })
 
-            vm.removeRow(id, "r1")
+            vm.rows.remove(id, "r1")
             service = repository.service(id)!!
             assertEquals(listOf("s1", "r2"), service.rows.map { it.id })
             assertNull(service.plannedSecondsFor("r1"))
@@ -131,9 +131,9 @@ class CalendarViewModelTest {
         val vm = viewModel()
         try {
             vm.select(sunday)
-            val id = vm.addService("Sunday", "10:00", "sunday", null)
-            vm.addRow(id, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
-            assertEquals(2, vm.copyService(id, RepeatRule.WEEKLY, 2, includeRows = true, includeCues = true))
+            val id = vm.services.add("Sunday", "10:00", "sunday", null)
+            vm.rows.add(id, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
+            assertEquals(2, vm.services.copy(id, RepeatRule.WEEKLY, 2, includeRows = true, includeCues = true))
             val doc = vm.document.value
             assertEquals(3, doc.services.size)
             val series = doc.serviceById(id)!!.seriesId
@@ -141,7 +141,7 @@ class CalendarViewModelTest {
             assertTrue(doc.services.all { it.seriesId == series })
             assertEquals(listOf("2026-09-27", "2026-10-04", "2026-10-11"), doc.services.map { it.date }.sorted())
             assertTrue(doc.services.all { it.rows.single().title == "Opening" })
-            assertEquals(0, vm.copyService("missing", RepeatRule.WEEKLY, 2, includeRows = true, includeCues = true))
+            assertEquals(0, vm.services.copy("missing", RepeatRule.WEEKLY, 2, includeRows = true, includeCues = true))
         } finally {
             tearDown(vm)
         }
@@ -152,17 +152,17 @@ class CalendarViewModelTest {
         val vm = viewModel()
         try {
             vm.select(LocalDate(2026, 9, 13))
-            vm.addService("Two Sundays ago", "10:00", "sunday", null)
+            vm.services.add("Two Sundays ago", "10:00", "sunday", null)
             vm.select(LocalDate(2026, 9, 20))
-            val last = vm.addService("Last Sunday", "10:00", "sunday", null)
-            vm.addRow(last, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
+            val last = vm.services.add("Last Sunday", "10:00", "sunday", null)
+            vm.rows.add(last, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
             vm.select(LocalDate(2026, 9, 23))
-            vm.addService("Midweek", "19:00", "midweek", null)
+            vm.services.add("Midweek", "19:00", "midweek", null)
 
-            assertEquals("Last Sunday", vm.lastServiceLike(sunday)!!.name)
-            assertNull(vm.lastServiceLike(LocalDate(2026, 9, 26)))
+            assertEquals("Last Sunday", vm.services.lastLike(sunday)!!.name)
+            assertNull(vm.services.lastLike(LocalDate(2026, 9, 26)))
 
-            vm.copyLastInto(sunday)
+            vm.services.copyLastInto(sunday)
             val copy = vm.servicesOn(sunday).single()
             assertEquals(copy.id, vm.openServiceId.value)
             assertEquals("Last Sunday", copy.name)
@@ -178,19 +178,19 @@ class CalendarViewModelTest {
         val vm = viewModel()
         try {
             vm.select(sunday)
-            val id = vm.addService("Sunday", "10:00", "sunday", null)
-            vm.setArmed(id, false)
+            val id = vm.services.add("Sunday", "10:00", "sunday", null)
+            vm.services.setArmed(id, false)
             assertTrue(!repository.service(id)!!.armed)
 
-            vm.addRow(id, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
-            vm.saveAsTemplate(id, "Standard")
+            vm.rows.add(id, PlanRow.Song("r1", "Opening"), 270, RowTiming.DEFAULT)
+            vm.services.saveAsTemplate(id, "Standard")
             val template = vm.document.value.templates.single()
             assertEquals("Standard", template.name)
             vm.select(LocalDate(2026, 10, 4))
-            val fromTemplate = vm.addService("Next", "10:00", "sunday", template.id)
+            val fromTemplate = vm.services.add("Next", "10:00", "sunday", template.id)
             assertEquals("Opening", repository.service(fromTemplate)!!.rows.single().title)
 
-            vm.deleteService(fromTemplate)
+            vm.services.delete(fromTemplate)
             assertNull(vm.openServiceId.value)
             assertNull(repository.service(fromTemplate))
             assertEquals(setOf(fromTemplate), vm.document.value.pendingDeletes)
@@ -208,11 +208,11 @@ class CalendarViewModelTest {
         )
         val vm = viewModel(enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), desktop))
         try {
-            vm.startEnrollment()
+            vm.pairing.start()
             val waiting = vm.enrollment.value
             if (waiting is EnrollFlow.WaitingForApproval) assertEquals(6, waiting.code.length)
             assertEquals(EnrollFlow.ScanQr, vm.enrollment.first { it !is EnrollFlow.WaitingForApproval })
-            vm.resetEnrollment()
+            vm.pairing.reset()
             assertEquals(EnrollFlow.Idle, vm.enrollment.value)
         } finally {
             tearDown(vm)
@@ -228,11 +228,11 @@ class CalendarViewModelTest {
         val broken = HttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
         val failed = viewModel(enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), broken))
         try {
-            denied.startEnrollment()
+            denied.pairing.start()
             assertEquals(EnrollFlow.Denied, denied.enrollment.first { it !is EnrollFlow.WaitingForApproval })
-            off.startEnrollment()
+            off.pairing.start()
             assertEquals(EnrollFlow.SyncOff, off.enrollment.first { it !is EnrollFlow.WaitingForApproval })
-            failed.startEnrollment()
+            failed.pairing.start()
             assertIs<EnrollFlow.Failed>(failed.enrollment.first { it !is EnrollFlow.WaitingForApproval })
         } finally {
             tearDown(denied, off, failed)
@@ -244,10 +244,10 @@ class CalendarViewModelTest {
         var saved: CalendarSyncState? = null
         val vm = viewModel(saveEnrollment = { saved = it })
         try {
-            vm.completeEnrollment("https://example.org/not-a-qr")
+            vm.pairing.complete("https://example.org/not-a-qr")
             assertEquals(EnrollFlow.Failed(""), vm.enrollment.value)
             assertNull(saved)
-            vm.completeEnrollment(
+            vm.pairing.complete(
                 "churchpresenter://calendar-enroll?relay=https://sync.example.org&instance=inst-1" +
                     "&token=tokentokentokentoken&key=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
             )
@@ -298,13 +298,13 @@ class CalendarViewModelTest {
             assertEquals(listOf("GET changes"), calls)
 
             vm.select(sunday)
-            vm.addService("Sunday", "10:00", "sunday", null)
+            vm.services.add("Sunday", "10:00", "sunday", null)
             vm.syncStatus.first { it is SyncStatus.Synced && it.pushed == 1 }
             assertTrue("PUT records/id-1" in calls)
             assertTrue(vm.document.value.pendingPush.isEmpty())
             assertEquals(rev, state.cursor)
 
-            vm.leaveSync()
+            vm.pairing.leave()
             assertEquals(SyncStatus.NotEnrolled, vm.syncStatus.value)
             assertTrue(!state.isEnrolled)
         } finally {

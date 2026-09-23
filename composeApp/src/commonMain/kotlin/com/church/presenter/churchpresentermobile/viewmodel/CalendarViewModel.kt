@@ -128,48 +128,6 @@ class CalendarViewModel(
 
     // ── Relay ──────────────────────────────────────────────────────────────
 
-    fun syncNow() {
-        val engine = sync ?: return
-        viewModelScope.launch { engine.sync() }
-    }
-
-    fun leaveSync() {
-        sync?.leave()
-        _enrollment.value = EnrollFlow.Idle
-    }
-
-    /** Step one: ask the desktop, showing a code the operator compares with their prompt. */
-    fun startEnrollment() {
-        val service = enrollService ?: return
-        val code = List(ENROLL_CODE_DIGITS) { ('0'..'9').random() }.joinToString("")
-        _enrollment.value = EnrollFlow.WaitingForApproval(code)
-        viewModelScope.launch {
-            service.enroll(deviceName(), code)
-                .onSuccess { _enrollment.value = EnrollFlow.ScanQr }
-                .onFailure { e ->
-                    _enrollment.value = when (e) {
-                        is EnrollDenied -> EnrollFlow.Denied
-                        is EnrollSyncOff -> EnrollFlow.SyncOff
-                        else -> EnrollFlow.Failed(e.message.orEmpty())
-                    }
-                }
-        }
-    }
-
-    /** Step two: the QR the desktop shows after Allow, carrying the token and the key. */
-    fun completeEnrollment(qrText: String) {
-        val state = CalendarSyncState.fromQr(qrText)
-        if (state == null) {
-            _enrollment.value = EnrollFlow.Failed("")
-            return
-        }
-        saveEnrollment(state)
-        _enrollment.value = EnrollFlow.Done
-        viewModelScope.launch { sync?.sync() }
-    }
-
-    fun resetEnrollment() { _enrollment.value = EnrollFlow.Idle }
-
     fun loadPickerSources() {
         val songsSource = songCatalog
         if (songsSource != null) {
@@ -228,83 +186,144 @@ class CalendarViewModel(
 
     fun servicesOn(date: LocalDate): List<PlannedService> = document.value.servicesOn(storedDate(date))
 
-    /** Adds a service on the selected date and opens it. */
-    fun addService(name: String, startTime: String, kind: String, templateId: String?): String {
-        val template = templateId?.let { id -> document.value.templates.firstOrNull { it.id == id } }
-        val heading = ServiceHeading(name, startTime, kind)
-        val service = serviceFromTemplate(template, _selectedDate.value, heading, newId, nowIso())
-        repository.saveService(service)
-        _openServiceId.value = service.id
-        return service.id
-    }
+    // ── What the screens reach for, grouped by what it acts on ─────────────
+    //
+    // Three inner classes rather than thirty functions side by side: `rows.move(...)` says what it
+    // moves, and each group is the whole surface for one thing the planner does. Inner rather than
+    // separate collaborators because every one of them works on this ViewModel's own state.
 
-    fun copyService(id: String, rule: RepeatRule, count: Int, includeRows: Boolean, includeCues: Boolean): Int {
-        val source = repository.service(id) ?: return 0
-        val from = source.date.let { LocalDate.parse(it) }
-        val seriesId = source.seriesId.ifEmpty { newId() }
-        val copies = repeatDates(from, rule, count).map { date ->
-            copyService(source, date, newId, includeRows, includeCues, seriesId, nowIso())
+    /** Planning a service: adding one, copying it forward, and what becomes of it. */
+    inner class Services {
+        /** Adds a service on the selected date and opens it. */
+        fun add(name: String, startTime: String, kind: String, templateId: String?): String {
+            val template = templateId?.let { id -> document.value.templates.firstOrNull { it.id == id } }
+            val heading = ServiceHeading(name, startTime, kind)
+            val service = serviceFromTemplate(template, _selectedDate.value, heading, newId, nowIso())
+            repository.saveService(service)
+            _openServiceId.value = service.id
+            return service.id
         }
-        val stamped = if (source.seriesId.isEmpty()) copies + source.copy(seriesId = seriesId) else copies
-        repository.saveServices(stamped)
-        return copies.size
+
+        fun copy(id: String, rule: RepeatRule, count: Int, includeRows: Boolean, includeCues: Boolean): Int {
+            val source = repository.service(id) ?: return 0
+            val from = source.date.let { LocalDate.parse(it) }
+            val seriesId = source.seriesId.ifEmpty { newId() }
+            val copies = repeatDates(from, rule, count).map { date ->
+                copyService(source, date, newId, includeRows, includeCues, seriesId, nowIso())
+            }
+            val stamped = if (source.seriesId.isEmpty()) copies + source.copy(seriesId = seriesId) else copies
+            repository.saveServices(stamped)
+            return copies.size
+        }
+
+        /** The most recent earlier service on the same weekday as [date], the one "Copy last Sunday" copies. */
+        fun lastLike(date: LocalDate): PlannedService? {
+            val stored = storedDate(date)
+            return document.value.services
+                .filter { it.date < stored && parseStoredDate(it.date)?.dayOfWeek == date.dayOfWeek }
+                .maxByOrNull { it.date + it.startTime }
+        }
+
+        /** Copies [lastLike] onto the selected date and opens the copy. */
+        fun copyLastInto(date: LocalDate) {
+            val source = lastLike(date) ?: return
+            val copy = copyService(source, date, newId, at = nowIso())
+            repository.saveService(copy)
+            _openServiceId.value = copy.id
+        }
+
+        fun delete(id: String) {
+            if (_openServiceId.value == id) _openServiceId.value = null
+            repository.deleteService(id)
+        }
+
+        fun update(service: PlannedService) = repository.saveService(service)
+
+        fun setArmed(id: String, armed: Boolean) {
+            repository.service(id)?.let { repository.saveService(it.copy(armed = armed)) }
+        }
+
+        fun saveAsTemplate(id: String, name: String) {
+            val service = repository.service(id) ?: return
+            repository.saveTemplate(templateFrom(service, name, newId))
+        }
     }
 
-    /** The most recent earlier service on the same weekday as [date], the one "Copy last Sunday" copies. */
-    fun lastServiceLike(date: LocalDate): PlannedService? {
-        val stored = storedDate(date)
-        return document.value.services
-            .filter { it.date < stored && parseStoredDate(it.date)?.dayOfWeek == date.dayOfWeek }
-            .maxByOrNull { it.date + it.startTime }
+    /** The rows of a run of show. */
+    inner class Rows {
+
+        /** A key for a row about to be added; unique for the life of this planner. */
+        fun newId(): String = this@CalendarViewModel.newId()
+        fun add(serviceId: String, row: PlanRow, seconds: Int?, timing: RowTiming) {
+            val service = repository.service(serviceId) ?: return
+            repository.saveService(service.withRow(row, seconds, timing))
+        }
+
+        fun update(
+            serviceId: String,
+            row: PlanRow,
+            seconds: Int?,
+            timing: RowTiming,
+        ) = add(serviceId, row, seconds, timing)
+
+        fun remove(serviceId: String, rowId: String) {
+            val service = repository.service(serviceId) ?: return
+            repository.saveService(service.withoutRow(rowId))
+        }
+
+        fun move(serviceId: String, from: Int, to: Int) {
+            val service = repository.service(serviceId) ?: return
+            repository.saveService(service.withRowMoved(from, to))
+        }
     }
 
-    /** Copies [lastServiceLike] onto the selected date and opens the copy. */
-    fun copyLastInto(date: LocalDate) {
-        val source = lastServiceLike(date) ?: return
-        val copy = copyService(source, date, newId, at = nowIso())
-        repository.saveService(copy)
-        _openServiceId.value = copy.id
+    /** Pairing this phone with the church computer, and syncing once it is paired. */
+    inner class Pairing {
+        fun syncNow() {
+            val engine = sync ?: return
+            viewModelScope.launch { engine.sync() }
+        }
+
+        fun leave() {
+            sync?.leave()
+            _enrollment.value = EnrollFlow.Idle
+        }
+
+        /** Step one: ask the desktop, showing a code the operator compares with their prompt. */
+        fun start() {
+            val service = enrollService ?: return
+            val code = List(ENROLL_CODE_DIGITS) { ('0'..'9').random() }.joinToString("")
+            _enrollment.value = EnrollFlow.WaitingForApproval(code)
+            viewModelScope.launch {
+                service.enroll(deviceName(), code)
+                    .onSuccess { _enrollment.value = EnrollFlow.ScanQr }
+                    .onFailure { e ->
+                        _enrollment.value = when (e) {
+                            is EnrollDenied -> EnrollFlow.Denied
+                            is EnrollSyncOff -> EnrollFlow.SyncOff
+                            else -> EnrollFlow.Failed(e.message.orEmpty())
+                        }
+                    }
+            }
+        }
+
+        /** Step two: the QR the desktop shows after Allow, carrying the token and the key. */
+        fun complete(qrText: String) {
+            val state = CalendarSyncState.fromQr(qrText)
+            if (state == null) {
+                _enrollment.value = EnrollFlow.Failed("")
+                return
+            }
+            saveEnrollment(state)
+            _enrollment.value = EnrollFlow.Done
+            viewModelScope.launch { sync?.sync() }
+        }
+
+        fun reset() { _enrollment.value = EnrollFlow.Idle }
     }
 
-    fun deleteService(id: String) {
-        if (_openServiceId.value == id) _openServiceId.value = null
-        repository.deleteService(id)
-    }
+    val services = Services()
+    val rows = Rows()
+    val pairing = Pairing()
 
-    fun updateService(service: PlannedService) = repository.saveService(service)
-
-    fun setArmed(id: String, armed: Boolean) {
-        repository.service(id)?.let { repository.saveService(it.copy(armed = armed)) }
-    }
-
-    fun saveAsTemplate(id: String, name: String) {
-        val service = repository.service(id) ?: return
-        repository.saveTemplate(templateFrom(service, name, newId))
-    }
-
-    // ── Rows ───────────────────────────────────────────────────────────────
-
-    fun addRow(serviceId: String, row: PlanRow, seconds: Int?, timing: RowTiming) {
-        val service = repository.service(serviceId) ?: return
-        repository.saveService(service.withRow(row, seconds, timing))
-    }
-
-    fun updateRow(
-        serviceId: String,
-        row: PlanRow,
-        seconds: Int?,
-        timing: RowTiming,
-    ) = addRow(serviceId, row, seconds, timing)
-
-    fun removeRow(serviceId: String, rowId: String) {
-        val service = repository.service(serviceId) ?: return
-        repository.saveService(service.withoutRow(rowId))
-    }
-
-    fun moveRow(serviceId: String, from: Int, to: Int) {
-        val service = repository.service(serviceId) ?: return
-        repository.saveService(service.withRowMoved(from, to))
-    }
-
-    fun newRowId(): String = newId()
 }
