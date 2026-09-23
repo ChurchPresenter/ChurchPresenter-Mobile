@@ -15,6 +15,8 @@ enum class AppTab {
     PRESENTATION,
     /** Standalone-only: the on-device content library. */
     LIBRARY,
+    /** Calendar-mode only: the planner as the whole app, rather than a More entry. */
+    CALENDAR,
     MORE;
 
     companion object {
@@ -25,17 +27,21 @@ enum class AppTab {
          * ones that only mean something with a desktop attached (Media casting
          * and the desktop's presentation decks) and adds the local controller and
          * library. More survives in both, but with different contents — see
-         * [MoreDestination.forMode].
+         * [MoreDestination.forMode]. Calendar mode is the planner and nothing
+         * else: every other tab either drives a desktop or projects from here.
          */
         fun forMode(mode: AppMode): List<AppTab> = when (mode) {
             AppMode.REMOTE -> listOf(SONGS, BIBLE, MEDIA, PRESENTATION, MORE)
             AppMode.STANDALONE -> listOf(PRESENT, SONGS, BIBLE, LIBRARY, MORE)
+            AppMode.CALENDAR -> listOf(CALENDAR, MORE)
         }
     }
 }
 
 /** Secondary destinations reached from the [AppTab.MORE] launcher. */
 enum class MoreDestination {
+    /** Planned services on a month grid, each with a run of show. Works with or without a desktop. */
+    CALENDAR,
     PICTURES,
     QA,
     DICTIONARY,
@@ -71,8 +77,11 @@ enum class MoreDestination {
             // CONTACT is in both: it posts to a public endpoint on the
             // internet, so it needs no desktop, and a user who hits a problem in
             // standalone is exactly the one with something to report.
-            AppMode.REMOTE -> listOf(PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
-            AppMode.STANDALONE -> listOf(PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
+            AppMode.REMOTE -> listOf(CALENDAR, PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
+            AppMode.STANDALONE -> listOf(CALENDAR, PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
+            // The calendar is the tab itself in this mode, so More keeps only the
+            // one entry that needs neither a desktop nor an output.
+            AppMode.CALENDAR -> listOf(CONTACT)
         }
     }
 }

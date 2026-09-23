@@ -7,6 +7,9 @@ import com.church.presenter.churchpresentermobile.model.LocalSongAdapter
 import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.model.SongDurations
+import com.church.presenter.churchpresentermobile.calendar.sync.CatalogRecord
+import com.church.presenter.churchpresentermobile.calendar.sync.SongCatalogStore
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +30,10 @@ private const val TAG = "SongCatalog"
  */
 interface SongReader {
     suspend fun getSongs(): Result<List<Song>>
+
+    /** The desktop's songbooks with each song's usual length; a source with none answers an empty list. */
+    suspend fun getSongCatalog(): Result<List<CatalogRecord>> = Result.success(emptyList())
+
     suspend fun getSongDetail(
         number: String,
         bookName: String? = null,
@@ -57,6 +64,8 @@ class SongCatalog(
     private val mode: StateFlow<AppMode>,
     private val remote: SongReader,
     private val library: LibraryRepository? = null,
+    /** The desktop's songbooks as last received, from the LAN or the relay, for planning away from church. */
+    private val catalogStore: SongCatalogStore? = null,
 ) {
     /** True when songs are being served from this device rather than a desktop. */
     val isLocal: Boolean
@@ -102,6 +111,42 @@ class SongCatalog(
         Logger.d(TAG, "list — ${songs.size} songs from the on-device library")
         return Result.success(songs)
     }
+
+    /**
+     * The songs a service can be planned with: the desktop's list while a desktop answers, and
+     * otherwise the copy of it in this device's library -- the plan is made all week, mostly
+     * with the church computer off. The two name a song the same way (`songbook::number`), so
+     * the desktop finds either in its own library when the plan comes back.
+     */
+    suspend fun listForPlanning(): List<Song> {
+        if (isLocal) return list().getOrDefault(emptyList())
+        val fromDesktop = remote.getSongs().getOrNull()
+        val fromCatalog = if (fromDesktop == null) catalogStore?.songs().orEmpty() else emptyList()
+        return when {
+            fromDesktop != null -> {
+                // The desktop is here: take its songbooks too, so the lengths -- and the list
+                // itself, next time the desktop is off -- are the current ones.
+                remote.getSongCatalog().getOrNull()?.let { catalogStore?.replaceAll(it) }
+                fromDesktop
+            }
+            fromCatalog.isNotEmpty() -> {
+                Logger.d(TAG, "listForPlanning — no desktop; ${fromCatalog.size} songs from the songbooks it sent")
+                fromCatalog
+            }
+            else -> librarySongs()
+        }
+    }
+
+    private fun librarySongs(): List<Song> {
+        val local = library ?: return emptyList()
+        local.load()
+        val songs = local.library.value.songs.map(LocalSongAdapter::toSong)
+        Logger.d(TAG, "listForPlanning — no desktop; ${songs.size} songs from the on-device library")
+        return songs
+    }
+
+    /** How long each song usually runs on the desktop -- what the songbooks carry -- for planning a service. */
+    fun durations(): SongDurations = catalogStore?.durations() ?: SongDurations.NONE
 
     /**
      * Lyrics for [song], plus the deck to project.

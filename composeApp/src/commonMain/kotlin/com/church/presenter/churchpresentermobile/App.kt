@@ -82,6 +82,8 @@ import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.ui.BibleScreen
 import com.church.presenter.churchpresentermobile.ui.BottomTabBar
 import com.church.presenter.churchpresentermobile.ui.DictionaryScreen
+import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
+import com.church.presenter.churchpresentermobile.ui.calendar.CalendarScreen
 import com.church.presenter.churchpresentermobile.ui.MoreScreen
 import com.church.presenter.churchpresentermobile.ui.MoreTwoPane
 import com.church.presenter.churchpresentermobile.ui.moreDestinationTitle
@@ -129,6 +131,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
+import com.church.presenter.churchpresentermobile.calendar.sync.SongCatalogStore
 import com.church.presenter.churchpresentermobile.network.SongCatalog
 import com.church.presenter.churchpresentermobile.network.SongService
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
@@ -240,6 +243,11 @@ fun App(
     val libraryRepository = remember {
         LibraryRepository(now = { Clock.System.now().toEpochMilliseconds() })
     }
+    // Planned services. Its own file, like the Bible library, so a plan is never rewritten by a
+    // song edit and can be synced with a desktop on its own.
+    val calendarRepository = remember { CalendarRepository() }
+    // The desktop's songbooks as last received, for planning when no desktop answers.
+    val songCatalogStore = remember { SongCatalogStore() }
     // Translations copied onto this device. Separate from the song library because a Bible is
     // megabytes and that document is rewritten whole on every song edit.
     val bibleRepository = remember {
@@ -367,6 +375,7 @@ fun App(
             mode = AppModeHolder.mode,
             remote = SongService(appSettings, projectionRouter),
             library = libraryRepository,
+            catalogStore = songCatalogStore,
         )
     }
     val songsViewModel: SongsViewModel = viewModel(key = "songs_$isDemoMode") {
@@ -611,7 +620,11 @@ fun App(
     // hamburger is at the rail's top-left and the gear at the window's
     // top-right, drawn once by the shell, so every pane header on a tablet
     // starts and ends with its title.
-    val paneMenu: (() -> Unit)? = if (useRail) null else ({ coroutineScope.launch { drawerState.open() } })
+    // Calendar mode has no drawer either: the remote one is the desktop's schedule
+    // and the standalone one is this device's running order, and it has neither.
+    val hasDrawer = appMode != AppMode.CALENDAR
+    val paneMenu: (() -> Unit)? =
+        if (useRail || !hasDrawer) null else ({ coroutineScope.launch { drawerState.open() } })
     val paneSettings: (() -> Unit)? = if (useRail) null else ({ showSettings = true })
 
     // ── Shortcut / Quick-Action tab navigation ────────────────────────────
@@ -770,8 +783,9 @@ fun App(
                     // First launch on a phone: ask how they want to present before
                     // asking them to find a server they may not need.
                     supportsStandalone && !appSettings.isModeChosen -> showModePicker = true
-                    // Standalone has no server to connect to or check.
-                    appMode == AppMode.STANDALONE -> Unit
+                    // Standalone has no server to connect to or check; calendar mode
+                    // talks to nothing but the relay.
+                    appMode != AppMode.REMOTE -> Unit
                     // On first launch skip the status check — show the connect-setup
                     // screen directly so the user configures the server first.
                     // On subsequent launches go straight to the status check as usual.
@@ -836,8 +850,10 @@ fun App(
         }
         ModalNavigationDrawer(
             drawerState = drawerState,
+            gesturesEnabled = hasDrawer,
             scrimColor = LocalAppColors.current.scrim,
             drawerContent = {
+                if (!hasDrawer) return@ModalNavigationDrawer
                 // Standalone's running order is this device's own list, so it gets
                 // the same drawer rather than a second idea of "today" somewhere
                 // else — and, being local, it is editable in place.
@@ -915,6 +931,11 @@ fun App(
                         largeTitle = bibleChapter != null,
                         onBack = { bibleNavigateBack?.invoke() }
                     )
+                    // The calendar draws its own header: the month view carries Today,
+                    // and the run of show inside it carries the service's name and its
+                    // Armed switch, neither of which the shell's bar has room for.
+                    inMoreDetail && moreDestination == MoreDestination.CALENDAR -> Unit
+                    selectedTab == AppTab.CALENDAR -> Unit
                     inMoreDetail -> ScreenHeader(
                         title = moreDestinationTitle(moreDestination, appMode),
                         onBack = { moreDestination = null },
@@ -1061,12 +1082,38 @@ fun App(
                             providedViewModel = presentationsViewModel,
                             modifier = Modifier.fillMaxSize()
                         )
+                        // Calendar mode's whole app. The same screen More opens in the
+                        // other modes, given the gear instead of a Back arrow because
+                        // there is nothing behind it to go back to.
+                        AppTab.CALENDAR -> CalendarScreen(
+                            repository = calendarRepository,
+                            catalogStore = songCatalogStore,
+                            songCatalog = songCatalog,
+                            bibleCatalog = bibleCatalog,
+                            settings = appSettings,
+                            twoPane = twoPane,
+                            onSettings = { showSettings = true },
+                            modifier = Modifier.fillMaxSize(),
+                        )
                         AppTab.MORE -> {
                             // The open tool, named once: the phone shows it *instead of*
                             // the launcher and the tablet shows it *beside* one, and these
                             // six screens each take their own collaborators to build.
                             val moreTool: @Composable () -> Unit = {
                                 when (moreDestination) {
+                                    // Works in both modes: the plan lives on this device, and
+                                    // the picker reads songs and verses from wherever the
+                                    // catalogs currently do.
+                                    MoreDestination.CALENDAR -> CalendarScreen(
+                                        repository = calendarRepository,
+                                        catalogStore = songCatalogStore,
+                                        songCatalog = songCatalog,
+                                        bibleCatalog = bibleCatalog,
+                                        settings = appSettings,
+                                        twoPane = twoPane,
+                                        onBack = if (twoPane) null else ({ moreDestination = null }),
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
                                     // Standalone has no desktop folders to browse, so
                                     // Photos means this device's own pictures.
                                     MoreDestination.PICTURES if appMode == AppMode.STANDALONE ->
@@ -1223,7 +1270,7 @@ fun App(
                             selectedTab = selectedTab,
                             tabs = tabs,
                             onTabSelected = selectTab,
-                            onMenu = { coroutineScope.launch { drawerState.open() } },
+                            onMenu = if (hasDrawer) ({ coroutineScope.launch { drawerState.open() } }) else null,
                         )
                         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
                             Column(modifier = Modifier.fillMaxSize()) {
@@ -1234,8 +1281,10 @@ fun App(
                                 Box(modifier = Modifier.weight(1f)) { renderTab(selectedTab) }
                             }
                             // The one gear for the whole window, in its top-right
-                            // corner, over whichever header happens to be there.
-                            GearButton(
+                            // corner, over whichever header happens to be there. The
+                            // calendar's right pane keeps Add service there, so that
+                            // tab draws the gear in its own header instead.
+                            if (selectedTab != AppTab.CALENDAR) GearButton(
                                 onClick = { showSettings = true },
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)

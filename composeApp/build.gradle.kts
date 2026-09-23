@@ -850,6 +850,7 @@ kotlin {
         // so it has no typesafe accessor — look it up by name instead.
         getByName("webMain") {
             kotlin.srcDir(generateWebBuildConfig.map { layout.buildDirectory.dir("generated/webbuildconfig") })
+            dependencies { implementation(libs.cryptography.provider.webcrypto) }
         }
 
         // Build provenance for the live-map ping (see generateProvenanceConfig
@@ -870,10 +871,12 @@ kotlin {
             implementation(libs.ktor.client.js)
         }
 
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.cryptography.provider.jdk)
             implementation(libs.androidx.core.splashscreen)
             // Firebase — BOM version is enforced via the top-level dependencies block
             implementation(libs.firebase.crashlytics)
@@ -889,8 +892,10 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
+            implementation(libs.cryptography.provider.apple)
         }
         commonMain.dependencies {
+            implementation(libs.cryptography.core)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -945,6 +950,8 @@ kotlin {
         // gate, must not pick them up. Run with :composeApp:wasmJsBrowserTest.
         jvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
+            // The calendar relay's AES-GCM: one API in commonMain, the platform's own crypto behind it.
+            implementation(libs.cryptography.provider.jdk)
         }
         // Compose UI tests live in commonTest with the rest of the suite, and need
         // a Skia surface to run on.

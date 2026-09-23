@@ -50,6 +50,7 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
     AppTab.BIBLE -> AnalyticsScreen.BIBLE_BOOKS
     AppTab.MEDIA -> AnalyticsScreen.MEDIA
     AppTab.PRESENTATION -> AnalyticsScreen.PRESENTATIONS
+    AppTab.CALENDAR -> AnalyticsScreen.CALENDAR
     AppTab.MORE -> AnalyticsScreen.MORE
 }
 
@@ -60,6 +61,7 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
  * own data, and the launcher grid itself is already covered by the More tab.
  */
 internal fun moreScreenName(destination: MoreDestination?): String? = when (destination) {
+    MoreDestination.CALENDAR -> AnalyticsScreen.CALENDAR
     MoreDestination.PICTURES -> AnalyticsScreen.PICTURES
     MoreDestination.QA -> AnalyticsScreen.QA_ADMIN
     MoreDestination.DICTIONARY -> AnalyticsScreen.DICTIONARY
@@ -128,4 +130,5 @@ private val TABS_WITH_PANE_HEADERS = setOf(
     AppTab.MEDIA,
     AppTab.MORE,
     AppTab.LIBRARY,
+    AppTab.CALENDAR,
 )

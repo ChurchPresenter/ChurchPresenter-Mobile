@@ -9,8 +9,13 @@ package com.church.presenter.churchpresentermobile.model
  * [STANDALONE] makes the phone itself the presenter — slides are rendered
  * locally and pushed to attached output sinks (external display, phone-hosted
  * web page, Cast). No desktop is required.
+ *
+ * [CALENDAR] projects nothing: the phone only plans services, and the plan reaches
+ * the church computer through the relay. No desktop is looked for, so the app opens
+ * straight onto the calendar instead of a connection check it has no use for.
  */
 enum class AppMode {
     REMOTE,
     STANDALONE,
+    CALENDAR,
 }

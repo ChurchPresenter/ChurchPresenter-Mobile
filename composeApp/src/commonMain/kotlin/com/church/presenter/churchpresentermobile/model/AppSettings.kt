@@ -28,6 +28,9 @@ private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
 private const val KEY_SAVED_THEMES = "saved_themes"
+private const val KEY_CALENDAR_SYNC = "calendar_sync"
+private const val KEY_RELAY_CLIENT_KEY = "relay_client_key"
+private const val KEY_RELAY_CLIENT_KEY_AT = "relay_client_key_at"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -120,6 +123,20 @@ class AppSettings(
     var slideThemeJson: String
         get() = storage.getString(KEY_SLIDE_THEME, "{}")
         set(value) { storage.putString(KEY_SLIDE_THEME, value) }
+
+    /** The calendar relay's shared client key as last fetched from the website, and when. */
+    var relayClientKey: String
+        get() = storage.getString(KEY_RELAY_CLIENT_KEY, "")
+        set(value) { storage.putString(KEY_RELAY_CLIENT_KEY, value) }
+
+    var relayClientKeyFetchedAt: Long
+        get() = storage.getString(KEY_RELAY_CLIENT_KEY_AT, "0").toLongOrNull() ?: 0L
+        set(value) { storage.putString(KEY_RELAY_CLIENT_KEY_AT, value.toString()) }
+
+    /** JSON of this phone's calendar relay enrollment; "{}" until enrolled. */
+    var calendarSyncJson: String
+        get() = storage.getString(KEY_CALENDAR_SYNC, "{}")
+        set(value) { storage.putString(KEY_CALENDAR_SYNC, value) }
 
     /** JSON array of the user's saved looks, as {name, theme} entries. Defaults to "[]". */
     var savedThemesJson: String
@@ -223,24 +240,26 @@ class AppSettings(
         set(value) { storage.putInt(KEY_TELEMETRY_ENABLED, if (value) 1 else 0) }
 
     /**
-     * How the app projects — remote control of a desktop, or standalone presenter.
+     * How the app projects — remote control of a desktop, standalone presenter, or calendar only.
      *
-     * Reads coerce to [AppMode.REMOTE] on platforms that cannot present
-     * ([supportsStandalone] is false), so a settings blob written on a phone can
-     * never leave the web build in a mode it has no sink for. Writes are
-     * coerced the same way, so the stored value never disagrees with what the
-     * app is actually doing.
+     * [AppMode.STANDALONE] coerces to [AppMode.REMOTE] on platforms that cannot present
+     * ([supportsStandalone] is false), so a settings blob written on a phone can never leave the
+     * web build in a mode it has no sink for. [AppMode.CALENDAR] is not coerced: it projects
+     * nothing, so there is no sink it could be missing. Writes are coerced the same way as reads,
+     * so the stored value never disagrees with what the app is actually doing.
      */
     var appMode: AppMode
         get() {
-            if (!supportsStandalone) return AppMode.REMOTE
             val stored = storage.getString(KEY_APP_MODE, AppMode.REMOTE.name)
-            return AppMode.entries.firstOrNull { it.name == stored } ?: AppMode.REMOTE
+            return usable(AppMode.entries.firstOrNull { it.name == stored } ?: AppMode.REMOTE)
         }
         set(value) {
-            val effective = if (supportsStandalone) value else AppMode.REMOTE
-            storage.putString(KEY_APP_MODE, effective.name)
+            storage.putString(KEY_APP_MODE, usable(value).name)
         }
+
+    /** [mode] itself, or remote where this build cannot do what that mode asks. */
+    private fun usable(mode: AppMode): AppMode =
+        if (mode == AppMode.STANDALONE && !supportsStandalone) AppMode.REMOTE else mode
 
     /**
      * True once the user has picked a mode on the setup screen. Existing

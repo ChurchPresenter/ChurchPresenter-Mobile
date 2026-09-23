@@ -98,6 +98,7 @@ object AnalyticsScreen {
     const val MODE_PICKER        = "Mode Picker"
     const val LIBRARY            = "Library"
     const val CCLI_REPORT        = "CCLI Report"
+    const val CALENDAR           = "Calendar"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

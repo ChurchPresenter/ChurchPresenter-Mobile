@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.contact_us_title
+import churchpresentermobile.composeapp.generated.resources.mode_calendar_body
+import churchpresentermobile.composeapp.generated.resources.mode_calendar_title
 import churchpresentermobile.composeapp.generated.resources.mode_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_remote_title
 import churchpresentermobile.composeapp.generated.resources.mode_standalone_body
@@ -141,11 +143,12 @@ internal fun SettingsPage(
 private fun ModeSection(appMode: AppMode, onModeTapped: (AppMode) -> Unit) {
     val colors = LocalAppColors.current
     SectionTitle(SettingsSection.MODE.title, tag = UiTags.SETTINGS_MODE_SECTION)
-    val modeOptions = listOf(AppMode.REMOTE, AppMode.STANDALONE)
+    val modeOptions = listOf(AppMode.REMOTE, AppMode.STANDALONE, AppMode.CALENDAR)
     SegmentedControl(
         options = listOf(
             stringResource(Res.string.mode_remote_title),
             stringResource(Res.string.mode_standalone_title),
+            stringResource(Res.string.mode_calendar_title),
         ),
         selectedIndex = modeOptions.indexOf(appMode).coerceAtLeast(0),
         onSelect = { index ->
@@ -155,10 +158,10 @@ private fun ModeSection(appMode: AppMode, onModeTapped: (AppMode) -> Unit) {
         optionTag = { UiTags.settingsMode(it) },
     )
     Text(
-        text = if (appMode == AppMode.STANDALONE) {
-            stringResource(Res.string.mode_standalone_body)
-        } else {
-            stringResource(Res.string.mode_remote_body)
+        text = when (appMode) {
+            AppMode.REMOTE -> stringResource(Res.string.mode_remote_body)
+            AppMode.STANDALONE -> stringResource(Res.string.mode_standalone_body)
+            AppMode.CALENDAR -> stringResource(Res.string.mode_calendar_body)
         },
         fontSize = 12.sp,
         color = colors.muted,

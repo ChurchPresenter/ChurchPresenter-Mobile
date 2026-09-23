@@ -58,6 +58,8 @@ import churchpresentermobile.composeapp.generated.resources.mode_switch_cancel
 import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_action
 import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_body
 import churchpresentermobile.composeapp.generated.resources.mode_switch_confirm_title
+import churchpresentermobile.composeapp.generated.resources.mode_switch_to_calendar_body
+import churchpresentermobile.composeapp.generated.resources.mode_switch_to_calendar_title
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_title
 import churchpresentermobile.composeapp.generated.resources.settings_cancel
@@ -212,7 +214,11 @@ fun SettingsScreen(
         )
     }
     SettingsSheet(
-        sections = settingsSections(hasDesktop = hasDesktop, supportsStandalone = supportsStandalone),
+        sections = settingsSections(
+            hasDesktop = hasDesktop,
+            supportsStandalone = supportsStandalone,
+            canLeaveMode = appMode != AppMode.REMOTE,
+        ),
         status = statusState.takeIf { hasDesktop },
         address = "${appSettings.host}:${appSettings.port}",
         twoPane = twoPane,
@@ -500,19 +506,24 @@ internal fun ModeSwitchDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val toStandalone = target == AppMode.STANDALONE
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                if (toStandalone) stringResource(Res.string.mode_switch_confirm_title)
-                else stringResource(Res.string.mode_switch_to_remote_title)
+                when (target) {
+                    AppMode.STANDALONE -> stringResource(Res.string.mode_switch_confirm_title)
+                    AppMode.REMOTE -> stringResource(Res.string.mode_switch_to_remote_title)
+                    AppMode.CALENDAR -> stringResource(Res.string.mode_switch_to_calendar_title)
+                }
             )
         },
         text = {
             Text(
-                if (toStandalone) stringResource(Res.string.mode_switch_confirm_body)
-                else stringResource(Res.string.mode_switch_to_remote_body)
+                when (target) {
+                    AppMode.STANDALONE -> stringResource(Res.string.mode_switch_confirm_body)
+                    AppMode.REMOTE -> stringResource(Res.string.mode_switch_to_remote_body)
+                    AppMode.CALENDAR -> stringResource(Res.string.mode_switch_to_calendar_body)
+                }
             )
         },
         confirmButton = {

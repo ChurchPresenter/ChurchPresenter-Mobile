@@ -38,6 +38,7 @@ object ApiConstants {
     const val WS_CONNECT_TIMEOUT_MS = 4_000L
 
     const val SONGS_ENDPOINT = "songs"
+    const val SONG_CATALOG_ENDPOINT = "song-catalog"
     const val SONG_SELECT_ENDPOINT = "select"
     const val PROJECT_ENDPOINT = "project"
     const val SCHEDULE_ADD_ENDPOINT = "schedule/add"

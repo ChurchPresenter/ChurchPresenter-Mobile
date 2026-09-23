@@ -231,6 +231,10 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         // Forward to Firebase Messaging so it can process the message internally
         // (e.g. update FCM token if needed).
         Messaging.messaging().appDidReceiveMessage(userInfo)
+        // The calendar relay's silent nudge: something changed, fetch it.
+        if let type = userInfo["type"] as? String, type == CalendarSyncTrigger.shared.MESSAGE_TYPE {
+            CalendarSyncTrigger.shared.requested()
+        }
         completionHandler(.newData)
     }
 

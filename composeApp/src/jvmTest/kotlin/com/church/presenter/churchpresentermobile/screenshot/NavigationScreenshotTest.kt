@@ -52,6 +52,18 @@ class NavigationScreenshotTest {
     }
 
     @Test
+    fun modePickerCalendar() = screenshot("mode-picker__calendar-selected") {
+        // The third card, for a phone that plans and never projects.
+        ModePickerScreen(onModeChosen = {}, initialMode = AppMode.CALENDAR)
+    }
+
+    @Test
+    fun moreCalendar() = screenshot("more__calendar") {
+        // One row: everything else here either drives a desktop or projects.
+        MoreScreen(mode = AppMode.CALENDAR, onSelect = {})
+    }
+
+    @Test
     fun serviceOrderPopulated() = screenshot("service-order__populated") {
         ServiceOrderDrawerContent(entries = entries)
     }

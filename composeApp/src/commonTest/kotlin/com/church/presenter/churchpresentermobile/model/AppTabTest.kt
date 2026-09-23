@@ -54,8 +54,9 @@ class AppTabTest {
     }
 
     @Test
-    fun `songs and bible are reachable in both modes`() {
-        AppMode.entries.forEach { mode ->
+    fun `songs and bible are reachable in both presenting modes`() {
+        // Calendar mode presents nothing, so it has neither tab.
+        listOf(AppMode.REMOTE, AppMode.STANDALONE).forEach { mode ->
             val tabs = AppTab.forMode(mode)
             assertTrue(AppTab.SONGS in tabs)
             assertTrue(AppTab.BIBLE in tabs)
@@ -83,8 +84,12 @@ class AppTabTest {
         //
         // REPORT is the CCLI report of what this device put on a screen, which
         // only standalone has: in remote mode the desktop projects and reports.
+        //
+        // CALENDAR plans against this device's own calendar.json; the desktop
+        // only enters through the relay, which standalone can enroll with too.
         assertEquals(
             listOf(
+                MoreDestination.CALENDAR,
                 MoreDestination.PICTURES,
                 MoreDestination.ANNOUNCEMENTS,
                 MoreDestination.WEB,

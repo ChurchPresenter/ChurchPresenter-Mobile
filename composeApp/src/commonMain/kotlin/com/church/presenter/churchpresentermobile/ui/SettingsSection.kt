@@ -93,9 +93,14 @@ enum class SettingsSection(
  * to copy from in standalone, and the device names only mean something to a
  * desktop that asks for them.
  */
-internal fun settingsSections(hasDesktop: Boolean, supportsStandalone: Boolean): List<SettingsSection> =
+internal fun settingsSections(
+    hasDesktop: Boolean,
+    supportsStandalone: Boolean,
+    /** True where the app is in a mode other than remote, which always has a way back out. */
+    canLeaveMode: Boolean = false,
+): List<SettingsSection> =
     buildList {
-        if (supportsStandalone) add(SettingsSection.MODE)
+        if (supportsStandalone || canLeaveMode) add(SettingsSection.MODE)
         add(if (hasDesktop) SettingsSection.SERVER else SettingsSection.COMPUTER)
         if (hasDesktop) add(SettingsSection.DEVICE)
         add(SettingsSection.APPEARANCE)
