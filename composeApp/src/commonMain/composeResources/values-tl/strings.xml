@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Naitakda ang server sa %1$s:%2$s</string>
     <string name="qr_scan_button">I-scan ang QR code</string>
+    <string name="qr_camera_denied_title">Kailangan ang access sa camera</string>
+    <string name="qr_camera_denied_body">Kailangan ng ChurchPresenter ang camera para i-scan ang QR code. Payagan ang access sa camera sa Settings, o ilagay nang mano-mano ang address ng server.</string>
+    <string name="qr_camera_open_settings">Buksan ang Settings</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Pagkatiwalaan ang sertipiko ng server</string>

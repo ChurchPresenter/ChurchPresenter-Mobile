@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ 服务器已设为 %1$s:%2$s</string>
     <string name="qr_scan_button">扫描二维码</string>
+    <string name="qr_camera_denied_title">需要相机权限</string>
+    <string name="qr_camera_denied_body">ChurchPresenter 需要使用相机扫描二维码。请在“设置”中允许访问相机，或手动输入服务器地址。</string>
+    <string name="qr_camera_open_settings">打开设置</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">信任服务器证书</string>

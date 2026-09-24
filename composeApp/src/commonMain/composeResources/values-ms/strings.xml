@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Pelayan ditetapkan kepada %1$s:%2$s</string>
     <string name="qr_scan_button">Imbas kod QR</string>
+    <string name="qr_camera_denied_title">Akses kamera diperlukan</string>
+    <string name="qr_camera_denied_body">ChurchPresenter memerlukan kamera untuk mengimbas kod QR. Benarkan akses kamera dalam Tetapan, atau masukkan alamat pelayan secara manual.</string>
+    <string name="qr_camera_open_settings">Buka Tetapan</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Percayai sijil pelayan</string>

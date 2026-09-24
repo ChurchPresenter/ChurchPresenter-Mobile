@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ سرور روی %1$s:%2$s تنظیم شد</string>
     <string name="qr_scan_button">پویش کد QR</string>
+    <string name="qr_camera_denied_title">دسترسی به دوربین لازم است</string>
+    <string name="qr_camera_denied_body">ChurchPresenter برای پویش کد QR به دوربین نیاز دارد. دسترسی به دوربین را در تنظیمات مجاز کنید یا نشانی سرور را دستی وارد کنید.</string>
+    <string name="qr_camera_open_settings">باز کردن تنظیمات</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">اعتماد به گواهی سرور</string>

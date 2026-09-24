@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Sunucu %1$s:%2$s olarak ayarlandı</string>
     <string name="qr_scan_button">QR kodu tara</string>
+    <string name="qr_camera_denied_title">Kamera erişimi gerekli</string>
+    <string name="qr_camera_denied_body">ChurchPresenter'ın QR kodu taramak için kameraya ihtiyacı var. Ayarlar'dan kamera erişimine izin verin veya sunucu adresini elle girin.</string>
+    <string name="qr_camera_open_settings">Ayarlar'ı aç</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Sunucu sertifikasına güven</string>

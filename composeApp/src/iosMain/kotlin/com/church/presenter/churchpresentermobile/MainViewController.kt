@@ -1,10 +1,19 @@
 package com.church.presenter.churchpresentermobile
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.window.ComposeUIViewController
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.ui.BackgroundPasteboardClipboard
 
-fun MainViewController() = ComposeUIViewController { App() }
+fun MainViewController() = ComposeUIViewController {
+    // Pastes must not read the pasteboard on the main thread — see BackgroundPasteboardClipboard.
+    CompositionLocalProvider(LocalClipboard provides remember { BackgroundPasteboardClipboard() }) {
+        App()
+    }
+}
 
 /**
  * Called from Swift's onOpenURL handler to process a churchpresenter:// deep link.

@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ सर्वर %1$s:%2$s पर सेट किया गया</string>
     <string name="qr_scan_button">QR कोड स्कैन करें</string>
+    <string name="qr_camera_denied_title">कैमरा एक्सेस आवश्यक है</string>
+    <string name="qr_camera_denied_body">QR कोड स्कैन करने के लिए ChurchPresenter को कैमरे की आवश्यकता है। सेटिंग्स में कैमरा एक्सेस की अनुमति दें, या सर्वर का पता मैन्युअल रूप से दर्ज करें।</string>
+    <string name="qr_camera_open_settings">सेटिंग्स खोलें</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">सर्वर प्रमाणपत्र पर भरोसा करें</string>

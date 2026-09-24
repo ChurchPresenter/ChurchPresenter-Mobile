@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Servidor configurado a %1$s:%2$s</string>
     <string name="qr_scan_button">Escanear código QR</string>
+    <string name="qr_camera_denied_title">Se necesita acceso a la cámara</string>
+    <string name="qr_camera_denied_body">ChurchPresenter necesita la cámara para escanear el código QR. Permite el acceso a la cámara en Ajustes o introduce la dirección del servidor manualmente.</string>
+    <string name="qr_camera_open_settings">Abrir Ajustes</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Confiar en el certificado del servidor</string>

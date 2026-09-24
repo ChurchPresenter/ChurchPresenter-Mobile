@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ تم ضبط الخادم على %1$s:%2$s</string>
     <string name="qr_scan_button">امسح رمز QR</string>
+    <string name="qr_camera_denied_title">مطلوب الوصول إلى الكاميرا</string>
+    <string name="qr_camera_denied_body">يحتاج ChurchPresenter إلى الكاميرا لمسح رمز QR. اسمح بالوصول إلى الكاميرا من الإعدادات، أو أدخل عنوان الخادم يدويًا.</string>
+    <string name="qr_camera_open_settings">فتح الإعدادات</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">الوثوق بشهادة الخادم</string>

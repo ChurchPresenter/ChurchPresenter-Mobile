@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ サーバーを %1$s:%2$s に設定しました</string>
     <string name="qr_scan_button">QR コードをスキャン</string>
+    <string name="qr_camera_denied_title">カメラへのアクセスが必要です</string>
+    <string name="qr_camera_denied_body">QR コードをスキャンするには ChurchPresenter がカメラを使用する必要があります。設定でカメラへのアクセスを許可するか、サーバーのアドレスを手動で入力してください。</string>
+    <string name="qr_camera_open_settings">設定を開く</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">サーバー証明書を信頼する</string>

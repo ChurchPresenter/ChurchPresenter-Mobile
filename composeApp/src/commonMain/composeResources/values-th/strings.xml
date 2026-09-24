@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ ตั้งเซิร์ฟเวอร์เป็น %1$s:%2$s แล้ว</string>
     <string name="qr_scan_button">สแกนคิวอาร์โค้ด</string>
+    <string name="qr_camera_denied_title">ต้องการสิทธิ์เข้าถึงกล้อง</string>
+    <string name="qr_camera_denied_body">ChurchPresenter ต้องใช้กล้องเพื่อสแกนคิวอาร์โค้ด อนุญาตการเข้าถึงกล้องในการตั้งค่า หรือป้อนที่อยู่เซิร์ฟเวอร์ด้วยตนเอง</string>
+    <string name="qr_camera_open_settings">เปิดการตั้งค่า</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">เชื่อถือใบรับรองของเซิร์ฟเวอร์</string>

@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Servern satt till %1$s:%2$s</string>
     <string name="qr_scan_button">Skanna QR-kod</string>
+    <string name="qr_camera_denied_title">Kameraåtkomst krävs</string>
+    <string name="qr_camera_denied_body">ChurchPresenter behöver kameran för att skanna QR-koden. Tillåt kameraåtkomst i Inställningar, eller ange serveradressen manuellt.</string>
+    <string name="qr_camera_open_settings">Öppna Inställningar</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Lita på serverns certifikat</string>

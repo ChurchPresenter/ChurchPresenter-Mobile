@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Seva imewekwa kuwa %1$s:%2$s</string>
     <string name="qr_scan_button">Changanua msimbo wa QR</string>
+    <string name="qr_camera_denied_title">Ruhusa ya kamera inahitajika</string>
+    <string name="qr_camera_denied_body">ChurchPresenter inahitaji kamera ili kuchanganua msimbo wa QR. Ruhusu kamera katika Mipangilio, au weka anwani ya seva mwenyewe.</string>
+    <string name="qr_camera_open_settings">Fungua Mipangilio</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Amini cheti cha seva</string>

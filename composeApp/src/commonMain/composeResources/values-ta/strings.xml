@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ சேவையகம் %1$s:%2$s ஆக அமைக்கப்பட்டது</string>
     <string name="qr_scan_button">QR குறியீட்டை ஸ்கேன் செய்</string>
+    <string name="qr_camera_denied_title">கேமரா அணுகல் தேவை</string>
+    <string name="qr_camera_denied_body">QR குறியீட்டை ஸ்கேன் செய்ய ChurchPresenter-க்கு கேமரா தேவை. அமைப்புகளில் கேமரா அணுகலை அனுமதிக்கவும், அல்லது சர்வர் முகவரியை கைமுறையாக உள்ளிடவும்.</string>
+    <string name="qr_camera_open_settings">அமைப்புகளைத் திற</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">சேவையகச் சான்றிதழை நம்புங்கள்</string>

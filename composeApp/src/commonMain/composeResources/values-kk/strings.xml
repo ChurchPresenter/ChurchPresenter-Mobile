@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Сервер %1$s:%2$s мекенжайына орнатылды</string>
     <string name="qr_scan_button">QR-кодты сканерлеу</string>
+    <string name="qr_camera_denied_title">Камераға рұқсат қажет</string>
+    <string name="qr_camera_denied_body">QR-кодты сканерлеу үшін ChurchPresenter-ге камера қажет. Параметрлерде камераға рұқсат беріңіз немесе сервер мекенжайын қолмен енгізіңіз.</string>
+    <string name="qr_camera_open_settings">Параметрлерді ашу</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Сервер сертификатына сену</string>
