@@ -74,7 +74,8 @@ class EnrollServiceTest {
         val reply = service(
             HttpStatusCode.OK,
             """{"relayUrl":"https://sync.example.org/","instanceId":"inst-1","deviceId":"phone-1",""" +
-                """"deviceToken":"devicetokendevicetoken","instanceKey":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"}""",
+                """"deviceToken":"devicetokendevicetoken",""" +
+                """"instanceKey":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"}""",
         ).enroll("Phone", "123456").getOrThrow()
 
         val state = assertNotNull(reply.toState())

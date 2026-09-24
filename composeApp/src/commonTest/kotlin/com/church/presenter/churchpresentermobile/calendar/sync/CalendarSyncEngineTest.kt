@@ -408,11 +408,12 @@ class CalendarSyncEngineTest {
                 }
             },
         )
+        val website = HttpClient(MockEngine { respond("{}", HttpStatusCode.OK) })
         val engine = CalendarSyncEngine(
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, HttpClient(MockEngine { respond("{}", HttpStatusCode.OK) }), now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, website, now = { 5_000_000L }),
             deviceName = { deviceName },
             clientFor = { s, k -> RelayClient(s, k, refusing) },
         )
