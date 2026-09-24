@@ -183,6 +183,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server määratud: %1$s:%2$s</string>
     <string name="qr_scan_button">Skaneeri QR-kood</string>
+    <string name="qr_camera_denied_title">Vaja on kaamera juurdepääsu</string>
+    <string name="qr_camera_denied_body">ChurchPresenter vajab QR-koodi skaneerimiseks kaamerat. Luba kaamera juurdepääs seadetes või sisesta serveri aadress käsitsi.</string>
+    <string name="qr_camera_open_settings">Ava seaded</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Usalda serveri sertifikaat</string>

@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server disetel ke %1$s:%2$s</string>
     <string name="qr_scan_button">Pindai kode QR</string>
+    <string name="qr_camera_denied_title">Akses kamera diperlukan</string>
+    <string name="qr_camera_denied_body">ChurchPresenter memerlukan kamera untuk memindai kode QR. Izinkan akses kamera di Pengaturan, atau masukkan alamat server secara manual.</string>
+    <string name="qr_camera_open_settings">Buka Pengaturan</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Percayai sertifikat server</string>

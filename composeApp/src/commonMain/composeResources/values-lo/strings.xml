@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ ຕັ້ງເຊີບເວີເປັນ %1$s:%2$s ແລ້ວ</string>
     <string name="qr_scan_button">ສະແກນ QR ໂຄດ</string>
+    <string name="qr_camera_denied_title">ຕ້ອງການສິດເຂົ້າເຖິງກ້ອງ</string>
+    <string name="qr_camera_denied_body">ChurchPresenter ຕ້ອງໃຊ້ກ້ອງເພື່ອສະແກນ QR ໂຄດ. ອະນຸຍາດການເຂົ້າເຖິງກ້ອງໃນການຕັ້ງຄ່າ ຫຼື ປ້ອນທີ່ຢູ່ເຊີບເວີດ້ວຍຕົນເອງ.</string>
+    <string name="qr_camera_open_settings">ເປີດການຕັ້ງຄ່າ</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">ເຊື່ອຖືໃບຢັ້ງຢືນຂອງເຊີບເວີ</string>

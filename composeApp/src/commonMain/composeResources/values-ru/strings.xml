@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Сервер установлен на %1$s:%2$s</string>
     <string name="qr_scan_button">Сканировать QR-код</string>
+    <string name="qr_camera_denied_title">Нужен доступ к камере</string>
+    <string name="qr_camera_denied_body">ChurchPresenter нужна камера, чтобы сканировать QR-код. Разрешите доступ к камере в Настройках или введите адрес сервера вручную.</string>
+    <string name="qr_camera_open_settings">Открыть Настройки</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Доверять сертификату сервера</string>

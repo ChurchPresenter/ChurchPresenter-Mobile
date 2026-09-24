@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server %1$s:%2$s ga o'rnatildi</string>
     <string name="qr_scan_button">QR kodni skanerlash</string>
+    <string name="qr_camera_denied_title">Kameraga ruxsat kerak</string>
+    <string name="qr_camera_denied_body">QR kodni skanerlash uchun ChurchPresenter kameraga muhtoj. Sozlamalarda kameraga ruxsat bering yoki server manzilini qo‘lda kiriting.</string>
+    <string name="qr_camera_open_settings">Sozlamalarni ochish</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Server sertifikatiga ishonish</string>

@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server nastaven na %1$s:%2$s</string>
     <string name="qr_scan_button">Skenovat QR kód</string>
+    <string name="qr_camera_denied_title">Je potřeba přístup ke kameře</string>
+    <string name="qr_camera_denied_body">ChurchPresenter potřebuje kameru ke skenování QR kódu. Povolte přístup ke kameře v Nastavení nebo zadejte adresu serveru ručně.</string>
+    <string name="qr_camera_open_settings">Otevřít Nastavení</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Důvěřovat certifikátu serveru</string>

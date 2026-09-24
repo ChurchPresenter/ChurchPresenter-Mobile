@@ -183,6 +183,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server setat la %1$s:%2$s</string>
     <string name="qr_scan_button">Scanează codul QR</string>
+    <string name="qr_camera_denied_title">Este necesar accesul la cameră</string>
+    <string name="qr_camera_denied_body">ChurchPresenter are nevoie de cameră pentru a scana codul QR. Permite accesul la cameră din Setări sau introdu manual adresa serverului.</string>
+    <string name="qr_camera_open_settings">Deschide Setări</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Aprobă certificatul serverului</string>

@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Poslužitelj postavljen na %1$s:%2$s</string>
     <string name="qr_scan_button">Skeniraj QR kod</string>
+    <string name="qr_camera_denied_title">Potreban je pristup kameri</string>
+    <string name="qr_camera_denied_body">ChurchPresenter treba kameru za skeniranje QR koda. Dopustite pristup kameri u Postavkama ili ručno unesite adresu poslužitelja.</string>
+    <string name="qr_camera_open_settings">Otvori Postavke</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Vjeruj certifikatu poslužitelja</string>

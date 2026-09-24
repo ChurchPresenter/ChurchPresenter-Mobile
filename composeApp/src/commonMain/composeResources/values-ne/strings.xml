@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ सर्भर %1$s:%2$s मा सेट गरियो</string>
     <string name="qr_scan_button">QR कोड स्क्यान गर्नुहोस्</string>
+    <string name="qr_camera_denied_title">क्यामेरा पहुँच आवश्यक छ</string>
+    <string name="qr_camera_denied_body">QR कोड स्क्यान गर्न ChurchPresenter लाई क्यामेरा चाहिन्छ। सेटिङमा क्यामेरा पहुँच अनुमति दिनुहोस्, वा सर्भरको ठेगाना आफैं प्रविष्ट गर्नुहोस्।</string>
+    <string name="qr_camera_open_settings">सेटिङ खोल्नुहोस्</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">सर्भर प्रमाणपत्रमा विश्वास गर्नुहोस्</string>

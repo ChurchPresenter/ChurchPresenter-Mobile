@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Palvelimeksi asetettiin %1$s:%2$s</string>
     <string name="qr_scan_button">Skannaa QR-koodi</string>
+    <string name="qr_camera_denied_title">Kameran käyttöoikeus tarvitaan</string>
+    <string name="qr_camera_denied_body">ChurchPresenter tarvitsee kameraa QR-koodin skannaamiseen. Salli kameran käyttö asetuksissa tai syötä palvelimen osoite käsin.</string>
+    <string name="qr_camera_open_settings">Avaa asetukset</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Luota palvelimen varmenteeseen</string>

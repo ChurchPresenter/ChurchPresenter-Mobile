@@ -151,6 +151,9 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Serveris iestatīts uz %1$s:%2$s</string>
     <string name="qr_scan_button">Skenēt QR kodu</string>
+    <string name="qr_camera_denied_title">Nepieciešama piekļuve kamerai</string>
+    <string name="qr_camera_denied_body">ChurchPresenter nepieciešama kamera, lai skenētu QR kodu. Atļaujiet piekļuvi kamerai iestatījumos vai ievadiet servera adresi manuāli.</string>
+    <string name="qr_camera_open_settings">Atvērt iestatījumus</string>
 
     <!-- Certificate Setup Screen -->
     <string name="cert_setup_title">Uzticēties servera sertifikātam</string>
