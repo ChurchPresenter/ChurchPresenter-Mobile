@@ -920,7 +920,6 @@
     <string name="calendar_item_count_other">%1$d items</string>
     <string name="calendar_auto_starts">%1$d auto starts</string>
     <string name="calendar_armed">Armed</string>
-    <string name="calendar_load_into_schedule">Load into Schedule</string>
     <string name="calendar_add_item">Add item</string>
     <string name="calendar_copy_service">Copy service</string>
     <string name="calendar_run_empty_title">Empty run of show</string>

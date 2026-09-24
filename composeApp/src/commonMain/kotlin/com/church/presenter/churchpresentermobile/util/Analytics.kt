@@ -99,6 +99,7 @@ object AnalyticsScreen {
     const val LIBRARY            = "Library"
     const val CCLI_REPORT        = "CCLI Report"
     const val CALENDAR           = "Calendar"
+    const val CONTACT            = "Contact"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

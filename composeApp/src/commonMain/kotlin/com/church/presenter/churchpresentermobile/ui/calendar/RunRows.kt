@@ -67,7 +67,12 @@ internal fun SectionRow(row: PlanRow.Section, actions: RowActions, modifier: Mod
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Icon(Icons.Filled.DragIndicator, contentDescription = null, tint = colors.dim, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.Filled.DragIndicator,
+            contentDescription = null,
+            tint = colors.dim,
+            modifier = Modifier.size(18.dp).then(actions.handle),
+        )
         Box(modifier = Modifier.width(3.dp).height(14.dp).clip(RoundedCornerShape(2.dp)).background(tint))
         Text(
             text = row.title.uppercase(),
@@ -98,7 +103,12 @@ internal fun ItemRow(clocked: ClockedRow, serviceStart: String, actions: RowActi
             .padding(start = 8.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Filled.DragIndicator, contentDescription = null, tint = colors.dim, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.Filled.DragIndicator,
+            contentDescription = null,
+            tint = colors.dim,
+            modifier = Modifier.size(18.dp).then(actions.handle),
+        )
         Spacer(Modifier.width(6.dp))
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

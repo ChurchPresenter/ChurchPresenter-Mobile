@@ -37,7 +37,6 @@ internal object CalendarTags {
 
     const val RUN_COPY = "run:copy"
 
-    const val RUN_LOAD = "run:load"
 
     const val RUN_EDIT_SERVICE = "run:editService"
 

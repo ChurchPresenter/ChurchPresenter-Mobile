@@ -15,7 +15,6 @@ import com.church.presenter.churchpresentermobile.ui.exists
 import com.church.presenter.churchpresentermobile.ui.isShowing
 import com.church.presenter.churchpresentermobile.ui.showScreen
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -30,7 +29,6 @@ class CalendarScreenTest {
     private val storage = InMemoryFileStorage()
     private val repository = CalendarRepository(storage, now = { "2026-09-20T10:00:00Z" })
     private val settings = AppSettings(InMemorySettingsStorage())
-    private var loaded: PlannedService? = null
     private var settingsOpened = 0
     private var backs = 0
 
@@ -43,7 +41,6 @@ class CalendarScreenTest {
             twoPane = twoPane,
             onBack = { backs++ },
             onSettings = if (withSettings) ({ settingsOpened++ }) else null,
-            onLoadIntoSchedule = { loaded = it },
         )
     }
 
@@ -99,21 +96,6 @@ class CalendarScreenTest {
         waitForIdle()
 
         assertTrue(exists(CalendarTags.MONTH_NEXT), "back on the month")
-    }
-
-    @Test
-    fun aServiceCanBeLoadedIntoTheDesktopsSchedule() = runComposeUiTest {
-        plan()
-        show()
-        click(CalendarTags.day(todayStored))
-        waitForIdle()
-        click(CalendarTags.serviceCard("s1"))
-        waitForIdle()
-
-        click(CalendarTags.RUN_LOAD)
-        waitForIdle()
-
-        assertEquals("s1", loaded?.id)
     }
 
     @Test
