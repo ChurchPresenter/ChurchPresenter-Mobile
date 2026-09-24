@@ -59,7 +59,10 @@ import platform.AVFoundation.AVMetadataObjectTypeQRCode
 import platform.AVFoundation.authorizationStatusForMediaType
 import platform.AVFoundation.requestAccessForMediaType
 import platform.CoreGraphics.CGRectZero
+import platform.Foundation.NSProcessInfo
 import platform.Foundation.NSURL
+import platform.Foundation.iOSAppOnMac
+import platform.Foundation.macCatalystApp
 import platform.QuartzCore.CATransaction
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
@@ -82,10 +85,13 @@ import platform.darwin.dispatch_queue_create
  * Camera permission is requested lazily on first tap. When it has been denied,
  * the tap explains why nothing can be scanned and offers the Settings app —
  * iOS never shows the system prompt a second time.
+ *
+ * Renders nothing when the iPad app runs on a Mac — see [runningOnMac].
  */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
+    if (runningOnMac) return
     var showScanner by remember { mutableStateOf(false) }
     var showDenied by remember { mutableStateOf(false) }
     val currentOnScanned by rememberUpdatedState(onScanned)
@@ -164,7 +170,21 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun hasCameraAvailable(): Boolean =
-    remember { AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) != null }
+    remember { !runningOnMac && AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) != null }
+
+/**
+ * True when this iPad build is running on a Mac (Apple silicon "Designed for
+ * iPad", or Catalyst).
+ *
+ * The live camera is switched off there: every Sentry crash in the Skia draw
+ * path (CHURCH-PRESENTER-MOBILE-1N, -1V, -1X) came from a Mac with the capture
+ * pipeline streaming, and nowhere else. Pointing a Mac's webcam at a QR code on
+ * the Mac's own screen is not a real workflow either, so callers fall back to
+ * manual entry, as they already do on a device with no camera.
+ */
+private val runningOnMac: Boolean by lazy {
+    NSProcessInfo.processInfo.let { it.iOSAppOnMac || it.macCatalystApp }
+}
 
 @Composable
 private fun CameraDeniedDialog(onDismiss: () -> Unit) {
