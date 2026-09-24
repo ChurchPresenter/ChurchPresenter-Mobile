@@ -16,7 +16,10 @@ name: Tests
 on:
   push:
     branches: [ main ]
+  # Draft pull requests run nothing; `ready_for_review` runs every job once one
+  # is marked ready. Each job's `if` does the skipping.
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   # Manual "record" run — see the screenshots job. Goldens are tied to the OS
   # that drew them, so they have to be produced on a runner, not a laptop.
   workflow_dispatch:
@@ -33,6 +36,7 @@ env:
 jobs:
   offline-assets:
     name: display assets are offline-capable
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +45,7 @@ jobs:
 
   detekt:
     name: Detekt (desktop ruleset)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     # ~10s, and it runs alongside the suite rather than after it, so a style
     # regression is reported without waiting on the browser tests.
@@ -69,6 +74,7 @@ jobs:
 
   js-tests:
     name: commonTest (headless browser)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -101,6 +107,7 @@ jobs:
   # rather than "run it locally with -Precord and commit what you get".
   screenshots:
     name: Screenshots (Roborazzi)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -150,6 +157,7 @@ jobs:
 
   coverage:
     name: Coverage (JaCoCo)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     # pull-requests: write for the coverage comment below; everything else this job
     # does needs no more than the read the default token already carries.
