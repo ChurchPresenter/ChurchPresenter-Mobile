@@ -39,9 +39,31 @@ data class WriteResponse(val rev: Long)
 @Serializable
 data class EnrollBody(val deviceName: String, val code: String)
 
-/** What the desktop answers; the token and key come by QR. */
+/**
+ * What the desktop answers once the operator allows it: the whole enrollment, so Allow is the last
+ * step. A desktop from before that answers with only the first two, and the phone falls back to
+ * scanning the QR it shows instead.
+ */
 @Serializable
-data class EnrollReply(val relayUrl: String, val instanceId: String)
+data class EnrollReply(
+    val relayUrl: String,
+    val instanceId: String,
+    val deviceId: String = "",
+    val deviceToken: String = "",
+    val instanceKey: String = "",
+) {
+    /** The enrollment this reply completes, or null when the desktop kept the keys for its QR. */
+    fun toState(): CalendarSyncState? {
+        val state = CalendarSyncState(
+            relayUrl = relayUrl,
+            instanceId = instanceId,
+            deviceToken = deviceToken,
+            instanceKey = instanceKey,
+            deviceId = deviceId,
+        )
+        return state.takeIf { it.isEnrolled }
+    }
+}
 
 @Serializable
 data class PushTokenBody(val pushToken: String)

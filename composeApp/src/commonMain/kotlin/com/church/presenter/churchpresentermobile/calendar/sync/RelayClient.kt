@@ -146,7 +146,13 @@ class EnrollService(
         val relay = Sanitize.relayUrl(reply.relayUrl) ?: throw RelayFailure.Rejected(response.status.value, "relay url")
         val instance = reply.instanceId.takeIf(Sanitize::isId)
             ?: throw RelayFailure.Rejected(response.status.value, "instance id")
-        EnrollReply(relayUrl = relay, instanceId = instance)
+        EnrollReply(
+            relayUrl = relay,
+            instanceId = instance,
+            deviceId = reply.deviceId.takeIf(Sanitize::isId).orEmpty(),
+            deviceToken = Sanitize.secret(reply.deviceToken).orEmpty(),
+            instanceKey = Sanitize.secret(reply.instanceKey).orEmpty(),
+        )
     }
 
     private companion object {

@@ -32,6 +32,7 @@ import com.church.presenter.churchpresentermobile.calendar.sync.EnrollDenied
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollService
 import com.church.presenter.churchpresentermobile.calendar.sync.EnrollSyncOff
 import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
@@ -47,7 +48,10 @@ sealed class EnrollFlow {
     data object Idle : EnrollFlow()
     /** The desktop is showing its prompt; [code] is on this screen for the operator to compare. */
     data class WaitingForApproval(val code: String) : EnrollFlow()
-    /** Approved — the desktop is showing the QR with this phone's token and the instance key. */
+    /**
+     * Approved by a desktop too old to hand the keys over in its answer: it is showing the QR with
+     * this phone's token and the instance key instead.
+     */
     data object ScanQr : EnrollFlow()
     data object Done : EnrollFlow()
     data object Denied : EnrollFlow()
@@ -66,7 +70,6 @@ class ChapterPreview(val verseCount: Int, val firstWords: Map<Int, String>)
  * The planner's state: which month and day are showing, which service is open, and the song and
  * book lists the picker offers. Every edit goes straight to the repository, which saves it.
  */
-@OptIn(FlowPreview::class)
 class CalendarViewModel(
     private val repository: CalendarRepository,
     private val songCatalog: SongCatalog? = null,
@@ -107,23 +110,15 @@ class CalendarViewModel(
     private val _books = MutableStateFlow(CANONICAL_BOOKS)
     val books: StateFlow<List<PickerBook>> = _books.asStateFlow()
 
+    // Created before `init`, which may start syncing through [pairing].
+    val services = Services()
+    val rows = Rows()
+    val pairing = Pairing()
+
     init {
         repository.load()
         loadPickerSources()
-        if (sync?.isEnrolled == true) {
-            viewModelScope.launch { sync.sync() }
-            viewModelScope.launch { CalendarSyncTrigger.requests.collect { sync.sync() } }
-            // Every local edit is pushed shortly after it settles; the relay is what makes a
-            // plan reach the other phones and, on Sunday, the desktop.
-            viewModelScope.launch {
-                document.map { it.pendingPush.size + it.pendingDeletes.size }
-                    .filter { it > 0 }
-                    .debounce(PUSH_DEBOUNCE_MS)
-                    .collect {
-                    sync.sync()
-                }
-            }
-        }
+        if (sync?.isEnrolled == true) pairing.startSyncing(sync)
     }
 
     // ── Relay ──────────────────────────────────────────────────────────────
@@ -279,6 +274,23 @@ class CalendarViewModel(
 
     /** Pairing this phone with the church computer, and syncing once it is paired. */
     inner class Pairing {
+        /** Whether the relay listeners are running. */
+        private var syncing = false
+
+        /**
+         * Syncs now, then keeps syncing. Started on open for a phone already enrolled, and again
+         * the moment an enrollment completes — without the second, a phone paired in this session
+         * got one round and then nothing until the app was reopened.
+         */
+        internal fun startSyncing(engine: CalendarSyncEngine) {
+            if (syncing) {
+                viewModelScope.launch { engine.sync() }
+                return
+            }
+            syncing = true
+            viewModelScope.keepSyncing(engine, document)
+        }
+
         fun syncNow() {
             val engine = sync ?: return
             viewModelScope.launch { engine.sync() }
@@ -289,14 +301,18 @@ class CalendarViewModel(
             _enrollment.value = EnrollFlow.Idle
         }
 
-        /** Step one: ask the desktop, showing a code the operator compares with their prompt. */
+        /** Ask the desktop, showing a code the operator compares with their prompt; Allow finishes it. */
         fun start() {
             val service = enrollService ?: return
             val code = List(ENROLL_CODE_DIGITS) { ('0'..'9').random() }.joinToString("")
             _enrollment.value = EnrollFlow.WaitingForApproval(code)
             viewModelScope.launch {
                 service.enroll(deviceName(), code)
-                    .onSuccess { _enrollment.value = EnrollFlow.ScanQr }
+                    .onSuccess { reply ->
+                        // Allow is the last step: the answer carries the enrollment itself.
+                        val state = reply.toState()
+                        if (state == null) _enrollment.value = EnrollFlow.ScanQr else enrolled(state)
+                    }
                     .onFailure { e ->
                         _enrollment.value = when (e) {
                             is EnrollDenied -> EnrollFlow.Denied
@@ -307,23 +323,40 @@ class CalendarViewModel(
             }
         }
 
-        /** Step two: the QR the desktop shows after Allow, carrying the token and the key. */
+        /** A QR carrying the token and the key: an invite, or what an older desktop shows after Allow. */
         fun complete(qrText: String) {
             val state = CalendarSyncState.fromQr(qrText)
             if (state == null) {
                 _enrollment.value = EnrollFlow.Failed("")
                 return
             }
+            enrolled(state)
+        }
+
+        private fun enrolled(state: CalendarSyncState) {
             saveEnrollment(state)
             _enrollment.value = EnrollFlow.Done
-            viewModelScope.launch { sync?.sync() }
+            sync?.let(::startSyncing)
         }
 
         fun reset() { _enrollment.value = EnrollFlow.Idle }
     }
 
-    val services = Services()
-    val rows = Rows()
-    val pairing = Pairing()
 
+}
+
+/**
+ * One round now, another on every relay nudge, and one after every local edit settles — the relay
+ * is what makes a plan reach the other phones and, on Sunday, the desktop.
+ */
+@OptIn(FlowPreview::class)
+private fun CoroutineScope.keepSyncing(engine: CalendarSyncEngine, document: StateFlow<CalendarDocument>) {
+    launch { engine.sync() }
+    launch { CalendarSyncTrigger.requests.collect { engine.sync() } }
+    launch {
+        document.map { it.pendingPush.size + it.pendingDeletes.size }
+            .filter { it > 0 }
+            .debounce(PUSH_DEBOUNCE_MS)
+            .collect { engine.sync() }
+    }
 }

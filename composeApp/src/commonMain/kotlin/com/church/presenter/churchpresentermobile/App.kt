@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -38,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.network.ktor3.KtorNetworkFetcherFactory
+import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
@@ -848,66 +850,10 @@ fun App(
             )
             return@AppTheme
         }
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            gesturesEnabled = hasDrawer,
-            scrimColor = LocalAppColors.current.scrim,
-            drawerContent = {
-                if (!hasDrawer) return@ModalNavigationDrawer
-                // Standalone's running order is this device's own list, so it gets
-                // the same drawer rather than a second idea of "today" somewhere
-                // else — and, being local, it is editable in place.
-                if (appMode == AppMode.STANDALONE) {
-                    val serviceEntries by serviceOrder.entries.collectAsState(initial = serviceOrder.current)
-                    ServiceOrderDrawerContent(
-                        entries = serviceEntries,
-                        onMove = { from, to -> serviceOrder.move(from, to) },
-                        onRemove = { index -> serviceOrder.removeAt(index) },
-                        onClear = { serviceOrder.clear() },
-                        onClose = { coroutineScope.launch { drawerState.close() } },
-                        onItemClick = { entry ->
-                            coroutineScope.launch {
-                                drawerState.close()
-                                // Same reset as the remote drawer below: the
-                                // destination should show its own header rather
-                                // than the previous screen's.
-                                songDetailTitle = null
-                                songDetailBookName = null
-                                bibleBook = null
-                                bibleChapter = null
-                                when (entry.type) {
-                                    SetlistEntryType.SONG -> {
-                                        selectedTab = AppTab.SONGS
-                                        pendingSongTitle = entry.title
-                                        pendingSongBook = null
-                                    }
-                                    // Announcements live in the Library tab in
-                                    // standalone — that is where they are written
-                                    // and where projecting one from starts.
-                                    SetlistEntryType.ANNOUNCEMENT -> selectedTab = AppTab.LIBRARY
-                                    SetlistEntryType.BIBLE -> selectedTab = AppTab.BIBLE
-                                }
-                            }
-                        },
-                    )
-                    return@ModalNavigationDrawer
-                }
-                ScheduleDrawerContent(
-                    appSettings = appSettings,
-                    isDemoMode = isDemoMode,
-                    settingsSaveToken = settingsSaveToken,
-                    scheduleRefreshToken = scheduleRefreshToken,
-                    providedViewModel = scheduleViewModel,
-                    onClose = { coroutineScope.launch { drawerState.close() } },
-                                    onItemClick = { item ->
-                                        coroutineScope.launch {
-                                            drawerState.close()
-                                            openScheduleItem(destinationFor(item))
-                                        }
-                                    }
-                )
-            }
-        ) {
+        // The app, with or without the schedule drawer around it. Calendar mode has no drawer, and an
+        // empty one is not harmless: at zero width its open and closed positions coincide, the drawer
+        // reads as open, and its invisible scrim swallowed every tap after a switch to that mode.
+        val shell: @Composable () -> Unit = {
             // The screen's own header, hoisted out of `topBar` because the two
             // layouts hang it in different places: across the top of the window on a
             // phone, and inside the content column on a tablet, where the rail owns
@@ -1095,6 +1041,14 @@ fun App(
                             onSettings = { showSettings = true },
                             modifier = Modifier.fillMaxSize(),
                         )
+                        // Calendar mode's second tab: More would have held nothing else.
+                        AppTab.CONTACT -> Column(modifier = Modifier.fillMaxSize()) {
+                            if (twoPane) {
+                                ScreenHeader(title = stringResource(Res.string.contact_us_title))
+                                HorizontalDivider(color = LocalAppColors.current.borderSubtle)
+                            }
+                            ContactScreen(modifier = Modifier.weight(1f))
+                        }
                         AppTab.MORE -> {
                             // The open tool, named once: the phone shows it *instead of*
                             // the launcher and the tablet shows it *beside* one, and these
@@ -1111,7 +1065,10 @@ fun App(
                                         bibleCatalog = bibleCatalog,
                                         settings = appSettings,
                                         twoPane = twoPane,
-                                        onBack = if (twoPane) null else ({ moreDestination = null }),
+                                        onBack = { moreDestination = null },
+                                        // On a tablet it fills the window as in calendar mode, so
+                                        // it carries the gear the launcher's header would have.
+                                        onSettings = if (twoPane) ({ showSettings = true }) else null,
                                         modifier = Modifier.fillMaxSize(),
                                     )
                                     // Standalone has no desktop folders to browse, so
@@ -1188,7 +1145,12 @@ fun App(
                                 }
                             }
 
-                            if (twoPane) {
+                            // The calendar is two panes of its own; beside the launcher both were
+                            // squeezed, so it takes the whole window, as in calendar mode, with a
+                            // back arrow to the launcher.
+                            if (twoPane && moreDestination == MoreDestination.CALENDAR) {
+                                moreTool()
+                            } else if (twoPane) {
                                 MoreTwoPane(
                                     mode = appMode,
                                     selected = moreDestination,
@@ -1284,7 +1246,9 @@ fun App(
                             // corner, over whichever header happens to be there. The
                             // calendar's right pane keeps Add service there, so that
                             // tab draws the gear in its own header instead.
-                            if (selectedTab != AppTab.CALENDAR) GearButton(
+                            val calendarOpen = selectedTab == AppTab.CALENDAR ||
+                                (selectedTab == AppTab.MORE && moreDestination == MoreDestination.CALENDAR)
+                            if (!calendarOpen) GearButton(
                                 onClick = { showSettings = true },
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
@@ -1314,8 +1278,12 @@ fun App(
                     appSettings = appSettings,
                     onContact = {
                         showSettings = false
-                        selectedTab = AppTab.MORE
-                        moreDestination = MoreDestination.CONTACT
+                        if (AppTab.CONTACT in tabs) {
+                            selectedTab = AppTab.CONTACT
+                        } else {
+                            selectedTab = AppTab.MORE
+                            moreDestination = MoreDestination.CONTACT
+                        }
                     },
                     onDismiss = {
                         appSettings.isSetupComplete = true
@@ -1334,6 +1302,69 @@ fun App(
                     twoPane = twoPane,
                 )
             }
-        } // end ModalNavigationDrawer
+        }
+        if (!hasDrawer) {
+            shell()
+        } else {
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                gesturesEnabled = true,
+                scrimColor = LocalAppColors.current.scrim,
+                drawerContent = {
+                    // Standalone's running order is this device's own list, so it gets
+                    // the same drawer rather than a second idea of "today" somewhere
+                    // else — and, being local, it is editable in place.
+                    if (appMode == AppMode.STANDALONE) {
+                        val serviceEntries by serviceOrder.entries.collectAsState(initial = serviceOrder.current)
+                        ServiceOrderDrawerContent(
+                            entries = serviceEntries,
+                            onMove = { from, to -> serviceOrder.move(from, to) },
+                            onRemove = { index -> serviceOrder.removeAt(index) },
+                            onClear = { serviceOrder.clear() },
+                            onClose = { coroutineScope.launch { drawerState.close() } },
+                            onItemClick = { entry ->
+                                coroutineScope.launch {
+                                    drawerState.close()
+                                    // Same reset as the remote drawer below: the
+                                    // destination should show its own header rather
+                                    // than the previous screen's.
+                                    songDetailTitle = null
+                                    songDetailBookName = null
+                                    bibleBook = null
+                                    bibleChapter = null
+                                    when (entry.type) {
+                                        SetlistEntryType.SONG -> {
+                                            selectedTab = AppTab.SONGS
+                                            pendingSongTitle = entry.title
+                                            pendingSongBook = null
+                                        }
+                                        // Announcements live in the Library tab in
+                                        // standalone — that is where they are written
+                                        // and where projecting one from starts.
+                                        SetlistEntryType.ANNOUNCEMENT -> selectedTab = AppTab.LIBRARY
+                                        SetlistEntryType.BIBLE -> selectedTab = AppTab.BIBLE
+                                    }
+                                }
+                            },
+                        )
+                        return@ModalNavigationDrawer
+                    }
+                    ScheduleDrawerContent(
+                        appSettings = appSettings,
+                        isDemoMode = isDemoMode,
+                        settingsSaveToken = settingsSaveToken,
+                        scheduleRefreshToken = scheduleRefreshToken,
+                        providedViewModel = scheduleViewModel,
+                        onClose = { coroutineScope.launch { drawerState.close() } },
+                                        onItemClick = { item ->
+                                            coroutineScope.launch {
+                                                drawerState.close()
+                                                openScheduleItem(destinationFor(item))
+                                            }
+                                        }
+                    )
+                },
+            ) { shell() }
+        }
     }
 }

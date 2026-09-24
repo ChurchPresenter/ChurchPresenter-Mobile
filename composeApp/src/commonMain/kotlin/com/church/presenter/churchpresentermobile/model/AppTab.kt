@@ -17,6 +17,11 @@ enum class AppTab {
     LIBRARY,
     /** Calendar-mode only: the planner as the whole app, rather than a More entry. */
     CALENDAR,
+    /**
+     * Calendar-mode only: Contact as a tab of its own. It was More's only entry there, and a
+     * launcher with one tile is a detour rather than a menu.
+     */
+    CONTACT,
     MORE;
 
     companion object {
@@ -33,7 +38,7 @@ enum class AppTab {
         fun forMode(mode: AppMode): List<AppTab> = when (mode) {
             AppMode.REMOTE -> listOf(SONGS, BIBLE, MEDIA, PRESENTATION, MORE)
             AppMode.STANDALONE -> listOf(PRESENT, SONGS, BIBLE, LIBRARY, MORE)
-            AppMode.CALENDAR -> listOf(CALENDAR, MORE)
+            AppMode.CALENDAR -> listOf(CALENDAR, CONTACT)
         }
     }
 }
@@ -79,8 +84,8 @@ enum class MoreDestination {
             // standalone is exactly the one with something to report.
             AppMode.REMOTE -> listOf(CALENDAR, PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
             AppMode.STANDALONE -> listOf(CALENDAR, PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
-            // The calendar is the tab itself in this mode, so More keeps only the
-            // one entry that needs neither a desktop nor an output.
+            // Calendar mode has no More tab — Calendar and Contact are both tabs —
+            // so this list only settles a Contact left open from another mode.
             AppMode.CALENDAR -> listOf(CONTACT)
         }
     }

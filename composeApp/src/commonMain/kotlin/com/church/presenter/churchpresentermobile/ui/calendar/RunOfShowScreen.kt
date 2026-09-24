@@ -6,7 +6,6 @@ import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
@@ -33,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +44,6 @@ import churchpresentermobile.composeapp.generated.resources.calendar_add_item
 import churchpresentermobile.composeapp.generated.resources.calendar_armed
 import churchpresentermobile.composeapp.generated.resources.calendar_auto_starts
 import churchpresentermobile.composeapp.generated.resources.calendar_copy_service
-import churchpresentermobile.composeapp.generated.resources.calendar_load_into_schedule
 import churchpresentermobile.composeapp.generated.resources.calendar_run_empty_body
 import churchpresentermobile.composeapp.generated.resources.calendar_run_empty_title
 import churchpresentermobile.composeapp.generated.resources.cd_back
@@ -100,33 +98,40 @@ internal fun RunOfShowScreen(
             )
         } else {
             val listState = rememberLazyListState()
+            val drag = remember(listState) { RowDragState(listState) { from, to -> actions.rows.onMove(from, to) } }
+            val currentIds by rememberUpdatedState(service.rows.map { it.id })
+            // While a row is dragged the list follows the order being dragged, not the saved one.
+            val shown = drag.order.takeIf { drag.draggingId != null }
+                ?.let { order -> rows.sortedBy { order.indexOf(it.row.id) } }
+                ?: rows
             LazyColumn(
                 state = listState,
                 modifier = Modifier.weight(1f).fillMaxWidth().verticalScrollbar(listState),
                 contentPadding = PaddingValues(horizontal = PagePadding, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(rows, key = { it.row.id }) { clocked ->
+                items(shown, key = { it.row.id }) { clocked ->
                     val index = service.rows.indexOfFirst { it.id == clocked.row.id }
                     val rowActions = RowActions(
                         onOpen = { editingRowId = clocked.row.id },
-                        onMoveUp = if (inline && index > 0) ({ actions.rows.onMove(index, index - 1) }) else null,
+                        handle = Modifier.dragHandle(drag, clocked.row.id) { currentIds },
+                        onMoveUp = if (inline && index > 0) {
+                            ({ holdScroll(listState); actions.rows.onMove(index, index - 1) })
+                        } else {
+                            null
+                        },
                         onMoveDown = if (inline && index < service.rows.lastIndex) {
-                            ({ actions.rows.onMove(index, index + 1) })
+                            ({ holdScroll(listState); actions.rows.onMove(index, index + 1) })
                         } else {
                             null
                         },
                         onRemove = if (inline) ({ actions.rows.onRemove(clocked.row.id) }) else null,
                     )
+                    val rowModifier = Modifier.testTag(CalendarTags.row(clocked.row.id))
+                        .draggableRow(drag, clocked.row.id) { currentIds }
                     when (val row = clocked.row) {
-                        is PlanRow.Section ->
-                            SectionRow(row, rowActions, Modifier.testTag(CalendarTags.row(row.id)))
-                        else -> ItemRow(
-                            clocked,
-                            service.startTime,
-                            rowActions,
-                            Modifier.testTag(CalendarTags.row(clocked.row.id)),
-                        )
+                        is PlanRow.Section -> SectionRow(row, rowActions, rowModifier)
+                        else -> ItemRow(clocked, service.startTime, rowActions, rowModifier)
                     }
                 }
             }
@@ -135,7 +140,6 @@ internal fun RunOfShowScreen(
         RunBottomBar(
             onAdd = { sheet = OpenSheet.ADD },
             onCopy = { sheet = OpenSheet.COPY },
-            onLoad = actions.onLoadIntoSchedule,
         )
     }
 
@@ -234,7 +238,7 @@ internal fun runSubtitle(service: PlannedService): String {
 }
 
 @Composable
-private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit, onLoad: (() -> Unit)?) {
+private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = PagePadding, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -253,14 +257,5 @@ private fun RunBottomBar(onAdd: () -> Unit, onCopy: () -> Unit, onLoad: (() -> U
             onClick = onCopy,
             modifier = Modifier.testTag(CalendarTags.RUN_COPY),
         )
-        Box(modifier = Modifier.weight(1f)) {
-            CalendarPrimaryButton(
-                label = stringResource(Res.string.calendar_load_into_schedule),
-                icon = Icons.Outlined.FileDownload,
-                onClick = { onLoad?.invoke() },
-                enabled = onLoad != null,
-                modifier = Modifier.fillMaxWidth().testTag(CalendarTags.RUN_LOAD),
-            )
-        }
     }
 }

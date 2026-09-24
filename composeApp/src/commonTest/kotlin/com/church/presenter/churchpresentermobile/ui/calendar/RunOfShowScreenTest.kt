@@ -29,9 +29,8 @@ class RunOfShowScreenTest {
     private val moves = mutableListOf<Pair<Int, Int>>()
     private val removed = mutableListOf<String>()
     private var deleted = 0
-    private var loaded = 0
 
-    private fun actions(loadable: Boolean = false) = RunOfShowActions(
+    private fun actions() = RunOfShowActions(
         rows = RowListActions(
             onAdd = { _, _, _ -> },
             onUpdate = {},
@@ -42,20 +41,18 @@ class RunOfShowScreenTest {
         onCopy = {},
         onUpdateService = {},
         onDelete = { deleted++ },
-        onLoadIntoSchedule = if (loadable) ({ loaded++ }) else null,
     )
 
     private fun ComposeUiTest.show(
         service: PlannedService = CalendarFixtures.service,
         inline: Boolean = false,
-        loadable: Boolean = false,
         onBack: (() -> Unit)? = null,
     ) = showScreen {
         RunOfShowScreen(
             service,
             CalendarFixtures.sources(),
             { "new-row" },
-            actions(loadable),
+            actions(),
             onBack = onBack,
             inline = inline,
         )
@@ -160,24 +157,6 @@ class RunOfShowScreenTest {
         show(inline = true)
 
         assertTrue(exists(CalendarTags.row("r2")), "every row is reachable by its id")
-    }
-
-    @Test
-    fun loadIntoScheduleIsOfferedOnlyWithADesktopToLoadInto() = runComposeUiTest {
-        show(loadable = true)
-
-        click(CalendarTags.RUN_LOAD)
-
-        assertEquals(1, loaded)
-    }
-
-    @Test
-    fun withNoDesktopTheLoadButtonDoesNothing() = runComposeUiTest {
-        show(loadable = false)
-
-        click(CalendarTags.RUN_LOAD)
-
-        assertEquals(0, loaded, "it is drawn but disabled, so the row still reads as loadable later")
     }
 
     @Test

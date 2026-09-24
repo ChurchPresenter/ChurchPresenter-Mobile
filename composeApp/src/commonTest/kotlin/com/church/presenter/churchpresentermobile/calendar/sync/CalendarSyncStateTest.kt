@@ -63,4 +63,12 @@ class CalendarSyncStateTest {
         assertFalse(full.copy(deviceToken = "").isEnrolled)
         assertFalse(full.copy(instanceKey = "").isEnrolled)
     }
+
+    @Test
+    fun theQrsDeviceIdIsKeptWhenItIsOneAndDroppedWhenItIsNot() {
+        assertEquals("phone-1", CalendarSyncState.fromQr("$qr&device=phone-1")!!.deviceId)
+        val odd = CalendarSyncState.fromQr("$qr&device=not an id")!!
+        assertEquals("", odd.deviceId, "an odd device id is not a reason to refuse the whole enrollment")
+        assertTrue(odd.isEnrolled)
+    }
 }

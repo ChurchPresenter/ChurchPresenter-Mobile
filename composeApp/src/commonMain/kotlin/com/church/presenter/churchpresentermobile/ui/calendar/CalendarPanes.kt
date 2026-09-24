@@ -57,6 +57,7 @@ internal fun CalendarTwoPane(
     runActions: (PlannedService) -> RunOfShowActions,
     onAddService: () -> Unit,
     modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
 ) {
     Row(modifier = modifier.fillMaxSize().background(LocalAppColors.current.background)) {
         val monthScroll = rememberScrollState()
@@ -69,11 +70,11 @@ internal fun CalendarTwoPane(
                 serviceCount = state.monthServices.size,
                 monthName = monthTitle(state.month),
                 onToday = header.onToday,
-                onBack = null,
+                onBack = onBack,
                 compact = true,
                 onSync = header.onSync,
                 synced = header.synced,
-                onSettings = header.onSettings,
+                onSettings = null,
             )
             Column(
                 modifier = Modifier.padding(horizontal = PagePadding),
@@ -86,7 +87,7 @@ internal fun CalendarTwoPane(
         }
         VerticalDivider(color = LocalAppColors.current.borderSubtle)
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            DayHeader(state.selectedDate, state.dayServices, onAdd = onAddService)
+            DayHeader(state.selectedDate, state.dayServices, onAdd = onAddService, onSettings = header.onSettings)
             val shown = openService?.takeIf { it.date == storedDate(state.selectedDate) }
                 ?: state.dayServices.firstOrNull()
             if (state.dayServices.isNotEmpty()) {

@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +39,8 @@ import churchpresentermobile.composeapp.generated.resources.calendar_title
 import churchpresentermobile.composeapp.generated.resources.calendar_today
 import churchpresentermobile.composeapp.generated.resources.cd_back
 import churchpresentermobile.composeapp.generated.resources.cd_settings
+import com.church.presenter.churchpresentermobile.ui.GearButton
+import com.church.presenter.churchpresentermobile.ui.UiTags
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.calendar.longDate
 import com.church.presenter.churchpresentermobile.calendar.parseStoredDate
@@ -67,9 +70,7 @@ internal val MonthPaneWidth = 320.dp
  * two panes. Both draw their own header — the month view's carries Today, and the run of show's
  * carries the service's name and its Armed switch — so the shell's header stays out of the way.
  *
- * @param onBack What the month view's back arrow does on a phone; null hides it.
- * @param onLoadIntoSchedule Loads a run of show into the desktop's schedule; null while there is
- *   no desktop to load into.
+ * @param onBack What the month view's back arrow does; null hides it.
  */
 @Composable
 fun CalendarScreen(
@@ -82,7 +83,6 @@ fun CalendarScreen(
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     onSettings: (() -> Unit)? = null,
-    onLoadIntoSchedule: ((PlannedService) -> Unit)? = null,
 ) {
     val viewModel: CalendarViewModel = viewModel(key = "calendar") {
         calendarViewModel(repository, songCatalog, bibleCatalog, catalogStore, settings)
@@ -104,7 +104,7 @@ fun CalendarScreen(
     var newServiceSheet by remember { mutableStateOf(false) }
 
     val runActions: (PlannedService) -> RunOfShowActions = { service ->
-        runOfShowActions(viewModel, service, onLoadIntoSchedule)
+        runOfShowActions(viewModel, service)
     }
 
     val monthServices = document.services.filter { parseStoredDate(it.date)?.let(month::contains) == true }
@@ -130,6 +130,7 @@ fun CalendarScreen(
             runActions = runActions,
             onAddService = { newServiceSheet = true },
             modifier = modifier,
+            onBack = onBack,
         )
         openService != null -> {
             AppBackHandler(enabled = true) { viewModel.closeService() }
@@ -240,7 +241,12 @@ internal fun MonthHeader(
 }
 
 @Composable
-internal fun DayHeader(date: LocalDate, services: List<PlannedService>, onAdd: () -> Unit) {
+internal fun DayHeader(
+    date: LocalDate,
+    services: List<PlannedService>,
+    onAdd: () -> Unit,
+    onSettings: (() -> Unit)? = null,
+) {
     val colors = LocalAppColors.current
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = PagePadding, vertical = 12.dp),
@@ -250,7 +256,20 @@ internal fun DayHeader(date: LocalDate, services: List<PlannedService>, onAdd: (
             Text(longDate(date), color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             MutedText(serviceCountText(services.size))
         }
-        CalendarPrimaryButton(stringResource(Res.string.calendar_add_service), icon = Icons.Filled.Add, onClick = onAdd)
+        // An empty day offers Add service in its body; a second one up here is noise.
+        if (services.isNotEmpty()) {
+            CalendarPrimaryButton(
+                stringResource(Res.string.calendar_add_service),
+                icon = Icons.Filled.Add,
+                onClick = onAdd,
+            )
+        }
+        // Beside the pane that reaches the window's right edge, the gear sits in the top-right
+        // corner as it does on every other tab, rather than among the month's buttons.
+        if (onSettings != null) {
+            Spacer(Modifier.width(8.dp))
+            GearButton(onClick = onSettings, modifier = Modifier.testTag(UiTags.HEADER_SETTINGS))
+        }
     }
 }
 
@@ -292,7 +311,6 @@ private fun calendarViewModel(
 private fun runOfShowActions(
     viewModel: CalendarViewModel,
     service: PlannedService,
-    onLoadIntoSchedule: ((PlannedService) -> Unit)?,
 ): RunOfShowActions = RunOfShowActions(
     rows = RowListActions(
         onAdd = { row, seconds, timing -> viewModel.rows.add(service.id, row, seconds, timing) },
@@ -306,5 +324,4 @@ private fun runOfShowActions(
         viewModel.services.update(service.copy(name = draft.name, startTime = draft.startTime, kind = draft.kind))
     },
     onDelete = { viewModel.services.delete(service.id) },
-    onLoadIntoSchedule = onLoadIntoSchedule?.let { load -> { load(service) } },
 )

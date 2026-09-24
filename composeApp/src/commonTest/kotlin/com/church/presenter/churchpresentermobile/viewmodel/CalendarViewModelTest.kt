@@ -311,4 +311,81 @@ class CalendarViewModelTest {
             tearDown(vm)
         }
     }
+
+    @Test
+    fun aPhoneEnrolledInThisSessionKeepsSyncingAfterItsFirstRound() = runVmTestUnconfined {
+        val calls = ArrayList<String>()
+        var rev = 10L
+        val relayHttp = HttpClient(
+            MockEngine { request ->
+                val path = request.url.encodedPath.substringAfter("/i/inst-1/")
+                calls += "${request.method.value} $path"
+                when {
+                    path == "changes" -> respond("""{"rev":$rev,"records":[],"tombstones":[]}""", HttpStatusCode.OK)
+                    request.method == HttpMethod.Put -> respond("""{"rev":${++rev}}""", HttpStatusCode.OK)
+                    else -> respond("{}", HttpStatusCode.NotFound)
+                }
+            },
+        )
+        val websiteHttp = HttpClient(MockEngine { respond("{}", HttpStatusCode.OK) })
+        val settings = AppSettings(InMemorySettingsStorage()).apply {
+            relayClientKey = "clientkeyclientkey01"
+            relayClientKeyFetchedAt = 5_000_000L
+        }
+        // Not enrolled when the planner opens: the QR arrives while it is on screen.
+        var state = CalendarSyncState()
+        val engine = CalendarSyncEngine(
+            repository,
+            state = { state },
+            saveState = { state = it },
+            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }),
+            clientFor = { s, k -> RelayClient(s, k, relayHttp) },
+        )
+        val vm = viewModel(sync = engine, saveEnrollment = { state = it })
+        try {
+            assertTrue(calls.isEmpty())
+            vm.pairing.complete(
+                "churchpresenter://calendar-enroll?relay=https://sync.example.org&instance=inst-1" +
+                    "&token=devicetokendevicetoken&key=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            )
+            vm.syncStatus.first { it is SyncStatus.Synced && it.at.isNotEmpty() }
+            assertEquals(listOf("GET changes"), calls)
+
+            // An edit after enrolling reaches the relay without reopening the planner.
+            vm.select(sunday)
+            vm.services.add("Sunday", "10:00", "sunday", null)
+            vm.syncStatus.first { it is SyncStatus.Synced && it.pushed == 1 }
+            assertTrue("PUT records/id-1" in calls)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun allowingOverWifiIsTheLastStep() = runVmTestUnconfined {
+        val desktop = HttpClient(
+            MockEngine {
+                respond(
+                    """{"relayUrl":"https://sync.example.org","instanceId":"inst-1","deviceId":"phone-1",""" +
+                        """"deviceToken":"devicetokendevicetoken",""" +
+                        """"instanceKey":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"}""",
+                    HttpStatusCode.OK,
+                )
+            },
+        )
+        var saved: CalendarSyncState? = null
+        val vm = viewModel(
+            enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), desktop),
+            saveEnrollment = { saved = it },
+        )
+        try {
+            vm.pairing.start()
+            assertEquals(EnrollFlow.Done, vm.enrollment.first { it !is EnrollFlow.WaitingForApproval })
+            val state = assertNotNull(saved)
+            assertEquals("phone-1", state.deviceId)
+            assertTrue(state.isEnrolled)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }

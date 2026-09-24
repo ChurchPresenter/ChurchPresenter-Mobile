@@ -93,7 +93,6 @@ class CalendarScreenshotTest {
         onCopy = {},
         onUpdateService = {},
         onDelete = {},
-        onLoadIntoSchedule = null,
     )
 
     // ── The month ────────────────────────────────────────────────────────

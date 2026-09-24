@@ -5,6 +5,7 @@ import com.church.presenter.churchpresentermobile.calendar.nowIso
 import com.church.presenter.churchpresentermobile.model.PlannedService
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.io.IOException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -95,6 +96,12 @@ class CalendarSyncEngine(
             _status.value = SyncStatus.Failed(e.message.orEmpty())
             false
         } catch (e: IllegalArgumentException) {
+            Logger.e(TAG, "sync failed: ${e.message}", e)
+            _status.value = SyncStatus.Failed(e.message.orEmpty())
+            false
+        } catch (e: IOException) {
+            // The network itself: no route, a dropped WiFi, a captive portal, a certificate the
+            // device's clock says is not valid yet. Uncaught, one took the app down.
             Logger.e(TAG, "sync failed: ${e.message}", e)
             _status.value = SyncStatus.Failed(e.message.orEmpty())
             false

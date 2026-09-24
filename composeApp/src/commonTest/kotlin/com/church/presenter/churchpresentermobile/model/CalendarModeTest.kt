@@ -19,10 +19,11 @@ import kotlin.test.assertTrue
 class CalendarModeTest {
 
     @Test
-    fun `the strip is the calendar and the launcher, and nothing that projects`() {
+    fun `the strip is the calendar and contact, and nothing that projects`() {
         val tabs = AppTab.forMode(AppMode.CALENDAR)
 
-        assertEquals(listOf(AppTab.CALENDAR, AppTab.MORE), tabs)
+        // Contact is a tab rather than More's only tile: a launcher with one entry is a detour.
+        assertEquals(listOf(AppTab.CALENDAR, AppTab.CONTACT), tabs)
         assertFalse(AppTab.PRESENT in tabs, "nothing is projected from this phone")
         assertFalse(AppTab.SONGS in tabs, "the songs tab drives a desktop; the picker reads the catalog")
         assertFalse(AppTab.MEDIA in tabs)
@@ -69,7 +70,8 @@ class CalendarModeTest {
         // The strip is rememberSaveable, so after a switch it can still name a tab that is gone.
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.SONGS, tabs))
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.PRESENT, tabs))
-        assertEquals(AppTab.MORE, settledTab(AppTab.MORE, tabs))
+        assertEquals(AppTab.CALENDAR, settledTab(AppTab.MORE, tabs))
+        assertEquals(AppTab.CONTACT, settledTab(AppTab.CONTACT, tabs))
     }
 
     @Test
@@ -84,6 +86,7 @@ class CalendarModeTest {
     @Test
     fun `the calendar tab reports itself to the screen report`() {
         assertEquals("Calendar", tabScreenName(AppTab.CALENDAR))
+        assertEquals("Contact", tabScreenName(AppTab.CONTACT))
     }
 
     @Test
@@ -92,7 +95,10 @@ class CalendarModeTest {
             val tabs = AppTab.forMode(mode)
             assertTrue(tabs.isNotEmpty(), "$mode has no tabs")
             assertEquals(tabs.distinct(), tabs, "$mode repeats a tab")
-            assertTrue(AppTab.MORE in tabs, "$mode must keep a way into settings and contact")
+            assertTrue(
+                AppTab.MORE in tabs || AppTab.CONTACT in tabs,
+                "$mode must keep a way into contact",
+            )
         }
     }
 

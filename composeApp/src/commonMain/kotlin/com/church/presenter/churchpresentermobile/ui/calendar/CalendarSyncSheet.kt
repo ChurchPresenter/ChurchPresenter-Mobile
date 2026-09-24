@@ -41,7 +41,6 @@ import churchpresentermobile.composeapp.generated.resources.calendar_sync_waitin
 import churchpresentermobile.composeapp.generated.resources.calendar_try_again
 import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
 import com.church.presenter.churchpresentermobile.ui.QrScanButton
-import com.church.presenter.churchpresentermobile.ui.hasCameraAvailable
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.EnrollFlow
 import org.jetbrains.compose.resources.stringResource
@@ -129,7 +128,7 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
                     if (flow == EnrollFlow.Idle) Res.string.calendar_sync_enroll else Res.string.calendar_try_again,
                 ),
                 onClick = actions.onEnroll,
-                enabled = canReachDesktop && hasCameraAvailable(),
+                enabled = canReachDesktop,
                 modifier = Modifier.fillMaxWidth().testTag(SheetTags.SYNC_ENROLL),
             )
         }

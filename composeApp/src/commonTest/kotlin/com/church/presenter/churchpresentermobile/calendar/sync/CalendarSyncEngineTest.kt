@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.calendar.sync
 
+import kotlinx.io.IOException
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.PlanRow
@@ -47,6 +48,7 @@ class CalendarSyncEngineTest {
         var clientKey = "clientkeyclientkey01"
         var deviceToken = enrolled.deviceToken
         var pushTokens = ArrayList<String>()
+        val nameBoxes = ArrayList<String>()
         val calls = ArrayList<String>()
 
         fun handle(scope: MockRequestHandleScope, request: HttpRequestData): HttpResponseData = with(scope) {
@@ -89,6 +91,11 @@ class CalendarSyncEngineTest {
                     tombstones += RemoteTombstone(path.removePrefix("records/"), "2026-09-20T12:00:00Z")
                     respond("""{"rev":$rev}""", HttpStatusCode.OK)
                 }
+                path == "devices/me/name" -> {
+                    val body = (request.body as TextContent).text
+                    nameBoxes += json.decodeFromString(DeviceNameBody.serializer(), body).nameBox
+                    respond("{}", HttpStatusCode.OK)
+                }
                 path == "devices/me/push" -> {
                     val body = (request.body as TextContent).text
                     pushTokens += json.decodeFromString(PushTokenBody.serializer(), body).pushToken
@@ -116,6 +123,7 @@ class CalendarSyncEngineTest {
     private var websiteKey = "clientkeyclientkey01"
     private var state = enrolled
     private var pushToken = ""
+    private var deviceName = ""
 
     private suspend fun sealing() = Sealing.fromEncodedKey(key, "inst-1")!!
 
@@ -128,6 +136,7 @@ class CalendarSyncEngineTest {
             saveState = { state = it },
             clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }),
             pushToken = { pushToken },
+            deviceName = { deviceName },
             clientFor = { s, k -> RelayClient(s, k, relayHttp) },
         )
     }
@@ -335,5 +344,101 @@ class CalendarSyncEngineTest {
         assertFalse(state.isEnrolled)
         assertEquals(SyncStatus.NotEnrolled, engine.status.value)
         assertFalse(engine.isEnrolled)
+    }
+
+    @Test
+    fun aNetworkThatFailsUnderneathIsReportedNotThrown() = runTest {
+        // A dropped WiFi or a certificate the clock says is not valid yet arrives as an IOException
+        // from the engine; uncaught, one took the whole app down.
+        val broken = HttpClient(MockEngine { throw IOException("Chain validation failed") })
+        val engine = CalendarSyncEngine(
+            repository,
+            state = { state },
+            saveState = { state = it },
+            clientKeys = ClientKeySource(settings, broken, now = { 5_000_000L }),
+            clientFor = { s, k -> RelayClient(s, k, broken) },
+        )
+
+        assertFalse(engine.sync())
+        val status = assertIs<SyncStatus.Failed>(engine.status.value)
+        assertTrue("Chain validation failed" in status.message)
+        assertTrue(state.isEnrolled, "a network failure is not a reason to forget the enrollment")
+    }
+
+    @Test
+    fun thisPhonesNameIsSentSealedOnceAndAgainOnlyWhenItChanges() = runTest {
+        state = enrolled.copy(deviceId = "phone-1")
+        deviceName = "  Anna's iPad  "
+        val engine = engine()
+
+        assertTrue(engine.sync())
+        assertEquals(1, relay.nameBoxes.size)
+        assertTrue("Anna" !in relay.nameBoxes.single(), "the relay only ever sees the sealed name")
+        assertEquals("Anna's iPad", state.registeredName)
+
+        assertTrue(engine.sync())
+        assertEquals(1, relay.nameBoxes.size, "an unchanged name is not sent again")
+
+        deviceName = "Front desk"
+        assertTrue(engine.sync())
+        assertEquals(2, relay.nameBoxes.size)
+        assertEquals("Front desk", state.registeredName)
+    }
+
+    @Test
+    fun aPhoneWithNoDeviceIdOrNoNameSendsNone() = runTest {
+        deviceName = "Anna's iPad"
+        assertTrue(engine().sync())
+        state = enrolled.copy(deviceId = "phone-1")
+        deviceName = "   "
+        assertTrue(engine().sync())
+        assertTrue(relay.nameBoxes.isEmpty())
+    }
+
+    @Test
+    fun aNameTheRelayRefusesIsTriedAgainNextRound() = runTest {
+        state = enrolled.copy(deviceId = "phone-1")
+        deviceName = "Anna's iPad"
+        val refusing = HttpClient(
+            MockEngine { request ->
+                if (request.url.encodedPath.endsWith("devices/me/name")) {
+                    respond("", HttpStatusCode.ServiceUnavailable)
+                } else {
+                    relay.handle(this, request)
+                }
+            },
+        )
+        val website = HttpClient(MockEngine { respond("{}", HttpStatusCode.OK) })
+        val engine = CalendarSyncEngine(
+            repository,
+            state = { state },
+            saveState = { state = it },
+            clientKeys = ClientKeySource(settings, website, now = { 5_000_000L }),
+            deviceName = { deviceName },
+            clientFor = { s, k -> RelayClient(s, k, refusing) },
+        )
+
+        assertTrue(engine.sync(), "the name is a courtesy; the round itself still succeeds")
+        assertEquals("", state.registeredName)
+    }
+
+    @Test
+    fun aPendingEditForAServiceThatIsGoneIsDroppedNotSent() = runTest {
+        repository.saveService(service("svc-1", "Sunday"))
+        repository.deleteService("svc-1")
+        val engine = engine()
+        assertTrue(engine.sync())
+        assertTrue(relay.calls.none { it == "PUT records/svc-1" })
+        assertTrue(repository.document.value.pendingPush.isEmpty())
+    }
+
+    @Test
+    fun aRecordThatOpensButIsNotAServiceIsLeftOut() = runTest {
+        relay.rev += 1
+        val notAService = sealing().sealText("""{"hello":"world"}""", "odd-1")
+        relay.records["odd-1"] = SealedRecord("odd-1", "2026-12-01", notAService, rev = relay.rev)
+        relay.desktopWrote(service("svc-1", "Sunday"))
+        assertTrue(engine().sync())
+        assertEquals(listOf("svc-1"), repository.document.value.services.map { it.id })
     }
 }
