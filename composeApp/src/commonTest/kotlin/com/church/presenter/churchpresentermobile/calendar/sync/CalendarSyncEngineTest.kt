@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.calendar.sync
 
+import kotlinx.io.IOException
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.PlanRow
@@ -335,5 +336,24 @@ class CalendarSyncEngineTest {
         assertFalse(state.isEnrolled)
         assertEquals(SyncStatus.NotEnrolled, engine.status.value)
         assertFalse(engine.isEnrolled)
+    }
+
+    @Test
+    fun aNetworkThatFailsUnderneathIsReportedNotThrown() = runTest {
+        // A dropped WiFi or a certificate the clock says is not valid yet arrives as an IOException
+        // from the engine; uncaught, one took the whole app down.
+        val broken = HttpClient(MockEngine { throw IOException("Chain validation failed") })
+        val engine = CalendarSyncEngine(
+            repository,
+            state = { state },
+            saveState = { state = it },
+            clientKeys = ClientKeySource(settings, broken, now = { 5_000_000L }),
+            clientFor = { s, k -> RelayClient(s, k, broken) },
+        )
+
+        assertFalse(engine.sync())
+        val status = assertIs<SyncStatus.Failed>(engine.status.value)
+        assertTrue("Chain validation failed" in status.message)
+        assertTrue(state.isEnrolled, "a network failure is not a reason to forget the enrollment")
     }
 }

@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.calendar.sync
 
+import kotlin.test.assertNull
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.network.ApiConstants
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -66,5 +67,40 @@ class EnrollServiceTest {
         assertTrue(junk.enroll("Phone", "123456").isFailure)
         val down = service(HttpStatusCode.ServiceUnavailable, "")
         assertTrue(down.enroll("Phone", "123456").exceptionOrNull() is RelayFailure.Rejected)
+    }
+
+    @Test
+    fun anApprovalCarriesTheWholeEnrollmentSoThereIsNothingToScan() = runTest {
+        val reply = service(
+            HttpStatusCode.OK,
+            """{"relayUrl":"https://sync.example.org/","instanceId":"inst-1","deviceId":"phone-1",""" +
+                """"deviceToken":"devicetokendevicetoken","instanceKey":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"}""",
+        ).enroll("Phone", "123456").getOrThrow()
+
+        val state = assertNotNull(reply.toState())
+        assertEquals("https://sync.example.org", state.relayUrl)
+        assertEquals("phone-1", state.deviceId)
+        assertEquals("devicetokendevicetoken", state.deviceToken)
+        assertTrue(state.isEnrolled)
+    }
+
+    @Test
+    fun anOlderDesktopsReplyLeavesTheQrToFinishIt() = runTest {
+        val reply = service(HttpStatusCode.OK, """{"relayUrl":"https://sync.example.org","instanceId":"inst-1"}""")
+            .enroll("Phone", "123456").getOrThrow()
+        assertNull(reply.toState())
+    }
+
+    @Test
+    fun keysThatAreNotKeysAreDroppedRatherThanSaved() = runTest {
+        val reply = service(
+            HttpStatusCode.OK,
+            """{"relayUrl":"https://sync.example.org","instanceId":"inst-1","deviceId":"not an id!",""" +
+                """"deviceToken":"<script>","instanceKey":""}""",
+        ).enroll("Phone", "123456").getOrThrow()
+
+        assertEquals("", reply.deviceId)
+        assertEquals("", reply.deviceToken)
+        assertNull(reply.toState(), "half an enrollment is none")
     }
 }

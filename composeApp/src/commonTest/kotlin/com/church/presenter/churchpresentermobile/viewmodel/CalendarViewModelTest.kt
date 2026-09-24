@@ -360,4 +360,32 @@ class CalendarViewModelTest {
             tearDown(vm)
         }
     }
+
+    @Test
+    fun allowingOverWifiIsTheLastStep() = runVmTestUnconfined {
+        val desktop = HttpClient(
+            MockEngine {
+                respond(
+                    """{"relayUrl":"https://sync.example.org","instanceId":"inst-1","deviceId":"phone-1",""" +
+                        """"deviceToken":"devicetokendevicetoken",""" +
+                        """"instanceKey":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"}""",
+                    HttpStatusCode.OK,
+                )
+            },
+        )
+        var saved: CalendarSyncState? = null
+        val vm = viewModel(
+            enrollService = EnrollService(AppSettings(InMemorySettingsStorage()), desktop),
+            saveEnrollment = { saved = it },
+        )
+        try {
+            vm.pairing.start()
+            assertEquals(EnrollFlow.Done, vm.enrollment.first { it !is EnrollFlow.WaitingForApproval })
+            val state = assertNotNull(saved)
+            assertEquals("phone-1", state.deviceId)
+            assertTrue(state.isEnrolled)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }
