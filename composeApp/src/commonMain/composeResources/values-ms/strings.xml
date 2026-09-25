@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Menyegerakkan…</string>
     <string name="calendar_sync_status_failed">Tidak dapat menghubungi geganti: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Komputer gereja tidak lagi menerima telefon ini. Daftar semula untuk meneruskan.</string>
+    <string name="calendar_sync_line_failed">Penyegerakan gagal</string>
+    <string name="calendar_sync_line_stopped">Penyegerakan dihentikan</string>
+    <string name="calendar_sync_next_in">seterusnya dalam %1$s min</string>
+    <string name="calendar_sync_next_soon">seterusnya kurang 1 min</string>
+    <string name="calendar_sync_retry_in">cuba lagi dalam %1$s min</string>
+    <string name="calendar_sync_retry_soon">akan cuba lagi sebentar</string>
     <string name="calendar_sync_now">Segerak sekarang</string>
     <string name="calendar_sync_leave">Hentikan penyegerakan pada telefon ini</string>
     <string name="calendar_sync_cd">Segerak</string>

@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Synchronizuji…</string>
     <string name="calendar_sync_status_failed">Nepodařilo se spojit s přenosovým serverem: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Sborový počítač už tento telefon nepřijímá. Pro pokračování se přihlaste znovu.</string>
+    <string name="calendar_sync_line_failed">Synchronizace selhala</string>
+    <string name="calendar_sync_line_stopped">Synchronizace zastavena</string>
+    <string name="calendar_sync_next_in">další za %1$s min</string>
+    <string name="calendar_sync_next_soon">další za méně než minutu</string>
+    <string name="calendar_sync_retry_in">opakování za %1$s min</string>
+    <string name="calendar_sync_retry_soon">brzy se zopakuje</string>
     <string name="calendar_sync_now">Synchronizovat</string>
     <string name="calendar_sync_leave">Ukončit synchronizaci v tomto telefonu</string>
     <string name="calendar_sync_cd">Synchronizace</string>

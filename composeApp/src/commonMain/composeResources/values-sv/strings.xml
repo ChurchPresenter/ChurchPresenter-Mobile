@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Synkar…</string>
     <string name="calendar_sync_status_failed">Kunde inte nå reläet: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Församlingens dator godtar inte längre den här telefonen. Anslut den på nytt för att fortsätta.</string>
+    <string name="calendar_sync_line_failed">Synkroniseringen misslyckades</string>
+    <string name="calendar_sync_line_stopped">Synkroniseringen stoppad</string>
+    <string name="calendar_sync_next_in">nästa om %1$s min</string>
+    <string name="calendar_sync_next_soon">nästa om under en min</string>
+    <string name="calendar_sync_retry_in">nytt försök om %1$s min</string>
+    <string name="calendar_sync_retry_soon">försöker igen strax</string>
     <string name="calendar_sync_now">Synka nu</string>
     <string name="calendar_sync_leave">Sluta synka på den här telefonen</string>
     <string name="calendar_sync_cd">Synka</string>

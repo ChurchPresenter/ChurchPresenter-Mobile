@@ -34,6 +34,8 @@ import com.church.presenter.churchpresentermobile.calendar.sync.EnrollSyncOff
 import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -42,6 +44,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 /** Where the two-step enrollment with the desktop stands. */
 sealed class EnrollFlow {
@@ -63,6 +68,9 @@ sealed class EnrollFlow {
 private const val ENROLL_CODE_DIGITS = 6
 private const val PUSH_DEBOUNCE_MS = 1_500L
 
+/** How long after the last round the next one runs by itself, in case a relay nudge never arrived. */
+internal const val SYNC_INTERVAL_MS = 5 * 60_000L
+
 /** What the Bible picker knows about a chapter once it has been read: how many verses, and their text. */
 class ChapterPreview(val verseCount: Int, val firstWords: Map<Int, String>)
 
@@ -79,11 +87,16 @@ class CalendarViewModel(
     private val deviceName: () -> String = { "" },
     private val saveEnrollment: (CalendarSyncState) -> Unit = {},
     private val newId: () -> String = { generateUUID() },
+    private val clock: Clock = Clock.System,
 ) : ViewModel() {
 
     val document: StateFlow<CalendarDocument> = repository.document
 
     val syncStatus: StateFlow<SyncStatus> = sync?.status ?: MutableStateFlow(SyncStatus.NotEnrolled)
+
+    /** When the next timed round runs; null while one is running, or when this phone is not syncing. */
+    private val _nextSyncAt = MutableStateFlow<Instant?>(null)
+    val nextSyncAt: StateFlow<Instant?> = _nextSyncAt.asStateFlow()
 
     private val _enrollment = MutableStateFlow<EnrollFlow>(EnrollFlow.Idle)
     val enrollment: StateFlow<EnrollFlow> = _enrollment.asStateFlow()
@@ -289,6 +302,7 @@ class CalendarViewModel(
             }
             syncing = true
             viewModelScope.keepSyncing(engine, document)
+            viewModelScope.syncPeriodically(engine, clock, _nextSyncAt)
         }
 
         fun syncNow() {
@@ -358,5 +372,30 @@ private fun CoroutineScope.keepSyncing(engine: CalendarSyncEngine, document: Sta
             .filter { it > 0 }
             .debounce(PUSH_DEBOUNCE_MS)
             .collect { engine.sync() }
+    }
+}
+
+/**
+ * A round [SYNC_INTERVAL_MS] after whichever round finished last, retrying a failed one on the same
+ * beat. Every round restarts the wait, so a nudge or an edit pushes the next timed one out rather
+ * than stacking another on top; a phone that stops being enrolled stops counting.
+ *
+ * The round itself is launched in [this] scope, not run inside the collector: its first act is to
+ * report Syncing, which would otherwise cancel the very block that started it.
+ */
+private fun CoroutineScope.syncPeriodically(
+    engine: CalendarSyncEngine,
+    clock: Clock,
+    nextAt: MutableStateFlow<Instant?>,
+) = launch {
+    engine.status.collectLatest { status ->
+        val finished = (status is SyncStatus.Synced && status.at.isNotEmpty()) || status is SyncStatus.Failed
+        if (!finished) {
+            nextAt.value = null
+            return@collectLatest
+        }
+        nextAt.value = clock.now() + SYNC_INTERVAL_MS.milliseconds
+        delay(SYNC_INTERVAL_MS)
+        this@syncPeriodically.launch { engine.sync() }
     }
 }

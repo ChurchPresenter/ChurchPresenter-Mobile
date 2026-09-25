@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">ஒத்திசைக்கிறது…</string>
     <string name="calendar_sync_status_failed">ரிலேயைத் தொடர்பு கொள்ள முடியவில்லை: %1$s</string>
     <string name="calendar_sync_status_unauthorized">சபைக் கணினி இந்தத் தொலைபேசியை இனி ஏற்கவில்லை. தொடர மீண்டும் பதிவு செய்யுங்கள்.</string>
+    <string name="calendar_sync_line_failed">ஒத்திசைவு தோல்வி</string>
+    <string name="calendar_sync_line_stopped">ஒத்திசைவு நிறுத்தப்பட்டது</string>
+    <string name="calendar_sync_next_in">அடுத்தது %1$s நிமி-ல்</string>
+    <string name="calendar_sync_next_soon">அடுத்தது ஒரு நிமிடத்துக்குள்</string>
+    <string name="calendar_sync_retry_in">%1$s நிமி-ல் மீண்டும் முயற்சி</string>
+    <string name="calendar_sync_retry_soon">விரைவில் மீண்டும் முயற்சி</string>
     <string name="calendar_sync_now">இப்போது ஒத்திசை</string>
     <string name="calendar_sync_leave">இந்தத் தொலைபேசியில் ஒத்திசைவை நிறுத்து</string>
     <string name="calendar_sync_cd">ஒத்திசை</string>

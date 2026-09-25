@@ -28,6 +28,9 @@ internal object CalendarTags {
     /** A service's card on the day it is planned for. */
     fun serviceCard(id: String) = "calendar:service:$id"
 
+    /** The small "Synced 2 min ago · next in 3 min" line above a header's buttons. */
+    const val SYNC_LINE = "calendar:syncLine"
+
     // ── The run of show ──────────────────────────────────────────────────
     const val RUN_BACK = "run:back"
 

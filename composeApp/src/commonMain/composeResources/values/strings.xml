@@ -1038,6 +1038,12 @@
     <string name="calendar_sync_status_syncing">Syncing…</string>
     <string name="calendar_sync_status_failed">Could not reach the relay: %1$s</string>
     <string name="calendar_sync_status_unauthorized">The church computer no longer accepts this phone. Enroll again to continue.</string>
+    <string name="calendar_sync_line_failed">Sync failed</string>
+    <string name="calendar_sync_line_stopped">Sync stopped</string>
+    <string name="calendar_sync_next_in">next in %1$s min</string>
+    <string name="calendar_sync_next_soon">next in under a min</string>
+    <string name="calendar_sync_retry_in">retry in %1$s min</string>
+    <string name="calendar_sync_retry_soon">retrying shortly</string>
     <string name="calendar_sync_now">Sync now</string>
     <string name="calendar_sync_leave">Stop syncing on this phone</string>
     <string name="calendar_sync_cd">Sync</string>

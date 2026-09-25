@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Synchronisation…</string>
     <string name="calendar_sync_status_failed">Relais injoignable : %1$s</string>
     <string name="calendar_sync_status_unauthorized">L'ordinateur de l'église n'accepte plus ce téléphone. Inscrivez-le à nouveau pour continuer.</string>
+    <string name="calendar_sync_line_failed">Échec de la synchronisation</string>
+    <string name="calendar_sync_line_stopped">Synchronisation arrêtée</string>
+    <string name="calendar_sync_next_in">prochaine dans %1$s min</string>
+    <string name="calendar_sync_next_soon">prochaine dans moins d’1 min</string>
+    <string name="calendar_sync_retry_in">nouvel essai dans %1$s min</string>
+    <string name="calendar_sync_retry_soon">nouvel essai imminent</string>
     <string name="calendar_sync_now">Synchroniser</string>
     <string name="calendar_sync_leave">Arrêter la synchronisation sur ce téléphone</string>
     <string name="calendar_sync_cd">Synchroniser</string>

@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Synchronizowanie…</string>
     <string name="calendar_sync_status_failed">Nie można połączyć się z przekaźnikiem: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Komputer kościelny nie akceptuje już tego telefonu. Zgłoś się ponownie, aby kontynuować.</string>
+    <string name="calendar_sync_line_failed">Synchronizacja nie powiodła się</string>
+    <string name="calendar_sync_line_stopped">Synchronizacja zatrzymana</string>
+    <string name="calendar_sync_next_in">następna za %1$s min</string>
+    <string name="calendar_sync_next_soon">następna za mniej niż minutę</string>
+    <string name="calendar_sync_retry_in">ponowienie za %1$s min</string>
+    <string name="calendar_sync_retry_soon">wkrótce ponowienie</string>
     <string name="calendar_sync_now">Synchronizuj teraz</string>
     <string name="calendar_sync_leave">Przestań synchronizować na tym telefonie</string>
     <string name="calendar_sync_cd">Synchronizacja</string>

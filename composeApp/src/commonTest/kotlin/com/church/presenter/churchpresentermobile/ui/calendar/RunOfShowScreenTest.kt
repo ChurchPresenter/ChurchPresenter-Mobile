@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui.calendar
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
+import com.church.presenter.churchpresentermobile.calendar.sync.SyncStatus
 import com.church.presenter.churchpresentermobile.model.PlanRow
 import com.church.presenter.churchpresentermobile.model.PlannedService
 import com.church.presenter.churchpresentermobile.ui.click
@@ -13,6 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 /**
  * The run of show: every row of a service in order, with the clock time each one is projected to
@@ -47,6 +49,8 @@ class RunOfShowScreenTest {
         service: PlannedService = CalendarFixtures.service,
         inline: Boolean = false,
         onBack: (() -> Unit)? = null,
+        sync: CalendarSyncView? = null,
+        onSync: (() -> Unit)? = null,
     ) = showScreen {
         RunOfShowScreen(
             service,
@@ -55,6 +59,8 @@ class RunOfShowScreenTest {
             actions(),
             onBack = onBack,
             inline = inline,
+            sync = sync,
+            onSync = onSync,
         )
     }
 
@@ -65,6 +71,35 @@ class RunOfShowScreenTest {
         show()
 
         assertTrue(isShowing(CalendarFixtures.SERVICE_NAME))
+    }
+
+    @Test
+    fun theHeaderSaysWhichDayTheServiceIsOn() = runComposeUiTest {
+        show()
+
+        // "Sunday Morning" alone could be any Sunday.
+        assertTrue(isShowing("Sunday, Sep 20"))
+    }
+
+    @Test
+    fun aPhoneShowsWhereSyncStandsAndTappingItOpensTheSheet() = runComposeUiTest {
+        var opened = 0
+        show(
+            onBack = {},
+            sync = CalendarSyncView(SyncStatus.Syncing, nextAt = null, now = Instant.fromEpochMilliseconds(0)),
+            onSync = { opened++ },
+        )
+
+        assertTrue(exists(CalendarTags.SYNC_LINE))
+        click(CalendarTags.SYNC_LINE)
+        assertEquals(1, opened)
+    }
+
+    @Test
+    fun besideTheMonthTheRunLeavesSyncToTheMonthHeader() = runComposeUiTest {
+        show(inline = true)
+
+        assertFalse(exists(CalendarTags.SYNC_LINE))
     }
 
     @Test
