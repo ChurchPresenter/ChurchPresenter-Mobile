@@ -84,6 +84,8 @@ object Sanitize {
             ) -> timing(t) }.filterValues { !it.isDefault() },
             seriesId = service.seriesId.takeIf(::isId).orEmpty(),
             updatedAt = instant(service.updatedAt),
+            editedAt = instant(service.editedAt),
+            version = service.version.coerceAtLeast(0L),
             rev = service.rev.coerceAtLeast(0L),
         )
     }

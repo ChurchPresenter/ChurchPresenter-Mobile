@@ -20,18 +20,30 @@ class ClientKeySourceTest {
 
     private val freshConfig = """{"clientKey":"freshkeyfreshkey1234","relayUrl":"x"}"""
 
-    private fun source(status: HttpStatusCode = HttpStatusCode.OK, body: String = freshConfig) =
+    private fun source(
+        status: HttpStatusCode = HttpStatusCode.OK,
+        body: String = freshConfig,
+        configUrl: String = TEST_CONFIG_URL,
+    ) =
         ClientKeySource(
             settings,
             HttpClient(
                 MockEngine { request ->
                     fetches++
-                    assertEquals("https://www.churchpresenter.org/api/relay-config", request.url.toString())
+                    assertEquals(TEST_CONFIG_URL, request.url.toString())
                     respond(body, status)
                 },
             ),
             now = { clock },
+            configUrl = { configUrl },
         )
+
+    @Test
+    fun withNoAddressFromRemoteConfigNothingIsFetchedAndThereIsNoKey() = runTest {
+        assertEquals(null, source(configUrl = "").refresh())
+        assertEquals(null, source(configUrl = "http://keys.example/k3v9q").refresh(), "TLS or nothing")
+        assertEquals(0, fetches)
+    }
 
     @Test
     fun aFreshCachedKeyIsUsedWithoutAskingTheWebsite() = runTest {
@@ -68,3 +80,5 @@ class ClientKeySourceTest {
         assertEquals("", settings.relayClientKey)
     }
 }
+
+private const val TEST_CONFIG_URL = "https://keys.example/k3v9q"
