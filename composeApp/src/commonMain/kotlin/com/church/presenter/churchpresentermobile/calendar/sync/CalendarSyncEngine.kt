@@ -112,7 +112,7 @@ class CalendarSyncEngine(
         registerPushIfChanged(client, current)
         registerNameIfChanged(client, sealing, current)
         val pushed = push(client, sealing)
-        val pulled = pull(client, sealing, state(), pushed)
+        val pulled = pull(client, sealing, state())
         _status.value = SyncStatus.Synced(nowIso(), pulled, pushed.size)
     }
 
@@ -137,7 +137,11 @@ class CalendarSyncEngine(
             .onFailure { Logger.e(TAG, "name not registered: ${it.message}") }
     }
 
-    /** Replays local edits and deletes. A stale write is dropped here and the pull below brings the winner. */
+    /**
+     * Replays local edits and deletes. A write the relay refuses as stale stays pending: the pull
+     * below brings the relay's copy, and whichever outranks the other (SYNC.md, *Which copy wins*)
+     * is kept -- ours is then written again next round, against the revision the pull brought.
+     */
     private suspend fun push(client: RelayClient, sealing: Sealing): Set<String> {
         val doc = repository.document.value
         val done = HashSet<String>()
@@ -145,24 +149,33 @@ class CalendarSyncEngine(
             val service = doc.serviceById(id) ?: run { done += id; continue }
             try {
                 client.putRecord(sealing.seal(service), ifRev = service.rev)
+                done += id
             } catch (_: RelayFailure.Conflict) {
-                Logger.d(TAG, "push $id — relay has a newer copy, taking theirs")
+                Logger.d(TAG, "push $id — relay has another copy; the pull decides which stands")
             }
-            done += id
         }
+        // A deletion is a sealed record like any other, never the relay's own unsigned tombstone.
         val deleted = HashSet<String>()
         for (id in doc.pendingDeletes) {
-            runCatching { client.deleteRecord(id) }
-                .onFailure { if (it !is RelayFailure.Conflict) throw it }
-            deleted += id
+            val deletedAt = doc.deletedServices[id] ?: nowIso()
+            val deletion = PlannedService(
+                id = id,
+                // Only for the relay's retention: kept as long as the deletion is remembered.
+                date = deletedAt.take(DATE_CHARS),
+                name = "",
+                startTime = "",
+                version = doc.deletedVersions[id] ?: 1L,
+                editedAt = deletedAt,
+                deleted = true,
+            )
+            try {
+                client.putRecord(sealing.seal(deletion), ifRev = doc.deletedRevs[id] ?: 0L)
+                deleted += id
+            } catch (_: RelayFailure.Conflict) {
+                Logger.d(TAG, "delete $id — relay has another copy; the pull decides which stands")
+            }
         }
-        repository.applySync(
-            accepted = emptyMap(),
-            removed = emptySet(),
-            presets = null,
-            pushedIds = done,
-            deletedIds = deleted,
-        )
+        repository.applySync(pushedIds = done, deletedIds = deleted)
         return done
     }
 
@@ -170,24 +183,29 @@ class CalendarSyncEngine(
         client: RelayClient,
         sealing: Sealing,
         current: CalendarSyncState,
-        pushed: Set<String>,
         page: Int = 1,
     ): Int {
         val changes = client.changes(current.cursor)
         if (changes.rev < current.cursor) throw RelayFailure.Rejected(0, "revision went backwards")
         val accepted = HashMap<String, PlannedService>()
+        val deletions = HashMap<String, PlannedService>()
         val catalog = HashMap<String, CatalogRecord>()
         var unreadable = 0
         var rejected = 0
+        val now = nowIso()
         for (record in changes.records.take(Sanitize.RECORDS_PER_PULL)) {
             when {
                 record.id.startsWith(CATALOG_PREFIX) ->
                     sealing.openCatalog(record)?.let { catalog[record.id] = it } ?: unreadable++
                 else -> {
-                    val opened = sealing.open(record)
-                    val service = opened?.let(Sanitize::service)
+                    // A sealed edit time ahead of this phone's clock is taken as now, so a device set
+                    // to next year cannot make its copies win for a year.
+                    val opened = sealing.open(record)?.let { it.copy(editedAt = EditOrder.clamped(it.editedAt, now)) }
+                    val service = opened?.takeUnless { it.deleted }?.let(Sanitize::service)
                     when {
                         opened == null -> unreadable++
+                        opened.deleted && Sanitize.isId(opened.id) ->
+                            deletions[opened.id] = opened.copy(version = opened.version.coerceAtLeast(0L))
                         service == null -> rejected++
                         else -> accepted[service.id] = service
                     }
@@ -196,29 +214,29 @@ class CalendarSyncEngine(
         }
         if (unreadable > 0) Logger.e(TAG, "pull — $unreadable records did not open under this key")
         if (rejected > 0) Logger.e(TAG, "pull — $rejected records were not services this phone keeps")
+        // The relay's plaintext tombstones delete no service: nobody signed them. Only the desktop's
+        // songbooks still leave that way -- a list of songs, not a plan, and put back on its next push.
         val gone = changes.tombstones.map { it.id }.filter(Sanitize::isId).toSet()
-        val removed = gone.filterNot { it.startsWith(CATALOG_PREFIX) }.toSet()
         catalogStore?.merge(catalog, gone.filter { it.startsWith(CATALOG_PREFIX) }.toSet())
         val presets = changes.presetsBox.takeIf { it.isNotEmpty() }
             ?.let { box -> sealing.openPresets(box)?.presets?.let(Sanitize::presets) }
-        // An edit made here while this round ran stays pending; a record we just pushed comes
-        // back stamped by the relay and replaces our unstamped copy.
-        val stillPending = repository.document.value.pendingPush - pushed
-        val applied = accepted.filterKeys { it !in stillPending }
+        // Merged copy by copy: a record we just pushed comes back stamped by the relay and replaces
+        // our copy of it, and nothing that does not outrank what is here replaces it.
         repository.applySync(
-            accepted = applied,
-            removed = removed,
+            services = accepted.values.toList(),
+            deletions = deletions.values.toList(),
             presets = presets,
-            pushedIds = emptySet(),
-            deletedIds = emptySet(),
         )
         val next = current.copy(cursor = changes.rev, lastSyncAt = nowIso())
         saveState(next)
-        val count = applied.size + removed.size
+        val count = accepted.size + deletions.size
         if (!changes.more) return count
         // A full page: the rest is behind it. Stopping here would leave the cursor short, which is safe,
         // but the phone would look up to date until the next round.
         if (page >= MAX_PULL_PAGES) throw RelayFailure.Rejected(0, "relay has more changes than one round will read")
-        return count + pull(client, sealing, next, pushed, page + 1)
+        return count + pull(client, sealing, next, page + 1)
     }
 }
+
+/** `YYYY-MM-DD` at the front of an ISO instant. */
+private const val DATE_CHARS = 10

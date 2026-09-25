@@ -23,6 +23,10 @@ data class CalendarDocument(
     val pendingPush: Set<String> = emptySet(),
     /** Services deleted here and not yet told to the relay. */
     val pendingDeletes: Set<String> = emptySet(),
+    /** Each deletion's [PlannedService.version], which orders it against an edit. */
+    val deletedVersions: Map<String, Long> = emptyMap(),
+    /** The relay revision each deleted service was at: what writing its deletion is conditioned on. */
+    val deletedRevs: Map<String, Long> = emptyMap(),
 ) {
     fun servicesOn(date: String): List<PlannedService> =
         services.filter { it.date == date }.sortedBy { it.startTime }
@@ -40,12 +44,18 @@ data class CalendarDocument(
     fun withServices(added: List<PlannedService>): CalendarDocument =
         added.fold(this) { document, service -> document.withService(service) }
 
-    fun withoutService(id: String, at: String): CalendarDocument = copy(
-        services = services.filterNot { it.id == id },
-        deletedServices = deletedServices + (id to at),
-        pendingPush = pendingPush - id,
-        pendingDeletes = pendingDeletes + id,
-    )
+    fun withoutService(id: String, at: String): CalendarDocument {
+        val service = serviceById(id)
+        return copy(
+            services = services.filterNot { it.id == id },
+            deletedServices = deletedServices + (id to at),
+            // One more edit than the copy it deleted, so it outranks that copy everywhere.
+            deletedVersions = deletedVersions + (id to (service?.version ?: deletedVersions[id] ?: 0L) + 1),
+            deletedRevs = deletedRevs + (id to (service?.rev ?: deletedRevs[id] ?: 0L)),
+            pendingPush = pendingPush - id,
+            pendingDeletes = pendingDeletes + id,
+        )
+    }
 
     fun withTemplate(template: SavedTemplate): CalendarDocument {
         val index = templates.indexOfFirst { it.id == template.id || it.name.equals(template.name, ignoreCase = true) }
@@ -76,10 +86,19 @@ data class PlannedService(
     val armed: Boolean = true,
     /** Shared by every copy made together, so a series can be found again. */
     val seriesId: String = "",
-    /** ISO instant of the last edit; what a merge compares. Stamped by the relay once synced. */
+    /** ISO instant the relay stamped on this copy. Shown, never merged on: the relay could write anything there. */
     val updatedAt: String = "",
     /** The relay revision this copy came from; 0 until it has been there. What a write is conditioned on. */
     val rev: Long = 0L,
+    /**
+     * How many edits this service has had, sealed with it: the copy with more wins, so a copy the
+     * relay hands back from earlier can never overwrite a newer one. See SYNC.md, *Which copy wins*.
+     */
+    val version: Long = 0L,
+    /** When the last edit was made, by the editor's own clock, sealed; only breaks a tie in [version]. */
+    val editedAt: String = "",
+    /** A sealed deletion: the service was deleted at [version], and nothing else here means anything. */
+    val deleted: Boolean = false,
 ) {
     fun timingFor(rowId: String): RowTiming = timing[rowId] ?: RowTiming.DEFAULT
     fun plannedSecondsFor(rowId: String): Int? = plannedSeconds[rowId]

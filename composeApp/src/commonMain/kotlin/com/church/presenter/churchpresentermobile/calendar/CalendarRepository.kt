@@ -1,6 +1,9 @@
 package com.church.presenter.churchpresentermobile.calendar
 
 import com.church.presenter.churchpresentermobile.calendar.sync.Sanitize
+import com.church.presenter.churchpresentermobile.calendar.sync.edited
+import com.church.presenter.churchpresentermobile.calendar.sync.receiving
+import com.church.presenter.churchpresentermobile.calendar.sync.receivingDeletion
 import com.church.presenter.churchpresentermobile.library.FileStore
 import com.church.presenter.churchpresentermobile.library.createFileStore
 import com.church.presenter.churchpresentermobile.model.CalendarDocument
@@ -12,9 +15,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 private const val TAG = "CalendarRepository"
 internal const val CALENDAR_FILE = "calendar.json"
+
+/** How long a deletion is remembered, as on the desktop: long enough to refuse an old copy of it. */
+private val DELETION_MEMORY = 90.days
 
 /**
  * `calendar.json` on this device: every planned service, saved templates and the desktop's
@@ -64,7 +72,8 @@ class CalendarRepository(
         val clean = Sanitize.service(service, fromRelay = false) ?: return
         val before = _document.value.serviceById(clean.id)
         if (before == clean) return
-        commit { it.withService(clean.copy(updatedAt = now())).copy(pendingPush = it.pendingPush + clean.id) }
+        val stamp = now()
+        commit { it.withService(it.edited(clean, stamp)).copy(pendingPush = it.pendingPush + clean.id) }
     }
 
     fun saveServices(services: List<PlannedService>) {
@@ -72,32 +81,41 @@ class CalendarRepository(
         val clean = services.mapNotNull { Sanitize.service(it, fromRelay = false) }
         if (clean.isEmpty()) return
         commit {
-            it.withServices(clean.map { service -> service.copy(updatedAt = stamp) })
+            it.withServices(clean.map { service -> it.edited(service, stamp) })
                 .copy(pendingPush = it.pendingPush + clean.map { s -> s.id })
         }
     }
 
     /**
-     * What a sync round decided: services as the relay now holds them (written without marking
-     * them pending), ids the relay no longer has, the desktop's preset index, and which pending
-     * marks were accepted.
+     * What a sync round brought and what it sent. [services] and [deletions] from the relay are
+     * merged by *Which copy wins* (SYNC.md): each replaces what is here only when it outranks it,
+     * so the relay's own stamps and plaintext tombstones decide nothing. [pushedIds] and
+     * [deletedIds] are the writes the relay accepted, no longer pending. A sent deletion is still
+     * remembered, for 90 days: it is what refuses an old copy of the service handed back later.
      */
     fun applySync(
-        accepted: Map<String, PlannedService>,
-        removed: Set<String>,
-        presets: List<PresetSummary>?,
-        pushedIds: Set<String>,
-        deletedIds: Set<String>,
+        services: List<PlannedService> = emptyList(),
+        deletions: List<PlannedService> = emptyList(),
+        presets: List<PresetSummary>? = null,
+        pushedIds: Set<String> = emptySet(),
+        deletedIds: Set<String> = emptySet(),
     ) {
-        commit { doc ->
-            val kept = doc.services.filterNot { it.id in removed }.map { accepted[it.id] ?: it }
-            val added = accepted.values.filter { s -> kept.none { it.id == s.id } && s.id !in doc.pendingDeletes }
+        commit { start ->
+            var doc = start.copy(
+                pendingPush = start.pendingPush - pushedIds,
+                pendingDeletes = start.pendingDeletes - deletedIds,
+            )
+            for (remote in services) doc = doc.receiving(remote)
+            for (deletion in deletions) doc = doc.receivingDeletion(deletion)
+            val cutoff = runCatching { (Instant.parse(now()) - DELETION_MEMORY).toString() }.getOrNull()
+            val remembered = doc.deletedServices.filter { (id, at) ->
+                cutoff == null || id in doc.pendingDeletes || at >= cutoff
+            }
             doc.copy(
-                services = kept + added,
                 presets = presets ?: doc.presets,
-                pendingPush = doc.pendingPush - pushedIds - removed,
-                pendingDeletes = doc.pendingDeletes - deletedIds - removed,
-                deletedServices = doc.deletedServices.filterKeys { it !in deletedIds },
+                deletedServices = remembered,
+                deletedVersions = doc.deletedVersions.filterKeys { it in remembered },
+                deletedRevs = doc.deletedRevs.filterKeys { it in remembered },
             )
         }
     }

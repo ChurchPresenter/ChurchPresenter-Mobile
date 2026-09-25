@@ -144,6 +144,10 @@ class CalendarSyncEngineTest {
     private fun service(id: String, name: String, rev: Long = 0) =
         PlannedService(id, "2026-09-27", name, "10:00", rows = listOf(PlanRow.Section("r1", "Worship")), rev = rev)
 
+    private fun deletion(id: String, version: Long) = PlannedService(
+        id, "2026-09-20", "", "", version = version, editedAt = "2026-09-20T09:00:00Z", deleted = true,
+    )
+
     @Test
     fun anUnenrolledPhoneDoesNotTouchTheNetwork() = runTest {
         state = CalendarSyncState()
@@ -244,7 +248,8 @@ class CalendarSyncEngineTest {
         val engine = engine()
         engine.sync()
         repository.saveService(repository.service("svc-1")!!.copy(name = "Phone edit"))
-        relay.desktopWrote(service("svc-1", "Desktop edit"))
+        // An edit of the same copy, made after the phone's: the tie goes to the later edit.
+        relay.desktopWrote(service("svc-1", "Desktop edit").copy(version = 1, editedAt = "2026-09-20T11:00:00Z"))
 
         assertTrue(engine.sync())
         val doc = repository.document.value
@@ -254,23 +259,84 @@ class CalendarSyncEngineTest {
     }
 
     @Test
-    fun aLocalDeleteReachesTheRelayAndATombstoneRemovesHere() = runTest {
+    fun aLocalDeleteReachesTheRelaySealedAndASealedDeletionRemovesHere() = runTest {
         relay.desktopWrote(service("svc-1", "Sunday"))
         relay.desktopWrote(service("svc-2", "Midweek"))
         val engine = engine()
         engine.sync()
         repository.deleteService("svc-1")
-        relay.records.remove("svc-2")
-        relay.rev += 1
-        relay.tombstones += RemoteTombstone("svc-2", "2026-09-20T11:00:00Z")
+        relay.desktopWrote(deletion("svc-2", version = 1))
 
         assertTrue(engine.sync())
         val doc = repository.document.value
         assertTrue(doc.services.isEmpty())
         assertTrue(doc.pendingDeletes.isEmpty())
-        assertTrue(doc.deletedServices.isEmpty())
-        assertNull(relay.records["svc-1"])
-        assertTrue(relay.calls.contains("DELETE records/svc-1"))
+        assertEquals(setOf("svc-1", "svc-2"), doc.deletedServices.keys)
+        val sent = sealing().open(relay.records.getValue("svc-1"))!!
+        assertTrue(sent.deleted)
+        assertEquals(1L, sent.version)
+        assertTrue(relay.calls.none { it.startsWith("DELETE") }, "the relay's own tombstone is never used")
+    }
+
+    @Test
+    fun theRelaysOwnPlaintextTombstoneDeletesNothing() = runTest {
+        relay.desktopWrote(service("svc-1", "Sunday"))
+        val engine = engine()
+        engine.sync()
+        relay.rev += 1
+        relay.tombstones += RemoteTombstone("svc-1", "2099-01-01T00:00:00Z")
+
+        assertTrue(engine.sync())
+        assertEquals("Sunday", repository.service("svc-1")?.name)
+    }
+
+    @Test
+    fun anOldCopyHandedBackByTheRelayCannotOverwriteANewerOne() = runTest {
+        relay.desktopWrote(service("svc-1", "Current").copy(version = 5, editedAt = "2026-09-20T09:00:00Z"))
+        val engine = engine()
+        engine.sync()
+        relay.desktopWrote(service("svc-1", "Stale").copy(version = 3, editedAt = "2026-09-20T09:30:00Z"))
+
+        assertTrue(engine.sync())
+        assertEquals("Current", repository.service("svc-1")?.name)
+    }
+
+    @Test
+    fun anOldCopyHandedBackCannotBringADeletedServiceBack() = runTest {
+        relay.desktopWrote(service("svc-1", "Sunday").copy(version = 2))
+        val engine = engine()
+        engine.sync()
+        repository.deleteService("svc-1")
+        engine.sync()
+        relay.desktopWrote(service("svc-1", "Sunday").copy(version = 2, editedAt = "2026-09-20T09:00:00Z"))
+
+        assertTrue(engine.sync())
+        assertNull(repository.service("svc-1"))
+    }
+
+    @Test
+    fun aRefusedWriteThatOutranksTheRelaysCopyIsSentAgain() = runTest {
+        relay.desktopWrote(service("svc-1", "Sunday").copy(version = 1, editedAt = "2026-09-20T08:00:00Z"))
+        val engine = engine()
+        engine.sync()
+        repository.saveService(repository.service("svc-1")!!.copy(name = "Phone edit"))
+        // Another edit of the same copy lands first, made earlier than the phone's.
+        relay.desktopWrote(service("svc-1", "Earlier edit").copy(version = 2, editedAt = "2026-09-20T09:00:00Z"))
+
+        assertTrue(engine.sync())
+        assertEquals("Phone edit", repository.service("svc-1")?.name)
+        assertEquals(setOf("svc-1"), repository.document.value.pendingPush, "written again next round")
+        assertTrue(engine.sync())
+        assertEquals("Phone edit", sealing().open(relay.records.getValue("svc-1"))!!.name)
+        assertTrue(repository.document.value.pendingPush.isEmpty())
+    }
+
+    @Test
+    fun anEditTimeAheadOfThisPhonesClockIsTakenAsNow() = runTest {
+        relay.desktopWrote(service("svc-1", "From the future").copy(version = 1, editedAt = "2099-01-01T00:00:00Z"))
+
+        assertTrue(engine().sync())
+        assertTrue(repository.service("svc-1")!!.editedAt < "2099", "clamped to the phone's own clock")
     }
 
     @Test
@@ -423,12 +489,13 @@ class CalendarSyncEngineTest {
     }
 
     @Test
-    fun aPendingEditForAServiceThatIsGoneIsDroppedNotSent() = runTest {
+    fun aPendingEditForAServiceThatIsGoneIsDroppedAndOnlyItsDeletionIsSent() = runTest {
         repository.saveService(service("svc-1", "Sunday"))
         repository.deleteService("svc-1")
         val engine = engine()
         assertTrue(engine.sync())
-        assertTrue(relay.calls.none { it == "PUT records/svc-1" })
+        assertEquals(1, relay.calls.count { it == "PUT records/svc-1" })
+        assertTrue(sealing().open(relay.records.getValue("svc-1"))!!.deleted)
         assertTrue(repository.document.value.pendingPush.isEmpty())
     }
 

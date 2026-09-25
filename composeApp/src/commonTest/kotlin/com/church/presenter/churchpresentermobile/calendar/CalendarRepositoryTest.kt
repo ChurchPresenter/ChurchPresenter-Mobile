@@ -73,38 +73,35 @@ class CalendarRepositoryTest {
     }
 
     @Test
-    fun applySyncTakesTheRelaysCopiesAndClearsWhatWasAccepted() {
-        repository.saveService(service(name = "Local edit"))
+    fun aSyncKeepsWhatOutranksAndClearsWhatWasSent() {
+        repository.saveService(service())
         repository.saveService(service(id = "svc-2", name = "Also local"))
         repository.deleteService("svc-2")
-        val fromRelay = service(name = "Local edit", rev = 4).copy(updatedAt = "2026-09-20T10:05:00Z")
-        val newFromRelay = service(id = "svc-3", name = "Planned on the desktop", rev = 5)
-        val reAdded = service(id = "svc-2", name = "Deleted here", rev = 6)
+        // The phone's own write coming back stamped by the relay: the same edit, a new revision.
+        val ownEchoed = repository.service("svc-1")!!.copy(rev = 4, updatedAt = "2026-09-20T10:05:00Z")
+        val newFromRelay = service(id = "svc-3", name = "Planned on the desktop", rev = 5).copy(version = 1)
+        val oldCopyOfDeleted = service(id = "svc-2", name = "Deleted here", rev = 6).copy(version = 1)
         repository.applySync(
-            accepted = mapOf("svc-1" to fromRelay, "svc-3" to newFromRelay, "svc-2" to reAdded),
-            removed = setOf("svc-9"),
+            services = listOf(ownEchoed, newFromRelay, oldCopyOfDeleted),
             presets = listOf(PresetSummary("p1", "Countdown")),
             pushedIds = setOf("svc-1"),
-            deletedIds = emptySet(),
         )
         val doc = repository.document.value
         assertEquals(listOf("svc-1", "svc-3"), doc.services.map { it.id })
         assertEquals(4L, doc.serviceById("svc-1")!!.rev)
         assertTrue(doc.pendingPush.isEmpty())
-        assertEquals(setOf("svc-2"), doc.pendingDeletes)
+        assertEquals(setOf("svc-2"), doc.pendingDeletes, "the deletion outranks the copy it deleted")
+        assertEquals(6L, doc.deletedRevs["svc-2"], "and is written next against the relay's revision")
         assertEquals(listOf(PresetSummary("p1", "Countdown")), doc.presets)
     }
 
     @Test
-    fun aRemovalFromTheRelayDropsTheServiceAndItsPendingMarks() {
+    fun aSealedDeletionThatOutranksTheServiceRemovesItAndItsPendingMarks() {
         repository.saveService(service())
-        repository.applySync(
-            accepted = emptyMap(),
-            removed = setOf("svc-1"),
-            presets = null,
-            pushedIds = emptySet(),
-            deletedIds = emptySet(),
+        val deletion = PlannedService(
+            "svc-1", "2026-09-20", "", "", version = 2, editedAt = "2026-09-20T11:00:00Z", deleted = true,
         )
+        repository.applySync(deletions = listOf(deletion))
         val doc = repository.document.value
         assertTrue(doc.services.isEmpty())
         assertTrue(doc.pendingPush.isEmpty())
@@ -112,19 +109,26 @@ class CalendarRepositoryTest {
     }
 
     @Test
-    fun anAcknowledgedDeleteForgetsTheTombstone() {
+    fun anAcknowledgedDeleteIsNoLongerPendingButIsStillRemembered() {
         repository.saveService(service())
         repository.deleteService("svc-1")
-        repository.applySync(
-            accepted = emptyMap(),
-            removed = emptySet(),
-            presets = null,
-            pushedIds = emptySet(),
-            deletedIds = setOf("svc-1"),
-        )
+        repository.applySync(deletedIds = setOf("svc-1"))
         val doc = repository.document.value
         assertTrue(doc.pendingDeletes.isEmpty())
-        assertTrue(doc.deletedServices.isEmpty())
+        assertTrue("svc-1" in doc.deletedServices, "what refuses an old copy of it handed back later")
+        assertEquals(2L, doc.deletedVersions["svc-1"], "one edit more than the copy it deleted")
+    }
+
+    @Test
+    fun anEditCountsOnceUntilItHasBeenSent() {
+        repository.saveService(service())
+        assertEquals(1L, repository.service("svc-1")!!.version)
+        repository.saveService(service().copy(name = "Again"))
+        repository.saveService(service().copy(name = "And again"))
+        assertEquals(1L, repository.service("svc-1")!!.version, "still one write waiting to go")
+        repository.applySync(pushedIds = setOf("svc-1"))
+        repository.saveService(service().copy(name = "After it went"))
+        assertEquals(2L, repository.service("svc-1")!!.version)
     }
 
     @Test
