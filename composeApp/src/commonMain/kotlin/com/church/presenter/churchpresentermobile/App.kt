@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -39,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.network.ktor3.KtorNetworkFetcherFactory
-import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.bible_chapter_label
@@ -110,6 +108,7 @@ import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.CcliReportScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
+import com.church.presenter.churchpresentermobile.ui.ContactOverlay
 import com.church.presenter.churchpresentermobile.ui.ContactScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
@@ -488,6 +487,8 @@ fun App(
     // Show connect QR-scan setup screen — set to true by the splash callback on
     // first launch (when !appSettings.isConnectSetupDone) or from SettingsScreen.
     var showConnectSetup by remember { mutableStateOf(false) }
+    // The contact form over the app, for a mode with no More tab to hold it (calendar mode).
+    var showContact by remember { mutableStateOf(false) }
 
     LaunchedEffect(showSettings) {
         if (showSettings) Analytics.logScreenView(AnalyticsScreen.SETTINGS)
@@ -929,7 +930,7 @@ fun App(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = { if (!useRail) appHeader() },
                 bottomBar = {
-                    if (!useRail) {
+                    if (!useRail && showsTabBar(tabs)) {
                         BottomTabBar(
                             selectedTab = selectedTab,
                             tabs = tabs,
@@ -1041,14 +1042,6 @@ fun App(
                             onSettings = { showSettings = true },
                             modifier = Modifier.fillMaxSize(),
                         )
-                        // Calendar mode's second tab: More would have held nothing else.
-                        AppTab.CONTACT -> Column(modifier = Modifier.fillMaxSize()) {
-                            if (twoPane) {
-                                ScreenHeader(title = stringResource(Res.string.contact_us_title))
-                                HorizontalDivider(color = LocalAppColors.current.borderSubtle)
-                            }
-                            ContactScreen(modifier = Modifier.weight(1f))
-                        }
                         AppTab.MORE -> {
                             // The open tool, named once: the phone shows it *instead of*
                             // the launcher and the tablet shows it *beside* one, and these
@@ -1228,9 +1221,9 @@ fun App(
 
                 if (useRail) {
                     Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                        NavRail(
+                        if (showsTabBar(tabs) || hasDrawer) NavRail(
                             selectedTab = selectedTab,
-                            tabs = tabs,
+                            tabs = if (showsTabBar(tabs)) tabs else emptyList(),
                             onTabSelected = selectTab,
                             onMenu = if (hasDrawer) ({ coroutineScope.launch { drawerState.open() } }) else null,
                         )
@@ -1278,8 +1271,8 @@ fun App(
                     appSettings = appSettings,
                     onContact = {
                         showSettings = false
-                        if (AppTab.CONTACT in tabs) {
-                            selectedTab = AppTab.CONTACT
+                        if (contactOpensOverlay(tabs)) {
+                            showContact = true
                         } else {
                             selectedTab = AppTab.MORE
                             moreDestination = MoreDestination.CONTACT
@@ -1302,6 +1295,7 @@ fun App(
                     twoPane = twoPane,
                 )
             }
+            if (showContact) ContactOverlay(onClose = { showContact = false })
         }
         if (!hasDrawer) {
             shell()

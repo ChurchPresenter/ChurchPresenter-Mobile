@@ -52,6 +52,12 @@ import org.jetbrains.compose.resources.stringResource
 private const val DAYS_PER_WEEK = 7
 private const val MAX_DOTS = 3
 
+/**
+ * A day cell's width over its height. Wider than tall: a square cell left six weeks of empty
+ * space around each number and pushed the day's Add service off a phone's screen.
+ */
+private const val DAY_CELL_ASPECT = 1.3f
+
 /** The month grid: a dot under each planned day, the selected day lit, today ringed. */
 @Composable
 internal fun MonthGrid(
@@ -158,7 +164,7 @@ private fun DayCell(
     val colors = LocalAppColors.current
     Column(
         modifier = modifier
-            .aspectRatio(1f)
+            .aspectRatio(DAY_CELL_ASPECT)
             .padding(2.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(if (selected) colors.accent else colors.background.copy(alpha = 0f))

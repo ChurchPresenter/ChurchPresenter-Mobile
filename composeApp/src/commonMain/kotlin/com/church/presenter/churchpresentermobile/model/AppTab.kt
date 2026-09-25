@@ -17,11 +17,6 @@ enum class AppTab {
     LIBRARY,
     /** Calendar-mode only: the planner as the whole app, rather than a More entry. */
     CALENDAR,
-    /**
-     * Calendar-mode only: Contact as a tab of its own. It was More's only entry there, and a
-     * launcher with one tile is a detour rather than a menu.
-     */
-    CONTACT,
     MORE;
 
     companion object {
@@ -34,11 +29,13 @@ enum class AppTab {
          * library. More survives in both, but with different contents — see
          * [MoreDestination.forMode]. Calendar mode is the planner and nothing
          * else: every other tab either drives a desktop or projects from here.
+         * With one tab there is no strip at all (see [showsTabBar]); Contact is
+         * reached from Settings, as it is in every mode.
          */
         fun forMode(mode: AppMode): List<AppTab> = when (mode) {
             AppMode.REMOTE -> listOf(SONGS, BIBLE, MEDIA, PRESENTATION, MORE)
             AppMode.STANDALONE -> listOf(PRESENT, SONGS, BIBLE, LIBRARY, MORE)
-            AppMode.CALENDAR -> listOf(CALENDAR, CONTACT)
+            AppMode.CALENDAR -> listOf(CALENDAR)
         }
     }
 }
@@ -84,8 +81,8 @@ enum class MoreDestination {
             // standalone is exactly the one with something to report.
             AppMode.REMOTE -> listOf(CALENDAR, PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
             AppMode.STANDALONE -> listOf(CALENDAR, PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
-            // Calendar mode has no More tab — Calendar and Contact are both tabs —
-            // so this list only settles a Contact left open from another mode.
+            // Calendar mode has no More tab, so this list only settles a Contact
+            // left open from another mode.
             AppMode.CALENDAR -> listOf(CONTACT)
         }
     }
