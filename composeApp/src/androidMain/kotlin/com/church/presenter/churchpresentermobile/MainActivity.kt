@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
                 RemoteConfigKeys.FEATURE_PICTURES_ENABLED      to RemoteConfigDefaults.FEATURE_PICTURES_ENABLED,
                 RemoteConfigKeys.FEATURE_PRESENTATION_ENABLED  to RemoteConfigDefaults.FEATURE_PRESENTATION_ENABLED,
                 RemoteConfigKeys.IS_DEMO_MODE                  to RemoteConfigDefaults.IS_DEMO_MODE,
+                RemoteConfigKeys.RELAY_CONFIG_URL              to RemoteConfigDefaults.RELAY_CONFIG_URL,
             ),
             fetchIntervalSeconds = if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
                                       RemoteConfigDefaults.FETCH_INTERVAL_DEBUG

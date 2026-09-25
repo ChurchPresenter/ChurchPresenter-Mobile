@@ -288,7 +288,7 @@ class CalendarViewModelTest {
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
             clientFor = { s, k -> RelayClient(s, k, relayHttp) },
         )
         val vm = viewModel(sync = engine)
@@ -338,7 +338,7 @@ class CalendarViewModelTest {
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
             clientFor = { s, k -> RelayClient(s, k, relayHttp) },
         )
         val vm = viewModel(sync = engine, saveEnrollment = { state = it })
@@ -389,3 +389,5 @@ class CalendarViewModelTest {
         }
     }
 }
+
+private const val TEST_CONFIG_URL = "https://keys.example/k3v9q"

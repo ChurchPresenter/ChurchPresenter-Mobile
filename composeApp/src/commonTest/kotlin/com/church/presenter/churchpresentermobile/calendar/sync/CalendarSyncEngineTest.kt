@@ -134,7 +134,7 @@ class CalendarSyncEngineTest {
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
             pushToken = { pushToken },
             deviceName = { deviceName },
             clientFor = { s, k -> RelayClient(s, k, relayHttp) },
@@ -204,7 +204,7 @@ class CalendarSyncEngineTest {
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
             clientFor = { s, k -> RelayClient(s, k, relayHttp) },
             catalogStore = catalogStore,
         )
@@ -421,7 +421,7 @@ class CalendarSyncEngineTest {
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, broken, now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, broken, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
             clientFor = { s, k -> RelayClient(s, k, broken) },
         )
 
@@ -479,7 +479,7 @@ class CalendarSyncEngineTest {
             repository,
             state = { state },
             saveState = { state = it },
-            clientKeys = ClientKeySource(settings, website, now = { 5_000_000L }),
+            clientKeys = ClientKeySource(settings, website, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
             deviceName = { deviceName },
             clientFor = { s, k -> RelayClient(s, k, refusing) },
         )
@@ -509,3 +509,5 @@ class CalendarSyncEngineTest {
         assertEquals(listOf("svc-1"), repository.document.value.services.map { it.id })
     }
 }
+
+private const val TEST_CONFIG_URL = "https://keys.example/k3v9q"

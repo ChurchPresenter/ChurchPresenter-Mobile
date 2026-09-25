@@ -14,6 +14,8 @@ object RemoteConfigKeys {
     const val FEATURE_PRESENTATION_ENABLED  = "feature_presentation_enabled"
     /** When true the app displays pre-built demo content without making any API calls. */
     const val IS_DEMO_MODE                  = "is_demo_mode"
+    /** Where the calendar relay's client key is fetched. Not in the source: set in the Firebase console. */
+    const val RELAY_CONFIG_URL              = "relay_config_url"
 }
 
 /**
@@ -30,6 +32,8 @@ object RemoteConfigDefaults {
     const val FEATURE_PRESENTATION_ENABLED  = true
     /** Demo mode is off by default. */
     const val IS_DEMO_MODE                  = false
+    /** Empty: without the console's value there is no key to fetch, and calendar sync says so. */
+    const val RELAY_CONFIG_URL              = ""
 
     /** Minimum fetch interval for production builds (seconds). */
     const val FETCH_INTERVAL_PRODUCTION = 3600L
