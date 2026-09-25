@@ -235,6 +235,8 @@
     <!-- Deep link / QR code connect -->
     <string name="deep_link_connected">✓ Server set to %1$s:%2$s</string>
     <string name="qr_scan_button">Scan QR Code</string>
+    <string name="qr_scanner_downloading">Downloading the QR scanner…</string>
+    <string name="qr_scanner_unavailable">QR scanning requires Google Play Services, which is not available on this device.</string>
     <string name="qr_camera_denied_title">Camera access needed</string>
     <string name="qr_camera_denied_body">ChurchPresenter needs the camera to scan the QR code. Allow camera access in Settings, or enter the server address manually.</string>
     <string name="qr_camera_open_settings">Open Settings</string>

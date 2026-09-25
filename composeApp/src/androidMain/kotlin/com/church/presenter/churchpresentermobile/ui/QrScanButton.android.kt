@@ -17,11 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.common.moduleinstall.ModuleInstall
+import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.qr_scan_button
+import churchpresentermobile.composeapp.generated.resources.qr_scanner_downloading
+import churchpresentermobile.composeapp.generated.resources.qr_scanner_unavailable
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -32,9 +35,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
     val context = LocalContext.current
+    val messages = ScannerMessages(
+        downloading = stringResource(Res.string.qr_scanner_downloading),
+        unavailable = stringResource(Res.string.qr_scanner_unavailable),
+    )
 
     OutlinedButton(
-        onClick = { startBarcodeScan(context, onScanned) },
+        onClick = { startBarcodeScan(context, messages, onScanned) },
         modifier = modifier
     ) {
         Icon(imageVector = Icons.Filled.QrCodeScanner, contentDescription = null)
@@ -49,35 +56,45 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
  * when the module wasn't ready, which crashed with an uncatchable
  * `ActivityNotFoundException` deep inside that activity rather than
  * surfacing here (CHURCH-PRESENTER-MOBILE-1G).
+ *
+ * The module is downloaded on demand and is not there until some app asks for
+ * it, so a missing module is requested rather than treated as a device without
+ * Play Services — otherwise a phone no app had scanned on yet could never scan.
  */
-private fun startBarcodeScan(context: Context, onScanned: (String) -> Unit) {
+private fun startBarcodeScan(context: Context, messages: ScannerMessages, onScanned: (String) -> Unit) {
     try {
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
             .build()
         val scanner = GmsBarcodeScanning.getClient(context, options)
-        ModuleInstall.getClient(context).areModulesAvailable(scanner)
+        val startScan = {
+            scanner.startScan()
+                .addOnSuccessListener { barcode -> barcode.rawValue?.let(onScanned) }
+                .addOnFailureListener { showToast(context, messages.unavailable) }
+        }
+        val modules = ModuleInstall.getClient(context)
+        modules.areModulesAvailable(scanner)
             .addOnSuccessListener { response ->
                 if (response.areModulesAvailable()) {
-                    scanner.startScan()
-                        .addOnSuccessListener { barcode -> barcode.rawValue?.let(onScanned) }
-                        .addOnFailureListener { showScannerUnavailableToast(context) }
+                    startScan()
                 } else {
-                    showScannerUnavailableToast(context)
+                    showToast(context, messages.downloading)
+                    modules.installModules(ModuleInstallRequest.newBuilder().addApi(scanner).build())
+                        .addOnSuccessListener { startScan() }
+                        .addOnFailureListener { showToast(context, messages.unavailable) }
                 }
             }
-            .addOnFailureListener { showScannerUnavailableToast(context) }
+            .addOnFailureListener { showToast(context, messages.unavailable) }
     } catch (e: ActivityNotFoundException) {
-        showScannerUnavailableToast(context)
+        showToast(context, messages.unavailable)
     }
 }
 
-private fun showScannerUnavailableToast(context: Context) {
-    Toast.makeText(
-        context,
-        "QR scanning requires Google Play Services, which is not available on this device.",
-        Toast.LENGTH_LONG
-    ).show()
+/** The scanner's toasts, resolved in composition since the scan runs outside it. */
+private class ScannerMessages(val downloading: String, val unavailable: String)
+
+private fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
 
 @Composable
