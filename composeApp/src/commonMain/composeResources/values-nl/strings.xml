@@ -735,6 +735,12 @@
     <string name="calendar_sync_status_syncing">Synchroniseren…</string>
     <string name="calendar_sync_status_failed">Kan de relay niet bereiken: %1$s</string>
     <string name="calendar_sync_status_unauthorized">De kerkcomputer accepteert deze telefoon niet meer. Meld hem opnieuw aan om door te gaan.</string>
+    <string name="calendar_sync_line_failed">Synchronisatie mislukt</string>
+    <string name="calendar_sync_line_stopped">Synchronisatie gestopt</string>
+    <string name="calendar_sync_next_in">volgende over %1$s min</string>
+    <string name="calendar_sync_next_soon">volgende binnen een minuut</string>
+    <string name="calendar_sync_retry_in">opnieuw over %1$s min</string>
+    <string name="calendar_sync_retry_soon">zo meteen opnieuw</string>
     <string name="calendar_sync_now">Nu synchroniseren</string>
     <string name="calendar_sync_leave">Stop met synchroniseren op deze telefoon</string>
     <string name="calendar_sync_cd">Synchroniseren</string>

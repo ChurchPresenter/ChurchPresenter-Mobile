@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">در حال همگام‌سازی…</string>
     <string name="calendar_sync_status_failed">دسترسی به رله ممکن نشد: %1$s</string>
     <string name="calendar_sync_status_unauthorized">رایانهٔ کلیسا دیگر این گوشی را نمی‌پذیرد. برای ادامه دوباره ثبت‌نام کنید.</string>
+    <string name="calendar_sync_line_failed">همگام‌سازی ناموفق بود</string>
+    <string name="calendar_sync_line_stopped">همگام‌سازی متوقف شد</string>
+    <string name="calendar_sync_next_in">بعدی تا %1$s دقیقه دیگر</string>
+    <string name="calendar_sync_next_soon">بعدی کمتر از یک دقیقه دیگر</string>
+    <string name="calendar_sync_retry_in">تلاش دوباره تا %1$s دقیقه دیگر</string>
+    <string name="calendar_sync_retry_soon">به‌زودی دوباره تلاش می‌شود</string>
     <string name="calendar_sync_now">همگام‌سازی</string>
     <string name="calendar_sync_leave">توقف همگام‌سازی روی این گوشی</string>
     <string name="calendar_sync_cd">همگام‌سازی</string>

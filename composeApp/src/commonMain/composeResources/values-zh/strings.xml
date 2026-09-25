@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">正在同步…</string>
     <string name="calendar_sync_status_failed">无法连接中继：%1$s</string>
     <string name="calendar_sync_status_unauthorized">教会电脑已不再接受这部手机。请重新登记以继续。</string>
+    <string name="calendar_sync_line_failed">同步失败</string>
+    <string name="calendar_sync_line_stopped">同步已停止</string>
+    <string name="calendar_sync_next_in">%1$s 分钟后再次同步</string>
+    <string name="calendar_sync_next_soon">不到 1 分钟后再次同步</string>
+    <string name="calendar_sync_retry_in">%1$s 分钟后重试</string>
+    <string name="calendar_sync_retry_soon">即将重试</string>
     <string name="calendar_sync_now">立即同步</string>
     <string name="calendar_sync_leave">停止在这部手机上同步</string>
     <string name="calendar_sync_cd">同步</string>

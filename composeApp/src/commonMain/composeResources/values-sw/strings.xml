@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Inasawazisha…</string>
     <string name="calendar_sync_status_failed">Haikuweza kufikia relei: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Kompyuta ya kanisa haikubali tena simu hii. Jisajili tena ili kuendelea.</string>
+    <string name="calendar_sync_line_failed">Usawazishaji umeshindwa</string>
+    <string name="calendar_sync_line_stopped">Usawazishaji umesimamishwa</string>
+    <string name="calendar_sync_next_in">inayofuata baada ya dak %1$s</string>
+    <string name="calendar_sync_next_soon">inayofuata chini ya dakika</string>
+    <string name="calendar_sync_retry_in">jaribu tena baada ya dak %1$s</string>
+    <string name="calendar_sync_retry_soon">itajaribu tena hivi karibuni</string>
     <string name="calendar_sync_now">Sawazisha sasa</string>
     <string name="calendar_sync_leave">Acha kusawazisha kwenye simu hii</string>
     <string name="calendar_sync_cd">Sawazisha</string>

@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">सिंक हो रहा है…</string>
     <string name="calendar_sync_status_failed">रिले तक नहीं पहुँच सके: %1$s</string>
     <string name="calendar_sync_status_unauthorized">चर्च का कंप्यूटर अब इस फ़ोन को स्वीकार नहीं करता। जारी रखने के लिए दोबारा पंजीकरण करें।</string>
+    <string name="calendar_sync_line_failed">सिंक विफल</string>
+    <string name="calendar_sync_line_stopped">सिंक रुका हुआ है</string>
+    <string name="calendar_sync_next_in">अगला %1$s मिनट में</string>
+    <string name="calendar_sync_next_soon">अगला एक मिनट से कम में</string>
+    <string name="calendar_sync_retry_in">%1$s मिनट में फिर कोशिश</string>
+    <string name="calendar_sync_retry_soon">जल्द फिर कोशिश</string>
     <string name="calendar_sync_now">अभी सिंक करें</string>
     <string name="calendar_sync_leave">इस फ़ोन पर सिंक बंद करें</string>
     <string name="calendar_sync_cd">सिंक</string>

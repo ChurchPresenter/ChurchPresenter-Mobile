@@ -27,17 +27,6 @@ class ChromeScreenshotTest {
     }
 
     @Test
-    fun bottomBarCalendarMode() = screenshot("bottom-tab-bar__calendar") {
-        // Two tabs: the planner and the launcher. Nothing here projects, so the strip that
-        // drives an output is not drawn at all.
-        BottomTabBar(
-            selectedTab = AppTab.CALENDAR,
-            onTabSelected = {},
-            tabs = AppTab.forMode(AppMode.CALENDAR),
-        )
-    }
-
-    @Test
     fun bottomBarStandaloneMode() = screenshot("bottom-tab-bar__standalone") {
         // A different tab set entirely — the phone drives its own output, so
         // Present and Library replace Media and the desktop's decks.

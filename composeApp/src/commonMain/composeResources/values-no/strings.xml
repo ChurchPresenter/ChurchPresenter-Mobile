@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Synkroniserer…</string>
     <string name="calendar_sync_status_failed">Fikk ikke kontakt med releet: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Menighetens datamaskin godtar ikke lenger denne telefonen. Meld den på igjen for å fortsette.</string>
+    <string name="calendar_sync_line_failed">Synkronisering mislyktes</string>
+    <string name="calendar_sync_line_stopped">Synkronisering stoppet</string>
+    <string name="calendar_sync_next_in">neste om %1$s min</string>
+    <string name="calendar_sync_next_soon">neste om under ett min</string>
+    <string name="calendar_sync_retry_in">nytt forsøk om %1$s min</string>
+    <string name="calendar_sync_retry_soon">prøver igjen straks</string>
     <string name="calendar_sync_now">Synkroniser nå</string>
     <string name="calendar_sync_leave">Slutt å synkronisere på denne telefonen</string>
     <string name="calendar_sync_cd">Synkroniser</string>

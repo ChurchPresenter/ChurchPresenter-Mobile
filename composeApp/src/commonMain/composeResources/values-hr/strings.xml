@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Sinkroniziram…</string>
     <string name="calendar_sync_status_failed">Nije moguće doći do releja: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Crkveno računalo više ne prihvaća ovaj telefon. Prijavite ga ponovno za nastavak.</string>
+    <string name="calendar_sync_line_failed">Sinkronizacija nije uspjela</string>
+    <string name="calendar_sync_line_stopped">Sinkronizacija zaustavljena</string>
+    <string name="calendar_sync_next_in">sljedeća za %1$s min</string>
+    <string name="calendar_sync_next_soon">sljedeća za manje od minute</string>
+    <string name="calendar_sync_retry_in">ponovno za %1$s min</string>
+    <string name="calendar_sync_retry_soon">uskoro ponovno</string>
     <string name="calendar_sync_now">Sinkroniziraj</string>
     <string name="calendar_sync_leave">Prekini sinkronizaciju na ovom telefonu</string>
     <string name="calendar_sync_cd">Sinkronizacija</string>

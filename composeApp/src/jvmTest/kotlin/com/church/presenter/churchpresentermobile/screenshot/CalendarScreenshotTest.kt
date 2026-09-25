@@ -15,7 +15,9 @@ import com.church.presenter.churchpresentermobile.model.RowKind
 import com.church.presenter.churchpresentermobile.model.RowTiming
 import com.church.presenter.churchpresentermobile.model.SectionPalette
 import com.church.presenter.churchpresentermobile.model.ServiceKind
+import com.church.presenter.churchpresentermobile.ui.calendar.CalendarSyncView
 import com.church.presenter.churchpresentermobile.ui.calendar.DayServices
+import com.church.presenter.churchpresentermobile.ui.calendar.MonthHeader
 import com.church.presenter.churchpresentermobile.ui.calendar.MonthGrid
 import com.church.presenter.churchpresentermobile.ui.calendar.PickerSources
 import com.church.presenter.churchpresentermobile.ui.calendar.RowListActions
@@ -27,6 +29,8 @@ import com.church.presenter.churchpresentermobile.ui.calendar.SyncActions
 import com.church.presenter.churchpresentermobile.viewmodel.EnrollFlow
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 /**
  * The calendar: the month a service is planned in, the run of show inside it, and what the phone
@@ -41,6 +45,8 @@ class CalendarScreenshotTest {
         val SEPTEMBER = YearMonthRef(2026, 9)
         val SUNDAY = LocalDate(2026, 9, 20)
         val TODAY = LocalDate(2026, 9, 17)
+        /** The sync line's clock, pinned so the countdown in a golden never moves. */
+        val SYNC_NOW: Instant = Instant.parse("2026-09-20T10:00:00Z")
     }
 
     private val services = listOf(
@@ -109,6 +115,31 @@ class CalendarScreenshotTest {
         Month(emptyList())
     }
 
+    @Test
+    fun monthHeaderSynced() = screenshot("calendar__month-header-synced") {
+        // The line sits over the buttons: when the last round was, and when the next one runs.
+        MonthHeaderWith(SyncStatus.Synced("2026-09-20T09:58:00Z", 0, 0), nextAt = SYNC_NOW + 3.minutes)
+    }
+
+    @Test
+    fun monthHeaderSyncFailed() = screenshot("calendar__month-header-sync-failed") {
+        MonthHeaderWith(SyncStatus.Failed("offline"), nextAt = SYNC_NOW + 5.minutes)
+    }
+
+    @Composable
+    private fun MonthHeaderWith(status: SyncStatus, nextAt: Instant) {
+        MonthHeader(
+            serviceCount = services.size,
+            monthName = "September 2026",
+            onToday = {},
+            onBack = null,
+            compact = false,
+            onSync = {},
+            sync = CalendarSyncView(status, nextAt, SYNC_NOW),
+            onSettings = {},
+        )
+    }
+
     @Composable
     private fun Month(shown: List<PlannedService>) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -160,6 +191,19 @@ class CalendarScreenshotTest {
     @Test
     fun runOfShow() = screenshot("calendar__run-of-show") {
         RunOfShowScreen(fullService, sources, { "new" }, runActions, onBack = {})
+    }
+
+    @Test
+    fun runOfShowSynced() = screenshot("calendar__run-of-show-synced") {
+        // On a phone the sync line takes the room above Armed, since the month header is not on screen.
+        RunOfShowScreen(
+            fullService,
+            sources,
+            { "new" },
+            runActions,
+            onBack = {},
+            sync = CalendarSyncView(SyncStatus.Synced("2026-09-20T09:58:00Z", 0, 0), SYNC_NOW + 3.minutes, SYNC_NOW),
+        )
     }
 
     @Test

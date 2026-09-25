@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Sinhronizē…</string>
     <string name="calendar_sync_status_failed">Neizdevās sasniegt retranslatoru: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Draudzes dators vairs nepieņem šo tālruni. Pievienojieties vēlreiz, lai turpinātu.</string>
+    <string name="calendar_sync_line_failed">Sinhronizācija neizdevās</string>
+    <string name="calendar_sync_line_stopped">Sinhronizācija apturēta</string>
+    <string name="calendar_sync_next_in">nākamā pēc %1$s min</string>
+    <string name="calendar_sync_next_soon">nākamā pēc mazāk nekā minūtes</string>
+    <string name="calendar_sync_retry_in">atkārtoti pēc %1$s min</string>
+    <string name="calendar_sync_retry_soon">drīz mēģinās vēlreiz</string>
     <string name="calendar_sync_now">Sinhronizēt tagad</string>
     <string name="calendar_sync_leave">Pārtraukt sinhronizāciju šajā tālrunī</string>
     <string name="calendar_sync_cd">Sinhronizēt</string>

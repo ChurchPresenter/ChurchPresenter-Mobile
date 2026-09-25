@@ -6,8 +6,8 @@ import androidx.compose.ui.Modifier
 /**
  * Platform-specific button that launches a QR-code scanner and returns the decoded string.
  *
- * Android : Uses Google Play Services Code Scanner (no camera permission required,
- *           Google provides the scanning UI via Play Services).
+ * Android : Presents a full-screen camera overlay built into the app (CameraX + ZXing), so it
+ *           needs camera permission but not Google Play Services.
  * iOS     : Presents a full-screen AVFoundation camera overlay.
  * Web     : Hidden — browser camera scanning is not supported in this context.
  *

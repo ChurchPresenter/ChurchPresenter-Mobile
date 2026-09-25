@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Menyinkronkan…</string>
     <string name="calendar_sync_status_failed">Tidak dapat menghubungi relai: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Komputer gereja tidak lagi menerima ponsel ini. Daftarkan lagi untuk melanjutkan.</string>
+    <string name="calendar_sync_line_failed">Sinkronisasi gagal</string>
+    <string name="calendar_sync_line_stopped">Sinkronisasi dihentikan</string>
+    <string name="calendar_sync_next_in">berikutnya dalam %1$s mnt</string>
+    <string name="calendar_sync_next_soon">berikutnya kurang dari 1 mnt</string>
+    <string name="calendar_sync_retry_in">coba lagi dalam %1$s mnt</string>
+    <string name="calendar_sync_retry_soon">segera mencoba lagi</string>
     <string name="calendar_sync_now">Sinkronkan sekarang</string>
     <string name="calendar_sync_leave">Hentikan sinkronisasi di ponsel ini</string>
     <string name="calendar_sync_cd">Sinkronkan</string>

@@ -887,8 +887,12 @@ kotlin {
             implementation(libs.sentry.android)
             implementation(libs.play.review)
             implementation(libs.play.app.update)
-            // QR code scanner — no camera permission required, Google provides the UI
-            implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+            // QR code scanner — built into the app, no Play Services: CameraX for the camera,
+            // ZXing to decode
+            implementation(libs.androidx.camera.camera2)
+            implementation(libs.androidx.camera.lifecycle)
+            implementation(libs.androidx.camera.view)
+            implementation(libs.zxing.core)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)

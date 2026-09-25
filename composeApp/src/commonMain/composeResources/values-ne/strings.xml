@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">सिंक हुँदै…</string>
     <string name="calendar_sync_status_failed">रिलेसम्म पुग्न सकिएन: %1$s</string>
     <string name="calendar_sync_status_unauthorized">मण्डलीको कम्प्युटरले अब यो फोन स्वीकार गर्दैन। जारी राख्न फेरि दर्ता गर्नुहोस्।</string>
+    <string name="calendar_sync_line_failed">सिंक असफल भयो</string>
+    <string name="calendar_sync_line_stopped">सिंक रोकिएको छ</string>
+    <string name="calendar_sync_next_in">अर्को %1$s मिनेटमा</string>
+    <string name="calendar_sync_next_soon">अर्को एक मिनेटभित्र</string>
+    <string name="calendar_sync_retry_in">%1$s मिनेटमा फेरि प्रयास</string>
+    <string name="calendar_sync_retry_soon">छिट्टै फेरि प्रयास</string>
     <string name="calendar_sync_now">अहिले सिंक गर्नुहोस्</string>
     <string name="calendar_sync_leave">यस फोनमा सिंक बन्द गर्नुहोस्</string>
     <string name="calendar_sync_cd">सिंक</string>

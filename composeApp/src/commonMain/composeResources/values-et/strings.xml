@@ -735,6 +735,12 @@
     <string name="calendar_sync_status_syncing">Sünkroonin…</string>
     <string name="calendar_sync_status_failed">Releega ei saadud ühendust: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Koguduse arvuti ei võta seda telefoni enam vastu. Jätkamiseks liitu uuesti.</string>
+    <string name="calendar_sync_line_failed">Sünkroonimine ebaõnnestus</string>
+    <string name="calendar_sync_line_stopped">Sünkroonimine peatatud</string>
+    <string name="calendar_sync_next_in">järgmine %1$s min pärast</string>
+    <string name="calendar_sync_next_soon">järgmine alla minuti pärast</string>
+    <string name="calendar_sync_retry_in">uus katse %1$s min pärast</string>
+    <string name="calendar_sync_retry_soon">uus katse kohe</string>
     <string name="calendar_sync_now">Sünkrooni kohe</string>
     <string name="calendar_sync_leave">Lõpeta sünkroonimine selles telefonis</string>
     <string name="calendar_sync_cd">Sünkrooni</string>

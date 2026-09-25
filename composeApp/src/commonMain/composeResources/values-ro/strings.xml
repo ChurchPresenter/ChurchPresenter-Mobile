@@ -735,6 +735,12 @@
     <string name="calendar_sync_status_syncing">Se sincronizează…</string>
     <string name="calendar_sync_status_failed">Nu s-a putut contacta releul: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Computerul bisericii nu mai acceptă acest telefon. Înscrieți-l din nou pentru a continua.</string>
+    <string name="calendar_sync_line_failed">Sincronizarea a eșuat</string>
+    <string name="calendar_sync_line_stopped">Sincronizare oprită</string>
+    <string name="calendar_sync_next_in">următoarea în %1$s min</string>
+    <string name="calendar_sync_next_soon">următoarea în mai puțin de un minut</string>
+    <string name="calendar_sync_retry_in">reîncercare în %1$s min</string>
+    <string name="calendar_sync_retry_soon">reîncercare în curând</string>
     <string name="calendar_sync_now">Sincronizează acum</string>
     <string name="calendar_sync_leave">Oprește sincronizarea pe acest telefon</string>
     <string name="calendar_sync_cd">Sincronizare</string>

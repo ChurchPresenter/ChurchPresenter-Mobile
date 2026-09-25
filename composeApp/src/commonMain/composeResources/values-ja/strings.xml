@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">同期中…</string>
     <string name="calendar_sync_status_failed">中継サーバーに接続できません: %1$s</string>
     <string name="calendar_sync_status_unauthorized">教会のパソコンはこの端末を受け付けなくなりました。続けるには登録し直してください。</string>
+    <string name="calendar_sync_line_failed">同期に失敗しました</string>
+    <string name="calendar_sync_line_stopped">同期は停止中</string>
+    <string name="calendar_sync_next_in">次回まで %1$s 分</string>
+    <string name="calendar_sync_next_soon">次回まで 1 分未満</string>
+    <string name="calendar_sync_retry_in">%1$s 分後に再試行</string>
+    <string name="calendar_sync_retry_soon">まもなく再試行</string>
     <string name="calendar_sync_now">今すぐ同期</string>
     <string name="calendar_sync_leave">この端末での同期を停止</string>
     <string name="calendar_sync_cd">同期</string>

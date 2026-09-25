@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Synkronoidaan…</string>
     <string name="calendar_sync_status_failed">Välityspalvelinta ei tavoitettu: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Seurakunnan tietokone ei enää hyväksy tätä puhelinta. Liitä se uudelleen jatkaaksesi.</string>
+    <string name="calendar_sync_line_failed">Synkronointi epäonnistui</string>
+    <string name="calendar_sync_line_stopped">Synkronointi pysäytetty</string>
+    <string name="calendar_sync_next_in">seuraava %1$s min päästä</string>
+    <string name="calendar_sync_next_soon">seuraava alle minuutin päästä</string>
+    <string name="calendar_sync_retry_in">uusi yritys %1$s min päästä</string>
+    <string name="calendar_sync_retry_soon">uusi yritys pian</string>
     <string name="calendar_sync_now">Synkronoi nyt</string>
     <string name="calendar_sync_leave">Lopeta synkronointi tällä puhelimella</string>
     <string name="calendar_sync_cd">Synkronoi</string>

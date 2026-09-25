@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">กำลังซิงก์…</string>
     <string name="calendar_sync_status_failed">ติดต่อรีเลย์ไม่ได้: %1$s</string>
     <string name="calendar_sync_status_unauthorized">คอมพิวเตอร์ของคริสตจักรไม่รับโทรศัพท์เครื่องนี้แล้ว ลงทะเบียนใหม่เพื่อใช้งานต่อ</string>
+    <string name="calendar_sync_line_failed">ซิงก์ไม่สำเร็จ</string>
+    <string name="calendar_sync_line_stopped">หยุดการซิงก์แล้ว</string>
+    <string name="calendar_sync_next_in">ครั้งถัดไปใน %1$s นาที</string>
+    <string name="calendar_sync_next_soon">ครั้งถัดไปในไม่ถึง 1 นาที</string>
+    <string name="calendar_sync_retry_in">ลองใหม่ใน %1$s นาที</string>
+    <string name="calendar_sync_retry_soon">จะลองใหม่เร็วๆ นี้</string>
     <string name="calendar_sync_now">ซิงก์เดี๋ยวนี้</string>
     <string name="calendar_sync_leave">หยุดซิงก์บนโทรศัพท์เครื่องนี้</string>
     <string name="calendar_sync_cd">ซิงก์</string>

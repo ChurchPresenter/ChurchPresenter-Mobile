@@ -51,7 +51,6 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
     AppTab.MEDIA -> AnalyticsScreen.MEDIA
     AppTab.PRESENTATION -> AnalyticsScreen.PRESENTATIONS
     AppTab.CALENDAR -> AnalyticsScreen.CALENDAR
-    AppTab.CONTACT -> AnalyticsScreen.CONTACT
     AppTab.MORE -> AnalyticsScreen.MORE
 }
 
@@ -132,5 +131,18 @@ private val TABS_WITH_PANE_HEADERS = setOf(
     AppTab.MORE,
     AppTab.LIBRARY,
     AppTab.CALENDAR,
-    AppTab.CONTACT,
 )
+
+/**
+ * Whether [tabs] earn a tab strip — the bottom bar on a phone, the rail on a tablet.
+ *
+ * Calendar mode is one tab; a bar holding only the screen already on show takes a strip of the
+ * screen and offers nowhere to go.
+ */
+internal fun showsTabBar(tabs: List<AppTab>): Boolean = tabs.size > 1
+
+/**
+ * Where Settings' Contact us leads: More's Contact where there is a More tab, otherwise the
+ * contact form over the app (true).
+ */
+internal fun contactOpensOverlay(tabs: List<AppTab>): Boolean = AppTab.MORE !in tabs

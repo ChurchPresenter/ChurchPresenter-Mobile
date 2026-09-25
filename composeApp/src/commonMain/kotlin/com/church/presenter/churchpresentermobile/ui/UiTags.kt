@@ -366,6 +366,9 @@ internal object UiTags {
     const val SETTINGS_DISPLAY_NAME = "settings:displayName"
     const val SETTINGS_CHECK_STATUS = "settings:checkStatus"
     const val SETTINGS_CONTACT = "settings:contact"
+
+    /** The contact form opened over the app from Settings, in a mode with no More tab. */
+    const val CONTACT_OVERLAY = "contact:overlay"
     const val SETTINGS_TELEMETRY = "settings:telemetry"
     const val SETTINGS_DRAFT_URL = "settings:draftUrl"
     const val SETTINGS_SERVER_SECTION = "settings:serverSection"

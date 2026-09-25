@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Сінхранізацыя…</string>
     <string name="calendar_sync_status_failed">Не ўдалося звязацца з рэтранслятарам: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Царкоўны камп’ютар больш не прымае гэты тэлефон. Падключыцеся зноў, каб працягнуць.</string>
+    <string name="calendar_sync_line_failed">Сінхранізацыя не ўдалася</string>
+    <string name="calendar_sync_line_stopped">Сінхранізацыя спынена</string>
+    <string name="calendar_sync_next_in">наступная праз %1$s хв</string>
+    <string name="calendar_sync_next_soon">наступная менш чым праз хв</string>
+    <string name="calendar_sync_retry_in">паўтор праз %1$s хв</string>
+    <string name="calendar_sync_retry_soon">хутка паўтор</string>
     <string name="calendar_sync_now">Сінхранізаваць</string>
     <string name="calendar_sync_leave">Адключыць сінхранізацыю на гэтым тэлефоне</string>
     <string name="calendar_sync_cd">Сінхранізацыя</string>
