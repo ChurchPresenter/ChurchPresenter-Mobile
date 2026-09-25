@@ -4,6 +4,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.ui.CertSetupScreen
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
+import com.church.presenter.churchpresentermobile.ui.ContactOverlay
 import com.church.presenter.churchpresentermobile.ui.ContactScreen
 import com.church.presenter.churchpresentermobile.ui.NOT_CHURCH_PRESENTER
 import com.church.presenter.churchpresentermobile.ui.StatusScreen
@@ -89,5 +90,12 @@ class SetupScreenshotTest {
     @Test
     fun contact() = screenshot("contact__form") {
         ContactScreen()
+    }
+
+    @Test
+    fun contactOverCalendarMode() = screenshot("contact__overlay") {
+        // Calendar mode has no More tab, so Settings' Contact us opens the form over the planner,
+        // with a Back arrow to return to it.
+        ContactOverlay(onClose = {})
     }
 }

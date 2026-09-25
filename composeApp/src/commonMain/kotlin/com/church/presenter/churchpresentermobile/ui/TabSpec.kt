@@ -7,12 +7,10 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.DesktopWindows
 import androidx.compose.material.icons.outlined.LibraryMusic
-import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.ui.graphics.vector.ImageVector
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.tab_calendar
 import churchpresentermobile.composeapp.generated.resources.tab_library
@@ -41,6 +39,5 @@ internal val tabSpecs = listOf(
     TabSpec(AppTab.PRESENTATION, Res.string.tab_present, Icons.Outlined.DesktopWindows),
     TabSpec(AppTab.LIBRARY, Res.string.tab_library, Icons.Outlined.LibraryMusic),
     TabSpec(AppTab.CALENDAR, Res.string.tab_calendar, Icons.Outlined.CalendarMonth),
-    TabSpec(AppTab.CONTACT, Res.string.contact_us_title, Icons.Outlined.MailOutline),
     TabSpec(AppTab.MORE, Res.string.tab_more, Icons.Filled.MoreHoriz),
 )

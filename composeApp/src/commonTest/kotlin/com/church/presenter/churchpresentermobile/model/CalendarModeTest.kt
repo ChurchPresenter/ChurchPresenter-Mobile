@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.contactOpensOverlay
 import com.church.presenter.churchpresentermobile.settledMoreDestination
+import com.church.presenter.churchpresentermobile.showsTabBar
 import com.church.presenter.churchpresentermobile.settledTab
 import com.church.presenter.churchpresentermobile.tabScreenName
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -19,11 +21,10 @@ import kotlin.test.assertTrue
 class CalendarModeTest {
 
     @Test
-    fun `the strip is the calendar and contact, and nothing that projects`() {
+    fun `the calendar is the only tab, and nothing that projects`() {
         val tabs = AppTab.forMode(AppMode.CALENDAR)
 
-        // Contact is a tab rather than More's only tile: a launcher with one entry is a detour.
-        assertEquals(listOf(AppTab.CALENDAR, AppTab.CONTACT), tabs)
+        assertEquals(listOf(AppTab.CALENDAR), tabs)
         assertFalse(AppTab.PRESENT in tabs, "nothing is projected from this phone")
         assertFalse(AppTab.SONGS in tabs, "the songs tab drives a desktop; the picker reads the catalog")
         assertFalse(AppTab.MEDIA in tabs)
@@ -71,7 +72,6 @@ class CalendarModeTest {
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.SONGS, tabs))
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.PRESENT, tabs))
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.MORE, tabs))
-        assertEquals(AppTab.CONTACT, settledTab(AppTab.CONTACT, tabs))
     }
 
     @Test
@@ -86,7 +86,21 @@ class CalendarModeTest {
     @Test
     fun `the calendar tab reports itself to the screen report`() {
         assertEquals("Calendar", tabScreenName(AppTab.CALENDAR))
-        assertEquals("Contact", tabScreenName(AppTab.CONTACT))
+    }
+
+    @Test
+    fun `one tab draws no tab bar`() {
+        // A bar holding only the screen already on show is a strip of screen with nowhere to go.
+        assertFalse(showsTabBar(AppTab.forMode(AppMode.CALENDAR)))
+        assertTrue(showsTabBar(AppTab.forMode(AppMode.REMOTE)))
+        assertTrue(showsTabBar(AppTab.forMode(AppMode.STANDALONE)))
+    }
+
+    @Test
+    fun `settings contact opens over the app where there is no More tab`() {
+        assertTrue(contactOpensOverlay(AppTab.forMode(AppMode.CALENDAR)))
+        assertFalse(contactOpensOverlay(AppTab.forMode(AppMode.REMOTE)))
+        assertFalse(contactOpensOverlay(AppTab.forMode(AppMode.STANDALONE)))
     }
 
     @Test
@@ -95,8 +109,9 @@ class CalendarModeTest {
             val tabs = AppTab.forMode(mode)
             assertTrue(tabs.isNotEmpty(), "$mode has no tabs")
             assertEquals(tabs.distinct(), tabs, "$mode repeats a tab")
+            // Settings offers Contact us in every mode; it needs More, or the overlay, to land on.
             assertTrue(
-                AppTab.MORE in tabs || AppTab.CONTACT in tabs,
+                AppTab.MORE in tabs || contactOpensOverlay(tabs),
                 "$mode must keep a way into contact",
             )
         }
