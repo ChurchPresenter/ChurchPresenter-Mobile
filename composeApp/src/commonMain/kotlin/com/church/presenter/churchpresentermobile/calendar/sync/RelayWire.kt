@@ -40,9 +40,10 @@ data class WriteResponse(val rev: Long)
 data class EnrollBody(val deviceName: String, val code: String)
 
 /**
- * What the desktop answers once the operator allows it: the whole enrollment, so Allow is the last
- * step. A desktop from before that answers with only the first two, and the phone falls back to
- * scanning the QR it shows instead.
+ * What the desktop answers once the operator allows it over the LAN: where the calendar lives. The
+ * token and the key are never taken from here, even from a desktop that sends them: this answer
+ * crosses plain HTTP on a shared WiFi, where anyone could read them -- or answer in the desktop's
+ * place with a relay and a key of their own. They come only from the QR on the desktop's screen.
  */
 @Serializable
 data class EnrollReply(

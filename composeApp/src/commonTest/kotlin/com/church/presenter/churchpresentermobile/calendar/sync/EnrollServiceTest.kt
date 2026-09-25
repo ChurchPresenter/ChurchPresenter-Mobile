@@ -70,7 +70,7 @@ class EnrollServiceTest {
     }
 
     @Test
-    fun anApprovalCarriesTheWholeEnrollmentSoThereIsNothingToScan() = runTest {
+    fun aTokenAndKeySentOverTheWifiAreNeverTaken() = runTest {
         val reply = service(
             HttpStatusCode.OK,
             """{"relayUrl":"https://sync.example.org/","instanceId":"inst-1","deviceId":"phone-1",""" +
@@ -78,11 +78,11 @@ class EnrollServiceTest {
                 """"instanceKey":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"}""",
         ).enroll("Phone", "123456").getOrThrow()
 
-        val state = assertNotNull(reply.toState())
-        assertEquals("https://sync.example.org", state.relayUrl)
-        assertEquals("phone-1", state.deviceId)
-        assertEquals("devicetokendevicetoken", state.deviceToken)
-        assertTrue(state.isEnrolled)
+        assertEquals("https://sync.example.org", reply.relayUrl)
+        assertEquals("phone-1", reply.deviceId)
+        assertEquals("", reply.deviceToken)
+        assertEquals("", reply.instanceKey)
+        assertNull(reply.toState(), "the QR on the desktop's screen finishes it")
     }
 
     @Test

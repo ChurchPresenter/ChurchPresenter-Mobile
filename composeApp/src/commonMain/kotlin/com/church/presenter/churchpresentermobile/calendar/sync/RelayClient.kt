@@ -146,12 +146,11 @@ class EnrollService(
         val relay = Sanitize.relayUrl(reply.relayUrl) ?: throw RelayFailure.Rejected(response.status.value, "relay url")
         val instance = reply.instanceId.takeIf(Sanitize::isId)
             ?: throw RelayFailure.Rejected(response.status.value, "instance id")
+        // Never the token or the key -- see [EnrollReply]: without them the phone scans the desktop's QR.
         EnrollReply(
             relayUrl = relay,
             instanceId = instance,
             deviceId = reply.deviceId.takeIf(Sanitize::isId).orEmpty(),
-            deviceToken = Sanitize.secret(reply.deviceToken).orEmpty(),
-            instanceKey = Sanitize.secret(reply.instanceKey).orEmpty(),
         )
     }
 

@@ -362,7 +362,7 @@ class CalendarViewModelTest {
     }
 
     @Test
-    fun allowingOverWifiIsTheLastStep() = runVmTestUnconfined {
+    fun keysSentOverWifiAreNeverTakenTheDesktopsQrIsScannedInstead() = runVmTestUnconfined {
         val desktop = HttpClient(
             MockEngine {
                 respond(
@@ -380,10 +380,10 @@ class CalendarViewModelTest {
         )
         try {
             vm.pairing.start()
-            assertEquals(EnrollFlow.Done, vm.enrollment.first { it !is EnrollFlow.WaitingForApproval })
-            val state = assertNotNull(saved)
-            assertEquals("phone-1", state.deviceId)
-            assertTrue(state.isEnrolled)
+            // A reply carrying the token and the key -- an old desktop, or someone answering in its
+            // place on the WiFi -- still ends at the QR: nothing from it is saved.
+            assertEquals(EnrollFlow.ScanQr, vm.enrollment.first { it !is EnrollFlow.WaitingForApproval })
+            assertNull(saved)
         } finally {
             tearDown(vm)
         }
