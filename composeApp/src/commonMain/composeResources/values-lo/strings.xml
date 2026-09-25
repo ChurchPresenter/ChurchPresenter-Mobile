@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">ກຳລັງຊິງຄ໌…</string>
     <string name="calendar_sync_status_failed">ຕິດຕໍ່ຣີເລບໍ່ໄດ້: %1$s</string>
     <string name="calendar_sync_status_unauthorized">ຄອມພິວເຕີຂອງໂບດບໍ່ຮັບໂທລະສັບເຄື່ອງນີ້ອີກແລ້ວ. ລົງທະບຽນໃໝ່ເພື່ອໃຊ້ຕໍ່.</string>
+    <string name="calendar_sync_line_failed">ຊິງບໍ່ສຳເລັດ</string>
+    <string name="calendar_sync_line_stopped">ຢຸດການຊິງແລ້ວ</string>
+    <string name="calendar_sync_next_in">ຄັ້ງຕໍ່ໄປໃນ %1$s ນາທີ</string>
+    <string name="calendar_sync_next_soon">ຄັ້ງຕໍ່ໄປໃນບໍ່ເຖິງ 1 ນາທີ</string>
+    <string name="calendar_sync_retry_in">ລອງໃໝ່ໃນ %1$s ນາທີ</string>
+    <string name="calendar_sync_retry_soon">ຈະລອງໃໝ່ໃນໄວໆນີ້</string>
     <string name="calendar_sync_now">ຊິງຄ໌ດຽວນີ້</string>
     <string name="calendar_sync_leave">ຢຸດຊິງຄ໌ໃນໂທລະສັບເຄື່ອງນີ້</string>
     <string name="calendar_sync_cd">ຊິງຄ໌</string>

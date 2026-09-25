@@ -50,8 +50,10 @@ import churchpresentermobile.composeapp.generated.resources.cd_back
 import com.church.presenter.churchpresentermobile.calendar.autoStartCount
 import com.church.presenter.churchpresentermobile.calendar.clockText
 import com.church.presenter.churchpresentermobile.calendar.clockedRows
+import com.church.presenter.churchpresentermobile.calendar.dayOverline
 import com.church.presenter.churchpresentermobile.calendar.endMinutes
 import com.church.presenter.churchpresentermobile.calendar.minutesText
+import com.church.presenter.churchpresentermobile.calendar.parseStoredDate
 import com.church.presenter.churchpresentermobile.calendar.timeFromMinutes
 import com.church.presenter.churchpresentermobile.calendar.totalSeconds
 import com.church.presenter.churchpresentermobile.model.PlanRow
@@ -68,6 +70,8 @@ private enum class OpenSheet { NONE, ADD, COPY, EDIT_SERVICE }
  *
  * @param onBack Drawn as a back arrow on a phone; null beside a month pane, where there is nowhere to go back to.
  * @param inline True when the rows sit beside the calendar and can be moved with buttons rather than a sheet.
+ * @param sync Shown above the Armed switch on a phone; null beside a month pane, whose header already says it.
+ * @param onSync Opens the sync sheet when the sync line is tapped.
  */
 @Composable
 internal fun RunOfShowScreen(
@@ -78,6 +82,8 @@ internal fun RunOfShowScreen(
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     inline: Boolean = false,
+    sync: CalendarSyncView? = null,
+    onSync: (() -> Unit)? = null,
 ) {
     val colors = LocalAppColors.current
     var sheet by remember { mutableStateOf(OpenSheet.NONE) }
@@ -85,7 +91,13 @@ internal fun RunOfShowScreen(
     val rows = clockedRows(service)
 
     Column(modifier = modifier.fillMaxSize().background(colors.background)) {
-        RunHeader(service, onBack = onBack, onEdit = { sheet = OpenSheet.EDIT_SERVICE }, onArmed = actions.onArmed)
+        RunHeader(
+            service,
+            onBack = onBack,
+            onEdit = { sheet = OpenSheet.EDIT_SERVICE },
+            onArmed = actions.onArmed,
+            sync = sync?.let { SyncLineSlot(it, onSync) },
+        )
         HorizontalDivider(color = colors.borderSubtle)
         if (service.rows.isEmpty()) {
             EmptyState(
@@ -165,29 +177,40 @@ internal fun RunOfShowScreen(
         )
         OpenSheet.NONE -> Unit
     }
-    val editing = editingRowId?.let { id -> service.rows.firstOrNull { it.id == id } }
-    if (editing != null) {
-        val index = service.rows.indexOf(editing)
-        RowEditorSheet(
-            service = service,
-            row = editing,
-            onSave = { actions.rows.onUpdate(it); editingRowId = null },
-            onMove = { delta -> actions.rows.onMove(index, index + delta) },
-            onRemove = { actions.rows.onRemove(editing.id); editingRowId = null },
-            onDismiss = { editingRowId = null },
-        )
-    }
+    editingRowId?.let { id -> RowEditor(service, id, actions.rows, onClose = { editingRowId = null }) }
+}
+
+/** The editor for the row [rowId], while that row is still in [service]. */
+@Composable
+private fun RowEditor(service: PlannedService, rowId: String, rows: RowListActions, onClose: () -> Unit) {
+    val editing = service.rows.firstOrNull { it.id == rowId } ?: return
+    val index = service.rows.indexOf(editing)
+    RowEditorSheet(
+        service = service,
+        row = editing,
+        onSave = { rows.onUpdate(it); onClose() },
+        onMove = { delta -> rows.onMove(index, index + delta) },
+        onRemove = { rows.onRemove(editing.id); onClose() },
+        onDismiss = onClose,
+    )
 }
 
 @Composable
-private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: () -> Unit, onArmed: (Boolean) -> Unit) {
+private fun RunHeader(
+    service: PlannedService,
+    onBack: (() -> Unit)?,
+    onEdit: () -> Unit,
+    onArmed: (Boolean) -> Unit,
+    sync: SyncLineSlot?,
+) {
     val colors = LocalAppColors.current
-    Row(
+    SyncLineAbove(
+        sync = sync?.view,
+        onSync = sync?.onClick,
         modifier = Modifier
             .fillMaxWidth()
             .then(if (onBack != null) Modifier.statusBarsPadding() else Modifier)
             .padding(horizontal = PagePadding, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onBack != null) {
             Icon(
@@ -207,8 +230,19 @@ private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: ()
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            MutedText(runSubtitle(service))
+            MutedText(runSubtitle(service), maxLines = 2)
         }
+        ArmedSwitch(service.armed, onArmed)
+    }
+}
+
+/** The sync line and what tapping it does, carried together into the header. */
+private class SyncLineSlot(val view: CalendarSyncView, val onClick: (() -> Unit)?)
+
+@Composable
+private fun ArmedSwitch(armed: Boolean, onArmed: (Boolean) -> Unit) {
+    val colors = LocalAppColors.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             stringResource(Res.string.calendar_armed),
             color = colors.muted,
@@ -217,7 +251,7 @@ private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: ()
         )
         Spacer(Modifier.width(8.dp))
         Switch(
-            checked = service.armed,
+            checked = armed,
             onCheckedChange = onArmed,
             modifier = Modifier.testTag(CalendarTags.RUN_ARMED),
             colors = SwitchDefaults.colors(checkedTrackColor = colors.accent, checkedThumbColor = colors.onAccent),
@@ -225,12 +259,14 @@ private fun RunHeader(service: PlannedService, onBack: (() -> Unit)?, onEdit: ()
     }
 }
 
-/** `10:00–11:09 AM · 69 min · 3 auto starts`. */
+/** `Sunday, Sep 20 · 10:00–11:09 AM · 69 min · 3 auto starts`. */
 @Composable
 internal fun runSubtitle(service: PlannedService): String {
     val start = clockText(service.startTime)
     val end = endMinutes(service)?.let { clockText(timeFromMinutes(it)) }
-    val parts = mutableListOf(if (end != null && totalSeconds(service) > 0) "$start–$end" else start)
+    // The name says "Sunday Morning", not which Sunday; the date is what tells them apart.
+    val date = parseStoredDate(service.date)?.let(::dayOverline) ?: service.date
+    val parts = mutableListOf(date, if (end != null && totalSeconds(service) > 0) "$start–$end" else start)
     if (totalSeconds(service) > 0) parts += minutesText(totalSeconds(service))
     val auto = autoStartCount(service)
     if (auto > 0) parts += stringResource(Res.string.calendar_auto_starts, auto)

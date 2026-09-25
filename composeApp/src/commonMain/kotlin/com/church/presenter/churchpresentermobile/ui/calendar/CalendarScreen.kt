@@ -88,6 +88,9 @@ fun CalendarScreen(
         calendarViewModel(repository, songCatalog, bibleCatalog, catalogStore, settings)
     }
     val syncStatus by viewModel.syncStatus.collectAsState()
+    val nextSyncAt by viewModel.nextSyncAt.collectAsState()
+    val syncNow = rememberSyncClock(active = syncStatus != SyncStatus.NotEnrolled)
+    val syncView = CalendarSyncView(syncStatus, nextSyncAt, syncNow)
     val enrollFlow by viewModel.enrollment.collectAsState()
     var syncSheet by remember { mutableStateOf(false) }
     val document by viewModel.document.collectAsState()
@@ -117,7 +120,7 @@ fun CalendarScreen(
     val headerActions = MonthHeaderActions(
         onToday = viewModel::goToToday,
         onSync = { syncSheet = true },
-        synced = syncStatus is SyncStatus.Synced || syncStatus is SyncStatus.Syncing,
+        sync = syncView,
         onSettings = onSettings,
     )
     when {
@@ -141,6 +144,8 @@ fun CalendarScreen(
                 runActions(openService),
                 modifier = modifier,
                 onBack = viewModel::closeService,
+                sync = syncView,
+                onSync = { syncSheet = true },
             )
         }
         else -> CalendarMonthPane(
@@ -191,16 +196,17 @@ internal fun MonthHeader(
     onBack: (() -> Unit)?,
     compact: Boolean,
     onSync: () -> Unit,
-    synced: Boolean,
+    sync: CalendarSyncView,
     onSettings: (() -> Unit)?,
 ) {
     val colors = LocalAppColors.current
-    Row(
+    SyncLineAbove(
+        sync = sync,
+        onSync = onSync,
         modifier = Modifier
             .fillMaxWidth()
             .then(if (compact) Modifier else Modifier.statusBarsPadding())
             .padding(horizontal = PagePadding, vertical = if (compact) 12.dp else 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onBack != null) {
             Icon(
@@ -220,6 +226,14 @@ internal fun MonthHeader(
             )
             MutedText(stringResource(Res.string.calendar_month_summary, serviceCountText(serviceCount), monthName))
         }
+        MonthHeaderButtons(onToday, onSync, sync.status, onSettings)
+    }
+}
+
+@Composable
+private fun MonthHeaderButtons(onToday: () -> Unit, onSync: () -> Unit, status: SyncStatus, onSettings: (() -> Unit)?) {
+    val synced = status is SyncStatus.Synced || status is SyncStatus.Syncing
+    Row(verticalAlignment = Alignment.CenterVertically) {
         CalendarSecondaryButton(stringResource(Res.string.calendar_today), onClick = onToday)
         Spacer(Modifier.width(8.dp))
         CalendarSecondaryButton(

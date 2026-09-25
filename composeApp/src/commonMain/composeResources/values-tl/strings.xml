@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Nagsi-sync…</string>
     <string name="calendar_sync_status_failed">Hindi maabot ang relay: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Hindi na tinatanggap ng kompyuter ng simbahan ang teleponong ito. Magpatala ulit para magpatuloy.</string>
+    <string name="calendar_sync_line_failed">Nabigo ang pag-sync</string>
+    <string name="calendar_sync_line_stopped">Huminto ang pag-sync</string>
+    <string name="calendar_sync_next_in">susunod sa %1$s min</string>
+    <string name="calendar_sync_next_soon">susunod sa loob ng isang min</string>
+    <string name="calendar_sync_retry_in">susubukan muli sa %1$s min</string>
+    <string name="calendar_sync_retry_soon">susubukan muli sandali</string>
     <string name="calendar_sync_now">I-sync ngayon</string>
     <string name="calendar_sync_leave">Itigil ang pag-sync sa teleponong ito</string>
     <string name="calendar_sync_cd">I-sync</string>

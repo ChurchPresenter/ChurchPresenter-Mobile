@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Wird synchronisiert…</string>
     <string name="calendar_sync_status_failed">Relais nicht erreichbar: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Der Gemeindecomputer akzeptiert dieses Telefon nicht mehr. Melden Sie es erneut an, um fortzufahren.</string>
+    <string name="calendar_sync_line_failed">Synchronisierung fehlgeschlagen</string>
+    <string name="calendar_sync_line_stopped">Synchronisierung gestoppt</string>
+    <string name="calendar_sync_next_in">nächste in %1$s Min.</string>
+    <string name="calendar_sync_next_soon">nächste in unter 1 Min.</string>
+    <string name="calendar_sync_retry_in">neuer Versuch in %1$s Min.</string>
+    <string name="calendar_sync_retry_soon">gleich neuer Versuch</string>
     <string name="calendar_sync_now">Jetzt synchronisieren</string>
     <string name="calendar_sync_leave">Synchronisierung auf diesem Telefon beenden</string>
     <string name="calendar_sync_cd">Synchronisieren</string>

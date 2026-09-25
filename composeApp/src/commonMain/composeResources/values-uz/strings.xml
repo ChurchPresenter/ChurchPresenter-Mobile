@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Sinxronlanmoqda…</string>
     <string name="calendar_sync_status_failed">Rele bilan bog'lanib bo'lmadi: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Cherkov kompyuteri bu telefonni endi qabul qilmaydi. Davom etish uchun qayta ro'yxatdan o'ting.</string>
+    <string name="calendar_sync_line_failed">Sinxronlash muvaffaqiyatsiz</string>
+    <string name="calendar_sync_line_stopped">Sinxronlash toʻxtatildi</string>
+    <string name="calendar_sync_next_in">keyingisi %1$s daqiqadan soʻng</string>
+    <string name="calendar_sync_next_soon">keyingisi bir daqiqa ichida</string>
+    <string name="calendar_sync_retry_in">%1$s daqiqadan soʻng qayta urinish</string>
+    <string name="calendar_sync_retry_soon">tez orada qayta urinish</string>
     <string name="calendar_sync_now">Hozir sinxronlash</string>
     <string name="calendar_sync_leave">Bu telefonda sinxronlashni to'xtatish</string>
     <string name="calendar_sync_cd">Sinxronlash</string>

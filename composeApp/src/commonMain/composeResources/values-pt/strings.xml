@@ -735,6 +735,12 @@
     <string name="calendar_sync_status_syncing">Sincronizando…</string>
     <string name="calendar_sync_status_failed">Não foi possível alcançar o retransmissor: %1$s</string>
     <string name="calendar_sync_status_unauthorized">O computador da igreja não aceita mais este telefone. Inscreva-o novamente para continuar.</string>
+    <string name="calendar_sync_line_failed">Falha na sincronização</string>
+    <string name="calendar_sync_line_stopped">Sincronização parada</string>
+    <string name="calendar_sync_next_in">próxima em %1$s min</string>
+    <string name="calendar_sync_next_soon">próxima em menos de 1 min</string>
+    <string name="calendar_sync_retry_in">nova tentativa em %1$s min</string>
+    <string name="calendar_sync_retry_soon">nova tentativa em breve</string>
     <string name="calendar_sync_now">Sincronizar agora</string>
     <string name="calendar_sync_leave">Parar de sincronizar neste telefone</string>
     <string name="calendar_sync_cd">Sincronizar</string>

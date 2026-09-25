@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Eşitleniyor…</string>
     <string name="calendar_sync_status_failed">Aktarıcıya ulaşılamadı: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Kilise bilgisayarı bu telefonu artık kabul etmiyor. Devam etmek için yeniden kaydolun.</string>
+    <string name="calendar_sync_line_failed">Eşitleme başarısız</string>
+    <string name="calendar_sync_line_stopped">Eşitleme durduruldu</string>
+    <string name="calendar_sync_next_in">sonraki %1$s dk içinde</string>
+    <string name="calendar_sync_next_soon">sonraki 1 dk içinde</string>
+    <string name="calendar_sync_retry_in">%1$s dk içinde yeniden denenecek</string>
+    <string name="calendar_sync_retry_soon">birazdan yeniden denenecek</string>
     <string name="calendar_sync_now">Şimdi eşitle</string>
     <string name="calendar_sync_leave">Bu telefonda eşitlemeyi durdur</string>
     <string name="calendar_sync_cd">Eşitle</string>

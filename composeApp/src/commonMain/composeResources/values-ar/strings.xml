@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">جارٍ المزامنة…</string>
     <string name="calendar_sync_status_failed">تعذّر الوصول إلى المُرحِّل: %1$s</string>
     <string name="calendar_sync_status_unauthorized">لم يعد حاسوب الكنيسة يقبل هذا الهاتف. سجّله من جديد للمتابعة.</string>
+    <string name="calendar_sync_line_failed">فشلت المزامنة</string>
+    <string name="calendar_sync_line_stopped">توقفت المزامنة</string>
+    <string name="calendar_sync_next_in">التالية بعد %1$s د</string>
+    <string name="calendar_sync_next_soon">التالية بعد أقل من دقيقة</string>
+    <string name="calendar_sync_retry_in">إعادة المحاولة بعد %1$s د</string>
+    <string name="calendar_sync_retry_soon">إعادة المحاولة قريبًا</string>
     <string name="calendar_sync_now">مزامنة الآن</string>
     <string name="calendar_sync_leave">إيقاف المزامنة على هذا الهاتف</string>
     <string name="calendar_sync_cd">مزامنة</string>

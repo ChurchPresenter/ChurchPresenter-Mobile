@@ -42,7 +42,8 @@ internal class CalendarMonthState(
 internal class MonthHeaderActions(
     val onToday: () -> Unit,
     val onSync: () -> Unit,
-    val synced: Boolean,
+    /** What the line above the buttons says, and when the next round runs. */
+    val sync: CalendarSyncView,
     val onSettings: (() -> Unit)?,
 )
 
@@ -73,7 +74,7 @@ internal fun CalendarTwoPane(
                 onBack = onBack,
                 compact = true,
                 onSync = header.onSync,
-                synced = header.synced,
+                sync = header.sync,
                 onSettings = null,
             )
             Column(
@@ -150,7 +151,7 @@ internal fun CalendarMonthPane(
             onBack = onBack,
             compact = false,
             onSync = header.onSync,
-            synced = header.synced,
+            sync = header.sync,
             onSettings = header.onSettings,
         )
         val scroll = rememberScrollState()

@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Sincronizando…</string>
     <string name="calendar_sync_status_failed">No se pudo contactar con el repetidor: %1$s</string>
     <string name="calendar_sync_status_unauthorized">El ordenador de la iglesia ya no acepta este teléfono. Vuelve a inscribirlo para continuar.</string>
+    <string name="calendar_sync_line_failed">Error de sincronización</string>
+    <string name="calendar_sync_line_stopped">Sincronización detenida</string>
+    <string name="calendar_sync_next_in">próxima en %1$s min</string>
+    <string name="calendar_sync_next_soon">próxima en menos de 1 min</string>
+    <string name="calendar_sync_retry_in">reintento en %1$s min</string>
+    <string name="calendar_sync_retry_soon">reintentando en breve</string>
     <string name="calendar_sync_now">Sincronizar ahora</string>
     <string name="calendar_sync_leave">Dejar de sincronizar en este teléfono</string>
     <string name="calendar_sync_cd">Sincronizar</string>

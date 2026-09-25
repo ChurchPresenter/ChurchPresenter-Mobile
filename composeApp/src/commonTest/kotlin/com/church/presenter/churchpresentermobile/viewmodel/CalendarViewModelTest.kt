@@ -22,7 +22,9 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,6 +32,8 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class CalendarViewModelTest {
 
@@ -384,6 +388,76 @@ class CalendarViewModelTest {
             val state = assertNotNull(saved)
             assertEquals("phone-1", state.deviceId)
             assertTrue(state.isEnrolled)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    // ── The timed round ──────────────────────────────────────────────────
+
+    /** An enrolled engine whose relay counts the pulls it serves, so a test can await a round. */
+    private fun countingEngine(pulls: MutableStateFlow<Int>): CalendarSyncEngine {
+        val relayHttp = HttpClient(
+            MockEngine { request ->
+                if (request.url.encodedPath.endsWith("/changes")) pulls.value++
+                respond("""{"rev":1,"records":[],"tombstones":[]}""", HttpStatusCode.OK)
+            },
+        )
+        val websiteHttp = HttpClient(MockEngine { respond("{}", HttpStatusCode.OK) })
+        val settings = AppSettings(InMemorySettingsStorage()).apply {
+            relayClientKey = "clientkeyclientkey01"
+            relayClientKeyFetchedAt = 5_000_000L
+        }
+        var state = CalendarSyncState(
+            relayUrl = "https://sync.example.org",
+            instanceId = "inst-1",
+            deviceToken = "devicetokendevicetoken",
+            instanceKey = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        )
+        return CalendarSyncEngine(
+            repository,
+            state = { state },
+            saveState = { state = it },
+            clientKeys = ClientKeySource(settings, websiteHttp, now = { 5_000_000L }, configUrl = { TEST_CONFIG_URL }),
+            clientFor = { s, k -> RelayClient(s, k, relayHttp) },
+        )
+    }
+
+    @Test
+    fun anEnrolledPhoneSyncsAgainOnItsOwnAfterTheInterval() = runVmTestUnconfined {
+        val pulls = MutableStateFlow(0)
+        val clock = object : Clock {
+            override fun now() = Instant.fromEpochMilliseconds(testScheduler.currentTime)
+        }
+        val vm = CalendarViewModel(repository, sync = countingEngine(pulls), newId = newId, clock = clock)
+        try {
+            vm.syncStatus.first { it is SyncStatus.Synced && it.at.isNotEmpty() }
+            val next = vm.nextSyncAt.first { it != null }
+            assertEquals(SYNC_INTERVAL_MS, next!!.toEpochMilliseconds() - testScheduler.currentTime)
+
+            advanceTimeBy(SYNC_INTERVAL_MS - 1)
+            assertEquals(1, pulls.value, "a timed round ran before its interval was up")
+
+            pulls.first { it >= 2 }
+            assertTrue(testScheduler.currentTime >= SYNC_INTERVAL_MS)
+            // The timed round finishes and books the one after it, rather than stalling at Syncing.
+            vm.nextSyncAt.first { it != null && it > next }
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun leavingStopsTheTimedRound() = runVmTestUnconfined {
+        val pulls = MutableStateFlow(0)
+        val vm = CalendarViewModel(repository, sync = countingEngine(pulls), newId = newId)
+        try {
+            vm.syncStatus.first { it is SyncStatus.Synced && it.at.isNotEmpty() }
+            vm.nextSyncAt.first { it != null }
+            vm.pairing.leave()
+            assertNull(vm.nextSyncAt.first { it == null })
+            advanceTimeBy(SYNC_INTERVAL_MS * 3)
+            assertEquals(1, pulls.value)
         } finally {
             tearDown(vm)
         }

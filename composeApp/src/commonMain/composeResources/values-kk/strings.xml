@@ -704,6 +704,12 @@
     <string name="calendar_sync_status_syncing">Синхрондалуда…</string>
     <string name="calendar_sync_status_failed">Реле-серверге жету мүмкін болмады: %1$s</string>
     <string name="calendar_sync_status_unauthorized">Шіркеу компьютері бұл телефонды енді қабылдамайды. Жалғастыру үшін қайта тіркеліңіз.</string>
+    <string name="calendar_sync_line_failed">Синхрондау сәтсіз</string>
+    <string name="calendar_sync_line_stopped">Синхрондау тоқтатылды</string>
+    <string name="calendar_sync_next_in">келесісі %1$s мин кейін</string>
+    <string name="calendar_sync_next_soon">келесісі бір минутқа жетпей</string>
+    <string name="calendar_sync_retry_in">%1$s мин кейін қайталау</string>
+    <string name="calendar_sync_retry_soon">жақында қайталанады</string>
     <string name="calendar_sync_now">Қазір синхрондау</string>
     <string name="calendar_sync_leave">Осы телефонда синхрондауды тоқтату</string>
     <string name="calendar_sync_cd">Синхрондау</string>
