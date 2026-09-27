@@ -6,6 +6,16 @@
         <true/>
 
         <!--
+            All encryption is Apple's own: HTTPS/WSS through NSURLSession, and
+            the calendar relay's AES-256-GCM (Sealing.kt) through Apple's system
+            crypto via cryptography-provider-apple. No algorithm is bundled or
+            implemented in the app. Declaring it here stops App Store Connect
+            holding every build for export compliance; revisit if that changes.
+        -->
+        <key>ITSAppUsesNonExemptEncryption</key>
+        <false/>
+
+        <!--
             Disable automatic ViewController-class screen tracking so only our
             manual logScreenView() calls appear in Firebase "Pages and screens".
         -->
