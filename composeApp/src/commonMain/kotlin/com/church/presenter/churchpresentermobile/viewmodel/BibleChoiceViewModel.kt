@@ -49,4 +49,10 @@ class BibleChoiceViewModel(
         repository.setActive(id)
         Logger.d(TAG, "setActive — reading '$id'")
     }
+
+    /** Deletes a translation from this device; the next one becomes the one read. */
+    fun remove(id: String) {
+        repository.remove(id)
+        Logger.d(TAG, "remove — deleted '$id'")
+    }
 }

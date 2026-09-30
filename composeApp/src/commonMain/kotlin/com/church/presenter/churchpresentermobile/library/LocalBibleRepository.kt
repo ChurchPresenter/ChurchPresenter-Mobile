@@ -14,6 +14,19 @@ private const val TAG = "LocalBibleRepository"
 internal const val BIBLE_INDEX_FILE = "bibles.json"
 internal const val BIBLE_FILE_PREFIX = "bible_"
 
+/** What a download knows about a translation beyond the module's own text. */
+data class InstallDetails(
+    val languageName: String = "",
+    val origin: String = "",
+    val license: String = "",
+    val catalogKey: String = "",
+) {
+    companion object {
+        /** [origin] of a translation converted from a file on the device — named on screen, not shown raw. */
+        const val ORIGIN_FILE = "file"
+    }
+}
+
 /**
  * Translations copied onto this device: a small index, and one `.spb` per translation.
  *
@@ -71,10 +84,17 @@ class LocalBibleRepository(
      * Installing a translation already present replaces it rather than adding a second copy —
      * a re-sync after the desktop's text changed is the ordinary case, not an error.
      *
+     * [details] is what a web download knows that the module does not say about itself.
+     *
      * Returns null when the download was not a Bible at all, which is what a captive-portal
      * login page or a 404 body looks like by the time it reaches here.
      */
-    fun install(fileName: String, text: String, sourceHost: String = ""): InstalledBible? {
+    fun install(
+        fileName: String,
+        text: String,
+        sourceHost: String = "",
+        details: InstallDetails = InstallDetails(),
+    ): InstalledBible? {
         val bible = SpbParser.parse(text, fileName)
         if (bible.isEmpty) {
             Logger.e(TAG, "install '$fileName' — no verses parsed, refusing to store it")
@@ -98,6 +118,11 @@ class LocalBibleRepository(
                     chapterCount = it.totalChapters,
                 )
             },
+            abbreviation = bible.abbreviation,
+            languageName = details.languageName,
+            origin = details.origin,
+            license = details.license,
+            catalogKey = details.catalogKey,
         )
         mutate { current ->
             current.copy(

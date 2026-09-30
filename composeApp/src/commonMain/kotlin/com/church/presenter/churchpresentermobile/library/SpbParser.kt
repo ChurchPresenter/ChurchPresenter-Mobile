@@ -44,6 +44,7 @@ object SpbParser {
     /** The whole module: its title, its books, and its verses keyed for chapter lookup. */
     fun parse(text: String, fileName: String = ""): ParsedBible {
         var title = ""
+        var abbreviation = ""
         val headerOrder = mutableListOf<Int>()
         val names = mutableMapOf<Int, String>()
         val declared = mutableMapOf<Int, Int>()
@@ -74,6 +75,10 @@ object SpbParser {
 
             if (line.startsWith(TITLE_PREFIX)) {
                 title = line.removePrefix(TITLE_PREFIX).trim()
+                continue
+            }
+            if (line.startsWith(ABBREVIATION_PREFIX)) {
+                abbreviation = line.removePrefix(ABBREVIATION_PREFIX).trim()
                 continue
             }
             if (line.startsWith("##")) continue
@@ -125,6 +130,7 @@ object SpbParser {
             title = title.ifBlank { fileName.substringBeforeLast(".") },
             books = books(headerOrder, names, declared, chaptersSeen),
             versesByChapter = chapters,
+            abbreviation = abbreviation,
         )
     }
 
@@ -203,6 +209,7 @@ object SpbParser {
     internal fun key(book: Int, chapter: Int): Int = book * CHAPTER_KEY_STRIDE + chapter
 
     private const val TITLE_PREFIX = "##Title:"
+    private const val ABBREVIATION_PREFIX = "##Abbreviation:"
     private const val SEPARATOR = "-----"
 
     /** Comfortably above any book's chapter count, so a key cannot collide with the next book. */
@@ -219,6 +226,8 @@ data class ParsedBible(
     val title: String,
     val books: List<BibleBook>,
     private val versesByChapter: Map<Int, List<BibleVerse>>,
+    /** The `##Abbreviation:` header — "KJV" — blank when the module carries none. */
+    val abbreviation: String = "",
 ) {
     /** Verses of one chapter, in file order. Empty when the module does not carry it. */
     fun chapter(bookNumber: Int, chapter: Int): List<BibleVerse> =

@@ -10,6 +10,7 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.DemoData
 import com.church.presenter.churchpresentermobile.model.ToastEvent
+import com.church.presenter.churchpresentermobile.model.VerseSource
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
 import com.church.presenter.churchpresentermobile.network.WsSender
@@ -512,7 +513,9 @@ class BibleViewModel(
                 chapter     = chapter,
                 verseNumber = firstVerse.number,
                 verseText   = selectedVerses.joinToString("\n") { it.displayText },
-                verseRange  = verseRange
+                verseRange  = verseRange,
+                source      = verseSource(),
+                bookId      = book.bookId ?: 0,
             ).onSuccess {
                 Logger.d(TAG, "selectBibleVerse — success")
                 _isProjecting.value        = true
@@ -632,6 +635,13 @@ class BibleViewModel(
         projectVerseAtIndex(index)
     }
 
+    /**
+     * The downloaded translation the verses on screen came from, or null when they came from the
+     * desktop. Sent with a projection so the desktop shows the phone's text rather than its own.
+     */
+    private fun verseSource(): VerseSource? =
+        if (catalog.isLocal) VerseSource(catalog.activeBibleName, catalog.activeBibleAbbreviation) else null
+
     private fun projectVerseAtIndex(index: Int) {
         val book    = _selectedBook.value    ?: return
         val chapter = _selectedChapter.value ?: return
@@ -651,7 +661,9 @@ class BibleViewModel(
                 bookName    = book.displayName,
                 chapter     = chapter,
                 verseNumber = verse.number,
-                verseText   = verse.displayText
+                verseText   = verse.displayText,
+                source      = verseSource(),
+                bookId      = book.bookId ?: 0,
             ).onSuccess {
                 Logger.d(TAG, "selectBibleVerse — success")
             }.onFailure { e ->
@@ -693,7 +705,9 @@ class BibleViewModel(
             bibleService.addBibleToSchedule(
                 bookName = book.displayName,
                 chapter  = chapter,
-                verses   = selectedVerses
+                verses   = selectedVerses,
+                source   = verseSource(),
+                bookId   = book.bookId ?: 0,
             ).onSuccess {
                 Logger.d(TAG, "addBibleToSchedule — success")
                 _scheduleAdded.value = true

@@ -12,6 +12,15 @@ actual fun TextDocumentPicker(
 }
 
 @Composable
+actual fun BinaryDocumentPicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+) {
+    content { onPicked(null) }
+}
+
+@Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,
     content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,

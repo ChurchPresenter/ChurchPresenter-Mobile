@@ -40,24 +40,49 @@ class BibleCatalogTest {
     private fun empty(): LocalBibleRepository = LocalBibleRepository(InMemoryFileStorage())
 
     @Test
-    fun remoteModeAsksTheDesktopEvenWithATranslationInstalled() = runTest {
-        // The desktop is authoritative whenever it answers — a downloaded copy must not quietly
-        // replace the translation the operator is presenting from.
+    fun remoteModeReadsADownloadedTranslationFirst() = runTest {
+        // A translation downloaded onto the phone is one the operator chose for it: remote mode
+        // reads it without asking the desktop, and projecting sends its text so the screen shows
+        // the same translation the phone does.
         val reader = FakeReader()
         val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), reader, installed())
 
+        assertEquals("Genesis", catalog.books().getOrThrow().first().displayName)
+        assertEquals(0, reader.bookCalls)
+        assertTrue(catalog.isLocal)
+    }
+
+    @Test
+    fun remoteModeWithNothingDownloadedAsksTheDesktop() = runTest {
+        val reader = FakeReader()
+        val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), reader, empty())
+
         assertEquals("Desktop Genesis", catalog.books().getOrThrow().first().displayName)
+        assertEquals(1, reader.bookCalls)
         assertFalse(catalog.isLocal)
     }
 
     @Test
-    fun standaloneNamesTheTranslationItIsReadingAndRemoteDoesNot() {
-        // The CCLI report credits verses to a translation; only a downloaded one has a
-        // name this side of the network.
+    fun theFirstDownloadMovesRemoteModeOntoIt() = runTest {
+        // isLocalSource drives the tab's reload; installing the first translation must flip it.
+        val bibles = empty()
+        val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), FakeReader(), bibles)
+        assertFalse(catalog.isLocalSource.first())
+
+        bibles.install("en_KJV.spb", module)
+
+        assertTrue(catalog.isLocalSource.first())
+    }
+
+    @Test
+    fun aDownloadedTranslationIsNamedInEitherModeAndTheDesktopsIsNot() {
+        // The CCLI report and a projected verse credit the translation; only a downloaded one
+        // has a name this side of the network.
         val standalone = MutableStateFlow(AppMode.STANDALONE)
         val remote = MutableStateFlow(AppMode.REMOTE)
         assertEquals("King James Version", BibleCatalog(standalone, FakeReader(), installed()).activeBibleName)
-        assertEquals("", BibleCatalog(remote, FakeReader(), installed()).activeBibleName)
+        assertEquals("King James Version", BibleCatalog(remote, FakeReader(), installed()).activeBibleName)
+        assertEquals("", BibleCatalog(remote, FakeReader(), empty()).activeBibleName)
         assertEquals("", BibleCatalog(standalone, FakeReader(), empty()).activeBibleName)
     }
 
@@ -160,14 +185,14 @@ class BibleCatalogTest {
     }
 
     @Test
-    fun aReachableDesktopIsPreferredOverTheLocalCopy() = runTest {
-        // The desktop's translation is the one the congregation is seeing.
+    fun aDownloadedTranslationIsReadEvenWithTheDesktopReachable() = runTest {
+        // The phone's text is what gets projected, so it is also what the operator reads.
         val bibles = LocalBibleRepository(InMemoryFileStorage()) { 1L }
         bibles.install("en_KJV.spb", module)
         val catalog = BibleCatalog(MutableStateFlow(AppMode.REMOTE), FakeReader(), bibles)
 
         val verses = catalog.chapter(1, 1).getOrThrow()
 
-        assertEquals("from the desktop", verses.first().text)
+        assertEquals("In the beginning God created the heavens and the earth.", verses.first().text)
     }
 }

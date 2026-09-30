@@ -77,4 +77,17 @@ class BibleChoiceViewModelTest {
         assertEquals("", viewModel.activeId.value)
         assertNull(viewModel.active.value)
     }
+
+    @Test
+    fun removingTheTranslationBeingReadMovesToTheNext() = runVmTestUnconfined {
+        val repository = repository()
+        repository.install("en_KJV.spb", module("King James Version", "Genesis"))
+        repository.install("ru_RST.spb", module("Синодальный", "Бытие"))
+        val viewModel = BibleChoiceViewModel(repository)
+
+        viewModel.remove("en_KJV")
+
+        assertEquals(listOf("ru_RST"), repository.index.value.bibles.map { it.id })
+        assertEquals("ru_RST", viewModel.activeId.value)
+    }
 }

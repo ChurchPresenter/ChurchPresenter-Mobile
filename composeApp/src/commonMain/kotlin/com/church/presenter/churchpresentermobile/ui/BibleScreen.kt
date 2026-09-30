@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import com.church.presenter.churchpresentermobile.ui.bibles.BibleTabEmpty
+import com.church.presenter.churchpresentermobile.ui.bibles.BibleTranslationPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,27 +36,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.ui.bibles.BiblesPage
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.church.presenter.churchpresentermobile.SyncRequestHandler
-import com.church.presenter.churchpresentermobile.TabNavigationHandler
-import com.church.presenter.churchpresentermobile.model.AppTab
-import com.church.presenter.churchpresentermobile.ui.library.SyncSection
-import androidx.compose.material.icons.filled.CloudDownload
-import churchpresentermobile.composeapp.generated.resources.empty_action_get_bible
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_count
-import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_body
-import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_title
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
 import churchpresentermobile.composeapp.generated.resources.bible_retry
@@ -112,6 +108,10 @@ fun BibleScreen(
     /** Opens settings. Only used in [twoPane], which owns its header. */
     onSettings: (() -> Unit)? = null,
     providedViewModel: BibleViewModel? = null,
+    /** Translations on this device, for the selector above the books. Null hides the selector. */
+    bibles: LocalBibleRepository? = null,
+    /** Opens the Bibles screen on a page. Null where Bibles cannot be downloaded (the web). */
+    onOpenBibles: ((BiblesPage) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // Use the session-scoped ViewModel passed from App.kt when available.
@@ -123,7 +123,6 @@ fun BibleScreen(
         }
 
     LaunchedEffect(settingsSaveToken) { if (settingsSaveToken > 0) vm.onSettingsSaved(settingsSaveToken) }
-
     val books               by vm.books.collectAsState()
     val bookSearchQuery     by vm.bookSearchQuery.collectAsState()
     val selectedBook        by vm.selectedBook.collectAsState()
@@ -164,7 +163,7 @@ fun BibleScreen(
     val colors = LocalAppColors.current
 
     if (hasNoLocalBibles) {
-        NoBibleYet(modifier)
+        BibleTabEmpty(onOpenBibles, modifier)
         return
     }
 
@@ -174,6 +173,7 @@ fun BibleScreen(
         BibleBooksScreen(
             books, bookSearchQuery, vm::setBookSearchQuery, vm::selectBook, isLoading,
             Modifier.fillMaxSize(),
+            header = { bibles?.let { BibleTranslationPicker(it, twoPane, onOpenBibles) } },
         )
     }
     val chaptersPane: @Composable (BibleBook, Int) -> Unit = { book, columns ->
@@ -264,30 +264,6 @@ private fun BibleOnePane(
                 else -> booksPane()
             }
         }
-    }
-}
-
-/**
- * Standalone with no translation copied onto the device yet.
- *
- * Offers the one thing that fixes it rather than naming a mode the operator
- * would have to go and switch to.
- */
-@Composable
-private fun NoBibleYet(modifier: Modifier = Modifier) {
-    val colors = LocalAppColors.current
-    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
-        EmptyState(
-            title = stringResource(Res.string.bible_standalone_empty_title),
-            body = stringResource(Res.string.bible_standalone_empty_body),
-            actionLabel = stringResource(Res.string.empty_action_get_bible),
-            actionIcon = Icons.Filled.CloudDownload,
-            onAction = {
-                // The Library tab owns the sheet; ask it to open on the Bible half.
-                SyncRequestHandler.request(SyncSection.BIBLE)
-                TabNavigationHandler.navigateTo(AppTab.LIBRARY)
-            },
-        )
     }
 }
 
@@ -495,10 +471,13 @@ fun BibleBooksScreen(
     onSearchQueryChange: (String) -> Unit,
     onBookSelect: (BibleBook) -> Unit,
     isLoading: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Drawn above the search — the translation selector, where there is one. */
+    header: @Composable () -> Unit = {},
 ) {
     val colors = LocalAppColors.current
     Column(modifier = modifier.fillMaxSize().background(colors.background)) {
+        header()
         SearchField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,

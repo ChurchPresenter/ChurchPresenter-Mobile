@@ -79,6 +79,57 @@ actual fun TextDocumentPicker(
     content { launcher.launch(TEXT_DOCUMENT_MIME_TYPES) }
 }
 
+/** The largest Bible XML in any of the archives is 21 MB; this leaves room and refuses a video. */
+private const val MAX_BINARY_DOCUMENT_BYTES = 64L * 1024 * 1024
+
+@Composable
+actual fun BinaryDocumentPicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) { onPicked(null); return@rememberLauncherForActivityResult }
+
+        scope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    val (name, size) = context.contentResolver
+                        .query(uri, null, null, null, null)
+                        ?.use { cursor ->
+                            if (!cursor.moveToFirst()) return@use null
+                            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                            val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                            val fileName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
+                            val bytes = if (sizeIndex >= 0) cursor.getLong(sizeIndex) else 0L
+                            fileName to bytes
+                        } ?: (null to 0L)
+
+                    if (size > MAX_BINARY_DOCUMENT_BYTES) error("That file is too large to be a Bible")
+
+                    val bytes = context.contentResolver.openInputStream(uri)
+                        ?.use { it.readBytes() }
+                        ?: error("Could not read that file")
+
+                    PickedBinaryFile(bytes = bytes, fileName = name ?: "import.xml")
+                }
+            }
+
+            result
+                .onSuccess(onPicked)
+                .onFailure { onPicked(null); onError(it.message ?: "Could not read that file") }
+        }
+    }
+
+    // Bible XML arrives as text/xml, application/xml or — from a download — octet-stream.
+    content { launcher.launch(arrayOf("text/xml", "application/xml", "application/octet-stream", "*/*")) }
+}
+
 @Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,

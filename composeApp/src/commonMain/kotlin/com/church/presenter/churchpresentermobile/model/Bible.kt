@@ -98,8 +98,23 @@ data class BibleItemPayload(
     val chapter: Int,
     val verseNumber: Int,
     val verseText: String = "",
-    val verseRange: String? = null
+    val verseRange: String? = null,
+    /**
+     * The phone's own translation, when the verse came from a Bible downloaded onto it. With
+     * [useClientText] the desktop shows [verseText] as sent, under this name, instead of looking
+     * the reference up in its own translation — so the screen shows what the phone shows. All
+     * three default, and default values are not encoded, so a desktop-sourced verse sends exactly
+     * what it always did and an older desktop, which ignores unknown keys, is unaffected.
+     */
+    val bibleName: String = "",
+    val bibleAbbreviation: String = "",
+    val useClientText: Boolean = false,
+    /** The canonical book number, 1–66, so the desktop matches the book whatever it is called. */
+    val bookId: Int = 0,
 )
+
+/** Which downloaded translation a verse was read from; see [BibleSelectRequest.useClientText]. */
+data class VerseSource(val name: String, val abbreviation: String)
 
 /** Wrapper request body for POST /api/project and POST /api/schedule/add. */
 @Serializable
@@ -115,7 +130,19 @@ data class BibleSelectRequest(
     val chapter: Int,
     val verseNumber: Int,
     val verseText: String = "",
-    val verseRange: String? = null
+    val verseRange: String? = null,
+    /**
+     * The phone's own translation, when the verse came from a Bible downloaded onto it. With
+     * [useClientText] the desktop shows [verseText] as sent, under this name, instead of looking
+     * the reference up in its own translation — so the screen shows what the phone shows. All
+     * three default, and default values are not encoded, so a desktop-sourced verse sends exactly
+     * what it always did and an older desktop, which ignores unknown keys, is unaffected.
+     */
+    val bibleName: String = "",
+    val bibleAbbreviation: String = "",
+    val useClientText: Boolean = false,
+    /** The canonical book number, 1–66, so the desktop matches the book whatever it is called. */
+    val bookId: Int = 0,
 )
 
 

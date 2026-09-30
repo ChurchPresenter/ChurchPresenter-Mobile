@@ -31,7 +31,35 @@ data class InstalledBible(
     val sourceHost: String = "",
     val downloadedAtEpochMs: Long = 0L,
     val books: List<InstalledBibleBook> = emptyList(),
-)
+    /** The module's `##Abbreviation:` — "KJV" — shown beside the title in the translation list. */
+    val abbreviation: String = "",
+    /** "English", when known: a download names it; a module synced from a desktop does not. */
+    val languageName: String = "",
+    /** Where it was downloaded from — "eBible.org", "Zefania" — or blank for a desktop sync. */
+    val origin: String = "",
+    val license: String = "",
+    /** The catalogue row it was installed from, which is how the catalogue marks it "Installed". */
+    val catalogKey: String = "",
+) {
+    /** "OT", "NT" or "OT-NT", from the books it actually carries. */
+    val coverage: String
+        get() {
+            val ids = books.map { it.bookId }
+            val hasOld = ids.any { it in OLD_TESTAMENT }
+            val hasNew = ids.any { it in NEW_TESTAMENT }
+            return when {
+                hasOld && hasNew -> "OT-NT"
+                hasNew -> "NT"
+                hasOld -> "OT"
+                else -> ""
+            }
+        }
+
+    private companion object {
+        val OLD_TESTAMENT = 1..39
+        val NEW_TESTAMENT = 40..66
+    }
+}
 
 /** Every translation on this device, and which one the Bible tab is reading. */
 @Serializable

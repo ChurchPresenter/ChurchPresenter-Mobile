@@ -12,6 +12,7 @@ import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
+import platform.Foundation.dataWithContentsOfURL
 import platform.Foundation.stringWithContentsOfFile
 import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
@@ -21,6 +22,7 @@ import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIViewController
 import platform.UIKit.popoverPresentationController
 import platform.darwin.NSObject
+import platform.posix.memcpy
 
 private const val TAG = "DocumentIO"
 
@@ -76,6 +78,63 @@ private class PickerDelegate : NSObject(), UIDocumentPickerDelegateProtocol {
                 onPicked?.invoke(null)
             } else {
                 onPicked?.invoke(PickedTextFile(text = text, fileName = url.lastPathComponent ?: "import"))
+            }
+        } finally {
+            if (claimed) url.stopAccessingSecurityScopedResource()
+        }
+    }
+
+    override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+        onPicked?.invoke(null)
+    }
+}
+
+/** Same picker as [TextDocumentPicker]; the file comes back as bytes rather than as UTF-8 text. */
+@Composable
+actual fun BinaryDocumentPicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+) {
+    val delegate = remember { BinaryPickerDelegate() }
+    delegate.onPicked = onPicked
+    delegate.onError = onError
+
+    content {
+        val controller = UIDocumentPickerViewController(
+            documentTypes = listOf("public.xml", "public.data"),
+            inMode = platform.UIKit.UIDocumentPickerMode.UIDocumentPickerModeImport,
+        )
+        controller.delegate = delegate
+        rootViewController()?.presentViewController(controller, animated = true, completion = null)
+            ?: onError("Could not open the file picker")
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private class BinaryPickerDelegate : NSObject(), UIDocumentPickerDelegateProtocol {
+    var onPicked: ((PickedBinaryFile?) -> Unit)? = null
+    var onError: ((String) -> Unit)? = null
+
+    override fun documentPicker(
+        controller: UIDocumentPickerViewController,
+        didPickDocumentsAtURLs: List<*>,
+    ) {
+        val url = didPickDocumentsAtURLs.firstOrNull() as? NSURL
+        if (url == null) { onPicked?.invoke(null); return }
+
+        val claimed = url.startAccessingSecurityScopedResource()
+        try {
+            val data = NSData.dataWithContentsOfURL(url)
+            if (data == null) {
+                onError?.invoke("Could not read that file")
+                onPicked?.invoke(null)
+            } else {
+                val bytes = ByteArray(data.length.toInt())
+                if (bytes.isNotEmpty()) {
+                    bytes.usePinned { pinned -> memcpy(pinned.addressOf(0), data.bytes, data.length) }
+                }
+                onPicked?.invoke(PickedBinaryFile(bytes = bytes, fileName = url.lastPathComponent ?: "import.xml"))
             }
         } finally {
             if (claimed) url.stopAccessingSecurityScopedResource()
