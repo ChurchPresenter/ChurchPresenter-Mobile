@@ -24,6 +24,7 @@ internal object XmlText {
     private const val BOM_FF = 0xFF
     private const val BOM_FE = 0xFE
     private const val UTF16_BOM_SIZE = 2
+    private const val LESS_THAN = 0x3C
 
     private val ENCODING_ATTRIBUTE = Regex("""encoding\s*=\s*["']([A-Za-z0-9._-]+)["']""")
 
@@ -39,6 +40,9 @@ internal object XmlText {
             at(0) == UTF8_BOM[0] && at(1) == UTF8_BOM[1] && at(2) == UTF8_BOM[2] -> "utf-8" to UTF8_BOM.size
             at(0) == BOM_FF && at(1) == BOM_FE -> "utf-16le" to UTF16_BOM_SIZE
             at(0) == BOM_FE && at(1) == BOM_FF -> "utf-16be" to UTF16_BOM_SIZE
+            // No mark, but `<` with a zero byte beside it: UTF-16 by the XML spec's own detection.
+            at(0) == 0 && at(1) == LESS_THAN -> "utf-16be" to 0
+            at(0) == LESS_THAN && at(1) == 0 -> "utf-16le" to 0
             else -> null
         }
     }

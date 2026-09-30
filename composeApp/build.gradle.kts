@@ -571,6 +571,7 @@ val viewModelBackedUiTests = listOf(
     "com.church.presenter.churchpresentermobile.ui.SettingsStatusDialogTest",
     "com.church.presenter.churchpresentermobile.ui.BibleTabTest",
     "com.church.presenter.churchpresentermobile.ui.bibles.BiblesScreenTest",
+    "com.church.presenter.churchpresentermobile.ui.bibles.BibleTabEntryTest",
     // The shell test composes the WHOLE app, which starts a real status check
     // and waits for it. On the single-threaded wasm runtime that request cannot
     // complete inside the Compose test clock, so the wait can only expire.

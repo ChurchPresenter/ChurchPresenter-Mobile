@@ -72,7 +72,10 @@ class BiblesScreenTest {
             ),
         )
         val repository = LocalBibleRepository(InMemoryFileStorage())
-        repository.install("ENG_KJV.spb", "##Title:\tKing James Version\n1\tGenesis\t50\n-----\nB001C001V001\t1\t1\t1\tIn the beginning")
+        repository.install(
+            "ENG_KJV.spb",
+            "##Title:\tKing James Version\n1\tGenesis\t50\n-----\nB001C001V001\t1\t1\t1\tIn the beginning",
+        )
         val catalog = BibleWebCatalog(fetcher, InMemoryFileStorage(), now = { 0L })
         val downloads = BibleDownloads(repository, fetcher, clock = { 0L })
         val vms = BiblesViewModels(
@@ -154,7 +157,10 @@ class BiblesScreenTest {
     @Test
     fun anInstalledRowDoesNothingWhenTapped() = runComposeUiTest {
         val screen = screen()
-        screen.repository.install("ENG_WEBP.spb", "##Title:\tWEB\n1\tGenesis\t50\n-----\nB001C001V001\t1\t1\t1\tIn the beginning")
+        screen.repository.install(
+            "ENG_WEBP.spb",
+            "##Title:\tWEB\n1\tGenesis\t50\n-----\nB001C001V001\t1\t1\t1\tIn the beginning",
+        )
         show(screen, BiblesPage.GET)
         awaitRow("EBIBLE:engwebp")
 

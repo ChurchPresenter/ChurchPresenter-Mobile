@@ -24,7 +24,8 @@ internal class Inflater(
     expectedSize: Int,
     private val maxOutput: Int,
 ) {
-    private var output = ByteArray(expectedSize.coerceIn(MIN_BUFFER, maxOutput))
+    // At least a small buffer to grow from, never past the limit — even a limit under MIN_BUFFER.
+    private var output = ByteArray(maxOf(expectedSize, MIN_BUFFER).coerceAtMost(maxOutput).coerceAtLeast(0))
     private var outSize = 0
     private var bitBuffer = 0
     private var bitCount = 0
