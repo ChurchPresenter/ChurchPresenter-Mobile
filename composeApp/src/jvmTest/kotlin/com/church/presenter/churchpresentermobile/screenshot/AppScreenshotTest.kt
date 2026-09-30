@@ -27,7 +27,7 @@ class AppScreenshotTest {
 
     @Test
     fun coldLaunch() = eachTheme { theme ->
-        screenshot("app__cold-launch", themes = listOf(theme)) { App(appSettings = settingsIn(theme)) }
+        screenshot("app__cold-launch", themes = listOf(theme)) { App(appSettings = settingsIn(theme), onLaunchPing = {}) }
     }
 
     @Test
@@ -36,7 +36,7 @@ class AppScreenshotTest {
             "app__tablet",
             width = Screenshots.TABLET_WIDTH,
             themes = listOf(theme),
-        ) { App(appSettings = settingsIn(theme)) }
+        ) { App(appSettings = settingsIn(theme), onLaunchPing = {}) }
     }
 
     private fun eachTheme(capture: (ThemeMode) -> Unit) =
