@@ -69,21 +69,15 @@ internal class XmlPullReader(private val source: String) {
             event = when {
                 position >= source.length -> XmlEvent.EOF
                 source[position] != '<' -> readText()
-                source.startsWith("<!--", position) -> skipTo(indexPast(source, position, "-->"))
+                source.startsWith("<!--", position) -> null.also { position = indexPast(source, position, "-->") }
                 source.startsWith(CDATA_OPEN, position) -> readCdata()
                 source.startsWith("<!", position) -> skipDeclaration()
-                source.startsWith("<?", position) -> skipTo(indexPast(source, position, "?>"))
+                source.startsWith("<?", position) -> null.also { position = indexPast(source, position, "?>") }
                 source.startsWith("</", position) -> readEnd()
                 else -> readStart()
             }
         }
         return event
-    }
-
-    /** Moves past skipped markup; returns null so [next] keeps looking for an event. */
-    private fun skipTo(index: Int): XmlEvent? {
-        position = index
-        return null
     }
 
     private fun readText(): XmlEvent {
@@ -174,7 +168,9 @@ internal class XmlPullReader(private val source: String) {
             index++
         }
         if (index >= source.length) fail("unterminated declaration at $position")
-        return skipTo(index + 1)
+        position = index + 1
+        // No event: [next] keeps looking.
+        return null
     }
 
     companion object {

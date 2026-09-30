@@ -96,7 +96,9 @@ internal object ZefaniaReader {
         chapters = raw.chapters.map { chapter ->
             chapter.copy(
                 verses = chapter.verses.map { verse ->
-                    verse.copy(text = VersePatches.apply(verse.text, language, raw.number, chapter.number, verse.number))
+                    verse.copy(
+                        text = VersePatches.apply(verse.text, language, raw.number, chapter.number, verse.number),
+                    )
                 },
             )
         },

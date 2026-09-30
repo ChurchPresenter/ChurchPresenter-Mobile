@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.bibles
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.foundation.border
@@ -18,9 +20,6 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -74,7 +73,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.TextStyle
@@ -103,7 +101,11 @@ internal fun ConvertForm(ui: ConvertUi, actions: ConvertActions, modifier: Modif
             when (val phase = ui.phase) {
                 ConvertPhase.Empty -> ChooseFile(actions.onPick)
                 is ConvertPhase.Installed -> {
-                    ReadyHeader(phase.bible.title, stringResource(Res.string.bibles_convert_installed_body), phase.bible.fileName)
+                    ReadyHeader(
+                        phase.bible.title,
+                        stringResource(Res.string.bibles_convert_installed_body),
+                        phase.bible.fileName,
+                    )
                 }
                 else -> ConvertBody(ui, actions)
             }
@@ -111,7 +113,7 @@ internal fun ConvertForm(ui: ConvertUi, actions: ConvertActions, modifier: Modif
         Column(
             Modifier
                 .fillMaxWidth()
-                .background(if (colors.isDark) Color(0xFF111117) else Color.White)
+                .background(colors.bottomBarFill)
                 .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 22.dp)
                 .navigationBarsPadding(),
         ) {
@@ -154,7 +156,12 @@ private fun ChooseFile(onPick: () -> Unit) {
             Modifier.size(72.dp).clip(RoundedCornerShape(20.dp)).background(colors.hueOf(BibleXmlFormat.ZEFANIA).tint),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.Description, contentDescription = null, tint = colors.hueOf(BibleXmlFormat.ZEFANIA).fg, modifier = Modifier.size(32.dp))
+            Icon(
+                Icons.Outlined.Description,
+                contentDescription = null,
+                tint = colors.hueOf(BibleXmlFormat.ZEFANIA).fg,
+                modifier = Modifier.size(32.dp),
+            )
         }
         Text(
             stringResource(Res.string.bibles_convert_choose),
@@ -194,7 +201,10 @@ private fun ConvertBody(ui: ConvertUi, actions: ConvertActions) {
         is ConvertPhase.Ready, ConvertPhase.Installing -> {
             val detected = (phase as? ConvertPhase.Ready)?.detected
             if (detected != null) {
-                Overline(stringResource(Res.string.bibles_convert_step_detected), Modifier.padding(start = 4.dp, top = 22.dp, bottom = 10.dp))
+                Overline(
+                    stringResource(Res.string.bibles_convert_step_detected),
+                    Modifier.padding(start = 4.dp, top = 22.dp, bottom = 10.dp),
+                )
                 FactRows(
                     listOf(
                         stringResource(Res.string.bibles_field_format) to { FormatBadge(detected.format) },
@@ -225,10 +235,17 @@ private fun SourceFileCard(file: PickedBible?, unreadable: Boolean, onChange: ()
                 Modifier
                     .size(42.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(if (unreadable) colors.danger.copy(alpha = if (colors.isDark) 0.12f else 0.08f) else zefania.tint),
+                    .background(
+                        if (unreadable) colors.errorTint else zefania.tint,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Outlined.Description, contentDescription = null, tint = if (unreadable) colors.danger else zefania.fg, modifier = Modifier.size(21.dp))
+                Icon(
+                    Icons.Outlined.Description,
+                    contentDescription = null,
+                    tint = if (unreadable) colors.danger else zefania.fg,
+                    modifier = Modifier.size(21.dp),
+                )
             }
             Column(Modifier.weight(1f)) {
                 Text(
@@ -240,7 +257,12 @@ private fun SourceFileCard(file: PickedBible?, unreadable: Boolean, onChange: ()
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(sizeLabel(file?.sizeBytes ?: 0), color = colors.muted, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
+                Text(
+                    sizeLabel(file?.sizeBytes ?: 0),
+                    color = colors.muted,
+                    fontSize = 11.sp,
+                    modifier = Modifier.padding(top = 6.dp),
+                )
             }
             Text(
                 stringResource(Res.string.bibles_convert_change),
@@ -267,10 +289,26 @@ private fun ErrorCard(phase: ConvertPhase.Unreadable) {
             .padding(14.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Icon(Icons.Outlined.ErrorOutline, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.Outlined.ErrorOutline,
+            contentDescription = null,
+            tint = colors.danger,
+            modifier = Modifier.size(18.dp),
+        )
         Column {
-            Text(stringResource(Res.string.bibles_convert_unreadable), color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-            Text(failureText(phase.failure), color = colors.secondary, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 6.dp))
+            Text(
+                stringResource(Res.string.bibles_convert_unreadable),
+                color = colors.danger,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                failureText(phase.failure),
+                color = colors.secondary,
+                fontSize = 12.sp,
+                lineHeight = 18.sp,
+                modifier = Modifier.padding(top = 6.dp),
+            )
         }
     }
 }
@@ -278,10 +316,25 @@ private fun ErrorCard(phase: ConvertPhase.Unreadable) {
 @Composable
 private fun SaveAs(ui: ConvertUi, actions: ConvertActions) {
     val colors = LocalAppColors.current
-    Overline(stringResource(Res.string.bibles_convert_step_save), Modifier.padding(start = 4.dp, top = 22.dp, bottom = 10.dp))
+    Overline(
+        stringResource(Res.string.bibles_convert_step_save),
+        Modifier.padding(start = 4.dp, top = 22.dp, bottom = 10.dp),
+    )
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        FormField(stringResource(Res.string.bibles_convert_field_title), ui.title, actions.onTitle, BiblesTags.CONVERT_TITLE, mono = false)
-        FormField(stringResource(Res.string.bibles_convert_field_abbreviation), ui.abbreviation, actions.onAbbreviation, BiblesTags.CONVERT_ABBREVIATION, mono = true)
+        FormField(
+            stringResource(Res.string.bibles_convert_field_title),
+            ui.title,
+            actions.onTitle,
+            BiblesTags.CONVERT_TITLE,
+            mono = false,
+        )
+        FormField(
+            stringResource(Res.string.bibles_convert_field_abbreviation),
+            ui.abbreviation,
+            actions.onAbbreviation,
+            BiblesTags.CONVERT_ABBREVIATION,
+            mono = true,
+        )
         Row(
             Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -289,7 +342,13 @@ private fun SaveAs(ui: ConvertUi, actions: ConvertActions) {
         ) {
             Icon(Icons.Outlined.Lock, contentDescription = null, tint = colors.muted, modifier = Modifier.size(13.dp))
             Text(stringResource(Res.string.bibles_convert_saved_as), color = colors.muted, fontSize = 12.sp)
-            Text(ui.savedFileName, color = colors.text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = MonoFamily)
+            Text(
+                ui.savedFileName,
+                color = colors.text,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = MonoFamily,
+            )
             Box(Modifier.weight(1f))
             Text(stringResource(Res.string.bibles_convert_from_abbreviation), color = colors.muted, fontSize = 11.sp)
         }
@@ -353,7 +412,14 @@ private fun Preview(reference: String, text: String) {
                 letterSpacing = 0.09.em,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
-            Text(text, color = colors.secondary, fontSize = 13.sp, lineHeight = 20.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
+            Text(
+                text,
+                color = colors.secondary,
+                fontSize = 13.sp,
+                lineHeight = 20.sp,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
@@ -402,7 +468,9 @@ internal fun InstalledList(
                 ) { Text(stringResource(Res.string.bibles_remove), color = colors.danger) }
             },
             dismissButton = {
-                TextButton(onClick = { confirming = null }) { Text(stringResource(Res.string.action_cancel), color = colors.muted) }
+                TextButton(
+                    onClick = { confirming = null },
+                ) { Text(stringResource(Res.string.action_cancel), color = colors.muted) }
             },
         )
     }
@@ -430,9 +498,21 @@ private fun InstalledRow(bible: InstalledBible, active: Boolean, onUse: () -> Un
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(Icons.AutoMirrored.Outlined.MenuBook, contentDescription = null, tint = if (active) colors.accent else colors.muted, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.AutoMirrored.Outlined.MenuBook,
+            contentDescription = null,
+            tint = if (active) colors.accent else colors.muted,
+            modifier = Modifier.size(18.dp),
+        )
         Column(Modifier.weight(1f)) {
-            Text(bible.title, color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                bible.title,
+                color = colors.text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Text(
                 listOf(bible.abbreviation, bible.languageName, bible.coverage, origin, sizeLabel(bible.sizeBytes))
                     .filter { it.isNotBlank() }
@@ -452,7 +532,12 @@ private fun InstalledRow(bible: InstalledBible, active: Boolean, onUse: () -> Un
             fontWeight = FontWeight.Bold,
         )
         IconButton(onClick = onRemove, modifier = Modifier.testTag(BiblesTags.remove(bible.id)).size(36.dp)) {
-            Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.bibles_remove), tint = colors.muted, modifier = Modifier.size(18.dp))
+            Icon(
+                Icons.Outlined.Delete,
+                contentDescription = stringResource(Res.string.bibles_remove),
+                tint = colors.muted,
+                modifier = Modifier.size(18.dp),
+            )
         }
     }
 }

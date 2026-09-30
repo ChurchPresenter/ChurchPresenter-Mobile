@@ -58,8 +58,8 @@ internal class Inflater(
         bitBuffer = 0
         bitCount = 0
         if (position + STORED_HEADER > end) corrupt("stored block ends early")
-        val length = (input[position].toInt() and BYTE_MASK) or ((input[position + 1].toInt() and BYTE_MASK) shl BITS_PER_BYTE)
-        val complement = (input[position + 2].toInt() and BYTE_MASK) or ((input[position + 3].toInt() and BYTE_MASK) shl BITS_PER_BYTE)
+        val length = littleEndianShort(position)
+        val complement = littleEndianShort(position + 2)
         if (length != complement.inv() and SHORT_MASK) corrupt("stored length mismatch")
         position += STORED_HEADER
         if (position + length > end) corrupt("stored block ends early")
@@ -68,6 +68,9 @@ internal class Inflater(
         outSize += length
         position += length
     }
+
+    private fun littleEndianShort(at: Int): Int =
+        (input[at].toInt() and BYTE_MASK) or ((input[at + 1].toInt() and BYTE_MASK) shl BITS_PER_BYTE)
 
     private fun decode(huffman: Huffman): Int {
         var code = 0

@@ -1,10 +1,10 @@
 package com.church.presenter.churchpresentermobile.ui.bibles
 
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.material.icons.filled.Copyright
 import androidx.compose.material.icons.filled.Download
@@ -98,13 +98,26 @@ internal fun LicenceDialog(
         containerColor = colors.sheetBackground,
         modifier = Modifier.testTag(BiblesTags.LICENCE),
         icon = {
-            Box(Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(colors.chosenFill), contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.Copyright, contentDescription = null, tint = colors.accent, modifier = Modifier.size(22.dp))
+            Box(
+                Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(colors.chosenFill),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.Copyright,
+                    contentDescription = null,
+                    tint = colors.accent,
+                    modifier = Modifier.size(22.dp),
+                )
             }
         },
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.bible_catalog_license_title), color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(Res.string.bible_catalog_license_title),
+                    color = colors.text,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
                 Text(
                     stringResource(Res.string.bible_catalog_license_subtitle),
                     color = colors.muted,
@@ -142,11 +155,18 @@ internal fun LicenceDialog(
                         modifier = Modifier.padding(top = 12.dp),
                     )
                 }
+                Box(Modifier.testTag(BiblesTags.LICENCE_END).fillMaxWidth().height(1.dp))
             }
         },
         confirmButton = {
             BiblesButton(
-                stringResource(if (source == null) Res.string.bibles_licence_accept_file else Res.string.bible_catalog_license_accept),
+                stringResource(
+                    if (source == null) {
+                        Res.string.bibles_licence_accept_file
+                    } else {
+                        Res.string.bible_catalog_license_accept
+                    },
+                ),
                 onConfirm,
                 icon = Icons.Filled.Download,
                 height = 44.dp,
@@ -163,7 +183,13 @@ internal fun LicenceDialog(
 }
 
 @Composable
-private fun LicenceFacts(name: String, identifier: String, copyright: String, source: BibleSource?, redistributable: Boolean) {
+private fun LicenceFacts(
+    name: String,
+    identifier: String,
+    copyright: String,
+    source: BibleSource?,
+    redistributable: Boolean,
+) {
     val colors = LocalAppColors.current
     BiblesCard(Modifier.fillMaxWidth(), radius = 12.dp) {
         Column(Modifier.padding(12.dp)) {
@@ -188,12 +214,18 @@ private fun LicenceFacts(name: String, identifier: String, copyright: String, so
                     color = tint,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clip(RoundedCornerShape(5.dp)).background(tint.copy(alpha = 0.12f)).padding(horizontal = 6.dp, vertical = 2.dp),
+                    modifier = Modifier.clip(RoundedCornerShape(5.dp)).background(tint.copy(alpha = 0.12f)).padding(
+                        horizontal = 6.dp,
+                        vertical = 2.dp,
+                    ),
                 )
             }
             Box(Modifier.height(8.dp))
             if (source != null) FactLine(stringResource(Res.string.bible_catalog_license_field_source), source.label)
-            if (identifier.isNotBlank()) FactLine(stringResource(Res.string.bible_catalog_license_field_identifier), identifier)
+            if (identifier.isNotBlank()) FactLine(
+                stringResource(Res.string.bible_catalog_license_field_identifier),
+                identifier,
+            )
             FactLine(
                 stringResource(Res.string.bible_catalog_license_field_copyright),
                 copyright.ifBlank { stringResource(Res.string.bible_catalog_license_unknown) },

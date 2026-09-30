@@ -2,7 +2,10 @@ package com.church.presenter.churchpresentermobile.ui.bibles
 
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleSource
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.CatalogSnapshot
+import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.CatalogFilter
+import com.church.presenter.churchpresentermobile.viewmodel.ConvertBibleViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.GetBiblesViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.CatalogRow
 import com.church.presenter.churchpresentermobile.viewmodel.CatalogView
 import com.church.presenter.churchpresentermobile.viewmodel.ConvertPhase
@@ -63,3 +66,9 @@ internal class ConvertActions(
     val onOpen: () -> Unit,
 )
 
+/** The screen's three ViewModels, handed in by a test instead of created by the screen. */
+class BiblesViewModels(
+    val get: GetBiblesViewModel,
+    val convert: ConvertBibleViewModel,
+    val choice: BibleChoiceViewModel,
+)

@@ -25,14 +25,16 @@ internal fun encodePathSegment(segment: String): String = buildString {
             append(char)
         } else {
             append('%')
-            append(HEX[(byte.toInt() shr 4) and 0x0F])
-            append(HEX[byte.toInt() and 0x0F])
+            append(HEX[(byte.toInt() shr NIBBLE_BITS) and NIBBLE_MASK])
+            append(HEX[byte.toInt() and NIBBLE_MASK])
         }
     }
 }
 
 private const val HEX = "0123456789ABCDEF"
 private const val ASCII_LIMIT = 0x80
+private const val NIBBLE_BITS = 4
+private const val NIBBLE_MASK = 0x0F
 
 /**
  * The Zefania XML preservation archive, listed through GitHub's git-tree API.
@@ -53,7 +55,10 @@ internal object ZefaniaCatalog {
     const val CATALOG_URL = "https://api.github.com/repos/$OWNER_REPO/git/trees/$BRANCH?recursive=1"
 
     fun downloadUrl(path: String): String =
-        "https://raw.githubusercontent.com/$OWNER_REPO/$BRANCH/" + path.split("/").joinToString("/", transform = ::encodePathSegment)
+        "https://raw.githubusercontent.com/$OWNER_REPO/$BRANCH/" + path.split("/").joinToString(
+            "/",
+            transform = ::encodePathSegment,
+        )
 
     /** `SF_2009-01-20_ENG_ACV_(A CONSERVATIVE VERSION).zip` and its many near-misses. */
     private val NAME_REGEX = Regex(
@@ -62,7 +67,12 @@ internal object ZefaniaCatalog {
     )
 
     @Serializable
-    internal data class TreeEntry(val path: String = "", val type: String = "", val sha: String = "", val size: Long = 0)
+    internal data class TreeEntry(
+        val path: String = "",
+        val type: String = "",
+        val sha: String = "",
+        val size: Long = 0,
+    )
 
     @Serializable
     internal data class TreeResponse(val tree: List<TreeEntry> = emptyList(), val truncated: Boolean = false)
@@ -75,7 +85,8 @@ internal object ZefaniaCatalog {
         val response = decodeOrNull(TreeResponse.serializer(), body)?.takeUnless { it.truncated } ?: return null
         val taken = mutableSetOf<String>()
         return response.tree
-            .filter { it.type == "blob" && it.path.startsWith(BIBLES_PREFIX) && it.path.endsWith(".zip", ignoreCase = true) }
+            .filter { it.type == "blob" && it.path.startsWith(BIBLES_PREFIX) }
+            .filter { it.path.endsWith(".zip", ignoreCase = true) }
             .sortedBy { it.path }
             .mapNotNull { entry -> entry(entry, languageNames) }
             .map { module ->

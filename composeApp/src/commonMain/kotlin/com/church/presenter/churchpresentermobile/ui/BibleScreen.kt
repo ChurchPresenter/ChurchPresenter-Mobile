@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import com.church.presenter.churchpresentermobile.ui.bibles.BibleTabEmpty
+import com.church.presenter.churchpresentermobile.ui.bibles.BibleTranslationPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,36 +36,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.ui.bibles.BiblesPage
-import com.church.presenter.churchpresentermobile.ui.bibles.NoBibleInstalled
-import com.church.presenter.churchpresentermobile.ui.bibles.TranslationPopover
-import com.church.presenter.churchpresentermobile.ui.bibles.TranslationSelector
-import com.church.presenter.churchpresentermobile.ui.bibles.TranslationSheet
-import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.church.presenter.churchpresentermobile.SyncRequestHandler
-import com.church.presenter.churchpresentermobile.TabNavigationHandler
-import com.church.presenter.churchpresentermobile.model.AppTab
-import com.church.presenter.churchpresentermobile.ui.library.SyncSection
-import androidx.compose.material.icons.filled.CloudDownload
-import churchpresentermobile.composeapp.generated.resources.empty_action_get_bible
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_chapters_count
-import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_body
-import churchpresentermobile.composeapp.generated.resources.bible_standalone_empty_title
 import churchpresentermobile.composeapp.generated.resources.bible_no_books
 import churchpresentermobile.composeapp.generated.resources.bible_no_match
 import churchpresentermobile.composeapp.generated.resources.bible_retry
@@ -136,7 +123,6 @@ fun BibleScreen(
         }
 
     LaunchedEffect(settingsSaveToken) { if (settingsSaveToken > 0) vm.onSettingsSaved(settingsSaveToken) }
-
     val books               by vm.books.collectAsState()
     val bookSearchQuery     by vm.bookSearchQuery.collectAsState()
     val selectedBook        by vm.selectedBook.collectAsState()
@@ -177,16 +163,8 @@ fun BibleScreen(
     val colors = LocalAppColors.current
 
     if (hasNoLocalBibles) {
-        NoBibleInstalled(
-            onGetBibles = onOpenBibles?.let { open -> { open(BiblesPage.GET) } },
-            modifier = modifier,
-            fallbackAction = { CopyFromDesktopButton() },
-        )
+        BibleTabEmpty(onOpenBibles, modifier)
         return
-    }
-
-    val selector: @Composable () -> Unit = {
-        if (bibles != null) BibleTranslationPicker(bibles, twoPane, onOpenBibles)
     }
 
     // The three levels, each named once, because the phone shows one at a time and
@@ -195,7 +173,7 @@ fun BibleScreen(
         BibleBooksScreen(
             books, bookSearchQuery, vm::setBookSearchQuery, vm::selectBook, isLoading,
             Modifier.fillMaxSize(),
-            header = selector,
+            header = { bibles?.let { BibleTranslationPicker(it, twoPane, onOpenBibles) } },
         )
     }
     val chaptersPane: @Composable (BibleBook, Int) -> Unit = { book, columns ->
@@ -286,54 +264,6 @@ private fun BibleOnePane(
                 else -> booksPane()
             }
         }
-    }
-}
-
-/**
- * The web build's way to a first Bible, which cannot download one: copy it from the desktop.
- * The Library tab owns that sheet, so ask it to open on the Bible half.
- */
-@Composable
-private fun CopyFromDesktopButton() {
-    OutlineActionButton(
-        label = stringResource(Res.string.empty_action_get_bible),
-        icon = Icons.Filled.CloudDownload,
-        onClick = {
-            SyncRequestHandler.request(SyncSection.BIBLE)
-            TabNavigationHandler.navigateTo(AppTab.LIBRARY)
-        },
-    )
-}
-
-/**
- * The translation selector and what it opens — design 1a/1b on a phone, 1g on a tablet.
- *
- * Owns the [BibleChoiceViewModel] it reads, as every composable here owns its own.
- */
-@Composable
-private fun BibleTranslationPicker(
-    bibles: LocalBibleRepository,
-    twoPane: Boolean,
-    onOpenBibles: ((BiblesPage) -> Unit)?,
-) {
-    val choice: BibleChoiceViewModel = viewModel(key = "bible_tab_choice") { BibleChoiceViewModel(bibles) }
-    val installed by choice.installed.collectAsState()
-    val active by choice.active.collectAsState()
-    val activeId by choice.activeId.collectAsState()
-    // With nothing installed and nowhere to get one, the selector would offer nothing.
-    if (installed.isEmpty() && onOpenBibles == null) return
-    var open by remember { mutableStateOf(false) }
-    val choose: (String) -> Unit = { id -> choice.setActive(id); open = false }
-    val manage = onOpenBibles?.let { go -> { open = false; go(BiblesPage.INSTALLED) } }
-    val getMore = onOpenBibles?.let { go -> { open = false; go(BiblesPage.GET) } }
-    Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp)) {
-        TranslationSelector(active, installed.size, onClick = { open = true }, open = open)
-        if (open && twoPane) {
-            TranslationPopover(installed, activeId, choose, manage, getMore, onDismiss = { open = false })
-        }
-    }
-    if (open && !twoPane) {
-        TranslationSheet(installed, activeId, choose, manage, getMore, onDismiss = { open = false })
     }
 }
 

@@ -29,6 +29,9 @@ internal object BiblesTags {
     const val LICENCE_ACCEPT = "bibles_licence_accept"
     const val LICENCE_CANCEL = "bibles_licence_cancel"
 
+    /** A zero-height marker after the licence text: reaching it is having read to the end. */
+    const val LICENCE_END = "bibles_licence_end"
+
     const val INSTALL_SHEET = "bibles_install_sheet"
     const val INSTALL_BACKGROUND = "bibles_install_background"
     const val INSTALL_CANCEL = "bibles_install_cancel"

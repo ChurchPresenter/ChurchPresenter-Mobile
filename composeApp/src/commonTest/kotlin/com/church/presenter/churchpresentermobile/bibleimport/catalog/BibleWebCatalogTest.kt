@@ -18,7 +18,10 @@ class BibleWebCatalogTest {
         {"truncated":false,"tree":[{"path":"zefania-sharp-sourceforge-backup/Bibles/UKR/x/SF_2009-01-20_UKR_OGI_(OGIENKO).zip","type":"blob","sha":"a","size":1}]}
     """.trimIndent().encodeToByteArray()
 
-    private val beblia = """{"commit":"c","bibles":[{"file":"UkrainianBible.xml","sha":"s","size":1,"title":"Ukrainian","id":"UKR","lang":"UKR"}]}"""
+    private val beblia = (
+        """{"commit":"c","bibles":[""" +
+            """{"file":"UkrainianBible.xml","sha":"s","size":1,"title":"Ukrainian","id":"UKR","lang":"UKR"}]}"""
+        )
         .encodeToByteArray()
 
     private val all = mapOf(

@@ -96,7 +96,12 @@ internal fun TranslationSelector(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Icon(Icons.AutoMirrored.Outlined.MenuBook, contentDescription = null, tint = colors.accent, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.AutoMirrored.Outlined.MenuBook,
+            contentDescription = null,
+            tint = colors.accent,
+            modifier = Modifier.size(18.dp),
+        )
         Column(Modifier.weight(1f)) {
             Text(
                 text = active?.title ?: stringResource(Res.string.bibles_selector_desktop),
@@ -110,7 +115,11 @@ internal fun TranslationSelector(
             )
             Text(
                 text = if (active != null) {
-                    stringResource(Res.string.bibles_selector_installed, active.abbreviation.ifBlank { active.coverage }, installedCount)
+                    stringResource(
+                        Res.string.bibles_selector_installed,
+                        active.abbreviation.ifBlank { active.coverage },
+                        installedCount,
+                    )
                 } else {
                     stringResource(Res.string.bibles_selector_desktop_detail)
                 },
@@ -123,7 +132,12 @@ internal fun TranslationSelector(
                 modifier = Modifier.padding(top = 3.dp),
             )
         }
-        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, tint = colors.selectorSubtle, modifier = Modifier.size(16.dp))
+        Icon(
+            Icons.Filled.KeyboardArrowDown,
+            contentDescription = null,
+            tint = colors.selectorSubtle,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 
@@ -207,8 +221,12 @@ internal fun TranslationPopover(
 /** Just below the 44-tall selector the popover is anchored to, with design 1g's 6 gap. */
 private val POPOVER_TOP = 50.dp
 
+/**
+ * The sheet's and the popover's content. `internal` rather than private so a UI test can compose
+ * it without the modal sheet around it, which is a window of its own.
+ */
 @Composable
-private fun TranslationList(
+internal fun TranslationList(
     installed: List<InstalledBible>,
     activeId: String,
     onChoose: (String) -> Unit,
@@ -248,7 +266,12 @@ private fun TranslationList(
             Overline(
                 stringResource(Res.string.bibles_on_this_device),
                 color = colors.selectorSubtle,
-                modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = if (compact) 2.dp else 4.dp, bottom = if (compact) 10.dp else 8.dp),
+                modifier = Modifier.padding(
+                    start = 4.dp,
+                    end = 4.dp,
+                    top = if (compact) 2.dp else 4.dp,
+                    bottom = if (compact) 10.dp else 8.dp,
+                ),
             )
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false),
@@ -258,7 +281,11 @@ private fun TranslationList(
                     TranslationRow(bible, bible.id == activeId, compact) { onChoose(bible.id) }
                 }
             }
-            Box(Modifier.padding(vertical = if (compact) 11.dp else 16.dp).fillMaxWidth().height(1.dp).background(colors.borderSubtle))
+            Box(
+                Modifier.padding(
+                    vertical = if (compact) 11.dp else 16.dp,
+                ).fillMaxWidth().height(1.dp).background(colors.borderSubtle),
+            )
         }
         if (onGetMore != null) {
             BiblesButton(
@@ -333,7 +360,12 @@ private fun TranslationRow(bible: InstalledBible, chosen: Boolean, compact: Bool
                 )
             }
         }
-        if (chosen) Icon(Icons.Filled.Check, contentDescription = null, tint = colors.accent, modifier = Modifier.size(16.dp))
+        if (chosen) Icon(
+            Icons.Filled.Check,
+            contentDescription = null,
+            tint = colors.accent,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 
@@ -351,7 +383,9 @@ internal fun NoBibleInstalled(
 ) {
     val colors = LocalAppColors.current
     Column(
-        modifier = modifier.testTag(BiblesTags.EMPTY).fillMaxSize().background(colors.background).padding(horizontal = 32.dp),
+        modifier = modifier.testTag(BiblesTags.EMPTY).fillMaxSize().background(colors.background).padding(
+            horizontal = 32.dp,
+        ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -363,7 +397,12 @@ internal fun NoBibleInstalled(
                 .border(1.dp, colors.chosenEdge, RoundedCornerShape(24.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.AutoMirrored.Outlined.MenuBook, contentDescription = null, tint = colors.accent, modifier = Modifier.size(40.dp))
+            Icon(
+                Icons.AutoMirrored.Outlined.MenuBook,
+                contentDescription = null,
+                tint = colors.accent,
+                modifier = Modifier.size(40.dp),
+            )
         }
         Spacer(Modifier.height(24.dp))
         Text(

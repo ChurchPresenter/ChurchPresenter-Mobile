@@ -51,7 +51,11 @@ enum class InstallFailure {
     STORAGE,
 }
 
-class InstallException(val failure: InstallFailure, message: String, cause: Throwable? = null) : Exception(message, cause)
+class InstallException(
+    val failure: InstallFailure,
+    message: String,
+    cause: Throwable? = null,
+) : Exception(message, cause)
 
 /** Ends an install with [failure] — the one way any step of it gives up. */
 internal fun installFailed(failure: InstallFailure, message: String, cause: Throwable? = null): Nothing =

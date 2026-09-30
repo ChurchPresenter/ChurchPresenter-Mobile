@@ -157,7 +157,11 @@ class ConvertBibleViewModel(
             val installed = withContext(work) {
                 repository.install(
                     fileName = convertedFileName(abbreviation),
-                    text = SpbWriter.write(bible, title = title, abbreviation = abbreviation.ifBlank { BibleNaming.abbreviation(title) }),
+                    text = SpbWriter.write(
+                        bible,
+                        title = title,
+                        abbreviation = abbreviation.ifBlank { BibleNaming.abbreviation(title) },
+                    ),
                     details = InstallDetails(
                         languageName = BibleLanguageNames.nameOf(bible.language),
                         origin = InstallDetails.ORIGIN_FILE,

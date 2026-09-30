@@ -1,5 +1,11 @@
 package com.church.presenter.churchpresentermobile.bibleimport
 
+/**
+ * Book names per language, ported from the desktop app's `BookNames`.
+ *
+ * Only [ENGLISH] and [LANGUAGE_LOOKUPS] are read: each language's own table is private so it
+ * compiles to a field rather than a getter nobody calls.
+ */
 internal object BookNames {
 
     val ENGLISH = mapOf(
@@ -20,7 +26,7 @@ internal object BookNames {
         62 to "1 John", 63 to "2 John", 64 to "3 John", 65 to "Jude", 66 to "Revelation"
     )
 
-    val UKRAINIAN = mapOf(
+    private val UKRAINIAN = mapOf(
         1 to "Буття", 2 to "Вихід", 3 to "Левит", 4 to "Числа", 5 to "Повторний Закон",
         6 to "Ісус Навин", 7 to "Книга Суддів", 8 to "Рут", 9 to "1-а Царств", 10 to "2-а Царств",
         11 to "3-я Царств", 12 to "4-а Царств", 13 to "1-а Паралипоменон", 14 to "2-а Паралипоменон",
@@ -38,7 +44,7 @@ internal object BookNames {
         62 to "1-е Івана", 63 to "2-е Івана", 64 to "3-е Івана", 65 to "Юди", 66 to "Об'явлення"
     )
 
-    val RUSSIAN = mapOf(
+    private val RUSSIAN = mapOf(
         1 to "Бытие", 2 to "Исход", 3 to "Левит", 4 to "Числа", 5 to "Второзаконие",
         6 to "Иисус Навин", 7 to "Книга Судей", 8 to "Руфь", 9 to "1-я Царств", 10 to "2-я Царств",
         11 to "3-я Царств", 12 to "4-я Царств", 13 to "1-я Паралипоменон", 14 to "2-я Паралипоменон",
@@ -56,7 +62,7 @@ internal object BookNames {
         62 to "1-е Иоанна", 63 to "2-е Иоанна", 64 to "3-е Иоанна", 65 to "Иуды", 66 to "Откровение"
     )
 
-    val GERMAN = mapOf(
+    private val GERMAN = mapOf(
         1 to "1. Mose", 2 to "2. Mose", 3 to "3. Mose", 4 to "4. Mose", 5 to "5. Mose",
         6 to "Josua", 7 to "Richter", 8 to "Ruth", 9 to "1. Samuel", 10 to "2. Samuel",
         11 to "1. Könige", 12 to "2. Könige", 13 to "1. Chronika", 14 to "2. Chronika",
@@ -74,7 +80,7 @@ internal object BookNames {
         62 to "1. Johannes", 63 to "2. Johannes", 64 to "3. Johannes", 65 to "Judas", 66 to "Offenbarung"
     )
 
-    val FRENCH = mapOf(
+    private val FRENCH = mapOf(
         1 to "Genèse", 2 to "Exode", 3 to "Lévitique", 4 to "Nombres", 5 to "Deutéronome",
         6 to "Josué", 7 to "Juges", 8 to "Ruth", 9 to "1 Samuel", 10 to "2 Samuel",
         11 to "1 Rois", 12 to "2 Rois", 13 to "1 Chroniques", 14 to "2 Chroniques",
@@ -92,7 +98,7 @@ internal object BookNames {
         62 to "1 Jean", 63 to "2 Jean", 64 to "3 Jean", 65 to "Jude", 66 to "Apocalypse"
     )
 
-    val SPANISH = mapOf(
+    private val SPANISH = mapOf(
         1 to "Génesis", 2 to "Éxodo", 3 to "Levítico", 4 to "Números", 5 to "Deuteronomio",
         6 to "Josué", 7 to "Jueces", 8 to "Ruth", 9 to "1 Samuel", 10 to "2 Samuel",
         11 to "1 Reyes", 12 to "2 Reyes", 13 to "1 Crónicas", 14 to "2 Crónicas",
@@ -110,7 +116,7 @@ internal object BookNames {
         62 to "1 Juan", 63 to "2 Juan", 64 to "3 Juan", 65 to "Judas", 66 to "Apocalipsis"
     )
 
-    val PORTUGUESE = mapOf(
+    private val PORTUGUESE = mapOf(
         1 to "Gênesis", 2 to "Êxodo", 3 to "Levítico", 4 to "Números", 5 to "Deuteronômio",
         6 to "Josué", 7 to "Juízes", 8 to "Rute", 9 to "1 Samuel", 10 to "2 Samuel",
         11 to "1 Reis", 12 to "2 Reis", 13 to "1 Crônicas", 14 to "2 Crônicas",
@@ -128,7 +134,7 @@ internal object BookNames {
         62 to "1 João", 63 to "2 João", 64 to "3 João", 65 to "Judas", 66 to "Apocalipse"
     )
 
-    val ITALIAN = mapOf(
+    private val ITALIAN = mapOf(
         1 to "Genesi", 2 to "Esodo", 3 to "Levitico", 4 to "Numeri", 5 to "Deuteronomio",
         6 to "Giosuè", 7 to "Giudici", 8 to "Rut", 9 to "1 Samuele", 10 to "2 Samuele",
         11 to "1 Re", 12 to "2 Re", 13 to "1 Cronache", 14 to "2 Cronache",
@@ -146,7 +152,7 @@ internal object BookNames {
         62 to "1 Giovanni", 63 to "2 Giovanni", 64 to "3 Giovanni", 65 to "Giuda", 66 to "Apocalisse"
     )
 
-    val DUTCH = mapOf(
+    private val DUTCH = mapOf(
         1 to "Genesis", 2 to "Exodus", 3 to "Leviticus", 4 to "Numeri", 5 to "Deuteronomium",
         6 to "Jozua", 7 to "Richteren", 8 to "Ruth", 9 to "1 Samuel", 10 to "2 Samuel",
         11 to "1 Koningen", 12 to "2 Koningen", 13 to "1 Kronieken", 14 to "2 Kronieken",
@@ -164,7 +170,7 @@ internal object BookNames {
         62 to "1 Johannes", 63 to "2 Johannes", 64 to "3 Johannes", 65 to "Judas", 66 to "Openbaring"
     )
 
-    val POLISH = mapOf(
+    private val POLISH = mapOf(
         1 to "Księga Rodzaju", 2 to "Księga Wyjścia", 3 to "Księga Kapłańska", 4 to "Księga Liczb",
         5 to "Księga Powtórzonego Prawa", 6 to "Księga Jozuego", 7 to "Księga Sędziów", 8 to "Księga Rut",
         9 to "1 Księga Samuela", 10 to "2 Księga Samuela", 11 to "1 Księga Królewska", 12 to "2 Księga Królewska",
@@ -187,7 +193,7 @@ internal object BookNames {
         65 to "List Judy", 66 to "Księga Apokalipsy"
     )
 
-    val CHINESE = mapOf(
+    private val CHINESE = mapOf(
         1 to "创世记", 2 to "出埃及记", 3 to "利未记", 4 to "民数记", 5 to "申命记",
         6 to "约书亚记", 7 to "士师记", 8 to "路得记", 9 to "撒母耳记上", 10 to "撒母耳记下",
         11 to "列王纪上", 12 to "列王纪下", 13 to "历代志上", 14 to "历代志下",
@@ -205,7 +211,7 @@ internal object BookNames {
         62 to "约翰一书", 63 to "约翰二书", 64 to "约翰三书", 65 to "犹大书", 66 to "启示录"
     )
 
-    val KOREAN = mapOf(
+    private val KOREAN = mapOf(
         1 to "창세기", 2 to "출애굽기", 3 to "레위기", 4 to "민수기", 5 to "신명기",
         6 to "여호수아", 7 to "사사기", 8 to "룻기", 9 to "사무엘상", 10 to "사무엘하",
         11 to "열왕기상", 12 to "열왕기하", 13 to "역대상", 14 to "역대하",
@@ -223,7 +229,7 @@ internal object BookNames {
         62 to "요한일서", 63 to "요한이서", 64 to "요한삼서", 65 to "유다서", 66 to "요한계시록"
     )
 
-    val ARABIC = mapOf(
+    private val ARABIC = mapOf(
         1 to "التكوين", 2 to "الخروج", 3 to "اللاويين", 4 to "الأعداد", 5 to "التثنية",
         6 to "يشوع", 7 to "القضاة", 8 to "راعوث", 9 to "صموئيل الأول", 10 to "صموئيل الثاني",
         11 to "ملوك الأول", 12 to "ملوك الثاني", 13 to "أخبار الأول", 14 to "أخبار الثاني",
@@ -241,7 +247,7 @@ internal object BookNames {
         62 to "يوحنا الأولى", 63 to "يوحنا الثانية", 64 to "يوحنا الثالثة", 65 to "يهوذا", 66 to "الرؤيا"
     )
 
-    val HEBREW = mapOf(
+    private val HEBREW = mapOf(
         1 to "בראשית", 2 to "שמות", 3 to "ויקרא", 4 to "במדבר", 5 to "דברים",
         6 to "יהושע", 7 to "שופטים", 8 to "רות", 9 to "שמואל א", 10 to "שמואל ב",
         11 to "מלכים א", 12 to "מלכים ב", 13 to "דברי הימים א", 14 to "דברי הימים ב",
@@ -259,7 +265,7 @@ internal object BookNames {
         62 to "יוחנן א", 63 to "יוחנן ב", 64 to "יוחנן ג", 65 to "יהודה", 66 to "חזון יוחנן"
     )
 
-    val CZECH = mapOf(
+    private val CZECH = mapOf(
         1 to "Genesis", 2 to "Exodus", 3 to "Leviticus", 4 to "Numeri", 5 to "Deuteronomium", 6 to "Jozue",
         7 to "Soudců", 8 to "Rút", 9 to "1. Samuelova", 10 to "2. Samuelova", 11 to "1. Královská",
         12 to "2. Královská", 13 to "1. Paralipomenon", 14 to "2. Paralipomenon", 15 to "Ezdráš", 16 to "Nehemjáš",
@@ -274,7 +280,7 @@ internal object BookNames {
         63 to "2. Janův", 64 to "3. Janův", 65 to "Judův", 66 to "Zjevení"
     )
 
-    val SLOVAK = mapOf(
+    private val SLOVAK = mapOf(
         1 to "Genezis", 2 to "Exodus", 3 to "Levitikus", 4 to "Numeri", 5 to "Deuteronómium", 6 to "Jozua",
         7 to "Sudcovia", 8 to "Rút", 9 to "1. Samuelova", 10 to "2. Samuelova", 11 to "1. Kráľov", 12 to "2. Kráľov",
         13 to "1. Kroník", 14 to "2. Kroník", 15 to "Ezdráš", 16 to "Nehemiáš", 17 to "Ester", 18 to "Jób",
@@ -289,7 +295,7 @@ internal object BookNames {
         65 to "Júdov", 66 to "Zjavenie"
     )
 
-    val CROATIAN = mapOf(
+    private val CROATIAN = mapOf(
         1 to "Postanak", 2 to "Izlazak", 3 to "Levitski zakonik", 4 to "Brojevi", 5 to "Ponovljeni zakon",
         6 to "Jošua", 7 to "Suci", 8 to "Ruta", 9 to "1. Samuelova", 10 to "2. Samuelova", 11 to "1. Kraljevima",
         12 to "2. Kraljevima", 13 to "1. Ljetopisa", 14 to "2. Ljetopisa", 15 to "Ezra", 16 to "Nehemija",
@@ -304,7 +310,7 @@ internal object BookNames {
         62 to "1. Ivanova", 63 to "2. Ivanova", 64 to "3. Ivanova", 65 to "Judina", 66 to "Otkrivenje"
     )
 
-    val ROMANIAN = mapOf(
+    private val ROMANIAN = mapOf(
         1 to "Geneza", 2 to "Exodul", 3 to "Leviticul", 4 to "Numeri", 5 to "Deuteronomul", 6 to "Iosua",
         7 to "Judecători", 8 to "Rut", 9 to "1 Samuel", 10 to "2 Samuel", 11 to "1 Împărați", 12 to "2 Împărați",
         13 to "1 Cronici", 14 to "2 Cronici", 15 to "Ezra", 16 to "Neemia", 17 to "Estera", 18 to "Iov",
@@ -319,7 +325,7 @@ internal object BookNames {
         66 to "Apocalipsa"
     )
 
-    val SWEDISH = mapOf(
+    private val SWEDISH = mapOf(
         1 to "Första Moseboken", 2 to "Andra Moseboken", 3 to "Tredje Moseboken", 4 to "Fjärde Moseboken",
         5 to "Femte Moseboken", 6 to "Josua", 7 to "Domarboken", 8 to "Rut", 9 to "Första Samuelsboken",
         10 to "Andra Samuelsboken", 11 to "Första Kungaboken", 12 to "Andra Kungaboken", 13 to "Första Krönikeboken",
@@ -337,7 +343,7 @@ internal object BookNames {
         65 to "Judasbrevet", 66 to "Uppenbarelseboken"
     )
 
-    val NORWEGIAN = mapOf(
+    private val NORWEGIAN = mapOf(
         1 to "Første Mosebok", 2 to "Andre Mosebok", 3 to "Tredje Mosebok", 4 to "Fjerde Mosebok",
         5 to "Femte Mosebok", 6 to "Josva", 7 to "Dommerne", 8 to "Rut", 9 to "Første Samuelsbok",
         10 to "Andre Samuelsbok", 11 to "Første Kongebok", 12 to "Andre Kongebok", 13 to "Første Krønikebok",
@@ -353,7 +359,7 @@ internal object BookNames {
         62 to "Første Johannes", 63 to "Andre Johannes", 64 to "Tredje Johannes", 65 to "Judas", 66 to "Åpenbaringen"
     )
 
-    val FINNISH = mapOf(
+    private val FINNISH = mapOf(
         1 to "1. Mooseksen kirja", 2 to "2. Mooseksen kirja", 3 to "3. Mooseksen kirja", 4 to "4. Mooseksen kirja",
         5 to "5. Mooseksen kirja", 6 to "Joosua", 7 to "Tuomarien kirja", 8 to "Ruut", 9 to "1. Samuelin kirja",
         10 to "2. Samuelin kirja", 11 to "1. Kuninkaiden kirja", 12 to "2. Kuninkaiden kirja", 13 to "1. Aikakirja",
@@ -370,7 +376,7 @@ internal object BookNames {
         63 to "2. Johanneksen kirje", 64 to "3. Johanneksen kirje", 65 to "Juudaksen kirje", 66 to "Ilmestyskirja"
     )
 
-    val ESTONIAN = mapOf(
+    private val ESTONIAN = mapOf(
         1 to "1. Moosese", 2 to "2. Moosese", 3 to "3. Moosese", 4 to "4. Moosese", 5 to "5. Moosese", 6 to "Joosua",
         7 to "Kohtumõistjate", 8 to "Rutt", 9 to "1. Saamueli", 10 to "2. Saamueli", 11 to "1. Kuningate",
         12 to "2. Kuningate", 13 to "1. Ajaraamat", 14 to "2. Ajaraamat", 15 to "Esra", 16 to "Nehemja",
@@ -386,7 +392,7 @@ internal object BookNames {
         65 to "Juuda", 66 to "Ilmutuse"
     )
 
-    val LATVIAN = mapOf(
+    private val LATVIAN = mapOf(
         1 to "1. Mozus", 2 to "2. Mozus", 3 to "3. Mozus", 4 to "4. Mozus", 5 to "5. Mozus", 6 to "Jozua",
         7 to "Soģi", 8 to "Rute", 9 to "1. Samuēla", 10 to "2. Samuēla", 11 to "1. Ķēniņu", 12 to "2. Ķēniņu",
         13 to "1. Laiku", 14 to "2. Laiku", 15 to "Ezra", 16 to "Nehemija", 17 to "Estere", 18 to "Ījabs",
@@ -404,7 +410,7 @@ internal object BookNames {
     // Authored from reference editions rather than checked against a printed Bible by a
     // reader of the language -- see the note on LANGUAGE_LOOKUPS below.
 
-    val BELARUSIAN = mapOf(
+    private val BELARUSIAN = mapOf(
         1 to "Быццё", 2 to "Выхад", 3 to "Лявіт", 4 to "Лікі", 5 to "Другазаконне", 6 to "Ісус Навін",
         7 to "Судзьдзяў", 8 to "Рут", 9 to "1-я Самуэля", 10 to "2-я Самуэля", 11 to "1-я Валадароў",
         12 to "2-я Валадароў", 13 to "1-я Хронік", 14 to "2-я Хронік", 15 to "Эздра", 16 to "Нээмія", 17 to "Эстэр",
@@ -423,7 +429,7 @@ internal object BookNames {
     // Authored from reference editions rather than checked against a printed Bible by a
     // reader of the language -- see the note on LANGUAGE_LOOKUPS below.
 
-    val KAZAKH = mapOf(
+    private val KAZAKH = mapOf(
         1 to "Жаратылыс", 2 to "Мысырдан көшу", 3 to "Леуіліктер", 4 to "Сандар", 5 to "Заңды қайталау", 6 to "Ешуа",
         7 to "Билер", 8 to "Рут", 9 to "1 Патшалықтар", 10 to "2 Патшалықтар", 11 to "3 Патшалықтар",
         12 to "4 Патшалықтар", 13 to "1 Шежірелер", 14 to "2 Шежірелер", 15 to "Езра", 16 to "Нехемия", 17 to "Естер",
@@ -441,7 +447,7 @@ internal object BookNames {
     // Authored from reference editions rather than checked against a printed Bible by a
     // reader of the language -- see the note on LANGUAGE_LOOKUPS below.
 
-    val UZBEK = mapOf(
+    private val UZBEK = mapOf(
         1 to "Ibtido", 2 to "Chiqish", 3 to "Levilar", 4 to "Sahroda", 5 to "Qonunlar", 6 to "Yoshua",
         7 to "Hakamlar", 8 to "Rut", 9 to "1 Shomuil", 10 to "2 Shomuil", 11 to "1 Shohlar", 12 to "2 Shohlar",
         13 to "1 Solnomalar", 14 to "2 Solnomalar", 15 to "Ezra", 16 to "Naxamiyo", 17 to "Ester", 18 to "Ayub",
@@ -456,7 +462,7 @@ internal object BookNames {
         62 to "1 Yuhanno", 63 to "2 Yuhanno", 64 to "3 Yuhanno", 65 to "Yahudo", 66 to "Vahiy"
     )
 
-    val TURKISH = mapOf(
+    private val TURKISH = mapOf(
         1 to "Yaratılış", 2 to "Mısır'dan Çıkış", 3 to "Levililer", 4 to "Çölde Sayım", 5 to "Yasa'nın Tekrarı",
         6 to "Yeşu", 7 to "Hakimler", 8 to "Rut", 9 to "1. Samuel", 10 to "2. Samuel", 11 to "1. Krallar",
         12 to "2. Krallar", 13 to "1. Tarihler", 14 to "2. Tarihler", 15 to "Ezra", 16 to "Nehemya", 17 to "Ester",
@@ -471,7 +477,7 @@ internal object BookNames {
         63 to "2. Yuhanna", 64 to "3. Yuhanna", 65 to "Yahuda", 66 to "Vahiy"
     )
 
-    val PERSIAN = mapOf(
+    private val PERSIAN = mapOf(
         1 to "پیدایش", 2 to "خروج", 3 to "لاویان", 4 to "اعداد", 5 to "تثنیه", 6 to "یوشع", 7 to "داوران", 8 to "روت",
         9 to "اول سموئیل", 10 to "دوم سموئیل", 11 to "اول پادشاهان", 12 to "دوم پادشاهان", 13 to "اول تواریخ",
         14 to "دوم تواریخ", 15 to "عزرا", 16 to "نحمیا", 17 to "استر", 18 to "ایوب", 19 to "مزامیر", 20 to "امثال",
@@ -485,7 +491,7 @@ internal object BookNames {
         63 to "دوم یوحنا", 64 to "سوم یوحنا", 65 to "یهودا", 66 to "مکاشفه"
     )
 
-    val HINDI = mapOf(
+    private val HINDI = mapOf(
         1 to "उत्पत्ति", 2 to "निर्गमन", 3 to "लैव्यव्यवस्था", 4 to "गिनती", 5 to "व्यवस्थाविवरण", 6 to "यहोशू",
         7 to "न्यायियों", 8 to "रूत", 9 to "1 शमूएल", 10 to "2 शमूएल", 11 to "1 राजा", 12 to "2 राजा",
         13 to "1 इतिहास", 14 to "2 इतिहास", 15 to "एज्रा", 16 to "नहेम्याह", 17 to "एस्तेर", 18 to "अय्यूब",
@@ -503,7 +509,7 @@ internal object BookNames {
     // Authored from reference editions rather than checked against a printed Bible by a
     // reader of the language -- see the note on LANGUAGE_LOOKUPS below.
 
-    val NEPALI = mapOf(
+    private val NEPALI = mapOf(
         1 to "उत्पत्ति", 2 to "प्रस्थान", 3 to "लेवी", 4 to "गन्ती", 5 to "व्यवस्था", 6 to "यहोशू", 7 to "न्यायकर्ता",
         8 to "रूथ", 9 to "1 शमूएल", 10 to "2 शमूएल", 11 to "1 राजा", 12 to "2 राजा", 13 to "1 इतिहास",
         14 to "2 इतिहास", 15 to "एज्रा", 16 to "नहेम्याह", 17 to "एस्तर", 18 to "अय्यूब", 19 to "भजनसंग्रह",
@@ -517,7 +523,7 @@ internal object BookNames {
         63 to "2 यूहन्ना", 64 to "3 यूहन्ना", 65 to "यहूदा", 66 to "प्रकाश"
     )
 
-    val THAI = mapOf(
+    private val THAI = mapOf(
         1 to "ปฐมกาล", 2 to "อพยพ", 3 to "เลวีนิติ", 4 to "กันดารวิถี", 5 to "เฉลยธรรมบัญญัติ", 6 to "โยชูวา",
         7 to "ผู้วินิจฉัย", 8 to "นางรูธ", 9 to "1 ซามูเอล", 10 to "2 ซามูเอล", 11 to "1 พงศ์กษัตริย์",
         12 to "2 พงศ์กษัตริย์", 13 to "1 พงศาวดาร", 14 to "2 พงศาวดาร", 15 to "เอสรา", 16 to "เนหะมีย์",
@@ -535,7 +541,7 @@ internal object BookNames {
     // Authored from reference editions rather than checked against a printed Bible by a
     // reader of the language -- see the note on LANGUAGE_LOOKUPS below.
 
-    val LAO = mapOf(
+    private val LAO = mapOf(
         1 to "ປະຖົມມະການ", 2 to "ອົບພະຍົບ", 3 to "ເລວີນິຕິ", 4 to "ຈົດເຊັນບັນຊີ", 5 to "ພຣະບັນຍັດສອງ", 6 to "ໂຢຊວຍ",
         7 to "ຜູ້ປົກຄອງ", 8 to "ນາງລຶດ", 9 to "1 ຊາມູເອນ", 10 to "2 ຊາມູເອນ", 11 to "1 ກະສັດ", 12 to "2 ກະສັດ",
         13 to "1 ພົງສາວະດານ", 14 to "2 ພົງສາວະດານ", 15 to "ເອຊະຣາ", 16 to "ເນເຫມີຢາ", 17 to "ເອສະເທີ", 18 to "ໂຢບ",
@@ -549,7 +555,7 @@ internal object BookNames {
         61 to "2 ເປໂຕຣ", 62 to "1 ໂຢຮັນ", 63 to "2 ໂຢຮັນ", 64 to "3 ໂຢຮັນ", 65 to "ຢູດາ", 66 to "ວິວອນ"
     )
 
-    val JAPANESE = mapOf(
+    private val JAPANESE = mapOf(
         1 to "創世記", 2 to "出エジプト記", 3 to "レビ記", 4 to "民数記", 5 to "申命記", 6 to "ヨシュア記", 7 to "士師記", 8 to "ルツ記",
         9 to "サムエル記上", 10 to "サムエル記下", 11 to "列王記上", 12 to "列王記下", 13 to "歴代誌上", 14 to "歴代誌下", 15 to "エズラ記",
         16 to "ネヘミヤ記", 17 to "エステル記", 18 to "ヨブ記", 19 to "詩編", 20 to "箴言", 21 to "コヘレトの言葉", 22 to "雅歌", 23 to "イザヤ書",
@@ -563,7 +569,7 @@ internal object BookNames {
         66 to "ヨハネの黙示録"
     )
 
-    val INDONESIAN = mapOf(
+    private val INDONESIAN = mapOf(
         1 to "Kejadian", 2 to "Keluaran", 3 to "Imamat", 4 to "Bilangan", 5 to "Ulangan", 6 to "Yosua",
         7 to "Hakim-hakim", 8 to "Rut", 9 to "1 Samuel", 10 to "2 Samuel", 11 to "1 Raja-raja", 12 to "2 Raja-raja",
         13 to "1 Tawarikh", 14 to "2 Tawarikh", 15 to "Ezra", 16 to "Nehemia", 17 to "Ester", 18 to "Ayub",
@@ -578,7 +584,7 @@ internal object BookNames {
         66 to "Wahyu"
     )
 
-    val MALAY = mapOf(
+    private val MALAY = mapOf(
         1 to "Kejadian", 2 to "Keluaran", 3 to "Imamat", 4 to "Bilangan", 5 to "Ulangan", 6 to "Yosua",
         7 to "Hakim-Hakim", 8 to "Rut", 9 to "1 Samuel", 10 to "2 Samuel", 11 to "1 Raja-Raja", 12 to "2 Raja-Raja",
         13 to "1 Tawarikh", 14 to "2 Tawarikh", 15 to "Ezra", 16 to "Nehemia", 17 to "Ester", 18 to "Ayub",
@@ -593,7 +599,7 @@ internal object BookNames {
         66 to "Wahyu"
     )
 
-    val TAGALOG = mapOf(
+    private val TAGALOG = mapOf(
         1 to "Genesis", 2 to "Exodo", 3 to "Levitico", 4 to "Mga Bilang", 5 to "Deuteronomio", 6 to "Josue",
         7 to "Mga Hukom", 8 to "Ruth", 9 to "1 Samuel", 10 to "2 Samuel", 11 to "1 Mga Hari", 12 to "2 Mga Hari",
         13 to "1 Mga Cronica", 14 to "2 Mga Cronica", 15 to "Ezra", 16 to "Nehemias", 17 to "Ester", 18 to "Job",
@@ -608,7 +614,7 @@ internal object BookNames {
         62 to "1 Juan", 63 to "2 Juan", 64 to "3 Juan", 65 to "Judas", 66 to "Pahayag"
     )
 
-    val SWAHILI = mapOf(
+    private val SWAHILI = mapOf(
         1 to "Mwanzo", 2 to "Kutoka", 3 to "Mambo ya Walawi", 4 to "Hesabu", 5 to "Kumbukumbu la Torati",
         6 to "Yoshua", 7 to "Waamuzi", 8 to "Ruthu", 9 to "1 Samweli", 10 to "2 Samweli", 11 to "1 Wafalme",
         12 to "2 Wafalme", 13 to "1 Mambo ya Nyakati", 14 to "2 Mambo ya Nyakati", 15 to "Ezra", 16 to "Nehemia",
@@ -623,7 +629,7 @@ internal object BookNames {
         64 to "3 Yohana", 65 to "Yuda", 66 to "Ufunuo"
     )
 
-    val TAMIL = mapOf(
+    private val TAMIL = mapOf(
         1 to "ஆதியாகமம்", 2 to "யாத்திராகமம்", 3 to "லேவியராகமம்", 4 to "எண்ணாகமம்", 5 to "உபாகமம்",
         6 to "யோசுவா", 7 to "நியாயாதிபதிகள்", 8 to "ரூத்", 9 to "1 சாமுவேல்", 10 to "2 சாமுவேல்",
         11 to "1 இராஜாக்கள்", 12 to "2 இராஜாக்கள்", 13 to "1 நாளாகமம்", 14 to "2 நாளாகமம்",

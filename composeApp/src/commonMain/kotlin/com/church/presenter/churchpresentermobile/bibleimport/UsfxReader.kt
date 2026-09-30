@@ -128,7 +128,9 @@ internal object UsfxReader {
         val reader = XmlPullReader(text)
         var event = reader.next()
         while (event != XmlEvent.EOF) {
-            if (event == XmlEvent.START && reader.name == "book") bookName(reader)?.let { (code, label) -> names[code] = label }
+            if (event == XmlEvent.START && reader.name == "book") {
+                bookName(reader)?.let { (code, label) -> names[code] = label }
+            }
             event = reader.next()
         }
         return names
@@ -199,7 +201,9 @@ internal object UsfxReader {
             flushVerse()
             val number = bookNumber ?: return
             if (chapters.isNotEmpty()) {
-                books.add(SourceBook(number, bookName, chapters.map { (chapter, verses) -> SourceChapter(chapter, verses) }))
+                books.add(
+                    SourceBook(number, bookName, chapters.map { (chapter, verses) -> SourceChapter(chapter, verses) }),
+                )
             }
             chapters.clear()
             bookNumber = null

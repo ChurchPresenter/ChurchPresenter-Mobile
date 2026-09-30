@@ -72,9 +72,16 @@ class SpbWriterTest {
     fun `a Septuagint psalm whose first verse is only its title codes it as verse zero`() {
         val psalm = SourceBook(
             19, "Псалтирь",
-            listOf(SourceChapter(3, listOf(SourceVerse(1, "Псалом Давида."), SourceVerse(2, "Господи! как умножились враги мои!")))),
+            listOf(
+                SourceChapter(
+                    3,
+                    listOf(SourceVerse(1, "Псалом Давида."), SourceVerse(2, "Господи! как умножились враги мои!")),
+                ),
+            ),
         )
-        val codes = SpbWriter.write(bible("RUS", listOf(psalm))).lines().filter { it.startsWith("B") }.map { it.take(12) }
+        val codes = SpbWriter.write(
+            bible("RUS", listOf(psalm)),
+        ).lines().filter { it.startsWith("B") }.map { it.take(12) }
         // Psalm 3 is numbered alike in both traditions; only the verse shifts.
         assertEquals(listOf("B019C003V000", "B019C003V001"), codes)
     }

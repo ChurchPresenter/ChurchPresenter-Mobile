@@ -20,6 +20,10 @@ internal object XmlText {
     private const val UPPER_CONTROL_START = 0x80
     private const val UPPER_CONTROL_END = 0xA0
     private const val DECLARATION_SCAN_BYTES = 256
+    private val UTF8_BOM = listOf(0xEF, 0xBB, 0xBF)
+    private const val BOM_FF = 0xFF
+    private const val BOM_FE = 0xFE
+    private const val UTF16_BOM_SIZE = 2
 
     private val ENCODING_ATTRIBUTE = Regex("""encoding\s*=\s*["']([A-Za-z0-9._-]+)["']""")
 
@@ -32,9 +36,9 @@ internal object XmlText {
     private fun bomEncoding(bytes: ByteArray): Pair<String, Int>? {
         fun at(i: Int) = bytes.getOrNull(i)?.toInt()?.and(BYTE_MASK)
         return when {
-            at(0) == 0xEF && at(1) == 0xBB && at(2) == 0xBF -> "utf-8" to 3
-            at(0) == 0xFF && at(1) == 0xFE -> "utf-16le" to 2
-            at(0) == 0xFE && at(1) == 0xFF -> "utf-16be" to 2
+            at(0) == UTF8_BOM[0] && at(1) == UTF8_BOM[1] && at(2) == UTF8_BOM[2] -> "utf-8" to UTF8_BOM.size
+            at(0) == BOM_FF && at(1) == BOM_FE -> "utf-16le" to UTF16_BOM_SIZE
+            at(0) == BOM_FE && at(1) == BOM_FF -> "utf-16be" to UTF16_BOM_SIZE
             else -> null
         }
     }

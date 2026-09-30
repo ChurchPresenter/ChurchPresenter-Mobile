@@ -124,12 +124,9 @@ class BibleWebCatalog(
         parse: (String) -> List<CatalogBible>?,
     ): Loaded {
         val cached = readCache(source)?.let { entry -> parse(entry.body)?.let { Cached(entry, it) } }
-        val young = cached != null && now() - cached.entry.fetchedAtMs < CACHE_LIFETIME_MS
-        return if (!refresh && young && cached != null) {
-            cached.bibles to SourceStatus.Fresh(cached.entry.fetchedAtMs)
-        } else {
-            fetchSource(source, url, headers, cached, parse)
-        }
+        val young = cached?.takeIf { !refresh && now() - it.entry.fetchedAtMs < CACHE_LIFETIME_MS }
+        return young?.let { it.bibles to SourceStatus.Fresh(it.entry.fetchedAtMs) }
+            ?: fetchSource(source, url, headers, cached, parse)
     }
 
     /** The source's list from the network, or — when that fails — the cached copy as stale. */
@@ -162,7 +159,12 @@ class BibleWebCatalog(
         }
     }
 
-    private suspend fun fetchOrNull(source: BibleSource, url: String, headers: Map<String, String>): WebResponse? = try {
+    private suspend fun fetchOrNull(
+        source: BibleSource,
+        url: String,
+        headers: Map<String,
+        String>,
+    ): WebResponse? = try {
         fetcher.get(url, headers) { _, _ -> }
     } catch (e: CancellationException) {
         throw e

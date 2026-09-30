@@ -41,7 +41,10 @@ class CatalogParsingTest {
 
     @Test
     fun `stems that collide are numbered in catalogue order`() {
-        assertEquals(listOf("ENG_WEBP", "ENG_WEBP_2"), EBibleCatalog.parse(csv).filter { it.identifier == "engwebp" }.map { it.fileStem })
+        assertEquals(
+            listOf("ENG_WEBP", "ENG_WEBP_2"),
+            EBibleCatalog.parse(csv).filter { it.identifier == "engwebp" }.map { it.fileStem },
+        )
     }
 
     @Test
@@ -126,7 +129,10 @@ class CatalogParsingTest {
 
     @Test
     fun `an untitled Holy Bible XML row is named after its file`() {
-        assertEquals("SpanishRV1909Bible", BebliaCatalog.parse(beblia, emptyMap())!!.first { it.identifier == "RV1909" }.displayName)
+        assertEquals(
+            "SpanishRV1909Bible",
+            BebliaCatalog.parse(beblia, emptyMap())!!.first { it.identifier == "RV1909" }.displayName,
+        )
     }
 
     @Test
@@ -155,7 +161,9 @@ class CatalogParsingTest {
 
     @Test
     fun `hand-checked names win over a catalogue's`() {
-        val names = BibleLanguageNames.resolve(mapOf("DEU" to LanguageNaming("German, Standard"), "ACH" to LanguageNaming("Acholi")))
+        val names = BibleLanguageNames.resolve(
+            mapOf("DEU" to LanguageNaming("German, Standard"), "ACH" to LanguageNaming("Acholi")),
+        )
         assertEquals("German", names["DEU"]?.english)
         assertEquals("Acholi", names["ACH"]?.english)
     }

@@ -19,7 +19,12 @@ internal class FakeWebFetcher(private val bodies: Map<String, WebResponse>) : We
     var gate: CompletableDeferred<Unit>? = null
     var failWith: Exception? = null
 
-    override suspend fun get(url: String, headers: Map<String, String>, onProgress: (Long, Long?) -> Unit): WebResponse {
+    override suspend fun get(
+        url: String,
+        headers: Map<String,
+        String>,
+        onProgress: (Long, Long?) -> Unit,
+    ): WebResponse {
         requested += url
         failWith?.let { throw it }
         gate?.await()
@@ -158,7 +163,8 @@ class BibleDownloadsTest {
             clock = { 0L }, scope = this, convertDispatcher = UnconfinedTestDispatcher(testScheduler),
         )
         downloads.install(zefania)
-        val failed = downloads.states.first { it[zefania.key] is InstallState.Failed }[zefania.key] as InstallState.Failed
+        val states = downloads.states.first { it[zefania.key] is InstallState.Failed }
+        val failed = states[zefania.key] as InstallState.Failed
         assertEquals(InstallFailure.CORRUPT, failed.failure)
     }
 

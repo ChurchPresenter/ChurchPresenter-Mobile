@@ -36,7 +36,10 @@ class BibleXmlReaderTest {
     @Test
     fun `the root element decides the format`() {
         assertEquals(BibleXmlFormat.ZEFANIA, BibleXmlReader.detect(zefania))
-        assertEquals(BibleXmlFormat.USFX, BibleXmlReader.detect("<?xml version=\"1.0\"?><usfx><book id=\"GEN\"/></usfx>"))
+        assertEquals(
+            BibleXmlFormat.USFX,
+            BibleXmlReader.detect("<?xml version=\"1.0\"?><usfx><book id=\"GEN\"/></usfx>"),
+        )
         assertEquals(BibleXmlFormat.BEBLIA, BibleXmlReader.detect("<bible translation=\"English KJV\"></bible>"))
     }
 
@@ -154,7 +157,10 @@ class BibleXmlReaderTest {
 
     @Test
     fun `what the catalogue knows wins over the Beblia root`() {
-        val bible = BibleXmlReader.read(beblia, ImportHints(language = "ukr", name = "Named by catalogue", rights = "CC"))
+        val bible = BibleXmlReader.read(
+            beblia,
+            ImportHints(language = "ukr", name = "Named by catalogue", rights = "CC"),
+        )
         assertEquals("Named by catalogue", bible.name)
         assertEquals("UKR", bible.language)
         assertEquals("CC", bible.rights)
