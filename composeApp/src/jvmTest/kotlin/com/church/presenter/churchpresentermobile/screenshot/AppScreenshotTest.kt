@@ -27,7 +27,9 @@ class AppScreenshotTest {
 
     @Test
     fun coldLaunch() = eachTheme { theme ->
-        screenshot("app__cold-launch", themes = listOf(theme)) { App(appSettings = settingsIn(theme), onLaunchPing = {}) }
+        screenshot("app__cold-launch", themes = listOf(theme)) {
+            App(appSettings = settingsIn(theme), onLaunchPing = {})
+        }
     }
 
     @Test
