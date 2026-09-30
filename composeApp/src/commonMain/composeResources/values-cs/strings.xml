@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Bible vymazány.</string>
     <string name="library_clear_done_all">Vše vymazáno.</string>
     <string name="more_new_badge">Nové</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Autorská práva a licence</string>
+    <string name="bible_catalog_license_subtitle">Potvrďte, že máte oprávnění tento překlad používat</string>
+    <string name="bible_catalog_license_body">Překlady Bible jsou chráněny autorským právem. Některé jsou volným dílem, jiné dovolují jen osobní nebo sborové použití a některé vyžadují licenci před veřejným zobrazením, streamováním nebo vysíláním.\n\nStažením potvrzujete, že máte oprávnění tento překlad ve svém prostředí používat, a že přijímáte podmínky vydavatele.</string>
+    <string name="bible_catalog_license_unknown">Tento archiv u tohoto překladu neuvádí žádná autorská práva.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org uvádí tento překlad jako volně šiřitelný a zveřejňuje autorská práva uvedená výše.</string>
+    <string name="bible_catalog_license_source_zefania">Archiv Zefania nezveřejňuje podrobnosti o licenci, takže autorská práva tohoto překladu jsou viditelná až po instalaci. Jeho moduly jsou příspěvkem komunity a nebyly ověřeny.</string>
+    <string name="bible_catalog_license_source_beblia">Archiv Holy Bible XML znovu zveřejňuje vlastní oznámení o autorských právech každého překladu uvedené výše, jeho soubory však pocházejí od komunity a žádné z těchto oznámení nebylo ověřeno.</string>
+    <string name="bible_catalog_license_accept">Rozumím — stáhnout</string>
+    <string name="bible_catalog_license_field_source">Zdroj</string>
+    <string name="bible_catalog_license_field_identifier">Identifikátor</string>
+    <string name="bible_catalog_license_field_copyright">Autorská práva</string>
+    <string name="bible_catalog_license_badge_redistributable">Volně šiřitelné</string>
+    <string name="bible_catalog_license_badge_unverified">Licence neověřena</string>
+    <string name="bible_catalog_book_names_english">Názvy knih se u tohoto překladu zobrazí anglicky — soubory archivu označují knihy pouze čísly. Text veršů to neovlivní.</string>
+    <string name="bible_catalog_stale_notice">Zobrazen seznam Biblí z vaší poslední návštěvy — zdá se, že jste offline.</string>
+    <string name="bible_catalog_error_network">Nepodařilo se připojit k archivu Biblí — zkontrolujte připojení</string>
+    <string name="bible_catalog_error_rate_limited">GitHub nyní omezuje počet požadavků. Zkuste to prosím za pár minut znovu.</string>
+    <string name="bible_catalog_error_generic">Nepodařilo se načíst seznam Biblí. Zkuste to prosím znovu.</string>
+    <string name="bible_catalog_empty_hint">Zkuste jiný hledaný výraz nebo jazyk.</string>
 </resources>

@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Biblije su očišćene.</string>
     <string name="library_clear_done_all">Sve je očišćeno.</string>
     <string name="more_new_badge">Novo</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Autorska prava i licenciranje</string>
+    <string name="bible_catalog_license_subtitle">Potvrdite da smijete koristiti ovaj prijevod</string>
+    <string name="bible_catalog_license_body">Biblijski prijevodi zaštićeni su autorskim pravom. Neki su u javnom vlasništvu, drugi dopuštaju samo osobnu ili crkvenu upotrebu, a za neke je potrebna licencija prije javnog prikazivanja, prijenosa ili emitiranja.\n\nPreuzimanjem potvrđujete da vam je dopušteno koristiti ovaj prijevod u svojoj sredini i da prihvaćate uvjete izdavača.</string>
+    <string name="bible_catalog_license_unknown">Ova arhiva ne navodi autorska prava za ovaj prijevod.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org navodi ovaj prijevod kao slobodan za daljnju distribuciju i objavljuje autorska prava prikazana iznad.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania arhiva ne objavljuje podatke o licenciji, pa autorska prava ovog prijevoda postaju vidljiva samo nakon instalacije. Njezine module doprinosi zajednica i nisu provjereni.</string>
+    <string name="bible_catalog_license_source_beblia">Arhiva Holy Bible XML ponovno objavljuje izjavu o autorskim pravima svakog prijevoda, prikazanu iznad, no njezine datoteke doprinosi zajednica i nijedna izjava nije provjerena.</string>
+    <string name="bible_catalog_license_accept">Razumijem — preuzmi</string>
+    <string name="bible_catalog_license_field_source">Izvor</string>
+    <string name="bible_catalog_license_field_identifier">Identifikator</string>
+    <string name="bible_catalog_license_field_copyright">Autorska prava</string>
+    <string name="bible_catalog_license_badge_redistributable">Slobodno za distribuciju</string>
+    <string name="bible_catalog_license_badge_unverified">Licencija nije provjerena</string>
+    <string name="bible_catalog_book_names_english">Nazivi knjiga za ovaj prijevod prikazivat će se na engleskom — datoteke u arhivi knjige označavaju samo brojem. Tekst stihova time nije zahvaćen.</string>
+    <string name="bible_catalog_stale_notice">Prikazan je popis Biblija od zadnjeg posjeta — izgleda da niste na mreži.</string>
+    <string name="bible_catalog_error_network">Nije moguće doći do arhive Biblija — provjerite vezu</string>
+    <string name="bible_catalog_error_rate_limited">GitHub trenutno ograničava zahtjeve. Pokušajte ponovno za nekoliko minuta.</string>
+    <string name="bible_catalog_error_generic">Popis Biblija nije se mogao učitati. Pokušajte ponovno.</string>
+    <string name="bible_catalog_empty_hint">Pokušajte s drugim pojmom ili jezikom.</string>
 </resources>

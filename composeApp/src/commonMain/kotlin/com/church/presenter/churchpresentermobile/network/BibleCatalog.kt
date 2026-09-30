@@ -28,10 +28,12 @@ interface BibleReader {
  * installed. The content twin of [SongCatalog], with one deliberate difference.
  *
  * Songs never read the on-device library in remote mode, so a desktop's list is not overwritten
- * by a library the operator isn't looking at. A Bible is not like that: the desktop's translation
- * and a downloaded copy of the same translation say the same thing, so when the desktop cannot be
- * reached mid-service a downloaded module is strictly better than an empty tab. Remote therefore
- * asks the desktop first and falls back; standalone reads the device and never asks at all.
+ * by a library the operator isn't looking at. A Bible is not like that. A translation downloaded
+ * onto this device is one the operator chose for it, so it is read first in *both* modes: it
+ * answers without a network round trip, it keeps working when the desktop drops off the Wi-Fi
+ * mid-service, and projecting sends its text so the screen shows the translation the phone shows.
+ * Only with nothing installed does remote mode ask the desktop — and standalone with nothing
+ * installed is the empty tab that offers a download.
  *
  * @param bibles Translations on this device. Null means remote-only — the right default for
  *   previews and for tests that predate this.
@@ -41,13 +43,20 @@ class BibleCatalog(
     private val remote: BibleReader,
     private val bibles: LocalBibleRepository? = null,
 ) {
-    /** True when Bible text is being served from this device rather than a desktop. */
+    /**
+     * True when Bible text is being served from this device rather than a desktop: always in
+     * standalone, and in remote whenever a translation has been downloaded.
+     */
     val isLocal: Boolean
-        get() = mode.value == AppMode.STANDALONE && bibles != null
+        get() = bibles != null && (mode.value == AppMode.STANDALONE || bibles.index.value.active != null)
 
-    /** [isLocal] as a stream, for UI that must follow a mode switch made in Settings. */
+    /**
+     * [isLocal] as a stream, for UI that must follow a mode switch made in Settings — or the
+     * first download, or the last removal, which move remote mode between the two sources.
+     */
     val isLocalSource: Flow<Boolean> =
-        mode.map { it == AppMode.STANDALONE && bibles != null }
+        if (bibles == null) flowOf(false)
+        else combine(mode, bibles.index) { current, index -> current == AppMode.STANDALONE || index.active != null }
 
     /**
      * Which translation this device is reading, as a stream. Empty when the text comes from a
@@ -98,13 +107,18 @@ class BibleCatalog(
     }
 
     /**
-     * The name of the translation the text is coming from, for the CCLI report.
+     * The name of the translation the text is coming from — for the CCLI report, and sent with a
+     * projected verse so the desktop can show it under the phone's translation.
      *
      * Only known when the words are this device's own: a desktop names its translation on
-     * its side and does not send it with a chapter, so remote reads report an empty name.
+     * its side and does not send it with a chapter, so desktop reads report an empty name.
      */
     val activeBibleName: String
         get() = if (isLocal) bibles?.index?.value?.active?.title.orEmpty() else ""
+
+    /** The active downloaded translation's abbreviation, sent alongside [activeBibleName]. */
+    val activeBibleAbbreviation: String
+        get() = if (isLocal) bibles?.index?.value?.active?.abbreviation.orEmpty() else ""
 
     /** Books straight out of the index, so drawing the list never parses a module. */
     private fun localBooks(): List<BibleBook> =

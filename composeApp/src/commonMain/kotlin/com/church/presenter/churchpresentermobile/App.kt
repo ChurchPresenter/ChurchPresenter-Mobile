@@ -149,6 +149,10 @@ import com.church.presenter.churchpresentermobile.viewmodel.SongsViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import com.church.presenter.churchpresentermobile.ui.StatusScreen
+import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleDownloads
+import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleWebCatalog
+import com.church.presenter.churchpresentermobile.ui.bibles.BiblesPage
+import com.church.presenter.churchpresentermobile.ui.bibles.BiblesScreen
 import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -255,6 +259,15 @@ fun App(
         LocalBibleRepository(now = { Clock.System.now().toEpochMilliseconds() })
             .also { it.load() }
     }
+    // Downloading Bibles off the web. Here rather than in the Bibles screen because an install
+    // outlives that screen ("Run in background"), and the catalogue is worth keeping for the
+    // session. Not offered on the web build: its storage cannot hold a Bible, and the archives
+    // do not allow a browser to fetch from them.
+    val bibleDownloadsSupported = remember { getPlatform().os != "web" }
+    val bibleDownloads = remember(bibleRepository) {
+        BibleDownloads(bibleRepository, clock = { Clock.System.now().toEpochMilliseconds() })
+    }
+    val bibleWebCatalog = remember { BibleWebCatalog(now = { Clock.System.now().toEpochMilliseconds() }) }
     // Photos the operator picks for this service. Held here because two things
     // need the same set: the screen that picks and projects them, and the
     // presentation server that serves the bytes to whatever is displaying.
@@ -484,6 +497,8 @@ fun App(
 
     // Settings are only opened manually by the user — not on first launch
     var showSettings by remember { mutableStateOf(false) }
+    // Getting, converting and managing Bibles, over the tabs like Settings; null when closed.
+    var biblesPage by remember { mutableStateOf<BiblesPage?>(null) }
     // Show connect QR-scan setup screen — set to true by the splash callback on
     // first launch (when !appSettings.isConnectSetupDone) or from SettingsScreen.
     var showConnectSetup by remember { mutableStateOf(false) }
@@ -1007,6 +1022,8 @@ fun App(
                                 pendingBibleVerses   = emptySet()
                             },
                             onScheduleRefresh = { scheduleRefreshToken++ },
+                            bibles = bibleRepository,
+                            onOpenBibles = if (bibleDownloadsSupported) ({ biblesPage = it }) else null,
                             modifier = Modifier.fillMaxSize()
                         )
                         AppTab.MEDIA -> MediaScreen(
@@ -1293,6 +1310,20 @@ fun App(
                         }
                     },
                     twoPane = twoPane,
+                )
+            }
+            biblesPage?.let { page ->
+                BiblesScreen(
+                    page = page,
+                    twoPane = twoPane,
+                    repository = bibleRepository,
+                    downloads = bibleDownloads,
+                    catalog = bibleWebCatalog,
+                    onClose = { biblesPage = null },
+                    onOpenedBible = {
+                        biblesPage = null
+                        selectedTab = AppTab.BIBLE
+                    },
                 )
             }
             if (showContact) ContactOverlay(onClose = { showContact = false })

@@ -1012,4 +1012,24 @@
     <string name="library_clear_done_bibles">Bíblias removidas.</string>
     <string name="library_clear_done_all">Tudo removido.</string>
     <string name="more_new_badge">Novo</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Direitos autorais e licenciamento</string>
+    <string name="bible_catalog_license_subtitle">Confirme que você tem permissão para usar esta tradução</string>
+    <string name="bible_catalog_license_body">As traduções da Bíblia são protegidas por direitos autorais. Algumas são de domínio público, outras permitem apenas uso pessoal ou congregacional, e algumas exigem uma licença antes de serem exibidas publicamente, transmitidas ou retransmitidas.\n\nAo baixar, você confirma que tem permissão para usar esta tradução em seu contexto e que aceita os termos do editor.</string>
+    <string name="bible_catalog_license_unknown">Este arquivo não informa direitos autorais para esta tradução.</string>
+    <string name="bible_catalog_license_source_ebible">O eBible.org lista esta tradução como redistribuível e publica os direitos autorais mostrados acima.</string>
+    <string name="bible_catalog_license_source_zefania">O arquivo Zefania não publica detalhes de licença, então os direitos autorais desta tradução só ficam visíveis após a instalação. Seus módulos são contribuídos pela comunidade e não foram verificados.</string>
+    <string name="bible_catalog_license_source_beblia">O arquivo Holy Bible XML volta a publicar o aviso de direitos de autor de cada tradução, apresentado acima, mas os seus ficheiros são contribuídos pela comunidade e nenhum dos avisos foi verificado.</string>
+    <string name="bible_catalog_license_accept">Entendi — baixar</string>
+    <string name="bible_catalog_license_field_source">Fonte</string>
+    <string name="bible_catalog_license_field_identifier">Identificador</string>
+    <string name="bible_catalog_license_field_copyright">Direitos autorais</string>
+    <string name="bible_catalog_license_badge_redistributable">Redistribuível</string>
+    <string name="bible_catalog_license_badge_unverified">Licença não verificada</string>
+    <string name="bible_catalog_book_names_english">Os nomes dos livros aparecerão em inglês nesta tradução — os ficheiros do arquivo identificam os livros apenas por número. O texto dos versículos não é afetado.</string>
+    <string name="bible_catalog_stale_notice">Mostrando a lista de Bíblias da sua última visita — parece que você está offline.</string>
+    <string name="bible_catalog_error_network">Não foi possível acessar o arquivo de Bíblias — verifique sua conexão</string>
+    <string name="bible_catalog_error_rate_limited">O GitHub está limitando as solicitações no momento. Tente novamente em alguns minutos.</string>
+    <string name="bible_catalog_error_generic">Não foi possível carregar a lista de Bíblias. Tente novamente.</string>
+    <string name="bible_catalog_empty_hint">Tente um termo de busca ou idioma diferente.</string>
 </resources>

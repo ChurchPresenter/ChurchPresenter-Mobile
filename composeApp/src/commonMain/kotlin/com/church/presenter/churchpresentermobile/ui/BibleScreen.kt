@@ -34,6 +34,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.ui.bibles.BiblesPage
+import com.church.presenter.churchpresentermobile.ui.bibles.NoBibleInstalled
+import com.church.presenter.churchpresentermobile.ui.bibles.TranslationPopover
+import com.church.presenter.churchpresentermobile.ui.bibles.TranslationSelector
+import com.church.presenter.churchpresentermobile.ui.bibles.TranslationSheet
+import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,6 +121,10 @@ fun BibleScreen(
     /** Opens settings. Only used in [twoPane], which owns its header. */
     onSettings: (() -> Unit)? = null,
     providedViewModel: BibleViewModel? = null,
+    /** Translations on this device, for the selector above the books. Null hides the selector. */
+    bibles: LocalBibleRepository? = null,
+    /** Opens the Bibles screen on a page. Null where Bibles cannot be downloaded (the web). */
+    onOpenBibles: ((BiblesPage) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // Use the session-scoped ViewModel passed from App.kt when available.
@@ -164,8 +177,16 @@ fun BibleScreen(
     val colors = LocalAppColors.current
 
     if (hasNoLocalBibles) {
-        NoBibleYet(modifier)
+        NoBibleInstalled(
+            onGetBibles = onOpenBibles?.let { open -> { open(BiblesPage.GET) } },
+            modifier = modifier,
+            fallbackAction = { CopyFromDesktopButton() },
+        )
         return
+    }
+
+    val selector: @Composable () -> Unit = {
+        if (bibles != null) BibleTranslationPicker(bibles, twoPane, onOpenBibles)
     }
 
     // The three levels, each named once, because the phone shows one at a time and
@@ -174,6 +195,7 @@ fun BibleScreen(
         BibleBooksScreen(
             books, bookSearchQuery, vm::setBookSearchQuery, vm::selectBook, isLoading,
             Modifier.fillMaxSize(),
+            header = selector,
         )
     }
     val chaptersPane: @Composable (BibleBook, Int) -> Unit = { book, columns ->
@@ -268,26 +290,50 @@ private fun BibleOnePane(
 }
 
 /**
- * Standalone with no translation copied onto the device yet.
- *
- * Offers the one thing that fixes it rather than naming a mode the operator
- * would have to go and switch to.
+ * The web build's way to a first Bible, which cannot download one: copy it from the desktop.
+ * The Library tab owns that sheet, so ask it to open on the Bible half.
  */
 @Composable
-private fun NoBibleYet(modifier: Modifier = Modifier) {
-    val colors = LocalAppColors.current
-    Box(modifier = modifier.fillMaxSize().background(colors.background)) {
-        EmptyState(
-            title = stringResource(Res.string.bible_standalone_empty_title),
-            body = stringResource(Res.string.bible_standalone_empty_body),
-            actionLabel = stringResource(Res.string.empty_action_get_bible),
-            actionIcon = Icons.Filled.CloudDownload,
-            onAction = {
-                // The Library tab owns the sheet; ask it to open on the Bible half.
-                SyncRequestHandler.request(SyncSection.BIBLE)
-                TabNavigationHandler.navigateTo(AppTab.LIBRARY)
-            },
-        )
+private fun CopyFromDesktopButton() {
+    OutlineActionButton(
+        label = stringResource(Res.string.empty_action_get_bible),
+        icon = Icons.Filled.CloudDownload,
+        onClick = {
+            SyncRequestHandler.request(SyncSection.BIBLE)
+            TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+        },
+    )
+}
+
+/**
+ * The translation selector and what it opens — design 1a/1b on a phone, 1g on a tablet.
+ *
+ * Owns the [BibleChoiceViewModel] it reads, as every composable here owns its own.
+ */
+@Composable
+private fun BibleTranslationPicker(
+    bibles: LocalBibleRepository,
+    twoPane: Boolean,
+    onOpenBibles: ((BiblesPage) -> Unit)?,
+) {
+    val choice: BibleChoiceViewModel = viewModel(key = "bible_tab_choice") { BibleChoiceViewModel(bibles) }
+    val installed by choice.installed.collectAsState()
+    val active by choice.active.collectAsState()
+    val activeId by choice.activeId.collectAsState()
+    // With nothing installed and nowhere to get one, the selector would offer nothing.
+    if (installed.isEmpty() && onOpenBibles == null) return
+    var open by remember { mutableStateOf(false) }
+    val choose: (String) -> Unit = { id -> choice.setActive(id); open = false }
+    val manage = onOpenBibles?.let { go -> { open = false; go(BiblesPage.INSTALLED) } }
+    val getMore = onOpenBibles?.let { go -> { open = false; go(BiblesPage.GET) } }
+    Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp)) {
+        TranslationSelector(active, installed.size, onClick = { open = true }, open = open)
+        if (open && twoPane) {
+            TranslationPopover(installed, activeId, choose, manage, getMore, onDismiss = { open = false })
+        }
+    }
+    if (open && !twoPane) {
+        TranslationSheet(installed, activeId, choose, manage, getMore, onDismiss = { open = false })
     }
 }
 
@@ -495,10 +541,13 @@ fun BibleBooksScreen(
     onSearchQueryChange: (String) -> Unit,
     onBookSelect: (BibleBook) -> Unit,
     isLoading: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Drawn above the search — the translation selector, where there is one. */
+    header: @Composable () -> Unit = {},
 ) {
     val colors = LocalAppColors.current
     Column(modifier = modifier.fillMaxSize().background(colors.background)) {
+        header()
         SearchField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,

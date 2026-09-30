@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Bībeles notīrītas.</string>
     <string name="library_clear_done_all">Viss notīrīts.</string>
     <string name="more_new_badge">Jauns</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Autortiesības un licencēšana</string>
+    <string name="bible_catalog_license_subtitle">Apstipriniet, ka drīkstat lietot šo tulkojumu</string>
+    <string name="bible_catalog_license_body">Bībeles tulkojumus aizsargā autortiesības. Daži ir brīvi pieejami, citi atļauj tikai personisku vai draudzes lietošanu, un dažiem pirms publiskas rādīšanas, straumēšanas vai apraides nepieciešama licence.\n\nLejupielādējot jūs apliecināt, ka drīkstat lietot šo tulkojumu savā vidē un ka piekrītat izdevēja noteikumiem.</string>
+    <string name="bible_catalog_license_unknown">Šis arhīvs nenorāda šī tulkojuma autortiesības.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org norāda šo tulkojumu kā tālāk izplatāmu un publicē augstāk redzamās autortiesības.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania arhīvs nepublicē licences informāciju, tāpēc šī tulkojuma autortiesības kļūst redzamas tikai pēc uzstādīšanas. Tā moduļus veidojusi kopiena, un tie nav pārbaudīti.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML arhīvs pārpublicē katra tulkojuma paša autortiesību paziņojumu, kas redzams augstāk, taču tā failus veidojusi kopiena un neviens no paziņojumiem nav pārbaudīts.</string>
+    <string name="bible_catalog_license_accept">Sapratu — lejupielādēt</string>
+    <string name="bible_catalog_license_field_source">Avots</string>
+    <string name="bible_catalog_license_field_identifier">Identifikators</string>
+    <string name="bible_catalog_license_field_copyright">Autortiesības</string>
+    <string name="bible_catalog_license_badge_redistributable">Tālāk izplatāms</string>
+    <string name="bible_catalog_license_badge_unverified">Licence nav pārbaudīta</string>
+    <string name="bible_catalog_book_names_english">Grāmatu nosaukumi šim tulkojumam būs angliski — arhīva faili grāmatas apzīmē tikai ar numuru. Pantu teksts no tā necieš.</string>
+    <string name="bible_catalog_stale_notice">Rāda Bībeļu sarakstu no jūsu pēdējās reizes — šķiet, esat bezsaistē.</string>
+    <string name="bible_catalog_error_network">Neizdevās sasniegt Bībeļu arhīvu — pārbaudiet savienojumu</string>
+    <string name="bible_catalog_error_rate_limited">GitHub šobrīd ierobežo pieprasījumus. Lūdzu, mēģiniet pēc dažām minūtēm.</string>
+    <string name="bible_catalog_error_generic">Neizdevās ielādēt Bībeļu sarakstu. Lūdzu, mēģiniet vēlreiz.</string>
+    <string name="bible_catalog_empty_hint">Mēģiniet citu meklējamo vārdu vai valodu.</string>
 </resources>

@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.BibleBooksResponse
 import com.church.presenter.churchpresentermobile.model.BibleChapterResponse
 import com.church.presenter.churchpresentermobile.model.BibleItemPayload
 import com.church.presenter.churchpresentermobile.model.BibleSelectRequest
+import com.church.presenter.churchpresentermobile.model.VerseSource
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.ProjectBibleRequest
 import com.church.presenter.churchpresentermobile.util.Logger
@@ -116,7 +117,9 @@ class BibleService(
         chapter: Int,
         verseNumber: Int,
         verseText: String,
-        verseRange: String? = null
+        verseRange: String? = null,
+        source: VerseSource? = null,
+        bookId: Int = 0,
     ): Result<Unit> {
         return apiRunCatching {
             val payload = json.encodeToString(BibleSelectRequest(
@@ -124,7 +127,11 @@ class BibleService(
                 chapter     = chapter,
                 verseNumber = verseNumber,
                 verseText   = verseText,
-                verseRange  = verseRange
+                verseRange  = verseRange,
+                bibleName = source?.name.orEmpty(),
+                bibleAbbreviation = source?.abbreviation.orEmpty(),
+                useClientText = source != null,
+                bookId = bookId,
             ))
             Logger.d(TAG, "selectBibleVerse ▶ WS select_bible_verse  payload=$payload")
             wsService.sendAction(WsMessageType.SELECT_BIBLE_VERSE, payload, fireAndForget = true).getOrThrow()
@@ -198,7 +205,9 @@ class BibleService(
     suspend fun addBibleToSchedule(
         bookName: String,
         chapter: Int,
-        verses: List<BibleVerse>
+        verses: List<BibleVerse>,
+        source: VerseSource? = null,
+        bookId: Int = 0,
     ): Result<Unit> {
         if (verses.isEmpty()) return Result.success(Unit)
 
@@ -223,7 +232,11 @@ class BibleService(
                         chapter     = chapter,
                         verseNumber = numbers.first(),
                         verseText   = combinedText,
-                        verseRange  = verseRange
+                        verseRange  = verseRange,
+                        bibleName = source?.name.orEmpty(),
+                        bibleAbbreviation = source?.abbreviation.orEmpty(),
+                        useClientText = source != null,
+                        bookId = bookId,
                     )
                 )
             )

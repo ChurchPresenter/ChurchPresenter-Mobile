@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">ລ້າງພຣະຄຳພີແລ້ວ.</string>
     <string name="library_clear_done_all">ລ້າງທຸກຢ່າງແລ້ວ.</string>
     <string name="more_new_badge">ໃໝ່</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">ລິຂະສິດ ແລະ ການອະນຸຍາດ</string>
+    <string name="bible_catalog_license_subtitle">ຢືນຢັນວ່າທ່ານມີສິດໃຊ້ສະບັບແປນີ້</string>
+    <string name="bible_catalog_license_body">ສະບັບແປພຣະຄຳພີໄດ້ຮັບການປົກປ້ອງດ້ວຍລິຂະສິດ. ບາງສະບັບເປັນສາທາລະນະສົມບັດ, ບາງສະບັບອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຕົວ ຫຼື ພາຍໃນຄຣິດຕະຈັກເທົ່ານັ້ນ, ແລະ ບາງສະບັບຕ້ອງມີການອະນຸຍາດກ່ອນຈຶ່ງຈະສະແດງຕໍ່ສາທາລະນະ, ຖ່າຍທອດສົດ ຫຼື ອອກອາກາດໄດ້.\n\nການດາວໂຫຼດຖືວ່າທ່ານຢືນຢັນວ່າທ່ານມີສິດໃຊ້ສະບັບແປນີ້ໃນບໍລິບົດຂອງທ່ານ ແລະ ຍອມຮັບເງື່ອນໄຂຂອງຜູ້ຈັດພິມ.</string>
+    <string name="bible_catalog_license_unknown">ຄັງນີ້ບໍ່ໄດ້ລະບຸລິຂະສິດຂອງສະບັບແປນີ້.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org ລະບຸວ່າສະບັບແປນີ້ສາມາດເຜີຍແຜ່ຕໍ່ໄດ້ ແລະ ເຜີຍແຜ່ລິຂະສິດຕາມທີ່ສະແດງຂ້າງເທິງ.</string>
+    <string name="bible_catalog_license_source_zefania">ຄັງ Zefania ບໍ່ໄດ້ເຜີຍແຜ່ລາຍລະອຽດການອະນຸຍາດ, ດັ່ງນັ້ນລິຂະສິດຂອງສະບັບແປນີ້ຈະເຫັນໄດ້ຫຼັງຕິດຕັ້ງເທົ່ານັ້ນ. ໂມດູນຂອງມັນມາຈາກຊຸມຊົນ ແລະ ຍັງບໍ່ໄດ້ກວດສອບ.</string>
+    <string name="bible_catalog_license_source_beblia">ຄັງ Holy Bible XML ເຜີຍແຜ່ຄຳຊີ້ແຈງລິຂະສິດຂອງແຕ່ລະສະບັບແປຕາມທີ່ສະແດງຂ້າງເທິງ, ແຕ່ໄຟລ໌ຂອງມັນມາຈາກຊຸມຊົນ ແລະ ຄຳຊີ້ແຈງເຫຼົ່ານັ້ນຍັງບໍ່ໄດ້ກວດສອບ.</string>
+    <string name="bible_catalog_license_accept">ຂ້ອຍເຂົ້າໃຈ — ດາວໂຫຼດ</string>
+    <string name="bible_catalog_license_field_source">ແຫຼ່ງ</string>
+    <string name="bible_catalog_license_field_identifier">ຕົວລະບຸ</string>
+    <string name="bible_catalog_license_field_copyright">ລິຂະສິດ</string>
+    <string name="bible_catalog_license_badge_redistributable">ເຜີຍແຜ່ຕໍ່ໄດ້</string>
+    <string name="bible_catalog_license_badge_unverified">ຍັງບໍ່ໄດ້ຢືນຢັນການອະນຸຍາດ</string>
+    <string name="bible_catalog_book_names_english">ຊື່ພຣະທຳຂອງສະບັບແປນີ້ຈະສະແດງເປັນພາສາອັງກິດ — ເພາະໄຟລ໌ໃນຄັງນີ້ລະບຸພຣະທຳດ້ວຍໝາຍເລກເທົ່ານັ້ນ. ຂໍ້ຄວາມພຣະຄຳບໍ່ໄດ້ຮັບຜົນກະທົບ.</string>
+    <string name="bible_catalog_stale_notice">ກຳລັງສະແດງລາຍການຈາກຄັ້ງກ່ອນ — ເບິ່ງຄືວ່າທ່ານບໍ່ໄດ້ຕໍ່ອິນເຕີເນັດ.</string>
+    <string name="bible_catalog_error_network">ເຂົ້າເຖິງຄັງພຣະຄຳພີບໍ່ໄດ້ — ກວດເບິ່ງການເຊື່ອມຕໍ່</string>
+    <string name="bible_catalog_error_rate_limited">ຕອນນີ້ GitHub ກຳລັງຈຳກັດຄຳຂໍ. ກະລຸນາລອງໃໝ່ໃນອີກສອງສາມນາທີ.</string>
+    <string name="bible_catalog_error_generic">ໂຫຼດລາຍການພຣະຄຳພີບໍ່ໄດ້. ກະລຸນາລອງໃໝ່.</string>
+    <string name="bible_catalog_empty_hint">ລອງໃຊ້ຄຳຄົ້ນຫາ ຫຼື ພາສາອື່ນ.</string>
 </resources>

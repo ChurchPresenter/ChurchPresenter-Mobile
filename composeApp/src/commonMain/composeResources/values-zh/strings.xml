@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">圣经已清除。</string>
     <string name="library_clear_done_all">已全部清除。</string>
     <string name="more_new_badge">新</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">版权与授权</string>
+    <string name="bible_catalog_license_subtitle">请确认你可以使用此译本</string>
+    <string name="bible_catalog_license_body">圣经译本受版权保护。有些属于公有领域，有些仅允许个人或会众使用，还有一些在公开展示、串流或广播前需要取得授权。\n\n下载即表示你确认自己有权在你的场景中使用此译本，并接受出版方的条款。</string>
+    <string name="bible_catalog_license_unknown">此档案库未注明该译本的版权信息。</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org 将此译本列为可再分发，并公布了上面显示的版权信息。</string>
+    <string name="bible_catalog_license_source_zefania">Zefania 档案库不公布授权细节，因此该译本的版权信息要在安装后才能看到。其模块由社区提供，未经核实。</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML 档案库转载了各译本自身的版权声明（如上所示），但其文件由社区提供，所有声明均未经核实。</string>
+    <string name="bible_catalog_license_accept">我已了解——下载</string>
+    <string name="bible_catalog_license_field_source">来源</string>
+    <string name="bible_catalog_license_field_identifier">标识符</string>
+    <string name="bible_catalog_license_field_copyright">版权</string>
+    <string name="bible_catalog_license_badge_redistributable">可再分发</string>
+    <string name="bible_catalog_license_badge_unverified">授权未核实</string>
+    <string name="bible_catalog_book_names_english">此译本的书卷名将以英文显示——该档案库的文件仅用编号标识书卷。经文正文不受影响。</string>
+    <string name="bible_catalog_stale_notice">显示的是上次访问时的圣经列表——你似乎处于离线状态。</string>
+    <string name="bible_catalog_error_network">无法连接圣经库——请检查网络连接</string>
+    <string name="bible_catalog_error_rate_limited">GitHub 目前正在限制请求，请几分钟后再试。</string>
+    <string name="bible_catalog_error_generic">无法加载圣经列表，请重试。</string>
+    <string name="bible_catalog_empty_hint">请换一个搜索词或语言试试。</string>
 </resources>

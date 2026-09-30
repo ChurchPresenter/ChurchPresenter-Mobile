@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Raamatut tyhjennetty.</string>
     <string name="library_clear_done_all">Kaikki tyhjennetty.</string>
     <string name="more_new_badge">Uusi</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Tekijänoikeus ja lisensointi</string>
+    <string name="bible_catalog_license_subtitle">Vahvista, että saat käyttää tätä käännöstä</string>
+    <string name="bible_catalog_license_body">Raamatunkäännökset ovat tekijänoikeuden suojaamia. Osa on vapaassa käytössä, osa sallii vain henkilökohtaisen tai seurakunnallisen käytön, ja osa vaatii lisenssin, ennen kuin niitä voi näyttää julkisesti, striimata tai lähettää.\n\nLataamalla vahvistat, että sinulla on oikeus käyttää tätä käännöstä omassa ympäristössäsi ja että hyväksyt julkaisijan ehdot.</string>
+    <string name="bible_catalog_license_unknown">Tämä arkisto ei ilmoita tekijänoikeutta tälle käännökselle.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org merkitsee tämän käännöksen vapaasti levitettäväksi ja julkaisee yllä näkyvän tekijänoikeustiedon.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania-arkisto ei julkaise lisenssitietoja, joten tämän käännöksen tekijänoikeus näkyy vasta asennuksen jälkeen. Sen moduulit ovat yhteisön tuottamia eikä niitä ole tarkistettu.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML -arkisto julkaisee uudelleen jokaisen käännöksen oman tekijänoikeuslausuman, joka näkyy yllä, mutta sen tiedostot ovat yhteisön tuottamia eikä yhtäkään lausumaa ole tarkistettu.</string>
+    <string name="bible_catalog_license_accept">Ymmärrän — lataa</string>
+    <string name="bible_catalog_license_field_source">Lähde</string>
+    <string name="bible_catalog_license_field_identifier">Tunniste</string>
+    <string name="bible_catalog_license_field_copyright">Tekijänoikeus</string>
+    <string name="bible_catalog_license_badge_redistributable">Vapaasti levitettävä</string>
+    <string name="bible_catalog_license_badge_unverified">Lisenssiä ei ole tarkistettu</string>
+    <string name="bible_catalog_book_names_english">Kirjojen nimet näkyvät tässä käännöksessä englanniksi — arkiston tiedostot yksilöivät kirjat vain numeroilla. Jaeteksti ei muutu.</string>
+    <string name="bible_catalog_stale_notice">Näytetään viime kerran Raamattuluettelo — näytät olevan offline-tilassa.</string>
+    <string name="bible_catalog_error_network">Raamattuarkistoon ei saatu yhteyttä — tarkista verkkoyhteytesi</string>
+    <string name="bible_catalog_error_rate_limited">GitHub rajoittaa pyyntöjä juuri nyt. Yritä uudelleen muutaman minuutin kuluttua.</string>
+    <string name="bible_catalog_error_generic">Raamattujen luetteloa ei voitu ladata. Yritä uudelleen.</string>
+    <string name="bible_catalog_empty_hint">Kokeile toista hakusanaa tai kieltä.</string>
 </resources>

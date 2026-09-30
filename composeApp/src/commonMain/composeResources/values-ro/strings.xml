@@ -1012,4 +1012,24 @@
     <string name="library_clear_done_bibles">Bibliile au fost șterse.</string>
     <string name="library_clear_done_all">Totul a fost șters.</string>
     <string name="more_new_badge">Nou</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Drepturi de autor și licențiere</string>
+    <string name="bible_catalog_license_subtitle">Confirmați că aveți permisiunea de a folosi această traducere</string>
+    <string name="bible_catalog_license_body">Traducerile Bibliei sunt protejate prin drepturi de autor. Unele sunt domeniu public, altele permit doar uz personal sau congregațional, iar altele necesită o licență înainte de a fi afișate public, transmise în flux sau difuzate.\n\nPrin descărcare, confirmați că aveți permisiunea de a folosi această traducere în contextul dvs. și că acceptați termenii editorului.</string>
+    <string name="bible_catalog_license_unknown">Această arhivă nu menționează drepturi de autor pentru această traducere.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org listează această traducere ca fiind redistribuibilă și publică drepturile de autor afișate mai sus.</string>
+    <string name="bible_catalog_license_source_zefania">Arhiva Zefania nu publică detalii despre licență, astfel drepturile de autor ale acestei traduceri devin vizibile abia după instalare. Modulele sale sunt contribuții ale comunității și nu au fost verificate.</string>
+    <string name="bible_catalog_license_source_beblia">Arhiva Holy Bible XML republică nota de drepturi de autor proprie fiecărei traduceri, afișată mai sus, însă fișierele sale sunt contribuite de comunitate și niciuna dintre note nu a fost verificată.</string>
+    <string name="bible_catalog_license_accept">Am înțeles — descarcă</string>
+    <string name="bible_catalog_license_field_source">Sursă</string>
+    <string name="bible_catalog_license_field_identifier">Identificator</string>
+    <string name="bible_catalog_license_field_copyright">Drepturi de autor</string>
+    <string name="bible_catalog_license_badge_redistributable">Redistribuibilă</string>
+    <string name="bible_catalog_license_badge_unverified">Licență neverificată</string>
+    <string name="bible_catalog_book_names_english">Numele cărților vor apărea în engleză pentru această traducere — fișierele arhivei identifică cărțile doar prin număr. Textul versetelor nu este afectat.</string>
+    <string name="bible_catalog_stale_notice">Se afișează lista de Biblii din ultima vizită — se pare că sunteți offline.</string>
+    <string name="bible_catalog_error_network">Nu s-a putut accesa arhiva de Biblii — verificați conexiunea</string>
+    <string name="bible_catalog_error_rate_limited">GitHub limitează în prezent numărul de solicitări. Încercați din nou peste câteva minute.</string>
+    <string name="bible_catalog_error_generic">Nu s-a putut încărca lista de Biblii. Încercați din nou.</string>
+    <string name="bible_catalog_empty_hint">Încercați un alt termen de căutare sau altă limbă.</string>
 </resources>

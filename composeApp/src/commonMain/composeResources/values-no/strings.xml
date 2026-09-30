@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Biblene er tømt.</string>
     <string name="library_clear_done_all">Alt er tømt.</string>
     <string name="more_new_badge">Ny</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Opphavsrett og lisens</string>
+    <string name="bible_catalog_license_subtitle">Bekreft at du har lov til å bruke denne oversettelsen</string>
+    <string name="bible_catalog_license_body">Bibeloversettelser er beskyttet av opphavsrett. Noen er offentlig eiendom, andre tillater bare privat bruk eller bruk i menigheten, og noen krever lisens før de kan vises offentlig, strømmes eller sendes.\n\nVed å laste ned bekrefter du at du har lov til å bruke denne oversettelsen i din sammenheng, og at du godtar vilkårene til utgiveren.</string>
+    <string name="bible_catalog_license_unknown">Dette arkivet oppgir ingen opphavsrett for denne oversettelsen.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org oppgir at denne oversettelsen kan videreformidles, og publiserer opphavsretten som er vist over.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania-arkivet oppgir ingen lisensopplysninger, så opphavsretten til denne oversettelsen blir først synlig når den er installert. Modulene er bidratt av frivillige og er ikke kontrollert.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML-arkivet gjengir opphavsretten til hver enkelt oversettelse, som vist over, men filene er bidratt av frivillige og ingen av opplysningene er kontrollert.</string>
+    <string name="bible_catalog_license_accept">Jeg forstår – last ned</string>
+    <string name="bible_catalog_license_field_source">Kilde</string>
+    <string name="bible_catalog_license_field_identifier">Identifikator</string>
+    <string name="bible_catalog_license_field_copyright">Opphavsrett</string>
+    <string name="bible_catalog_license_badge_redistributable">Kan videreformidles</string>
+    <string name="bible_catalog_license_badge_unverified">Lisens ikke kontrollert</string>
+    <string name="bible_catalog_book_names_english">Boknavnene vises på engelsk for denne oversettelsen – filene i arkivet identifiserer bøkene bare med nummer. Verstekstene berøres ikke.</string>
+    <string name="bible_catalog_stale_notice">Viser bibellisten fra forrige besøk – du ser ut til å være uten nett.</string>
+    <string name="bible_catalog_error_network">Fikk ikke kontakt med bibelarkivet – sjekk tilkoblingen</string>
+    <string name="bible_catalog_error_rate_limited">GitHub begrenser antall forespørsler akkurat nå. Prøv igjen om noen minutter.</string>
+    <string name="bible_catalog_error_generic">Kunne ikke laste listen over bibler. Prøv igjen.</string>
+    <string name="bible_catalog_empty_hint">Prøv et annet søkeord eller språk.</string>
 </resources>

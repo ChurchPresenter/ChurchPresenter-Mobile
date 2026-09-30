@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Біблії видалено.</string>
     <string name="library_clear_done_all">Усе видалено.</string>
     <string name="more_new_badge">Нове</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Авторські права та ліцензія</string>
+    <string name="bible_catalog_license_subtitle">Підтвердьте, що ви маєте право використовувати цей переклад</string>
+    <string name="bible_catalog_license_body">Переклади Біблії захищені авторським правом. Деякі з них — суспільне надбання, інші дозволені лише для особистого чи громадського використання, а для деяких потрібна ліцензія перед публічним показом, трансляцією чи мовленням.\n\nЗавантажуючи переклад, ви підтверджуєте, що маєте право використовувати його у своїх умовах, і приймаєте умови видавця.</string>
+    <string name="bible_catalog_license_unknown">У цьому архіві не вказано авторських прав на цей переклад.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org зазначає цей переклад як дозволений до поширення та публікує авторські права, вказані вище.</string>
+    <string name="bible_catalog_license_source_zefania">Архів Zefania не публікує відомості про ліцензію, тому авторські права на цей переклад стають видимими лише після встановлення. Його модулі додані спільнотою і не перевірялися.</string>
+    <string name="bible_catalog_license_source_beblia">Архів Holy Bible XML публікує власне повідомлення про авторські права кожного перекладу, показане вище, але його файли надані спільнотою і жодне з повідомлень не перевірялося.</string>
+    <string name="bible_catalog_license_accept">Розумію — завантажити</string>
+    <string name="bible_catalog_license_field_source">Джерело</string>
+    <string name="bible_catalog_license_field_identifier">Ідентифікатор</string>
+    <string name="bible_catalog_license_field_copyright">Авторські права</string>
+    <string name="bible_catalog_license_badge_redistributable">Дозволено поширювати</string>
+    <string name="bible_catalog_license_badge_unverified">Ліцензія не перевірена</string>
+    <string name="bible_catalog_book_names_english">Назви книг для цього перекладу буде показано англійською — у файлах архіву книги позначені лише номерами. На текст віршів це не впливає.</string>
+    <string name="bible_catalog_stale_notice">Показано список Біблій з останнього відвідування — здається, ви не в мережі.</string>
+    <string name="bible_catalog_error_network">Не вдалося з'єднатися з архівом Біблій — перевірте з'єднання</string>
+    <string name="bible_catalog_error_rate_limited">GitHub зараз обмежує кількість запитів. Спробуйте ще раз за кілька хвилин.</string>
+    <string name="bible_catalog_error_generic">Не вдалося завантажити список Біблій. Спробуйте ще раз.</string>
+    <string name="bible_catalog_empty_hint">Спробуйте інший пошуковий запит або мову.</string>
 </resources>

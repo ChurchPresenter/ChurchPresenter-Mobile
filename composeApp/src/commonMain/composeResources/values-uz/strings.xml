@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Muqaddas Kitoblar tozalandi.</string>
     <string name="library_clear_done_all">Hammasi tozalandi.</string>
     <string name="more_new_badge">Yangi</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Mualliflik huquqi va litsenziya</string>
+    <string name="bible_catalog_license_subtitle">Bu tarjimani ishlatishga haqli ekaningizni tasdiqlang</string>
+    <string name="bible_catalog_license_body">Injil tarjimalari mualliflik huquqi bilan himoyalangan. Baʼzilari ommaviy mulk, baʼzilari faqat shaxsiy yoki jamoat ichida ishlatishga ruxsat beradi, baʼzilari esa ommaga koʻrsatish, translyatsiya yoki efirdan oldin litsenziya talab qiladi.\n\nYuklab olish orqali siz bu tarjimani oʻz sharoitingizda ishlatishga haqli ekaningizni va nashriyot shartlarini qabul qilishingizni tasdiqlaysiz.</string>
+    <string name="bible_catalog_license_unknown">Bu arxiv mazkur tarjima uchun hech qanday mualliflik huquqini koʻrsatmagan.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org bu tarjimani qayta tarqatish mumkin deb belgilagan va yuqoridagi mualliflik huquqini eʼlon qilgan.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania arxivi litsenziya tafsilotlarini eʼlon qilmaydi, shuning uchun bu tarjimaning mualliflik huquqi faqat oʻrnatilgandan keyin koʻrinadi. Uning modullari jamoa tomonidan qoʻshilgan va tekshirilmagan.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML arxivi har bir tarjimaning oʻz mualliflik bayonotini yuqoridagidek qayta eʼlon qiladi, biroq fayllari jamoa tomonidan qoʻshilgan va bayonotlarning hech biri tekshirilmagan.</string>
+    <string name="bible_catalog_license_accept">Tushundim — yuklab olish</string>
+    <string name="bible_catalog_license_field_source">Manba</string>
+    <string name="bible_catalog_license_field_identifier">Identifikator</string>
+    <string name="bible_catalog_license_field_copyright">Mualliflik huquqi</string>
+    <string name="bible_catalog_license_badge_redistributable">Qayta tarqatish mumkin</string>
+    <string name="bible_catalog_license_badge_unverified">Litsenziya tasdiqlanmagan</string>
+    <string name="bible_catalog_book_names_english">Bu tarjimada kitob nomlari inglizcha koʻrinadi — arxiv fayllari kitoblarni faqat raqam bilan belgilaydi. Oyat matniga taʼsir qilmaydi.</string>
+    <string name="bible_catalog_stale_notice">Oxirgi tashrifingizdagi Injillar roʻyxati koʻrsatilmoqda — siz oflaynga oʻxshaysiz.</string>
+    <string name="bible_catalog_error_network">Injil arxiviga ulanib boʻlmadi — aloqangizni tekshiring</string>
+    <string name="bible_catalog_error_rate_limited">GitHub hozir soʻrovlarni cheklamoqda. Bir necha daqiqadan soʻng qayta urinib koʻring.</string>
+    <string name="bible_catalog_error_generic">Injillar roʻyxatini yuklab boʻlmadi. Qayta urinib koʻring.</string>
+    <string name="bible_catalog_empty_hint">Boshqa qidiruv soʻzi yoki tilni sinab koʻring.</string>
 </resources>

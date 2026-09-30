@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Alkitab telah dikosongkan.</string>
     <string name="library_clear_done_all">Semua telah dikosongkan.</string>
     <string name="more_new_badge">Baharu</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Hak cipta dan pelesenan</string>
+    <string name="bible_catalog_license_subtitle">Sahkan bahawa anda boleh menggunakan terjemahan ini</string>
+    <string name="bible_catalog_license_body">Terjemahan Alkitab dilindungi hak cipta. Ada yang berada dalam domain awam, ada yang membenarkan penggunaan peribadi atau sidang sahaja, dan ada yang memerlukan lesen sebelum boleh dipaparkan kepada umum, distrim atau disiarkan.\n\nDengan memuat turunnya, anda mengesahkan bahawa anda dibenarkan menggunakan terjemahan ini dalam keadaan anda, dan bahawa anda menerima terma penerbit.</string>
+    <string name="bible_catalog_license_unknown">Arkib ini tidak menyatakan apa-apa hak cipta untuk terjemahan ini.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org menyenaraikan terjemahan ini sebagai boleh diedarkan semula dan menerbitkan hak cipta yang ditunjukkan di atas.</string>
+    <string name="bible_catalog_license_source_zefania">Arkib Zefania tidak menerbitkan butiran lesen, jadi hak cipta terjemahan ini hanya kelihatan setelah ia dipasang. Modulnya disumbangkan oleh komuniti dan belum disemak.</string>
+    <string name="bible_catalog_license_source_beblia">Arkib Holy Bible XML menerbitkan semula pernyataan hak cipta setiap terjemahan, seperti di atas, tetapi failnya disumbangkan oleh komuniti dan tiada satu pun pernyataan itu telah disemak.</string>
+    <string name="bible_catalog_license_accept">Saya faham — Muat Turun</string>
+    <string name="bible_catalog_license_field_source">Sumber</string>
+    <string name="bible_catalog_license_field_identifier">Pengecam</string>
+    <string name="bible_catalog_license_field_copyright">Hak cipta</string>
+    <string name="bible_catalog_license_badge_redistributable">Boleh diedarkan semula</string>
+    <string name="bible_catalog_license_badge_unverified">Lesen belum disemak</string>
+    <string name="bible_catalog_book_names_english">Nama kitab akan muncul dalam bahasa Inggeris untuk terjemahan ini — fail arkib ini mengenal pasti kitab dengan nombor sahaja. Teks ayat tidak terjejas.</string>
+    <string name="bible_catalog_stale_notice">Menunjukkan senarai Alkitab daripada kunjungan terakhir anda — nampaknya anda di luar talian.</string>
+    <string name="bible_catalog_error_network">Tidak dapat menghubungi arkib Alkitab — periksa sambungan anda</string>
+    <string name="bible_catalog_error_rate_limited">GitHub sedang mengehadkan permintaan sekarang. Sila cuba lagi dalam beberapa minit.</string>
+    <string name="bible_catalog_error_generic">Tidak dapat memuatkan senarai Alkitab. Sila cuba lagi.</string>
+    <string name="bible_catalog_empty_hint">Cuba istilah carian atau bahasa yang lain.</string>
 </resources>

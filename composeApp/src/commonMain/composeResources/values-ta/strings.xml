@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">பைபிள்கள் அழிக்கப்பட்டன.</string>
     <string name="library_clear_done_all">அனைத்தும் அழிக்கப்பட்டன.</string>
     <string name="more_new_badge">புதியது</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">பதிப்புரிமையும் உரிமமும்</string>
+    <string name="bible_catalog_license_subtitle">இந்த மொழிபெயர்ப்பைப் பயன்படுத்தலாம் என உறுதிப்படுத்தவும்</string>
+    <string name="bible_catalog_license_body">வேதாகம மொழிபெயர்ப்புகள் பதிப்புரிமையால் பாதுகாக்கப்படுகின்றன. சில பொதுவெளியில் உள்ளன, சில தனிப்பட்ட அல்லது சபை பயன்பாட்டை மட்டுமே அனுமதிக்கின்றன, சிலவற்றைப் பொதுவில் காட்ட, ஒளிபரப்ப அல்லது நேரலையில் வழங்க உரிமம் தேவை.\n\nபதிவிறக்குவதன் மூலம், உங்கள் சூழலில் இந்த மொழிபெயர்ப்பைப் பயன்படுத்த உங்களுக்கு அனுமதி உள்ளது என்பதையும், வெளியீட்டாளரின் நிபந்தனைகளை ஏற்கிறீர்கள் என்பதையும் உறுதிப்படுத்துகிறீர்கள்.</string>
+    <string name="bible_catalog_license_unknown">இந்த மொழிபெயர்ப்புக்கு இந்தக் காப்பகம் எந்தப் பதிப்புரிமையையும் குறிப்பிடவில்லை.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org இந்த மொழிபெயர்ப்பை மறுவிநியோகிக்கத்தக்கது எனப் பட்டியலிட்டு, மேலே காட்டப்பட்டுள்ள பதிப்புரிமையை வெளியிடுகிறது.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania காப்பகம் உரிம விவரங்களை வெளியிடுவதில்லை, எனவே இந்த மொழிபெயர்ப்பின் பதிப்புரிமை நிறுவிய பிறகே தெரியவரும். அதன் தொகுதிகள் சமூகத்தால் வழங்கப்பட்டவை, சரிபார்க்கப்படவில்லை.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML காப்பகம் ஒவ்வொரு மொழிபெயர்ப்பின் சொந்தப் பதிப்புரிமை அறிக்கையை மேலே காட்டியபடி மறுவெளியீடு செய்கிறது, ஆனால் அதன் கோப்புகள் சமூகத்தால் வழங்கப்பட்டவை, எந்த அறிக்கையும் சரிபார்க்கப்படவில்லை.</string>
+    <string name="bible_catalog_license_accept">புரிந்துகொண்டேன் — பதிவிறக்கு</string>
+    <string name="bible_catalog_license_field_source">மூலம்</string>
+    <string name="bible_catalog_license_field_identifier">அடையாளங்காட்டி</string>
+    <string name="bible_catalog_license_field_copyright">பதிப்புரிமை</string>
+    <string name="bible_catalog_license_badge_redistributable">மறுவிநியோகிக்கத்தக்கது</string>
+    <string name="bible_catalog_license_badge_unverified">உரிமம் சரிபார்க்கப்படவில்லை</string>
+    <string name="bible_catalog_book_names_english">இந்த மொழிபெயர்ப்பிற்குப் புத்தகப் பெயர்கள் ஆங்கிலத்தில் தோன்றும் — காப்பகத்தின் கோப்புகள் புத்தகங்களை எண்ணால் மட்டுமே அடையாளப்படுத்துகின்றன. வசன உரை பாதிக்கப்படாது.</string>
+    <string name="bible_catalog_stale_notice">உங்கள் கடைசி வருகையின் வேதாகமப் பட்டியல் காட்டப்படுகிறது — நீங்கள் இணையத்தில் இல்லை போலும்.</string>
+    <string name="bible_catalog_error_network">வேதாகமக் காப்பகத்தை அடைய முடியவில்லை — உங்கள் இணைப்பைச் சரிபார்க்கவும்</string>
+    <string name="bible_catalog_error_rate_limited">GitHub தற்போது வேண்டுகோள்களை வரம்பிடுகிறது. சில நிமிடங்களில் மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="bible_catalog_error_generic">வேதாகமப் பட்டியலை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="bible_catalog_empty_hint">வேறு தேடல் சொல் அல்லது மொழியை முயற்சிக்கவும்.</string>
 </resources>

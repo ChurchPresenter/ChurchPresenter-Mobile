@@ -1012,4 +1012,24 @@
     <string name="library_clear_done_bibles">Piiblid tühjendatud.</string>
     <string name="library_clear_done_all">Kõik tühjendatud.</string>
     <string name="more_new_badge">Uus</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Autoriõigus ja litsentsimine</string>
+    <string name="bible_catalog_license_subtitle">Kinnita, et sul on õigus seda tõlget kasutada</string>
+    <string name="bible_catalog_license_body">Piiblitõlked on autoriõigusega kaitstud. Mõned on avalik omand, teised lubavad ainult isiklikku või koguduslikku kasutust ning mõned nõuavad enne avalikult näitamist, voogedastust või ülekandmist litsentsi.\n\nAllalaadimisega kinnitad, et sul on õigus seda tõlget oma keskkonnas kasutada ja et nõustud kirjastaja tingimustega.</string>
+    <string name="bible_catalog_license_unknown">See arhiiv ei märgi selle tõlke kohta autoriõigust.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org märgib selle tõlke edasilevitatavaks ja avaldab ülalnäidatud autoriõiguse.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania arhiiv ei avalda litsentsi üksikasju, seega saab selle tõlke autoriõigus nähtavaks alles pärast installimist. Selle moodulid on kogukonna panustatud ja neid pole kontrollitud.</string>
+    <string name="bible_catalog_license_source_beblia">Arhiiv Holy Bible XML avaldab uuesti iga tõlke enda autoriõiguse teate, mis on näidatud ülal, kuid selle failid on kogukonna panus ja ühtegi teadet ei ole kontrollitud.</string>
+    <string name="bible_catalog_license_accept">Selge — laadi alla</string>
+    <string name="bible_catalog_license_field_source">Allikas</string>
+    <string name="bible_catalog_license_field_identifier">Identifikaator</string>
+    <string name="bible_catalog_license_field_copyright">Autoriõigus</string>
+    <string name="bible_catalog_license_badge_redistributable">Edasilevitatav</string>
+    <string name="bible_catalog_license_badge_unverified">Litsents kontrollimata</string>
+    <string name="bible_catalog_book_names_english">Selle tõlke puhul kuvatakse raamatute nimed inglise keeles — arhiivi failid tähistavad raamatuid ainult numbriga. Salmide teksti see ei mõjuta.</string>
+    <string name="bible_catalog_stale_notice">Kuvatakse Piiblite loendit sinu viimasest külastusest — tundub, et oled võrguühenduseta.</string>
+    <string name="bible_catalog_error_network">Piibliarhiivi ei õnnestunud avada — kontrolli oma ühendust</string>
+    <string name="bible_catalog_error_rate_limited">GitHub piirab hetkel päringute arvu. Palun proovi mõne minuti pärast uuesti.</string>
+    <string name="bible_catalog_error_generic">Piiblite loendit ei õnnestunud laadida. Palun proovi uuesti.</string>
+    <string name="bible_catalog_empty_hint">Proovi teist otsingusõna või keelt.</string>
 </resources>

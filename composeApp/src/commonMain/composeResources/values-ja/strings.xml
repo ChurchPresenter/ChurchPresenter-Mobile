@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">聖書を消去しました。</string>
     <string name="library_clear_done_all">すべて消去しました。</string>
     <string name="more_new_badge">新着</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">著作権とライセンス</string>
+    <string name="bible_catalog_license_subtitle">この訳を使用できることを確認してください</string>
+    <string name="bible_catalog_license_body">聖書の訳は著作権で保護されています。パブリックドメインのものもありますが、個人または教会内での使用のみが認められているもの、公開・配信・放送するにはライセンスが必要なものもあります。\n\nダウンロードすることで、ご自身の環境でこの訳を使用する権利があり、発行者の条件に同意したものとみなされます。</string>
+    <string name="bible_catalog_license_unknown">このアーカイブには、この訳の著作権表示がありません。</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org はこの訳を再配布可能なものとして掲載し、上記の著作権表示を公開しています。</string>
+    <string name="bible_catalog_license_source_zefania">Zefania アーカイブはライセンス情報を公開していないため、この訳の著作権はインストール後にしか確認できません。モジュールは有志によって提供されたもので、内容の確認は行われていません。</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML アーカイブは各訳の著作権表示をそのまま再掲しており、上に示しています。ただしファイルは有志によって提供されたもので、いずれの表示も確認されていません。</string>
+    <string name="bible_catalog_license_accept">理解しました — ダウンロード</string>
+    <string name="bible_catalog_license_field_source">提供元</string>
+    <string name="bible_catalog_license_field_identifier">識別子</string>
+    <string name="bible_catalog_license_field_copyright">著作権</string>
+    <string name="bible_catalog_license_badge_redistributable">再配布可能</string>
+    <string name="bible_catalog_license_badge_unverified">ライセンス未確認</string>
+    <string name="bible_catalog_book_names_english">この訳では書名が英語で表示されます。アーカイブのファイルが書を番号でしか識別していないためです。節の本文には影響しません。</string>
+    <string name="bible_catalog_stale_notice">オフラインのようです。前回開いたときの聖書一覧を表示しています。</string>
+    <string name="bible_catalog_error_network">聖書アーカイブに接続できません — 接続を確認してください</string>
+    <string name="bible_catalog_error_rate_limited">現在 GitHub がリクエストを制限しています。数分後にもう一度お試しください。</string>
+    <string name="bible_catalog_error_generic">聖書の一覧を読み込めませんでした。もう一度お試しください。</string>
+    <string name="bible_catalog_empty_hint">別の検索語または言語でお試しください。</string>
 </resources>

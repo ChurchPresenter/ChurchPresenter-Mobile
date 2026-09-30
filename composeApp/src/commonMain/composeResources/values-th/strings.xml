@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">ล้างพระคัมภีร์แล้ว</string>
     <string name="library_clear_done_all">ล้างทั้งหมดแล้ว</string>
     <string name="more_new_badge">ใหม่</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">ลิขสิทธิ์และการอนุญาต</string>
+    <string name="bible_catalog_license_subtitle">ยืนยันว่าคุณมีสิทธิ์ใช้ฉบับแปลนี้</string>
+    <string name="bible_catalog_license_body">ฉบับแปลพระคัมภีร์ได้รับความคุ้มครองด้านลิขสิทธิ์ บางฉบับเป็นสาธารณสมบัติ บางฉบับอนุญาตให้ใช้ส่วนตัวหรือภายในคริสตจักรเท่านั้น และบางฉบับต้องได้รับอนุญาตก่อนนำไปแสดงต่อสาธารณะ ถ่ายทอดสด หรือออกอากาศ\n\nการดาวน์โหลดถือว่าคุณยืนยันว่าคุณมีสิทธิ์ใช้ฉบับแปลนี้ในบริบทของคุณ และยอมรับเงื่อนไขของผู้จัดพิมพ์</string>
+    <string name="bible_catalog_license_unknown">คลังนี้ไม่ได้ระบุลิขสิทธิ์ของฉบับแปลนี้</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org ระบุว่าฉบับแปลนี้เผยแพร่ต่อได้ และเผยแพร่ข้อความลิขสิทธิ์ตามที่แสดงด้านบน</string>
+    <string name="bible_catalog_license_source_zefania">คลัง Zefania ไม่ได้เผยแพร่รายละเอียดการอนุญาต ลิขสิทธิ์ของฉบับแปลนี้จึงเห็นได้หลังติดตั้งแล้วเท่านั้น โมดูลของคลังนี้มาจากชุมชนและยังไม่ได้ตรวจสอบ</string>
+    <string name="bible_catalog_license_source_beblia">คลัง Holy Bible XML เผยแพร่ข้อความลิขสิทธิ์ของแต่ละฉบับแปลตามที่แสดงด้านบน แต่ไฟล์ของคลังมาจากชุมชนและยังไม่มีข้อความใดได้รับการตรวจสอบ</string>
+    <string name="bible_catalog_license_accept">เข้าใจแล้ว — ดาวน์โหลด</string>
+    <string name="bible_catalog_license_field_source">แหล่งที่มา</string>
+    <string name="bible_catalog_license_field_identifier">ตัวระบุ</string>
+    <string name="bible_catalog_license_field_copyright">ลิขสิทธิ์</string>
+    <string name="bible_catalog_license_badge_redistributable">เผยแพร่ต่อได้</string>
+    <string name="bible_catalog_license_badge_unverified">ยังไม่ได้ตรวจสอบการอนุญาต</string>
+    <string name="bible_catalog_book_names_english">ชื่อหนังสือของฉบับแปลนี้จะแสดงเป็นภาษาอังกฤษ — เพราะไฟล์ของคลังนี้ระบุหนังสือด้วยหมายเลขเท่านั้น เนื้อข้อพระคัมภีร์ไม่ได้รับผลกระทบ</string>
+    <string name="bible_catalog_stale_notice">กำลังแสดงรายการพระคัมภีร์จากครั้งก่อน — ดูเหมือนคุณออฟไลน์อยู่</string>
+    <string name="bible_catalog_error_network">เข้าถึงคลังพระคัมภีร์ไม่ได้ — ตรวจสอบการเชื่อมต่อ</string>
+    <string name="bible_catalog_error_rate_limited">ขณะนี้ GitHub กำลังจำกัดคำขอ กรุณาลองใหม่ในอีกไม่กี่นาที</string>
+    <string name="bible_catalog_error_generic">โหลดรายการพระคัมภีร์ไม่ได้ กรุณาลองใหม่</string>
+    <string name="bible_catalog_empty_hint">ลองใช้คำค้นหาหรือภาษาอื่น</string>
 </resources>

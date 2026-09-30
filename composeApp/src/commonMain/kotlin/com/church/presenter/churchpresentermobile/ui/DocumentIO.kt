@@ -21,6 +21,26 @@ expect fun TextDocumentPicker(
 )
 
 /**
+ * A file the user chose, as its raw bytes.
+ *
+ * Not a data class: a `ByteArray` compares by identity, which would make `equals` a lie.
+ */
+class PickedBinaryFile(val bytes: ByteArray, val fileName: String)
+
+/**
+ * Opens any file as bytes — a Bible's XML, whose encoding is only known once its declaration has
+ * been read, so it cannot be decoded as UTF-8 on the way in the way [TextDocumentPicker] does.
+ *
+ * @param onPicked Called with the file, or `null` when the user cancels.
+ */
+@Composable
+expect fun BinaryDocumentPicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+)
+
+/**
  * Saves [text] as a file the user can keep or send on.
  *
  * On Android and iOS this raises the system share sheet, which covers both

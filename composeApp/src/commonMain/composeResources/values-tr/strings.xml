@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Kutsal Kitaplar temizlendi.</string>
     <string name="library_clear_done_all">Her şey temizlendi.</string>
     <string name="more_new_badge">Yeni</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Telif hakkı ve lisanslama</string>
+    <string name="bible_catalog_license_subtitle">Bu çeviriyi kullanabileceğinizi onaylayın</string>
+    <string name="bible_catalog_license_body">Kutsal Kitap çevirileri telif hakkıyla korunur. Bazıları kamu malıdır, bazıları yalnızca kişisel ya da cemaat içi kullanıma izin verir, bazıları ise herkese açık gösterim, canlı yayın veya kayıt için önceden lisans gerektirir.\n\nİndirerek, bu çeviriyi kendi ortamınızda kullanma hakkına sahip olduğunuzu ve yayıncının koşullarını kabul ettiğinizi onaylamış olursunuz.</string>
+    <string name="bible_catalog_license_unknown">Bu arşiv, bu çeviri için herhangi bir telif hakkı bildirmiyor.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org bu çeviriyi yeniden dağıtılabilir olarak listeliyor ve yukarıda gösterilen telif hakkını yayımlıyor.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania arşivi lisans ayrıntısı yayımlamaz; bu yüzden bu çevirinin telif hakkı ancak kurulduktan sonra görünür hale gelir. Modülleri topluluk katkısıdır ve denetlenmemiştir.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML arşivi her çevirinin kendi telif hakkı bildirimini yukarıda göründüğü gibi yeniden yayımlar; ancak dosyaları topluluk katkısıdır ve bildirimlerin hiçbiri denetlenmemiştir.</string>
+    <string name="bible_catalog_license_accept">Anladım — İndir</string>
+    <string name="bible_catalog_license_field_source">Kaynak</string>
+    <string name="bible_catalog_license_field_identifier">Tanımlayıcı</string>
+    <string name="bible_catalog_license_field_copyright">Telif hakkı</string>
+    <string name="bible_catalog_license_badge_redistributable">Yeniden dağıtılabilir</string>
+    <string name="bible_catalog_license_badge_unverified">Lisans doğrulanmadı</string>
+    <string name="bible_catalog_book_names_english">Bu çeviride kitap adları İngilizce görünecek — arşivin dosyaları kitapları yalnızca numarayla tanımlıyor. Ayet metni bundan etkilenmez.</string>
+    <string name="bible_catalog_stale_notice">Son ziyaretinizden kalan Kutsal Kitap listesi gösteriliyor — çevrimdışı görünüyorsunuz.</string>
+    <string name="bible_catalog_error_network">Kutsal Kitap arşivine ulaşılamadı — bağlantınızı denetleyin</string>
+    <string name="bible_catalog_error_rate_limited">GitHub şu anda istekleri sınırlıyor. Lütfen birkaç dakika sonra yeniden deneyin.</string>
+    <string name="bible_catalog_error_generic">Kutsal Kitap listesi yüklenemedi. Lütfen yeniden deneyin.</string>
+    <string name="bible_catalog_empty_hint">Başka bir arama terimi ya da dil deneyin.</string>
 </resources>

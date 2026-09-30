@@ -1012,4 +1012,24 @@
     <string name="library_clear_done_bibles">Bijbels gewist.</string>
     <string name="library_clear_done_all">Alles gewist.</string>
     <string name="more_new_badge">Nieuw</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Auteursrecht en licentie</string>
+    <string name="bible_catalog_license_subtitle">Bevestig dat je deze vertaling mag gebruiken</string>
+    <string name="bible_catalog_license_body">Bijbelvertalingen zijn auteursrechtelijk beschermd. Sommige zijn vrij van rechten, andere staan alleen persoonlijk of gemeentelijk gebruik toe, en sommige vereisen een licentie voordat ze publiekelijk getoond, gestreamd of uitgezonden mogen worden.\n\nDoor te downloaden bevestig je dat je deze vertaling in jouw omgeving mag gebruiken en dat je de voorwaarden van de uitgever accepteert.</string>
+    <string name="bible_catalog_license_unknown">Dit archief vermeldt geen auteursrecht voor deze vertaling.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org vermeldt deze vertaling als herdistribueerbaar en publiceert het hierboven getoonde auteursrecht.</string>
+    <string name="bible_catalog_license_source_zefania">Het Zefania-archief publiceert geen licentiegegevens, dus het auteursrecht van deze vertaling wordt pas zichtbaar na installatie. De modules zijn door de gemeenschap aangeleverd en niet gecontroleerd.</string>
+    <string name="bible_catalog_license_source_beblia">Het archief Holy Bible XML publiceert de hierboven getoonde eigen copyrightvermelding van elke vertaling opnieuw, maar de bestanden zijn door de gemeenschap aangeleverd en geen van de vermeldingen is gecontroleerd.</string>
+    <string name="bible_catalog_license_accept">Begrepen — downloaden</string>
+    <string name="bible_catalog_license_field_source">Bron</string>
+    <string name="bible_catalog_license_field_identifier">Identificatie</string>
+    <string name="bible_catalog_license_field_copyright">Auteursrecht</string>
+    <string name="bible_catalog_license_badge_redistributable">Herdistribueerbaar</string>
+    <string name="bible_catalog_license_badge_unverified">Licentie niet geverifieerd</string>
+    <string name="bible_catalog_book_names_english">De boeknamen verschijnen bij deze vertaling in het Engels — de bestanden van het archief duiden boeken alleen met een nummer aan. De verstekst blijft ongewijzigd.</string>
+    <string name="bible_catalog_stale_notice">De Bijbellijst van je laatste bezoek wordt getoond — je lijkt offline te zijn.</string>
+    <string name="bible_catalog_error_network">Kan het Bijbelarchief niet bereiken — controleer je verbinding</string>
+    <string name="bible_catalog_error_rate_limited">GitHub beperkt op dit moment het aantal verzoeken. Probeer het over een paar minuten opnieuw.</string>
+    <string name="bible_catalog_error_generic">Kan de Bijbellijst niet laden. Probeer het opnieuw.</string>
+    <string name="bible_catalog_empty_hint">Probeer een andere zoekterm of taal.</string>
 </resources>

@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Na-clear ang mga Bibliya.</string>
     <string name="library_clear_done_all">Na-clear ang lahat.</string>
     <string name="more_new_badge">Bago</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Copyright at paglilisensya</string>
+    <string name="bible_catalog_license_subtitle">Kumpirmahin na puwede mong gamitin ang saling ito</string>
+    <string name="bible_catalog_license_body">Protektado ng copyright ang mga salin ng Biblia. May ilang public domain, may ilang para lamang sa personal o pangkongregasyong gamit, at may ilang nangangailangan ng lisensya bago maipakita sa publiko, ma-stream o ma-broadcast.\n\nSa pag-download, kinukumpirma mo na pinapayagan kang gamitin ang saling ito sa lugar mo, at tinatanggap mo ang mga tuntunin ng publisher.</string>
+    <string name="bible_catalog_license_unknown">Walang isinaad na copyright ang archive para sa saling ito.</string>
+    <string name="bible_catalog_license_source_ebible">Nakalista sa eBible.org ang saling ito bilang maipapamahagi at inilalathala nito ang copyright na nasa itaas.</string>
+    <string name="bible_catalog_license_source_zefania">Walang inilalathalang detalye ng lisensya ang Zefania archive, kaya makikita lang ang copyright ng saling ito kapag naka-install na. Mula sa komunidad ang mga module nito at hindi pa nasusuri.</string>
+    <string name="bible_catalog_license_source_beblia">Inilalathala muli ng Holy Bible XML archive ang sariling copyright statement ng bawat salin, na nasa itaas, pero mula sa komunidad ang mga file nito at wala pang nasuri sa mga statement.</string>
+    <string name="bible_catalog_license_accept">Naiintindihan ko — I-download</string>
+    <string name="bible_catalog_license_field_source">Pinagmulan</string>
+    <string name="bible_catalog_license_field_identifier">Identifier</string>
+    <string name="bible_catalog_license_field_copyright">Copyright</string>
+    <string name="bible_catalog_license_badge_redistributable">Maipapamahagi</string>
+    <string name="bible_catalog_license_badge_unverified">Hindi beripikado ang lisensya</string>
+    <string name="bible_catalog_book_names_english">Ingles ang lalabas na pangalan ng mga aklat para sa saling ito — numero lamang ang gamit ng mga file ng archive sa pagkilala ng aklat. Hindi ito nakakaapekto sa teksto ng talata.</string>
+    <string name="bible_catalog_stale_notice">Ipinapakita ang listahan ng Biblia mula sa huling pagbisita mo — mukhang offline ka.</string>
+    <string name="bible_catalog_error_network">Hindi maabot ang archive ng Biblia — tingnan ang koneksyon mo</string>
+    <string name="bible_catalog_error_rate_limited">Nililimitahan ng GitHub ang mga request ngayon. Pakisubukan muli sa loob ng ilang minuto.</string>
+    <string name="bible_catalog_error_generic">Hindi ma-load ang listahan ng mga Biblia. Pakisubukan muli.</string>
+    <string name="bible_catalog_empty_hint">Subukan ang ibang salitang hahanapin o ibang wika.</string>
 </resources>

@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">تم مسح الأناجيل.</string>
     <string name="library_clear_done_all">تم مسح كل شيء.</string>
     <string name="more_new_badge">جديد</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">حقوق النشر والترخيص</string>
+    <string name="bible_catalog_license_subtitle">أكّد أنه يجوز لك استخدام هذه الترجمة</string>
+    <string name="bible_catalog_license_body">ترجمات الكتاب المقدس محمية بحقوق النشر. بعضها في الملك العام، وبعضها يسمح بالاستخدام الشخصي أو الكنسي فقط، وبعضها يتطلب ترخيصًا قبل عرضه علنًا أو بثه.\n\nبالتنزيل فإنك تؤكد أنه يُسمح لك باستخدام هذه الترجمة في سياقك، وأنك تقبل شروط الناشر.</string>
+    <string name="bible_catalog_license_unknown">لا يذكر هذا الأرشيف أي حقوق نشر لهذه الترجمة.</string>
+    <string name="bible_catalog_license_source_ebible">يدرج eBible.org هذه الترجمة على أنها قابلة لإعادة التوزيع وينشر حقوق النشر المبينة أعلاه.</string>
+    <string name="bible_catalog_license_source_zefania">لا ينشر أرشيف Zefania تفاصيل الترخيص، لذا لا تظهر حقوق نشر هذه الترجمة إلا بعد تثبيتها. وحداته من مساهمات المجتمع ولم تُراجَع.</string>
+    <string name="bible_catalog_license_source_beblia">يعيد أرشيف Holy Bible XML نشر بيان حقوق النشر الخاص بكل ترجمة، كما هو مبيّن أعلاه، لكن ملفاته من مساهمات المجتمع ولم يُراجَع أي من تلك البيانات.</string>
+    <string name="bible_catalog_license_accept">أفهم ذلك — تنزيل</string>
+    <string name="bible_catalog_license_field_source">المصدر</string>
+    <string name="bible_catalog_license_field_identifier">المعرّف</string>
+    <string name="bible_catalog_license_field_copyright">حقوق النشر</string>
+    <string name="bible_catalog_license_badge_redistributable">قابل لإعادة التوزيع</string>
+    <string name="bible_catalog_license_badge_unverified">الترخيص غير مؤكَّد</string>
+    <string name="bible_catalog_book_names_english">ستظهر أسماء الأسفار بالإنجليزية في هذه الترجمة — إذ تعرّف ملفات الأرشيف الأسفار بالأرقام فقط. ولا يتأثر نص الآيات بذلك.</string>
+    <string name="bible_catalog_stale_notice">تُعرض قائمة النسخ من زيارتك الأخيرة — يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="bible_catalog_error_network">تعذّر الوصول إلى أرشيف الكتاب المقدس — تحقق من اتصالك</string>
+    <string name="bible_catalog_error_rate_limited">يحدّ GitHub من الطلبات حاليًا. حاول مرة أخرى بعد بضع دقائق.</string>
+    <string name="bible_catalog_error_generic">تعذّر تحميل قائمة النسخ. حاول مرة أخرى.</string>
+    <string name="bible_catalog_empty_hint">جرّب كلمة بحث أخرى أو لغة أخرى.</string>
 </resources>

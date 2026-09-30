@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">کتاب‌مقدس‌ها پاک شدند.</string>
     <string name="library_clear_done_all">همه‌چیز پاک شد.</string>
     <string name="more_new_badge">جدید</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">حق نشر و پروانه</string>
+    <string name="bible_catalog_license_subtitle">تأیید کنید که می‌توانید از این ترجمه استفاده کنید</string>
+    <string name="bible_catalog_license_body">ترجمه‌های کتاب‌مقدس زیر پوشش حق نشر هستند. برخی در مالکیت عمومی‌اند، برخی تنها کاربرد شخصی یا کلیسایی را روا می‌دارند، و برخی پیش از نمایش عمومی، پخش زنده یا رسانه‌ای پروانه می‌خواهند.\n\nبا دریافت، تأیید می‌کنید که مجاز به کاربرد این ترجمه در جایگاه خود هستید و شرایط ناشر را می‌پذیرید.</string>
+    <string name="bible_catalog_license_unknown">این بایگانی هیچ حق نشری برای این ترجمه اعلام نکرده است.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org این ترجمه را بازپخش‌پذیر می‌داند و حق نشر بالا را منتشر کرده است.</string>
+    <string name="bible_catalog_license_source_zefania">بایگانی Zefania جزئیات پروانه را منتشر نمی‌کند، پس حق نشر این ترجمه تنها پس از نصب دیده می‌شود. پیمانه‌های آن را کاربران فراهم کرده‌اند و بررسی نشده‌اند.</string>
+    <string name="bible_catalog_license_source_beblia">بایگانی Holy Bible XML بیانیهٔ حق نشر هر ترجمه را همان‌گونه که بالا آمده بازنشر می‌کند، اما پرونده‌هایش را کاربران فراهم کرده‌اند و هیچ‌یک از این بیانیه‌ها بررسی نشده است.</string>
+    <string name="bible_catalog_license_accept">می‌پذیرم — دریافت</string>
+    <string name="bible_catalog_license_field_source">منبع</string>
+    <string name="bible_catalog_license_field_identifier">شناسه</string>
+    <string name="bible_catalog_license_field_copyright">حق نشر</string>
+    <string name="bible_catalog_license_badge_redistributable">بازپخش‌پذیر</string>
+    <string name="bible_catalog_license_badge_unverified">پروانه بررسی‌نشده</string>
+    <string name="bible_catalog_book_names_english">نام کتاب‌ها در این ترجمه به انگلیسی نمایش داده می‌شود — چون پرونده‌های این بایگانی کتاب‌ها را تنها با شماره می‌شناسانند. متن آیات از این بابت دگرگون نمی‌شود.</string>
+    <string name="bible_catalog_stale_notice">فهرست نسخه‌ها از آخرین بازدید شما نشان داده می‌شود — گویا برون‌خط هستید.</string>
+    <string name="bible_catalog_error_network">دسترسی به بایگانی کتاب‌مقدس ممکن نشد — اتصال خود را بررسی کنید</string>
+    <string name="bible_catalog_error_rate_limited">GitHub هم‌اکنون درخواست‌ها را محدود کرده است. چند دقیقهٔ دیگر دوباره تلاش کنید.</string>
+    <string name="bible_catalog_error_generic">بارگذاری فهرست نسخه‌ها ممکن نشد. دوباره تلاش کنید.</string>
+    <string name="bible_catalog_empty_hint">واژهٔ جست‌وجو یا زبان دیگری را بیازمایید.</string>
 </resources>

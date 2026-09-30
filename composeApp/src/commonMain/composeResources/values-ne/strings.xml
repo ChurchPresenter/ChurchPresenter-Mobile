@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">बाइबलहरू हटाइए।</string>
     <string name="library_clear_done_all">सबै हटाइयो।</string>
     <string name="more_new_badge">नयाँ</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">प्रतिलिपि अधिकार र इजाजत</string>
+    <string name="bible_catalog_license_subtitle">यो अनुवाद प्रयोग गर्न पाउनुहुन्छ भनी पुष्टि गर्नुहोस्</string>
+    <string name="bible_catalog_license_body">बाइबल अनुवादहरू प्रतिलिपि अधिकारद्वारा सुरक्षित हुन्छन्। केही सार्वजनिक अधिकारमा छन्, केहीले व्यक्तिगत वा मण्डलीभित्रको प्रयोग मात्र दिन्छन्, र केहीलाई सार्वजनिक रूपमा देखाउन, स्ट्रिम गर्न वा प्रसारण गर्न इजाजत चाहिन्छ।\n\nडाउनलोड गरेर तपाईं आफ्नो सन्दर्भमा यो अनुवाद प्रयोग गर्न पाउनुहुन्छ र प्रकाशकका सर्तहरू स्वीकार गर्नुहुन्छ भनी पुष्टि गर्नुहुन्छ।</string>
+    <string name="bible_catalog_license_unknown">यो सङ्ग्रहले यस अनुवादको कुनै प्रतिलिपि अधिकार उल्लेख गरेको छैन।</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org ले यो अनुवादलाई पुनर्वितरणयोग्य भनी सूचीबद्ध गरेको छ र माथि देखाइएको प्रतिलिपि अधिकार प्रकाशित गर्छ।</string>
+    <string name="bible_catalog_license_source_zefania">Zefania सङ्ग्रहले इजाजतको विवरण प्रकाशित गर्दैन, त्यसैले यस अनुवादको प्रतिलिपि अधिकार स्थापना गरेपछि मात्र देखिन्छ। यसका मोड्युल समुदायले दिएका हुन् र जाँचिएका छैनन्।</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML सङ्ग्रहले हरेक अनुवादको आफ्नै प्रतिलिपि अधिकार कथन माथिजस्तै पुनः प्रकाशित गर्छ, तर यसका फाइल समुदायले दिएका हुन् र कुनै पनि कथन जाँचिएको छैन।</string>
+    <string name="bible_catalog_license_accept">बुझेँ — डाउनलोड गर्नुहोस्</string>
+    <string name="bible_catalog_license_field_source">स्रोत</string>
+    <string name="bible_catalog_license_field_identifier">पहिचायक</string>
+    <string name="bible_catalog_license_field_copyright">प्रतिलिपि अधिकार</string>
+    <string name="bible_catalog_license_badge_redistributable">पुनर्वितरणयोग्य</string>
+    <string name="bible_catalog_license_badge_unverified">इजाजत प्रमाणित छैन</string>
+    <string name="bible_catalog_book_names_english">यस अनुवादमा पुस्तकका नाम अङ्ग्रेजीमा देखिनेछन् — किनभने यो सङ्ग्रहका फाइलले पुस्तकलाई नम्बरले मात्र चिनाउँछन्। पदको पाठमा असर पर्दैन।</string>
+    <string name="bible_catalog_stale_notice">तपाईंको पछिल्लो पटकको बाइबल सूची देखाइँदै छ — तपाईं अफलाइन देखिनुहुन्छ।</string>
+    <string name="bible_catalog_error_network">बाइबल सङ्ग्रहमा पुग्न सकिएन — आफ्नो जडान जाँच्नुहोस्</string>
+    <string name="bible_catalog_error_rate_limited">GitHub ले अहिले अनुरोध सीमित गरिरहेको छ। केही मिनेटपछि फेरि प्रयास गर्नुहोस्।</string>
+    <string name="bible_catalog_error_generic">बाइबलको सूची लोड गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।</string>
+    <string name="bible_catalog_empty_hint">अर्को खोज शब्द वा भाषा प्रयास गर्नुहोस्।</string>
 </resources>

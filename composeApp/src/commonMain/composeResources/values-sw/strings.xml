@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Biblia zimefutwa.</string>
     <string name="library_clear_done_all">Kila kitu kimefutwa.</string>
     <string name="more_new_badge">Mpya</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Hakimiliki na leseni</string>
+    <string name="bible_catalog_license_subtitle">Thibitisha kwamba unaruhusiwa kutumia tafsiri hii</string>
+    <string name="bible_catalog_license_body">Tafsiri za Biblia zinalindwa na hakimiliki. Baadhi ziko wazi kwa umma, nyingine zinaruhusu matumizi ya binafsi au ya kanisa pekee, na baadhi zinahitaji leseni kabla ya kuonyeshwa hadharani, kutiririshwa au kurushwa hewani.\n\nKwa kupakua unathibitisha kwamba unaruhusiwa kutumia tafsiri hii mahali pako, na kwamba unakubali masharti ya mchapishaji.</string>
+    <string name="bible_catalog_license_unknown">Hifadhi hii haitaji hakimiliki yoyote kwa tafsiri hii.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org inaiorodhesha tafsiri hii kama inayoweza kusambazwa upya na inachapisha hakimiliki iliyoonyeshwa hapo juu.</string>
+    <string name="bible_catalog_license_source_zefania">Hifadhi ya Zefania haichapishi maelezo ya leseni, hivyo hakimiliki ya tafsiri hii inaonekana tu baada ya kusakinishwa. Moduli zake zimechangiwa na jamii na hazijakaguliwa.</string>
+    <string name="bible_catalog_license_source_beblia">Hifadhi ya Holy Bible XML inachapisha upya tamko la hakimiliki la kila tafsiri, kama lilivyoonyeshwa hapo juu, lakini faili zake zimechangiwa na jamii na hakuna tamko lolote lililokaguliwa.</string>
+    <string name="bible_catalog_license_accept">Nimeelewa — pakua</string>
+    <string name="bible_catalog_license_field_source">Chanzo</string>
+    <string name="bible_catalog_license_field_identifier">Kitambulisho</string>
+    <string name="bible_catalog_license_field_copyright">Hakimiliki</string>
+    <string name="bible_catalog_license_badge_redistributable">Inaweza kusambazwa upya</string>
+    <string name="bible_catalog_license_badge_unverified">Leseni haijathibitishwa</string>
+    <string name="bible_catalog_book_names_english">Majina ya vitabu yataonekana kwa Kiingereza kwa tafsiri hii — faili za hifadhi hii hutambua vitabu kwa namba pekee. Maandishi ya mistari hayaathiriwi.</string>
+    <string name="bible_catalog_stale_notice">Inaonyesha orodha ya Biblia ya ziara yako ya mwisho — inaonekana huna mtandao.</string>
+    <string name="bible_catalog_error_network">Imeshindwa kufikia hifadhi ya Biblia — kagua muunganisho wako</string>
+    <string name="bible_catalog_error_rate_limited">GitHub inapunguza maombi kwa sasa. Tafadhali jaribu tena baada ya dakika chache.</string>
+    <string name="bible_catalog_error_generic">Imeshindwa kupakia orodha ya Biblia. Tafadhali jaribu tena.</string>
+    <string name="bible_catalog_empty_hint">Jaribu neno lingine la kutafuta au lugha nyingine.</string>
 </resources>

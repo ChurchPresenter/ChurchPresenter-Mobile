@@ -981,4 +981,24 @@
     <string name="library_clear_done_bibles">Інжілдер тазаланды.</string>
     <string name="library_clear_done_all">Барлығы тазаланды.</string>
     <string name="more_new_badge">Жаңа</string>
+    <!-- Shared with the desktop app's Bible catalogue, translations included. -->
+    <string name="bible_catalog_license_title">Авторлық құқық және лицензия</string>
+    <string name="bible_catalog_license_subtitle">Бұл аударманы қолдануға құқығыңыз бар екенін растаңыз</string>
+    <string name="bible_catalog_license_body">Киелі Кітап аудармалары авторлық құқықпен қорғалған. Кейбіреуі — қоғамдық игілік, басқалары тек жеке немесе қауымдық қолдануға рұқсат етілген, ал кейбіреулеріне жария көрсету, трансляциялау немесе таратудың алдында лицензия қажет.\n\nЖүктеп алу арқылы сіз бұл аударманы өз ортаңызда қолдануға құқығыңыз бар екенін және баспагердің шарттарын қабылдайтыныңызды растайсыз.</string>
+    <string name="bible_catalog_license_unknown">Бұл мұрағатта осы аударманың авторлық құқығы көрсетілмеген.</string>
+    <string name="bible_catalog_license_source_ebible">eBible.org бұл аударманы таратуға рұқсат етілген деп көрсетеді және жоғарыда көрсетілген авторлық құқықты жариялайды.</string>
+    <string name="bible_catalog_license_source_zefania">Zefania мұрағаты лицензия туралы мәліметтерді жарияламайды, сондықтан бұл аударманың авторлық құқығы тек орнатылғаннан кейін ғана көрінеді. Оның модульдері қауымдастық қосқан және тексерілмеген.</string>
+    <string name="bible_catalog_license_source_beblia">Holy Bible XML мұрағаты әр аударманың жоғарыда көрсетілген өз авторлық құқық мәлімдемесін жариялайды, бірақ оның файлдарын қауымдастық ұсынған және мәлімдемелердің ешқайсысы тексерілмеген.</string>
+    <string name="bible_catalog_license_accept">Түсінікті — жүктеп алу</string>
+    <string name="bible_catalog_license_field_source">Дереккөз</string>
+    <string name="bible_catalog_license_field_identifier">Идентификатор</string>
+    <string name="bible_catalog_license_field_copyright">Авторлық құқық</string>
+    <string name="bible_catalog_license_badge_redistributable">Таратуға рұқсат етілген</string>
+    <string name="bible_catalog_license_badge_unverified">Лицензия тексерілмеген</string>
+    <string name="bible_catalog_book_names_english">Бұл аударма үшін кітап атаулары ағылшынша көрсетіледі — мұрағат файлдарында кітаптар тек нөмірмен белгіленген. Тармақ мәтініне бұл әсер етпейді.</string>
+    <string name="bible_catalog_stale_notice">Соңғы келуіңіздегі Киелі Кітаптар тізімі көрсетіліп тұр — сіз желіден тыс сияқтысыз.</string>
+    <string name="bible_catalog_error_network">Киелі Кітап мұрағатына қосылу мүмкін болмады — байланысты тексеріңіз</string>
+    <string name="bible_catalog_error_rate_limited">GitHub қазір сұрау санын шектеп тұр. Бірнеше минуттан кейін қайталап көріңіз.</string>
+    <string name="bible_catalog_error_generic">Киелі Кітаптар тізімін жүктеу мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="bible_catalog_empty_hint">Басқа іздеу сөзін немесе тілді қолданып көріңіз.</string>
 </resources>
