@@ -1,8 +1,10 @@
 package com.church.presenter.churchpresentermobile.util
 
+import android.os.RemoteException
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.lifecycle.Lifecycle
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -54,6 +56,7 @@ class AppUpdateTest {
         every {
             activity.packageManager.getInstallerPackageName(activity.packageName)
         } returns "com.android.vending"
+        every { activity.lifecycle.currentState } returns Lifecycle.State.RESUMED
     }
 
     /** Play answers with an update in the given state. */
@@ -151,7 +154,45 @@ class AppUpdateTest {
         verify(exactly = 0) { manager.startUpdateFlowForResult(any(), launcher, any<AppUpdateOptions>()) }
     }
 
+    @Test
+    fun `an answer that arrives after the activity is gone prompts nothing`() {
+        // CHURCH-PRESENTER-MOBILE-23: Play answered after a rotation had destroyed
+        // the activity, whose launcher was unregistered with it, and launching it
+        // threw. The activity that replaced it runs its own check.
+        every { activity.lifecycle.currentState } returns Lifecycle.State.DESTROYED
+        playAnswers(UpdateAvailability.UPDATE_AVAILABLE)
+
+        check()
+
+        verify(exactly = 0) { manager.startUpdateFlowForResult(any(), launcher, any<AppUpdateOptions>()) }
+    }
+
+    @Test
+    fun `a launcher that is unregistered under the flow does not crash the app`() {
+        // The same race, lost between the lifecycle check and the launch.
+        every {
+            manager.startUpdateFlowForResult(any(), launcher, any<AppUpdateOptions>())
+        } throws IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher")
+        playAnswers(UpdateAvailability.UPDATE_AVAILABLE)
+
+        check()
+
+        verify { manager.startUpdateFlowForResult(any(), launcher, any<AppUpdateOptions>()) }
+    }
+
     // ── When there is no Play Store to ask ───────────────────────────────
+
+    @Test
+    fun `a Play Store service that dies while answering is not reported as a crash`() {
+        // CHURCH-PRESENTER-MOBILE-22: "AppUpdateService : Binder has died" — the
+        // Play Store updating itself or killed for memory. Not this app's defect.
+        mockkObject(CrashReporting)
+        playFails(RuntimeException("update check failed", RemoteException("AppUpdateService : Binder has died.")))
+
+        check()
+
+        verify(exactly = 0) { CrashReporting.recordException(any()) }
+    }
 
     @Test
     fun `a build with no Play Store is not reported as a crash`() {
