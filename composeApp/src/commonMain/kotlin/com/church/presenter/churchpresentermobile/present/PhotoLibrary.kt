@@ -4,6 +4,8 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "PhotoLibrary"
 
@@ -84,12 +86,25 @@ class PhotoLibrary(
     }
 
     /** Stores [bytes] and returns the photo, ready to be listed and projected. */
-    fun add(fileName: String, bytes: ByteArray): StoredPhoto {
+    fun add(fileName: String, bytes: ByteArray): StoredPhoto =
         // Shrunk on the way in, not on the way out: these bytes are held in
         // memory for the life of the session and sent to every screen watching,
         // so a camera-sized original would be paid for twice over. A phone photo
         // is several times larger than any output this app drives can show.
-        val stored = downscale(bytes)
+        keep(fileName, bytes, downscale(bytes))
+
+    /**
+     * [add], with the shrinking run on [worker] instead of the caller's thread.
+     *
+     * Decoding and re-encoding a camera photo takes seconds on a small phone; on
+     * the main thread, a handful picked at once froze the app into an ANR
+     * (CHURCH-PRESENTER-MOBILE-25). The photo is still listed on the caller's
+     * thread, so the list only ever changes there.
+     */
+    suspend fun add(fileName: String, bytes: ByteArray, worker: CoroutineContext): StoredPhoto =
+        keep(fileName, bytes, withContext(worker) { downscale(bytes) })
+
+    private fun keep(fileName: String, bytes: ByteArray, stored: ByteArray): StoredPhoto {
         val photo = StoredPhoto(id = newId(), fileName = fileName)
         bytesById[photo.id] = stored
         _photos.value = _photos.value + photo

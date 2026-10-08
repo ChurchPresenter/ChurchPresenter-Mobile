@@ -7,8 +7,12 @@ import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
+import com.church.presenter.churchpresentermobile.ui.PickedPhoto
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -68,6 +72,29 @@ class LocalPhotosViewModelTest {
         assertEquals(SlideKind.IMAGE, slide.kind)
         assertEquals(SlideBackdrop.IMAGE, slide.backdrop)
         assertEquals("http://192.168.1.50:8080/photo/${second.id}", slide.backdropUrl)
+    }
+
+    @Test
+    fun pickedPhotosAreShrunkOffTheMainThreadAndListedInPickOrder() = runVmTest {
+        // CHURCH-PRESENTER-MOBILE-25: decoding a set of camera photos in the picker's
+        // callback, on the main thread, froze small phones into an ANR.
+        var onWorker = false
+        val worker = object : CoroutineDispatcher() {
+            override fun dispatch(context: CoroutineContext, block: Runnable) {
+                onWorker = true
+                try { block.run() } finally { onWorker = false }
+            }
+        }
+        val shrunkOnWorker = mutableListOf<Boolean>()
+        var next = 0
+        val library = PhotoLibrary(newId = { "photo-${next++}" }, downscale = { shrunkOnWorker += onWorker; it })
+        val vm = LocalPhotosViewModel(library, engine(), imageWork = worker)
+
+        vm.addPicked(listOf(PickedPhoto(bytes(1), "first.jpg"), PickedPhoto(bytes(2), "second.jpg")))
+        advanceUntilIdle()
+
+        assertEquals(listOf(true, true), shrunkOnWorker)
+        assertEquals(listOf("first.jpg", "second.jpg"), vm.photos.value.map { it.fileName })
     }
 
     @Test

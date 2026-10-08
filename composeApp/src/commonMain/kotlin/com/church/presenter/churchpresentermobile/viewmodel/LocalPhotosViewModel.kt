@@ -6,13 +6,17 @@ import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.present.StoredPhoto
+import com.church.presenter.churchpresentermobile.ui.PickedPhoto
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "LocalPhotosViewModel"
 
@@ -31,6 +35,8 @@ private const val TAG = "LocalPhotosViewModel"
 class LocalPhotosViewModel(
     private val library: PhotoLibrary,
     private val presenter: StandaloneEngine?,
+    /** Where picked photos are shrunk: never the main thread. */
+    private val imageWork: CoroutineContext = Dispatchers.Default,
 ) : ViewModel() {
 
     /** The photos picked this session, in the order they were picked. */
@@ -55,6 +61,18 @@ class LocalPhotosViewModel(
 
     /** Adds a picked photo. Returns it so callers can project it straight away. */
     fun add(fileName: String, bytes: ByteArray): StoredPhoto = library.add(fileName, bytes)
+
+    /**
+     * Adds what the picker returned, in the order picked, shrinking each off the
+     * main thread — the picker answers there, and decoding a set of camera photos
+     * in that callback froze the app (CHURCH-PRESENTER-MOBILE-25).
+     */
+    fun addPicked(picked: List<PickedPhoto>) {
+        if (picked.isEmpty()) return
+        viewModelScope.launch {
+            picked.forEach { library.add(it.fileName, it.bytes, imageWork) }
+        }
+    }
 
     /** Forgets [id]; clears the screen too if that photo was on it. */
     fun remove(id: String) {

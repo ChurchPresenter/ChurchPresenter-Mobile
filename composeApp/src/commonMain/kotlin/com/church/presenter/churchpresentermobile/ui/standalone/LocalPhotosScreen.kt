@@ -83,7 +83,7 @@ fun LocalPhotosScreen(
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
             PhotoPickerLauncher(
-                onPhotoPicked = { picked -> picked.forEach { vm.add(it.fileName, it.bytes) } },
+                onPhotoPicked = vm::addPicked,
             ) { launch ->
                 OutlineActionButton(
                     label = stringResource(Res.string.pictures_pick_from_device),
