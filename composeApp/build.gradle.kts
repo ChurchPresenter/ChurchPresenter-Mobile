@@ -899,6 +899,11 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
             implementation(libs.cryptography.provider.apple)
+            // CommonCrypto (the provider above) has no AES-GCM, which the calendar relay seals with:
+            // without CryptoKit an enrolled iPhone could not open its key and crashed on its first
+            // sync (CHURCH-PRESENTER-MOBILE-28). Both register, and the default provider asks
+            // CryptoKit first, then CommonCrypto for what CryptoKit lacks.
+            implementation(libs.cryptography.provider.cryptokit)
         }
         commonMain.dependencies {
             implementation(libs.cryptography.core)

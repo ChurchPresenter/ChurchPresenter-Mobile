@@ -3,9 +3,9 @@ package com.church.presenter.churchpresentermobile.calendar.sync
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.calendar.nowIso
 import com.church.presenter.churchpresentermobile.model.PlannedService
+import com.church.presenter.churchpresentermobile.network.apiRunCatching
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.io.IOException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -65,13 +65,20 @@ class CalendarSyncEngine(
             _status.value = SyncStatus.NotEnrolled
             return@withLock false
         }
-        val sealing = Sealing.fromEncodedKey(current.instanceKey, current.instanceId)
+        // Opening the key needs AES-GCM from the platform's crypto provider. Built outside the
+        // round's guard, a platform without it threw straight out of the sync loop and took the app
+        // down the moment a phone was paired (CHURCH-PRESENTER-MOBILE-28).
+        val sealing = apiRunCatching { Sealing.fromEncodedKey(current.instanceKey, current.instanceId) }
+            .getOrElse { return@withLock failed(it) }
         if (sealing == null) {
             _status.value = SyncStatus.Unauthorized
             return@withLock false
         }
         _status.value = SyncStatus.Syncing
-        try {
+        // A round is background work: whatever goes wrong in it -- the network, a reply that makes
+        // no sense, the platform -- is reported, and the next round tries again. Nothing it throws
+        // may reach the loop that started it, where it is fatal.
+        apiRunCatching {
             val client = clientFor(current, clientKeys::current)
             try {
                 round(client, sealing, current)
@@ -80,32 +87,26 @@ class CalendarSyncEngine(
                 if (clientKeys.refresh() == null) throw rotated
                 round(client, sealing, state())
             }
-            true
-        } catch (refused: RelayFailure.Unauthorized) {
-            Logger.e(TAG, "the relay no longer accepts this phone: ${refused.message}")
-            _status.value = SyncStatus.Unauthorized
-            false
-        } catch (e: RelayFailure) {
-            Logger.e(TAG, "sync failed: ${e.message}")
-            _status.value = SyncStatus.Failed(e.message.orEmpty())
-            false
-        } catch (e: IllegalStateException) {
-            // Whatever the wire handed us could not be made sense of. A round is background work:
-            // it reports and waits for the next one rather than taking the app down.
-            Logger.e(TAG, "sync failed: ${e.message}", e)
-            _status.value = SyncStatus.Failed(e.message.orEmpty())
-            false
-        } catch (e: IllegalArgumentException) {
-            Logger.e(TAG, "sync failed: ${e.message}", e)
-            _status.value = SyncStatus.Failed(e.message.orEmpty())
-            false
-        } catch (e: IOException) {
-            // The network itself: no route, a dropped WiFi, a captive portal, a certificate the
-            // device's clock says is not valid yet. Uncaught, one took the app down.
-            Logger.e(TAG, "sync failed: ${e.message}", e)
-            _status.value = SyncStatus.Failed(e.message.orEmpty())
-            false
+        }.fold(onSuccess = { true }, onFailure = ::failed)
+    }
+
+    /** Reports a round that did not complete; false, for [sync] to return. */
+    private fun failed(e: Throwable): Boolean {
+        when (e) {
+            is RelayFailure.Unauthorized -> {
+                Logger.e(TAG, "the relay no longer accepts this phone: ${e.message}")
+                _status.value = SyncStatus.Unauthorized
+            }
+            is RelayFailure -> {
+                Logger.e(TAG, "sync failed: ${e.message}")
+                _status.value = SyncStatus.Failed(e.message.orEmpty())
+            }
+            else -> {
+                Logger.e(TAG, "sync failed: ${e.message}", e)
+                _status.value = SyncStatus.Failed(e.message.orEmpty())
+            }
         }
+        return false
     }
 
     private suspend fun round(client: RelayClient, sealing: Sealing, current: CalendarSyncState) {

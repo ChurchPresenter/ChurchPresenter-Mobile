@@ -432,6 +432,28 @@ class CalendarSyncEngineTest {
     }
 
     @Test
+    fun anythingElseARoundThrowsIsReportedNotThrown() = runTest {
+        // CHURCH-PRESENTER-MOBILE-28: the first round after pairing threw something the round did
+        // not list, straight out of the sync loop, and the coroutine runtime aborted the app.
+        val engine = CalendarSyncEngine(
+            repository,
+            state = { state },
+            saveState = { state = it },
+            clientKeys = ClientKeySource(settings, HttpClient(MockEngine { error("unused") }), now = { 5_000_000L }),
+            clientFor = { _, _ -> throw UnsupportedOperationException("Algorithm not found: AES-GCM") },
+        )
+
+        assertFalse(engine.sync())
+        val status = assertIs<SyncStatus.Failed>(engine.status.value)
+        assertTrue("AES-GCM" in status.message)
+        assertTrue(state.isEnrolled, "a round that fails is not a reason to forget the enrollment")
+
+        // And the next round still runs: one failure does not wedge the engine.
+        assertFalse(engine.sync())
+        assertIs<SyncStatus.Failed>(engine.status.value)
+    }
+
+    @Test
     fun thisPhonesNameIsSentSealedOnceAndAgainOnlyWhenItChanges() = runTest {
         state = enrolled.copy(deviceId = "phone-1")
         deviceName = "  Anna's iPad  "
