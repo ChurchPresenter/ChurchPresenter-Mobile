@@ -1,8 +1,12 @@
 package com.church.presenter.churchpresentermobile.util
 
+import android.os.RemoteException
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.lifecycle.Lifecycle
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
@@ -66,28 +70,18 @@ object AppUpdate {
         val manager = AppUpdateManagerFactory.create(activity)
         manager.appUpdateInfo
             .addOnSuccessListener { info ->
-                when (info.updateAvailability()) {
-                    UpdateAvailability.UPDATE_AVAILABLE -> {
-                        val type = if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
+                val type = when (info.updateAvailability()) {
+                    UpdateAvailability.UPDATE_AVAILABLE ->
+                        if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
                             AppUpdateType.FLEXIBLE else AppUpdateType.IMMEDIATE
-                        Logger.d(TAG, "Update available — launching type=$type")
-                        manager.startUpdateFlowForResult(
-                            info,
-                            launcher,
-                            AppUpdateOptions.newBuilder(type).build()
-                        )
+                    // Resume an immediate update that was interrupted
+                    UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> AppUpdateType.IMMEDIATE
+                    else -> {
+                        Logger.d(TAG, "No update available")
+                        return@addOnSuccessListener
                     }
-                    UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
-                        // Resume an immediate update that was interrupted
-                        Logger.d(TAG, "Resuming interrupted immediate update")
-                        manager.startUpdateFlowForResult(
-                            info,
-                            launcher,
-                            AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
-                        )
-                    }
-                    else -> Logger.d(TAG, "No update available")
                 }
+                startFlow(activity, manager, info, launcher, type)
             }
             .addOnFailureListener { e ->
                 // Expected on sideloaded / non-Play installs (emulators, alternative
@@ -95,11 +89,52 @@ object AppUpdate {
                 // as noise rather than reporting it to crash reporting.
                 if (e is InstallException && e.errorCode in EXPECTED_NO_PLAY_ERRORS) {
                     Logger.d(TAG, "Skipping update check — no Play Store (errorCode=${e.errorCode})")
+                } else if (e.isPlayStoreGone()) {
+                    Logger.d(TAG, "Skipping update check — the Play Store service went away: ${e.message}")
                 } else {
                     Logger.e(TAG, "Failed to check for app update", e)
                     CrashReporting.recordException(e)
                 }
             }
     }
+
+    /**
+     * Starts the update flow, unless the activity that asked is gone.
+     *
+     * Play answers on its own time. By then the activity may have been destroyed —
+     * rotated, or closed — and its [launcher] unregistered with it, and launching
+     * an unregistered launcher throws (CHURCH-PRESENTER-MOBILE-23). The activity
+     * that replaces it runs its own check, so nothing is lost by skipping this one.
+     */
+    private fun startFlow(
+        activity: ComponentActivity,
+        manager: AppUpdateManager,
+        info: AppUpdateInfo,
+        launcher: ActivityResultLauncher<IntentSenderRequest>,
+        type: Int,
+    ) {
+        if (activity.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+            Logger.d(TAG, "Update available, but the activity that asked is gone — not prompting")
+            return
+        }
+        Logger.d(TAG, "Update available — launching type=$type")
+        try {
+            manager.startUpdateFlowForResult(info, launcher, AppUpdateOptions.newBuilder(type).build())
+        } catch (e: IllegalStateException) {
+            // The launcher went with its activity between the check above and here.
+            Logger.e(TAG, "Update flow not started: ${e.message}", e)
+        }
+    }
+
+    /**
+     * True when the Play Store's update service died while answering — the Play
+     * Store app updating itself, or being killed for memory on a small device
+     * (CHURCH-PRESENTER-MOBILE-22, "AppUpdateService : Binder has died"). Not a
+     * defect here; the next launch asks again.
+     */
+    private fun Throwable.isPlayStoreGone(): Boolean =
+        generateSequence(this) { it.cause }.take(MAX_CAUSE_DEPTH).any { it is RemoteException }
+
+    private const val MAX_CAUSE_DEPTH = 8
 }
 
