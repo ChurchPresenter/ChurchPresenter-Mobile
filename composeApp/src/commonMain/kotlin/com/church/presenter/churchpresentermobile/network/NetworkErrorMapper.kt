@@ -210,6 +210,11 @@ private val CONNECTIVITY_MESSAGE_MARKERS = listOf(
     // condition and, by volume, the single largest source of false reports.
     "Code=-1005",
     "network connection was lost",
+    // kCFErrorHTTPProxyConnectionFailure: the Wi-Fi has an HTTP proxy configured
+    // and it would not carry the connection to a LAN address. The network's
+    // settings, not this app (CHURCH-PRESENTER-MOBILE-H, on the /ws upgrade).
+    "Code=306 ",
+    "web proxy server",
     "offline",
     // Internal sentinel exceptions thrown by ServerEventService when the
     // server is unreachable, or when a pending action is torn down because
@@ -271,6 +276,9 @@ fun Throwable.toFriendlyNetworkMessage(): String {
             inner.contains("Code=-1005") ||
             inner.contains("network connection was lost", ignoreCase = true) ->
                 "Connection lost. Check your Wi-Fi and the server."
+            inner.contains("Code=306 ") ||
+            inner.contains("web proxy server", ignoreCase = true) ->
+                "The Wi-Fi's proxy blocked the connection. Check its proxy settings."
             inner.contains("Code=-1004") ||
             inner.contains("Could not connect", ignoreCase = true) ->
                 "Server not reachable. Check the IP address and port."

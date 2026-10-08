@@ -23,15 +23,18 @@
         <false/>
 
         <!--
-            Allow plain HTTP (http://) connections to local Church Presenter servers
-            on the LAN (e.g. 192.168.x.x:8765). The server no longer uses HTTPS —
-            no SSL certificates required.
+            Allow plain HTTP (http://) connections to the Church Presenter desktop,
+            wherever it is reachable (e.g. 192.168.x.x:8765). The server no longer
+            uses HTTPS — no SSL certificates required.
+
+            NSAllowsArbitraryLoads alone, deliberately: alongside NSAllowsLocalNetworking
+            iOS ignores it and allows plain HTTP only to private LAN ranges and .local
+            names, so a desktop reached over a VPN such as Tailscale (100.64.0.0/10)
+            was refused with NSURLErrorDomain -1022 (CHURCH-PRESENTER-MOBILE-H).
         -->
         <key>NSAppTransportSecurity</key>
         <dict>
             <key>NSAllowsArbitraryLoads</key>
-            <true/>
-            <key>NSAllowsLocalNetworking</key>
             <true/>
         </dict>
 

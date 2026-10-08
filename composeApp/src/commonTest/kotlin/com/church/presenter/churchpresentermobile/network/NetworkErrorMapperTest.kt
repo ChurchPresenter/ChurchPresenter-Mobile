@@ -299,6 +299,22 @@ class NetworkErrorMapperTest {
     }
 
     @Test
+    fun iosProxyThatWillNotCarryTheConnectionIsExpected() {
+        // CHURCH-PRESENTER-MOBILE-H, continued: a Wi-Fi with an HTTP proxy configured
+        // refused the WebSocket upgrade to the desktop's LAN address. The network's
+        // settings, not a defect -- but nothing matched it, so it was reported.
+        val raw = "Exception in http request: Error Domain=NSURLErrorDomain Code=306 " +
+            "\"There was a problem communicating with the web proxy server (HTTP).\" " +
+            "UserInfo={NSErrorFailingURLStringKey=ws://192.168.1.100:8765/ws}"
+        assertTrue(Exception(raw).isExpectedConnectivityError())
+        assertFalse(Exception(raw).shouldReportAsNonFatal())
+        assertEquals(
+            "The Wi-Fi's proxy blocked the connection. Check its proxy settings.",
+            Exception(raw).toFriendlyNetworkMessage(),
+        )
+    }
+
+    @Test
     fun serverEventServicePauseSentinelIsExpected() {
         // CHURCH-PRESENTER-MOBILE-1H: ServerEventService.pause() completes any
         // in-flight sendAction() with Exception("Paused") when the app is
