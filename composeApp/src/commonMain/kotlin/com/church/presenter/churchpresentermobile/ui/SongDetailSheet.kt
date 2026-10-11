@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.label_live
 import churchpresentermobile.composeapp.generated.resources.song_detail_no_lyrics
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongVerse
 import com.church.presenter.churchpresentermobile.library.Chords
@@ -108,10 +109,16 @@ fun SongDetailScreen(
 
                 detail != null -> {
                     if (detail.allVerses.isNotEmpty()) {
+                        // One card per desktop slide, not per section: a verse split with a
+                        // manual break ([---]) is two slides there, and the index a card sends
+                        // has to name the same slide on both ends. See SlideBreaks.
+                        val slides = remember(detail) { detail.slideVerses }
                         // Build numbered labels: "Verse 1", "Verse 2", "Chorus", "Chorus 2", etc.
-                        val sectionLabels = remember(detail) {
+                        // Counted per section, so both halves of a split verse share its label
+                        // and add "(1/2)", "(2/2)", as the desktop numbers a split section's slides.
+                        val sectionLabels = remember(slides) {
                             val typeCounts = mutableMapOf<String, Int>()
-                            detail.allVerses.map { v ->
+                            slides.filter { it.part == 0 }.map { v ->
                                 val rawType = (v.label ?: v.type ?: v.name)
                                     ?.trim()?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                                 if (rawType != null) {
@@ -129,6 +136,13 @@ fun SongDetailScreen(
                                         totalPerType[p.first] == 1 -> p.first
                                         else -> "${p.first} ${p.second}"
                                     }
+                                }
+                            }.let { perSection ->
+                                var section = -1
+                                slides.map { v ->
+                                    if (v.part == 0) section++
+                                    val label = perSection.getOrElse(section) { (section + 1).toString() }
+                                    SlideDeckBuilder.partLabel(label, v.part, v.parts)
                                 }
                             }
                         }
@@ -151,7 +165,7 @@ fun SongDetailScreen(
                                     start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp
                                 )
                             ) {
-                                itemsIndexed(detail.allVerses) { index, verse ->
+                                itemsIndexed(slides) { index, verse ->
                                     VerseCard(
                                         verse = verse,
                                         index = index,

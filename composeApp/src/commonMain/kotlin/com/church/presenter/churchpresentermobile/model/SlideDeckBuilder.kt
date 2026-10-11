@@ -19,7 +19,8 @@ object SlideDeckBuilder {
     /**
      * Builds a deck from a song and its fetched lyrics.
      *
-     * Prefers the structured verse list ([SongDetail.allVerses]). When the
+     * Prefers the structured verse list, one slide per desktop slide
+     * ([SongDetail.slideVerses], so a verse with a manual break is two). When the
      * server returned only a blob of text, falls back to splitting
      * [SongDetail.plainText] on blank lines — the near-universal stanza
      * separator. A song with neither yields an empty deck rather than a deck of
@@ -31,11 +32,14 @@ object SlideDeckBuilder {
         val number = detail.number?.takeIf { it.isNotBlank() } ?: song.number
         val book = detail.bookName ?: song.bookName
 
-        val bodies: List<Pair<String, String?>> = detail.allVerses
-            .map { verse -> verse.displayText to verse.displayLabel }
-            .filter { (text, _) -> text.isNotBlank() }
+        var section = -1
+        val bodies: List<Pair<String, String>> = detail.slideVerses
+            .map { verse ->
+                if (verse.part == 0) section++
+                verse.displayText to partLabel(sectionLabel(verse.displayLabel, section), verse.part, verse.parts)
+            }
             .ifEmpty {
-                splitStanzas(detail.plainText).mapIndexed { i, text -> text to (i + 1).toString() }
+                splitStanzas(detail.plainText).mapIndexed { i, text -> text to sectionLabel((i + 1).toString(), i) }
             }
         val credit = SongCredit(
             id = song.localId.orEmpty(),
@@ -52,7 +56,7 @@ object SlideDeckBuilder {
                 // alongside so an output can draw a chart when asked to.
                 body = Chords.stripChords(text).trim(),
                 chordBody = text.trim().takeIf { Chords.hasChords(it) },
-                reference = buildReference(title, sectionLabel(label, index)),
+                reference = buildReference(title, label),
                 sourceId = listOfNotNull(book, number).joinToString(":").ifBlank { null },
                 index = index,
                 total = bodies.size,
@@ -80,6 +84,9 @@ object SlideDeckBuilder {
         // and the heading in the detail sheet cannot drift apart.
         val usable = LocalSongAdapter.usableSections(song.sections)
         val labels = LocalSongAdapter.sectionLabels(usable)
+        // One slide per desktop slide, the same split the detail sheet lists (via
+        // LocalSongAdapter.toDetail), so a tapped card and the projected slide agree.
+        val pieces = SlideBreaks.pieces(usable.map { it.text })
         val credit = SongCredit(
             id = song.id,
             number = song.number,
@@ -89,17 +96,17 @@ object SlideDeckBuilder {
             ccliNumber = SongCredit.ccliNumberIn(song.copyright),
         )
 
-        val slides = usable.mapIndexed { index, section ->
-            val label = labels[index]
+        val slides = pieces.mapIndexed { index, piece ->
+            val label = partLabel(labels[piece.source], piece.part, piece.parts)
             Slide(
                 kind = SlideKind.SONG,
-                body = Chords.stripChords(section.text).trim(),
-                chordBody = section.text.trim().takeIf { Chords.hasChords(it) },
+                body = Chords.stripChords(piece.text).trim(),
+                chordBody = piece.text.trim().takeIf { Chords.hasChords(it) },
                 reference = buildReference(song.title, label),
                 footer = song.copyright?.takeIf { it.isNotBlank() },
                 sourceId = song.id,
                 index = index,
-                total = usable.size,
+                total = pieces.size,
                 songCredit = credit,
             )
         }
@@ -320,6 +327,10 @@ object SlideDeckBuilder {
             else -> trimmed
         }
     }
+
+    /** "Verse 1 (1/2)" for a slide of a split section; the bare label otherwise. */
+    fun partLabel(label: String, part: Int, parts: Int): String =
+        if (parts > 1) "$label (${part + 1}/$parts)" else label
 
     private fun buildReference(title: String, section: String): String? {
         val cleanTitle = title.trim()

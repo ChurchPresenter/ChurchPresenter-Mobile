@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Song(
@@ -153,6 +154,10 @@ data class SongVerse(
     @SerialName("verseText") val verseTextCamel: String? = null,
     @SerialName("slide-text") val slideText: String? = null,
     @SerialName("lyric-text") val lyricText: String? = null,
+    // Set only on the entries of [SongDetail.slideVerses]: which slide of its section this is,
+    // 0-based, out of how many. A section without a manual break is slide 0 of 1.
+    @Transient val part: Int = 0,
+    @Transient val parts: Int = 1,
 ) {
     /** The verse number/label to display (e.g. "1", "Chorus"). */
     val displayLabel: String?
@@ -209,6 +214,20 @@ data class SongDetail(
     val allVerses: List<SongVerse>
         get() = listOfNotNull(verses, sections, lyrics, slides, stanzas, songVersesKebab, songVersesCamel, verseListKebab)
             .firstOrNull { it.isNotEmpty() } ?: emptyList()
+
+    /**
+     * [allVerses] as the desktop's slides: a verse with a manual break (`[---]`) becomes one
+     * entry per slide, and chord-only lines ride on the slide they lead into. Index into this,
+     * not [allVerses], whenever an index is shared with the desktop or a projected deck —
+     * see [SlideBreaks].
+     */
+    val slideVerses: List<SongVerse>
+        get() {
+            val verses = allVerses
+            return SlideBreaks.pieces(verses.map { it.displayText }).map { piece ->
+                verses[piece.source].copy(lines = piece.text.lines(), part = piece.part, parts = piece.parts)
+            }
+        }
 
     val hasLyrics: Boolean
         get() = allVerses.isNotEmpty() || plainText != null

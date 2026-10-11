@@ -1,8 +1,12 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
 import com.church.presenter.churchpresentermobile.model.Slide
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
+import com.church.presenter.churchpresentermobile.model.Song
+import com.church.presenter.churchpresentermobile.model.SongDetail
+import com.church.presenter.churchpresentermobile.model.SongVerse
 import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.ui.standalone.ColorPickerDialog
@@ -55,6 +59,35 @@ class StandaloneOutputScreenshotTest {
                     reference = "Amazing Grace",
                 ),
             )
+        },
+    )
+
+    @Test
+    fun songSlideSplitVerse() = screenshot(
+        "output__song-split-verse",
+        width = Screenshots.TABLET_WIDTH,
+        content = {
+            // Built the way standalone builds it, so the golden shows the real split:
+            // the second half of a verse written with a manual break ([---]).
+            val deck = SlideDeckBuilder.fromSong(
+                Song(number = "1", title = "Amazing Grace", bookName = "Hymns"),
+                SongDetail(
+                    title = "Amazing Grace",
+                    verses = listOf(
+                        SongVerse(
+                            label = "Verse 1",
+                            lines = listOf(
+                                "Amazing grace! how sweet the sound",
+                                "That saved a wretch like me!",
+                                "[---]",
+                                "I once was lost, but now am found,",
+                                "Was blind, but now I see.",
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            StandaloneOutputScreen(slide = deck.slides[1].copy(theme = theme))
         },
     )
 
