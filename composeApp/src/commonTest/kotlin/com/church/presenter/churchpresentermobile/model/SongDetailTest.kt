@@ -286,6 +286,47 @@ class SongDetailTest {
 
     private val json = Json { ignoreUnknownKeys = true }
 
+    // ── Slides (manual breaks) ───────────────────────────────────────────
+
+    @Test
+    fun `a verse with a manual break is listed as one entry per slide`() {
+        // The desktop's song API sends the verse whole, marker and all; the
+        // index a card sends is a slide index, so the list has to be the slides.
+        val detail = SongDetail(
+            verses = listOf(
+                SongVerse(label = "Verse 1", lines = listOf("a1", "a2", "[---]", "a3")),
+                SongVerse(label = "Verse 2", lines = listOf("b1")),
+            ),
+        )
+
+        assertEquals(listOf("a1\na2", "a3", "b1"), detail.slideVerses.map { it.displayText })
+        assertEquals(listOf(0 to 2, 1 to 2, 0 to 1), detail.slideVerses.map { it.part to it.parts })
+    }
+
+    @Test
+    fun `both halves of a split verse keep its label`() {
+        val detail = SongDetail(verses = listOf(SongVerse(label = "Chorus", text = "one\n[---]\ntwo")))
+
+        assertEquals(listOf("Chorus", "Chorus"), detail.slideVerses.map { it.displayLabel })
+    }
+
+    @Test
+    fun `a song without breaks has the same slides as verses`() {
+        val detail = SongDetail(verses = listOf(verse("one"), verse("two")))
+
+        assertEquals(detail.allVerses.map { it.displayText }, detail.slideVerses.map { it.displayText })
+    }
+
+    @Test
+    fun `the marker stays in the verse list as the desktop sent it`() {
+        // Only the slide view splits; the library copies allVerses and has to
+        // keep the break so it survives the trip into the phone's own library.
+        val detail = SongDetail(verses = listOf(verse("one\n[---]\ntwo")))
+
+        assertEquals(1, detail.allVerses.size)
+        assertTrue("[---]" in detail.allVerses.single().displayText)
+    }
+
     private fun decode(body: String): SongDetail = json.decodeFromString(body)
 
     private fun verse(text: String) = SongVerse(type = "verse", text = text)

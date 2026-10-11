@@ -51,6 +51,24 @@ class SongDetailScreenshotTest {
         ),
     )
 
+    // Verse 1 is long enough to be split with a manual break ([---]), so it is two
+    // slides on the desktop and must be two cards here.
+    private val splitDetail = detail.copy(
+        verses = listOf(
+            SongVerse(
+                number = 1,
+                label = "Verse 1",
+                lines = listOf(
+                    "Amazing grace! how sweet the sound",
+                    "That saved a wretch like me!",
+                    "[---]",
+                    "I once was lost, but now am found,",
+                    "Was blind, but now I see.",
+                ),
+            ),
+        ) + detail.verses.orEmpty().drop(1),
+    )
+
     private fun songDetail(
         detail: SongDetail? = this.detail,
         isLoading: Boolean = false,
@@ -120,6 +138,19 @@ class SongDetailScreenshotTest {
     fun standalone() = screenshot(
         "song-detail__standalone",
         content = songDetail(standalone = true),
+    )
+
+    @Test
+    fun splitVerse() = screenshot(
+        "song-detail__split-verse",
+        content = songDetail(detail = splitDetail),
+    )
+
+    @Test
+    fun splitVerseSecondHalfLive() = screenshot(
+        "song-detail__split-verse-live",
+        // The second half of verse 1 live: the slide the reported bug landed on by mistake.
+        content = songDetail(detail = splitDetail, selectedVerseIndex = 1, isProjecting = true),
     )
 
     @Test

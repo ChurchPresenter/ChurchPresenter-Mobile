@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.library.Chords
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -699,5 +700,79 @@ class SlideDeckBuilderTest {
         val deck = SlideDeckBuilder.fromAnnouncement(text = "Welcome")
 
         assertEquals(SlideFont.SANS, deck.slides.first().theme.font)
+    }
+
+    // ── Manual slide breaks ──────────────────────────────────────────────
+
+    @Test
+    fun `a song verse with a manual break projects as two slides`() {
+        // Standalone mode is its own presenter: it has to split where the desktop
+        // does, or the [---] would be projected as words on the screen.
+        val detail = SongDetail(
+            title = "Amazing Grace",
+            verses = listOf(
+                SongVerse(label = "Verse 1", lines = listOf("one", "[---]", "two")),
+                SongVerse(label = "Verse 2", lines = listOf("three")),
+            ),
+        )
+
+        val deck = SlideDeckBuilder.fromSong(amazingGrace, detail)
+
+        assertEquals(listOf("one", "two", "three"), deck.slides.map { it.body })
+        assertEquals(
+            listOf("Amazing Grace · Verse 1 (1/2)", "Amazing Grace · Verse 1 (2/2)", "Amazing Grace · Verse 2"),
+            deck.slides.map { it.reference },
+        )
+        assertEquals(listOf(0, 1, 2), deck.slides.map { it.index })
+        assertTrue(deck.slides.all { it.total == 3 })
+    }
+
+    @Test
+    fun `an unnamed verse after a split one is still numbered by verse, not by slide`() {
+        val detail = SongDetail(
+            title = "Amazing Grace",
+            verses = listOf(SongVerse(text = "one\n[---]\ntwo"), SongVerse(text = "three")),
+        )
+
+        val deck = SlideDeckBuilder.fromSong(amazingGrace, detail)
+
+        assertEquals("Amazing Grace · Verse 2", deck.slides[2].reference)
+    }
+
+    @Test
+    fun `a local song section with a manual break projects as two slides`() {
+        val deck = SlideDeckBuilder.fromLocalSong(
+            localSong(
+                listOf(
+                    LocalSongSection(SectionType.VERSE, "one\n[---]\ntwo"),
+                    LocalSongSection(SectionType.CHORUS, "chorus"),
+                )
+            )
+        )
+
+        assertEquals(listOf("one", "two", "chorus"), deck.slides.map { it.body })
+        assertEquals(
+            listOf("Amazing Grace · Verse 1 (1/2)", "Amazing Grace · Verse 1 (2/2)", "Amazing Grace · Chorus"),
+            deck.slides.map { it.reference },
+        )
+    }
+
+    @Test
+    fun `a local song's deck and its detail sheet split the same way`() {
+        // The sheet lists LocalSongAdapter.toDetail(song).slideVerses and the
+        // tapped index is shown from this deck, so the two must line up exactly.
+        val song = localSong(
+            listOf(
+                LocalSongSection(SectionType.VERSE, "[G] [C]"),
+                LocalSongSection(SectionType.VERSE, "one\n[---]\ntwo"),
+                LocalSongSection(SectionType.CHORUS, "chorus"),
+            )
+        )
+
+        val deck = SlideDeckBuilder.fromLocalSong(song)
+        val listed = LocalSongAdapter.toDetail(song).slideVerses
+
+        assertEquals(listed.size, deck.slides.size)
+        assertEquals(listed.map { Chords.stripChords(it.displayText).trim() }, deck.slides.map { it.body })
     }
 }
