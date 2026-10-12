@@ -1,0 +1,35 @@
+Church Presenter je mobilný spoločník počítačovej aplikácie ChurchPresenter — a bohoslužbu zvládne viesť aj sám. Premietajte piesne, biblické pasáže, obrázky, snímky a videá odkiaľkoľvek v sále.
+
+TRI SPÔSOBY PREMIETANIA
+• Diaľkové ovládanie — ovládajte ChurchPresenter na počítači v kostole cez Wi-Fi. Počítač zobrazuje snímky, telefón slúži ako ovládač.
+• Samostatne — prezentujete priamo z telefónu alebo tabletu. Snímky pošlete do televízora cez AirPlay alebo adaptér USB-C či Lightning. Bez počítača a bez internetu.
+• Kalendár — plánujte bohoslužby v telefóne počas týždňa. Plány sa cez cloud dostanú do počítača v kostole a každý pripojený telefón vidí rovnaký plán.
+
+OKAMŽITE NA PLÁTNE
+• Piesne — vyhľadávanie podľa čísla alebo názvu, filter podľa spevníka, premietanie textu slohu po slohe
+• Biblia — rýchly skok na ľubovoľnú knihu, kapitolu a verš a premietnutie jedným ťuknutím
+• Obrázky — prehliadanie priečinkov s obrázkami a premietnutie ľubovoľnej fotky
+• Prezentácie — zobrazenie snímok a ich postupné prepínanie
+• Médiá — prehrávanie videa a zvuku z počítača, zo sieťovej adresy alebo z telefónu s ovládaním prehrávania, pozastavenia a posunu
+• Vyčistenie plátna kedykoľvek
+
+PROGRAM BOHOSLUŽBY
+Pridávajte do programu piesne, biblické čítania, obrázky, prezentácie a médiá priamo z telefónu. Program sa s počítačom synchronizuje v reálnom čase.
+
+OTÁZKY A ODPOVEDE NAŽIVO
+Moderujte otázky poslucháčov: schvaľujte ich alebo zamietajte, upravujte, premietnite vybranú otázku a označte ju ako vybavenú.
+
+VLASTNÁ KNIŽNICA
+Píšte piesne a oznamy v telefóne, kopírujte preklady Biblie z počítača cez Wi-Fi, zvoľte pozadie a veľkosť písma a exportujte prehľad používania piesní pre CCLI — všetko bez internetu.
+
+JEDNODUCHÉ NASTAVENIE
+1. Spustite ChurchPresenter na počítači pripojenom k projektoru
+2. Pripojte iPhone alebo iPad k tej istej sieti Wi-Fi
+3. Naskenujte QR kód zobrazený v počítačovej aplikácii alebo zadajte adresu ručne
+4. Začnite premietať
+
+Bez účtu a prihlasovania. Navrhnuté pre iPhone aj iPad, dostupné v 35 jazykoch.
+
+POŽIADAVKY
+• Režimy diaľkového ovládania a kalendára vyžadujú počítačovú aplikáciu ChurchPresenter
+• iPhone alebo iPad so systémom iOS 18.2 alebo novším

@@ -1,0 +1,35 @@
+Church Presenter este aplicația mobilă care însoțește programul ChurchPresenter pentru calculator — și poate conduce singură un serviciu divin. Proiectați cântece, pasaje din Biblie, imagini, slide-uri și video de oriunde din sală.
+
+TREI MODURI DE PREZENTARE
+• Telecomandă — controlați ChurchPresenter pe calculatorul bisericii prin Wi-Fi. Calculatorul afișează slide-urile, iar telefonul este telecomanda.
+• Independent — telefonul sau tableta devine prezentatorul. Trimiteți slide-urile la televizor prin AirPlay sau un adaptor USB-C ori Lightning. Fără calculator și fără internet.
+• Calendar — planificați serviciile pe telefon în timpul săptămânii. Planurile ajung la calculatorul bisericii prin cloud, iar fiecare telefon înregistrat vede același plan.
+
+PE ECRAN ÎNTR-O CLIPĂ
+• Cântece — căutare după număr sau titlu, filtrare după cartea de cântări, proiectarea versurilor strofă cu strofă
+• Biblia — salt rapid la orice carte, capitol și verset și afișare pe ecran cu o singură atingere
+• Imagini — răsfoirea dosarelor cu imagini și proiectarea oricărei fotografii
+• Prezentări — afișarea slide-urilor și parcurgerea lor pe rând
+• Media — redare video și audio de pe calculator, de la o adresă din rețea sau de pe telefon, cu comenzi de redare, pauză și derulare
+• Golirea ecranului în orice moment
+
+PROGRAMUL SERVICIULUI
+Adăugați în program cântece, citiri din Biblie, imagini, prezentări și media direct de pe telefon. Programul se sincronizează cu calculatorul în timp real.
+
+ÎNTREBĂRI ȘI RĂSPUNSURI ÎN DIRECT
+Moderați întrebările publicului: aprobați-le sau respingeți-le, editați-le, afișați una pe ecran și marcați-o ca rezolvată.
+
+BIBLIOTECA PROPRIE
+Scrieți cântece și anunțuri pe telefon, copiați traduceri ale Bibliei de pe calculator prin Wi-Fi, alegeți fundalul și mărimea textului și exportați un raport de utilizare a cântecelor pentru CCLI — totul fără internet.
+
+CONFIGURARE SIMPLĂ
+1. Porniți ChurchPresenter pe calculatorul conectat la proiector
+2. Conectați iPhone-ul sau iPad-ul la aceeași rețea Wi-Fi
+3. Scanați codul QR afișat de aplicația de pe calculator sau introduceți adresa manual
+4. Începeți prezentarea
+
+Fără cont și fără autentificare. Concepută pentru iPhone și iPad, disponibilă în 35 de limbi.
+
+CERINȚE
+• Modurile telecomandă și calendar necesită aplicația ChurchPresenter pentru calculator
+• iPhone sau iPad cu iOS 18.2 sau o versiune mai nouă

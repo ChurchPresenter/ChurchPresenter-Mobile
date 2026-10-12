@@ -1,0 +1,35 @@
+Church Presenter adalah pendamping seluler untuk aplikasi desktop ChurchPresenter — dan juga bisa menjalankan ibadah sendiri. Tayangkan lagu, ayat Alkitab, gambar, slide, dan video dari mana saja di ruangan.
+
+TIGA CARA PRESENTASI
+• Kendali jarak jauh — kendalikan ChurchPresenter di komputer gereja melalui Wi-Fi. Komputer menampilkan slide; ponsel Anda menjadi remote-nya.
+• Mandiri — ponsel atau tablet Anda menjadi presenternya. Kirim slide ke TV dengan AirPlay atau adaptor USB-C atau Lightning. Tanpa komputer dan tanpa internet.
+• Kalender — rencanakan ibadah di ponsel selama sepekan. Rencana sampai ke komputer gereja melalui cloud, dan setiap ponsel yang terdaftar melihat rencana yang sama.
+
+LANGSUNG TAMPIL DI LAYAR
+• Lagu — cari berdasarkan nomor atau judul, saring per buku lagu, tayangkan lirik bait demi bait
+• Alkitab — langsung ke kitab, pasal, dan ayat mana pun, lalu tampilkan di layar dengan satu ketukan
+• Gambar — jelajahi folder gambar dan tayangkan foto apa pun
+• Presentasi — tampilkan slide dan lanjutkan satu per satu
+• Media — putar video dan audio dari komputer, URL jaringan, atau ponsel Anda, dengan kontrol putar, jeda, dan geser
+• Kosongkan layar kapan saja
+
+SUSUN JADWAL IBADAH
+Tambahkan lagu, pembacaan Alkitab, gambar, presentasi, dan media ke jadwal dari ponsel Anda. Jadwal tetap sinkron dengan desktop secara real time.
+
+TANYA JAWAB LANGSUNG
+Moderasi pertanyaan jemaat: setujui atau tolak, edit, tampilkan di layar, lalu tandai selesai.
+
+PUSTAKA ANDA SENDIRI
+Tulis lagu dan pengumuman di ponsel, salin terjemahan Alkitab dari komputer melalui Wi-Fi, pilih latar dan ukuran teks, serta ekspor laporan penggunaan lagu CCLI — semuanya tanpa internet.
+
+PENYIAPAN MUDAH
+1. Jalankan ChurchPresenter di komputer yang terhubung ke proyektor
+2. Sambungkan iPhone atau iPad ke jaringan Wi-Fi yang sama
+3. Pindai kode QR yang ditampilkan aplikasi desktop, atau masukkan alamatnya secara manual
+4. Mulai presentasi
+
+Tanpa akun atau login. Dirancang untuk iPhone dan iPad, tersedia dalam 35 bahasa.
+
+PERSYARATAN
+• Mode kendali jarak jauh dan kalender memerlukan aplikasi desktop ChurchPresenter
+• iPhone atau iPad dengan iOS 18.2 atau lebih baru

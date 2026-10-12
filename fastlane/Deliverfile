@@ -1,0 +1,16 @@
+# App Store listing text for every localization, uploaded with `fastlane deliver`.
+# Text only: the binary goes up through Store Release, screenshots by hand.
+#
+# Run by the "App Store Metadata" workflow (.github/workflows/ios-metadata.yml),
+# or locally — see APP_STORE.md, "Localized listings".
+
+app_identifier("com.church.presenter.churchpresentermobile")
+platform("ios")
+metadata_path("./fastlane/metadata")
+
+skip_binary_upload(true)
+skip_screenshots(true)
+submit_for_review(false)
+
+# Skips the HTML preview prompt, which a CI run cannot answer.
+force(true)

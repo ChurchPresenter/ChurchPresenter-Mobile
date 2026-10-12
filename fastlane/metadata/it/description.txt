@@ -1,0 +1,35 @@
+Church Presenter è l'app mobile che accompagna il programma desktop ChurchPresenter, e può anche gestire un culto in piena autonomia. Proietta canti, passi biblici, immagini, slide e video da qualsiasi punto della sala.
+
+TRE MODI DI PRESENTARE
+• Telecomando — controlla ChurchPresenter sul computer della chiesa tramite Wi-Fi. Il computer mostra le slide; il telefono è il telecomando.
+• Autonomo — il telefono o il tablet diventa il presentatore. Invia le slide a una TV con AirPlay o un adattatore USB-C o Lightning. Non servono né computer né internet.
+• Calendario — pianifica i culti dal telefono durante la settimana. I programmi arrivano al computer della chiesa tramite il cloud e ogni telefono registrato vede lo stesso programma.
+
+PROIETTA SUBITO SULLO SCHERMO
+• Canti — cerca per numero o titolo, filtra per innario, proietta il testo strofa per strofa
+• Bibbia — vai a qualsiasi libro, capitolo e versetto e mostralo sullo schermo con un tocco
+• Immagini — sfoglia le cartelle di immagini e proietta qualsiasi foto
+• Presentazioni — mostra le presentazioni e scorri le slide una a una
+• Media — riproduci video e audio dal computer, da un URL di rete o dal telefono, con comandi di riproduzione, pausa e avanzamento
+• Svuota lo schermo in qualsiasi momento
+
+PREPARA L'ORDINE DEL CULTO
+Aggiungi canti, letture bibliche, immagini, presentazioni e media alla scaletta dal telefono. Tutto resta sincronizzato con il desktop in tempo reale.
+
+DOMANDE E RISPOSTE IN DIRETTA
+Modera le domande del pubblico: approvale o rifiutale, modificale, mostrane una sullo schermo e segnala come completata.
+
+LA TUA LIBRERIA
+Scrivi canti e annunci sul telefono, copia le traduzioni della Bibbia dal computer tramite Wi-Fi, scegli sfondo e dimensione del testo ed esporta un report CCLI sull'utilizzo dei canti, tutto senza internet.
+
+CONFIGURAZIONE SEMPLICE
+1. Avvia ChurchPresenter sul computer collegato al proiettore
+2. Collega iPhone o iPad alla stessa rete Wi-Fi
+3. Scansiona il codice QR mostrato dall'app desktop o inserisci l'indirizzo manualmente
+4. Inizia a presentare
+
+Nessun account o accesso richiesto. Progettata per iPhone e iPad, disponibile in 35 lingue.
+
+REQUISITI
+• Le modalità telecomando e calendario richiedono l'app desktop ChurchPresenter
+• iPhone o iPad con iOS 18.2 o versioni successive

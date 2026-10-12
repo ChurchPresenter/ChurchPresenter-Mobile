@@ -1,0 +1,35 @@
+Church Presenter er mobilappen til desktopprogrammet ChurchPresenter – og den kan også klare en hel gudstjeneste på egen hånd. Vis sange, bibeltekster, billeder, slides og video fra hvor som helst i rummet.
+
+TRE MÅDER AT PRÆSENTERE PÅ
+• Fjernbetjening – styr ChurchPresenter på kirkens computer via Wi-Fi. Computeren viser dine slides; telefonen er fjernbetjeningen.
+• Selvstændig – din telefon eller tablet står selv for præsentationen. Send slides til et tv med AirPlay eller en USB-C- eller Lightning-adapter. Ingen computer og intet internet nødvendigt.
+• Kalender – planlæg gudstjenester på telefonen i løbet af ugen. Planerne når kirkens computer via skyen, og alle tilmeldte telefoner ser den samme plan.
+
+VIS PÅ SKÆRMEN MED DET SAMME
+• Sange – søg på nummer eller titel, filtrer efter sangbog, vis teksten vers for vers
+• Bibel – gå direkte til enhver bog, kapitel og vers, og vis det på skærmen med ét tryk
+• Billeder – gennemse billedmapper og vis et hvilket som helst foto
+• Præsentationer – vis slideshows og bladr igennem dem
+• Medier – afspil video og lyd fra computeren, en netværks-URL eller din telefon med knapper til afspil, pause og spol
+• Ryd skærmen når som helst
+
+LÆG GUDSTJENESTEPROGRAMMET
+Føj sange, skriftlæsninger, billeder, præsentationer og medier til programmet fra din telefon. Det holdes synkroniseret med desktopprogrammet i realtid.
+
+LIVE SPØRGSMÅL OG SVAR
+Moderér spørgsmål fra salen: godkend eller afvis dem, redigér dem, vis et på skærmen og markér det som færdigt.
+
+DIT EGET BIBLIOTEK
+Skriv sange og meddelelser på telefonen, kopiér bibeloversættelser fra din computer via Wi-Fi, vælg baggrund og tekststørrelse, og eksportér en CCLI-rapport over sangbrug – alt sammen uden internet.
+
+NEM OPSÆTNING
+1. Start ChurchPresenter på den computer, der er tilsluttet projektoren
+2. Forbind din iPhone eller iPad til det samme Wi-Fi-netværk
+3. Scan QR-koden, som desktopprogrammet viser, eller indtast adressen manuelt
+4. Begynd at præsentere
+
+Ingen konto eller login nødvendig. Designet til iPhone og iPad, fås på 35 sprog.
+
+KRAV
+• Fjernbetjenings- og kalendertilstand kræver desktopprogrammet ChurchPresenter
+• iPhone eller iPad med iOS 18.2 eller nyere

@@ -1,0 +1,35 @@
+A Church Presenter a ChurchPresenter asztali alkalmazás mobil társa – és önállóan is képes levezetni egy istentiszteletet. Vetíts énekeket, bibliai igeszakaszokat, képeket, diákat és videót a terem bármely pontjáról.
+
+HÁROMFÉLE VETÍTÉSI MÓD
+• Távirányító – irányítsd Wi-Fi-n keresztül a gyülekezeti számítógépen futó ChurchPresentert. A számítógép jeleníti meg a diákat, a telefonod a távirányító.
+• Önálló – a telefonod vagy táblagéped maga a vetítő. Küldd a diákat tévére AirPlay-jel vagy USB-C-, illetve Lightning-adapterrel. Nincs szükség számítógépre és internetre.
+• Naptár – tervezd meg az istentiszteleteket a telefonodon a hét folyamán. A tervek a felhőn keresztül jutnak el a gyülekezeti számítógépre, és minden regisztrált telefon ugyanazt a tervet látja.
+
+AZONNALI VETÍTÉS
+• Énekek – keresés szám vagy cím alapján, szűrés énekeskönyv szerint, a szöveg vetítése versszakonként
+• Biblia – ugorj bármelyik könyvre, fejezetre és versre, és egy érintéssel vetítsd ki
+• Képek – böngészd a képmappákat, és vetíts ki bármilyen fotót
+• Prezentációk – diasorok megjelenítése és léptetése
+• Média – videó és hang lejátszása a számítógépről, hálózati URL-ről vagy a telefonodról, lejátszás, szünet és tekerés vezérlőkkel
+• A kivetítést bármikor törölheted
+
+ÁLLÍTSD ÖSSZE AZ ISTENTISZTELET RENDJÉT
+Adj hozzá énekeket, bibliai olvasmányokat, képeket, prezentációkat és médiát a programhoz a telefonodról. Valós időben szinkronban marad az asztali alkalmazással.
+
+ÉLŐ KÉRDÉS-FELELET
+Moderáld a hallgatóság kérdéseit: hagyd jóvá vagy utasítsd el őket, szerkeszd őket, vetíts ki egyet, majd jelöld késznek.
+
+SAJÁT KÖNYVTÁR
+Írj énekeket és hirdetéseket a telefonodon, másolj bibliafordításokat a számítógépedről Wi-Fi-n keresztül, válassz hátteret és betűméretet, és exportálj CCLI énekhasználati jelentést – mindezt internet nélkül.
+
+EGYSZERŰ BEÁLLÍTÁS
+1. Indítsd el a ChurchPresentert a projektorhoz csatlakoztatott számítógépen
+2. Csatlakoztasd az iPhone-odat vagy iPadedet ugyanarra a Wi-Fi-hálózatra
+3. Olvasd be az asztali alkalmazás által mutatott QR-kódot, vagy add meg kézzel a címet
+4. Kezdheted a vetítést
+
+Nem kell fiók vagy bejelentkezés. iPhone-ra és iPadre tervezve, 35 nyelven elérhető.
+
+KÖVETELMÉNYEK
+• A távirányító és a naptár mód a ChurchPresenter asztali alkalmazást igényli
+• iPhone vagy iPad iOS 18.2 vagy újabb rendszerrel

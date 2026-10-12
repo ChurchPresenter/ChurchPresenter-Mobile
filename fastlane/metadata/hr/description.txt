@@ -1,0 +1,35 @@
+Church Presenter je mobilni pratitelj računalne aplikacije ChurchPresenter — a bogoslužje može voditi i samostalno. Prikazujte pjesme, biblijske odlomke, slike, slajdove i videozapise s bilo kojeg mjesta u dvorani.
+
+TRI NAČINA PRIKAZIVANJA
+• Daljinsko upravljanje — upravljajte aplikacijom ChurchPresenter na crkvenom računalu putem Wi-Fi mreže. Računalo prikazuje slajdove, a mobitel je daljinski upravljač.
+• Samostalno — vaš mobitel ili tablet sam vodi prezentaciju. Šaljite slajdove na televizor putem značajke AirPlay ili USB-C ili Lightning adaptera. Nisu potrebni ni računalo ni internet.
+• Kalendar — planirajte bogoslužja na mobitelu tijekom tjedna. Planovi stižu na crkveno računalo putem oblaka, a svaki povezani mobitel vidi isti plan.
+
+ODMAH NA PLATNU
+• Pjesme — traženje po broju ili naslovu, filtriranje po pjesmarici, prikaz teksta strofu po strofu
+• Biblija — brzi skok na bilo koju knjigu, poglavlje i redak te prikaz na platnu jednim dodirom
+• Slike — pregledavanje mapa sa slikama i prikaz bilo koje fotografije
+• Prezentacije — prikaz slajdova i listanje jednog po jednog
+• Mediji — reprodukcija videa i zvuka s računala, mrežne adrese ili mobitela, uz kontrole za reprodukciju, pauzu i premotavanje
+• Brisanje platna u bilo kojem trenutku
+
+RASPORED BOGOSLUŽJA
+Dodajte pjesme, biblijska čitanja, slike, prezentacije i medije u raspored izravno s mobitela. Raspored se u stvarnom vremenu usklađuje s računalom.
+
+PITANJA I ODGOVORI UŽIVO
+Moderirajte pitanja okupljenih: odobrite ih ili odbijte, uredite, prikažite odabrano pitanje na platnu i označite ga kao obrađeno.
+
+VLASTITA KNJIŽNICA
+Pišite pjesme i obavijesti na mobitelu, kopirajte prijevode Biblije s računala putem Wi-Fi mreže, odaberite pozadinu i veličinu teksta te izvezite izvješće o korištenju pjesama za CCLI — sve bez interneta.
+
+JEDNOSTAVNO POSTAVLJANJE
+1. Pokrenite ChurchPresenter na računalu spojenom na projektor
+2. Spojite iPhone ili iPad na istu Wi-Fi mrežu
+3. Skenirajte QR kôd koji prikazuje računalna aplikacija ili ručno upišite adresu
+4. Počnite s prikazom
+
+Nisu potrebni račun ni prijava. Dizajnirano za iPhone i iPad, dostupno na 35 jezika.
+
+ZAHTJEVI
+• Načini daljinskog upravljanja i kalendara zahtijevaju računalnu aplikaciju ChurchPresenter
+• iPhone ili iPad sa sustavom iOS 18.2 ili novijim

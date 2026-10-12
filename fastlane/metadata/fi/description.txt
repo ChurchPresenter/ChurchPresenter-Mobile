@@ -1,0 +1,35 @@
+Church Presenter on ChurchPresenter-tietokoneohjelman mobiilikumppani – ja se voi myös hoitaa jumalanpalveluksen täysin itsenäisesti. Heijasta lauluja, raamatunkohtia, kuvia, dioja ja videoita mistä tahansa salista.
+
+KOLME TAPAA ESITTÄÄ
+• Kaukosäädin – ohjaa seurakunnan tietokoneen ChurchPresenteria Wi-Fin kautta. Tietokone näyttää diat; puhelimesi on kaukosäädin.
+• Itsenäinen – puhelimesi tai tablettisi on esitystietokone. Lähetä diat televisioon AirPlayllä tai USB-C- tai Lightning-sovittimella. Tietokonetta tai internetiä ei tarvita.
+• Kalenteri – suunnittele tilaisuudet puhelimella viikon aikana. Suunnitelmat siirtyvät seurakunnan tietokoneelle pilven kautta, ja jokainen liitetty puhelin näkee saman suunnitelman.
+
+HETI VALKOKANKAALLE
+• Laulut – hae numerolla tai nimellä, rajaa laulukirjan mukaan ja heijasta sanat säkeistö kerrallaan
+• Raamattu – siirry mihin tahansa kirjaan, lukuun ja jakeeseen ja näytä se yhdellä napautuksella
+• Kuvat – selaa kuvakansioita ja heijasta mikä tahansa valokuva
+• Esitykset – näytä diaesityksiä ja etene niissä dia kerrallaan
+• Media – toista videota ja ääntä tietokoneelta, verkko-osoitteesta tai puhelimesta, toisto-, tauko- ja kelausohjaimin
+• Tyhjennä näyttö milloin tahansa
+
+KOOSTA TILAISUUDEN OHJELMA
+Lisää ohjelmaan lauluja, raamatunlukuja, kuvia, esityksiä ja mediaa puhelimesta. Ohjelma pysyy synkronoituna tietokoneen kanssa reaaliajassa.
+
+KYSYMYKSET SUORANA
+Moderoi yleisön kysymyksiä: hyväksy tai hylkää, muokkaa, nosta yksi näytölle ja merkitse se käsitellyksi.
+
+OMA KIRJASTO
+Kirjoita lauluja ja tiedotteita puhelimella, kopioi raamatunkäännöksiä tietokoneelta Wi-Fin kautta, valitse tausta ja tekstin koko ja vie CCLI-laulujen käyttöraportti – kaikki ilman internetiä.
+
+HELPPO KÄYTTÖÖNOTTO
+1. Käynnistä ChurchPresenter tietokoneella, joka on kytketty videoprojektoriin
+2. Yhdistä iPhone tai iPad samaan Wi-Fi-verkkoon
+3. Skannaa tietokoneohjelman näyttämä QR-koodi tai syötä osoite käsin
+4. Aloita esitys
+
+Ei tiliä eikä kirjautumista. Suunniteltu iPhonelle ja iPadille, saatavilla 35 kielellä.
+
+VAATIMUKSET
+• Kaukosäädin- ja kalenteritila vaativat ChurchPresenter-tietokoneohjelman
+• iPhone tai iPad, jossa iOS 18.2 tai uudempi

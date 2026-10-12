@@ -49,6 +49,22 @@ that builds and uploads a signed IPA.
 
 Go to **App Store → [version] → App Information + App Store listing (English)**.
 
+### Localized listings
+
+The listing text for every language lives in `fastlane/metadata/<locale>/`
+(`name`, `subtitle`, `keywords`, `promotional_text`, `description`), and is
+the source of truth — the English copy below is the original draft. Edit the
+files, then upload all languages at once:
+
+- **CI:** Actions → **App Store Metadata** → Run workflow. Uses the same
+  `APP_STORE_CONNECT_*` secrets as Step 9. Leave the version blank to update
+  the version currently being prepared.
+- **Locally:** `fastlane deliver --api_key_path <key.json>` from the repo root.
+
+Name and subtitle only change while a version is in *Prepare for Submission*;
+promotional text can change at any time. Text only — screenshots and the
+binary are untouched.
+
 ### App name & subtitle
 
 | Field        | Limit     | Value                                         |

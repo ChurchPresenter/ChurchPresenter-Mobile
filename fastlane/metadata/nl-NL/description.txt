@@ -1,0 +1,35 @@
+Church Presenter is de mobiele metgezel van de desktopapp ChurchPresenter – en kan ook zelfstandig een dienst draaien. Projecteer liederen, Bijbelgedeelten, afbeeldingen, dia's en video vanaf elke plek in de zaal.
+
+DRIE MANIEREN OM TE PRESENTEREN
+• Afstandsbediening – bedien ChurchPresenter op de kerkcomputer via wifi. De computer toont de dia's; je telefoon is de afstandsbediening.
+• Zelfstandig – je telefoon of tablet is de presentatiecomputer. Stuur dia's naar een tv met AirPlay of een USB-C- of Lightning-adapter. Geen computer en geen internet nodig.
+• Agenda – plan diensten door de week op je telefoon. De plannen bereiken de kerkcomputer via de cloud, en elke gekoppelde telefoon ziet hetzelfde plan.
+
+DIRECT OP HET SCHERM
+• Liederen – zoek op nummer of titel, filter op liedboek en projecteer de tekst couplet voor couplet
+• Bijbel – ga naar elk boek, hoofdstuk en vers en zet het met één tik op het scherm
+• Afbeeldingen – blader door mappen met afbeeldingen en projecteer elke foto
+• Presentaties – toon diavoorstellingen en loop ze dia voor dia door
+• Media – speel video en audio af vanaf de computer, een netwerk-URL of je telefoon, met afspelen, pauzeren en spoelen
+• Wis het scherm op elk moment
+
+STEL DE LITURGIE SAMEN
+Voeg liederen, Schriftlezingen, afbeeldingen, presentaties en media vanaf je telefoon toe aan het schema. Het blijft in realtime gesynchroniseerd met de desktop.
+
+LIVE Q&A
+Modereer vragen uit de zaal: keur ze goed of af, bewerk ze, zet er één op het scherm en markeer hem als afgehandeld.
+
+JE EIGEN BIBLIOTHEEK
+Schrijf liederen en mededelingen op je telefoon, kopieer Bijbelvertalingen via wifi van je computer, kies een achtergrond en tekstgrootte en exporteer een CCLI-rapport van liedgebruik – allemaal zonder internet.
+
+EENVOUDIG INSTELLEN
+1. Start ChurchPresenter op de computer die op de beamer is aangesloten
+2. Verbind je iPhone of iPad met hetzelfde wifinetwerk
+3. Scan de QR-code in de desktopapp, of voer het adres handmatig in
+4. Begin met presenteren
+
+Geen account of inlog nodig. Ontworpen voor iPhone en iPad, beschikbaar in 35 talen.
+
+VEREISTEN
+• Afstandsbediening en Agenda vereisen de desktopapp ChurchPresenter
+• iPhone of iPad met iOS 18.2 of hoger

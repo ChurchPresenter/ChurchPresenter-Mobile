@@ -1,0 +1,35 @@
+Church Presenter to mobilny towarzysz programu ChurchPresenter na komputer — a do tego potrafi samodzielnie poprowadzić nabożeństwo. Wyświetlaj pieśni, fragmenty Biblii, zdjęcia, slajdy i filmy z dowolnego miejsca w sali.
+
+TRZY SPOSOBY PREZENTACJI
+• Zdalne sterowanie — steruj programem ChurchPresenter na komputerze w kościele przez Wi-Fi. Komputer wyświetla slajdy, a telefon jest pilotem.
+• Samodzielnie — Twój telefon lub tablet sam prowadzi prezentację. Wysyłaj slajdy na telewizor przez AirPlay lub adapter USB-C albo Lightning. Nie potrzebujesz komputera ani internetu.
+• Kalendarz — planuj nabożeństwa na telefonie w ciągu tygodnia. Plany trafiają na komputer w kościele przez chmurę, a każdy dodany telefon widzi ten sam plan.
+
+NATYCHMIAST NA EKRANIE
+• Pieśni — szukaj po numerze lub tytule, filtruj według śpiewnika, wyświetlaj tekst zwrotka po zwrotce
+• Biblia — przejdź do dowolnej księgi, rozdziału i wersetu i wyświetl go jednym dotknięciem
+• Zdjęcia — przeglądaj foldery ze zdjęciami i wyświetl dowolne z nich
+• Prezentacje — pokazuj slajdy i przełączaj je po kolei
+• Media — odtwarzaj wideo i audio z komputera, z adresu sieciowego lub z telefonu, z przyciskami odtwarzania, pauzy i przewijania
+• Wyczyść ekran w każdej chwili
+
+PROGRAM NABOŻEŃSTWA
+Dodawaj do programu pieśni, czytania biblijne, zdjęcia, prezentacje i media prosto z telefonu. Program synchronizuje się z komputerem w czasie rzeczywistym.
+
+PYTANIA I ODPOWIEDZI NA ŻYWO
+Moderuj pytania od słuchaczy: zatwierdzaj lub odrzucaj, edytuj, wyświetlaj wybrane na ekranie i oznaczaj jako omówione.
+
+WŁASNA BIBLIOTEKA
+Pisz pieśni i ogłoszenia na telefonie, kopiuj przekłady Biblii z komputera przez Wi-Fi, wybierz tło i rozmiar tekstu oraz eksportuj raport użycia pieśni dla CCLI — wszystko bez internetu.
+
+PROSTA KONFIGURACJA
+1. Uruchom ChurchPresenter na komputerze podłączonym do projektora
+2. Połącz iPhone’a lub iPada z tą samą siecią Wi-Fi
+3. Zeskanuj kod QR wyświetlany przez program na komputerze lub wpisz adres ręcznie
+4. Zacznij prezentację
+
+Bez konta i logowania. Zaprojektowany dla iPhone’a i iPada, dostępny w 35 językach.
+
+WYMAGANIA
+• Tryby zdalnego sterowania i kalendarza wymagają programu ChurchPresenter na komputer
+• iPhone lub iPad z systemem iOS 18.2 lub nowszym

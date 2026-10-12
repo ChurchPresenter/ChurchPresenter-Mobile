@@ -1,0 +1,35 @@
+Church Presenter là ứng dụng di động đồng hành với phần mềm ChurchPresenter trên máy tính — và cũng có thể tự mình điều hành cả một buổi nhóm. Trình chiếu bài hát, phân đoạn Kinh Thánh, hình ảnh, slide và video từ bất cứ đâu trong hội trường.
+
+BA CÁCH TRÌNH CHIẾU
+• Điều khiển từ xa — điều khiển ChurchPresenter trên máy tính của hội thánh qua Wi-Fi. Máy tính hiển thị slide, còn điện thoại của bạn là chiếc điều khiển.
+• Độc lập — điện thoại hoặc máy tính bảng của bạn chính là máy trình chiếu. Gửi slide lên TV bằng AirPlay hoặc bộ chuyển USB-C hay Lightning. Không cần máy tính, không cần internet.
+• Lịch — lên kế hoạch cho các buổi nhóm trên điện thoại trong tuần. Kế hoạch được gửi đến máy tính của hội thánh qua đám mây, và mọi điện thoại đã đăng ký đều thấy cùng một kế hoạch.
+
+CHIẾU LÊN MÀN HÌNH TỨC THÌ
+• Bài hát — tìm theo số hoặc tên bài, lọc theo sách thánh ca, chiếu lời từng đoạn
+• Kinh Thánh — chuyển nhanh đến bất kỳ sách, chương và câu nào, đưa lên màn hình chỉ với một chạm
+• Hình ảnh — duyệt các thư mục ảnh và chiếu bất kỳ bức ảnh nào
+• Bài thuyết trình — hiển thị bộ slide và chuyển qua từng trang
+• Media — phát video và âm thanh từ máy tính, URL mạng hoặc điện thoại, với các nút phát, tạm dừng và tua
+• Xóa màn hình bất cứ lúc nào
+
+SOẠN CHƯƠNG TRÌNH THỜ PHƯỢNG
+Thêm bài hát, phần đọc Kinh Thánh, hình ảnh, bài thuyết trình và media vào chương trình ngay từ điện thoại. Mọi thứ được đồng bộ với máy tính theo thời gian thực.
+
+HỎI ĐÁP TRỰC TIẾP
+Kiểm duyệt câu hỏi của hội chúng: chấp nhận hoặc từ chối, chỉnh sửa, đưa một câu hỏi lên màn hình và đánh dấu đã xong.
+
+THƯ VIỆN CỦA RIÊNG BẠN
+Soạn bài hát và thông báo trên điện thoại, sao chép các bản dịch Kinh Thánh từ máy tính qua Wi-Fi, chọn hình nền và cỡ chữ, xuất báo cáo sử dụng bài hát CCLI — tất cả không cần internet.
+
+CÀI ĐẶT ĐƠN GIẢN
+1. Chạy ChurchPresenter trên máy tính được kết nối với máy chiếu
+2. Kết nối iPhone hoặc iPad vào cùng mạng Wi-Fi
+3. Quét mã QR hiển thị trên ứng dụng máy tính, hoặc nhập địa chỉ thủ công
+4. Bắt đầu trình chiếu
+
+Không cần tài khoản hay đăng nhập. Thiết kế cho iPhone và iPad, có sẵn 35 ngôn ngữ.
+
+YÊU CẦU
+• Chế độ điều khiển từ xa và lịch cần ứng dụng ChurchPresenter trên máy tính
+• iPhone hoặc iPad chạy iOS 18.2 trở lên
