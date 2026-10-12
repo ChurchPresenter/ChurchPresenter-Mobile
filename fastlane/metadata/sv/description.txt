@@ -1,0 +1,35 @@
+Church Presenter är mobilappen till datorprogrammet ChurchPresenter – och den kan också sköta en gudstjänst helt på egen hand. Visa sånger, bibelord, bilder, bildspel och video var du än står i lokalen.
+
+TRE SÄTT ATT PRESENTERA
+• Fjärrkontroll – styr ChurchPresenter på kyrkans dator via Wi-Fi. Datorn visar bilderna; mobilen är fjärrkontrollen.
+• Fristående – din mobil eller surfplatta är presentatören. Skicka bilderna till en tv med AirPlay eller en USB-C- eller Lightning-adapter. Ingen dator och inget internet behövs.
+• Kalender – planera gudstjänster i mobilen under veckan. Planerna når kyrkans dator via molnet, och alla anslutna mobiler ser samma plan.
+
+DIREKT UPP PÅ SKÄRMEN
+• Sånger – sök på nummer eller titel, filtrera på sångbok och visa texten vers för vers
+• Bibeln – gå till valfri bok, kapitel och vers och visa den med ett tryck
+• Bilder – bläddra i bildmappar och visa valfritt foto
+• Presentationer – visa bildspel och stega igenom dem
+• Media – spela video och ljud från datorn, en nätverks-URL eller mobilen, med uppspelning, paus och spolning
+• Rensa skärmen när som helst
+
+BYGG GUDSTJÄNSTENS SCHEMA
+Lägg till sånger, bibelläsningar, bilder, presentationer och media i schemat från mobilen. Det hålls synkat med datorn i realtid.
+
+LIVE-FRÅGOR
+Moderera frågor från publiken: godkänn eller avvisa, redigera, visa en på skärmen och markera den som klar.
+
+DITT EGET BIBLIOTEK
+Skriv sånger och meddelanden i mobilen, kopiera bibelöversättningar från datorn via Wi-Fi, välj bakgrund och textstorlek och exportera en CCLI-rapport över sånganvändning – allt utan internet.
+
+ENKEL INSTALLATION
+1. Starta ChurchPresenter på datorn som är ansluten till projektorn
+2. Anslut din iPhone eller iPad till samma Wi-Fi-nätverk
+3. Skanna QR-koden som visas i datorprogrammet, eller ange adressen manuellt
+4. Börja presentera
+
+Inget konto eller inloggning krävs. Utformad för iPhone och iPad, finns på 35 språk.
+
+KRAV
+• Lägena Fjärrkontroll och Kalender kräver datorprogrammet ChurchPresenter
+• iPhone eller iPad med iOS 18.2 eller senare

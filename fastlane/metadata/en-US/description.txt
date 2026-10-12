@@ -1,0 +1,35 @@
+Church Presenter is the mobile companion for the ChurchPresenter desktop app — and it can also run a service on its own. Project songs, Bible passages, pictures, slides and video from anywhere in the room.
+
+THREE WAYS TO PRESENT
+• Remote control — drive ChurchPresenter on your church computer over Wi-Fi. The computer shows the slides; your phone is the remote.
+• Standalone — your phone or tablet is the presenter. Send slides to a TV with AirPlay or a USB-C or Lightning adapter. No computer and no internet needed.
+• Calendar — plan services on your phone during the week. Plans reach the church computer over the cloud, and every enrolled phone sees the same plan.
+
+PROJECT TO SCREEN INSTANTLY
+• Songs — search by number or title, filter by songbook, project lyrics verse by verse
+• Bible — jump to any book, chapter and verse and put it on screen with one tap
+• Pictures — browse image folders and project any photo
+• Presentations — show slide decks and step through them
+• Media — play video and audio from the computer, a network URL or your phone, with play, pause and seek controls
+• Clear the screen at any moment
+
+BUILD THE SERVICE SCHEDULE
+Add songs, Bible readings, pictures, presentations and media to the schedule from your phone. It stays in sync with the desktop in real time.
+
+LIVE Q&A
+Moderate audience questions: approve or deny them, edit them, put one on screen and mark it done.
+
+YOUR OWN LIBRARY
+Write songs and announcements on your phone, copy Bible translations from your computer over Wi-Fi, choose a backdrop and text size, and export a CCLI song usage report — all without internet.
+
+SIMPLE SETUP
+1. Run ChurchPresenter on the computer connected to your projector
+2. Put your iPhone or iPad on the same Wi-Fi network
+3. Scan the QR code shown by the desktop app, or enter the address by hand
+4. Start presenting
+
+No account or login required. Designed for iPhone and iPad, available in 35 languages.
+
+REQUIREMENTS
+• Remote control and calendar modes need the ChurchPresenter desktop app
+• iPhone or iPad with iOS 18.2 or later

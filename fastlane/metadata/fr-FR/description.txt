@@ -1,0 +1,35 @@
+Church Presenter est le compagnon mobile du logiciel ChurchPresenter pour ordinateur – et il peut aussi animer un culte à lui seul. Projetez cantiques, passages bibliques, images, diapositives et vidéos depuis n'importe quel endroit de la salle.
+
+TROIS FAÇONS DE PRÉSENTER
+• Télécommande – pilotez ChurchPresenter sur l'ordinateur de l'église via le Wi-Fi. L'ordinateur affiche les diapositives ; votre téléphone sert de télécommande.
+• Autonome – votre téléphone ou votre tablette devient le poste de projection. Envoyez les diapositives vers un téléviseur avec AirPlay ou un adaptateur USB-C ou Lightning. Ni ordinateur ni internet nécessaires.
+• Calendrier – préparez les cultes sur votre téléphone pendant la semaine. Les programmes parviennent à l'ordinateur de l'église via le cloud, et chaque téléphone inscrit voit le même programme.
+
+PROJECTION INSTANTANÉE
+• Cantiques – recherche par numéro ou par titre, filtre par recueil, projection des paroles couplet par couplet
+• Bible – accédez à n'importe quel livre, chapitre et verset et affichez-le d'un simple toucher
+• Images – parcourez vos dossiers d'images et projetez n'importe quelle photo
+• Présentations – affichez vos diaporamas et faites défiler les diapositives
+• Média – lisez vidéo et audio depuis l'ordinateur, une URL réseau ou votre téléphone, avec lecture, pause et avance/retour
+• Effacez l'affichage à tout moment
+
+PRÉPAREZ LE PROGRAMME DU CULTE
+Ajoutez cantiques, lectures bibliques, images, présentations et médias au programme depuis votre téléphone. Il reste synchronisé en temps réel avec l'ordinateur.
+
+Q&R EN DIRECT
+Modérez les questions de l'assemblée : approuvez-les ou refusez-les, modifiez-les, affichez-en une à l'écran et marquez-la comme traitée.
+
+VOTRE PROPRE BIBLIOTHÈQUE
+Rédigez cantiques et annonces sur votre téléphone, copiez des traductions de la Bible depuis votre ordinateur via le Wi-Fi, choisissez un arrière-plan et une taille de texte, et exportez un rapport d'utilisation des chants CCLI – le tout sans internet.
+
+INSTALLATION SIMPLE
+1. Lancez ChurchPresenter sur l'ordinateur relié au vidéoprojecteur
+2. Connectez votre iPhone ou iPad au même réseau Wi-Fi
+3. Scannez le code QR affiché par le logiciel, ou saisissez l'adresse manuellement
+4. Commencez à projeter
+
+Aucun compte ni identifiant requis. Conçu pour iPhone et iPad, disponible en 35 langues.
+
+CONFIGURATION REQUISE
+• Les modes Télécommande et Calendrier nécessitent le logiciel ChurchPresenter pour ordinateur
+• iPhone ou iPad avec iOS 18.2 ou version ultérieure

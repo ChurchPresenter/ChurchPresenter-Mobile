@@ -1,0 +1,35 @@
+Church Presenter er mobilappen til PC-programmet ChurchPresenter – og den kan også kjøre et gudstjenesteopplegg helt på egen hånd. Vis sanger, bibeltekster, bilder, lysbilder og video fra hvor som helst i lokalet.
+
+TRE MÅTER Å PRESENTERE PÅ
+• Fjernkontroll – styr ChurchPresenter på kirkens PC over Wi-Fi. PC-en viser lysbildene; mobilen er fjernkontrollen.
+• Frittstående – mobilen eller nettbrettet er presentasjonsmaskinen. Send lysbilder til en TV med AirPlay eller en USB-C- eller Lightning-adapter. Ingen PC og ikke internett nødvendig.
+• Kalender – planlegg gudstjenester på mobilen i løpet av uken. Planene når kirkens PC via skyen, og alle tilknyttede mobiler ser den samme planen.
+
+RETT PÅ SKJERMEN
+• Sanger – søk på nummer eller tittel, filtrer på sangbok og vis teksten vers for vers
+• Bibelen – gå til hvilken som helst bok, kapittel og vers og vis det med ett trykk
+• Bilder – bla gjennom bildemapper og vis hvilket som helst bilde
+• Presentasjoner – vis lysbildeserier og bla gjennom dem
+• Media – spill av video og lyd fra PC-en, en nettverks-URL eller mobilen, med avspilling, pause og spoling
+• Tøm skjermen når som helst
+
+LAG GUDSTJENESTEPLANEN
+Legg til sanger, bibellesninger, bilder, presentasjoner og media i planen fra mobilen. Den holdes synkronisert med PC-en i sanntid.
+
+SPØRSMÅL DIREKTE
+Moderer spørsmål fra salen: godkjenn eller avvis, rediger, vis ett på skjermen og merk det som ferdig.
+
+DITT EGET BIBLIOTEK
+Skriv sanger og kunngjøringer på mobilen, kopier bibeloversettelser fra PC-en over Wi-Fi, velg bakgrunn og tekststørrelse, og eksporter en CCLI-rapport over sangbruk – alt uten internett.
+
+ENKELT OPPSETT
+1. Start ChurchPresenter på PC-en som er koblet til prosjektoren
+2. Koble iPhone eller iPad til det samme Wi-Fi-nettverket
+3. Skann QR-koden som vises i PC-programmet, eller skriv inn adressen manuelt
+4. Begynn å presentere
+
+Ingen konto eller innlogging nødvendig. Laget for iPhone og iPad, tilgjengelig på 35 språk.
+
+KRAV
+• Fjernkontroll- og kalendermodus krever PC-programmet ChurchPresenter
+• iPhone eller iPad med iOS 18.2 eller nyere

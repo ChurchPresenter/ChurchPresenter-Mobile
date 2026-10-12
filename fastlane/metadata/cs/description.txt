@@ -1,0 +1,35 @@
+Church Presenter je mobilní společník desktopové aplikace ChurchPresenter — a bohoslužbu zvládne vést i sám. Promítejte písně, biblické pasáže, obrázky, slidy a videa odkudkoli v sále.
+
+TŘI ZPŮSOBY PROMÍTÁNÍ
+• Dálkové ovládání — ovládejte ChurchPresenter na počítači v kostele přes Wi-Fi. Počítač zobrazuje slidy, telefon slouží jako ovladač.
+• Samostatně — prezentujete přímo z telefonu nebo tabletu. Slidy pošlete do televize přes AirPlay nebo adaptér USB-C či Lightning. Bez počítače a bez internetu.
+• Kalendář — plánujte bohoslužby v telefonu během týdne. Plány se přes cloud dostanou do počítače v kostele a každý zapojený telefon vidí stejný plán.
+
+OKAMŽITĚ NA PLÁTNĚ
+• Písně — hledání podle čísla nebo názvu, filtr podle zpěvníku, promítání textu sloku po sloce
+• Bible — rychlý skok na libovolnou knihu, kapitolu a verš a promítnutí jedním klepnutím
+• Obrázky — procházení složek s obrázky a promítnutí libovolné fotky
+• Prezentace — zobrazení slidů a jejich postupné přepínání
+• Média — přehrávání videa a zvuku z počítače, ze síťové adresy nebo z telefonu s ovládáním přehrávání, pauzy a posunu
+• Vyčištění plátna kdykoli
+
+PROGRAM BOHOSLUŽBY
+Přidávejte do programu písně, biblická čtení, obrázky, prezentace a média přímo z telefonu. Program se s počítačem synchronizuje v reálném čase.
+
+OTÁZKY A ODPOVĚDI ŽIVĚ
+Moderujte dotazy posluchačů: schvalujte je nebo zamítejte, upravujte, promítněte vybraný dotaz a označte ho jako vyřízený.
+
+VLASTNÍ KNIHOVNA
+Pište písně a oznámení v telefonu, kopírujte překlady Bible z počítače přes Wi-Fi, zvolte pozadí a velikost písma a exportujte přehled používání písní pro CCLI — vše bez internetu.
+
+SNADNÉ NASTAVENÍ
+1. Spusťte ChurchPresenter na počítači připojeném k projektoru
+2. Připojte iPhone nebo iPad ke stejné síti Wi-Fi
+3. Naskenujte QR kód zobrazený v desktopové aplikaci, nebo zadejte adresu ručně
+4. Začněte promítat
+
+Bez účtu a přihlašování. Navrženo pro iPhone i iPad, dostupné ve 35 jazycích.
+
+POŽADAVKY
+• Režimy dálkového ovládání a kalendáře vyžadují desktopovou aplikaci ChurchPresenter
+• iPhone nebo iPad se systémem iOS 18.2 nebo novějším

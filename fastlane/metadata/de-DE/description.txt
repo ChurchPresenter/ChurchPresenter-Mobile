@@ -1,0 +1,35 @@
+Church Presenter ist die mobile Ergänzung zur Desktop-App ChurchPresenter – und kann einen Gottesdienst auch ganz allein gestalten. Projiziere Lieder, Bibelstellen, Bilder, Folien und Videos von jedem Platz im Raum.
+
+DREI ARTEN ZU PRÄSENTIEREN
+• Fernsteuerung – steuere ChurchPresenter auf dem Gemeinde-Computer per WLAN. Der Computer zeigt die Folien, dein Handy ist die Fernbedienung.
+• Eigenständig – dein Handy oder Tablet ist der Präsentationsrechner. Sende Folien per AirPlay oder über einen USB-C- oder Lightning-Adapter an einen Fernseher. Kein Computer und kein Internet nötig.
+• Kalender – plane Gottesdienste unter der Woche auf dem Handy. Die Pläne gelangen über die Cloud auf den Gemeinde-Computer, und jedes eingebundene Handy sieht denselben Plan.
+
+SOFORT AUF DIE LEINWAND
+• Lieder – nach Nummer oder Titel suchen, nach Liederbuch filtern, Liedtexte Strophe für Strophe projizieren
+• Bibel – zu jedem Buch, Kapitel und Vers springen und mit einem Tippen anzeigen
+• Bilder – Bildordner durchsuchen und jedes Foto projizieren
+• Präsentationen – Foliensätze zeigen und Folie für Folie durchgehen
+• Medien – Video und Audio vom Computer, von einer Netzwerk-URL oder vom Handy abspielen, mit Wiedergabe, Pause und Spulen
+• Die Anzeige jederzeit leeren
+
+DAS GOTTESDIENSTPROGRAMM ERSTELLEN
+Füge Lieder, Bibellesungen, Bilder, Präsentationen und Medien vom Handy aus zum Programm hinzu. Es bleibt in Echtzeit mit dem Desktop synchron.
+
+LIVE-Q&A
+Moderiere Fragen aus der Gemeinde: freigeben oder ablehnen, bearbeiten, eine Frage auf die Leinwand bringen und als erledigt markieren.
+
+DEINE EIGENE BIBLIOTHEK
+Schreibe Lieder und Ankündigungen auf dem Handy, kopiere Bibelübersetzungen per WLAN von deinem Computer, wähle Hintergrund und Schriftgröße und exportiere einen CCLI-Liedbericht – alles ohne Internet.
+
+EINFACHE EINRICHTUNG
+1. Starte ChurchPresenter auf dem Computer, der mit dem Beamer verbunden ist
+2. Verbinde dein iPhone oder iPad mit demselben WLAN
+3. Scanne den QR-Code in der Desktop-App oder gib die Adresse von Hand ein
+4. Los geht's
+
+Kein Konto und keine Anmeldung nötig. Entwickelt für iPhone und iPad, verfügbar in 35 Sprachen.
+
+VORAUSSETZUNGEN
+• Fernsteuerung und Kalender benötigen die Desktop-App ChurchPresenter
+• iPhone oder iPad mit iOS 18.2 oder höher

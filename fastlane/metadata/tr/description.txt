@@ -1,0 +1,35 @@
+Church Presenter, ChurchPresenter masaüstü uygulamasının mobil yardımcısıdır ve bir ibadeti tek başına da yürütebilir. İlahileri, Kutsal Kitap ayetlerini, resimleri, slaytları ve videoları salonun her yerinden yansıtın.
+
+SUNMANIN ÜÇ YOLU
+• Uzaktan kumanda: Kilise bilgisayarınızdaki ChurchPresenter'ı Wi-Fi üzerinden yönetin. Slaytları bilgisayar gösterir, telefonunuz kumanda olur.
+• Bağımsız: Telefonunuz ya da tabletiniz sunucunun kendisi olur. Slaytları AirPlay ya da bir USB-C veya Lightning adaptörüyle televizyona gönderin. Bilgisayar da internet de gerekmez.
+• Takvim: Hafta içinde ibadetleri telefonunuzdan planlayın. Planlar bulut üzerinden kilise bilgisayarına ulaşır ve kayıtlı her telefon aynı planı görür.
+
+ANINDA EKRANA YANSITIN
+• İlahiler: numaraya veya başlığa göre arayın, ilahi kitabına göre filtreleyin, sözleri kıta kıta yansıtın
+• Kutsal Kitap: istediğiniz kitaba, bölüme ve ayete gidin, tek dokunuşla ekrana getirin
+• Resimler: resim klasörlerine göz atın ve istediğiniz fotoğrafı yansıtın
+• Sunumlar: slayt dosyalarını gösterin ve adım adım ilerleyin
+• Medya: bilgisayardan, bir ağ adresinden veya telefonunuzdan video ve ses oynatın; oynatma, duraklatma ve sarma denetimleriyle
+• Ekranı istediğiniz an temizleyin
+
+İBADET PROGRAMINI HAZIRLAYIN
+İlahileri, Kutsal Kitap okumalarını, resimleri, sunumları ve medyayı telefonunuzdan programa ekleyin. Program masaüstüyle gerçek zamanlı olarak eşitlenir.
+
+CANLI SORU-CEVAP
+Katılımcı sorularını yönetin: onaylayın ya da reddedin, düzenleyin, birini ekrana getirin ve tamamlandı olarak işaretleyin.
+
+SİZE AİT KİTAPLIK
+Telefonunuzda ilahi ve duyuru yazın, Kutsal Kitap çevirilerini bilgisayarınızdan Wi-Fi ile kopyalayın, arka plan ve yazı boyutu seçin, CCLI ilahi kullanım raporunu dışa aktarın; hepsi internetsiz.
+
+KOLAY KURULUM
+1. Projeksiyona bağlı bilgisayarda ChurchPresenter'ı çalıştırın
+2. iPhone veya iPad'inizi aynı Wi-Fi ağına bağlayın
+3. Masaüstü uygulamasının gösterdiği QR kodunu okutun ya da adresi elle girin
+4. Sunuma başlayın
+
+Hesap veya oturum açma gerekmez. iPhone ve iPad için tasarlandı, 35 dilde kullanılabilir.
+
+GEREKSİNİMLER
+• Uzaktan kumanda ve takvim modları için ChurchPresenter masaüstü uygulaması gerekir
+• iOS 18.2 veya üzeri yüklü iPhone ya da iPad

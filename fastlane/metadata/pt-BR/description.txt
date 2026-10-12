@@ -1,0 +1,35 @@
+Church Presenter é o complemento móvel do aplicativo de computador ChurchPresenter — e também consegue conduzir um culto sozinho. Projete músicas, passagens bíblicas, imagens, slides e vídeos de qualquer lugar do salão.
+
+TRÊS FORMAS DE APRESENTAR
+• Controle remoto — comande o ChurchPresenter no computador da igreja pelo Wi-Fi. O computador exibe os slides; seu celular é o controle.
+• Autônomo — seu celular ou tablet é o apresentador. Envie slides para uma TV com AirPlay ou um adaptador USB-C ou Lightning. Sem computador e sem internet.
+• Calendário — planeje os cultos no celular durante a semana. Os planos chegam ao computador da igreja pela nuvem, e todos os celulares cadastrados veem o mesmo plano.
+
+PROJETE NA TELA NA HORA
+• Músicas — busque por número ou título, filtre por hinário e projete a letra estrofe por estrofe
+• Bíblia — vá para qualquer livro, capítulo e versículo e coloque na tela com um toque
+• Imagens — navegue pelas pastas de imagens e projete qualquer foto
+• Apresentações — exiba apresentações de slides e avance por elas
+• Mídia — reproduza vídeo e áudio do computador, de uma URL de rede ou do celular, com controles de reproduzir, pausar e avançar
+• Limpe a tela a qualquer momento
+
+MONTE A PROGRAMAÇÃO DO CULTO
+Adicione músicas, leituras bíblicas, imagens, apresentações e mídia à programação pelo celular. Tudo fica sincronizado com o computador em tempo real.
+
+PERGUNTAS AO VIVO
+Modere as perguntas do público: aprove ou recuse, edite, coloque uma na tela e marque como concluída.
+
+SUA PRÓPRIA BIBLIOTECA
+Escreva músicas e avisos no celular, copie traduções da Bíblia do computador pelo Wi-Fi, escolha um fundo e o tamanho do texto e exporte um relatório de uso de músicas CCLI — tudo sem internet.
+
+CONFIGURAÇÃO SIMPLES
+1. Abra o ChurchPresenter no computador conectado ao projetor
+2. Conecte o iPhone ou iPad à mesma rede Wi-Fi
+3. Escaneie o código QR exibido no aplicativo de computador ou digite o endereço manualmente
+4. Comece a apresentar
+
+Não precisa de conta nem login. Feito para iPhone e iPad, disponível em 35 idiomas.
+
+REQUISITOS
+• Os modos Controle remoto e Calendário precisam do aplicativo de computador ChurchPresenter
+• iPhone ou iPad com iOS 18.2 ou superior

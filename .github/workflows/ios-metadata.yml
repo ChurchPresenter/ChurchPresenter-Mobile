@@ -1,0 +1,49 @@
+name: App Store Metadata
+
+# Uploads the App Store listing text — name, subtitle, keywords, promotional
+# text and description, in every language under fastlane/metadata — without
+# building anything. Name and subtitle can only change while a version is
+# being prepared for submission; promotional text can change at any time.
+#
+# Required secrets (see APP_STORE.md Step 9):
+#   APP_STORE_CONNECT_KEY_ID, APP_STORE_CONNECT_ISSUER_ID,
+#   APP_STORE_CONNECT_PRIVATE_KEY
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_version:
+        description: "Version to update, e.g. 1.1.40 (blank = the version being prepared)"
+        required: false
+        default: ""
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  upload:
+    name: Upload listing text
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install fastlane
+        run: sudo gem install fastlane -v 2.241.0 --no-document
+
+      - name: Write App Store Connect API key
+        env:
+          KEY_ID:      ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID:   ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          jq -n --arg k "$KEY_ID" --arg i "$ISSUER_ID" --arg p "$PRIVATE_KEY" \
+            '{key_id: $k, issuer_id: $i, key: $p, in_house: false}' > "$RUNNER_TEMP/asc_api_key.json"
+
+      - name: Upload metadata
+        env:
+          APP_VERSION: ${{ inputs.app_version }}
+        run: |
+          args=(--api_key_path "$RUNNER_TEMP/asc_api_key.json")
+          [ -n "$APP_VERSION" ] && args+=(--app_version "$APP_VERSION")
+          fastlane deliver "${args[@]}"
