@@ -189,32 +189,6 @@
     <ID>TooManyFunctions:StatusScreen.kt$com.church.presenter.churchpresentermobile.ui.StatusScreen.kt</ID>
     <ID>TooManyFunctions:UiTags.kt$UiTags</ID>
     <ID>TooManyFunctions:WebViewModel.kt$WebViewModel : ViewModel</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_background = Color(0xFF1A1C1E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_error = Color(0xFFFFB4AB)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onBackground = Color(0xFFE2E2E6)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onPrimary = Color(0xFF003259)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onPrimaryContainer = Color(0xFFD1E4FF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onSurface = Color(0xFFE2E2E6)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onSurfaceVariant = Color(0xFFC3C7CF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_outline = Color(0xFF8D9199)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_outlineVariant = Color(0xFF43474E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_primary = Color(0xFF9EC3F5)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_primaryContainer = Color(0xFF1E4976)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_surface = Color(0xFF1A1C1E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_surfaceVariant = Color(0xFF43474E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_background = Color(0xFFFAFBFF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_error = Color(0xFFBA1A1A)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onBackground = Color(0xFF1A1C1E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onPrimary = Color(0xFFFFFFFF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onPrimaryContainer = Color(0xFF001D36)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onSurface = Color(0xFF1A1C1E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_onSurfaceVariant = Color(0xFF43474E)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_outline = Color(0xFF73777F)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_outlineVariant = Color(0xFFC3C7CF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_primary = Color(0xFF3D5A80)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_primaryContainer = Color(0xFFD1E4FF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_surface = Color(0xFFFAFBFF)</ID>
-    <ID>UnusedPrivateProperty:AppTheme.kt$private val md_light_surfaceVariant = Color(0xFFDFE2EB)</ID>
     <ID>UseCheckOrError:FakeOutputSink.kt$FakeOutputSink$throw IllegalStateException("sink $id is broken")</ID>
     <ID>UseCheckOrError:LocalWebServer.mobile.kt$LocalWebServer$throw IllegalStateException("Could not bind any port for the presentation server")</ID>
     <ID>UseCheckOrError:MediaFilePicker.android.kt$throw IllegalStateException("Could not open the selected file")</ID>
