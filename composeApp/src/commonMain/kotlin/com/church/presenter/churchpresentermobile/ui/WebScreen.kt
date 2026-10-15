@@ -66,7 +66,6 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.Bookmark
 import com.church.presenter.churchpresentermobile.viewmodel.WebViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.domainOf
-import com.church.presenter.churchpresentermobile.viewmodel.normalizeUrl
 
 /**
  * Drives the desktop's Web tab — enter a URL, project it live, and keep a list
