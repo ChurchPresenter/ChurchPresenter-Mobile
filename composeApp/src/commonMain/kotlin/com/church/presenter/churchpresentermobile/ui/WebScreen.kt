@@ -68,6 +68,15 @@ import com.church.presenter.churchpresentermobile.viewmodel.Bookmark
 import com.church.presenter.churchpresentermobile.viewmodel.WebViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.domainOf
 
+// The preview card is drawn as a little browser window: the three title-bar
+// dots, then placeholder lines of text at these fractions of the width.
+private val WINDOW_CLOSE_DOT = Color(0xFFFF5F57)
+private val WINDOW_MINIMISE_DOT = Color(0xFFFEBC2E)
+private val WINDOW_ZOOM_DOT = Color(0xFF28C840)
+private const val FAUX_LINE_SHORT = 0.60f
+private const val FAUX_LINE_LONG = 0.85f
+private const val FAUX_LINE_MEDIUM = 0.72f
+
 /**
  * Drives the desktop's Web tab — enter a URL, project it live, and keep a list
  * of reusable bookmarks. Matches design screen 15 (Remote: Web).
@@ -308,7 +317,7 @@ private fun PreviewCard(url: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(16f / 9f)
+            .aspectRatio(SCREEN_ASPECT_RATIO)
             .clip(RoundedCornerShape(12.dp))
             .background(colors.surface)
             .border(1.dp, colors.border, RoundedCornerShape(12.dp)),
@@ -319,7 +328,7 @@ private fun PreviewCard(url: String) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
-            Dot(Color(0xFFFF5F57)); Dot(Color(0xFFFEBC2E)); Dot(Color(0xFF28C840))
+            Dot(WINDOW_CLOSE_DOT); Dot(WINDOW_MINIMISE_DOT); Dot(WINDOW_ZOOM_DOT)
         }
         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Text(
@@ -331,11 +340,11 @@ private fun PreviewCard(url: String) {
                 overflow = TextOverflow.Ellipsis,
             )
             Spacer(Modifier.height(10.dp))
-            FauxLine(0.60f)
+            FauxLine(FAUX_LINE_SHORT)
             Spacer(Modifier.height(7.dp))
-            FauxLine(0.85f)
+            FauxLine(FAUX_LINE_LONG)
             Spacer(Modifier.height(7.dp))
-            FauxLine(0.72f)
+            FauxLine(FAUX_LINE_MEDIUM)
         }
     }
 }

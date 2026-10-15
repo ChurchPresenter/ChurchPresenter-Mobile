@@ -75,6 +75,7 @@ import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.model.LibraryField
 import com.church.presenter.churchpresentermobile.model.SectionType
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
+import com.church.presenter.churchpresentermobile.ui.SCREEN_ASPECT_RATIO
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneOutputScreen
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
@@ -186,7 +187,7 @@ fun SongEditorScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(16f / 9f)
+                            .aspectRatio(SCREEN_ASPECT_RATIO)
                             .clip(RoundedCornerShape(AppDimens.radiusChip)),
                     ) {
                         StandaloneOutputScreen(preview)

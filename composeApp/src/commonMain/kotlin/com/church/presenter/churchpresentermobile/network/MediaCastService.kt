@@ -18,6 +18,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private const val TAG = "MediaCastService"
+
+/** How much of a response body the debug log shows. */
+private const val UPLOAD_BODY_LOG_CHARS = 200
 // encodeDefaults = true is REQUIRED: mediaType defaults to "url", and without this kotlinx omits
 // any field equal to its default — so "mediaType":"url" would never reach the desktop, which then
 // falls back to "local" and tries to open the URL as a file path (nothing plays).
@@ -94,7 +97,7 @@ class MediaCastService(
                 })
             }
             val raw = response.bodyAsText()
-            Logger.d(TAG, "uploadMedia ◀ status=${response.status}  body=${raw.take(200)}")
+            Logger.d(TAG, "uploadMedia ◀ status=${response.status}  body=${raw.take(UPLOAD_BODY_LOG_CHARS)}")
             response.ensureSuccess(raw)
             json.decodeFromString<MediaUploadResponse>(raw)
         }.onFailure { e -> Logger.e(TAG, "uploadMedia — FAILED: ${e.message}", e) }

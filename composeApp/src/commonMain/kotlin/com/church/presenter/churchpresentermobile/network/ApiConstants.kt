@@ -36,6 +36,16 @@ object ApiConstants {
     const val SOCKET_TIMEOUT_MS = 15_000L
     /** Socket-connect timeout for the persistent WebSocket connection. */
     const val WS_CONNECT_TIMEOUT_MS = 4_000L
+    // Thumbnails are generated on demand by the desktop and can be slow under a
+    // burst of grid requests, so the image client is far more patient.
+    /** Overall request timeout for thumbnail/image requests. */
+    const val IMAGE_REQUEST_TIMEOUT_MS = 30_000L
+    /** Socket-connect timeout for thumbnail/image requests. */
+    const val IMAGE_CONNECT_TIMEOUT_MS = 15_000L
+    /** Socket read timeout for thumbnail/image requests. */
+    const val IMAGE_SOCKET_TIMEOUT_MS = 30_000L
+    /** Parallel image connections to one server — enough for a grid to fill at once. */
+    const val IMAGE_MAX_CONNECTIONS_PER_HOST = 12
 
     const val SONGS_ENDPOINT = "songs"
     const val SONG_CATALOG_ENDPOINT = "song-catalog"

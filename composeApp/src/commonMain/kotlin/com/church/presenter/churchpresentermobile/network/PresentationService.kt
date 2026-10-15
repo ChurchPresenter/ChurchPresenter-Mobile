@@ -23,6 +23,10 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "PresentationService"
 
+/** How much of a response body the debug log shows. */
+private const val BODY_LOG_CHARS = 500
+private const val UPLOAD_BODY_LOG_CHARS = 300
+
 /** Lenient JSON parser — ignores unknown keys and is tolerant of malformed input. */
 private val json = Json {
     ignoreUnknownKeys = true
@@ -60,7 +64,7 @@ class PresentationService(
             val httpResponse = client.get(url) { applyApiKey() }
             Logger.d(TAG, "getPresentationById — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getPresentationById — raw body (first 500 chars): ${raw.take(500)}")
+            Logger.d(TAG, "getPresentationById — raw body (first 500 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
             val imageBase = "http://${settings.host}:${settings.port}"
             val presentation = json.decodeFromString<Presentation>(raw)
@@ -87,7 +91,7 @@ class PresentationService(
             val httpResponse = client.get(url) { applyApiKey() }
             Logger.d(TAG, "getPresentations — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getPresentations — raw body (first 500 chars): ${raw.take(500)}")
+            Logger.d(TAG, "getPresentations — raw body (first 500 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
             // Thumbnail URLs are root-relative (e.g. /api/presentations/…/slides/0),
             // so prefix with scheme+host+port only — NOT apiBaseUrl which already appends /api.
@@ -202,7 +206,7 @@ class PresentationService(
                 applyApiKey()
             }
             val raw = response.bodyAsText()
-            Logger.d(TAG, "uploadPresentation ◀ status=${response.status}  body=${raw.take(300)}")
+            Logger.d(TAG, "uploadPresentation ◀ status=${response.status}  body=${raw.take(UPLOAD_BODY_LOG_CHARS)}")
             response.ensureSuccess(raw)
             // Parse leniently: accept {"ok":true} with no id/name (both are nullable)
             runCatching { json.decodeFromString<UploadPresentationResponse>(raw) }

@@ -38,6 +38,7 @@ import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
+import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 
 /**
  * Renders one [Slide] full-bleed — the audience view.
@@ -312,9 +313,9 @@ private fun SlideFont.toFontFamily(): FontFamily = when (this) {
 /** Body type as a fraction of the rendered width, clamped like the mockup's `clamp()`. */
 private fun scaledSp(widthDp: Float, size: SlideTextSize): TextUnit {
     val (ratio, min, max) = when (size) {
-        SlideTextSize.SMALL -> Triple(0.052f, 12f, 34f)
-        SlideTextSize.MEDIUM -> Triple(0.066f, 15f, 44f)
-        SlideTextSize.LARGE -> Triple(0.084f, 18f, 56f)
+        SlideTextSize.SMALL -> SMALL_BODY
+        SlideTextSize.MEDIUM -> MEDIUM_BODY
+        SlideTextSize.LARGE -> LARGE_BODY
     }
     return (widthDp * ratio).coerceIn(min, max).sp
 }
@@ -327,12 +328,24 @@ private fun scaledSp(widthDp: Float, size: SlideTextSize): TextUnit {
  */
 internal fun parseHexColor(hex: String, fallback: Color): Color {
     val cleaned = hex.trim().removePrefix("#")
-    if (cleaned.length != 6 && cleaned.length != 8) return fallback
-    val value = cleaned.toLongOrNull(16) ?: return fallback
-    return if (cleaned.length == 6) Color(value or 0xFF000000L) else Color(value)
+    if (cleaned.length != RGB_HEX_LENGTH && cleaned.length != ARGB_HEX_LENGTH) return fallback
+    val value = cleaned.toLongOrNull(HEX_RADIX) ?: return fallback
+    return if (cleaned.length == RGB_HEX_LENGTH) Color(value or OPAQUE_ALPHA) else Color(value)
 }
 
 private const val HIDE_FADE_MS = 450
+
+/** Body type per size: fraction of the rendered width, then the sp floor and ceiling. */
+private val SMALL_BODY = Triple(0.052f, 12f, 34f)
+private val MEDIUM_BODY = Triple(0.066f, 15f, 44f)
+private val LARGE_BODY = Triple(0.084f, 18f, 56f)
+
+private const val RGB_HEX_LENGTH = 6
+private const val ARGB_HEX_LENGTH = 8
+
+/** Alpha channel for a `#RRGGBB` colour, which carries none of its own. */
+private const val OPAQUE_ALPHA = 0xFF000000L
+
 /**
  * How far auto-fit may shrink the words before it stops.
  *

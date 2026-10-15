@@ -20,6 +20,9 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "BibleService"
 
+/** How much of a response body the debug log shows. */
+private const val BODY_LOG_CHARS = 500
+
 /** Lenient JSON parser — ignores unknown keys and is tolerant of malformed input. */
 private val json = Json {
     ignoreUnknownKeys = true
@@ -54,7 +57,7 @@ class BibleService(
             Logger.d(TAG, "getBooks — HTTP status: ${httpResponse.status}")
             // Read body once as text — avoids double-read and works regardless of Content-Type
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getBooks — raw body (first 500 chars): ${raw.take(500)}")
+            Logger.d(TAG, "getBooks — raw body (first 500 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<BibleBooksResponse>(raw)
             val books = response.allBooks
@@ -85,7 +88,7 @@ class BibleService(
             }
             Logger.d(TAG, "getChapter — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getChapter — raw body (first 500 chars): ${raw.take(500)}")
+            Logger.d(TAG, "getChapter — raw body (first 500 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<BibleChapterResponse>(raw)
             val verses = response.allVerses

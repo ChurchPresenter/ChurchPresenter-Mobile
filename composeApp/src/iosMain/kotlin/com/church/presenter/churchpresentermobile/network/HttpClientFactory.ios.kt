@@ -34,15 +34,15 @@ actual fun createImageHttpClient(): HttpClient = HttpClient(Darwin) {
     install(HttpTimeout) {
         // Thumbnails are generated on-demand by the desktop and can be slow under a
         // burst of grid requests, so give them generous timeouts.
-        requestTimeoutMillis = 30_000
-        connectTimeoutMillis = 15_000
-        socketTimeoutMillis = 30_000
+        requestTimeoutMillis = ApiConstants.IMAGE_REQUEST_TIMEOUT_MS
+        connectTimeoutMillis = ApiConstants.IMAGE_CONNECT_TIMEOUT_MS
+        socketTimeoutMillis = ApiConstants.IMAGE_SOCKET_TIMEOUT_MS
     }
     engine {
         // NSURLSession defaults to ~6 connections per host, which starves a photo/
         // slide grid loading many thumbnails from the same server at once.
         configureSession {
-            setHTTPMaximumConnectionsPerHost(12)
+            setHTTPMaximumConnectionsPerHost(ApiConstants.IMAGE_MAX_CONNECTIONS_PER_HOST.toLong())
         }
     }
     // No ContentNegotiation — lets Coil read raw image bytes without interference

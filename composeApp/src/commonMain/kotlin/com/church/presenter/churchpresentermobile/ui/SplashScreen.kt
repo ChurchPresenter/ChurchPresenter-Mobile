@@ -72,6 +72,11 @@ private class SplashMetrics(
     }
 }
 
+/** Splash timing: the logo grows in, holds, then the whole screen fades out. */
+private const val LOGO_GROW_MS = 650
+private const val HOLD_MS = 2100L
+private const val FADE_OUT_MS = 450
+
 /** Where the ambient wash is centred, as fractions of the screen: the design's `at 50% 34%`. */
 private const val AMBIENT_CENTER_Y = 0.34f
 
@@ -135,9 +140,9 @@ fun SplashScreen(onComplete: () -> Unit, twoPane: Boolean = false) {
     val scale = remember { Animatable(0.82f) }
 
     LaunchedEffect(Unit) {
-        scale.animateTo(1f, animationSpec = tween(650, easing = FastOutSlowInEasing))
-        delay(2100)
-        alpha.animateTo(0f, animationSpec = tween(450))
+        scale.animateTo(1f, animationSpec = tween(LOGO_GROW_MS, easing = FastOutSlowInEasing))
+        delay(HOLD_MS)
+        alpha.animateTo(0f, animationSpec = tween(FADE_OUT_MS))
         onComplete()
     }
 

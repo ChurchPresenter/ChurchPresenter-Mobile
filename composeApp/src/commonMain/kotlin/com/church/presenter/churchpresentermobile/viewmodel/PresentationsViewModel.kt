@@ -16,6 +16,7 @@ import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.Logger
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -357,10 +358,10 @@ class PresentationsViewModel(
                 .onFailure { e ->
                     Logger.e(TAG, "uploadPresentationFile — FAILED: ${e.message}", e)
                     _toastEvent.value = when ((e as? ApiException)?.httpStatus) {
-                        404          -> ToastEvent.UploadUnsupported
-                        413          -> ToastEvent.UploadFileTooLarge
-                        in 400..599  -> ToastEvent.UploadServerError(e.message ?: "")
-                        else         -> ToastEvent.UploadFailed(e.recordNetworkError(TAG, "uploadPresentationFile"))
+                        HttpStatusCode.NotFound.value -> ToastEvent.UploadUnsupported
+                        HttpStatusCode.PayloadTooLarge.value -> ToastEvent.UploadFileTooLarge
+                        in 400..599 -> ToastEvent.UploadServerError(e.message ?: "")
+                        else -> ToastEvent.UploadFailed(e.recordNetworkError(TAG, "uploadPresentationFile"))
                     }
                 }
             _uploadProgress.value = null

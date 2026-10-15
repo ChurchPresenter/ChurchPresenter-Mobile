@@ -18,10 +18,15 @@ import com.google.android.play.core.review.ReviewManagerFactory
 object AppReview {
 
     private const val TAG = "AppReview"
+    private const val FIRST_PROMPT_OPEN = 3
+    private const val SECOND_PROMPT_OPEN = 10
+    private const val REPEAT_EVERY_OPENS = 20
 
     /** Returns true when [openCount] matches a review-prompt milestone. */
     fun shouldRequest(openCount: Int): Boolean =
-        openCount == 3 || openCount == 10 || (openCount > 10 && openCount % 20 == 0)
+        openCount == FIRST_PROMPT_OPEN ||
+            openCount == SECOND_PROMPT_OPEN ||
+            (openCount > SECOND_PROMPT_OPEN && openCount % REPEAT_EVERY_OPENS == 0)
 
     /**
      * Shows the Play in-app review sheet if [openCount] hits a milestone.

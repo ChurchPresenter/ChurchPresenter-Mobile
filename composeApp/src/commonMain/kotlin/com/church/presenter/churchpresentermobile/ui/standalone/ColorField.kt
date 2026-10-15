@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.KeyboardOptions
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
+import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 
 /**
@@ -115,7 +116,7 @@ internal fun parseHexColorOrNull(hex: String): Color? {
         else -> return null
     }
     if (!expanded.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }) return null
-    return runCatching { Color(("FF$expanded").toLong(16)) }.getOrNull()
+    return runCatching { Color(("FF$expanded").toLong(HEX_RADIX)) }.getOrNull()
 }
 
 /** What gets stored and sent on the wire, so every renderer sees the same shape. */

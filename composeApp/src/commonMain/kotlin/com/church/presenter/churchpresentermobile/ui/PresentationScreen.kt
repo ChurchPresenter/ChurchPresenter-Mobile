@@ -494,7 +494,7 @@ private fun SlideRow(
                 modifier = Modifier
                     .weight(1f)
                     .widthIn(max = 500.dp)
-                    .aspectRatio(16f / 9f)
+                    .aspectRatio(SCREEN_ASPECT_RATIO)
                     .clip(RoundedCornerShape(8.dp))
                     .then(
                         if (isSlideSelected) Modifier.border(2.5.dp, colors.accent, RoundedCornerShape(8.dp))

@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.http.HttpStatusCode
 import io.ktor.websocket.DefaultWebSocketSession
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
@@ -45,6 +46,9 @@ private const val ACTION_RESPONSE_TIMEOUT_MS = 120_000L
 private const val WS_CONNECTION_TIMEOUT_MS = 10_000L
 /** Maximum time allowed for the actual WebSocket frame write — guards against a hung send on iOS. */
 private const val WS_SEND_TIMEOUT_MS = 5_000L
+
+/** How much of an error message is attached to a crash report. */
+private const val ERROR_MSG_REPORT_CHARS = 200
 
 /** Server-push event envelope — `{ "type": "...", "payload": "..." }`. */
 @Serializable
@@ -301,7 +305,8 @@ class ServerEventService(
             if (lastException is ApiException) {
                 // A 408 means the frame may never have reached the server — force reconnect
                 // so the broken send path is cleared before the next user action.
-                if ((lastException as ApiException).httpStatus == 408) reconnect()
+                val status = (lastException as ApiException).httpStatus
+                if (status == HttpStatusCode.RequestTimeout.value) reconnect()
                 Logger.e(TAG, "sendAction — server rejection, not retrying: ${lastException?.message}")
                 return result
             }
@@ -323,7 +328,10 @@ class ServerEventService(
                 CrashReporting.setCustomKey("ws_action_type",    type)
                 CrashReporting.setCustomKey("ws_server_url",     settings.wsBaseUrl)
                 CrashReporting.setCustomKey("network_error_type", finalError::class.simpleName ?: "Throwable")
-                CrashReporting.setCustomKey("network_error_msg",  finalError.message?.take(200) ?: "unknown")
+                CrashReporting.setCustomKey(
+                    "network_error_msg",
+                    finalError.message?.take(ERROR_MSG_REPORT_CHARS) ?: "unknown",
+                )
                 CrashReporting.recordException(finalError)
             }
         }

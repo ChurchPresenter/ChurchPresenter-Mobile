@@ -4,6 +4,9 @@ import com.church.presenter.churchpresentermobile.model.ApiException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.isSuccess
 
+/** Longest server explanation carried on an [ApiException]. */
+private const val MAX_REASON_CHARS = 200
+
 /**
  * Throws [ApiException] when this response is not 2xx, carrying the status code
  * and the server's own explanation.
@@ -28,6 +31,6 @@ fun HttpResponse.ensureSuccess(body: String? = null) {
     if (status.isSuccess()) return
     throw ApiException(
         httpStatus = status.value,
-        reason = body?.trim()?.take(200)?.takeIf { it.isNotEmpty() },
+        reason = body?.trim()?.take(MAX_REASON_CHARS)?.takeIf { it.isNotEmpty() },
     )
 }

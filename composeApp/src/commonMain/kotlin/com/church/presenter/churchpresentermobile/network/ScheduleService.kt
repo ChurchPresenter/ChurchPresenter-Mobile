@@ -14,6 +14,9 @@ import kotlinx.serialization.json.decodeFromJsonElement
 
 private const val TAG = "ScheduleService"
 
+/** How much of a response body the debug log shows. */
+private const val BODY_LOG_CHARS = 500
+
 private val lenientJson = Json { ignoreUnknownKeys = true; isLenient = true }
 
 /**
@@ -42,7 +45,7 @@ class ScheduleService(
             val httpResponse = client.get(url) { applyApiKey() }
             Logger.d(TAG, "getSchedule — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getSchedule — raw body (first 500 chars): ${raw.take(500)}")
+            Logger.d(TAG, "getSchedule — raw body (first 500 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
 
             // Parse flexibly: the endpoint may return a bare array or a wrapper object
