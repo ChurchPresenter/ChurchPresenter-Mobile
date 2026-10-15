@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.media_title
-import churchpresentermobile.composeapp.generated.resources.media_load_label
 import churchpresentermobile.composeapp.generated.resources.media_url_placeholder
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.MediaViewModel

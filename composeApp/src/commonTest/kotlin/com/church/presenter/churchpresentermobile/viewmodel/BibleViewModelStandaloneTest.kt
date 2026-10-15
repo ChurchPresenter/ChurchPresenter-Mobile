@@ -17,7 +17,6 @@ import com.church.presenter.churchpresentermobile.testutil.tearDown
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertFalse
