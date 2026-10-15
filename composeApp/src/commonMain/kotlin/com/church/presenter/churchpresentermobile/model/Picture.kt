@@ -29,10 +29,9 @@ data class PicturesFolder(
 @Serializable
 data class PictureSelectRequest(
     @SerialName("folder-id") val folderId: String,
-    /** Primary identifier — server resolves the image by name when present. */
+    /** Names the image in the desktop's remote-action log. */
     @SerialName("file-name") val fileName: String? = null,
-    /** Fallback index — sent only when [fileName] is null, for servers that do not yet
-     *  support name-based resolution. */
+    /** The image the desktop actually displays over WS `select_picture`. */
     val index: Int? = null,
 )
 

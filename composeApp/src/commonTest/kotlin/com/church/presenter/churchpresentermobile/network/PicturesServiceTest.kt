@@ -116,6 +116,17 @@ class PicturesServiceTest {
     }
 
     @Test
+    fun selectPictureAlsoSendsTheFileName() = runTest {
+        // The desktop names the image by file in its remote-action log; without
+        // it the operator sees "image 3" instead of the picture they tapped.
+        val ws = FakeWsSender()
+
+        wsService(ws).selectPicture("f1", "a.jpg", indexFallback = 3).getOrThrow()
+
+        assertTrue(ws.lastPayload.contains("\"file-name\":\"a.jpg\""), ws.lastPayload)
+    }
+
+    @Test
     fun selectPictureIsFireAndForget() = runTest {
         // Projecting must not block on an acknowledgement — the operator taps and
         // the picture appears; waiting for a round-trip made the grid feel stuck.

@@ -180,7 +180,7 @@ class StandaloneEngine(
      * [setDeck]/[showSlide] handoff, so it is swallowed successfully rather
      * than surfaced to the user as a failure.
      */
-    fun handleRemoteAction(type: String, payloadJson: String): Result<Unit> {
+    fun handleRemoteAction(type: String): Result<Unit> {
         when (type) {
             WsMessageType.CLEAR -> clear()
             else -> Logger.d(TAG, "ignoring desktop-only action in standalone mode: $type")

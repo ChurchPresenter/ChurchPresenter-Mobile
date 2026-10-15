@@ -165,7 +165,6 @@ fun SongsTable(
             error = detailError,
             selectedVerseIndex = selectedVerseIndex,
             isProjecting = isProjecting,
-            scheduleAdded = scheduleAdded,
             onVerseSelected = { vm.selectVerse(it) },
             onToggleProjecting = { vm.toggleProjecting() },
             // Null in standalone: there is no desktop schedule to add to,

@@ -79,18 +79,23 @@ class PicturesService(
     /**
      * Sends POST /api/pictures/select to display the given image on screen.
      *
-     * [fileName] is the primary identifier — the desktop server resolves the file by name,
-     * making selection immune to any index-ordering difference between clients.
-     * [indexFallback] is included in the request body **only** when [fileName] is null, as a
-     * last-resort for servers that do not yet support name-based resolution.
+     * Both identifiers are sent. The desktop's WS `select_picture` handler still
+     * displays by [indexFallback], and uses [fileName] to name the image in its
+     * remote-action log — so dropping either one costs the desktop something.
      *
      * @param folderId      The folder ID from the current [PicturesFolder].
-     * @param fileName      The exact filename; used as the primary identifier when non-null.
-     * @param indexFallback Server image index; sent only when [fileName] is null.
+     * @param fileName      The exact filename, when known.
+     * @param indexFallback Server image index — what the desktop displays.
      */
-    suspend fun selectPicture(folderId: String, fileName: String?, indexFallback: Int? = null): Result<Unit> {
+    suspend fun selectPicture(
+        folderId: String,
+        fileName: String?,
+        indexFallback: Int? = null,
+    ): Result<Unit> {
         return apiRunCatching {
-            val payload = json.encodeToString(PictureSelectRequest(folderId = folderId, index = indexFallback))
+            val payload = json.encodeToString(
+                PictureSelectRequest(folderId = folderId, fileName = fileName, index = indexFallback),
+            )
             Logger.d(
                 TAG,
                 "selectPicture ▶ WS select_picture  folderId=$folderId  index=$indexFallback  payload=$payload"

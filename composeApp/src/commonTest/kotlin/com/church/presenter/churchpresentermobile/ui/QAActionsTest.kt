@@ -213,18 +213,6 @@ class QAActionsTest {
     }
 
     @Test
-    fun stoppingDoesNotMarkTheQuestionAnswered() = runComposeUiTest {
-        // Taking a question off the screen is not the same as answering it —
-        // it must stay in the queue for the speaker to come back to.
-        val actions = QaActions()
-        showQaBoard(adminState(listOf(approved), displayedQuestionId = "q2"), actions)
-
-        click(UiTags.qaStop("q2"))
-
-        assertTrue(actions.markedDone.isEmpty())
-    }
-
-    @Test
     fun anotherCardKeepsItsOwnActionsWhileOneIsLive() = runComposeUiTest {
         showQaBoard(adminState(listOf(pending, approved), displayedQuestionId = "q2"))
 

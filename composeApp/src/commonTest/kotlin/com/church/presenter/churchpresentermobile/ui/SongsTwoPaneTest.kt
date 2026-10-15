@@ -152,7 +152,6 @@ class SongsTwoPaneTest {
             error = null,
             selectedVerseIndex = null,
             isProjecting = false,
-            scheduleAdded = false,
             onVerseSelected = {},
             onToggleProjecting = {},
             modifier = Modifier.fillMaxSize(),

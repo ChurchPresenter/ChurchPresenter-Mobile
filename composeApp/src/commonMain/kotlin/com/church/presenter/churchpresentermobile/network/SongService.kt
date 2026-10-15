@@ -189,7 +189,7 @@ class SongService(
      * @param songNumber  The song number string.
      * @param verseIndex  0-based section index.
      */
-    suspend fun selectVerse(songNumber: String, bookName: String?, verseIndex: Int): Result<Unit> {
+    suspend fun selectVerse(songNumber: String, verseIndex: Int): Result<Unit> {
         return apiRunCatching {
             val payload = json.encodeToString(SelectSectionRequest(number = songNumber, section = verseIndex))
             Logger.d(TAG, "selectVerse ▶ WS select_song_section  section=$verseIndex  payload=$payload")

@@ -64,7 +64,7 @@ class QAScreenshotTest {
     fun boardWithEveryStatus() = screenshot("qa-board__mixed-statuses") {
         QAAdminContent(
             state = board(),
-            onApprove = {}, onDeny = {}, onEdit = { _, _ -> }, onMarkDone = {},
+            onApprove = {}, onDeny = {}, onEdit = { _, _ -> },
             onDisplay = {}, onApproveAndDisplay = {}, onDelete = {},
             onAddQuestion = { _, _ -> }, askForName = false, onClearDisplay = {},
             votingEnabled = false,
@@ -77,7 +77,7 @@ class QAScreenshotTest {
         // counts would be shown for a room that was never asked.
         QAAdminContent(
             state = board(votingEnabled = true),
-            onApprove = {}, onDeny = {}, onEdit = { _, _ -> }, onMarkDone = {},
+            onApprove = {}, onDeny = {}, onEdit = { _, _ -> },
             onDisplay = {}, onApproveAndDisplay = {}, onDelete = {},
             onAddQuestion = { _, _ -> }, askForName = false, onClearDisplay = {},
             votingEnabled = true,
@@ -88,7 +88,7 @@ class QAScreenshotTest {
     fun boardWithOneDisplayed() = screenshot("qa-board__question-displayed") {
         QAAdminContent(
             state = board(displayedQuestionId = "2"),
-            onApprove = {}, onDeny = {}, onEdit = { _, _ -> }, onMarkDone = {},
+            onApprove = {}, onDeny = {}, onEdit = { _, _ -> },
             onDisplay = {}, onApproveAndDisplay = {}, onDelete = {},
             onAddQuestion = { _, _ -> }, askForName = false, onClearDisplay = {},
             votingEnabled = false,
@@ -99,7 +99,7 @@ class QAScreenshotTest {
     fun boardEmpty() = screenshot("qa-board__no-questions") {
         QAAdminContent(
             state = board(questions = emptyList()),
-            onApprove = {}, onDeny = {}, onEdit = { _, _ -> }, onMarkDone = {},
+            onApprove = {}, onDeny = {}, onEdit = { _, _ -> },
             onDisplay = {}, onApproveAndDisplay = {}, onDelete = {},
             onAddQuestion = { _, _ -> }, askForName = false, onClearDisplay = {},
             votingEnabled = false,
@@ -110,7 +110,7 @@ class QAScreenshotTest {
     fun boardSessionClosed() = screenshot("qa-board__session-closed") {
         QAAdminContent(
             state = board(sessionActive = false, questions = emptyList()),
-            onApprove = {}, onDeny = {}, onEdit = { _, _ -> }, onMarkDone = {},
+            onApprove = {}, onDeny = {}, onEdit = { _, _ -> },
             onDisplay = {}, onApproveAndDisplay = {}, onDelete = {},
             onAddQuestion = { _, _ -> }, askForName = false, onClearDisplay = {},
             votingEnabled = false,

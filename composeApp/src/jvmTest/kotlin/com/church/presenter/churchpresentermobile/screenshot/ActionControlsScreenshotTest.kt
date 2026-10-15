@@ -23,7 +23,6 @@ class ActionControlsScreenshotTest {
     fun actionsIdle() = screenshot("content-actions__idle", width = null) {
         ContentActionButtons(
             isProjecting = false,
-            scheduleAdded = false,
             onToggleProjecting = {},
             onAddToSchedule = {},
             modifier = Modifier.padding(16.dp),
@@ -34,7 +33,6 @@ class ActionControlsScreenshotTest {
     fun actionsProjecting() = screenshot("content-actions__projecting", width = null) {
         ContentActionButtons(
             isProjecting = true,
-            scheduleAdded = false,
             onToggleProjecting = {},
             onAddToSchedule = {},
             modifier = Modifier.padding(16.dp),
@@ -45,7 +43,6 @@ class ActionControlsScreenshotTest {
     fun actionsAlreadyInSchedule() = screenshot("content-actions__in-schedule", width = null) {
         ContentActionButtons(
             isProjecting = false,
-            scheduleAdded = true,
             onToggleProjecting = {},
             onAddToSchedule = {},
             modifier = Modifier.padding(16.dp),
@@ -56,7 +53,6 @@ class ActionControlsScreenshotTest {
     fun actionsWithCastBadge() = screenshot("content-actions__cast-badge", width = null) {
         ContentActionButtons(
             isProjecting = true,
-            scheduleAdded = false,
             onToggleProjecting = {},
             onAddToSchedule = {},
             castBadgeCount = 3,
@@ -68,7 +64,6 @@ class ActionControlsScreenshotTest {
     fun actionsHeld() = screenshot("content-actions__held", width = null) {
         ContentActionButtons(
             isProjecting = true,
-            scheduleAdded = false,
             onToggleProjecting = {},
             onAddToSchedule = {},
             isHolding = true,
@@ -82,10 +77,8 @@ class ActionControlsScreenshotTest {
     fun actionsMultiSelect() = screenshot("content-actions__multi-select", width = null) {
         ContentActionButtons(
             isProjecting = false,
-            scheduleAdded = false,
             onToggleProjecting = {},
             onAddToSchedule = {},
-            isMultiSelectMode = true,
             onToggleMultiSelect = {},
             modifier = Modifier.padding(16.dp),
         )
@@ -97,7 +90,6 @@ class ActionControlsScreenshotTest {
         // not a disabled control.
         ContentActionButtons(
             isProjecting = false,
-            scheduleAdded = false,
             onToggleProjecting = {},
             onAddToSchedule = null,
             modifier = Modifier.padding(16.dp),

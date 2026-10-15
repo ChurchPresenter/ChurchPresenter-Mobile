@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.network.WsMessageType
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
@@ -65,6 +66,21 @@ class WebProjectionTest {
 
         type(UiTags.WEB_URL, "example.org")
         click(UiTags.WEB_GO_LIVE)
+
+        awaitThat { sender.calls.isNotEmpty() }
+        assertEquals(WsMessageType.PROJECT, sender.lastType)
+    }
+
+    @Test
+    fun theKeyboardGoKeySendsThePageToTheDesktop() = runComposeUiTest {
+        // The keyboard shows a Go key for the address — pressing it has to do
+        // what it says rather than nothing.
+        val sender = FakeWsSender()
+        val vm = viewModel(sender)
+        showWeb(vm)
+
+        type(UiTags.WEB_URL, "example.org")
+        textField(UiTags.WEB_URL).performImeAction()
 
         awaitThat { sender.calls.isNotEmpty() }
         assertEquals(WsMessageType.PROJECT, sender.lastType)

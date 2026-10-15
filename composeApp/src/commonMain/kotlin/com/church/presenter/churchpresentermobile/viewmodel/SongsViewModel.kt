@@ -604,7 +604,7 @@ class SongsViewModel(
         val song = _selectedSong.value ?: return
         Logger.d(TAG, "selectVerse — firing for ${song.number} section=$index bookName=${song.bookName}")
         viewModelScope.launch {
-            songService.selectVerse(song.number, song.bookName, index)
+            songService.selectVerse(song.number, index)
                 .onSuccess { Logger.d(TAG, "selectVerse — success") }
                 .onFailure { e ->
                     Logger.e(TAG, "selectVerse — FAILED: ${e.message}", e)

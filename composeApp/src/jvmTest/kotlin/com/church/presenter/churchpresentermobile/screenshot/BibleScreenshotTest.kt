@@ -48,7 +48,6 @@ class BibleScreenshotTest {
         isLoading: Boolean = false,
         isProjecting: Boolean = false,
         isHolding: Boolean = false,
-        scheduleAdded: Boolean = false,
         selectedVerseIndices: Set<Int> = emptySet(),
         projectedVerseIndex: Int? = null,
         isMultiSelectMode: Boolean = false,
@@ -60,7 +59,6 @@ class BibleScreenshotTest {
             isLoading = isLoading,
             isProjecting = isProjecting,
             isHolding = isHolding,
-            scheduleAdded = scheduleAdded,
             selectedVerseIndices = selectedVerseIndices,
             projectedVerseIndex = projectedVerseIndex,
             isMultiSelectMode = isMultiSelectMode,
@@ -144,12 +142,6 @@ class BibleScreenshotTest {
     fun multiSelectRun() = screenshot(
         "bible-detail__multi-select",
         content = detail(isMultiSelectMode = true, selectedVerseIndices = setOf(0, 1, 2)),
-    )
-
-    @Test
-    fun alreadyInSchedule() = screenshot(
-        "bible-detail__in-schedule",
-        content = detail(selectedVerseIndices = setOf(0), scheduleAdded = true),
     )
 
     @Test

@@ -65,7 +65,6 @@ fun BibleDetailScreen(
     isLoading: Boolean = false,
     isProjecting: Boolean,
     isHolding: Boolean = false,
-    scheduleAdded: Boolean,
     selectedVerseIndices: Set<Int>,
     projectedVerseIndex: Int?,
     isMultiSelectMode: Boolean = false,
@@ -86,7 +85,6 @@ fun BibleDetailScreen(
             isLoading = isLoading,
             isProjecting = isProjecting,
             isHolding = isHolding,
-            scheduleAdded = scheduleAdded,
             selectedVerseIndices = selectedVerseIndices,
             projectedVerseIndex = projectedVerseIndex,
             isMultiSelectMode = isMultiSelectMode,
@@ -122,7 +120,6 @@ internal fun BibleVersesPane(
     selectedChapter: Int,
     verses: List<BibleVerse>,
     isProjecting: Boolean,
-    scheduleAdded: Boolean,
     selectedVerseIndices: Set<Int>,
     projectedVerseIndex: Int?,
     onChapterSelect: (Int) -> Unit,
@@ -195,7 +192,6 @@ internal fun BibleVersesPane(
             // ── Action buttons (bottom-right, overlaid on the pager) ──────
             ContentActionButtons(
                 isProjecting       = isProjecting,
-                scheduleAdded      = scheduleAdded,
                 onToggleProjecting = onToggleProjecting,
                 onAddToSchedule    = onAddToSchedule,
                 modifier           = Modifier.align(Alignment.BottomEnd),
@@ -203,7 +199,6 @@ internal fun BibleVersesPane(
                 isHolding          = isHolding,
                 onToggleHold       = onToggleHold,
                 onClearDisplay     = onClearDisplay,
-                isMultiSelectMode  = isMultiSelectMode,
                 onToggleMultiSelect = onToggleMultiSelect,
             )
         }

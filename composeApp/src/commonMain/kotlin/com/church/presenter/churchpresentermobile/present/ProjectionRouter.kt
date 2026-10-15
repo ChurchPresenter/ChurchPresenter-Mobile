@@ -37,7 +37,7 @@ class ProjectionRouter(
         fireAndForget: Boolean,
     ): Result<Unit> = when (mode.value) {
         AppMode.REMOTE -> remote.sendAction(type, payloadJson, fireAndForget)
-        AppMode.STANDALONE -> standalone.handleRemoteAction(type, payloadJson)
+        AppMode.STANDALONE -> standalone.handleRemoteAction(type)
         // Nothing projects in calendar mode, and no tab that could ask is in its strip.
         AppMode.CALENDAR -> Result.success(Unit)
     }
