@@ -37,7 +37,10 @@ private external fun storageSet(key: String, value: String)
 private external fun storageRemove(key: String)
 
 // Returned newline-joined: Wasm JS interop cannot hand back a Kotlin List directly.
-@JsFun("""(prefix) => Object.keys(localStorage).filter(k => k.startsWith(prefix)).map(k => k.slice(prefix.length)).join('\n')""")
+@JsFun(
+    """(prefix) => Object.keys(localStorage).filter(k => k.startsWith(prefix))""" +
+        """.map(k => k.slice(prefix.length)).join('\n')"""
+)
 private external fun storageKeys(prefix: String): String
 
 actual fun createFileStore(): FileStore = WasmJsFileStore()

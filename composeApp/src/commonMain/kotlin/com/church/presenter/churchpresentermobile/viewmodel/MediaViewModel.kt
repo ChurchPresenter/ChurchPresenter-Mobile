@@ -116,7 +116,11 @@ class MediaViewModel(
             _uploadProgress.value = 0f
             service.uploadMedia(picked) { p -> _uploadProgress.value = p }.fold(
                 onSuccess = { resp ->
-                    _uploaded.value = UploadedMedia(path = resp.path, title = resp.name.ifBlank { mediaTitleFrom(picked.fileName) }, mediaType = resp.mediaType)
+                    _uploaded.value = UploadedMedia(
+                        path = resp.path,
+                        title = resp.name.ifBlank { mediaTitleFrom(picked.fileName) },
+                        mediaType = resp.mediaType,
+                    )
                     _source.value = MediaSource.UPLOAD
                     _message.value = "Uploaded — ready to go live"
                 },
@@ -138,7 +142,12 @@ class MediaViewModel(
             MediaSource.URL -> {
                 val full = normalizeUrl(_url.value)
                 if (full.isNotBlank()) {
-                    return MediaItemPayload(id = "", mediaUrl = full, mediaTitle = mediaTitleFrom(full), mediaType = "url")
+                    return MediaItemPayload(
+                        id = "",
+                        mediaUrl = full,
+                        mediaTitle = mediaTitleFrom(full),
+                        mediaType = "url",
+                    )
                 }
             }
         }

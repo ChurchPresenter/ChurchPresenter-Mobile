@@ -227,10 +227,17 @@ fun SettingsField(
                         color = colors.text,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium,
-                        fontFamily = if (mono) androidx.compose.ui.text.font.FontFamily.Monospace else androidx.compose.ui.text.font.FontFamily.Default,
+                        fontFamily = if (mono) {
+                            androidx.compose.ui.text.font.FontFamily.Monospace
+                        } else {
+                            androidx.compose.ui.text.font.FontFamily.Default
+                        },
                     ),
                     visualTransformation = visual,
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = keyboardType,
+                        imeAction = imeAction,
+                    ),
                     cursorBrush = androidx.compose.ui.graphics.SolidColor(colors.accent),
                     modifier = Modifier.fillMaxWidth(),
                 )

@@ -120,7 +120,8 @@ fun SongDetailScreen(
                             val typeCounts = mutableMapOf<String, Int>()
                             slides.filter { it.part == 0 }.map { v ->
                                 val rawType = (v.label ?: v.type ?: v.name)
-                                    ?.trim()?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                                    ?.trim()
+                                    ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                                 if (rawType != null) {
                                     val count = (typeCounts[rawType] ?: 0) + 1
                                     typeCounts[rawType] = count
@@ -129,7 +130,9 @@ fun SongDetailScreen(
                             }.let { pairs ->
                                 // Only append number if there are multiple sections of that type
                                 val totalPerType = mutableMapOf<String, Int>()
-                                pairs.forEach { p -> if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1 }
+                                pairs.forEach { p ->
+                                    if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1
+                                }
                                 pairs.mapIndexed { i, p ->
                                     when {
                                         p == null -> (i + 1).toString()

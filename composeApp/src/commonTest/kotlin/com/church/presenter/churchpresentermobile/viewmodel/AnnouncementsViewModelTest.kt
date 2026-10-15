@@ -23,7 +23,9 @@ import kotlin.test.assertTrue
  */
 class AnnouncementsViewModelTest {
 
-    private fun vmWith(storage: InMemorySettingsStorage = InMemorySettingsStorage()): Pair<AnnouncementsViewModel, AppSettings> {
+    private fun vmWith(
+        storage: InMemorySettingsStorage = InMemorySettingsStorage(),
+    ): Pair<AnnouncementsViewModel, AppSettings> {
         val settings = AppSettings(storage)
         return AnnouncementsViewModel(settings, ServerEventService(settings)) to settings
     }

@@ -42,7 +42,10 @@ class SongService(
     private val client: HttpClient = createHttpClient(),
 ) : SongReader {
     init {
-        Logger.d(TAG, "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
+        Logger.d(
+            TAG,
+            "SongService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}"
+        )
     }
 
     /**
@@ -80,7 +83,12 @@ class SongService(
      * Uses a two-pass approach: standard JSON decode first, then a flexible
      * JsonObject scan as a safety net for any unrecognised field names.
      */
-    override suspend fun getSongDetail(number: String, bookName: String?, songId: Int, title: String?): Result<SongDetail> {
+    override suspend fun getSongDetail(
+        number: String,
+        bookName: String?,
+        songId: Int,
+        title: String?,
+    ): Result<SongDetail> {
         val pathSegment = number.ifBlank { "_" }
         val url = "${settings.apiBaseUrl}/${ApiConstants.SONGS_ENDPOINT}/$pathSegment"
         Logger.d(TAG, "getSongDetail — requesting URL: $url  bookName=$bookName  songId=$songId  title=$title")
@@ -136,7 +144,9 @@ class SongService(
                 .map { (k, v) -> k to (v as JsonPrimitive).contentOrNull.orEmpty() }
                 .filter { (_, text) -> text.contains('\n') && text.length > 30 }
                 .maxByOrNull { (_, text) -> text.length }
-                ?.also { (key, text) -> Logger.d(TAG, "flexibleScan — found plain lyrics under key='$key' (${text.length} chars)") }
+                ?.also { (key, text) ->
+                    Logger.d(TAG, "flexibleScan — found plain lyrics under key='$key' (${text.length} chars)")
+                }
                 ?.second
         } else null
 

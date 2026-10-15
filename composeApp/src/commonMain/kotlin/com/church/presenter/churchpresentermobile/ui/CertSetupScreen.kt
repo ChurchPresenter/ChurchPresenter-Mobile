@@ -216,7 +216,10 @@ fun CertSetupScreen(
             }
 
             if (!isIos) {
-                SetupStep(number = if (isAndroid) "2" else "4", title = stringResource(Res.string.cert_setup_step2_android_title)) {
+                SetupStep(
+                    number = if (isAndroid) "2" else "4",
+                    title = stringResource(Res.string.cert_setup_step2_android_title),
+                ) {
                     Text(
                         text = stringResource(Res.string.cert_setup_step2_android_body),
                         style = MaterialTheme.typography.bodySmall,
@@ -224,7 +227,10 @@ fun CertSetupScreen(
                     )
                 }
 
-                SetupStep(number = if (isAndroid) "3" else "5", title = stringResource(Res.string.cert_setup_android_unknown_sources_title)) {
+                SetupStep(
+                    number = if (isAndroid) "3" else "5",
+                    title = stringResource(Res.string.cert_setup_android_unknown_sources_title),
+                ) {
                     Text(
                         text = stringResource(Res.string.cert_setup_android_unknown_sources_body),
                         style = MaterialTheme.typography.bodySmall,

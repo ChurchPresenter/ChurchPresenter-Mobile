@@ -185,7 +185,8 @@ class NetworkErrorMapperTest {
 
     @Test
     fun friendlyIosCouldNotConnect() {
-        val msg = "Exception in http request: Error Domain=NSURLErrorDomain Code=-1004 \"Could not connect to the server\""
+        val msg = "Exception in http request: Error Domain=NSURLErrorDomain Code=-1004 " +
+            "\"Could not connect to the server\""
         assertEquals(
             "Server not reachable. Check the IP address and port.",
             Exception(msg).toFriendlyNetworkMessage(),

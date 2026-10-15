@@ -120,7 +120,14 @@ fun WebScreen(
             Spacer(Modifier.height(24.dp))
             // ── Bookmarks (matches design) ────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(Res.string.web_bookmarks_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
+                Text(
+                    stringResource(Res.string.web_bookmarks_label),
+                    color = colors.muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.05.em,
+                    modifier = Modifier.weight(1f),
+                )
                 Text(
                     text = stringResource(Res.string.web_add_bookmark),
                     color = colors.accent,
@@ -174,7 +181,12 @@ private fun WebActions(onClear: () -> Unit, onGoLive: () -> Unit, onAddToSchedul
         .clickable { onClear() },
             contentAlignment = Alignment.Center,
         ) {
-            Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.action_clear),
+                color = colors.text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+            )
         }
         Row(
             modifier = Modifier
@@ -187,9 +199,19 @@ private fun WebActions(onClear: () -> Unit, onGoLive: () -> Unit, onAddToSchedul
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(18.dp))
+            Icon(
+                Icons.Outlined.DesktopWindows,
+                contentDescription = null,
+                tint = colors.onAccent,
+                modifier = Modifier.size(18.dp),
+            )
             Spacer(Modifier.size(8.dp))
-            Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                stringResource(Res.string.action_go_live),
+                color = colors.onAccent,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
     Spacer(Modifier.height(12.dp))
@@ -205,9 +227,19 @@ private fun WebActions(onClear: () -> Unit, onGoLive: () -> Unit, onAddToSchedul
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.AutoMirrored.Filled.PlaylistAdd,
+            contentDescription = null,
+            tint = colors.amber,
+            modifier = Modifier.size(18.dp),
+        )
         Spacer(Modifier.size(8.dp))
-        Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        Text(
+            stringResource(Res.string.label_add_to_schedule),
+            color = colors.amber,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 
 }
@@ -215,7 +247,13 @@ private fun WebActions(onClear: () -> Unit, onGoLive: () -> Unit, onAddToSchedul
 @Composable
 private fun Overline(label: String) {
     val colors = LocalAppColors.current
-    Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)
+    Text(
+        label.uppercase(),
+        color = colors.muted,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.05.em,
+    )
     Spacer(Modifier.height(8.dp))
 }
 
@@ -241,7 +279,12 @@ private fun UrlBar(
         Icon(Icons.Outlined.Lock, contentDescription = null, tint = colors.accent, modifier = Modifier.size(15.dp))
         Box(Modifier.weight(1f)) {
             if (value.isEmpty()) {
-                Text(stringResource(Res.string.web_url_placeholder), color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)
+                Text(
+                    stringResource(Res.string.web_url_placeholder),
+                    color = colors.muted,
+                    fontSize = 13.sp,
+                    fontFamily = FontFamily.Monospace,
+                )
             }
             BasicTextField(
                 value = value,
@@ -278,9 +321,20 @@ private fun PreviewCard(url: String) {
             Dot(Color(0xFFFF5F57)); Dot(Color(0xFFFEBC2E)); Dot(Color(0xFF28C840))
         }
         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(domain, color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                domain,
+                color = colors.text,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Spacer(Modifier.height(10.dp))
-            FauxLine(0.60f); Spacer(Modifier.height(7.dp)); FauxLine(0.85f); Spacer(Modifier.height(7.dp)); FauxLine(0.72f)
+            FauxLine(0.60f)
+            Spacer(Modifier.height(7.dp))
+            FauxLine(0.85f)
+            Spacer(Modifier.height(7.dp))
+            FauxLine(0.72f)
         }
     }
 }
@@ -319,12 +373,31 @@ private fun BookmarkRow(bookmark: Bookmark, isLive: Boolean, onClick: () -> Unit
             modifier = Modifier.size(34.dp).clip(RoundedCornerShape(9.dp)).background(colors.accentTint),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.Public, contentDescription = null, tint = colors.accent, modifier = Modifier.size(17.dp))
+            Icon(
+                Icons.Outlined.Public,
+                contentDescription = null,
+                tint = colors.accent,
+                modifier = Modifier.size(17.dp),
+            )
         }
         Column(Modifier.weight(1f)) {
-            Text(bookmark.title, color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                bookmark.title,
+                color = colors.text,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Spacer(Modifier.height(3.dp))
-            Text(domainOf(bookmark.url).ifBlank { bookmark.url }, color = colors.muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                domainOf(bookmark.url).ifBlank { bookmark.url },
+                color = colors.muted,
+                fontSize = 11.sp,
+                fontFamily = FontFamily.Monospace,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         if (isLive) {
             Row(
@@ -333,7 +406,12 @@ private fun BookmarkRow(bookmark: Bookmark, isLive: Boolean, onClick: () -> Unit
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
             ) {
                 Box(Modifier.size(6.dp).clip(RoundedCornerShape(3.dp)).background(colors.accent))
-                Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(Res.string.label_live),
+                    color = colors.accent,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
         } else {
             Box(
@@ -344,7 +422,12 @@ private fun BookmarkRow(bookmark: Bookmark, isLive: Boolean, onClick: () -> Unit
                     .clickable(onClick = onDelete),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.cd_delete),
+                    tint = colors.muted,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
     }

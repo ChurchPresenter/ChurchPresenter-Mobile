@@ -76,7 +76,10 @@ private class IosMediaPickerDelegate(
             val rawName = url.lastPathComponent ?: "media_${time(null)}.mp4"
             val ext = rawName.substringAfterLast('.', "").lowercase()
             if (ext !in MEDIA_FILE_EXTENSIONS) {
-                NSOperationQueue.mainQueue.addOperationWithBlock { onFilePicked(null); onError("Unsupported file type: .$ext") }
+                NSOperationQueue.mainQueue.addOperationWithBlock {
+                    onFilePicked(null)
+                    onError("Unsupported file type: .$ext")
+                }
                 return@addOperationWithBlock
             }
 
@@ -85,7 +88,10 @@ private class IosMediaPickerDelegate(
             url.stopAccessingSecurityScopedResource()
 
             val bytes = data?.let { it.bytes?.readBytes(it.length.toInt()) } ?: run {
-                NSOperationQueue.mainQueue.addOperationWithBlock { onFilePicked(null); onError("Could not read the selected file") }
+                NSOperationQueue.mainQueue.addOperationWithBlock {
+                    onFilePicked(null)
+                    onError("Could not read the selected file")
+                }
                 return@addOperationWithBlock
             }
             if (bytes.size.toLong() > maxBytes) {

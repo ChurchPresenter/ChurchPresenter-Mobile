@@ -27,8 +27,14 @@ actual object RemoteConfig {
                 Logger.d(TAG, "  maintenance_mode          = ${rc.getBoolean(RemoteConfigKeys.MAINTENANCE_MODE)}")
                 Logger.d(TAG, "  feature_bible             = ${rc.getBoolean(RemoteConfigKeys.FEATURE_BIBLE_ENABLED)}")
                 Logger.d(TAG, "  feature_songs             = ${rc.getBoolean(RemoteConfigKeys.FEATURE_SONGS_ENABLED)}")
-                Logger.d(TAG, "  feature_pictures          = ${rc.getBoolean(RemoteConfigKeys.FEATURE_PICTURES_ENABLED)}")
-                Logger.d(TAG, "  feature_presentation      = ${rc.getBoolean(RemoteConfigKeys.FEATURE_PRESENTATION_ENABLED)}")
+                Logger.d(
+                    TAG,
+                    "  feature_pictures          = ${rc.getBoolean(RemoteConfigKeys.FEATURE_PICTURES_ENABLED)}"
+                )
+                Logger.d(
+                    TAG,
+                    "  feature_presentation      = ${rc.getBoolean(RemoteConfigKeys.FEATURE_PRESENTATION_ENABLED)}"
+                )
                 Logger.d(TAG, "  min_app_version           = ${rc.getLong(RemoteConfigKeys.MIN_APP_VERSION)}")
                 Logger.d(TAG, "  announcement_banner       = ${rc.getString(RemoteConfigKeys.ANNOUNCEMENT_BANNER)}")
                 onComplete(activated)
@@ -39,7 +45,9 @@ actual object RemoteConfig {
                 // values and the app keeps working, so log a breadcrumb but don't
                 // report it as a non-fatal — it would be pure noise.
                 Logger.e("RemoteConfig", "fetchAndActivate failed", e)
-                CrashReporting.log("RemoteConfig fetchAndActivate failed (${e::class.simpleName}): ${e.message?.take(200)}")
+                CrashReporting.log(
+                    "RemoteConfig fetchAndActivate failed (${e::class.simpleName}): ${e.message?.take(200)}"
+                )
                 onComplete(false)
             }
     }

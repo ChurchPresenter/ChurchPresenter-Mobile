@@ -781,7 +781,11 @@ fun App(
 
     // Preload the target screen's content when a schedule-drawer tap requests it.
     LaunchedEffect(pendingMediaUrl) {
-        pendingMediaUrl?.let { mediaViewModel.setSource(MediaSource.URL); mediaViewModel.setUrl(it); pendingMediaUrl = null }
+        pendingMediaUrl?.let {
+            mediaViewModel.setSource(MediaSource.URL)
+            mediaViewModel.setUrl(it)
+            pendingMediaUrl = null
+        }
     }
     LaunchedEffect(pendingWebUrl) {
         pendingWebUrl?.let { webViewModel.setUrl(it); pendingWebUrl = null }
@@ -790,7 +794,10 @@ fun App(
         pendingAnnouncement?.let { announcementsViewModel.preload(it); pendingAnnouncement = null }
     }
     LaunchedEffect(pendingDictionaryQuery) {
-        pendingDictionaryQuery?.let { if (it.isNotBlank()) dictionaryViewModel.setSearchQuery(it); pendingDictionaryQuery = null }
+        pendingDictionaryQuery?.let {
+            if (it.isNotBlank()) dictionaryViewModel.setSearchQuery(it)
+            pendingDictionaryQuery = null
+        }
     }
 
     AppTheme(themeMode = themeMode) {

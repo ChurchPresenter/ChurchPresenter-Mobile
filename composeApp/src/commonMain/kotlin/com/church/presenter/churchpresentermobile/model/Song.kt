@@ -171,8 +171,9 @@ data class SongVerse(
         get() {
             val linesList = lines ?: verseLinesKebab ?: verseLinesCamel
             if (!linesList.isNullOrEmpty()) return linesList.joinToString("\n")
-            return listOfNotNull(text, content, lyrics, words, body, verseTextKebab, verseTextCamel, slideText, lyricText)
-                .firstOrNull { it.isNotBlank() } ?: ""
+            return listOfNotNull(
+                text, content, lyrics, words, body, verseTextKebab, verseTextCamel, slideText, lyricText
+            ).firstOrNull { it.isNotBlank() } ?: ""
         }
 }
 
@@ -212,8 +213,9 @@ data class SongDetail(
             .firstOrNull { it.isNotBlank() }
 
     val allVerses: List<SongVerse>
-        get() = listOfNotNull(verses, sections, lyrics, slides, stanzas, songVersesKebab, songVersesCamel, verseListKebab)
-            .firstOrNull { it.isNotEmpty() } ?: emptyList()
+        get() = listOfNotNull(
+            verses, sections, lyrics, slides, stanzas, songVersesKebab, songVersesCamel, verseListKebab
+        ).firstOrNull { it.isNotEmpty() } ?: emptyList()
 
     /**
      * [allVerses] as the desktop's slides: a verse with a manual break (`[---]`) becomes one

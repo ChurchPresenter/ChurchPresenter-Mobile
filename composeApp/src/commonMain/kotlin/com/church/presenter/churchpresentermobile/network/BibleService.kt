@@ -37,7 +37,10 @@ class BibleService(
     private val client: HttpClient = createHttpClient(),
 ) : BibleReader {
     init {
-        Logger.d(TAG, "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}")
+        Logger.d(
+            TAG,
+            "BibleService created — host=${settings.host} port=${settings.port} baseUrl=${settings.apiBaseUrl}"
+        )
     }
 
     /**

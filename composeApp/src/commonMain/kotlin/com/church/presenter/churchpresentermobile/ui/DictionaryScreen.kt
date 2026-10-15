@@ -468,8 +468,18 @@ private fun EntryRow(
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier.testTag(UiTags.dictEntryUses(entry.number)),
             ) {
-                Text(entry.occurrences.grouped(), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                Text(stringResource(Res.string.dictionary_uses), color = colors.dim, fontSize = 9.sp, letterSpacing = 0.05.em)
+                Text(
+                    entry.occurrences.grouped(),
+                    color = colors.text,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    stringResource(Res.string.dictionary_uses),
+                    color = colors.dim,
+                    fontSize = 9.sp,
+                    letterSpacing = 0.05.em,
+                )
             }
         }
     }
@@ -538,7 +548,13 @@ internal fun EntryDetail(
             NumberPill(entry.number, solid = true)
             Spacer(Modifier.size(10.dp))
             Text(
-                text = if (entry.isHebrew) stringResource(Res.string.dictionary_filter_hebrew) else if (entry.isGreek) stringResource(Res.string.dictionary_filter_greek) else "",
+                text = if (entry.isHebrew) {
+                    stringResource(Res.string.dictionary_filter_hebrew)
+                } else if (entry.isGreek) {
+                    stringResource(Res.string.dictionary_filter_greek)
+                } else {
+                    ""
+                },
                 color = colors.muted,
                 fontSize = 12.sp,
                 modifier = Modifier.testTag(UiTags.DICT_SHEET_LANGUAGE),
@@ -593,7 +609,12 @@ internal fun EntryDetail(
             label = stringResource(Res.string.dictionary_occurrences),
             modifier = Modifier.fillMaxWidth().testTag(UiTags.DICT_SHEET_OCCURRENCES),
         ) {
-            Text(stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()), color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                stringResource(Res.string.dictionary_occurrences_count, entry.occurrences.grouped()),
+                color = colors.text,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
 
         if (entry.definition.isNotBlank()) {
@@ -687,7 +708,13 @@ private fun MetaCard(label: String, modifier: Modifier = Modifier, value: @Compo
             .background(colors.inputBg)
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
-        Text(label.uppercase(), color = colors.muted, fontSize = 9.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)
+        Text(
+            label.uppercase(),
+            color = colors.muted,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.05.em,
+        )
         Spacer(Modifier.height(4.dp))
         value()
     }
@@ -697,7 +724,13 @@ private fun MetaCard(label: String, modifier: Modifier = Modifier, value: @Compo
 private fun SectionLabel(label: String) {
     val colors = LocalAppColors.current
     Spacer(Modifier.height(18.dp))
-    Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)
+    Text(
+        label.uppercase(),
+        color = colors.muted,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.05.em,
+    )
     Spacer(Modifier.height(6.dp))
 }
 

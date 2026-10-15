@@ -72,9 +72,10 @@ class MainActivity : ComponentActivity() {
                 RemoteConfigKeys.IS_DEMO_MODE                  to RemoteConfigDefaults.IS_DEMO_MODE,
                 RemoteConfigKeys.RELAY_CONFIG_URL              to RemoteConfigDefaults.RELAY_CONFIG_URL,
             ),
-            fetchIntervalSeconds = if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
-                                      RemoteConfigDefaults.FETCH_INTERVAL_DEBUG
-                                  else RemoteConfigDefaults.FETCH_INTERVAL_PRODUCTION
+            fetchIntervalSeconds =
+                if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+                    RemoteConfigDefaults.FETCH_INTERVAL_DEBUG
+                else RemoteConfigDefaults.FETCH_INTERVAL_PRODUCTION
         )
         RemoteConfig.fetchAndActivate { activated ->
             CrashReporting.log("RemoteConfig fetchAndActivate — activated=$activated")
