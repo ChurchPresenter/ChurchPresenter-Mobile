@@ -6,6 +6,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 actual object RemoteConfig {
 
     private const val TAG = "RemoteConfig"
+    /** Keeps a failure breadcrumb short — Crashlytics logs are size-limited. */
+    private const val BREADCRUMB_MAX = 200
     private val rc: FirebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
     actual fun init(defaults: Map<String, Any>, fetchIntervalSeconds: Long) {
@@ -46,7 +48,7 @@ actual object RemoteConfig {
                 // report it as a non-fatal — it would be pure noise.
                 Logger.e("RemoteConfig", "fetchAndActivate failed", e)
                 CrashReporting.log(
-                    "RemoteConfig fetchAndActivate failed (${e::class.simpleName}): ${e.message?.take(200)}"
+                    "RemoteConfig fetchAndActivate failed (${e::class.simpleName}): ${e.message?.take(BREADCRUMB_MAX)}"
                 )
                 onComplete(false)
             }

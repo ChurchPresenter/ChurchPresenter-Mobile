@@ -29,6 +29,10 @@ import kotlinx.serialization.json.jsonObject
 
 private const val TAG = "SongService"
 
+/** How much of a response body, and of a song's plain text, the debug log shows. */
+private const val BODY_LOG_CHARS = 500
+private const val PLAIN_TEXT_LOG_CHARS = 80
+
 private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
 /**
@@ -58,7 +62,7 @@ class SongService(
             val httpResponse = client.get(url) { applyApiKey() }
             Logger.d(TAG, "getSongs — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getSongs — raw body (first 500 chars): ${raw.take(500)}")
+            Logger.d(TAG, "getSongs — raw body (first 500 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
             val response = json.decodeFromString<SongsResponse>(raw)
             val songs = response.songBook.flatMap { book ->
@@ -106,7 +110,11 @@ class SongService(
 
             // Pass 1: standard decode (handles all @SerialName variants in the model)
             val base = json.decodeFromString<SongDetail>(raw)
-            Logger.d(TAG, "getSongDetail — pass1: verses=${base.allVerses.size}  plainText=${base.plainText?.take(80)}")
+            Logger.d(
+                TAG,
+                "getSongDetail — pass1: verses=${base.allVerses.size}  " +
+                    "plainText=${base.plainText?.take(PLAIN_TEXT_LOG_CHARS)}",
+            )
 
             if (base.hasLyrics) return@apiRunCatching base
 

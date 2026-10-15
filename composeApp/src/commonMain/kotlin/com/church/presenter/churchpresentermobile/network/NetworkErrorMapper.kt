@@ -2,6 +2,13 @@ package com.church.presenter.churchpresentermobile.network
 
 import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.util.CrashReporting
+import io.ktor.http.HttpStatusCode
+
+/** How far down a cause chain to look before giving up — guards against a cycle. */
+private const val MAX_CAUSE_DEPTH = 8
+
+/** Longest raw error text shown to the operator when nothing better is known. */
+private const val MAX_FALLBACK_MESSAGE_CHARS = 120
 
 /**
  * Records this exception as a non-fatal event in Crashlytics **and** returns a
@@ -72,7 +79,7 @@ fun Throwable.shouldReportAsNonFatal(): Boolean {
  * gone wrong, and there is nothing the phone can retry into existence.
  */
 fun Throwable.isServerNotReady(): Boolean =
-    this is ApiException && httpStatus == 503
+    this is ApiException && httpStatus == HttpStatusCode.ServiceUnavailable.value
 
 /**
  * Server-fault statuses that still warrant a non-fatal report.
@@ -106,7 +113,7 @@ private val REPORTABLE_SERVER_FAULT_STATUSES = setOf(
 fun Throwable.isUnusableAddressError(): Boolean {
     var current: Throwable? = this
     var depth = 0
-    while (current != null && depth < 8) {
+    while (current != null && depth < MAX_CAUSE_DEPTH) {
         val raw = current.message
         if (raw != null && UNUSABLE_ADDRESS_MARKERS.any { raw.contains(it, ignoreCase = true) }) {
             return true
@@ -143,7 +150,7 @@ fun Throwable.isExpectedConnectivityError(): Boolean {
     // recordException reports the whole chain, so checking only `this` misses it.
     var current: Throwable? = this
     var depth = 0
-    while (current != null && depth < 8) {
+    while (current != null && depth < MAX_CAUSE_DEPTH) {
         val name = current::class.simpleName ?: ""
         if (name in EXPECTED_CONNECTIVITY_EXCEPTIONS) return true
 
@@ -245,12 +252,13 @@ fun Throwable.toFriendlyNetworkMessage(): String {
     if (this is ApiException) {
         reason?.let { return it }
         return when (httpStatus) {
-            401, 403 -> "Server refused the request. Check the API key in Settings."
-            404      -> "Not found on the server."
-            408      -> "The server took too long to respond."
-            503      -> "The desktop isn't ready yet."
+            HttpStatusCode.Unauthorized.value, HttpStatusCode.Forbidden.value ->
+                "Server refused the request. Check the API key in Settings."
+            HttpStatusCode.NotFound.value -> "Not found on the server."
+            HttpStatusCode.RequestTimeout.value -> "The server took too long to respond."
+            HttpStatusCode.ServiceUnavailable.value -> "The desktop isn't ready yet."
             in 500..599 -> "The desktop app reported an error."
-            else     -> "Server error ($httpStatus)."
+            else -> "Server error ($httpStatus)."
         }
     }
 
@@ -289,7 +297,7 @@ fun Throwable.toFriendlyNetworkMessage(): String {
             inner.contains("hostname", ignoreCase = true) ->
                 "Invalid server address. Check the IP address."
             // Fallback: first line only, capped at 120 chars
-            else -> inner.lines().firstOrNull()?.take(120) ?: "Connection error"
+            else -> inner.lines().firstOrNull()?.take(MAX_FALLBACK_MESSAGE_CHARS) ?: "Connection error"
         }
     }
 
@@ -323,6 +331,6 @@ fun Throwable.toFriendlyNetworkMessage(): String {
         raw.contains("NetworkOnMainThreadException") ->
             "Network error (internal). Please restart the app."
 
-        else -> raw.take(120)
+        else -> raw.take(MAX_FALLBACK_MESSAGE_CHARS)
     }
 }

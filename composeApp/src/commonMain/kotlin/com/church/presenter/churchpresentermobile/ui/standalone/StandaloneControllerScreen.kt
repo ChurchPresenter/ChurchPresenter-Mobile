@@ -80,6 +80,7 @@ import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.StoredPhoto
 import com.church.presenter.churchpresentermobile.ui.OverlineRow
+import com.church.presenter.churchpresentermobile.ui.SCREEN_ASPECT_RATIO
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -336,7 +337,7 @@ private fun SlidePreview(slide: Slide, total: Int, index: Int, modifier: Modifie
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(16f / 9f)
+                .aspectRatio(SCREEN_ASPECT_RATIO)
                 .clip(RoundedCornerShape(AppDimens.radiusChip))
                 .border(1.dp, colors.border, RoundedCornerShape(AppDimens.radiusChip)),
         ) {

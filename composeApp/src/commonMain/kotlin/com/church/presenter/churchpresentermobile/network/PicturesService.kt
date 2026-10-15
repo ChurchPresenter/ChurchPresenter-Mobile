@@ -22,6 +22,10 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "PicturesService"
 
+/** How much of a response body the debug log shows. */
+private const val BODY_LOG_CHARS = 300
+private const val UPLOAD_BODY_LOG_CHARS = 200
+
 private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
 /**
@@ -59,7 +63,7 @@ class PicturesService(
             val httpResponse = client.get(url) { applyApiKey() }
             Logger.d(TAG, "getPictures — HTTP status: ${httpResponse.status}")
             val raw = httpResponse.bodyAsText()
-            Logger.d(TAG, "getPictures — raw body (first 300 chars): ${raw.take(300)}")
+            Logger.d(TAG, "getPictures — raw body (first 300 chars): ${raw.take(BODY_LOG_CHARS)}")
             httpResponse.ensureSuccess(raw)
             val folder = json.decodeFromString<PicturesFolder>(raw)
             // Thumbnail URLs are root-relative — prefix with scheme+host+port only (not /api)
@@ -163,7 +167,7 @@ class PicturesService(
                 applyApiKey()
             }
             val raw = response.bodyAsText()
-            Logger.d(TAG, "uploadPhoto ◀ status=${response.status}  body=${raw.take(200)}")
+            Logger.d(TAG, "uploadPhoto ◀ status=${response.status}  body=${raw.take(UPLOAD_BODY_LOG_CHARS)}")
             response.ensureSuccess(raw)
             json.decodeFromString<UploadPhotoResponse>(raw)
         }.onFailure { e -> Logger.e(TAG, "uploadPhoto — FAILED: ${e.message}", e) }

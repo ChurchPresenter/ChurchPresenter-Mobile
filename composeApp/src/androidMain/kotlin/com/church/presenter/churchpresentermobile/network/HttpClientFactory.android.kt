@@ -8,6 +8,9 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+/** OkHttp's overall in-flight cap, raised along with the per-host one. */
+private const val MAX_IMAGE_REQUESTS = 64
+
 private val lenientJson = Json { prettyPrint = true; isLenient = true; ignoreUnknownKeys = true }
 
 actual fun createHttpClient(): HttpClient = HttpClient(OkHttp) {
@@ -32,9 +35,9 @@ actual fun createImageHttpClient(): HttpClient = HttpClient(OkHttp) {
     install(HttpTimeout) {
         // Thumbnails are generated on-demand by the desktop and can be slow under a
         // burst of grid requests, so give them generous timeouts.
-        requestTimeoutMillis = 30_000
-        connectTimeoutMillis = 15_000
-        socketTimeoutMillis = 30_000
+        requestTimeoutMillis = ApiConstants.IMAGE_REQUEST_TIMEOUT_MS
+        connectTimeoutMillis = ApiConstants.IMAGE_CONNECT_TIMEOUT_MS
+        socketTimeoutMillis = ApiConstants.IMAGE_SOCKET_TIMEOUT_MS
     }
     engine {
         // OkHttp defaults to maxRequestsPerHost = 5, which starves a photo/slide
@@ -42,8 +45,8 @@ actual fun createImageHttpClient(): HttpClient = HttpClient(OkHttp) {
         // requests then time out). Raise the per-host cap so the grid fills in.
         config {
             dispatcher(okhttp3.Dispatcher().apply {
-                maxRequests = 64
-                maxRequestsPerHost = 12
+                maxRequests = MAX_IMAGE_REQUESTS
+                maxRequestsPerHost = ApiConstants.IMAGE_MAX_CONNECTIONS_PER_HOST
             })
         }
     }

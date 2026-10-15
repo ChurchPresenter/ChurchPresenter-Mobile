@@ -12,6 +12,9 @@ package com.church.presenter.churchpresentermobile.util
  */
 actual object CrashReporting {
 
+    /** Longest stack trace handed to the Swift bridge, in characters. */
+    private const val MAX_STACK_TRACE_CHARS = 4_000
+
     actual fun init() {
         // Crashlytics auto-starts after FirebaseApp.configure() in iOSApp.swift
     }
@@ -31,7 +34,7 @@ actual object CrashReporting {
             bridge.recordError(
                 message    = throwable.message ?: "Unknown error",
                 type       = throwable::class.simpleName ?: "Throwable",
-                stackTrace = throwable.stackTraceToString().take(4_000),
+                stackTrace = throwable.stackTraceToString().take(MAX_STACK_TRACE_CHARS),
             )
         } else {
             println("[Crashlytics] Non-fatal: ${throwable.message}")

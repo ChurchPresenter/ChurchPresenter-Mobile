@@ -7,6 +7,12 @@ import com.google.firebase.ktx.Firebase
 
 actual object Analytics {
 
+    /** Firebase's default session timeout — 30 minutes. */
+    private const val SESSION_TIMEOUT_MS = 1_800_000L
+
+    /** Longest event-parameter value Firebase Analytics accepts. */
+    private const val MAX_PARAM_VALUE_LENGTH = 100
+
     private var handle: FirebaseAnalytics? = null
     private var resolved = false
 
@@ -40,7 +46,7 @@ actual object Analytics {
             fa?.setAnalyticsCollectionEnabled(true)
             // Disable automatic Activity-class screen reporting so only our
             // manual logScreenView() calls appear in "Pages and screens".
-            fa?.setSessionTimeoutDuration(1800_000L) // keep default 30-min session
+            fa?.setSessionTimeoutDuration(SESSION_TIMEOUT_MS)
             fa?.setDefaultEventParameters(null)
         }
     }
@@ -52,7 +58,7 @@ actual object Analytics {
     actual fun logEvent(name: String, params: Map<String, String>) {
         runCatching {
             val bundle = Bundle()
-            params.forEach { (k, v) -> bundle.putString(k, v.take(100)) }
+            params.forEach { (k, v) -> bundle.putString(k, v.take(MAX_PARAM_VALUE_LENGTH)) }
             fa?.logEvent(name, bundle)
         }
         Logger.d("Analytics", "logEvent: $name $params")

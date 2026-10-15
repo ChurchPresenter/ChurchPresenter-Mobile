@@ -131,7 +131,7 @@ fun StatusScreen(
         if (uiState is StatusUiState.Success) {
             val warnings = (uiState as StatusUiState.Success).warnings
             if (warnings.isEmpty()) {
-                delay(3000)
+                delay(AUTO_ADVANCE_MS)
                 onContinue()
             }
         }
@@ -233,7 +233,7 @@ private fun LoadingContent(onOpenSettings: () -> Unit) {
     // leaving the user stuck on a bare spinner with no escape.
     var showEscapeHatch by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        delay(5000)
+        delay(ESCAPE_HATCH_MS)
         showEscapeHatch = true
     }
     Column(
@@ -733,6 +733,12 @@ private fun InfoCard(icon: ImageVector, title: String, body: String) {
     val colors = LocalAppColors.current
     NoticeCard(icon = icon, title = title, body = body, tint = colors.amber)
 }
+
+/** How long a clean result stays up before the screen moves on by itself. */
+private const val AUTO_ADVANCE_MS = 3000L
+
+/** How long the check may spin before the screen offers a way out. */
+private const val ESCAPE_HATCH_MS = 5000L
 
 /** Line height of a notice's body, as a multiple of its type size — the design's 1.55. */
 private const val NOTICE_LINE_HEIGHT = 1.55f

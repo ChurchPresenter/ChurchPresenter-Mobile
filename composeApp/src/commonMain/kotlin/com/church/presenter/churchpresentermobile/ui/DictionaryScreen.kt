@@ -87,6 +87,9 @@ import com.church.presenter.churchpresentermobile.viewmodel.DictionaryViewModel
 
 private val strongsRefRegex = Regex("[HG]\\d{1,5}")
 
+/** Digits between thousands separators. */
+private const val DIGIT_GROUP = 3
+
 /**
  * Groups an integer with commas: 2606 → "2,606".
  *
@@ -97,7 +100,7 @@ internal fun Int.grouped(): String {
     val s = toString()
     val sb = StringBuilder()
     for ((i, c) in s.withIndex()) {
-        if (i > 0 && (s.length - i) % 3 == 0) sb.append(',')
+        if (i > 0 && (s.length - i) % DIGIT_GROUP == 0) sb.append(',')
         sb.append(c)
     }
     return sb.toString()

@@ -107,12 +107,29 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementForm
 import com.church.presenter.churchpresentermobile.viewmodel.AnnouncementsViewModel
 
+private const val LAST_HOUR = 23
+private const val LAST_MINUTE = 59
+private const val LAST_SECOND = 59
+private const val DEGREES_IN_CIRCLE = 360f
+
+// Font size stepper bounds, in the desktop's points.
+private const val MIN_FONT_SIZE = 16
+private const val MAX_FONT_SIZE = 160
+private const val MAX_ANIMATION_SECONDS = 30f
+
+/** "Show on screen" is the wider of the two action buttons, against Clear's 1f. */
+private const val SHOW_BUTTON_WEIGHT = 1.6f
+
+private const val PREVIEW_FONT_SCALE = 0.32f
+private const val PREVIEW_MIN_FONT_SP = 14f
+private const val PREVIEW_MAX_FONT_SP = 44f
+
 /** Widened for the UI tests, which press a swatch by the colour it carries. */
 internal val TEXT_SWATCHES = listOf("#FFFFFF", "#F5C518", "#22C55E")
 internal val BG_SWATCHES = listOf("#000000", "#1E3A8A", "#7F1D1D")
 
 private fun parseHex(hex: String): Color = try {
-    Color(("FF" + hex.removePrefix("#")).toLong(16))
+    Color(("FF" + hex.removePrefix("#")).toLong(HEX_RADIX))
 } catch (_: Exception) { Color.White }
 
 private fun p2(n: Int) = n.toString().padStart(2, '0')
@@ -180,7 +197,7 @@ fun AnnouncementsScreen(
                             stringResource(Res.string.stepper_hrs),
                             form.hours,
                             0,
-                            23,
+                            LAST_HOUR,
                             Modifier.weight(1f),
                             tag = UiTags.ANNOUNCE_HOURS,
                         ) { v -> viewModel.update { it.copy(hours = v) } }
@@ -188,7 +205,7 @@ fun AnnouncementsScreen(
                             stringResource(Res.string.stepper_min),
                             form.minutes,
                             0,
-                            59,
+                            LAST_MINUTE,
                             Modifier.weight(1f),
                             tag = UiTags.ANNOUNCE_MINUTES,
                         ) { v -> viewModel.update { it.copy(minutes = v) } }
@@ -196,7 +213,7 @@ fun AnnouncementsScreen(
                             stringResource(Res.string.stepper_sec),
                             form.seconds,
                             0,
-                            59,
+                            LAST_SECOND,
                             Modifier.weight(1f),
                             tag = UiTags.ANNOUNCE_SECONDS,
                         ) { v -> viewModel.update { it.copy(seconds = v) } }
@@ -212,7 +229,7 @@ fun AnnouncementsScreen(
                             stringResource(Res.string.stepper_hour),
                             form.targetHour,
                             0,
-                            23,
+                            LAST_HOUR,
                             Modifier.weight(1f),
                             tag = UiTags.ANNOUNCE_TARGET_HOUR,
                         ) { v -> viewModel.update { it.copy(targetHour = v) } }
@@ -220,7 +237,7 @@ fun AnnouncementsScreen(
                             stringResource(Res.string.stepper_min),
                             form.targetMinute,
                             0,
-                            59,
+                            LAST_MINUTE,
                             Modifier.weight(1f),
                             tag = UiTags.ANNOUNCE_TARGET_MINUTE,
                         ) { v -> viewModel.update { it.copy(targetMinute = v) } }
@@ -250,8 +267,8 @@ fun AnnouncementsScreen(
             Stepper(
                 stringResource(Res.string.stepper_font_size),
                 form.fontSize,
-                16,
-                160,
+                MIN_FONT_SIZE,
+                MAX_FONT_SIZE,
                 step = 4,
                 tag = UiTags.ANNOUNCE_FONT_SIZE,
             ) { v -> viewModel.update { it.copy(fontSize = v) } }
@@ -283,9 +300,9 @@ fun AnnouncementsScreen(
             }
             Slider(
                 modifier = Modifier.testTag(UiTags.ANNOUNCE_DURATION),
-                value = (form.animationDuration / 1000f).coerceIn(0f, 30f),
+                value = (form.animationDuration / 1000f).coerceIn(0f, MAX_ANIMATION_SECONDS),
                 onValueChange = { v -> viewModel.update { it.copy(animationDuration = (v * 2).roundToInt() * 500) } },
-                valueRange = 0f..30f,
+                valueRange = 0f..MAX_ANIMATION_SECONDS,
                 steps = 59, // 0–30 s in 0.5 s increments
                 colors = SliderDefaults.colors(
                     thumbColor = colors.accent,
@@ -317,7 +334,7 @@ fun AnnouncementsScreen(
                 }
                 Row(
                     modifier = Modifier
-                        .weight(1.6f)
+                        .weight(SHOW_BUTTON_WEIGHT)
                         .height(50.dp)
                         .clip(RoundedCornerShape(13.dp))
                         .background(colors.accent)
@@ -557,10 +574,10 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
 
             ColorSlider(
                 stringResource(Res.string.color_slider_hue),
-                hue / 360f,
+                hue / DEGREES_IN_CIRCLE,
                 colors.accent,
                 UiTags.COLOR_PICKER_HUE,
-            ) { hue = it * 360f }
+            ) { hue = it * DEGREES_IN_CIRCLE }
             ColorSlider(
                 stringResource(Res.string.color_slider_saturation),
                 sat,
@@ -639,7 +656,7 @@ internal fun rgbToHsv(c: Color): FloatArray {
         max == g -> 60f * (((b - r) / d) + 2f)
         else -> 60f * (((r - g) / d) + 4f)
     }
-    if (h < 0f) h += 360f
+    if (h < 0f) h += DEGREES_IN_CIRCLE
     val s = if (max == 0f) 0f else d / max
     return floatArrayOf(h, s, max)
 }
@@ -707,7 +724,7 @@ private fun PreviewCard(form: AnnouncementForm, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(16f / 9f)
+            .aspectRatio(SCREEN_ASPECT_RATIO)
             .clip(RoundedCornerShape(12.dp))
             .background(parseHex(form.backgroundColor))
             .border(1.dp, colors.border, RoundedCornerShape(12.dp))
@@ -717,7 +734,7 @@ private fun PreviewCard(form: AnnouncementForm, modifier: Modifier = Modifier) {
         Text(
             previewText,
             color = parseHex(form.textColor),
-            fontSize = (form.fontSize * 0.32f).coerceIn(14f, 44f).sp,
+            fontSize = (form.fontSize * PREVIEW_FONT_SCALE).coerceIn(PREVIEW_MIN_FONT_SP, PREVIEW_MAX_FONT_SP).sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )

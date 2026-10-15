@@ -10,6 +10,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.InstalledBible
 import com.church.presenter.churchpresentermobile.network.BibleDownloadService
 import com.church.presenter.churchpresentermobile.util.Logger
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -93,7 +94,9 @@ class BibleSyncViewModel(
                     Logger.e(TAG, "loadChoices — FAILED: ${error.message}")
                     // A rejected key is a different problem from an unreachable computer, and
                     // only one of them is fixed by typing a key.
-                    if ((error as? ApiException)?.httpStatus == 401) _needsApiKey.value = true
+                    if ((error as? ApiException)?.httpStatus == HttpStatusCode.Unauthorized.value) {
+                        _needsApiKey.value = true
+                    }
                     _loadError.value = error.message ?: "Could not reach your computer"
                 }
             _isLoadingChoices.value = false

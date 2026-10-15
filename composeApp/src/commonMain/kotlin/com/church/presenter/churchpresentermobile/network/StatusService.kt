@@ -11,11 +11,16 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 
 private const val TAG = "StatusService"
+
+/** How much of a response body the debug log shows. */
+private const val STATUS_BODY_LOG_CHARS = 300
+private const val PROBE_BODY_LOG_CHARS = 200
 
 private val json = Json {
     ignoreUnknownKeys = true
@@ -66,7 +71,7 @@ class StatusService internal constructor(
         return apiRunCatching {
             val response = client.get(statusUrl) { applyHeaders() }
             val raw = response.bodyAsText()
-            Logger.d(TAG, "fetchStatus — status=${response.status}  body=${raw.take(300)}")
+            Logger.d(TAG, "fetchStatus — status=${response.status}  body=${raw.take(STATUS_BODY_LOG_CHARS)}")
 
             when {
                 isUnauthorized(response) -> {
@@ -124,7 +129,7 @@ class StatusService internal constructor(
         Logger.d(TAG, "probeSongs — GET $songsUrl")
         val response = client.get(songsUrl) { applyHeaders() }
         val raw = response.bodyAsText()
-        Logger.d(TAG, "probeSongs — status=${response.status}  body=${raw.take(200)}")
+        Logger.d(TAG, "probeSongs — status=${response.status}  body=${raw.take(PROBE_BODY_LOG_CHARS)}")
 
         if (isUnauthorized(response)) {
             return StatusProbeResult.Unauthorized(response.status.value)
@@ -147,7 +152,7 @@ class StatusService internal constructor(
     }
 
     private fun isUnauthorized(response: HttpResponse): Boolean =
-        response.status.value == 401 || response.status.value == 403
+        response.status == HttpStatusCode.Unauthorized || response.status == HttpStatusCode.Forbidden
 
     private fun HttpRequestBuilder.applyHeaders() {
         if (apiKey.isNotBlank()) header(ApiConstants.API_KEY_HEADER, apiKey)

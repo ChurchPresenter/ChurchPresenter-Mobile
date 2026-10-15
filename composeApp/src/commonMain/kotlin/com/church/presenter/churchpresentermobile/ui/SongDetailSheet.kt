@@ -49,6 +49,9 @@ import com.church.presenter.churchpresentermobile.library.Chords
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
+/** Verses are dimmed until projecting is on — a tap would not reach the screen. */
+private const val IDLE_VERSES_ALPHA = 0.6f
+
 /**
  * Full-screen song detail view with selectable verse cards.
  *
@@ -185,7 +188,7 @@ private fun VerseGrid(
             state = versesState,
             modifier = Modifier
                 .fillMaxSize()
-                .alpha(if (isProjecting) 1f else 0.6f)
+                .alpha(if (isProjecting) 1f else IDLE_VERSES_ALPHA)
                 .verticalScrollbar(versesState),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),

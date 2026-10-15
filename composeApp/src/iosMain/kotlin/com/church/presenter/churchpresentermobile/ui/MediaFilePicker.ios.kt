@@ -18,6 +18,8 @@ import platform.UniformTypeIdentifiers.UTType
 import platform.darwin.NSObject
 import platform.posix.time
 
+private const val BYTES_PER_MB = 1024 * 1024
+
 /**
  * iOS actual — presents a document picker filtered to video and audio. iOS has no tight
  * per-app heap cap, so the file is read via NSData and streamed to the channel in chunks.
@@ -95,10 +97,10 @@ private class IosMediaPickerDelegate(
                 return@addOperationWithBlock
             }
             if (bytes.size.toLong() > maxBytes) {
-                val mb = bytes.size / (1024 * 1024)
+                val mb = bytes.size / BYTES_PER_MB
                 NSOperationQueue.mainQueue.addOperationWithBlock {
                     onFilePicked(null)
-                    onError("File is too large ($mb MB). Maximum is ${maxBytes / (1024 * 1024)} MB.")
+                    onError("File is too large ($mb MB). Maximum is ${maxBytes / BYTES_PER_MB} MB.")
                 }
                 return@addOperationWithBlock
             }

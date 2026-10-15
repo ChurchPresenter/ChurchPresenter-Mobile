@@ -31,6 +31,11 @@ object SpbParser {
     /** `1 Genesis 50` — book number, name, chapter count. */
     private val BOOK_HEADER = Regex("""^(\d+)\s+(.+?)\s+(\d+)$""")
 
+    /** [BOOK_HEADER]'s groups, in order. */
+    private const val HEADER_BOOK_ID = 1
+    private const val HEADER_NAME = 2
+    private const val HEADER_CHAPTER_COUNT = 3
+
     /**
      * Book names only, without walking the verses.
      *
@@ -86,10 +91,10 @@ object SpbParser {
             if (!headerDone) {
                 val header = BOOK_HEADER.matchEntire(line)
                 if (header != null) {
-                    val id = header.groupValues[1].toInt()
+                    val id = header.groupValues[HEADER_BOOK_ID].toInt()
                     headerOrder += id
-                    names[id] = header.groupValues[2].trim()
-                    declared[id] = header.groupValues[3].toInt()
+                    names[id] = header.groupValues[HEADER_NAME].trim()
+                    declared[id] = header.groupValues[HEADER_CHAPTER_COUNT].toInt()
                     continue
                 }
                 // The rule is consumed here; a line starting with B ends the header but is still
@@ -144,10 +149,10 @@ object SpbParser {
             if (line.startsWith("##") || line.isEmpty()) continue
             if (line.startsWith(SEPARATOR) || line.startsWith("B")) break
             val header = BOOK_HEADER.matchEntire(line) ?: continue
-            val id = header.groupValues[1].toInt()
+            val id = header.groupValues[HEADER_BOOK_ID].toInt()
             headerOrder += id
-            names[id] = header.groupValues[2].trim()
-            declared[id] = header.groupValues[3].toInt()
+            names[id] = header.groupValues[HEADER_NAME].trim()
+            declared[id] = header.groupValues[HEADER_CHAPTER_COUNT].toInt()
         }
         return ParsedBible(
             title = "",

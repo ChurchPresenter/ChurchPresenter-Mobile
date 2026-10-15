@@ -37,6 +37,7 @@ import churchpresentermobile.composeapp.generated.resources.color_red
 import churchpresentermobile.composeapp.generated.resources.qa_admin_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_save
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
+import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
@@ -192,7 +193,7 @@ internal fun ColorSwatch(color: Color?, onClick: () -> Unit, modifier: Modifier 
 
 internal fun rgbToHex(red: Int, green: Int, blue: Int): String =
     "#" + listOf(red, green, blue).joinToString("") { channel ->
-        channel.coerceIn(0, MAX_CHANNEL.toInt()).toString(16).uppercase().padStart(2, '0')
+        channel.coerceIn(0, MAX_CHANNEL.toInt()).toString(HEX_RADIX).uppercase().padStart(2, '0')
     }
 
 private const val MAX_CHANNEL = 255f

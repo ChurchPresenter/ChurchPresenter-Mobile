@@ -16,6 +16,9 @@ object SlideDeckBuilder {
     /** Separator between the title and the section label on a slide's reference line. */
     private const val REFERENCE_SEPARATOR = " · "
 
+    /** An untitled announcement takes its title from the start of its first line. */
+    private const val UNTITLED_TITLE_CHARS = 40
+
     /**
      * Builds a deck from a song and its fetched lyrics.
      *
@@ -176,7 +179,7 @@ object SlideDeckBuilder {
 
         return SlideDeck(
             kind = SlideKind.ANNOUNCEMENT,
-            title = title?.takeIf { it.isNotBlank() } ?: body.lineSequence().first().take(40),
+            title = title?.takeIf { it.isNotBlank() } ?: body.lineSequence().first().take(UNTITLED_TITLE_CHARS),
             slides = listOf(
                 Slide(
                     kind = SlideKind.ANNOUNCEMENT,

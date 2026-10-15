@@ -16,6 +16,9 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "CpsetSerializer"
 
+/** How much of an untitled announcement's body identifies it when merging an import. */
+private const val IMPORT_KEY_BODY_CHARS = 80
+
 /**
  * Reads and writes `.cpset` files — the way a library or a Sunday set moves
  * between phones, or from a worship leader to an operator.
@@ -195,5 +198,5 @@ object CpsetSerializer {
     }
 
     private fun LocalAnnouncement.importKey(): String =
-        title.trim().lowercase().ifEmpty { body.trim().lowercase().take(80) }
+        title.trim().lowercase().ifEmpty { body.trim().lowercase().take(IMPORT_KEY_BODY_CHARS) }
 }
