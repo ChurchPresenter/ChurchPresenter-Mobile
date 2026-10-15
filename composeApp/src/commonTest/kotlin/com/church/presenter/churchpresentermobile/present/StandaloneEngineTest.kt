@@ -285,7 +285,7 @@ class StandaloneEngineTest {
         val f = Fixture()
         f.engine.setDeck(deckOf(3))
 
-        val result = f.engine.handleRemoteAction(WsMessageType.CLEAR, "{}")
+        val result = f.engine.handleRemoteAction(WsMessageType.CLEAR)
 
         assertTrue(result.isSuccess)
         assertEquals(SlideMessageType.CLEAR, f.published.last().type)
@@ -307,7 +307,7 @@ class StandaloneEngineTest {
             WsMessageType.SELECT_PICTURE,
         )
         types.forEach { type ->
-            assertTrue(f.engine.handleRemoteAction(type, "{}").isSuccess, "$type should not fail")
+            assertTrue(f.engine.handleRemoteAction(type).isSuccess, "$type should not fail")
         }
 
         assertEquals(before, f.published.size, "desktop-only actions must not emit a slide")

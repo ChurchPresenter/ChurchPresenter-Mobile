@@ -272,7 +272,7 @@ class SongServiceTest {
     fun selectVerseSendsTheSectionIndex() = runTest {
         val ws = FakeWsSender()
 
-        wsService(ws).selectVerse("42", "Hymns", verseIndex = 3).getOrThrow()
+        wsService(ws).selectVerse("42", verseIndex = 3).getOrThrow()
 
         assertEquals(WsMessageType.SELECT_SONG_SECTION, ws.lastType)
         assertTrue(ws.lastPayload.contains("\"section\":3"), ws.lastPayload)
@@ -286,6 +286,6 @@ class SongServiceTest {
         ws.failWith(IllegalStateException("socket closed"))
 
         assertTrue(wsService(ws).selectSong(Song(id = 1, number = "1", title = "T")).isFailure)
-        assertTrue(wsService(ws).selectVerse("1", null, 0).isFailure)
+        assertTrue(wsService(ws).selectVerse("1", 0).isFailure)
     }
 }

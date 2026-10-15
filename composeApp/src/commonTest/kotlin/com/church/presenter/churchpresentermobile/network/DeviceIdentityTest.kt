@@ -23,7 +23,7 @@ class DeviceIdentityTest {
 
     private var seen: Headers = Headers.Empty
 
-    private fun clientFor(settings: AppSettings): HttpClient {
+    private fun clientFor(): HttpClient {
         val engine = MockEngine { request ->
             seen = request.headers
             respond("{}", HttpStatusCode.OK)
@@ -32,7 +32,7 @@ class DeviceIdentityTest {
     }
 
     private suspend fun send(settings: AppSettings) {
-        clientFor(settings).get("http://desktop/api/status") { identifyDevice(settings) }
+        clientFor().get("http://desktop/api/status") { identifyDevice(settings) }
     }
 
     @Test

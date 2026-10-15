@@ -34,7 +34,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ContentActionButtons(
     isProjecting: Boolean,
-    scheduleAdded: Boolean,
     onToggleProjecting: () -> Unit,
     /** Null hides the schedule button — standalone has no desktop schedule. */
     onAddToSchedule: (() -> Unit)? = null,
@@ -43,7 +42,6 @@ fun ContentActionButtons(
     isHolding: Boolean = false,
     onToggleHold: (() -> Unit)? = null,
     onClearDisplay: (() -> Unit)? = null,
-    isMultiSelectMode: Boolean = false,
     onToggleMultiSelect: (() -> Unit)? = null,
     extraLeadingContent: @Composable ColumnScope.() -> Unit = {},
 ) {

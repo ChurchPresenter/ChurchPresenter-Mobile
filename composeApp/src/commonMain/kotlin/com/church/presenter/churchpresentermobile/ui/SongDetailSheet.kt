@@ -68,7 +68,6 @@ fun SongDetailScreen(
     error: String?,
     selectedVerseIndex: Int?,
     isProjecting: Boolean,
-    scheduleAdded: Boolean,
     onVerseSelected: (Int) -> Unit,
     onToggleProjecting: () -> Unit,
     /** Null hides the schedule button — standalone has no desktop schedule. */
@@ -112,74 +111,15 @@ fun SongDetailScreen(
                         // manual break ([---]) is two slides there, and the index a card sends
                         // has to name the same slide on both ends. See SlideBreaks.
                         val slides = remember(detail) { detail.slideVerses }
-                        // Build numbered labels: "Verse 1", "Verse 2", "Chorus", "Chorus 2", etc.
-                        // Counted per section, so both halves of a split verse share its label
-                        // and add "(1/2)", "(2/2)", as the desktop numbers a split section's slides.
-                        val sectionLabels = remember(slides) {
-                            val typeCounts = mutableMapOf<String, Int>()
-                            slides.filter { it.part == 0 }.map { v ->
-                                val rawType = (v.label ?: v.type ?: v.name)
-                                    ?.trim()
-                                    ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                                if (rawType != null) {
-                                    val count = (typeCounts[rawType] ?: 0) + 1
-                                    typeCounts[rawType] = count
-                                    rawType to count
-                                } else null
-                            }.let { pairs ->
-                                // Only append number if there are multiple sections of that type
-                                val totalPerType = mutableMapOf<String, Int>()
-                                pairs.forEach { p ->
-                                    if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1
-                                }
-                                pairs.mapIndexed { i, p ->
-                                    when {
-                                        p == null -> (i + 1).toString()
-                                        totalPerType[p.first] == 1 -> p.first
-                                        else -> "${p.first} ${p.second}"
-                                    }
-                                }
-                            }.let { perSection ->
-                                var section = -1
-                                slides.map { v ->
-                                    if (v.part == 0) section++
-                                    val label = perSection.getOrElse(section) { (section + 1).toString() }
-                                    SlideDeckBuilder.partLabel(label, v.part, v.parts)
-                                }
-                            }
-                        }
-                        val versesState = rememberLazyGridState()
-                        // Measured here rather than passed a two-pane flag: the
-                        // count follows the width this pane actually got, so the
-                        // same screen is one column on a phone, one in a narrow
-                        // split and two in a roomy one.
-                        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(verseColumns(maxWidth)),
-                                state = versesState,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .alpha(if (isProjecting) 1f else 0.6f)
-                                    .verticalScrollbar(versesState),
-                                verticalArrangement = Arrangement.spacedBy(10.dp),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                contentPadding = PaddingValues(
-                                    start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp
-                                )
-                            ) {
-                                itemsIndexed(slides) { index, verse ->
-                                    VerseCard(
-                                        verse = verse,
-                                        index = index,
-                                        label = sectionLabels.getOrElse(index) { (index + 1).toString() },
-                                        isSelected = isProjecting && selectedVerseIndex == index,
-                                        isProjecting = isProjecting,
-                                        showChords = showChords,
-                                        onClick = { onVerseSelected(index) }
-                                    )
-                                }
-                            }
-                        }
+                        val sectionLabels = remember(slides) { slideCardLabels(slides) }
+                        VerseGrid(
+                            slides = slides,
+                            labels = sectionLabels,
+                            selectedVerseIndex = selectedVerseIndex,
+                            isProjecting = isProjecting,
+                            showChords = showChords,
+                            onVerseSelected = onVerseSelected,
+                        )
                     } else if (!detail.plainText.isNullOrBlank()) {
                         val plainState = rememberLazyListState()
                         LazyColumn(
@@ -217,7 +157,6 @@ fun SongDetailScreen(
         // ── Action buttons (bottom-right, above snackbar) ─────────────────
         ContentActionButtons(
             isProjecting       = isProjecting,
-            scheduleAdded      = scheduleAdded,
             onToggleProjecting = onToggleProjecting,
             onAddToSchedule    = onAddToSchedule,
             onClearDisplay     = onClearDisplay,
@@ -226,6 +165,88 @@ fun SongDetailScreen(
     }
 }
 
+@Composable
+private fun VerseGrid(
+    slides: List<SongVerse>,
+    labels: List<String>,
+    selectedVerseIndex: Int?,
+    isProjecting: Boolean,
+    showChords: Boolean,
+    onVerseSelected: (Int) -> Unit,
+) {
+    val versesState = rememberLazyGridState()
+    // Measured here rather than passed a two-pane flag: the
+    // count follows the width this pane actually got, so the
+    // same screen is one column on a phone, one in a narrow
+    // split and two in a roomy one.
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(verseColumns(maxWidth)),
+            state = versesState,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(if (isProjecting) 1f else 0.6f)
+                .verticalScrollbar(versesState),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(
+                start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp
+            )
+        ) {
+            itemsIndexed(slides) { index, verse ->
+                VerseCard(
+                    verse = verse,
+                    index = index,
+                    label = labels.getOrElse(index) { (index + 1).toString() },
+                    isSelected = isProjecting && selectedVerseIndex == index,
+                    isProjecting = isProjecting,
+                    showChords = showChords,
+                    onClick = { onVerseSelected(index) }
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Numbered card labels — "Verse 1", "Verse 2", "Chorus", "Chorus 2" — one per slide.
+ *
+ * Counted per section, so both halves of a split verse share its label
+ * and add "(1/2)", "(2/2)", as the desktop numbers a split section's slides.
+ */
+internal fun slideCardLabels(slides: List<SongVerse>): List<String> {
+    val typeCounts = mutableMapOf<String, Int>()
+    return slides.filter { it.part == 0 }.map { v ->
+        val rawType = (v.label ?: v.type ?: v.name)
+            ?.trim()
+            ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        if (rawType != null) {
+            val count = (typeCounts[rawType] ?: 0) + 1
+            typeCounts[rawType] = count
+            rawType to count
+        } else null
+    }.let { pairs ->
+        // Only append number if there are multiple sections of that type
+        val totalPerType = mutableMapOf<String, Int>()
+        pairs.forEach { p ->
+            if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1
+        }
+        pairs.mapIndexed { i, p ->
+            when {
+                p == null -> (i + 1).toString()
+                totalPerType[p.first] == 1 -> p.first
+                else -> "${p.first} ${p.second}"
+            }
+        }
+    }.let { perSection ->
+        var section = -1
+        slides.map { v ->
+            if (v.part == 0) section++
+            val label = perSection.getOrElse(section) { (section + 1).toString() }
+            SlideDeckBuilder.partLabel(label, v.part, v.parts)
+        }
+    }
+}
 
 @Composable
 private fun VerseCard(

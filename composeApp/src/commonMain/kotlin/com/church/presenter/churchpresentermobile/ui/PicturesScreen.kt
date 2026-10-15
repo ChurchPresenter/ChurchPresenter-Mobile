@@ -277,7 +277,6 @@ fun PicturesScreen(
             ) { launchPicker ->
                 ContentActionButtons(
                     isProjecting       = isProjecting,
-                    scheduleAdded      = scheduleAdded,
                     onToggleProjecting = {
                         if (isProjecting) viewModel.clearDisplay()
                         else selectedImage?.let { viewModel.selectPicture(it) }
@@ -326,7 +325,6 @@ fun PicturesScreen(
             // never registered and therefore can never be presented.
             ContentActionButtons(
                 isProjecting       = isProjecting,
-                scheduleAdded      = scheduleAdded,
                 onToggleProjecting = {
                     if (isProjecting) viewModel.clearDisplay()
                     else selectedImage?.let { viewModel.selectPicture(it) }

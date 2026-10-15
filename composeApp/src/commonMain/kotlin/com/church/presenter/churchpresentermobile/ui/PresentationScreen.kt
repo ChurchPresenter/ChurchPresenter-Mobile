@@ -294,7 +294,6 @@ fun PresentationScreen(
             ) { launchPicker ->
                 ContentActionButtons(
                     isProjecting       = isProjecting,
-                    scheduleAdded      = scheduleAdded,
                     onToggleProjecting = {
                         if (isProjecting) viewModel.clearDisplay()
                         else {
@@ -347,7 +346,6 @@ fun PresentationScreen(
             // never registered and therefore can never be presented.
             ContentActionButtons(
                 isProjecting       = isProjecting,
-                scheduleAdded      = scheduleAdded,
                 onToggleProjecting = {
                     if (isProjecting) viewModel.clearDisplay()
                     else {

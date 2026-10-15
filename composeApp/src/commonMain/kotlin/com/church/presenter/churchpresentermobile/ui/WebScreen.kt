@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -292,6 +293,7 @@ private fun UrlBar(
                 textStyle = TextStyle(color = colors.text, fontSize = 13.sp, fontFamily = FontFamily.Monospace),
                 cursorBrush = SolidColor(colors.accent),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
+                keyboardActions = KeyboardActions(onGo = { onGo() }),
                 modifier = Modifier.fillMaxWidth(),
             )
         }

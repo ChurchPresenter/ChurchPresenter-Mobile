@@ -31,7 +31,7 @@ class ContentActionButtonsTest {
     @Test
     fun theCastButtonIsAlwaysPresent() = runComposeUiTest {
         setContent(themed {
-            ContentActionButtons(isProjecting = false, scheduleAdded = false, onToggleProjecting = {})
+            ContentActionButtons(isProjecting = false, onToggleProjecting = {})
         })
 
         assertTrue(countClickables(this) >= 1)
@@ -43,7 +43,6 @@ class ContentActionButtonsTest {
         setContent(themed {
             ContentActionButtons(
                 isProjecting = false,
-                scheduleAdded = false,
                 onToggleProjecting = {},
                 onAddToSchedule = {},
             )
@@ -51,7 +50,7 @@ class ContentActionButtonsTest {
         withHandler = countClickables(this)
 
         setContent(themed {
-            ContentActionButtons(isProjecting = false, scheduleAdded = false, onToggleProjecting = {})
+            ContentActionButtons(isProjecting = false, onToggleProjecting = {})
         })
         val withoutHandler = countClickables(this)
 
@@ -63,7 +62,6 @@ class ContentActionButtonsTest {
         setContent(themed {
             ContentActionButtons(
                 isProjecting = true,
-                scheduleAdded = false,
                 onToggleProjecting = {},
                 onToggleHold = {},
             )
@@ -71,7 +69,7 @@ class ContentActionButtonsTest {
         val withHold = countClickables(this)
 
         setContent(themed {
-            ContentActionButtons(isProjecting = true, scheduleAdded = false, onToggleProjecting = {})
+            ContentActionButtons(isProjecting = true, onToggleProjecting = {})
         })
 
         assertTrue(withHold > countClickables(this))
@@ -82,7 +80,6 @@ class ContentActionButtonsTest {
         setContent(themed {
             ContentActionButtons(
                 isProjecting = true,
-                scheduleAdded = false,
                 onToggleProjecting = {},
                 onClearDisplay = {},
             )
@@ -90,7 +87,7 @@ class ContentActionButtonsTest {
         val withClear = countClickables(this)
 
         setContent(themed {
-            ContentActionButtons(isProjecting = true, scheduleAdded = false, onToggleProjecting = {})
+            ContentActionButtons(isProjecting = true, onToggleProjecting = {})
         })
 
         assertTrue(withClear > countClickables(this))
@@ -101,7 +98,6 @@ class ContentActionButtonsTest {
         setContent(themed {
             ContentActionButtons(
                 isProjecting = false,
-                scheduleAdded = false,
                 onToggleProjecting = {},
                 onToggleMultiSelect = {},
             )
@@ -109,7 +105,7 @@ class ContentActionButtonsTest {
         val withMulti = countClickables(this)
 
         setContent(themed {
-            ContentActionButtons(isProjecting = false, scheduleAdded = false, onToggleProjecting = {})
+            ContentActionButtons(isProjecting = false, onToggleProjecting = {})
         })
 
         assertTrue(withMulti > countClickables(this))
@@ -120,24 +116,18 @@ class ContentActionButtonsTest {
         // The stack changes icon and tint on each of these; a missing branch is a
         // crash on the screen the operator uses most.
         for (projecting in listOf(true, false)) {
-            for (added in listOf(true, false)) {
-                for (holding in listOf(true, false)) {
-                    for (multi in listOf(true, false)) {
-                        setContent(themed {
-                            ContentActionButtons(
-                                isProjecting = projecting,
-                                scheduleAdded = added,
-                                onToggleProjecting = {},
-                                onAddToSchedule = {},
-                                isHolding = holding,
-                                onToggleHold = {},
-                                onClearDisplay = {},
-                                isMultiSelectMode = multi,
-                                onToggleMultiSelect = {},
-                            )
-                        })
-                    }
-                }
+            for (holding in listOf(true, false)) {
+                setContent(themed {
+                    ContentActionButtons(
+                        isProjecting = projecting,
+                        onToggleProjecting = {},
+                        onAddToSchedule = {},
+                        isHolding = holding,
+                        onToggleHold = {},
+                        onClearDisplay = {},
+                        onToggleMultiSelect = {},
+                    )
+                })
             }
         }
         assertTrue(countClickables(this) >= 1)
@@ -150,7 +140,6 @@ class ContentActionButtonsTest {
         setContent(themed {
             ContentActionButtons(
                 isProjecting = false,
-                scheduleAdded = false,
                 onToggleProjecting = {},
                 extraLeadingContent = { composed++ },
             )
@@ -169,7 +158,6 @@ class ContentActionButtonsTest {
                     AppTheme(themeMode = mode) {
                         ContentActionButtons(
                             isProjecting = true,
-                            scheduleAdded = false,
                             onToggleProjecting = {},
                             castBadgeCount = count,
                         )

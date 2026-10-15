@@ -28,11 +28,9 @@
     <ID>LongMethod:LookSheet.kt$@OptIn(ExperimentalLayoutApi::class) @Composable internal fun LookSheetContent( theme: SlideTheme, onThemeChange: ((SlideTheme) -&gt; SlideTheme) -&gt; Unit, showChords: Boolean, onShowChordsChange: (Boolean) -&gt; Unit, textSize: SlideTextSize, onTextSizeChange: (SlideTextSize) -&gt; Unit, presets: List&lt;NamedTheme&gt;, savedThemes: List&lt;NamedTheme&gt;, onApplyTheme: (NamedTheme) -&gt; Unit, onSaveTheme: (String) -&gt; Unit, onDeleteTheme: (String) -&gt; Unit, )</ID>
     <ID>LongMethod:PicturesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PicturesScreen( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, imageLoader: ImageLoader, pendingNavFolderId: String? = null, pendingNavImageIndex: Int? = null, onPendingNavHandled: () -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, canUploadFiles: Boolean = false, providedViewModel: PicturesViewModel? = null, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:PresentationScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PresentationScreen( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, imageLoader: ImageLoader, pendingNavPresentationId: String? = null, onPendingNavHandled: () -&gt; Unit = {}, onScheduleRefresh: () -&gt; Unit = {}, canUploadFiles: Boolean = false, providedViewModel: PresentationsViewModel? = null, modifier: Modifier = Modifier )</ID>
-    <ID>LongMethod:QAAdminScreen.kt$@Composable private fun QuestionCard( question: Question, isDisplayed: Boolean, showVotes: Boolean = false, onApprove: () -&gt; Unit, onDeny: () -&gt; Unit, onStartEdit: () -&gt; Unit, onMarkDone: () -&gt; Unit, onDisplay: () -&gt; Unit, onApproveAndDisplay: () -&gt; Unit, onDelete: () -&gt; Unit, onStop: () -&gt; Unit, )</ID>
     <ID>LongMethod:ScheduleDrawer.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ScheduleDrawerContent( appSettings: AppSettings, isDemoMode: Boolean = false, settingsSaveToken: Int, scheduleRefreshToken: Int = 0, onItemClick: (ScheduleItem) -&gt; Unit = {}, onClose: () -&gt; Unit = {}, providedViewModel: ScheduleViewModel? = null, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:ServerEventService.kt$ServerEventService$override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result&lt;Unit&gt;</ID>
     <ID>LongMethod:ServerEventService.kt$ServerEventService$suspend fun listen()</ID>
-    <ID>LongMethod:SongDetailSheet.kt$@Composable fun SongDetailScreen( detail: SongDetail?, isLoading: Boolean, error: String?, selectedVerseIndex: Int?, isProjecting: Boolean, scheduleAdded: Boolean, onVerseSelected: (Int) -&gt; Unit, onToggleProjecting: () -&gt; Unit, /** Null hides the schedule button — standalone has no desktop schedule. */ onAddToSchedule: (() -&gt; Unit)? = null, onClearDisplay: (() -&gt; Unit)? = null, /** Draw the words as a chord chart. Off shows them cleaned of markup. */ showChords: Boolean = false, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:SongEditorScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SongEditorScreen( repository: LibraryRepository, songId: String?, onClose: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:SongSyncSection.kt$@Composable internal fun SongSyncSection( repository: LibraryRepository, settings: AppSettings, sender: WsSender, onDone: () -&gt; Unit, /** Supplied by tests only; the sheet owns its own otherwise. */ providedViewModel: LibrarySyncViewModel? = null, )</ID>
     <ID>LongMethod:StandaloneOutputScreen.kt$@Composable fun StandaloneOutputScreen( slide: Slide, modifier: Modifier = Modifier, )</ID>
@@ -191,14 +189,6 @@
     <ID>TooManyFunctions:StatusScreen.kt$com.church.presenter.churchpresentermobile.ui.StatusScreen.kt</ID>
     <ID>TooManyFunctions:UiTags.kt$UiTags</ID>
     <ID>TooManyFunctions:WebViewModel.kt$WebViewModel : ViewModel</ID>
-    <ID>UnusedParameter:ContentActionButtons.kt$isMultiSelectMode: Boolean = false</ID>
-    <ID>UnusedParameter:ContentActionButtons.kt$scheduleAdded: Boolean</ID>
-    <ID>UnusedParameter:DeviceIdentityTest.kt$DeviceIdentityTest$settings: AppSettings</ID>
-    <ID>UnusedParameter:PicturesService.kt$PicturesService$fileName: String?</ID>
-    <ID>UnusedParameter:QAAdminScreen.kt$onMarkDone: () -&gt; Unit</ID>
-    <ID>UnusedParameter:SongService.kt$SongService$bookName: String?</ID>
-    <ID>UnusedParameter:StandaloneEngine.kt$StandaloneEngine$payloadJson: String</ID>
-    <ID>UnusedParameter:WebScreen.kt$onGo: () -&gt; Unit</ID>
     <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_background = Color(0xFF1A1C1E)</ID>
     <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_error = Color(0xFFFFB4AB)</ID>
     <ID>UnusedPrivateProperty:AppTheme.kt$private val md_dark_onBackground = Color(0xFFE2E2E6)</ID>

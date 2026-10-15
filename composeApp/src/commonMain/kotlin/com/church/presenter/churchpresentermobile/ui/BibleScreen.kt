@@ -185,7 +185,6 @@ fun BibleScreen(
             selectedChapter = chapter,
             verses = verses,
             isProjecting = isProjecting,
-            scheduleAdded = scheduleAdded,
             selectedVerseIndices = selectedVerseIndices,
             projectedVerseIndex = projectedVerseIndex,
             onChapterSelect = vm::selectChapter,

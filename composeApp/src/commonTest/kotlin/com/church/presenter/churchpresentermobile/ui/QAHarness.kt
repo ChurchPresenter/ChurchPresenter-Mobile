@@ -51,7 +51,6 @@ internal class QaActions {
     val approved = mutableListOf<String>()
     val denied = mutableListOf<String>()
     val edited = mutableListOf<Pair<String, String>>()
-    val markedDone = mutableListOf<String>()
     val displayed = mutableListOf<String>()
     val approvedAndDisplayed = mutableListOf<String>()
     val deleted = mutableListOf<String>()
@@ -70,7 +69,6 @@ internal fun ComposeUiTest.showQaBoard(
         onApprove = { actions.approved += it },
         onDeny = { actions.denied += it },
         onEdit = { id, text -> actions.edited += id to text },
-        onMarkDone = { actions.markedDone += it },
         onDisplay = { actions.displayed += it },
         onApproveAndDisplay = { actions.approvedAndDisplayed += it },
         onDelete = { actions.deleted += it },

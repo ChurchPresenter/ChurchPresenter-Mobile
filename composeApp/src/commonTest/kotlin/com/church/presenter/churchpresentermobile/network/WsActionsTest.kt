@@ -48,7 +48,7 @@ class WsActionsTest {
         svc.addSongToSchedule(song).getOrThrow()
         assertEquals(WsMessageType.ADD_TO_SCHEDULE, ws.lastType)
 
-        svc.selectVerse("42", "Hymns", 2).getOrThrow()
+        svc.selectVerse("42", 2).getOrThrow()
         assertEquals(WsMessageType.SELECT_SONG_SECTION, ws.lastType)
         assertTrue(ws.lastPayload.contains("\"section\":2"))
 

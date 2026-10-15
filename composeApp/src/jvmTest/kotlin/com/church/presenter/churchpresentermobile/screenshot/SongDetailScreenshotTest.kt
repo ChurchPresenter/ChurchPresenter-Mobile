@@ -75,7 +75,6 @@ class SongDetailScreenshotTest {
         error: String? = null,
         selectedVerseIndex: Int? = null,
         isProjecting: Boolean = false,
-        scheduleAdded: Boolean = false,
         showChords: Boolean = false,
         standalone: Boolean = false,
     ): @Composable () -> Unit = {
@@ -85,7 +84,6 @@ class SongDetailScreenshotTest {
             error = error,
             selectedVerseIndex = selectedVerseIndex,
             isProjecting = isProjecting,
-            scheduleAdded = scheduleAdded,
             onVerseSelected = {},
             onToggleProjecting = {},
             onAddToSchedule = if (standalone) null else ({ }),
@@ -120,12 +118,6 @@ class SongDetailScreenshotTest {
         "song-detail__projecting",
         // Live, on the chorus: the state the screen spends a service in.
         content = songDetail(selectedVerseIndex = 1, isProjecting = true),
-    )
-
-    @Test
-    fun alreadyInSchedule() = screenshot(
-        "song-detail__in-schedule",
-        content = songDetail(scheduleAdded = true),
     )
 
     @Test
