@@ -8,11 +8,6 @@
     <ID>CyclomaticComplexMethod:ServerEventService.kt$ServerEventService$override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result&lt;Unit&gt;</ID>
     <ID>CyclomaticComplexMethod:ServerEventService.kt$ServerEventService$suspend fun listen()</ID>
     <ID>CyclomaticComplexMethod:SpbParser.kt$SpbParser$fun parse(text: String, fileName: String = ""): ParsedBible</ID>
-    <ID>EmptyElseBlock:App.kt$if (it.isNotBlank()) dictionaryViewModel.setSearchQuery(it)</ID>
-    <ID>EmptyFunctionBlock:Analytics.js.kt$Analytics${}</ID>
-    <ID>EmptyFunctionBlock:Analytics.wasmJs.kt$Analytics${}</ID>
-    <ID>EmptyFunctionBlock:CrashReporting.js.kt$CrashReporting${}</ID>
-    <ID>EmptyFunctionBlock:CrashReporting.wasmJs.kt$CrashReporting${}</ID>
     <ID>FunctionNaming:ExternalDisplayViewController.kt$fun ExternalDisplayViewController(): UIViewController</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
     <ID>LongMethod:AnnouncementsScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun AnnouncementsScreen( viewModel: AnnouncementsViewModel, modifier: Modifier = Modifier, )</ID>
