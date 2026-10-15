@@ -81,7 +81,12 @@ class StatusService internal constructor(
                     val headerVersion = response.headers[ApiConstants.SERVER_VERSION_HEADER]
                     val status = json.decodeFromString<ServerStatus>(raw)
                         .let { if (headerVersion != null) it.copy(appVersion = headerVersion) else it }
-                    Logger.d(TAG, "fetchStatus — parsed: version=${status.appVersion} (header=$headerVersion)  bibles=${status.bibles.size}  songbooks=${status.songbooks.size}  features=${status.features}")
+                    Logger.d(
+                        TAG,
+                        "fetchStatus — parsed: version=${status.appVersion} (header=$headerVersion)  " +
+                            "bibles=${status.bibles.size}  songbooks=${status.songbooks.size}  " +
+                            "features=${status.features}"
+                    )
 
                     // Identity check: the lenient decoder happily turns `{}` or an
                     // unrelated body into an all-defaults ServerStatus, so require a

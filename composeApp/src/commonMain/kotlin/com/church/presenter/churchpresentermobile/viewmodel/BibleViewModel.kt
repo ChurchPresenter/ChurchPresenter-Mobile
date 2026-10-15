@@ -506,7 +506,11 @@ class BibleViewModel(
         }
         val nums = selectedVerses.map { it.number }
         val verseRange: String? = verseRangeString(nums)
-        Logger.d(TAG, "toggleProjecting ON — firing selectBibleVerse ${book.displayName} $chapter:${firstVerse.number} range=$verseRange")
+        Logger.d(
+            TAG,
+            "toggleProjecting ON — firing selectBibleVerse " +
+                "${book.displayName} $chapter:${firstVerse.number} range=$verseRange",
+        )
         viewModelScope.launch {
             bibleService.selectBibleVerse(
                 bookName    = book.displayName,
@@ -524,7 +528,9 @@ class BibleViewModel(
                 Analytics.logEvent(AnalyticsEvent.BIBLE_PROJECTED)
             }.onFailure { e ->
                 Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e)
-                _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse"))
+                _toastEvent.value = ToastEvent.FailedToProjectBible(
+                    e.recordNetworkError(TAG, "toggleProjecting/selectBibleVerse")
+                )
             }
         }
     }
@@ -655,7 +661,10 @@ class BibleViewModel(
             Logger.d(TAG, "projectVerseAtIndex — DEMO MODE, skipping API call")
             return
         }
-        Logger.d(TAG, "projectVerseAtIndex — firing selectBibleVerse ${book.displayName} $chapter:${verse.number} index=$index")
+        Logger.d(
+            TAG,
+            "projectVerseAtIndex — firing selectBibleVerse ${book.displayName} $chapter:${verse.number} index=$index",
+        )
         viewModelScope.launch {
             bibleService.selectBibleVerse(
                 bookName    = book.displayName,
@@ -668,7 +677,9 @@ class BibleViewModel(
                 Logger.d(TAG, "selectBibleVerse — success")
             }.onFailure { e ->
                 Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e)
-                _toastEvent.value = ToastEvent.FailedToProjectBible(e.recordNetworkError(TAG, "projectVerseAtIndex/selectBibleVerse"))
+                _toastEvent.value = ToastEvent.FailedToProjectBible(
+                    e.recordNetworkError(TAG, "projectVerseAtIndex/selectBibleVerse")
+                )
             }
         }
     }
@@ -716,7 +727,9 @@ class BibleViewModel(
                 Analytics.logEvent(AnalyticsEvent.BIBLE_ADDED_TO_SCHEDULE)
             }.onFailure { e ->
                 Logger.e(TAG, "addBibleToSchedule — FAILED: ${e.message}", e)
-                _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddBibleSchedule(e.recordNetworkError(TAG, "addToSchedule/addBibleToSchedule")) }
+                _toastEvent.value = e.toToastEvent {
+                    ToastEvent.FailedToAddBibleSchedule(e.recordNetworkError(TAG, "addToSchedule/addBibleToSchedule"))
+                }
             }
         }
     }

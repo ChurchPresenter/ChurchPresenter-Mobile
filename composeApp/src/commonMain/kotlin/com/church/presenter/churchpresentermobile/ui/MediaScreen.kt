@@ -217,7 +217,12 @@ internal fun UrlField(value: String, onValueChange: (String) -> Unit, modifier: 
         Icon(Icons.Outlined.Link, contentDescription = null, tint = colors.accent, modifier = Modifier.size(16.dp))
         Box(Modifier.weight(1f)) {
             if (value.isEmpty()) {
-                Text(stringResource(Res.string.media_url_placeholder), color = colors.muted, fontSize = 13.sp, fontFamily = FontFamily.Monospace)
+                Text(
+                    stringResource(Res.string.media_url_placeholder),
+                    color = colors.muted,
+                    fontSize = 13.sp,
+                    fontFamily = FontFamily.Monospace,
+                )
             }
             BasicTextField(
                 value = value,

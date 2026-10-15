@@ -31,7 +31,12 @@ class SettingsViewModelTest {
             vm.setPort("9000")
             vm.setApiKey(" k ")
             var ok = false
-            vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT", invalidHostError = "HOST")
+            vm.save(
+                onSuccess = { ok = true },
+                emptyHostError = "EMPTY",
+                invalidPortError = "PORT",
+                invalidHostError = "HOST",
+            )
 
             assertTrue(ok)
             assertEquals("10.0.0.5", settings.host)
@@ -72,7 +77,12 @@ class SettingsViewModelTest {
             vm.setPort("nonsense")
             vm.setCustomDeviceName("Sound desk")
             var ok = false
-            vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT", invalidHostError = "HOST")
+            vm.save(
+                onSuccess = { ok = true },
+                emptyHostError = "EMPTY",
+                invalidPortError = "PORT",
+                invalidHostError = "HOST",
+            )
 
             assertFalse(ok) // the port is still rejected
             assertEquals("PORT", vm.portError.value)
@@ -89,7 +99,12 @@ class SettingsViewModelTest {
             vm.setHost("   ")
             vm.setPort("8765")
             var ok = false
-            vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT", invalidHostError = "HOST")
+            vm.save(
+                onSuccess = { ok = true },
+                emptyHostError = "EMPTY",
+                invalidPortError = "PORT",
+                invalidHostError = "HOST",
+            )
 
             assertFalse(ok)
             assertEquals("EMPTY", vm.hostError.value)
@@ -111,7 +126,12 @@ class SettingsViewModelTest {
             vm.setPort("nonsense")
             vm.setThemeMode(ThemeMode.DARK)
             var ok = false
-            vm.save(onSuccess = { ok = true }, emptyHostError = "EMPTY", invalidPortError = "PORT", invalidHostError = "HOST")
+            vm.save(
+                onSuccess = { ok = true },
+                emptyHostError = "EMPTY",
+                invalidPortError = "PORT",
+                invalidHostError = "HOST",
+            )
 
             assertTrue(ok)
             assertEquals(ThemeMode.DARK, settings.themeMode)

@@ -605,7 +605,12 @@ internal fun QuestionEditor(
                     .clickable { if (text.isNotBlank()) onSave(text.trim()) }
                     .padding(horizontal = 18.dp, vertical = 8.dp),
             ) {
-                Text(stringResource(Res.string.qa_admin_save), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(Res.string.qa_admin_save),
+                    color = colors.onAccent,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
         }
 
@@ -636,7 +641,11 @@ internal fun QuestionEditor(
         // Meta: submitter + char counter
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                if (question.submitterName.isNotBlank()) stringResource(Res.string.qa_submitted_by, question.submitterName) else "",
+                if (question.submitterName.isNotBlank()) {
+                    stringResource(Res.string.qa_submitted_by, question.submitterName)
+                } else {
+                    ""
+                },
                 color = colors.muted, fontSize = 11.sp,
                 modifier = Modifier.testTag(UiTags.QA_EDIT_SUBMITTER),
             )
@@ -661,9 +670,19 @@ internal fun QuestionEditor(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Outlined.Delete, contentDescription = null, tint = colors.danger, modifier = Modifier.size(18.dp))
+            Icon(
+                Icons.Outlined.Delete,
+                contentDescription = null,
+                tint = colors.danger,
+                modifier = Modifier.size(18.dp),
+            )
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(Res.string.qa_delete_question), color = colors.danger, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                stringResource(Res.string.qa_delete_question),
+                color = colors.danger,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
 }

@@ -121,19 +121,51 @@ fun MoreScreen(
             Icons.Outlined.CalendarMonth,
             badge = stringResource(Res.string.more_new_badge),
         ),
-        MoreEntry(MoreDestination.PICTURES, stringResource(Res.string.more_photos_title), stringResource(Res.string.more_photos_subtitle), Icons.Outlined.Image),
-        MoreEntry(MoreDestination.QA, stringResource(Res.string.more_qa_title), stringResource(Res.string.more_qa_subtitle), Icons.Outlined.ChatBubbleOutline),
-        MoreEntry(MoreDestination.DICTIONARY, stringResource(Res.string.more_dictionary_title), stringResource(Res.string.more_dictionary_subtitle), Icons.AutoMirrored.Outlined.MenuBook),
+        MoreEntry(
+            MoreDestination.PICTURES,
+            stringResource(Res.string.more_photos_title),
+            stringResource(Res.string.more_photos_subtitle),
+            Icons.Outlined.Image,
+        ),
+        MoreEntry(
+            MoreDestination.QA,
+            stringResource(Res.string.more_qa_title),
+            stringResource(Res.string.more_qa_subtitle),
+            Icons.Outlined.ChatBubbleOutline,
+        ),
+        MoreEntry(
+            MoreDestination.DICTIONARY,
+            stringResource(Res.string.more_dictionary_title),
+            stringResource(Res.string.more_dictionary_subtitle),
+            Icons.AutoMirrored.Outlined.MenuBook,
+        ),
         // Same slot, two screens: the desktop's announcements, or this device's
         // own notices. The labels follow, so the subtitle does not promise
         // clocks and countdowns that only the remote screen has.
         MoreEntry(
             MoreDestination.ANNOUNCEMENTS,
-            stringResource(if (mode == AppMode.STANDALONE) Res.string.more_notices_title else Res.string.more_announcements_title),
-            stringResource(if (mode == AppMode.STANDALONE) Res.string.more_notices_subtitle else Res.string.more_announcements_subtitle),
+            stringResource(
+                if (mode == AppMode.STANDALONE) {
+                    Res.string.more_notices_title
+                } else {
+                    Res.string.more_announcements_title
+                }
+            ),
+            stringResource(
+                if (mode == AppMode.STANDALONE) {
+                    Res.string.more_notices_subtitle
+                } else {
+                    Res.string.more_announcements_subtitle
+                }
+            ),
             Icons.Outlined.Campaign,
         ),
-        MoreEntry(MoreDestination.WEB, stringResource(Res.string.more_web_title), stringResource(Res.string.more_web_subtitle), Icons.Outlined.Public),
+        MoreEntry(
+            MoreDestination.WEB,
+            stringResource(Res.string.more_web_title),
+            stringResource(Res.string.more_web_subtitle),
+            Icons.Outlined.Public,
+        ),
         // Standalone only: what this device itself has projected, for licence reporting.
         MoreEntry(
             MoreDestination.REPORT,
@@ -141,7 +173,12 @@ fun MoreScreen(
             stringResource(Res.string.more_report_subtitle),
             Icons.Outlined.BarChart,
         ),
-        MoreEntry(MoreDestination.CONTACT, stringResource(Res.string.more_contact_title), stringResource(Res.string.more_contact_subtitle), Icons.Outlined.MailOutline),
+        MoreEntry(
+            MoreDestination.CONTACT,
+            stringResource(Res.string.more_contact_title),
+            stringResource(Res.string.more_contact_subtitle),
+            Icons.Outlined.MailOutline,
+        ),
     ).filter { it.destination in available }
     // Laid out by hand rather than with LazyVerticalGrid: a lazy grid sizes each
     // tile to its own text, so one subtitle wrapping to a second line made its

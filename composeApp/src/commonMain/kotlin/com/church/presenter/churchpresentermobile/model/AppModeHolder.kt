@@ -35,7 +35,10 @@ object AppModeHolder {
      */
     val hasDesktop: Boolean get() = _mode.value == AppMode.REMOTE
 
-    /** Seeds the holder from persisted settings. Call once, early in [com.church.presenter.churchpresentermobile.App]. */
+    /**
+     * Seeds the holder from persisted settings. Call once, early in
+     * [com.church.presenter.churchpresentermobile.App].
+     */
     fun init(settings: AppSettings) {
         _mode.value = settings.appMode
         Logger.d(TAG, "init — mode=${_mode.value}")

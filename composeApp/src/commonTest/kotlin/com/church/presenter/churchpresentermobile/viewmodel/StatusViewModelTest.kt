@@ -81,8 +81,11 @@ class StatusViewModelTest {
         val settings = AppSettings(InMemorySettingsStorage())
         val vm = StatusViewModel(settings) {
             StatusService("http://t/api", "", "d", mockClient {
-                if (mode == "ok") respond("""{"appVersion":"1.0","bibles":["KJV"],"songbooks":["H"]}""", HttpStatusCode.OK)
-                else respond("""{"appVersion":"2.0"}""", HttpStatusCode.OK) // verified but content-limited
+                if (mode == "ok") {
+                    respond("""{"appVersion":"1.0","bibles":["KJV"],"songbooks":["H"]}""", HttpStatusCode.OK)
+                } else {
+                    respond("""{"appVersion":"2.0"}""", HttpStatusCode.OK) // verified but content-limited
+                }
             })
         }
         assertTrue(assertIs<StatusUiState.Success>(vm.settled()).warnings.isEmpty())
@@ -227,8 +230,11 @@ class StatusViewModelTest {
         val vm = StatusViewModel(settings) {
             StatusService("http://t/api", "", "d", mockClient {
                 probes += 1
-                if (probes <= 1) respond("""{"appVersion":"1.0","bibles":["KJV"],"songbooks":["Hymns"]}""", HttpStatusCode.OK)
-                else error("Connect timeout has expired")
+                if (probes <= 1) {
+                    respond("""{"appVersion":"1.0","bibles":["KJV"],"songbooks":["Hymns"]}""", HttpStatusCode.OK)
+                } else {
+                    error("Connect timeout has expired")
+                }
             })
         }
         try {

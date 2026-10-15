@@ -89,7 +89,11 @@ class SettingsViewModel(
     val telemetryEnabled = _telemetryEnabled.asStateFlow()
 
     init {
-        Logger.d(TAG, "SettingsViewModel init — loaded from storage: host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl}")
+        Logger.d(
+            TAG,
+            "SettingsViewModel init — loaded from storage: host=${appSettings.host} " +
+                "port=${appSettings.port} url=${appSettings.apiBaseUrl}"
+        )
     }
 
     private val _hostError = MutableStateFlow<String?>(null)
@@ -192,7 +196,11 @@ class SettingsViewModel(
 
         appSettings.themeMode = _themeMode.value
         _activeUrl.value = appSettings.apiBaseUrl
-        Logger.d(TAG, "save — persisted host=${appSettings.host} port=${appSettings.port} url=${appSettings.apiBaseUrl} themeMode=${appSettings.themeMode}")
+        Logger.d(
+            TAG,
+            "save — persisted host=${appSettings.host} port=${appSettings.port} " +
+                "url=${appSettings.apiBaseUrl} themeMode=${appSettings.themeMode}"
+        )
         onSuccess()
     }
 

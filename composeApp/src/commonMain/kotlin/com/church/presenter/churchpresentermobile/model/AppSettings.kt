@@ -65,13 +65,21 @@ class AppSettings(
     private fun migrateIfNeeded() {
         val storedVersion = storage.getInt(KEY_SETTINGS_VERSION, 0)
         if (storedVersion < CURRENT_SETTINGS_VERSION) {
-            Logger.d(TAG, "Migrating settings from version $storedVersion to $CURRENT_SETTINGS_VERSION — resetting host=$defaultHost port=${ApiConstants.DEFAULT_PORT}")
+            Logger.d(
+                TAG,
+                "Migrating settings from version $storedVersion to $CURRENT_SETTINGS_VERSION — " +
+                    "resetting host=$defaultHost port=${ApiConstants.DEFAULT_PORT}"
+            )
             storage.putString(KEY_HOST, defaultHost)
             storage.putInt(KEY_PORT, ApiConstants.DEFAULT_PORT)
             storage.putInt(KEY_SETTINGS_VERSION, CURRENT_SETTINGS_VERSION)
             Logger.d(TAG, "Migration complete — host=$defaultHost port=${ApiConstants.DEFAULT_PORT}")
         } else {
-            Logger.d(TAG, "Settings version $storedVersion is current — host=${storage.getString(KEY_HOST, defaultHost)} port=${storage.getInt(KEY_PORT, ApiConstants.DEFAULT_PORT)}")
+            Logger.d(
+                TAG,
+                "Settings version $storedVersion is current — host=${storage.getString(KEY_HOST, defaultHost)} " +
+                    "port=${storage.getInt(KEY_PORT, ApiConstants.DEFAULT_PORT)}"
+            )
         }
     }
 

@@ -216,7 +216,8 @@ class PresentationsViewModel(
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "selectPresentation — FAILED: ${e.message}", e)
-                    _toastEvent.value = ToastEvent.FailedToSelectPresentation(e.recordNetworkError(TAG, "selectPresentation"))
+                    _toastEvent.value =
+                        ToastEvent.FailedToSelectPresentation(e.recordNetworkError(TAG, "selectPresentation"))
                 }
         }
     }
@@ -283,7 +284,8 @@ class PresentationsViewModel(
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addToSchedule — FAILED: ${e.message}", e)
-                    _toastEvent.value = ToastEvent.FailedToAddPresentationSchedule(e.recordNetworkError(TAG, "addToSchedule"))
+                    _toastEvent.value =
+                        ToastEvent.FailedToAddPresentationSchedule(e.recordNetworkError(TAG, "addToSchedule"))
                 }
         }
     }
@@ -320,7 +322,11 @@ class PresentationsViewModel(
                         if (attempt > 0) delay(UPLOAD_POLL_INTERVAL_MS)
                         presentationService.getPresentations()
                             .onSuccess { list ->
-                                Logger.d(TAG, "uploadPresentationFile — poll attempt=${attempt + 1} list.size=${list.size} ids=${list.map { it.id }}")
+                                Logger.d(
+                                    TAG,
+                                    "uploadPresentationFile — poll attempt=${attempt + 1} " +
+                                        "list.size=${list.size} ids=${list.map { it.id }}",
+                                )
                                 if (uploadedId == null || list.any { it.id == uploadedId }) {
                                     _presentations.value = list
                                     if (uploadedId != null) {
@@ -342,7 +348,9 @@ class PresentationsViewModel(
                         presentationService.getPresentations()
                             .onSuccess { _presentations.value = it }
                             .onFailure { e ->
-                                _toastEvent.value = ToastEvent.UploadReloadFailed(e.recordNetworkError(TAG, "uploadPresentationFile/reload"))
+                                _toastEvent.value = ToastEvent.UploadReloadFailed(
+                                    e.recordNetworkError(TAG, "uploadPresentationFile/reload")
+                                )
                             }
                     }
                 }

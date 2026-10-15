@@ -277,7 +277,10 @@ class ServerEventService(
                             } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
                                 // Convert to a non-cancelling exception so apiRunCatching wraps
                                 // it in Result.failure instead of silently cancelling the caller.
-                                throw ApiException(httpStatus = 408, reason = "No response from server — approval timed out")
+                                throw ApiException(
+                                    httpStatus = 408,
+                                    reason = "No response from server — approval timed out",
+                                )
                             }
                             if (response.ok != true) {
                                 throw ApiException(
@@ -302,12 +305,18 @@ class ServerEventService(
                 Logger.e(TAG, "sendAction — server rejection, not retrying: ${lastException?.message}")
                 return result
             }
-            Logger.e(TAG, "sendAction — attempt ${attempt + 1} FAILED type=$type: ${lastException?.message}", lastException)
+            Logger.e(
+                TAG,
+                "sendAction — attempt ${attempt + 1} FAILED type=$type: ${lastException?.message}",
+                lastException,
+            )
         }
         // All attempts exhausted — report the final failure to Crashlytics
         val finalError = lastException ?: Exception("sendAction failed after $WS_MAX_ATTEMPTS attempts")
         if (finalError !is ApiException) {
-            CrashReporting.log("WS sendAction FAILED after $WS_MAX_ATTEMPTS attempts  type=$type  url=${settings.wsBaseUrl}")
+            CrashReporting.log(
+                "WS sendAction FAILED after $WS_MAX_ATTEMPTS attempts  type=$type  url=${settings.wsBaseUrl}"
+            )
             // Expected connectivity failures (server off, unreachable) are logged
             // but not reported as non-fatals — see isExpectedConnectivityError().
             if (!finalError.isExpectedConnectivityError()) {
@@ -422,7 +431,10 @@ class ServerEventService(
                 Logger.e(TAG, "listen — connection lost: ${e.message} — retrying in ${reconnectDelay}ms", e)
                 val errorMsg = e.message?.take(200) ?: "unknown"
                 if (!everConnected && !e.isExpectedConnectivityError()) {
-                    CrashReporting.log("[$TAG] listen — initial connect FAILED (${e::class.simpleName}): $errorMsg url=${settings.wsBaseUrl}")
+                    CrashReporting.log(
+                        "[$TAG] listen — initial connect FAILED (${e::class.simpleName}): " +
+                            "$errorMsg url=${settings.wsBaseUrl}"
+                    )
                     CrashReporting.setCustomKey("network_tag",        TAG)
                     CrashReporting.setCustomKey("network_operation",  "listen/connect")
                     CrashReporting.setCustomKey("network_error_type", e::class.simpleName ?: "Exception")
@@ -431,7 +443,10 @@ class ServerEventService(
                     CrashReporting.recordException(e)
                 } else if (!everConnected) {
                     // Expected connectivity failure on first connect — log only.
-                    CrashReporting.log("[$TAG] listen — initial connect FAILED (${e::class.simpleName}): $errorMsg url=${settings.wsBaseUrl}")
+                    CrashReporting.log(
+                        "[$TAG] listen — initial connect FAILED (${e::class.simpleName}): " +
+                            "$errorMsg url=${settings.wsBaseUrl}"
+                    )
                 } else {
                     CrashReporting.log("[$TAG] listen — session dropped (${e::class.simpleName}): $errorMsg")
                 }

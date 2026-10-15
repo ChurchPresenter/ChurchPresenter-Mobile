@@ -255,13 +255,20 @@ private fun SongsOverline(
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 DropdownMenuItem(
-                    text = { Text(allBooksLabel, fontWeight = if (selectedBook == null) FontWeight.Bold else FontWeight.Normal) },
+                    text = {
+                        Text(
+                            allBooksLabel,
+                            fontWeight = if (selectedBook == null) FontWeight.Bold else FontWeight.Normal,
+                        )
+                    },
                     onClick = { onBookSelected(null); expanded = false },
                     modifier = Modifier.testTag(UiTags.bookOption(null)),
                 )
                 availableBooks.forEach { book ->
                     DropdownMenuItem(
-                        text = { Text(book, fontWeight = if (book == selectedBook) FontWeight.Bold else FontWeight.Normal) },
+                        text = {
+                            Text(book, fontWeight = if (book == selectedBook) FontWeight.Bold else FontWeight.Normal)
+                        },
                         onClick = { onBookSelected(book); expanded = false },
                         modifier = Modifier.testTag(UiTags.bookOption(book)),
                     )

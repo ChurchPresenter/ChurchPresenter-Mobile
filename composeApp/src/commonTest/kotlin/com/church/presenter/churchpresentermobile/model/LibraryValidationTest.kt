@@ -53,7 +53,11 @@ class LibraryValidationTest {
     @Test
     fun `an over-long section is an error`() {
         val result = LibraryValidation.validateSong(
-            song(sections = listOf(LocalSongSection(SectionType.VERSE, "x".repeat(LibraryValidation.MAX_SECTION_CHARS + 1))))
+            song(
+                sections = listOf(
+                    LocalSongSection(SectionType.VERSE, "x".repeat(LibraryValidation.MAX_SECTION_CHARS + 1))
+                )
+            )
         )
         assertFalse(result.isValid)
         assertTrue(LibraryField.SECTIONS in result.errors)

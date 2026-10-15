@@ -261,7 +261,9 @@ fun ConnectSetupScreen(
                         label = { Text(stringResource(Res.string.settings_host_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_host_placeholder)) },
                         isError = manualHostError != null,
-                        supportingText = manualHostError?.let { msg -> { Text(msg, color = MaterialTheme.colorScheme.error) } },
+                        supportingText = manualHostError?.let { msg ->
+                            { Text(msg, color = MaterialTheme.colorScheme.error) }
+                        },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
                     )
@@ -272,9 +274,14 @@ fun ConnectSetupScreen(
                         label = { Text(stringResource(Res.string.settings_port_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_port_placeholder)) },
                         isError = manualPortError != null,
-                        supportingText = manualPortError?.let { msg -> { Text(msg, color = MaterialTheme.colorScheme.error) } },
+                        supportingText = manualPortError?.let { msg ->
+                            { Text(msg, color = MaterialTheme.colorScheme.error) }
+                        },
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next,
+                        ),
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
@@ -283,7 +290,10 @@ fun ConnectSetupScreen(
                         label = { Text(stringResource(Res.string.settings_api_key_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_api_key_placeholder)) },
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done,
+                        ),
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(

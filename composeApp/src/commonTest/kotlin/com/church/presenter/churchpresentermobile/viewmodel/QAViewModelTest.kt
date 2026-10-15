@@ -36,7 +36,10 @@ class QAViewModelTest {
         val vm = vm { path ->
             when {
                 path.endsWith("/status") ->
-                    respond("""{"sessionActive":true,"displayedQuestionId":"q1","votingEnabled":true}""", HttpStatusCode.OK)
+                    respond(
+                        """{"sessionActive":true,"displayedQuestionId":"q1","votingEnabled":true}""",
+                        HttpStatusCode.OK,
+                    )
                 else ->
                     respond("""[{"id":"q1","text":"Why?","timestamp":1,"status":"PENDING"}]""", HttpStatusCode.OK)
             }

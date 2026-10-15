@@ -91,7 +91,9 @@ object DesktopAddress {
         val candidate = host.trim()
         if (candidate.isEmpty()) return false
         // Bracketed IPv6 literal — the one legitimate use of colons in a host.
-        if (candidate.startsWith("[")) return candidate.endsWith("]") && IPV6_BODY.matches(candidate.drop(1).dropLast(1))
+        if (candidate.startsWith("[")) {
+            return candidate.endsWith("]") && IPV6_BODY.matches(candidate.drop(1).dropLast(1))
+        }
         return HOSTNAME.matches(candidate)
     }
 

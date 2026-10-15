@@ -35,8 +35,9 @@ object PingReporter {
     /**
      * Fired once per app launch, before/independent of any desktop connection.
      *
-     * @param installId Stable anonymous install id (see [com.church.presenter.churchpresentermobile.model.AppSettings.deviceId]),
-     * sent as the X-Install-Id header so the server dedupes repeat launches to one row per install.
+     * @param installId Stable anonymous install id
+     * (see [com.church.presenter.churchpresentermobile.model.AppSettings.deviceId]), sent as the
+     * X-Install-Id header so the server dedupes repeat launches to one row per install.
      */
     fun pingOnOpen(installId: String) = send(installId, connected = false)
 

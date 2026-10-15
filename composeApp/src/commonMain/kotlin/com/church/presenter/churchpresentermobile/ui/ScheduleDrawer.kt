@@ -89,7 +89,9 @@ fun ScheduleDrawerContent(
 ) {
     val colors = LocalAppColors.current
     val viewModel: ScheduleViewModel = providedViewModel
-        ?: viewModel(key = isDemoMode.toString()) { ScheduleViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
+        ?: viewModel(key = isDemoMode.toString()) {
+            ScheduleViewModel(appSettings, ServerEventService(appSettings), isDemoMode)
+        }
 
     LaunchedEffect(settingsSaveToken) {
         if (settingsSaveToken > 0) viewModel.onSettingsSaved()
@@ -215,11 +217,14 @@ private fun scheduleTypeStyleFor(type: String?): ScheduleTypeStyle {
     val t = type?.lowercase() ?: ""
     return when {
         t.contains("song") -> ScheduleTypeStyle(Icons.Outlined.MusicNote, colors.scheduleSongFg, colors.scheduleSongBg)
-        t.contains("bible") -> ScheduleTypeStyle(Icons.AutoMirrored.Outlined.MenuBook, colors.scheduleBibleFg, colors.scheduleBibleBg)
-        t.contains("picture") || t.contains("image") -> ScheduleTypeStyle(Icons.Outlined.Image, colors.schedulePictureFg, colors.schedulePictureBg)
+        t.contains("bible") ->
+            ScheduleTypeStyle(Icons.AutoMirrored.Outlined.MenuBook, colors.scheduleBibleFg, colors.scheduleBibleBg)
+        t.contains("picture") || t.contains("image") ->
+            ScheduleTypeStyle(Icons.Outlined.Image, colors.schedulePictureFg, colors.schedulePictureBg)
         t.contains("dictionary") -> ScheduleTypeStyle(Icons.Outlined.Translate, colors.accent, colors.accentTint)
         t.contains("announcement") -> ScheduleTypeStyle(Icons.Outlined.Campaign, colors.accent, colors.accentTint)
-        t.contains("website") || t.contains("web") -> ScheduleTypeStyle(Icons.Outlined.Public, colors.accent, colors.accentTint)
+        t.contains("website") || t.contains("web") ->
+            ScheduleTypeStyle(Icons.Outlined.Public, colors.accent, colors.accentTint)
         t.contains("media") -> ScheduleTypeStyle(Icons.Outlined.PlayCircleOutline, colors.accent, colors.accentTint)
         else -> ScheduleTypeStyle(Icons.Outlined.DesktopWindows, colors.muted, colors.inputBg)
     }
@@ -286,7 +291,12 @@ private fun ScheduleItemRow(item: ScheduleItem, index: Int, onClick: () -> Unit 
                 modifier = Modifier.testTag(UiTags.scheduleRowLive(index)),
             ) {
                 Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(colors.accent))
-                Text(stringResource(Res.string.label_live), color = colors.accent, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(Res.string.label_live),
+                    color = colors.accent,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
         }
     }

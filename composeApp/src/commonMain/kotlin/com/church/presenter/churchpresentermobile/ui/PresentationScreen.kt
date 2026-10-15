@@ -113,7 +113,9 @@ fun PresentationScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel: PresentationsViewModel = providedViewModel
-        ?: viewModel(key = isDemoMode.toString()) { PresentationsViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
+        ?: viewModel(key = isDemoMode.toString()) {
+            PresentationsViewModel(appSettings, ServerEventService(appSettings), isDemoMode)
+        }
 
     // React to settings changes – rebuild the service and reload
     LaunchedEffect(settingsSaveToken) {
@@ -305,8 +307,11 @@ fun PresentationScreen(
                     modifier        = Modifier.align(Alignment.BottomEnd),
                     extraLeadingContent = {
                         // Upload Presentation FAB — picker is live
-                        val neutralShadow = if (colors.isDark) androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
-                            else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                        val neutralShadow = if (colors.isDark) {
+                            androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
+                        } else {
+                            androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                        }
                         if (isUploading) {
                             Box(
                                 modifier = Modifier
@@ -401,8 +406,10 @@ fun PresentationScreen(
  */
 @Composable
 internal fun ToastEvent.presentationToastMessage(): String = when (this) {
-    is ToastEvent.FailedToSelectPresentation     -> stringResource(Res.string.toast_failed_to_select_presentation, reason)
-    is ToastEvent.FailedToAddPresentationSchedule -> stringResource(Res.string.toast_presentation_failed_to_add_schedule, reason)
+    is ToastEvent.FailedToSelectPresentation     ->
+        stringResource(Res.string.toast_failed_to_select_presentation, reason)
+    is ToastEvent.FailedToAddPresentationSchedule ->
+        stringResource(Res.string.toast_presentation_failed_to_add_schedule, reason)
     is ToastEvent.UploadUnsupported               -> stringResource(Res.string.toast_upload_unsupported)
     is ToastEvent.UploadFileTooLarge              -> stringResource(Res.string.toast_upload_file_too_large)
     is ToastEvent.UploadServerError               -> stringResource(Res.string.toast_upload_server_error, msg)

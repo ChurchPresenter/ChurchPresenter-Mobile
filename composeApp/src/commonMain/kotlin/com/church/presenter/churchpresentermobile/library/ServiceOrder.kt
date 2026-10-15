@@ -40,7 +40,9 @@ class ServiceOrder(private val repository: LibraryRepository) {
 
     /** The running order, re-read whenever the library changes. */
     val entries: Flow<List<LocalSetlistEntry>> =
-        repository.library.map { data -> data.setlists.firstOrNull { it.id == CURRENT_SERVICE_SETLIST_ID }?.entries.orEmpty() }
+        repository.library.map { data ->
+            data.setlists.firstOrNull { it.id == CURRENT_SERVICE_SETLIST_ID }?.entries.orEmpty()
+        }
 
     /** The running order as it stands right now. */
     val current: List<LocalSetlistEntry>

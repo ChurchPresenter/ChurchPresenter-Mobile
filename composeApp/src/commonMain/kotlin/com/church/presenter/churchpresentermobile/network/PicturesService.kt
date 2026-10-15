@@ -91,7 +91,10 @@ class PicturesService(
     suspend fun selectPicture(folderId: String, fileName: String?, indexFallback: Int? = null): Result<Unit> {
         return apiRunCatching {
             val payload = json.encodeToString(PictureSelectRequest(folderId = folderId, index = indexFallback))
-            Logger.d(TAG, "selectPicture ▶ WS select_picture  folderId=$folderId  index=$indexFallback  payload=$payload")
+            Logger.d(
+                TAG,
+                "selectPicture ▶ WS select_picture  folderId=$folderId  index=$indexFallback  payload=$payload"
+            )
             wsService.sendAction(WsMessageType.SELECT_PICTURE, payload, fireAndForget = true).getOrThrow()
         }.onFailure { e ->
             Logger.e(TAG, "selectPicture — FAILED: ${e.message}", e)
@@ -116,7 +119,9 @@ class PicturesService(
     suspend fun addToSchedule(folderId: String, imageIndex: Int, displayText: String): Result<Unit> {
         return apiRunCatching {
             val payload = json.encodeToString(
-                PictureScheduleAddRequest(PictureSchedulePayload(folderId = folderId, imageIndex = imageIndex, displayText = displayText))
+                PictureScheduleAddRequest(
+                    PictureSchedulePayload(folderId = folderId, imageIndex = imageIndex, displayText = displayText)
+                )
             )
             Logger.d(TAG, "addToSchedule ▶ WS add_to_schedule  payload=$payload")
             wsService.sendAction(WsMessageType.ADD_TO_SCHEDULE, payload).getOrThrow()

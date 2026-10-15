@@ -359,7 +359,10 @@ class SongsViewModel(
                     _songDetail.value = loaded.detail
                     loadedDeck = loaded.deck
                     presenter?.loadDeck(loaded.deck)
-                    Logger.d(TAG, "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}")
+                    Logger.d(
+                        TAG,
+                        "openSongDetail — loaded detail for ${song.number}, verses=${loaded.detail.allVerses.size}"
+                    )
                 }
                 .onFailure { e ->
                     _detailError.value = "Failed to load song details: ${e.recordNetworkError(TAG, "openSongDetail")}"
@@ -459,7 +462,9 @@ class SongsViewModel(
                 .onFailure { e ->
                     Logger.e(TAG, "projectSong — FAILED: ${e.message}", e)
                     _isProjecting.value = false
-                    _toastEvent.value = e.toToastEvent { ToastEvent.FailedToProject(e.recordNetworkError(TAG, "toggleProjecting/projectSong")) }
+                    _toastEvent.value = e.toToastEvent {
+                        ToastEvent.FailedToProject(e.recordNetworkError(TAG, "toggleProjecting/projectSong"))
+                    }
                 }
         }
     }
@@ -545,7 +550,9 @@ class SongsViewModel(
                 }
                 .onFailure { e ->
                     Logger.e(TAG, "addSongToSchedule — FAILED: ${e.message}", e)
-                    _toastEvent.value = e.toToastEvent { ToastEvent.FailedToAddSchedule(e.recordNetworkError(TAG, "addSongToSchedule")) }
+                    _toastEvent.value = e.toToastEvent {
+                        ToastEvent.FailedToAddSchedule(e.recordNetworkError(TAG, "addSongToSchedule"))
+                    }
                 }
         }
     }

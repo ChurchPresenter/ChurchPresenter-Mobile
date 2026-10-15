@@ -111,7 +111,9 @@ fun PicturesScreen(
     // The internal fallback is only here so the composable still works in
     // isolation (e.g. Compose Previews or tests).
     val viewModel: PicturesViewModel = providedViewModel
-        ?: viewModel(key = isDemoMode.toString()) { PicturesViewModel(appSettings, ServerEventService(appSettings), isDemoMode) }
+        ?: viewModel(key = isDemoMode.toString()) {
+            PicturesViewModel(appSettings, ServerEventService(appSettings), isDemoMode)
+        }
 
     // React to settings changes – rebuild the service and reload
     LaunchedEffect(settingsSaveToken) {
@@ -284,8 +286,11 @@ fun PicturesScreen(
                     modifier           = Modifier.align(Alignment.BottomEnd),
                     extraLeadingContent = {
                         // From Device FAB — picker is live
-                        val neutralShadow = if (colors.isDark) androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
-                            else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                        val neutralShadow = if (colors.isDark) {
+                            androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f)
+                        } else {
+                            androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.18f)
+                        }
                         if (isUploading) {
                             Box(
                                 modifier = Modifier

@@ -189,7 +189,11 @@ class PresentationService(
         val mimeType = mimeTypeForExtension(fileName.substringAfterLast('.', "pptx").lowercase())
         val dataUri = "data:$mimeType;base64,$encoded"
         val body = """{"name":${json.encodeToString(fileName)},"data":${json.encodeToString(dataUri)}}"""
-        Logger.d(TAG, "uploadPresentation ▶ POST $url  name=$fileName  mime=$mimeType  bytes=${fileBytes.size}  encodedBytes=${encoded.length}")
+        Logger.d(
+            TAG,
+            "uploadPresentation ▶ POST $url  name=$fileName  mime=$mimeType  " +
+                "bytes=${fileBytes.size}  encodedBytes=${encoded.length}"
+        )
         return apiRunCatching {
             // uploadClient has no request/socket timeout — required for large files
             val response = uploadClient.post(url) {

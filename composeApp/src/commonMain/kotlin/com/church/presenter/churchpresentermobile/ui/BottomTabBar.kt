@@ -80,7 +80,11 @@ fun BottomTabBar(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = if (active) colors.accentTint else androidx.compose.ui.graphics.Color.Transparent,
+                                color = if (active) {
+                                    colors.accentTint
+                                } else {
+                                    androidx.compose.ui.graphics.Color.Transparent
+                                },
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .padding(horizontal = 14.dp, vertical = 5.dp),

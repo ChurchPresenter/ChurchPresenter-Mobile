@@ -287,19 +287,28 @@ class PicturesViewModel(
                 _uploadProgress.value = photoIndex.toFloat() / photos.size.toFloat()
                 picturesService.uploadPhoto(photo.bytes, photo.fileName)
                     .onSuccess { uploaded ->
-                        Logger.d(TAG, "uploadDevicePhotos — uploaded ${photo.fileName} folderId=${uploaded.folderId} index=${uploaded.imageIndex}")
+                        Logger.d(
+                            TAG,
+                            "uploadDevicePhotos — uploaded ${photo.fileName} " +
+                                "folderId=${uploaded.folderId} index=${uploaded.imageIndex}",
+                        )
                         lastUploaded = uploaded
                         Analytics.logEvent(AnalyticsEvent.PHOTO_UPLOADED)
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "uploadDevicePhotos — FAILED for ${photo.fileName}: ${e.message}", e)
-                        _error.value = "Failed to upload ${photo.fileName}: ${e.recordNetworkError(TAG, "uploadDevicePhotos")}"
+                        _error.value =
+                            "Failed to upload ${photo.fileName}: ${e.recordNetworkError(TAG, "uploadDevicePhotos")}"
                     }
                 // Step progress up after this photo completes (success or failure)
                 _uploadProgress.value = (photoIndex + 1).toFloat() / photos.size.toFloat()
             }
             lastUploaded?.let { uploaded ->
-                Logger.d(TAG, "uploadDevicePhotos — projecting folderId=${uploaded.folderId} fileName=${uploaded.fileName} index=${uploaded.imageIndex}")
+                Logger.d(
+                    TAG,
+                    "uploadDevicePhotos — projecting folderId=${uploaded.folderId} " +
+                        "fileName=${uploaded.fileName} index=${uploaded.imageIndex}",
+                )
                 _isProjecting.value = true
                 // Track the selected image so Cast button can re-project it
                 _selectedImage.value = PictureImage(index = uploaded.imageIndex, fileName = uploaded.fileName)
@@ -319,7 +328,8 @@ class PicturesViewModel(
                     }
                     .onFailure { e ->
                         Logger.e(TAG, "uploadDevicePhotos — reload FAILED: ${e.message}", e)
-                        _error.value = "Uploaded but failed to load folder: ${e.recordNetworkError(TAG, "uploadDevicePhotos/reload")}"
+                        _error.value = "Uploaded but failed to load folder: " +
+                            e.recordNetworkError(TAG, "uploadDevicePhotos/reload")
                     }
             }
             _uploadProgress.value = null

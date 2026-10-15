@@ -143,7 +143,10 @@ fun AnnouncementsScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
             // ── Type (extra — not in the base design) ─────────────────────
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 AnnouncementType.entries.forEach { t ->
                     Chip(
                         label = announcementTypeLabel(t),
@@ -260,11 +263,23 @@ fun AnnouncementsScreen(
             ) { a -> viewModel.update { it.copy(animation = a) } }
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(Res.string.announcements_animation_duration_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
+                Text(
+                    stringResource(Res.string.announcements_animation_duration_label),
+                    color = colors.muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.05.em,
+                    modifier = Modifier.weight(1f),
+                )
                 // Show the duration in seconds with one decimal (0.5 s steps), e.g. "5.0".
                 val halfSecs = form.animationDuration / 500
                 val secondsLabel = "${halfSecs / 2}.${if (halfSecs % 2 == 0) "0" else "5"}"
-                Text(stringResource(Res.string.announce_duration_seconds, secondsLabel), color = colors.text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(Res.string.announce_duration_seconds, secondsLabel),
+                    color = colors.text,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
             Slider(
                 modifier = Modifier.testTag(UiTags.ANNOUNCE_DURATION),
@@ -293,7 +308,12 @@ fun AnnouncementsScreen(
                         .clickable { viewModel.clearScreen() },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(stringResource(Res.string.action_clear), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.action_clear),
+                        color = colors.text,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
                 }
                 Row(
                     modifier = Modifier
@@ -306,9 +326,19 @@ fun AnnouncementsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Filled.PlayArrow,
+                        contentDescription = null,
+                        tint = colors.onAccent,
+                        modifier = Modifier.size(20.dp),
+                    )
                     Spacer(Modifier.size(8.dp))
-                    Text(stringResource(Res.string.action_go_live), color = colors.onAccent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.action_go_live),
+                        color = colors.onAccent,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -324,15 +354,32 @@ fun AnnouncementsScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
+                Icon(
+                    Icons.AutoMirrored.Filled.PlaylistAdd,
+                    contentDescription = null,
+                    tint = colors.amber,
+                    modifier = Modifier.size(18.dp),
+                )
                 Spacer(Modifier.size(8.dp))
-                Text(stringResource(Res.string.label_add_to_schedule), color = colors.amber, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(Res.string.label_add_to_schedule),
+                    color = colors.amber,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
 
             Spacer(Modifier.height(24.dp))
             // ── Saved (matches design) ────────────────────────────────────
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(Res.string.announcements_saved_label), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em, modifier = Modifier.weight(1f))
+                Text(
+                    stringResource(Res.string.announcements_saved_label),
+                    color = colors.muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.05.em,
+                    modifier = Modifier.weight(1f),
+                )
                 Text(
                     stringResource(Res.string.announcements_add_new),
                     color = colors.accent,
@@ -384,7 +431,13 @@ fun AnnouncementsScreen(
 @Composable
 private fun Overline(label: String) {
     val colors = LocalAppColors.current
-    Text(label.uppercase(), color = colors.muted, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)
+    Text(
+        label.uppercase(),
+        color = colors.muted,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.05.em,
+    )
     Spacer(Modifier.height(8.dp))
 }
 
@@ -399,7 +452,12 @@ private fun Chip(label: String, selected: Boolean, modifier: Modifier = Modifier
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
-        Text(label, color = if (selected) colors.accent else colors.secondary, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+        Text(
+            label,
+            color = if (selected) colors.accent else colors.secondary,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }
 
@@ -448,7 +506,12 @@ private fun SwatchGroup(
                     .clickable(onClick = onOpenPicker),
                 contentAlignment = Alignment.Center,
             ) {
-                if (!isCustom) Icon(Icons.Outlined.Palette, contentDescription = stringResource(Res.string.cd_custom_color), tint = colors.muted, modifier = Modifier.size(16.dp))
+                if (!isCustom) Icon(
+                    Icons.Outlined.Palette,
+                    contentDescription = stringResource(Res.string.cd_custom_color),
+                    tint = colors.muted,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
     }
@@ -525,7 +588,14 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
                         .testTag(UiTags.COLOR_PICKER_USE)
                         .clickable { onPick(hex) },
                     contentAlignment = Alignment.Center,
-                ) { Text(stringResource(Res.string.color_picker_use), color = colors.onAccent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) }
+                ) {
+                    Text(
+                        stringResource(Res.string.color_picker_use),
+                        color = colors.onAccent,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
         }
     }
@@ -535,12 +605,22 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
 private fun ColorSlider(label: String, value: Float, accent: Color, tag: String, onChange: (Float) -> Unit) {
     val colors = LocalAppColors.current
     Spacer(Modifier.height(6.dp))
-    Text(label.uppercase(), color = colors.muted, fontSize = 9.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.05.em)
+    Text(
+        label.uppercase(),
+        color = colors.muted,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.05.em,
+    )
     Slider(
         value = value,
         onValueChange = onChange,
         modifier = Modifier.testTag(tag),
-        colors = SliderDefaults.colors(thumbColor = accent, activeTrackColor = accent, inactiveTrackColor = colors.inputBg),
+        colors = SliderDefaults.colors(
+            thumbColor = accent,
+            activeTrackColor = accent,
+            inactiveTrackColor = colors.inputBg,
+        ),
     )
 }
 
@@ -591,12 +671,24 @@ private fun SavedRow(
         ) {
             Text("Aa", color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
-        Text(label, color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f), maxLines = 1)
+        Text(
+            label,
+            color = colors.text,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+        )
         Box(
             modifier = deleteModifier.size(28.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onDelete),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.cd_delete), tint = colors.muted, modifier = Modifier.size(16.dp))
+            Icon(
+                Icons.Filled.Close,
+                contentDescription = stringResource(Res.string.cd_delete),
+                tint = colors.muted,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }
@@ -730,8 +822,18 @@ private fun AnimationDropdown(
                 .padding(horizontal = 14.dp, vertical = 13.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(announcementAnimationLabel(selected), color = colors.text, fontSize = 15.sp, modifier = Modifier.weight(1f))
-            Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, tint = colors.muted, modifier = Modifier.size(20.dp))
+            Text(
+                announcementAnimationLabel(selected),
+                color = colors.text,
+                fontSize = 15.sp,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                tint = colors.muted,
+                modifier = Modifier.size(20.dp),
+            )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             AnnouncementAnimation.entries.forEach { a ->
