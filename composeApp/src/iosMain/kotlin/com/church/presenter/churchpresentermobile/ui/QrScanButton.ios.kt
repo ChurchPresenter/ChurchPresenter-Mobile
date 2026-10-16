@@ -138,9 +138,11 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
                 .background(Color.Black)
         ) {
             UIKitView(
+                // Preview first, start second. Attaching the layer takes the session's
+                // configuration lock on the main thread; queued after a start, it waited
+                // out the whole of startRunning and hung the UI (CHURCH-PRESENTER-MOBILE-2A).
                 factory  = {
-                    startSession(session, delegate)
-                    CameraPreviewView(session)
+                    CameraPreviewView(session).also { startSession(session, delegate) }
                 },
                 modifier = Modifier.fillMaxSize()
             )
