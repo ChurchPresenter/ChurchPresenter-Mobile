@@ -8,8 +8,6 @@
     <ID>CyclomaticComplexMethod:ServerEventService.kt$ServerEventService$override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result&lt;Unit&gt;</ID>
     <ID>CyclomaticComplexMethod:ServerEventService.kt$ServerEventService$suspend fun listen()</ID>
     <ID>CyclomaticComplexMethod:SpbParser.kt$SpbParser$fun parse(text: String, fileName: String = ""): ParsedBible</ID>
-    <ID>FunctionNaming:ExternalDisplayViewController.kt$fun ExternalDisplayViewController(): UIViewController</ID>
-    <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
     <ID>LongMethod:AnnouncementsScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun AnnouncementsScreen( viewModel: AnnouncementsViewModel, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:App.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable @Preview fun App( appSettings: AppSettings = remember { AppSettings() }, onLaunchPing: (String) -&gt; Unit = { PingReporter.pingOnOpen(it) }, )</ID>
     <ID>LongMethod:BibleSyncSection.kt$@Composable internal fun BibleSyncSection( bibles: LocalBibleRepository, settings: AppSettings, /** Supplied by tests only; the sheet owns its own otherwise. */ providedViewModel: BibleSyncViewModel? = null, providedChoice: BibleChoiceViewModel? = null, )</ID>

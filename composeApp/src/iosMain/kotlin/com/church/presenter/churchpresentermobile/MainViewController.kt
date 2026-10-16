@@ -8,7 +8,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.ui.BackgroundPasteboardClipboard
 
-fun MainViewController() = ComposeUIViewController {
+fun mainViewController() = ComposeUIViewController {
     // Pastes must not read the pasteboard on the main thread — see BackgroundPasteboardClipboard.
     CompositionLocalProvider(LocalClipboard provides remember { BackgroundPasteboardClipboard() }) {
         App()

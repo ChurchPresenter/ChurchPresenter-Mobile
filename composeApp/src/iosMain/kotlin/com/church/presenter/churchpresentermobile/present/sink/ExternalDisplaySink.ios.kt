@@ -1,6 +1,6 @@
 package com.church.presenter.churchpresentermobile.present.sink
 
-import com.church.presenter.churchpresentermobile.ExternalDisplayViewController
+import com.church.presenter.churchpresentermobile.externalDisplayViewController
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
 import com.church.presenter.churchpresentermobile.present.OutputSink
 import com.church.presenter.churchpresentermobile.present.SinkState
@@ -135,7 +135,7 @@ private class IosExternalDisplaySink : OutputSink {
         runCatching {
             UIWindow(frame = screen.bounds).apply {
                 this.screen = screen
-                rootViewController = ExternalDisplayViewController()
+                rootViewController = externalDisplayViewController()
                 hidden = false
             }
         }.onSuccess { window ->
