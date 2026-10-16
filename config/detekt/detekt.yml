@@ -91,6 +91,22 @@ naming:
     ignoreAnnotated: ['Composable']
   MatchingDeclarationName:
     active: true
+    # detekt's defaults plus this project's two web source sets, so that
+    # `Analytics.wasmJs.kt` and `LocalWebServer.web.kt` read as `actual`s of
+    # their common file rather than as misnamed ones.
+    multiplatformTargets:
+      - ios
+      - android
+      - js
+      - jvm
+      - native
+      - iosArm64
+      - iosX64
+      - macosX64
+      - mingwX64
+      - linuxX64
+      - wasmJs
+      - web
 
 exceptions:
   TooGenericExceptionCaught:

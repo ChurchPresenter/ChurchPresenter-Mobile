@@ -10,7 +10,7 @@ import kotlinx.browser.localStorage
  * shared library code compiles for js, and leaves the door open for a read-only
  * library view in the browser later.
  */
-class JsFileStore : FileStore {
+private class JsFileStore : FileStore {
 
     override fun read(name: String): String? = localStorage.getItem(KEY_PREFIX + name)
 

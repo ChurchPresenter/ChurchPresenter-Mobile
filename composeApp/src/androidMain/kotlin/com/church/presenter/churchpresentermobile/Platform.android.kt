@@ -7,7 +7,7 @@ import android.provider.Settings
 import com.church.presenter.churchpresentermobile.model.getAppContext
 import java.util.UUID
 
-class AndroidPlatform : Platform {
+private class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
     override val os: String = "android"
 }

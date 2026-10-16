@@ -1,6 +1,6 @@
 package com.church.presenter.churchpresentermobile
 
-class WasmPlatform : Platform {
+private class WasmPlatform : Platform {
     override val name: String = "Web with Kotlin/Wasm"
     override val os: String = "web"
 }

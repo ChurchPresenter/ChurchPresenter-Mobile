@@ -8,7 +8,7 @@ package com.church.presenter.churchpresentermobile.library
  * Standalone mode is off on web, so nothing writes here today — see the JS
  * implementation for the reasoning.
  */
-class WasmJsFileStore : FileStore {
+private class WasmJsFileStore : FileStore {
 
     override fun read(name: String): String? = storageGet(KEY_PREFIX + name)
 
