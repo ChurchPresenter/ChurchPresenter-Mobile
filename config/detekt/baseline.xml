@@ -33,23 +33,6 @@
     <ID>LoopWithTooManyJumpStatements:BibleSyncService.kt$BibleSyncService$for</ID>
     <ID>LoopWithTooManyJumpStatements:ServerEventService.kt$ServerEventService$for</ID>
     <ID>LoopWithTooManyJumpStatements:SpbParser.kt$SpbParser$for</ID>
-    <ID>MatchingDeclarationName:Analytics.wasmJs.kt$Analytics</ID>
-    <ID>MatchingDeclarationName:CrashReporting.wasmJs.kt$CrashReporting</ID>
-    <ID>MatchingDeclarationName:DocumentIO.kt$PickedTextFile</ID>
-    <ID>MatchingDeclarationName:FileStorage.js.kt$JsFileStore : FileStore</ID>
-    <ID>MatchingDeclarationName:FileStorage.kt$FileStore</ID>
-    <ID>MatchingDeclarationName:FileStorage.wasmJs.kt$WasmJsFileStore : FileStore</ID>
-    <ID>MatchingDeclarationName:LocalWebServer.web.kt$LocalWebServer</ID>
-    <ID>MatchingDeclarationName:Logger.wasmJs.kt$Logger</ID>
-    <ID>MatchingDeclarationName:PhotoPickerLauncher.kt$PickedPhoto</ID>
-    <ID>MatchingDeclarationName:Platform.android.kt$AndroidPlatform : Platform</ID>
-    <ID>MatchingDeclarationName:Platform.ios.kt$IOSPlatform : Platform</ID>
-    <ID>MatchingDeclarationName:Platform.js.kt$JsPlatform : Platform</ID>
-    <ID>MatchingDeclarationName:Platform.wasmJs.kt$WasmPlatform : Platform</ID>
-    <ID>MatchingDeclarationName:PresentationFilePicker.kt$PickedFile</ID>
-    <ID>MatchingDeclarationName:PresentationKeepAlive.web.kt$PresentationKeepAlive</ID>
-    <ID>MatchingDeclarationName:RemoteConfig.wasmJs.kt$RemoteConfig</ID>
-    <ID>MatchingDeclarationName:SyncSheet.kt$SyncSection</ID>
     <ID>NestedBlockDepth:ChordProParser.kt$ChordProParser$fun parse(text: String, id: String, fallbackTitle: String = ""): LocalSong</ID>
     <ID>NewLineAtEndOfFile:MainActivity.kt$com.church.presenter.churchpresentermobile.MainActivity.kt</ID>
     <ID>NewLineAtEndOfFile:main.kt$com.church.presenter.churchpresentermobile.main.kt</ID>

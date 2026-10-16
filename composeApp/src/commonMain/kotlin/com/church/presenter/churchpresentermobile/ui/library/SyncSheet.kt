@@ -35,9 +35,6 @@ import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
-/** Which half of the sheet opens first, so an empty state can land on the right one. */
-enum class SyncSection { SONGS, BIBLE }
-
 /**
  * Copying content from a computer: where it is, then what to take.
  *
