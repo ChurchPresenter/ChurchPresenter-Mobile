@@ -16,7 +16,7 @@ import platform.UIKit.UIViewController
  * pass state down through. Collecting a StateFlow also means a screen connected
  * mid-service immediately shows whatever is already projected.
  */
-fun ExternalDisplayViewController(): UIViewController = ComposeUIViewController {
+fun externalDisplayViewController(): UIViewController = ComposeUIViewController {
     val envelope by SlideBus.current.collectAsState()
     StandaloneOutputScreen(slide = envelope.slide ?: Slide.BLANK)
 }
