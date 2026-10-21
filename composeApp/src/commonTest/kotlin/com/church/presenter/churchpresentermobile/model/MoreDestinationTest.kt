@@ -20,8 +20,20 @@ class MoreDestinationTest {
     @Test
     fun remoteOffersEveryDestinationButTheReport() {
         // The report counts what *this device* projected; in remote mode the
-        // desktop does the projecting and keeps its own.
-        assertEquals(MoreDestination.entries.toSet() - MoreDestination.REPORT, remote.toSet())
+        // desktop does the projecting and keeps its own. The canvas is tablet-only.
+        assertEquals(
+            MoreDestination.entries.toSet() - MoreDestination.REPORT - MoreDestination.CANVAS,
+            remote.toSet(),
+        )
+    }
+
+    @Test
+    fun theCanvasIsOfferedOnATabletInBothModesAndNeverOnAPhone() {
+        assertTrue(MoreDestination.CANVAS in MoreDestination.forMode(AppMode.REMOTE, tablet = true))
+        assertTrue(MoreDestination.CANVAS in MoreDestination.forMode(AppMode.STANDALONE, tablet = true))
+        assertTrue(MoreDestination.CANVAS !in remote)
+        assertTrue(MoreDestination.CANVAS !in standalone)
+        assertTrue(MoreDestination.CANVAS !in MoreDestination.forMode(AppMode.CALENDAR, tablet = true))
     }
 
     @Test

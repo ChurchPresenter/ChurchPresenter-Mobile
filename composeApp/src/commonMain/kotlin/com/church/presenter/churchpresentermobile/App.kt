@@ -108,6 +108,7 @@ import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.CcliReportScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
 import com.church.presenter.churchpresentermobile.ui.ContactOverlay
+import com.church.presenter.churchpresentermobile.ui.canvas.CanvasScreen
 import com.church.presenter.churchpresentermobile.ui.ContactScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
@@ -623,12 +624,13 @@ fun App(
     // selectedTab is rememberSaveable, so after a mode switch it can still hold a
     // tab that is no longer in the strip. Every index lookup below is therefore
     // written to survive a -1, and this effect settles it on the next frame.
-    LaunchedEffect(appMode) {
+    LaunchedEffect(appMode, twoPane) {
         selectedTab = settledTab(selectedTab, tabs)
         // Same for a More destination opened before the switch: standalone cannot
         // fill the desktop-backed screens, so leaving one open would strand the
-        // operator on a screen the launcher no longer offers a way back to.
-        moreDestination = settledMoreDestination(moreDestination, appMode)
+        // operator on a screen the launcher no longer offers a way back to. The
+        // canvas is tablet-only, so a window narrowing past two panes closes it.
+        moreDestination = settledMoreDestination(moreDestination, appMode, tablet = twoPane)
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -723,6 +725,9 @@ fun App(
     val inSongDetail = selectedTab == AppTab.SONGS && songDetailTitle != null
     val inBibleDetail = selectedTab == AppTab.BIBLE && bibleBook != null
     val inMoreDetail = selectedTab == AppTab.MORE && moreDestination != null
+    // The canvas fills the whole window over the shell, rail and all, as the tablet
+    // design draws it — it is a drawing surface, and the rail would only crowd it.
+    val canvasOpen = twoPane && selectedTab == AppTab.MORE && moreDestination == MoreDestination.CANVAS
 
     // System back inside a More sub-screen returns to the More launcher grid. Not
     // in two panes, where the launcher never went away: back would empty the
@@ -1150,6 +1155,8 @@ fun App(
                                         repository = playLogRepository,
                                         modifier = Modifier.fillMaxSize(),
                                     )
+                                    // Drawn over the whole window instead; see canvasOpen.
+                                    MoreDestination.CANVAS -> Unit
                                     MoreDestination.CONTACT -> ContactScreen(
                                         modifier = Modifier.fillMaxSize()
                                     )
@@ -1166,6 +1173,9 @@ fun App(
                             // back arrow to the launcher.
                             if (twoPane && moreDestination == MoreDestination.CALENDAR) {
                                 moreTool()
+                            } else if (canvasOpen) {
+                                // Covered by the canvas, which the shell draws over everything.
+                                Unit
                             } else if (twoPane) {
                                 MoreTwoPane(
                                     mode = appMode,
@@ -1289,6 +1299,13 @@ fun App(
                 }
             }
 
+            if (canvasOpen) {
+                CanvasScreen(
+                    onBack = { moreDestination = null },
+                    // Projecting a canvas needs the backend, which is still to come.
+                    onGoLive = {},
+                )
+            }
             if (showSettings) {
                 SettingsScreen(
                     appSettings = appSettings,
@@ -1339,7 +1356,8 @@ fun App(
         } else {
             ModalNavigationDrawer(
                 drawerState = drawerState,
-                gesturesEnabled = true,
+                // Not over the canvas: a stroke started at the left edge would open the drawer.
+                gesturesEnabled = !canvasOpen,
                 scrimColor = LocalAppColors.current.scrim,
                 drawerContent = {
                     // Standalone's running order is this device's own list, so it gets

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Public
@@ -75,6 +76,8 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.compose.material.icons.outlined.CalendarMonth
 import churchpresentermobile.composeapp.generated.resources.more_calendar_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_calendar_title
+import churchpresentermobile.composeapp.generated.resources.more_canvas_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_canvas_title
 import churchpresentermobile.composeapp.generated.resources.more_new_badge
 import androidx.compose.ui.unit.em
 import org.jetbrains.compose.resources.stringResource
@@ -103,6 +106,8 @@ private data class MoreEntry(
  * @param selected Drawn as the open tile. Only meaningful beside a detail pane —
  *   on a phone, opening a destination replaces this screen, so there is never a
  *   selected tile to see.
+ * @param tablet Whether the window is the tablet's two-pane layout, which adds
+ *   the tablet-only tools (the canvas) to the list.
  */
 @Composable
 fun MoreScreen(
@@ -110,15 +115,23 @@ fun MoreScreen(
     onSelect: (MoreDestination) -> Unit,
     modifier: Modifier = Modifier,
     selected: MoreDestination? = null,
+    tablet: Boolean = false,
 ) {
     val colors = LocalAppColors.current
-    val available = MoreDestination.forMode(mode)
+    val available = MoreDestination.forMode(mode, tablet)
     val entries = listOf(
         MoreEntry(
             MoreDestination.CALENDAR,
             stringResource(Res.string.more_calendar_title),
             stringResource(Res.string.more_calendar_subtitle),
             Icons.Outlined.CalendarMonth,
+            badge = stringResource(Res.string.more_new_badge),
+        ),
+        MoreEntry(
+            MoreDestination.CANVAS,
+            stringResource(Res.string.more_canvas_title),
+            stringResource(Res.string.more_canvas_subtitle),
+            Icons.Outlined.Draw,
             badge = stringResource(Res.string.more_new_badge),
         ),
         MoreEntry(
@@ -303,6 +316,7 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, 
 fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
     when (destination) {
         MoreDestination.CALENDAR -> stringResource(Res.string.more_calendar_title)
+        MoreDestination.CANVAS -> stringResource(Res.string.more_canvas_title)
         MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)
         MoreDestination.QA -> stringResource(Res.string.tab_qa_admin)
         MoreDestination.DICTIONARY -> stringResource(Res.string.strongs_dictionary_title)
@@ -347,7 +361,8 @@ fun MoreTwoPane(
                 onSettings = onSettings,
             )
             Box(modifier = Modifier.weight(1f)) {
-                MoreScreen(mode = mode, onSelect = onSelect, selected = selected)
+                // This split only exists in the two-pane layout, so the tablet-only tools belong in it.
+                MoreScreen(mode = mode, onSelect = onSelect, selected = selected, tablet = true)
             }
         }
 

@@ -44,6 +44,8 @@ enum class AppTab {
 enum class MoreDestination {
     /** Planned services on a month grid, each with a run of show. Works with or without a desktop. */
     CALENDAR,
+    /** Tablet-only: a whiteboard of pages to sketch on. Needs no desktop, so both modes have it. */
+    CANVAS,
     PICTURES,
     QA,
     DICTIONARY,
@@ -74,16 +76,24 @@ enum class MoreDestination {
          *
          * The CCLI report is standalone-only for the mirror-image reason: in
          * remote mode the desktop is what projects, and it keeps its own report.
+         *
+         * The canvas is listed only when [tablet] — the two-pane layout, which
+         * an iPad or Android tablet reaches and a phone never does. Its tool rail,
+         * dock and side panels are drawn for a tablet's board and have no phone
+         * arrangement.
          */
-        fun forMode(mode: AppMode): List<MoreDestination> = when (mode) {
-            // CONTACT is in both: it posts to a public endpoint on the
-            // internet, so it needs no desktop, and a user who hits a problem in
-            // standalone is exactly the one with something to report.
-            AppMode.REMOTE -> listOf(CALENDAR, PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
-            AppMode.STANDALONE -> listOf(CALENDAR, PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
-            // Calendar mode has no More tab, so this list only settles a Contact
-            // left open from another mode.
-            AppMode.CALENDAR -> listOf(CONTACT)
+        fun forMode(mode: AppMode, tablet: Boolean = false): List<MoreDestination> {
+            val all = when (mode) {
+                // CONTACT is in both: it posts to a public endpoint on the
+                // internet, so it needs no desktop, and a user who hits a problem in
+                // standalone is exactly the one with something to report.
+                AppMode.REMOTE -> listOf(CALENDAR, CANVAS, PICTURES, QA, DICTIONARY, ANNOUNCEMENTS, WEB, CONTACT)
+                AppMode.STANDALONE -> listOf(CALENDAR, CANVAS, PICTURES, ANNOUNCEMENTS, WEB, REPORT, CONTACT)
+                // Calendar mode has no More tab, so this list only settles a Contact
+                // left open from another mode.
+                AppMode.CALENDAR -> listOf(CONTACT)
+            }
+            return if (tablet) all else all - CANVAS
         }
     }
 }

@@ -26,13 +26,19 @@ internal fun settledTab(selected: AppTab, tabs: List<AppTab>): AppTab =
     if (selected in tabs) selected else tabs.first()
 
 /**
- * The More destination to keep open after a mode switch.
+ * The More destination to keep open after a mode switch, or after the window
+ * changes shape.
  *
  * Standalone cannot fill the desktop-backed screens, so one left open would
  * strand the operator somewhere the launcher no longer offers a way back to.
+ * The canvas likewise closes when the window narrows past [tablet] — an iPad
+ * entering Split View — since it has no layout for the narrower window.
  */
-internal fun settledMoreDestination(current: MoreDestination?, mode: AppMode): MoreDestination? =
-    current?.takeIf { it in MoreDestination.forMode(mode) }
+internal fun settledMoreDestination(
+    current: MoreDestination?,
+    mode: AppMode,
+    tablet: Boolean = false,
+): MoreDestination? = current?.takeIf { it in MoreDestination.forMode(mode, tablet) }
 
 /** The page in the pager that shows [tab], or the first page when it has none. */
 internal fun pageForTab(tab: AppTab, tabs: List<AppTab>): Int =
@@ -62,6 +68,7 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
  */
 internal fun moreScreenName(destination: MoreDestination?): String? = when (destination) {
     MoreDestination.CALENDAR -> AnalyticsScreen.CALENDAR
+    MoreDestination.CANVAS -> AnalyticsScreen.CANVAS
     MoreDestination.PICTURES -> AnalyticsScreen.PICTURES
     MoreDestination.QA -> AnalyticsScreen.QA_ADMIN
     MoreDestination.DICTIONARY -> AnalyticsScreen.DICTIONARY
