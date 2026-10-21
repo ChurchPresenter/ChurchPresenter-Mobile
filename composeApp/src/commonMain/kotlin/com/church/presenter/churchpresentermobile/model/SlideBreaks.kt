@@ -49,6 +49,19 @@ object SlideBreaks {
         }
     }
 
+    /**
+     * The second language's share of [piece], from that section's translated [text].
+     *
+     * Paired slide by slide within the section, as the desktop pairs them, so a translation that
+     * breaks its verse where the first language does lands on the right half. One that breaks it
+     * differently has no half to pair with, and its extra slides go untranslated rather than
+     * showing the wrong words.
+     */
+    fun secondaryPart(piece: Piece, text: String?): String? {
+        if (text.isNullOrBlank()) return null
+        return chunks(text).getOrNull(piece.part)?.let { Chords.stripChords(it).trim() }?.ifBlank { null }
+    }
+
     /** [text] cut at its break lines, keeping only the pieces with a non-blank line in them. */
     private fun chunks(text: String): List<String> {
         val out = mutableListOf<String>()

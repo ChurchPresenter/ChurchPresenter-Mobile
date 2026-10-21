@@ -235,13 +235,15 @@ class LibrarySyncService(
      * has no typed notion of a chorus.
      */
     private fun toLocalSong(song: Song, detail: SongDetail): LocalSong {
-        val verses = detail.allVerses
-            .map { it.displayText.trim() to it.displayLabel }
-            .filter { (text, _) -> text.isNotBlank() }
+        val verses = detail.allVerses.filter { it.displayText.isNotBlank() }
 
         val sections = if (verses.isNotEmpty()) {
-            verses.map { (text, label) ->
-                LocalSongSection(type = sectionTypeFor(label), text = text)
+            verses.map { verse ->
+                LocalSongSection(
+                    type = sectionTypeFor(verse.displayLabel),
+                    text = verse.displayText.trim(),
+                    secondaryText = verse.secondaryText?.trim(),
+                )
             }
         } else {
             detail.plainText

@@ -28,6 +28,7 @@ private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
 private const val KEY_SAVED_THEMES = "saved_themes"
+private const val KEY_DISPLAY_RECENT_COLORS = "display_recent_colors"
 private const val KEY_CALENDAR_SYNC = "calendar_sync"
 private const val KEY_RELAY_CLIENT_KEY = "relay_client_key"
 private const val KEY_RELAY_CLIENT_KEY_AT = "relay_client_key_at"
@@ -145,6 +146,14 @@ class AppSettings(
     var calendarSyncJson: String
         get() = storage.getString(KEY_CALENDAR_SYNC, "{}")
         set(value) { storage.putString(KEY_CALENDAR_SYNC, value) }
+
+    /**
+     * Colours last chosen in Display text's colour picker, newest first, comma-separated. Kept so
+     * a church's own blue is one tap away on every element, not re-typed for each.
+     */
+    var displayRecentColors: List<String>
+        get() = storage.getString(KEY_DISPLAY_RECENT_COLORS, "").split(',').filter { it.isNotBlank() }
+        set(value) { storage.putString(KEY_DISPLAY_RECENT_COLORS, value.joinToString(",")) }
 
     /** JSON array of the user's saved looks, as {name, theme} entries. Defaults to "[]". */
     var savedThemesJson: String

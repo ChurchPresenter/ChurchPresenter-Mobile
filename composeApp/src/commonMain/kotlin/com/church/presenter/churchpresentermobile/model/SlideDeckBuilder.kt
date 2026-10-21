@@ -36,13 +36,19 @@ object SlideDeckBuilder {
         val book = detail.bookName ?: song.bookName
 
         var section = -1
-        val bodies: List<Pair<String, String>> = detail.slideVerses
+        val bodies: List<SongPiece> = detail.slideVerses
             .map { verse ->
                 if (verse.part == 0) section++
-                verse.displayText to partLabel(sectionLabel(verse.displayLabel, section), verse.part, verse.parts)
+                SongPiece(
+                    text = verse.displayText,
+                    label = partLabel(sectionLabel(verse.displayLabel, section), verse.part, verse.parts),
+                    secondary = verse.secondaryText,
+                )
             }
             .ifEmpty {
-                splitStanzas(detail.plainText).mapIndexed { i, text -> text to sectionLabel((i + 1).toString(), i) }
+                splitStanzas(detail.plainText).mapIndexed { i, text ->
+                    SongPiece(text, sectionLabel((i + 1).toString(), i), secondary = null)
+                }
             }
         val credit = SongCredit(
             id = song.localId.orEmpty(),
@@ -52,7 +58,7 @@ object SlideDeckBuilder {
             songbook = book.orEmpty(),
         )
 
-        val slides = bodies.mapIndexed { index, (text, label) ->
+        val slides = bodies.mapIndexed { index, (text, label, secondary) ->
             Slide(
                 kind = SlideKind.SONG,
                 // body is always the clean words; the marked-up copy rides
@@ -63,6 +69,9 @@ object SlideDeckBuilder {
                 sourceId = listOfNotNull(book, number).joinToString(":").ifBlank { null },
                 index = index,
                 total = bodies.size,
+                songNumber = number.ifBlank { null },
+                songTitle = title.ifBlank { null },
+                secondaryBody = secondary?.let { Chords.stripChords(it).trim() }?.ifBlank { null },
                 songCredit = credit,
             )
         }
@@ -110,6 +119,9 @@ object SlideDeckBuilder {
                 sourceId = song.id,
                 index = index,
                 total = pieces.size,
+                songNumber = song.number.ifBlank { null },
+                songTitle = song.title.ifBlank { null },
+                secondaryBody = SlideBreaks.secondaryPart(piece, usable[piece.source].secondaryText),
                 songCredit = credit,
             )
         }
@@ -342,6 +354,9 @@ object SlideDeckBuilder {
             else -> cleanTitle + REFERENCE_SEPARATOR + section
         }
     }
+
+    /** One slide's worth of a fetched song: its words, its heading, and its second language. */
+    private data class SongPiece(val text: String, val label: String, val secondary: String?)
 
     /** Splits a lyrics blob into stanzas on blank lines, dropping empty runs. */
     private fun splitStanzas(text: String?): List<String> =

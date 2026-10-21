@@ -216,3 +216,74 @@ html, body {
 .chord-run  { display: inline-flex; flex-direction: column; align-items: flex-start; }
 .chord      { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .55em; line-height: 1.1; }
 .chord-words { white-space: pre-wrap; }
+
+/* ── Display text ────────────────────────────────────────────────────────
+   Bible and song slides styled element by element (DisplayTextLayout.kt).
+   Every size, colour and effect is set inline by app.js from the theme, in vh
+   so a 1080p "72" is 72/1080 of the screen's height — the native renderer's
+   unit. These rules carry only the layout, which is fixed. */
+
+/* The content box fills the screen, so the elements can sit top or bottom. */
+.content.dt-mode {
+  height: 100%;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.dt {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Number badge then title, on one line at the top of a song slide. */
+.dt-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: none;
+  width: 100%;
+}
+
+/* The rest of the screen; justify/align set by app.js from the body's style. */
+.dt-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Sized to its words, up to the full width — what a Compose Box in a column
+   does — so a backing hugs the text rather than spanning the screen. */
+.dt-el {
+  margin: 0;
+  flex: none;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.dt-header .dt-title { flex: 0 1 auto; min-width: 0; }
+
+/* Shrink-to-fit: the words alone take whatever height is left, and are only
+   clipped once even the smallest allowed size will not fit. */
+.dt-body.dt-fit { flex: 0 1 auto; min-height: 0; }
+.dt-body.dt-clip { overflow: hidden; }
+
+.dt-body.dt-chords { width: 100%; }
+
+/* The copyright line under everything else; size, gap and colour set by app.js. */
+.dt-footer {
+  margin: 0;
+  flex: none;
+  width: 100%;
+  text-align: center;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}

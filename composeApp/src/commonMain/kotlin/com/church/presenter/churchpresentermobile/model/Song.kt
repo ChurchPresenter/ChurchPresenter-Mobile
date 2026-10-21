@@ -154,6 +154,8 @@ data class SongVerse(
     @SerialName("verseText") val verseTextCamel: String? = null,
     @SerialName("slide-text") val slideText: String? = null,
     @SerialName("lyric-text") val lyricText: String? = null,
+    // The same section in the song's second language, when the desktop sends one.
+    val secondaryLines: List<String>? = null,
     // Set only on the entries of [SongDetail.slideVerses]: which slide of its section this is,
     // 0-based, out of how many. A section without a manual break is slide 0 of 1.
     @Transient val part: Int = 0,
@@ -175,6 +177,10 @@ data class SongVerse(
                 text, content, lyrics, words, body, verseTextKebab, verseTextCamel, slideText, lyricText
             ).firstOrNull { it.isNotBlank() } ?: ""
         }
+
+    /** The second language's lines joined, or null when this section has none. */
+    val secondaryText: String?
+        get() = secondaryLines?.joinToString("\n")?.takeIf { it.isNotBlank() }
 }
 
 /**
@@ -191,6 +197,8 @@ data class SongDetail(
     @SerialName("book_name")    val bookNameSnake: String? = null,
     @SerialName("songbook")     val songbook: String? = null,
     @SerialName("song-book")    val songBookKebab: String? = null,
+    // The title in the song's second language, when it has one.
+    val secondaryTitle: String? = null,
     // Verse arrays — every common container name
     val verses: List<SongVerse>? = null,
     val sections: List<SongVerse>? = null,
@@ -227,7 +235,13 @@ data class SongDetail(
         get() {
             val verses = allVerses
             return SlideBreaks.pieces(verses.map { it.displayText }).map { piece ->
-                verses[piece.source].copy(lines = piece.text.lines(), part = piece.part, parts = piece.parts)
+                val verse = verses[piece.source]
+                verse.copy(
+                    lines = piece.text.lines(),
+                    secondaryLines = SlideBreaks.secondaryPart(piece, verse.secondaryText)?.lines(),
+                    part = piece.part,
+                    parts = piece.parts,
+                )
             }
         }
 

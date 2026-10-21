@@ -35,12 +35,15 @@ enum class SectionType {
  * One projected block of a [LocalSong] — a stanza, a chorus, a bridge.
  *
  * @param label Optional override for the auto-generated label, e.g. "Verse 1a".
+ * @param secondaryText The same section in the song's second language, when the desktop it was
+ *   synced from has one. Shown beneath the words when Display text asks for it.
  */
 @Serializable
 data class LocalSongSection(
     val type: SectionType = SectionType.VERSE,
     val text: String = "",
     val label: String? = null,
+    val secondaryText: String? = null,
 )
 
 /**

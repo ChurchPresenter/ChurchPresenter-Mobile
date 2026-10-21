@@ -37,7 +37,11 @@ object LocalSongAdapter {
             author = song.author,
             bookNameCamel = song.bookName,
             sections = usable.mapIndexed { index, section ->
-                SongVerse(label = labels[index], text = section.text.trim())
+                SongVerse(
+                    label = labels[index],
+                    text = section.text.trim(),
+                    secondaryLines = section.secondaryText?.trim()?.takeIf { it.isNotEmpty() }?.lines(),
+                )
             },
         )
     }

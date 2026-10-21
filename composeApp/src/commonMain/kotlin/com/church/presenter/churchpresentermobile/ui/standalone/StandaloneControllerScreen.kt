@@ -124,7 +124,6 @@ fun StandaloneControllerScreen(
     val slide by viewModel.currentSlide.collectAsState()
     val isBlank by viewModel.isBlank.collectAsState()
     val isLive by viewModel.isLive.collectAsState()
-    val textSize by viewModel.textSize.collectAsState()
     val backdrop by viewModel.backdrop.collectAsState()
     val sinks by viewModel.sinks.collectAsState()
     val theme by viewModel.theme.collectAsState()
@@ -135,18 +134,18 @@ fun StandaloneControllerScreen(
     val savedThemes by viewModel.savedThemes.collectAsState()
     var showOutputs by remember { mutableStateOf(false) }
     var showLook by remember { mutableStateOf(false) }
+    var showDisplayText by remember { mutableStateOf(false) }
 
-    if (showOutputs) {
-        OutputTargetsSheet(sinks = sinks, onDismiss = { showOutputs = false })
-    }
+    if (showOutputs) OutputTargetsSheet(sinks = sinks, onDismiss = { showOutputs = false })
+    // Look opens Display text; the Look sheet — backdrop, saved looks, brand line, clock — is
+    // reached from inside it, and drawn after it so it lands on top.
+    if (showDisplayText) DisplayTextScreen(engine, settings, twoPane, { showLook = true }, { showDisplayText = false })
     if (showLook) {
         LookSheet(
             theme = theme,
             onThemeChange = viewModel::updateTheme,
             showChords = showChords,
             onShowChordsChange = viewModel::setShowChords,
-            textSize = textSize,
-            onTextSizeChange = viewModel::setTextSize,
             presets = viewModel.presets,
             savedThemes = savedThemes,
             onApplyTheme = viewModel::applyTheme,
@@ -193,7 +192,7 @@ fun StandaloneControllerScreen(
             urlFor = { photos?.urlFor(it) },
             onBackdropChange = viewModel::setBackdrop,
             onPickImage = viewModel::setImageBackdrop,
-            onOpenLook = { showLook = true },
+            onOpenLook = { showDisplayText = true },
         )
     }
 

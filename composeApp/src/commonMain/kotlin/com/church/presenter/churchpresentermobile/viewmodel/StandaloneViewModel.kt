@@ -7,11 +7,11 @@ import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.NamedTheme
+import com.church.presenter.churchpresentermobile.model.SlideThemeCodec
 import com.church.presenter.churchpresentermobile.model.SlideThemePresets
 import com.church.presenter.churchpresentermobile.util.Logger
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -161,7 +161,11 @@ class StandaloneViewModel(
      * Copies the values in rather than remembering which entry they came from,
      * so deleting a saved look never changes what is on the screen.
      */
-    fun applyTheme(named: NamedTheme) = updateTheme { named.theme }
+    fun applyTheme(named: NamedTheme) = updateTheme { current ->
+        // A preset is colours and a backdrop; it carries no Display text, and adopting one must
+        // not throw away the styling the operator built element by element.
+        named.theme.copy(display = named.theme.display ?: current.display)
+    }
 
     /** Saves the current look under [name], replacing any saved look of that name. */
     fun saveCurrentTheme(name: String) {
@@ -209,7 +213,6 @@ class StandaloneViewModel(
     fun clear() = engine.clear()
 }
 
-/** Lenient so a theme written by a newer build still opens on an older one. */
 /**
  * Honours a `showReference` saved before the setting was split by kind.
  *
@@ -232,4 +235,4 @@ private fun carryOldReferenceSetting(theme: SlideTheme, storedJson: String): Sli
 
 private const val TAG = "StandaloneViewModel"
 
-private val themeJson = Json { ignoreUnknownKeys = true; isLenient = true; encodeDefaults = true }
+private val themeJson = SlideThemeCodec.json

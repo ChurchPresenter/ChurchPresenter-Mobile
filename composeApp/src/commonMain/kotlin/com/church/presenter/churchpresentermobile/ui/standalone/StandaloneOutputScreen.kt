@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,12 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
-import com.church.presenter.churchpresentermobile.library.Chords
 import com.church.presenter.churchpresentermobile.model.SlideTextAlign
 import com.church.presenter.churchpresentermobile.model.showsReference
 import com.church.presenter.churchpresentermobile.model.displayBody
@@ -38,6 +37,8 @@ import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
+import com.church.presenter.churchpresentermobile.model.TextElement
+import com.church.presenter.churchpresentermobile.model.legacyLook
 import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 
 /**
@@ -56,6 +57,24 @@ import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 fun StandaloneOutputScreen(
     slide: Slide,
     modifier: Modifier = Modifier,
+    /** The element being edited in Display text, outlined on the preview. Null on a real output. */
+    highlight: TextElement? = null,
+    /** Lets the Display text preview jump to an element's settings. Null on a real output. */
+    onElementTap: ((TextElement) -> Unit)? = null,
+) {
+    // Bible and song slides read Display text directly; anything else drawn the old way takes its
+    // look from it too, since the theme's own font and colour are no longer edited anywhere.
+    val drawn = if (slide.kind == SlideKind.SONG || slide.kind == SlideKind.BIBLE) slide
+    else slide.copy(theme = slide.theme.legacyLook())
+    OutputSlide(drawn, modifier, highlight, onElementTap)
+}
+
+@Composable
+private fun OutputSlide(
+    slide: Slide,
+    modifier: Modifier,
+    highlight: TextElement?,
+    onElementTap: ((TextElement) -> Unit)?,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val boxWidth = maxWidth
@@ -88,91 +107,28 @@ fun StandaloneOutputScreen(
         }
         val showsText = mediaUrl == null || slide.kind !in setOf(SlideKind.WEB, SlideKind.VIDEO)
 
-        val textColor = parseHexColor(slide.theme.textColor, Color.White)
-        val accentColor = parseHexColor(slide.theme.accentColor, Color.White)
-
-        // Both axes come from the theme so the phone, an attached screen and a
-        // watching browser lay the words out the same way.
-        val bodyAlign = slide.theme.textAlign.toTextAlign()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(if (showsText) contentAlpha else 0f)
-                .padding(
-                    horizontal = boxWidth * slide.theme.margin.horizontal,
-                    vertical = boxHeight * slide.theme.margin.vertical,
-                ),
-            horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
-            verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
-        ) {
-            val chordText = slide.chordBody?.takeIf { slide.theme.showChords }
-            if (chordText != null) {
-                OutputChordChart(
-                    text = chordText,
-                    bodySize = bodySize,
-                    textColor = textColor,
-                    chordColor = accentColor,
-                    fontFamily = slide.theme.font.toFontFamily(),
-                    horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
-                )
-            } else if (slide.body.isNotBlank()) {
-                val bodyText = slide.displayBody()
-                val bodyStyle = TextStyle(
-                    fontSize = bodySize,
-                    lineHeight = bodySize * BODY_LINE_HEIGHT,
-                    fontFamily = slide.theme.font.toFontFamily(),
-                    color = textColor,
-                    textAlign = bodyAlign,
-                )
-                if (slide.theme.autoFitText) {
-                    // weight(fill = false) hands the text the height that is left
-                    // as a limit without making it fill that height, so the words
-                    // shrink to fit while the chosen vertical alignment still
-                    // decides where the block sits.
-                    BasicText(
-                        text = bodyText,
-                        style = bodyStyle,
-                        autoSize = TextAutoSize.StepBased(
-                            minFontSize = bodySize * AUTO_FIT_FLOOR,
-                            maxFontSize = bodySize,
-                        ),
-                        modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
-                    )
-                } else {
-                    Text(
-                        text = bodyText,
-                        style = bodyStyle,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
-            slide.reference?.takeIf { it.isNotBlank() && slide.showsReference() }?.let { reference ->
-                Text(
-                    text = reference.uppercase(),
-                    style = TextStyle(
-                        fontSize = referenceSize,
-                        letterSpacing = referenceSize * REFERENCE_TRACKING,
-                        fontFamily = FontFamily.SansSerif,
-                        color = accentColor.copy(alpha = REFERENCE_ALPHA),
-                        textAlign = bodyAlign,
-                    ),
-                    modifier = Modifier.padding(top = boxHeight * REFERENCE_GAP),
-                )
-            }
-            slide.footer?.takeIf { it.isNotBlank() }?.let { footer ->
-                Text(
-                    text = footer,
-                    style = TextStyle(
-                        fontSize = cornerSize,
-                        fontFamily = FontFamily.SansSerif,
-                        color = textColor.copy(alpha = FOOTER_ALPHA),
-                        textAlign = TextAlign.Center,
-                    ),
-                    modifier = Modifier.padding(top = boxHeight * FOOTER_GAP),
-                )
-            }
+        val textModifier = Modifier
+            .fillMaxSize()
+            .alpha(if (showsText) contentAlpha else 0f)
+            .padding(
+                horizontal = boxWidth * slide.theme.margin.horizontal,
+                vertical = boxHeight * slide.theme.margin.vertical,
+            )
+        val display = slide.theme.display?.takeIf { slide.kind == SlideKind.SONG || slide.kind == SlideKind.BIBLE }
+        if (display != null) {
+            DisplayTextContent(
+                slide = slide,
+                display = display,
+                scale = displayScale(boxHeight),
+                highlight = highlight,
+                onElementTap = onElementTap,
+                modifier = textModifier,
+            )
+        } else {
+            LegacyText(slide, LegacySizes(bodySize, referenceSize, cornerSize, boxHeight), textModifier)
         }
 
+        val textColor = parseHexColor(slide.theme.textColor, Color.White)
         // Corner furniture stays visible while the slide is blanked: a black
         // screen with the church name still reads as "we meant to do that".
         slide.theme.brandLine?.takeIf { it.isNotBlank() }?.let { brand ->
@@ -185,6 +141,98 @@ fun StandaloneOutputScreen(
                     color = textColor.copy(alpha = CORNER_ALPHA),
                 ),
                 modifier = Modifier.align(Alignment.TopStart).padding(boxWidth * CORNER_PAD),
+            )
+        }
+    }
+}
+
+/** The sizes the old single-style layout derives from the output's width. */
+private class LegacySizes(val body: TextUnit, val reference: TextUnit, val corner: TextUnit, val height: Dp)
+
+/**
+ * A slide drawn the way every slide was before Display text: one font, one colour, the size
+ * ladder. Still how notices are drawn, and Bible and song slides until a style is saved.
+ */
+@Composable
+private fun LegacyText(slide: Slide, sizes: LegacySizes, modifier: Modifier) {
+    val textColor = parseHexColor(slide.theme.textColor, Color.White)
+    val accentColor = parseHexColor(slide.theme.accentColor, Color.White)
+    val bodySize = sizes.body
+    val referenceSize = sizes.reference
+    val cornerSize = sizes.corner
+    val boxHeight = sizes.height
+    // Both axes come from the theme so the phone, an attached screen and a
+    // watching browser lay the words out the same way.
+    val bodyAlign = slide.theme.textAlign.toTextAlign()
+    Column(
+        modifier = modifier,
+        horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
+        verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
+    ) {
+        val chordText = slide.chordBody?.takeIf { slide.theme.showChords }
+        if (chordText != null) {
+            OutputChordChart(
+                text = chordText,
+                bodySize = bodySize,
+                textColor = textColor,
+                chordColor = accentColor,
+                fontFamily = slide.theme.font.toFontFamily(),
+                horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
+            )
+        } else if (slide.body.isNotBlank()) {
+            val bodyText = slide.displayBody()
+            val bodyStyle = TextStyle(
+                fontSize = bodySize,
+                lineHeight = bodySize * BODY_LINE_HEIGHT,
+                fontFamily = slide.theme.font.toFontFamily(),
+                color = textColor,
+                textAlign = bodyAlign,
+            )
+            if (slide.theme.autoFitText) {
+                // weight(fill = false) hands the text the height that is left
+                // as a limit without making it fill that height, so the words
+                // shrink to fit while the chosen vertical alignment still
+                // decides where the block sits.
+                BasicText(
+                    text = bodyText,
+                    style = bodyStyle,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = bodySize * AUTO_FIT_FLOOR,
+                        maxFontSize = bodySize,
+                    ),
+                    modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
+                )
+            } else {
+                Text(
+                    text = bodyText,
+                    style = bodyStyle,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+        slide.reference?.takeIf { it.isNotBlank() && slide.showsReference() }?.let { reference ->
+            Text(
+                text = reference.uppercase(),
+                style = TextStyle(
+                    fontSize = referenceSize,
+                    letterSpacing = referenceSize * REFERENCE_TRACKING,
+                    fontFamily = FontFamily.SansSerif,
+                    color = accentColor.copy(alpha = REFERENCE_ALPHA),
+                    textAlign = bodyAlign,
+                ),
+                modifier = Modifier.padding(top = boxHeight * REFERENCE_GAP),
+            )
+        }
+        slide.footer?.takeIf { it.isNotBlank() }?.let { footer ->
+            Text(
+                text = footer,
+                style = TextStyle(
+                    fontSize = cornerSize,
+                    fontFamily = FontFamily.SansSerif,
+                    color = textColor.copy(alpha = FOOTER_ALPHA),
+                    textAlign = TextAlign.Center,
+                ),
+                modifier = Modifier.padding(top = boxHeight * FOOTER_GAP),
             )
         }
     }
@@ -224,58 +272,6 @@ private fun Backdrop(slide: Slide) {
     }
 }
 
-/**
- * The words with their chords, for an output.
- *
- * Each chord sits above the words it was written against, using the same
- * splitter the phone and the desktop use, so the three agree on where a chord
- * belongs. Falls back to nothing special when a line has no chords: that line is
- * a single segment with an empty chord, which draws as ordinary words.
- */
-@Composable
-private fun OutputChordChart(
-    text: String,
-    bodySize: TextUnit,
-    textColor: Color,
-    chordColor: Color,
-    fontFamily: FontFamily,
-    horizontalAlignment: Alignment.Horizontal,
-) {
-    val chordSize = (bodySize.value * CHORD_RATIO).sp
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = horizontalAlignment,
-    ) {
-        text.lines().forEach { line ->
-            Row(verticalAlignment = Alignment.Bottom) {
-                Chords.parseLine(line).forEach { segment ->
-                    Column(horizontalAlignment = Alignment.Start) {
-                        Text(
-                            text = segment.chord,
-                            style = TextStyle(
-                                fontSize = chordSize,
-                                fontFamily = FontFamily.Monospace,
-                                color = chordColor,
-                            ),
-                        )
-                        Text(
-                            text = segment.text,
-                            style = TextStyle(
-                                fontSize = bodySize,
-                                lineHeight = bodySize * BODY_LINE_HEIGHT,
-                                fontFamily = fontFamily,
-                                color = textColor,
-                            ),
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-/** Chords are drawn smaller than the words they sit over. */
-private const val CHORD_RATIO = 0.55f
 
 /**
  * The desktop resolves the same three names to the same three alignments.

@@ -41,17 +41,6 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.standalone_accent_colour
 import churchpresentermobile.composeapp.generated.resources.standalone_brand_line
 import churchpresentermobile.composeapp.generated.resources.standalone_brand_line_hint
-import churchpresentermobile.composeapp.generated.resources.standalone_font
-import churchpresentermobile.composeapp.generated.resources.standalone_font_sans
-import churchpresentermobile.composeapp.generated.resources.standalone_align
-import churchpresentermobile.composeapp.generated.resources.standalone_align_center
-import churchpresentermobile.composeapp.generated.resources.standalone_align_left
-import churchpresentermobile.composeapp.generated.resources.standalone_align_right
-import churchpresentermobile.composeapp.generated.resources.standalone_valign
-import churchpresentermobile.composeapp.generated.resources.standalone_valign_bottom
-import churchpresentermobile.composeapp.generated.resources.standalone_valign_middle
-import churchpresentermobile.composeapp.generated.resources.standalone_valign_top
-import churchpresentermobile.composeapp.generated.resources.standalone_font_serif
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_bottom
 import churchpresentermobile.composeapp.generated.resources.standalone_gradient_top
 import churchpresentermobile.composeapp.generated.resources.standalone_look
@@ -59,10 +48,6 @@ import churchpresentermobile.composeapp.generated.resources.standalone_autofit
 import churchpresentermobile.composeapp.generated.resources.standalone_autofit_hint
 import churchpresentermobile.composeapp.generated.resources.standalone_ignore_breaks
 import churchpresentermobile.composeapp.generated.resources.standalone_ignore_breaks_hint
-import churchpresentermobile.composeapp.generated.resources.standalone_size_large
-import churchpresentermobile.composeapp.generated.resources.standalone_size_medium
-import churchpresentermobile.composeapp.generated.resources.standalone_size_small
-import churchpresentermobile.composeapp.generated.resources.standalone_text_size
 import churchpresentermobile.composeapp.generated.resources.standalone_margin
 import churchpresentermobile.composeapp.generated.resources.standalone_margin_medium
 import churchpresentermobile.composeapp.generated.resources.standalone_margin_thick
@@ -81,14 +66,9 @@ import churchpresentermobile.composeapp.generated.resources.standalone_theme_sav
 import churchpresentermobile.composeapp.generated.resources.standalone_theme_save_action
 import churchpresentermobile.composeapp.generated.resources.standalone_theme_name
 import churchpresentermobile.composeapp.generated.resources.standalone_theme_delete
-import churchpresentermobile.composeapp.generated.resources.standalone_text_colour
-import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideTheme
-import com.church.presenter.churchpresentermobile.model.SlideTextAlign
-import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideMargin
 import com.church.presenter.churchpresentermobile.model.NamedTheme
-import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.ui.OverlineRow
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.SettingsField
@@ -114,8 +94,6 @@ internal fun LookSheet(
     onThemeChange: ((SlideTheme) -> SlideTheme) -> Unit,
     showChords: Boolean,
     onShowChordsChange: (Boolean) -> Unit,
-    textSize: SlideTextSize,
-    onTextSizeChange: (SlideTextSize) -> Unit,
     presets: List<NamedTheme>,
     savedThemes: List<NamedTheme>,
     onApplyTheme: (NamedTheme) -> Unit,
@@ -134,8 +112,6 @@ internal fun LookSheet(
             onThemeChange = onThemeChange,
             showChords = showChords,
             onShowChordsChange = onShowChordsChange,
-            textSize = textSize,
-            onTextSizeChange = onTextSizeChange,
             presets = presets,
             savedThemes = savedThemes,
             onApplyTheme = onApplyTheme,
@@ -159,16 +135,12 @@ internal fun LookSheetContent(
     onThemeChange: ((SlideTheme) -> SlideTheme) -> Unit,
     showChords: Boolean,
     onShowChordsChange: (Boolean) -> Unit,
-    textSize: SlideTextSize,
-    onTextSizeChange: (SlideTextSize) -> Unit,
     presets: List<NamedTheme>,
     savedThemes: List<NamedTheme>,
     onApplyTheme: (NamedTheme) -> Unit,
     onSaveTheme: (String) -> Unit,
     onDeleteTheme: (String) -> Unit,
 ) {
-    var namingTheme by remember { mutableStateOf(false) }
-    var themeName by remember { mutableStateOf("") }
     val colors = LocalAppColors.current
 
     run {
@@ -187,64 +159,7 @@ internal fun LookSheetContent(
                 fontWeight = FontWeight.Bold,
             )
 
-            // A whole look in one tap. Setting up on a Sunday morning should not
-            // mean assembling a readable screen out of six colour fields.
-            OverlineRow(stringResource(Res.string.standalone_themes))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
-                presets.forEach { preset ->
-                    ThemeChip(
-                        name = preset.name,
-                        onClick = { onApplyTheme(preset) },
-                        modifier = Modifier.testTag(LookTags.preset(preset.name)),
-                    )
-                }
-            }
-
-            if (savedThemes.isNotEmpty()) {
-                OverlineRow(stringResource(Res.string.standalone_themes_saved))
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
-                    savedThemes.forEach { saved ->
-                        ThemeChip(
-                            name = saved.name,
-                            onClick = { onApplyTheme(saved) },
-                            onDelete = { onDeleteTheme(saved.name) },
-                            modifier = Modifier.testTag(LookTags.savedTheme(saved.name)),
-                            deleteModifier = Modifier.testTag(LookTags.deleteTheme(saved.name)),
-                        )
-                    }
-                }
-            }
-
-            if (namingTheme) {
-                SettingsField(
-                    label = stringResource(Res.string.standalone_theme_name),
-                    modifier = Modifier.testTag(LookTags.THEME_NAME),
-                    value = themeName,
-                    onValueChange = { themeName = it },
-                    placeholder = "",
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done,
-                )
-                Text(
-                    text = stringResource(Res.string.standalone_theme_save_action),
-                    color = colors.accent,
-                    fontSize = 13.sp,
-                    modifier = Modifier
-                        .testTag(LookTags.THEME_SAVE_CONFIRM)
-                        .clickable {
-                            onSaveTheme(themeName)
-                            themeName = ""
-                            namingTheme = false
-                        },
-                )
-            } else {
-                Text(
-                    text = stringResource(Res.string.standalone_theme_save),
-                    color = colors.accent,
-                    fontSize = 13.sp,
-                    modifier = Modifier.testTag(LookTags.THEME_SAVE).clickable { namingTheme = true },
-                )
-            }
+            ThemeChooser(presets, savedThemes, onApplyTheme, onSaveTheme, onDeleteTheme)
 
             Row(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 ColorField(
@@ -263,56 +178,13 @@ internal fun LookSheetContent(
                 )
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
-                ColorField(
-                    label = stringResource(Res.string.standalone_text_colour),
-                    value = theme.textColor,
-                    onValueChange = { hex -> onThemeChange { it.copy(textColor = hex) } },
-                    modifier = Modifier.weight(1f),
-                    tag = LookTags.TEXT_COLOUR,
-                )
-                ColorField(
-                    label = stringResource(Res.string.standalone_accent_colour),
-                    value = theme.accentColor,
-                    onValueChange = { hex -> onThemeChange { it.copy(accentColor = hex) } },
-                    modifier = Modifier.weight(1f),
-                    tag = LookTags.ACCENT_COLOUR,
-                )
-            }
-
-            OverlineRow(stringResource(Res.string.standalone_text_size))
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.standalone_size_small),
-                    stringResource(Res.string.standalone_size_medium),
-                    stringResource(Res.string.standalone_size_large),
-                ),
-                selectedIndex = TEXT_SIZES.indexOf(textSize).coerceAtLeast(0),
-                onSelect = { index -> onTextSizeChange(TEXT_SIZES[index]) },
-                optionTag = { LookTags.textSize(it) },
-            )
-
-            OverlineRow(stringResource(Res.string.standalone_font))
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.standalone_font_serif),
-                    stringResource(Res.string.standalone_font_sans),
-                ),
-                selectedIndex = FONTS.indexOf(theme.font).coerceAtLeast(0),
-                onSelect = { index -> onThemeChange { it.copy(font = FONTS[index]) } },
-                optionTag = { LookTags.font(it) },
-            )
-
-            OverlineRow(stringResource(Res.string.standalone_align))
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.standalone_align_left),
-                    stringResource(Res.string.standalone_align_center),
-                    stringResource(Res.string.standalone_align_right),
-                ),
-                selectedIndex = TEXT_ALIGNS.indexOf(theme.textAlign).coerceAtLeast(0),
-                onSelect = { index -> onThemeChange { it.copy(textAlign = TEXT_ALIGNS[index]) } },
-                optionTag = { LookTags.align(it) },
+            // The words' own font, size, colour and alignment live in Display text now, per
+            // element. The accent stays here: it colours chords and the lines nothing else styles.
+            ColorField(
+                label = stringResource(Res.string.standalone_accent_colour),
+                value = theme.accentColor,
+                onValueChange = { hex -> onThemeChange { it.copy(accentColor = hex) } },
+                tag = LookTags.ACCENT_COLOUR,
             )
 
             OverlineRow(stringResource(Res.string.standalone_margin))
@@ -325,18 +197,6 @@ internal fun LookSheetContent(
                 selectedIndex = MARGINS.indexOf(theme.margin).coerceAtLeast(0),
                 onSelect = { index -> onThemeChange { it.copy(margin = MARGINS[index]) } },
                 optionTag = { LookTags.margin(it) },
-            )
-
-            OverlineRow(stringResource(Res.string.standalone_valign))
-            SegmentedControl(
-                options = listOf(
-                    stringResource(Res.string.standalone_valign_top),
-                    stringResource(Res.string.standalone_valign_middle),
-                    stringResource(Res.string.standalone_valign_bottom),
-                ),
-                selectedIndex = VERTICAL_ALIGNS.indexOf(theme.verticalAlign).coerceAtLeast(0),
-                onSelect = { index -> onThemeChange { it.copy(verticalAlign = VERTICAL_ALIGNS[index]) } },
-                optionTag = { LookTags.verticalAlign(it) },
             )
 
             SettingsField(
@@ -352,63 +212,7 @@ internal fun LookSheetContent(
                 imeAction = ImeAction.Done,
             )
 
-            // Asked separately: a church that wants no heading over a hymn
-            // usually still wants the chapter and verse over scripture.
-            ToggleRow(
-                label = stringResource(Res.string.standalone_show_reference_songs),
-                tag = LookTags.SHOW_SONG_REFERENCE,
-                hint = stringResource(Res.string.standalone_show_reference_hint),
-                checked = theme.showSongReference,
-                onCheckedChange = { on -> onThemeChange { it.copy(showSongReference = on) } },
-            )
-
-            ToggleRow(
-                label = stringResource(Res.string.standalone_show_reference_bible),
-                tag = LookTags.SHOW_BIBLE_REFERENCE,
-                checked = theme.showBibleReference,
-                onCheckedChange = { on -> onThemeChange { it.copy(showBibleReference = on) } },
-            )
-
-            ToggleRow(
-                label = stringResource(Res.string.standalone_show_reference_other),
-                tag = LookTags.SHOW_OTHER_REFERENCE,
-                checked = theme.showOtherReference,
-                onCheckedChange = { on -> onThemeChange { it.copy(showOtherReference = on) } },
-            )
-
-            ToggleRow(
-                label = stringResource(Res.string.standalone_show_clock),
-                tag = LookTags.SHOW_CLOCK,
-                checked = theme.showClock,
-                onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
-            )
-
-            // Part of the theme, so one switch reaches the phone, an attached
-            // screen and any browser watching — the theme rides inside every
-            // slide, so none of them has to be told separately.
-            ToggleRow(
-                label = stringResource(Res.string.standalone_autofit),
-                tag = LookTags.AUTO_FIT,
-                hint = stringResource(Res.string.standalone_autofit_hint),
-                checked = theme.autoFitText,
-                onCheckedChange = { on -> onThemeChange { it.copy(autoFitText = on) } },
-            )
-
-            ToggleRow(
-                label = stringResource(Res.string.standalone_ignore_breaks),
-                tag = LookTags.IGNORE_BREAKS,
-                hint = stringResource(Res.string.standalone_ignore_breaks_hint),
-                checked = theme.ignoreLineBreaks,
-                onCheckedChange = { on -> onThemeChange { it.copy(ignoreLineBreaks = on) } },
-            )
-
-            ToggleRow(
-                label = stringResource(Res.string.standalone_show_chords),
-                tag = LookTags.SHOW_CHORDS,
-                hint = stringResource(Res.string.standalone_show_chords_hint),
-                checked = showChords,
-                onCheckedChange = onShowChordsChange,
-            )
+            LookToggles(theme, onThemeChange, showChords, onShowChordsChange)
 
             Text(
                 text = stringResource(Res.string.standalone_look_reset),
@@ -417,12 +221,157 @@ internal fun LookSheetContent(
                 modifier = Modifier
                     .padding(top = AppDimens.space8)
                     .testTag(LookTags.RESET)
-                    .clickable { onThemeChange { SlideTheme() } },
+                    // Display text keeps its styling: it has a Reset of its own, per element.
+                    .clickable { onThemeChange { SlideTheme(display = it.display) } },
             )
 
             Box(Modifier.padding(bottom = AppDimens.space16))
         }
     }
+}
+
+/** The built-in looks, the church's saved ones, and saving the current one under a name. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ThemeChooser(
+    presets: List<NamedTheme>,
+    savedThemes: List<NamedTheme>,
+    onApplyTheme: (NamedTheme) -> Unit,
+    onSaveTheme: (String) -> Unit,
+    onDeleteTheme: (String) -> Unit,
+) {
+    var namingTheme by remember { mutableStateOf(false) }
+    var themeName by remember { mutableStateOf("") }
+    val colors = LocalAppColors.current
+    // A whole look in one tap. Setting up on a Sunday morning should not
+    // mean assembling a readable screen out of six colour fields.
+    OverlineRow(stringResource(Res.string.standalone_themes))
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
+        presets.forEach { preset ->
+            ThemeChip(
+                name = preset.name,
+                onClick = { onApplyTheme(preset) },
+                modifier = Modifier.testTag(LookTags.preset(preset.name)),
+            )
+        }
+    }
+
+    if (savedThemes.isNotEmpty()) {
+        OverlineRow(stringResource(Res.string.standalone_themes_saved))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
+            savedThemes.forEach { saved ->
+                ThemeChip(
+                    name = saved.name,
+                    onClick = { onApplyTheme(saved) },
+                    onDelete = { onDeleteTheme(saved.name) },
+                    modifier = Modifier.testTag(LookTags.savedTheme(saved.name)),
+                    deleteModifier = Modifier.testTag(LookTags.deleteTheme(saved.name)),
+                )
+            }
+        }
+    }
+
+    if (namingTheme) {
+        SettingsField(
+            label = stringResource(Res.string.standalone_theme_name),
+            modifier = Modifier.testTag(LookTags.THEME_NAME),
+            value = themeName,
+            onValueChange = { themeName = it },
+            placeholder = "",
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+        )
+        Text(
+            text = stringResource(Res.string.standalone_theme_save_action),
+            color = colors.accent,
+            fontSize = 13.sp,
+            modifier = Modifier
+                .testTag(LookTags.THEME_SAVE_CONFIRM)
+                .clickable {
+                    onSaveTheme(themeName)
+                    themeName = ""
+                    namingTheme = false
+                },
+        )
+    } else {
+        Text(
+            text = stringResource(Res.string.standalone_theme_save),
+            color = colors.accent,
+            fontSize = 13.sp,
+            modifier = Modifier.testTag(LookTags.THEME_SAVE).clickable { namingTheme = true },
+        )
+    }
+}
+
+/** Which lines the screen draws, and how the words are fitted to it. */
+@Composable
+private fun LookToggles(
+    theme: SlideTheme,
+    onThemeChange: ((SlideTheme) -> SlideTheme) -> Unit,
+    showChords: Boolean,
+    onShowChordsChange: (Boolean) -> Unit,
+) {
+    // Asked separately: a church that wants no heading over a hymn
+    // usually still wants the chapter and verse over scripture. Once Display text
+    // styles songs and Bible verses, each of their lines has its own Show switch there,
+    // and two switches for one line is one too many.
+    if (theme.display == null) {
+        ToggleRow(
+            label = stringResource(Res.string.standalone_show_reference_songs),
+            tag = LookTags.SHOW_SONG_REFERENCE,
+            hint = stringResource(Res.string.standalone_show_reference_hint),
+            checked = theme.showSongReference,
+            onCheckedChange = { on -> onThemeChange { it.copy(showSongReference = on) } },
+        )
+
+        ToggleRow(
+            label = stringResource(Res.string.standalone_show_reference_bible),
+            tag = LookTags.SHOW_BIBLE_REFERENCE,
+            checked = theme.showBibleReference,
+            onCheckedChange = { on -> onThemeChange { it.copy(showBibleReference = on) } },
+        )
+    }
+
+    ToggleRow(
+        label = stringResource(Res.string.standalone_show_reference_other),
+        tag = LookTags.SHOW_OTHER_REFERENCE,
+        checked = theme.showOtherReference,
+        onCheckedChange = { on -> onThemeChange { it.copy(showOtherReference = on) } },
+    )
+
+    ToggleRow(
+        label = stringResource(Res.string.standalone_show_clock),
+        tag = LookTags.SHOW_CLOCK,
+        checked = theme.showClock,
+        onCheckedChange = { on -> onThemeChange { it.copy(showClock = on) } },
+    )
+
+    // Part of the theme, so one switch reaches the phone, an attached
+    // screen and any browser watching — the theme rides inside every
+    // slide, so none of them has to be told separately.
+    ToggleRow(
+        label = stringResource(Res.string.standalone_autofit),
+        tag = LookTags.AUTO_FIT,
+        hint = stringResource(Res.string.standalone_autofit_hint),
+        checked = theme.autoFitText,
+        onCheckedChange = { on -> onThemeChange { it.copy(autoFitText = on) } },
+    )
+
+    ToggleRow(
+        label = stringResource(Res.string.standalone_ignore_breaks),
+        tag = LookTags.IGNORE_BREAKS,
+        hint = stringResource(Res.string.standalone_ignore_breaks_hint),
+        checked = theme.ignoreLineBreaks,
+        onCheckedChange = { on -> onThemeChange { it.copy(ignoreLineBreaks = on) } },
+    )
+
+    ToggleRow(
+        label = stringResource(Res.string.standalone_show_chords),
+        tag = LookTags.SHOW_CHORDS,
+        hint = stringResource(Res.string.standalone_show_chords_hint),
+        checked = showChords,
+        onCheckedChange = onShowChordsChange,
+    )
 }
 
 /** A named look. Tapping adopts it; the cross removes a saved one. */
@@ -484,19 +433,8 @@ private fun ToggleRow(
     }
 }
 
-private val FONTS = listOf(SlideFont.SERIF, SlideFont.SANS)
-
-/** Option order for the alignment controls — must match their labels. */
-private val TEXT_ALIGNS = listOf(SlideTextAlign.LEFT, SlideTextAlign.CENTER, SlideTextAlign.RIGHT)
-private val VERTICAL_ALIGNS =
-    listOf(SlideVerticalAlign.TOP, SlideVerticalAlign.MIDDLE, SlideVerticalAlign.BOTTOM)
-
 /** Option order for the margin control — must match its labels. */
 private val MARGINS = listOf(SlideMargin.THIN, SlideMargin.MEDIUM, SlideMargin.THICK)
-
-/** Option order for the text-size control — must match its labels. */
-private val TEXT_SIZES =
-    listOf(SlideTextSize.SMALL, SlideTextSize.MEDIUM, SlideTextSize.LARGE)
 
 /**
  * Names the look sheet's controls for a UI test.
@@ -511,7 +449,6 @@ internal object LookTags {
     const val THEME_SAVE_CONFIRM = "look:themeSave:confirm"
     const val GRADIENT_TOP = "look:gradientTop"
     const val GRADIENT_BOTTOM = "look:gradientBottom"
-    const val TEXT_COLOUR = "look:textColour"
     const val ACCENT_COLOUR = "look:accentColour"
     const val BRAND_LINE = "look:brandLine"
     const val SHOW_SONG_REFERENCE = "look:showSongReference"
@@ -529,13 +466,9 @@ internal object LookTags {
 
     fun deleteTheme(name: String) = "look:saved:$name:delete"
 
-    fun textSize(index: Int) = "look:textSize:$index"
 
-    fun font(index: Int) = "look:font:$index"
 
-    fun align(index: Int) = "look:align:$index"
 
     fun margin(index: Int) = "look:margin:$index"
 
-    fun verticalAlign(index: Int) = "look:valign:$index"
 }

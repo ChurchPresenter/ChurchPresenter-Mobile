@@ -6,18 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.NamedTheme
-import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideMargin
-import com.church.presenter.churchpresentermobile.model.SlideTextAlign
-import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideTheme
-import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.ui.click
 import com.church.presenter.churchpresentermobile.ui.exists
 import com.church.presenter.churchpresentermobile.ui.isShowing
@@ -50,26 +45,22 @@ class LookSheetTest {
      */
     private fun ComposeUiTest.showLook(
         initial: SlideTheme = SlideTheme(),
-        initialTextSize: SlideTextSize = SlideTextSize.MEDIUM,
         initialShowChords: Boolean = false,
         presets: List<NamedTheme> = listOf(preset("Classic"), preset("Midnight")),
         savedThemes: List<NamedTheme> = emptyList(),
         onApplyTheme: (NamedTheme) -> Unit = {},
         onSaveTheme: (String) -> Unit = {},
         onDeleteTheme: (String) -> Unit = {},
-        state: LookState = LookState(initial, initialTextSize, initialShowChords),
+        state: LookState = LookState(initial, initialShowChords),
     ): LookState {
         showScreen {
             var theme by remember { mutableStateOf(state.theme) }
-            var size by remember { mutableStateOf(state.textSize) }
             var chords by remember { mutableStateOf(state.showChords) }
             LookSheetContent(
                 theme = theme,
                 onThemeChange = { edit -> theme = edit(theme); state.theme = theme },
                 showChords = chords,
                 onShowChordsChange = { chords = it; state.showChords = it },
-                textSize = size,
-                onTextSizeChange = { size = it; state.textSize = it },
                 presets = presets,
                 savedThemes = savedThemes,
                 onApplyTheme = onApplyTheme,
@@ -83,7 +74,6 @@ class LookSheetTest {
     /** What the sheet has edited so far. */
     internal class LookState(
         var theme: SlideTheme,
-        var textSize: SlideTextSize,
         var showChords: Boolean,
     )
 
@@ -205,12 +195,11 @@ class LookSheetTest {
     // ── Colours ──────────────────────────────────────────────────────────
 
     @Test
-    fun allFourColoursAreOffered() = runComposeUiTest {
+    fun allThreeColoursAreOffered() = runComposeUiTest {
         showLook()
 
         assertTrue(exists(LookTags.GRADIENT_TOP))
         assertTrue(exists(LookTags.GRADIENT_BOTTOM))
-        assertTrue(exists(LookTags.TEXT_COLOUR))
         assertTrue(exists(LookTags.ACCENT_COLOUR))
     }
 
@@ -233,15 +222,6 @@ class LookSheetTest {
     }
 
     @Test
-    fun theTextColourCanBeChanged() = runComposeUiTest {
-        val state = showLook()
-
-        type(LookTags.TEXT_COLOUR, "#FFEE00")
-
-        assertEquals("#FFEE00", state.theme.textColor)
-    }
-
-    @Test
     fun theAccentColourCanBeChanged() = runComposeUiTest {
         val state = showLook()
 
@@ -255,10 +235,10 @@ class LookSheetTest {
         val before = SlideTheme()
         val state = showLook(initial = before)
 
-        type(LookTags.TEXT_COLOUR, "#FFEE00")
+        type(LookTags.ACCENT_COLOUR, "#FFEE00")
 
         assertEquals(before.gradientTop, state.theme.gradientTop)
-        assertEquals(before.accentColor, state.theme.accentColor)
+        assertEquals(before.gradientBottom, state.theme.gradientBottom)
     }
 
     @Test
@@ -266,7 +246,7 @@ class LookSheetTest {
         val before = SlideTheme()
         val state = showLook(initial = before)
 
-        type(LookTags.TEXT_COLOUR, "#FFE")
+        type(LookTags.ACCENT_COLOUR, "#FFE")
 
         // Three digits is a complete colour; four is not.
         type(LookTags.GRADIENT_TOP, "#12")
@@ -274,118 +254,7 @@ class LookSheetTest {
         assertEquals(before.gradientTop, state.theme.gradientTop)
     }
 
-    // ── Size, font and layout ────────────────────────────────────────────
-
-    @Test
-    fun allThreeTextSizesAreOffered() = runComposeUiTest {
-        showLook()
-
-        assertTrue(exists(LookTags.textSize(0)))
-        assertTrue(exists(LookTags.textSize(1)))
-        assertTrue(exists(LookTags.textSize(2)))
-    }
-
-    @Test
-    fun theCurrentTextSizeIsSelected() = runComposeUiTest {
-        showLook(initialTextSize = SlideTextSize.LARGE)
-
-        tagged(LookTags.textSize(2)).assertIsSelected()
-    }
-
-    @Test
-    fun pickingASmallerTextSizeAppliesIt() = runComposeUiTest {
-        val state = showLook(initialTextSize = SlideTextSize.LARGE)
-
-        click(LookTags.textSize(0))
-
-        assertEquals(SlideTextSize.SMALL, state.textSize)
-    }
-
-    @Test
-    fun pickingALargerTextSizeAppliesIt() = runComposeUiTest {
-        val state = showLook(initialTextSize = SlideTextSize.SMALL)
-
-        click(LookTags.textSize(2))
-
-        assertEquals(SlideTextSize.LARGE, state.textSize)
-    }
-
-    @Test
-    fun bothFontsAreOffered() = runComposeUiTest {
-        showLook()
-
-        assertTrue(exists(LookTags.font(0)))
-        assertTrue(exists(LookTags.font(1)))
-    }
-
-    @Test
-    fun theCurrentFontIsSelected() = runComposeUiTest {
-        showLook(initial = SlideTheme(font = SlideFont.SANS))
-
-        tagged(LookTags.font(1)).assertIsSelected()
-    }
-
-    @Test
-    fun pickingTheOtherFontAppliesIt() = runComposeUiTest {
-        val state = showLook(initial = SlideTheme(font = SlideFont.SERIF))
-
-        click(LookTags.font(1))
-
-        assertEquals(SlideFont.SANS, state.theme.font)
-    }
-
-    @Test
-    fun goingBackToSerifAppliesIt() = runComposeUiTest {
-        val state = showLook(initial = SlideTheme(font = SlideFont.SANS))
-
-        click(LookTags.font(0))
-
-        assertEquals(SlideFont.SERIF, state.theme.font)
-    }
-
-    @Test
-    fun allThreeAlignmentsAreOffered() = runComposeUiTest {
-        showLook()
-
-        assertTrue(exists(LookTags.align(0)))
-        assertTrue(exists(LookTags.align(1)))
-        assertTrue(exists(LookTags.align(2)))
-    }
-
-    @Test
-    fun centreIsTheAlignmentToBeginWith() = runComposeUiTest {
-        showLook()
-
-        tagged(LookTags.align(1)).assertIsSelected()
-    }
-
-    @Test
-    fun aligningLeftAppliesIt() = runComposeUiTest {
-        val state = showLook()
-
-        click(LookTags.align(0))
-
-        assertEquals(SlideTextAlign.LEFT, state.theme.textAlign)
-    }
-
-    @Test
-    fun aligningRightAppliesIt() = runComposeUiTest {
-        val state = showLook()
-
-        click(LookTags.align(2))
-
-        assertEquals(SlideTextAlign.RIGHT, state.theme.textAlign)
-    }
-
-    @Test
-    fun theChosenAlignmentBecomesTheSelectedOne() = runComposeUiTest {
-        showLook()
-
-        click(LookTags.align(0))
-
-        tagged(LookTags.align(0)).assertIsSelected()
-        tagged(LookTags.align(1)).assertIsNotSelected()
-    }
+    // ── Layout ────────────────────────────────────────────
 
     @Test
     fun allThreeMarginsAreOffered() = runComposeUiTest {
@@ -420,31 +289,6 @@ class LookSheetTest {
         showLook()
 
         tagged(LookTags.margin(1)).assertIsSelected()
-    }
-
-    @Test
-    fun wordsCanBeMovedToTheTop() = runComposeUiTest {
-        val state = showLook()
-
-        click(LookTags.verticalAlign(0))
-
-        assertEquals(SlideVerticalAlign.TOP, state.theme.verticalAlign)
-    }
-
-    @Test
-    fun wordsCanBeMovedToTheBottom() = runComposeUiTest {
-        val state = showLook()
-
-        click(LookTags.verticalAlign(2))
-
-        assertEquals(SlideVerticalAlign.BOTTOM, state.theme.verticalAlign)
-    }
-
-    @Test
-    fun theMiddleIsWhereWordsSitToBeginWith() = runComposeUiTest {
-        showLook()
-
-        tagged(LookTags.verticalAlign(1)).assertIsSelected()
     }
 
     // ── The church's name in the corner ──────────────────────────────────
@@ -635,12 +479,4 @@ class LookSheetTest {
         assertTrue(state.showChords)
     }
 
-    @Test
-    fun resettingDoesNotTouchTheTextSize() = runComposeUiTest {
-        val state = showLook(initialTextSize = SlideTextSize.LARGE)
-
-        click(LookTags.RESET)
-
-        assertEquals(SlideTextSize.LARGE, state.textSize)
-    }
 }

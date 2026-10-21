@@ -33,6 +33,25 @@
       <p id="body" class="body"></p>
       <p id="reference" class="reference"></p>
       <p id="footer" class="footer"></p>
+      <!--
+        Display text: Bible and song slides styled element by element, when the
+        theme carries a `display` object. Mirrors DisplayTextLayout.kt. The
+        before/after slots hold the reference (Bible) or the second language
+        (song), whichever side of the words the operator put it on.
+      -->
+      <div id="dt" class="dt hidden">
+        <div id="dt-header" class="dt-header">
+          <div id="dt-number" class="dt-el dt-number"></div>
+          <div id="dt-title" class="dt-el dt-title"></div>
+        </div>
+        <div id="dt-area" class="dt-area">
+          <div id="dt-before" class="dt-el"></div>
+          <div id="dt-body" class="dt-el dt-body"></div>
+          <div id="dt-after" class="dt-el"></div>
+        </div>
+        <!-- The copyright line: unstyled, but always there when the slide has one. -->
+        <p id="dt-footer" class="dt-footer hidden"></p>
+      </div>
     </div>
   </main>
 

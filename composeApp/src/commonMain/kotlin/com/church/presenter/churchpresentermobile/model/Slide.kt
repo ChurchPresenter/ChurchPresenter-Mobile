@@ -101,6 +101,9 @@ enum class SlideVerticalAlign {
  *   page and are often far too long for a projector.
  * @property textAlign Where the words sit across the screen.
  * @property verticalAlign Where the words sit down the screen.
+ * @property display Per-element styling for Bible and song slides, from Display text. Null
+ *   until the operator first saves a style there, and while null every renderer draws Bible
+ *   and song slides from [font], [textColor] and the alignments above, exactly as before.
  *
  * New properties must carry a default: the theme travels inside every slide and
  * is persisted as JSON, so a defaulted field keeps an older payload — and an
@@ -124,6 +127,7 @@ data class SlideTheme(
     val margin: SlideMargin = SlideMargin.MEDIUM,
     val autoFitText: Boolean = false,
     val ignoreLineBreaks: Boolean = false,
+    val display: DisplayTextTheme? = null,
 )
 
 /**
@@ -167,6 +171,9 @@ const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
  * @property gradientTop Top colour of the gradient backdrop as `#RRGGBB`.
  * @property gradientBottom Bottom colour of the gradient backdrop as `#RRGGBB`.
  * @property total Number of slides in the owning [SlideDeck].
+ * @property songNumber The song's number in its songbook, for the number badge. Only on song slides.
+ * @property songTitle The song's title, for the title line. Only on song slides.
+ * @property secondaryBody The same words in the song's second language, when it has one.
  * @property songCredit The song this slide belongs to, for the CCLI report. Only on song slides.
  * @property verseCredit The verse this slide is, for the CCLI report. Only on Bible slides.
  */
@@ -192,6 +199,9 @@ data class Slide(
     val sourceId: String? = null,
     val index: Int = 0,
     val total: Int = 0,
+    val songNumber: String? = null,
+    val songTitle: String? = null,
+    val secondaryBody: String? = null,
     val songCredit: SongCredit? = null,
     val verseCredit: VerseCredit? = null,
 ) {

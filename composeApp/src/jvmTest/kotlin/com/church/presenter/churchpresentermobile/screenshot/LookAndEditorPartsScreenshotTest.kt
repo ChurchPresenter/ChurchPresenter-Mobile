@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.church.presenter.churchpresentermobile.model.NamedTheme
-import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import com.church.presenter.churchpresentermobile.model.SlideThemePresets
 import com.church.presenter.churchpresentermobile.ui.library.DiscardDialog
@@ -48,8 +47,6 @@ class LookAndEditorPartsScreenshotTest {
             onThemeChange = {},
             showChords = false,
             onShowChordsChange = {},
-            textSize = SlideTextSize.MEDIUM,
-            onTextSizeChange = {},
             presets = SlideThemePresets.all,
             savedThemes = emptyList(),
             onApplyTheme = {},
@@ -65,8 +62,6 @@ class LookAndEditorPartsScreenshotTest {
             onThemeChange = {},
             showChords = true,
             onShowChordsChange = {},
-            textSize = SlideTextSize.LARGE,
-            onTextSizeChange = {},
             presets = SlideThemePresets.all,
             savedThemes = saved,
             onApplyTheme = {},

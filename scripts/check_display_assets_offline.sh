@@ -83,4 +83,17 @@ for pair in "THIN:4:3" "MEDIUM:8:6" "THICK:14:10"; do
     geometry_error "margin $name should be h: $h, v: $v (see SlideMargin)"
 done
 
+# Display text: the gaps and boxes DisplayTextLayout.kt draws, in 1080p pixels.
+# app.js mirrors each as `NAME: value` in its DT table.
+LAYOUT_KT="composeApp/src/commonMain/kotlin/com/church/presenter/churchpresentermobile/ui/standalone/DisplayTextLayout.kt"
+if [ -f "$LAYOUT_KT" ]; then
+  for name in REFERENCE_GAP LANGUAGE_GAP HEADER_GAP HEADER_SPACING BACKING_RADIUS BACKING_PAD_H BACKING_PAD_V FOOTER FOOTER_GAP; do
+    value=$(sed -nE "s/^private const val ${name}_PX = ([0-9.]+)f\$/\1/p" "$LAYOUT_KT")
+    [ -n "$value" ] || geometry_error "${name}_PX not found in DisplayTextLayout.kt"
+    value="${value%.0}"
+    grep -qE "^[[:space:]]*$name:[[:space:]]*$value,?\$" "$JS" ||
+      geometry_error "display text $name should be $value (see DisplayTextLayout.kt)"
+  done
+fi
+
 echo "ok: display assets are self-contained and match the app's renderer ($(find "$ASSET_DIR" -type f | wc -l | tr -d ' ') files)"
