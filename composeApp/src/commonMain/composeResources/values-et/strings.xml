@@ -1336,4 +1336,7 @@
     <string name="canvas_clear_canvas_title">Kas tühjendada kogu lõuend?</string>
     <string name="canvas_clear_canvas_body">Kõik lehed eemaldatakse ja lõuend algab uuesti tühjalt. Saad selle tagasi võtta.</string>
     <string name="canvas_clear">Tühjenda</string>
+    <string name="canvas_waiting_approval">Ootab kinnitust…</string>
+    <string name="canvas_not_approved">Pole kinnitatud</string>
+    <string name="canvas_live_failed">Ekraanil näitamine ebaõnnestus</string>
 </resources>

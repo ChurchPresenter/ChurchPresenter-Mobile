@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Wyczyścić całą tablicę?</string>
     <string name="canvas_clear_canvas_body">Wszystkie strony zostaną usunięte, a tablica zacznie się od nowa pusta. Możesz to cofnąć.</string>
     <string name="canvas_clear">Wyczyść</string>
+    <string name="canvas_waiting_approval">Oczekiwanie na zatwierdzenie…</string>
+    <string name="canvas_not_approved">Nie zatwierdzono</string>
+    <string name="canvas_live_failed">Nie udało się wyświetlić</string>
 </resources>

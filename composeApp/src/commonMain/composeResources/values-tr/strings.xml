@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Tüm tuval temizlensin mi?</string>
     <string name="canvas_clear_canvas_body">Tüm sayfalar kaldırılır ve tuval yeniden boş başlar. Bunu geri alabilirsiniz.</string>
     <string name="canvas_clear">Temizle</string>
+    <string name="canvas_waiting_approval">Onay bekleniyor…</string>
+    <string name="canvas_not_approved">Onaylanmadı</string>
+    <string name="canvas_live_failed">Gösterilemedi</string>
 </resources>

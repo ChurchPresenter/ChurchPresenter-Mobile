@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Tyhjennetäänkö koko piirtotaulu?</string>
     <string name="canvas_clear_canvas_body">Kaikki sivut poistetaan ja piirtotaulu alkaa alusta tyhjänä. Voit kumota tämän.</string>
     <string name="canvas_clear">Tyhjennä</string>
+    <string name="canvas_waiting_approval">Odotetaan hyväksyntää…</string>
+    <string name="canvas_not_approved">Ei hyväksytty</string>
+    <string name="canvas_live_failed">Näyttäminen epäonnistui</string>
 </resources>

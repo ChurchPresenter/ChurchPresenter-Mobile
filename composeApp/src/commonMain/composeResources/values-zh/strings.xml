@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">清空整个画布？</string>
     <string name="canvas_clear_canvas_body">所有页面都将被移除，画布将重新变为空白。此操作可以撤销。</string>
     <string name="canvas_clear">清空</string>
+    <string name="canvas_waiting_approval">等待批准…</string>
+    <string name="canvas_not_approved">未获批准</string>
+    <string name="canvas_live_failed">无法投放</string>
 </resources>

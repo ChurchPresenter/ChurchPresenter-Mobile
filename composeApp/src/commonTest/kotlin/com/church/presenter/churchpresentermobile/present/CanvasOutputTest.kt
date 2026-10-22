@@ -70,9 +70,9 @@ class CanvasOutputTest {
     // ── Projector ────────────────────────────────────────────────────────
 
     @Test
-    fun `go live takes the screen with a canvas slide`() {
+    fun `go live takes the screen with a canvas slide`() = runTest {
         engine.setBlank(true)
-        assertTrue(projector.show(png(1), "#FFFFFF", "Sermon", takeOver = true))
+        assertEquals(CanvasShowResult.SHOWN, projector.show(png(1), "#FFFFFF", "Sermon", takeOver = true))
         val slide = engine.currentSlide.value
         assertEquals(SlideKind.CANVAS, slide.kind)
         assertEquals("#FFFFFF", slide.paper)
@@ -82,24 +82,37 @@ class CanvasOutputTest {
     }
 
     @Test
-    fun `a refresh only replaces a canvas that is still showing`() {
-        assertFalse(projector.show(png(1), "#000000", "", takeOver = false), "nothing to refresh yet")
+    fun `a refresh only replaces a canvas that is still showing`() = runTest {
+        assertEquals(
+            CanvasShowResult.NOT_SHOWING,
+            projector.show(png(1), "#000000", "", takeOver = false),
+            "nothing to refresh yet",
+        )
         projector.show(png(1), "#000000", "", takeOver = true)
-        assertTrue(projector.show(png(2), "#000000", "", takeOver = false))
+        assertEquals(CanvasShowResult.SHOWN, projector.show(png(2), "#000000", "", takeOver = false))
         engine.setDeck(SlideDeckBuilder.fromAnnouncements(listOf("Welcome")))
         assertFalse(projector.isShowing)
-        assertFalse(projector.show(png(3), "#000000", "", takeOver = false), "something else has the screen")
+        assertEquals(
+            CanvasShowResult.NOT_SHOWING,
+            projector.show(png(3), "#000000", "", takeOver = false),
+            "something else has the screen",
+        )
     }
 
     @Test
-    fun `nothing goes up while the server is down`() {
+    fun `this device's own outputs ask nobody's permission`() {
+        assertFalse(projector.asksFirst)
+    }
+
+    @Test
+    fun `nothing goes up while the server is down`() = runTest {
         baseUrl.value = null
-        assertFalse(projector.show(png(1), "#000000", "", takeOver = true))
+        assertEquals(CanvasShowResult.FAILED, projector.show(png(1), "#000000", "", takeOver = true))
         assertFalse(projector.isShowing)
     }
 
     @Test
-    fun `stop clears the screen only if the canvas is on it`() {
+    fun `stop clears the screen only if the canvas is on it`() = runTest {
         projector.show(png(1), "#000000", "", takeOver = true)
         projector.stop()
         assertEquals(SlideKind.BLANK, engine.currentSlide.value.kind)

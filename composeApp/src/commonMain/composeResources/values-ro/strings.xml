@@ -1336,4 +1336,7 @@
     <string name="canvas_clear_canvas_title">Golești toată planșa?</string>
     <string name="canvas_clear_canvas_body">Toate paginile sunt eliminate și planșa începe din nou goală. Poți anula această acțiune.</string>
     <string name="canvas_clear">Golește</string>
+    <string name="canvas_waiting_approval">Se așteaptă aprobarea…</string>
+    <string name="canvas_not_approved">Neaprobat</string>
+    <string name="canvas_live_failed">Transmisia live a eșuat</string>
 </resources>

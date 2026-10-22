@@ -44,6 +44,8 @@ class CanvasGoLiveTest {
             click(CanvasTags.GO_LIVE)
 
             assertFalse(vm.state.value.live)
+            // Taking the page down runs on the ViewModel's scope, so wait for it as Go Live does.
+            awaitThat { engine.currentSlide.value.kind != SlideKind.CANVAS }
             assertNotEquals(SlideKind.CANVAS, engine.currentSlide.value.kind, "End Live cleared the screen")
         } finally {
             vm.viewModelScope.cancel()

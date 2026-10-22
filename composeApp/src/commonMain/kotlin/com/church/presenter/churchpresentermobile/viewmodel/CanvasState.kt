@@ -24,6 +24,15 @@ enum class SaveStatus {
     FAILED,
 }
 
+/** Why the canvas came off — or never got onto — the screen, said once in the header. */
+enum class LiveNote {
+    /** The desktop operator declined to show it. */
+    DECLINED,
+
+    /** It could not be shown: the server is down, unreachable, or too old to know canvases. */
+    FAILED,
+}
+
 /** What the bar over the selection can do to it. */
 enum class SelectionAction { CROP, REPLACE, BRING_TO_FRONT, DUPLICATE, LOCK, DELETE }
 
@@ -40,6 +49,8 @@ enum class ArrangeAction { ALIGN, DISTRIBUTE, GROUP, FRONT, BACK }
  * @param editingId The text box or sticky note being typed into, if any.
  * @param replaceTarget The picture Replace was pressed on, which the Insert panel's
  *   next choice replaces instead of adding a new one.
+ * @param awaitingApproval Whether Go Live is waiting for the desktop operator to allow it.
+ * @param liveNote Why the last Go Live did not stay on screen, until the next one.
  * @param saveStatus Whether the latest change has reached the disk.
  * @param live Whether the canvas is on screen. Nothing is projected yet — this is
  *   the button's state, ready for the output it will drive.
@@ -56,6 +67,8 @@ data class CanvasUiState(
     val zoom: Int = 100,
     val options: CanvasToolOptions = CanvasToolOptions(),
     val live: Boolean = false,
+    val awaitingApproval: Boolean = false,
+    val liveNote: LiveNote? = null,
     val saveStatus: SaveStatus = SaveStatus.NONE,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,

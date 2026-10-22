@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">کل بوم پاک شود؟</string>
     <string name="canvas_clear_canvas_body">همهٔ صفحه‌ها حذف می‌شوند و بوم دوباره خالی شروع می‌شود. می‌توانید این کار را واگرد کنید.</string>
     <string name="canvas_clear">پاک کردن</string>
+    <string name="canvas_waiting_approval">در انتظار تأیید…</string>
+    <string name="canvas_not_approved">تأیید نشد</string>
+    <string name="canvas_live_failed">نمایش ممکن نشد</string>
 </resources>

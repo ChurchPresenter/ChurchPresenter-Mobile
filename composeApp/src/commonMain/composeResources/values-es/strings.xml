@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">¿Limpiar todo el lienzo?</string>
     <string name="canvas_clear_canvas_body">Se eliminan todas las páginas y el lienzo vuelve a quedar en blanco. Puede deshacerlo.</string>
     <string name="canvas_clear">Limpiar</string>
+    <string name="canvas_waiting_approval">Esperando aprobación…</string>
+    <string name="canvas_not_approved">No aprobado</string>
+    <string name="canvas_live_failed">No se pudo poner en vivo</string>
 </resources>

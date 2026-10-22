@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.library.SavedCanvas
 import com.church.presenter.churchpresentermobile.model.CanvasDocument
-import com.church.presenter.churchpresentermobile.present.CanvasProjector
+import com.church.presenter.churchpresentermobile.present.CanvasProjection
+import com.church.presenter.churchpresentermobile.present.CanvasShowResult
 import com.church.presenter.churchpresentermobile.present.encodeCanvasFrame
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,18 +25,23 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 /**
- * The canvas editor's state, held in memory, and — in standalone — its place on
- * this device's outputs.
+ * The canvas editor's state, saved on this device, and its place on the screen —
+ * this device's own outputs in standalone, the desktop's in remote.
  *
  * Every edit is [reduce]; this class adds only what a pure function cannot hold:
- * the undo history, a supply of fresh element ids, and projection. Go Live takes
- * the screen with the next frame the board sends ([showFrame]); each frame after
- * that refreshes it while the canvas is still what is showing; End Live clears it.
- * If anything else takes the screen meanwhile — a song from the Present tab — the
- * canvas stops being live by itself, so a later stroke cannot snatch the screen back.
+ * the undo history, a supply of fresh element ids, saving, and projection.
+ *
+ * Go Live takes the screen with the next frame the board sends ([showFrame]). Where
+ * the projection [asks first][CanvasProjection.asksFirst] — the desktop operator
+ * approves a remote device — the canvas shows it is waiting, and frames drawn
+ * meanwhile still go, so what is approved is the page as it is now. Each frame after
+ * that refreshes the page while the canvas is still what is showing; End Live takes
+ * it down, or withdraws a request still waiting. If anything else takes the screen
+ * — a song from the Present tab, or the operator's own choice — the canvas stops
+ * being live by itself, so a later stroke cannot snatch the screen back.
  *
  * @param document What to open. A blank, untitled canvas unless one is given.
- * @param projector Where frames go. Null outside standalone, where Go Live is off.
+ * @param projector Where frames go. Null where there is nowhere to project to.
  * @param frameWork Where a frame is scaled and encoded: never the main thread.
  * @param store Where the canvas is kept between sessions. What it holds is opened
  *   in place of [document]; every change is written back [SAVE_DELAY_MS] after the
@@ -44,7 +50,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class CanvasViewModel(
     document: CanvasDocument = CanvasDocument(),
-    private val projector: CanvasProjector? = null,
+    private val projector: CanvasProjection? = null,
     private val frameWork: CoroutineContext = Dispatchers.Default,
     private val store: CanvasRepository? = null,
     private val saveWork: CoroutineContext = Dispatchers.Default,
@@ -64,9 +70,14 @@ class CanvasViewModel(
      */
     private var lastRun: String? = null
 
-    /** Whether the next frame should take the screen — set by Go Live until a frame makes it up. */
+    /** Whether the next frame should take the screen — set by Go Live until a take-over is sent. */
     private var takeOver = false
+
+    /** The take-over in flight — perhaps waiting on the operator. Never cancelled by a newer frame. */
+    private var takeOverJob: Job? = null
     private var frameJob: Job? = null
+
+    private val takingOver: Boolean get() = takeOver || takeOverJob?.isActive == true
 
     init {
         if (store != null) autosave(store)
@@ -75,7 +86,7 @@ class CanvasViewModel(
                 var wasShowing = false
                 p.showing.collect { showing ->
                     val lostScreen = wasShowing && !showing
-                    if (lostScreen && _state.value.live && !takeOver) _state.update { it.copy(live = false) }
+                    if (lostScreen && _state.value.live && !takingOver) _state.update { it.copy(live = false) }
                     wasShowing = showing
                 }
             }
@@ -84,25 +95,51 @@ class CanvasViewModel(
 
     /**
      * A new picture of the page from the board, framed by [paper]. Projected while
-     * live; ignored otherwise. Only the latest counts: a frame still encoding when
-     * the next arrives is dropped.
+     * live; ignored otherwise.
+     *
+     * The first frame after Go Live is the take-over, and nothing cancels it: it may
+     * be waiting on the operator. Every other frame is a refresh, and only the latest
+     * counts — one still encoding or sending when the next arrives is dropped.
      */
     fun showFrame(frame: ImageBitmap, paper: String) {
         val p = projector ?: return
         if (!_state.value.live) return
+        val title = _state.value.document.title.orEmpty()
+        if (takeOver && takeOverJob?.isActive != true) {
+            takeOver = false
+            if (p.asksFirst) _state.update { it.copy(awaitingApproval = true) }
+            takeOverJob = viewModelScope.launch {
+                val png = encode(frame)
+                if (png == null) {
+                    // Could not encode this one; the next frame takes over instead.
+                    takeOver = true
+                    return@launch
+                }
+                settle(p.show(png, paper, title, takeOver = true))
+            }
+            return
+        }
+        // A refresh sent while the take-over is still waiting means nothing yet: the
+        // desktop keeps it for when the operator answers, and says "not showing".
+        val duringTakeOver = takeOverJob?.isActive == true
         frameJob?.cancel()
         frameJob = viewModelScope.launch {
-            val png = withContext(frameWork) { encodeCanvasFrame(frame) } ?: return@launch
-            val taking = takeOver
-            val shown = p.show(png, paper, _state.value.document.title.orEmpty(), takeOver = taking)
-            if (shown) {
-                takeOver = false
-            } else {
-                // Either the server is down (going live failed) or something else
-                // has the screen now; either way the canvas is not live.
-                takeOver = false
-                _state.update { it.copy(live = false) }
-            }
+            val png = encode(frame) ?: return@launch
+            val result = p.show(png, paper, title, takeOver = false)
+            if (!duringTakeOver) settle(result)
+        }
+    }
+
+    private suspend fun encode(frame: ImageBitmap): ByteArray? = withContext(frameWork) { encodeCanvasFrame(frame) }
+
+    /** The canvas's live state after a frame came back as [result]. */
+    private fun settle(result: CanvasShowResult) = _state.update { s ->
+        when (result) {
+            CanvasShowResult.SHOWN -> s.copy(awaitingApproval = false)
+            // Something else has the screen now.
+            CanvasShowResult.NOT_SHOWING -> s.copy(live = false, awaitingApproval = false)
+            CanvasShowResult.DECLINED -> s.copy(live = false, awaitingApproval = false, liveNote = LiveNote.DECLINED)
+            CanvasShowResult.FAILED -> s.copy(live = false, awaitingApproval = false, liveNote = LiveNote.FAILED)
         }
     }
 
@@ -124,7 +161,9 @@ class CanvasViewModel(
                 } else {
                     takeOver = false
                     frameJob?.cancel()
-                    projector?.stop()
+                    takeOverJob?.cancel()
+                    // Takes the page down, or withdraws a request still waiting on the operator.
+                    projector?.let { p -> viewModelScope.launch { p.stop() } }
                 }
             }
             else -> {

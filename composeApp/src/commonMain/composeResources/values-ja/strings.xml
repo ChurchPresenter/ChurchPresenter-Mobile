@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">キャンバス全体をクリアしますか？</string>
     <string name="canvas_clear_canvas_body">すべてのページが削除され、キャンバスは白紙からやり直しになります。この操作は元に戻せます。</string>
     <string name="canvas_clear">クリア</string>
+    <string name="canvas_waiting_approval">承認待ち…</string>
+    <string name="canvas_not_approved">承認されませんでした</string>
+    <string name="canvas_live_failed">表示できませんでした</string>
 </resources>

@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">முழு கேன்வாஸையும் அழிக்கவா?</string>
     <string name="canvas_clear_canvas_body">எல்லாப் பக்கங்களும் நீக்கப்பட்டு கேன்வாஸ் மீண்டும் வெறுமையாகத் தொடங்கும். இதைச் செயல்தவிர்க்கலாம்.</string>
     <string name="canvas_clear">அழி</string>
+    <string name="canvas_waiting_approval">ஒப்புதலுக்குக் காத்திருக்கிறது…</string>
+    <string name="canvas_not_approved">ஒப்புதல் கிடைக்கவில்லை</string>
+    <string name="canvas_live_failed">காட்ட முடியவில்லை</string>
 </resources>

@@ -30,7 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasTool
-import com.church.presenter.churchpresentermobile.present.CanvasProjector
+import com.church.presenter.churchpresentermobile.present.CanvasProjection
 import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
@@ -43,19 +43,20 @@ import kotlin.math.roundToInt
  *
  * Tablet only — the caller opens it only in the two-pane layout, where it fills the
  * window as the design draws it. Owns its [CanvasViewModel]. The canvas is saved on
- * this device as it is drawn on; Go Live puts the page on this device's outputs
- * through [projector] and keeps it up to date.
+ * this device as it is drawn on; Go Live puts the page on screen through
+ * [projector] — this device's outputs in standalone, the desktop's in remote, after
+ * the operator there allows it — and keeps it up to date.
  *
  * @param onBack Back to the More launcher, from the "‹ More" link or the system back gesture.
- * @param projector Where Go Live sends the page. Null outside standalone.
- * @param canProject Whether Go Live can work right now — standalone, with the
- *   presentation server running. Go Live is off while it cannot.
+ * @param projector Where Go Live sends the page.
+ * @param canProject Whether Go Live can work right now — the presentation server
+ *   running in standalone, the desktop connected in remote. Go Live is off while it cannot.
  * @param store Where the canvas is kept, so it opens as it was left.
  */
 @Composable
 fun CanvasScreen(
     onBack: () -> Unit,
-    projector: CanvasProjector?,
+    projector: CanvasProjection?,
     canProject: Boolean,
     store: CanvasRepository,
     modifier: Modifier = Modifier,

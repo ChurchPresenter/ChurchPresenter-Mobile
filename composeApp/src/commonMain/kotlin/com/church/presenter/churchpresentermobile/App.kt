@@ -57,7 +57,9 @@ import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.library.PlayLogRepository
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.present.CanvasOutput
+import com.church.presenter.churchpresentermobile.present.CanvasProjectionRouter
 import com.church.presenter.churchpresentermobile.present.CanvasProjector
+import com.church.presenter.churchpresentermobile.present.RemoteCanvasProjector
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
 import com.church.presenter.churchpresentermobile.present.PlayRecorder
@@ -285,7 +287,17 @@ fun App(
     val standaloneEngine = remember(sinkRegistry) {
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
-    val canvasProjector = remember(canvasOutput, standaloneEngine) { CanvasProjector(canvasOutput, standaloneEngine) }
+    // Where the canvas goes live: this device's outputs in standalone, the desktop's in
+    // remote (after the operator there allows it). One router, read per call, so a
+    // canvas left open across a mode switch follows the app, as every other screen does.
+    val canvasProjection = remember(canvasOutput, standaloneEngine, eventService) {
+        CanvasProjectionRouter(
+            mode = AppModeHolder.mode,
+            standalone = CanvasProjector(canvasOutput, standaloneEngine),
+            remote = RemoteCanvasProjector(appSettings, eventService.liveContentType),
+        )
+    }
+    val desktopConnected by eventService.connected.collectAsState()
     // The canvas on this device's disk, kept apart from the library like the play log.
     val canvasRepository = remember { CanvasRepository() }
     val projectionRouter = remember(standaloneEngine) {
@@ -1312,10 +1324,14 @@ fun App(
             if (canvasOpen) {
                 CanvasScreen(
                     onBack = { moreDestination = null },
-                    // Standalone projects the page itself. Remote has no way yet to hand
-                    // a canvas to the desktop, so Go Live is off there.
-                    projector = canvasProjector.takeIf { appMode == AppMode.STANDALONE },
-                    canProject = appMode == AppMode.STANDALONE && photoBaseUrl != null,
+                    // Go Live needs somewhere to go: the presentation server in standalone,
+                    // a connected desktop in remote.
+                    projector = canvasProjection,
+                    canProject = when (appMode) {
+                        AppMode.STANDALONE -> photoBaseUrl != null
+                        AppMode.REMOTE -> desktopConnected
+                        AppMode.CALENDAR -> false
+                    },
                     store = canvasRepository,
                 )
             }

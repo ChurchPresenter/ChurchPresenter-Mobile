@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">مسح لوحة الرسم بالكامل؟</string>
     <string name="canvas_clear_canvas_body">ستُزال كل الصفحات وتبدأ لوحة الرسم فارغة من جديد. يمكنك التراجع عن ذلك.</string>
     <string name="canvas_clear">مسح</string>
+    <string name="canvas_waiting_approval">بانتظار الموافقة…</string>
+    <string name="canvas_not_approved">لم تتم الموافقة</string>
+    <string name="canvas_live_failed">تعذّر العرض الآن</string>
 </resources>

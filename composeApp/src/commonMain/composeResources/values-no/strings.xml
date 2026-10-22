@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Tømme hele lerretet?</string>
     <string name="canvas_clear_canvas_body">Alle sider fjernes, og lerretet starter blankt igjen. Du kan angre dette.</string>
     <string name="canvas_clear">Tøm</string>
+    <string name="canvas_waiting_approval">Venter på godkjenning…</string>
+    <string name="canvas_not_approved">Ikke godkjent</string>
+    <string name="canvas_live_failed">Kunne ikke vise</string>
 </resources>

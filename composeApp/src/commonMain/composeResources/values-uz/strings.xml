@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Butun kanvas tozalansinmi?</string>
     <string name="canvas_clear_canvas_body">Barcha sahifalar o'chiriladi va kanvas yana bo'sh holda boshlanadi. Buni bekor qilishingiz mumkin.</string>
     <string name="canvas_clear">Tozalash</string>
+    <string name="canvas_waiting_approval">Tasdiq kutilmoqda…</string>
+    <string name="canvas_not_approved">Tasdiqlanmadi</string>
+    <string name="canvas_live_failed">Ko'rsatib bo'lmadi</string>
 </resources>

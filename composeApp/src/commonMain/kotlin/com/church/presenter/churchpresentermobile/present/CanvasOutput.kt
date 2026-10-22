@@ -79,13 +79,17 @@ class CanvasOutput(private val baseUrl: StateFlow<String?>) {
 class CanvasProjector(
     private val output: CanvasOutput,
     private val engine: StandaloneEngine,
-) {
+) : CanvasProjection {
+
+    /** This device's own outputs need nobody's permission. */
+    override val asksFirst: Boolean = false
+
     /** Whether the canvas's last frame is what the outputs are showing. */
     val isShowing: Boolean
         get() = shows(engine.currentSlide.value)
 
     /** [isShowing] as it changes — false the moment something else takes the screen. */
-    val showing: Flow<Boolean> = engine.currentSlide.map(::shows).distinctUntilChanged()
+    override val showing: Flow<Boolean> = engine.currentSlide.map(::shows).distinctUntilChanged()
 
     private fun shows(slide: Slide): Boolean = slide.kind == SlideKind.CANVAS && output.owns(slide.mediaUrl)
 
@@ -94,22 +98,24 @@ class CanvasProjector(
      * screen and lifts blank and off-air; without, it only refreshes a canvas that
      * is already showing.
      *
-     * @return Whether the frame went up. False when the server is down, or when
-     *   something else has the screen and this was not a take-over.
+     * @return [CanvasShowResult.SHOWN] when the frame went up;
+     *   [CanvasShowResult.NOT_SHOWING] when something else has the screen and this
+     *   was not a take-over; [CanvasShowResult.FAILED] when the presentation server
+     *   is down.
      */
-    fun show(png: ByteArray, paper: String, title: String, takeOver: Boolean): Boolean {
-        if (!takeOver && !isShowing) return false
+    override suspend fun show(png: ByteArray, paper: String, title: String, takeOver: Boolean): CanvasShowResult {
+        if (!takeOver && !isShowing) return CanvasShowResult.NOT_SHOWING
         val url = output.publish(png) ?: run {
             Logger.e(TAG, "show — the presentation server is not running")
-            return false
+            return CanvasShowResult.FAILED
         }
         engine.setDeck(SlideDeckBuilder.fromCanvas(url, paper, title))
         if (takeOver) engine.goLive()
-        return true
+        return CanvasShowResult.SHOWN
     }
 
     /** Takes the canvas off the screen, if it is still what is showing. */
-    fun stop() {
+    override suspend fun stop() {
         if (isShowing) engine.clear()
         output.clear()
     }

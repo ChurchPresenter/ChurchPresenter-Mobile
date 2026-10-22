@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Effacer tout le canevas ?</string>
     <string name="canvas_clear_canvas_body">Toutes les pages sont supprimées et le canevas repart vierge. Vous pouvez annuler cette action.</string>
     <string name="canvas_clear">Effacer</string>
+    <string name="canvas_waiting_approval">En attente d'approbation…</string>
+    <string name="canvas_not_approved">Non approuvé</string>
+    <string name="canvas_live_failed">Diffusion impossible</string>
 </resources>

@@ -1336,4 +1336,7 @@
     <string name="canvas_clear_canvas_title">Limpar o quadro inteiro?</string>
     <string name="canvas_clear_canvas_body">Todas as páginas são removidas e o quadro recomeça em branco. Você pode desfazer isso.</string>
     <string name="canvas_clear">Limpar</string>
+    <string name="canvas_waiting_approval">Aguardando aprovação…</string>
+    <string name="canvas_not_approved">Não aprovado</string>
+    <string name="canvas_live_failed">Não foi possível exibir ao vivo</string>
 </resources>

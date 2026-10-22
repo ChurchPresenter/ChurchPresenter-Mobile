@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">ล้างแคนวาสทั้งหมดหรือไม่</string>
     <string name="canvas_clear_canvas_body">ทุกหน้าจะถูกลบออกและแคนวาสจะเริ่มใหม่แบบว่างเปล่า คุณเลิกทำได้</string>
     <string name="canvas_clear">ล้าง</string>
+    <string name="canvas_waiting_approval">กำลังรออนุมัติ…</string>
+    <string name="canvas_not_approved">ไม่ได้รับอนุมัติ</string>
+    <string name="canvas_live_failed">แสดงไม่ได้</string>
 </resources>

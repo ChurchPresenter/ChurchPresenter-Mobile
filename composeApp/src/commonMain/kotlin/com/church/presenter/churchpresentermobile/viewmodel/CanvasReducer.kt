@@ -89,7 +89,11 @@ internal fun CanvasUiState.reduce(intent: CanvasIntent, newId: () -> String): Ca
     is CanvasIntent.ToggleLock -> editPage { it.updated(listOf(intent.id)) { e -> e.withFlags(locked = !e.locked) } }
     is CanvasIntent.ToggleHidden -> editPage { it.updated(listOf(intent.id)) { e -> e.withFlags(hidden = !e.hidden) } }
     is CanvasIntent.MoveLayer -> editPage { it.movedInStack(intent.id, intent.steps) }
-    is CanvasIntent.SetLive -> copy(live = intent.live)
+    is CanvasIntent.SetLive -> if (intent.live) {
+        copy(live = true, liveNote = null)
+    } else {
+        copy(live = false, awaitingApproval = false)
+    }
     CanvasIntent.Undo, CanvasIntent.Redo -> this
 }
 

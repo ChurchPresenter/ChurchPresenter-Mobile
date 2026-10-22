@@ -71,6 +71,13 @@ object ApiConstants {
     const val PICTURES_SELECT_ENDPOINT = "pictures/select"
     const val PICTURES_UPLOAD_ENDPOINT = "pictures/upload"
     const val MEDIA_UPLOAD_ENDPOINT = "media/upload"
+    /**
+     * A canvas page going live on the desktop, which calls it a drawing (its "canvas" is
+     * the scene editor). `frame` sends the page — a take-over waits for the operator to
+     * approve it — and `end` takes it down.
+     */
+    const val DRAWING_FRAME_ENDPOINT = "drawing/frame"
+    const val DRAWING_END_ENDPOINT = "drawing/end"
     const val SCHEDULE_ENDPOINT = "schedule"
     const val CLEAR_ENDPOINT = "clear"
     const val STATUS_ENDPOINT = "status"

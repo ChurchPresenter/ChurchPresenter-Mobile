@@ -1336,4 +1336,7 @@
     <string name="canvas_clear_canvas_title">Vymazať celé plátno?</string>
     <string name="canvas_clear_canvas_body">Všetky strany sa odstránia a plátno začne znova prázdne. Túto akciu môžete vrátiť späť.</string>
     <string name="canvas_clear">Vymazať</string>
+    <string name="canvas_waiting_approval">Čaká sa na schválenie…</string>
+    <string name="canvas_not_approved">Neschválené</string>
+    <string name="canvas_live_failed">Spustenie naživo zlyhalo</string>
 </resources>

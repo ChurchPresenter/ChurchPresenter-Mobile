@@ -48,6 +48,8 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.canvas_end_live
 import churchpresentermobile.composeapp.generated.resources.canvas_go_live
 import churchpresentermobile.composeapp.generated.resources.canvas_layers
+import churchpresentermobile.composeapp.generated.resources.canvas_live_failed
+import churchpresentermobile.composeapp.generated.resources.canvas_not_approved
 import churchpresentermobile.composeapp.generated.resources.canvas_not_saved
 import churchpresentermobile.composeapp.generated.resources.canvas_redo
 import churchpresentermobile.composeapp.generated.resources.canvas_saved
@@ -55,6 +57,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_saving
 import churchpresentermobile.composeapp.generated.resources.canvas_subtitle
 import churchpresentermobile.composeapp.generated.resources.canvas_undo
 import churchpresentermobile.composeapp.generated.resources.canvas_untitled
+import churchpresentermobile.composeapp.generated.resources.canvas_waiting_approval
 import churchpresentermobile.composeapp.generated.resources.canvas_zoom_in
 import churchpresentermobile.composeapp.generated.resources.canvas_zoom_out
 import churchpresentermobile.composeapp.generated.resources.canvas_zoom_value
@@ -64,6 +67,7 @@ import com.church.presenter.churchpresentermobile.model.zoomedOut
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
+import com.church.presenter.churchpresentermobile.viewmodel.LiveNote
 import com.church.presenter.churchpresentermobile.viewmodel.SaveStatus
 import org.jetbrains.compose.resources.stringResource
 
@@ -110,10 +114,16 @@ internal fun CanvasTopBar(
                     SaveStatus.SAVING -> Res.string.canvas_saving
                     SaveStatus.FAILED -> Res.string.canvas_not_saved
                 }?.let { stringResource(it) }
+                val liveNote = when (state.liveNote) {
+                    LiveNote.DECLINED -> Res.string.canvas_not_approved
+                    LiveNote.FAILED -> Res.string.canvas_live_failed
+                    null -> null
+                }?.let { stringResource(it) }
                 Text(
                     text = listOfNotNull(
                         stringResource(Res.string.canvas_subtitle, state.pageIndex + 1, state.document.pages.size),
                         saveNote,
+                        liveNote,
                     ).joinToString(" · "),
                     color = colors.muted,
                     fontSize = 11.sp,
@@ -151,7 +161,11 @@ internal fun CanvasTopBar(
                 )
                 CanvasMoreMenu(state, onIntent)
                 // End Live always works; Go Live only where there is somewhere to project to.
-                GoLiveButton(live = state.live, enabled = state.live || canProject) {
+                GoLiveButton(
+                    live = state.live,
+                    waiting = state.awaitingApproval,
+                    enabled = state.live || canProject,
+                ) {
                     onIntent(CanvasIntent.SetLive(!state.live))
                 }
             }
@@ -264,9 +278,13 @@ private fun ZoomStep(icon: ImageVector, description: String, tag: String, onClic
     }
 }
 
-/** Go Live, which turns into End Live — in the danger red — while the canvas is on screen. */
+/**
+ * Go Live, which turns into End Live — in the danger red — while the canvas is on
+ * screen, and reads "Waiting for approval…" while the desktop operator decides.
+ * Pressing it then withdraws the request.
+ */
 @Composable
-private fun GoLiveButton(live: Boolean, enabled: Boolean, onClick: () -> Unit) {
+private fun GoLiveButton(live: Boolean, waiting: Boolean, enabled: Boolean, onClick: () -> Unit) {
     val colors = canvasColors
     val content = if (live) Color.White else colors.onAccent
     Row(
@@ -289,7 +307,13 @@ private fun GoLiveButton(live: Boolean, enabled: Boolean, onClick: () -> Unit) {
             modifier = Modifier.size(18.dp),
         )
         Text(
-            stringResource(if (live) Res.string.canvas_end_live else Res.string.canvas_go_live),
+            stringResource(
+                when {
+                    waiting -> Res.string.canvas_waiting_approval
+                    live -> Res.string.canvas_end_live
+                    else -> Res.string.canvas_go_live
+                },
+            ),
             color = content,
             fontSize = 14.sp,
             fontWeight = FontWeight.ExtraBold,

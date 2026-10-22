@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">पूरा कैनवास साफ़ करें?</string>
     <string name="canvas_clear_canvas_body">हर पृष्ठ हटा दिया जाएगा और कैनवास फिर से खाली शुरू होगा। आप इसे पूर्ववत कर सकते हैं।</string>
     <string name="canvas_clear">साफ़ करें</string>
+    <string name="canvas_waiting_approval">स्वीकृति की प्रतीक्षा…</string>
+    <string name="canvas_not_approved">स्वीकृत नहीं</string>
+    <string name="canvas_live_failed">दिखाया नहीं जा सका</string>
 </resources>

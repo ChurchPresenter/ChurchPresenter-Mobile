@@ -30,6 +30,8 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 
 private const val TAG = "ServerEventService"
@@ -95,6 +97,18 @@ object WsMessageType {
 }
 
 private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+
+/** The desktop's name for showing nothing. */
+internal const val LIVE_NOTHING = "NONE"
+
+/**
+ * The `contentType` of a `live_state_changed` payload, or null when the payload
+ * carries none that can be read. Pulled out as a plain function so the parsing is
+ * testable without a socket.
+ */
+internal fun liveContentTypeOf(payload: String): String? = runCatching {
+    json.parseToJsonElement(payload).jsonObject["contentType"]?.jsonPrimitive?.contentOrNull
+}.getOrNull()?.takeIf { it.isNotBlank() }
 
 /**
  * Maintains a persistent WebSocket connection to the server and exposes
@@ -190,6 +204,15 @@ class ServerEventService(
     private val _questionsUpdated = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     /** Emits [Unit] each time the server pushes a `questions_updated` event (Q&A question added/changed). */
     val questionsUpdated: SharedFlow<Unit> = _questionsUpdated.asSharedFlow()
+
+    private val _liveContentType = MutableStateFlow<String?>(null)
+
+    /**
+     * What the desktop's outputs are showing, by its own name for the kind of
+     * content — `"LYRICS"`, `"PICTURES"`, `"DRAWING"` (a canvas sent from a phone),
+     * `"NONE"` — from its `live_state_changed` event. Null until it has said.
+     */
+    val liveContentType: StateFlow<String?> = _liveContentType.asStateFlow()
 
     private val _mediaState = MutableStateFlow<MediaPlaybackState?>(null)
     /** Latest desktop media-player state pushed via `media_state_changed` (null when never reported). */
@@ -414,7 +437,13 @@ class ServerEventService(
                             "schedule_updated"     -> _scheduleUpdated.tryEmit(Unit)
                             "songs_updated"        -> _songsUpdated.tryEmit(Unit)
                             "bible_updated"        -> _bibleUpdated.tryEmit(Unit)
-                            "display_cleared"      -> _displayCleared.tryEmit(Unit)
+                            "display_cleared"      -> {
+                                _displayCleared.tryEmit(Unit)
+                                _liveContentType.value = LIVE_NOTHING
+                            }
+                            "live_state_changed"   -> liveContentTypeOf(event.payload)?.let {
+                                _liveContentType.value = it
+                            }
                             "presentation_updated" -> _presentationUpdated.tryEmit(Unit)
                             "pictures_updated"     -> _picturesUpdated.tryEmit(Unit)
                             "song_section_selected" -> {

@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Rensa hela ritytan?</string>
     <string name="canvas_clear_canvas_body">Alla sidor tas bort och ritytan börjar om tom. Du kan ångra detta.</string>
     <string name="canvas_clear">Rensa</string>
+    <string name="canvas_waiting_approval">Väntar på godkännande…</string>
+    <string name="canvas_not_approved">Inte godkänd</string>
+    <string name="canvas_live_failed">Kunde inte visa</string>
 </resources>

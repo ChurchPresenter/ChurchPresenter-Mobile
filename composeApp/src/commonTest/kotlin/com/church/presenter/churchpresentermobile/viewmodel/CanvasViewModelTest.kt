@@ -16,6 +16,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.present.CanvasOutput
 import com.church.presenter.churchpresentermobile.present.CanvasProjector
+import com.church.presenter.churchpresentermobile.present.CanvasShowResult
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
@@ -324,11 +325,13 @@ class CanvasViewModelTest {
         try {
             vm.dispatch(CanvasIntent.SetLive(true))
             assertTrue(vm.state.value.live)
-            assertTrue(projector.show(byteArrayOf(1), "#000000", "", takeOver = true))
+            assertEquals(CanvasShowResult.SHOWN, projector.show(byteArrayOf(1), "#000000", "", takeOver = true))
             assertEquals(SlideKind.CANVAS, engine.currentSlide.value.kind)
 
             vm.dispatch(CanvasIntent.SetLive(false))
             assertFalse(vm.state.value.live)
+            // Taking the page down runs on the ViewModel's scope.
+            advanceUntilIdle()
             assertEquals(SlideKind.BLANK, engine.currentSlide.value.kind, "End Live clears the screen")
         } finally {
             tearDown(vm)

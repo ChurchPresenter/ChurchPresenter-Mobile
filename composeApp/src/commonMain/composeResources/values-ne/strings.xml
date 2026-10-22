@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">पूरै क्यानभास खाली गर्ने?</string>
     <string name="canvas_clear_canvas_body">सबै पृष्ठ हटाइन्छन् र क्यानभास फेरि खाली सुरु हुन्छ। तपाईं यसलाई पूर्ववत् गर्न सक्नुहुन्छ।</string>
     <string name="canvas_clear">खाली गर्नुहोस्</string>
+    <string name="canvas_waiting_approval">स्वीकृतिको प्रतीक्षा…</string>
+    <string name="canvas_not_approved">स्वीकृत भएन</string>
+    <string name="canvas_live_failed">देखाउन सकिएन</string>
 </resources>

@@ -1305,4 +1305,7 @@
     <string name="canvas_clear_canvas_title">Очистити все полотно?</string>
     <string name="canvas_clear_canvas_body">Усі сторінки буде видалено, і полотно почнеться знову порожнім. Цю дію можна скасувати.</string>
     <string name="canvas_clear">Очистити</string>
+    <string name="canvas_waiting_approval">Очікування схвалення…</string>
+    <string name="canvas_not_approved">Не схвалено</string>
+    <string name="canvas_live_failed">Не вдалося показати на екрані</string>
 </resources>
