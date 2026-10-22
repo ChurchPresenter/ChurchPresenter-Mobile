@@ -1,24 +1,41 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.CanvasDocument
+import com.church.presenter.churchpresentermobile.present.CanvasProjector
+import com.church.presenter.churchpresentermobile.present.encodeCanvasFrame
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 /**
- * The canvas editor's state, held in memory.
- *
- * There is no backend yet: nothing is saved, and Go Live is the caller's to wire.
- * What *is* real is the editing — strokes drawn with the pen and highlighter, pages,
- * selection, layer flags and undo — so the screen behaves like the tool it will be.
+ * The canvas editor's state, held in memory, and — in standalone — its place on
+ * this device's outputs.
  *
  * Every edit is [reduce]; this class adds only what a pure function cannot hold:
- * the undo history and a supply of fresh element ids.
+ * the undo history, a supply of fresh element ids, and projection. Go Live takes
+ * the screen with the next frame the board sends ([showFrame]); each frame after
+ * that refreshes it while the canvas is still what is showing; End Live clears it.
+ * If anything else takes the screen meanwhile — a song from the Present tab — the
+ * canvas stops being live by itself, so a later stroke cannot snatch the screen back.
  *
  * @param document What to open. A blank, untitled canvas unless one is given.
+ * @param projector Where frames go. Null outside standalone, where Go Live is off.
+ * @param frameWork Where a frame is scaled and encoded: never the main thread.
  */
-class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel() {
+class CanvasViewModel(
+    document: CanvasDocument = CanvasDocument(),
+    private val projector: CanvasProjector? = null,
+    private val frameWork: CoroutineContext = Dispatchers.Default,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(CanvasUiState(document = document))
     val state: StateFlow<CanvasUiState> = _state.asStateFlow()
@@ -34,6 +51,48 @@ class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel()
      */
     private var lastRun: String? = null
 
+    /** Whether the next frame should take the screen — set by Go Live until a frame makes it up. */
+    private var takeOver = false
+    private var frameJob: Job? = null
+
+    init {
+        projector?.let { p ->
+            viewModelScope.launch {
+                var wasShowing = false
+                p.showing.collect { showing ->
+                    if (wasShowing && !showing && _state.value.live && !takeOver) {
+                        _state.update { it.copy(live = false) }
+                    }
+                    wasShowing = showing
+                }
+            }
+        }
+    }
+
+    /**
+     * A new picture of the page from the board, framed by [paper]. Projected while
+     * live; ignored otherwise. Only the latest counts: a frame still encoding when
+     * the next arrives is dropped.
+     */
+    fun showFrame(frame: ImageBitmap, paper: String) {
+        val p = projector ?: return
+        if (!_state.value.live) return
+        frameJob?.cancel()
+        frameJob = viewModelScope.launch {
+            val png = withContext(frameWork) { encodeCanvasFrame(frame) } ?: return@launch
+            val taking = takeOver
+            val shown = p.show(png, paper, _state.value.document.title.orEmpty(), takeOver = taking)
+            if (shown) {
+                takeOver = false
+            } else {
+                // Either the server is down (going live failed) or something else
+                // has the screen now; either way the canvas is not live.
+                takeOver = false
+                _state.update { it.copy(live = false) }
+            }
+        }
+    }
+
     /**
      * Applies [intent]. Any change to the document goes on the undo history; a
      * change of tool, zoom or panel does not, as in every drawing app — Undo
@@ -44,6 +103,17 @@ class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel()
         when (intent) {
             CanvasIntent.Undo -> step(from = undoStack, to = redoStack)
             CanvasIntent.Redo -> step(from = redoStack, to = undoStack)
+            is CanvasIntent.SetLive -> {
+                if (intent.live && projector == null) return
+                _state.value = before.reduce(intent, ::newId)
+                if (intent.live) {
+                    takeOver = true
+                } else {
+                    takeOver = false
+                    frameJob?.cancel()
+                    projector?.stop()
+                }
+            }
             else -> {
                 val after = before.reduce(intent, ::newId)
                 val run = runOf(intent)

@@ -16,6 +16,13 @@ enum class SlideKind {
     WEB,
     /** A video played on the output. */
     VIDEO,
+    /**
+     * A canvas page, sent as a picture of itself in [Slide.mediaUrl]. A picture
+     * rather than a photo slide: a drawing must not be dimmed by the scrim that
+     * keeps text legible over a photo, and each new frame must replace the last
+     * without the screen going dark while it loads.
+     */
+    CANVAS,
     LOGO,
     BLANK,
 }
@@ -167,6 +174,9 @@ const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
  * @property gradientTop Top colour of the gradient backdrop as `#RRGGBB`.
  * @property gradientBottom Bottom colour of the gradient backdrop as `#RRGGBB`.
  * @property total Number of slides in the owning [SlideDeck].
+ * @property paper The colour round a [SlideKind.CANVAS] frame where its shape and the
+ *   screen's differ, as `#RRGGBB` — the canvas's own board colour, so the page reads
+ *   as filling the screen rather than floating in black bars.
  * @property songCredit The song this slide belongs to, for the CCLI report. Only on song slides.
  * @property verseCredit The verse this slide is, for the CCLI report. Only on Bible slides.
  */
@@ -194,6 +204,7 @@ data class Slide(
     val total: Int = 0,
     val songCredit: SongCredit? = null,
     val verseCredit: VerseCredit? = null,
+    val paper: String? = null,
 ) {
     /** True when the renderer should show nothing but the backdrop. */
     val isHidden: Boolean get() = isBlank || !isLive

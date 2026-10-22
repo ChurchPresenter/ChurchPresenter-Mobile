@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -47,6 +48,7 @@ import kotlin.math.roundToInt
  *
  * @param textSizes Where each text box landed once laid out, shared with the
  *   screen so the Arrange buttons can measure the selection too.
+ * @param onFrame A picture of the page for the outputs, while the canvas is live.
  */
 @Composable
 internal fun CanvasBoard(
@@ -55,6 +57,7 @@ internal fun CanvasBoard(
     textSizes: SnapshotStateMap<String, CanvasBounds>,
     paths: InkPaths,
     modifier: Modifier = Modifier,
+    onFrame: (ImageBitmap) -> Unit = {},
 ) {
     val colors = canvasColors
     val scale = state.zoom / PERCENT
@@ -93,15 +96,22 @@ internal fun CanvasBoard(
                     transformOrigin = TransformOrigin(0f, 0f)
                 },
         ) {
-            visible.forEach { element ->
-                key(element.id) {
-                    CanvasElementView(
-                        element = element,
-                        editing = element.id == state.editingId,
-                        paths = paths,
-                        onIntent = onIntent,
-                        onTextBounds = { id, bounds -> textSizes[id] = bounds },
-                    )
+            CapturedPage(
+                live = state.live,
+                paper = colors.board,
+                changes = state.page,
+                onFrame = onFrame,
+            ) {
+                visible.forEach { element ->
+                    key(element.id) {
+                        CanvasElementView(
+                            element = element,
+                            editing = element.id == state.editingId,
+                            paths = paths,
+                            onIntent = onIntent,
+                            onTextBounds = { id, bounds -> textSizes[id] = bounds },
+                        )
+                    }
                 }
             }
             if (state.tool == CanvasTool.SELECT) SelectGestures(state, onIntent, measure)

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -28,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasTool
+import com.church.presenter.churchpresentermobile.present.CanvasProjector
 import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
@@ -39,22 +41,31 @@ import kotlin.math.roundToInt
  * The canvas: a whiteboard of pages to sketch a talk on and put on screen.
  *
  * Tablet only — the caller opens it only in the two-pane layout, where it fills the
- * window as the design draws it. Owns its [CanvasViewModel]; there is no backend
- * yet, so the canvas lives in memory. Go Live toggles the button's own state and
- * tells [onGoLive] whether the canvas is now live, for the caller to project.
+ * window as the design draws it. Owns its [CanvasViewModel]. The canvas lives in
+ * memory for now; Go Live puts the page on this device's outputs through
+ * [projector] and keeps it up to date as it is drawn on.
  *
  * @param onBack Back to the More launcher, from the "‹ More" link or the system back gesture.
+ * @param projector Where Go Live sends the page. Null outside standalone.
+ * @param canProject Whether Go Live can work right now — standalone, with the
+ *   presentation server running. Go Live is off while it cannot.
  */
 @Composable
-fun CanvasScreen(onBack: () -> Unit, onGoLive: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    val viewModel: CanvasViewModel = viewModel { CanvasViewModel() }
+fun CanvasScreen(
+    onBack: () -> Unit,
+    projector: CanvasProjector?,
+    canProject: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val viewModel: CanvasViewModel = viewModel { CanvasViewModel(projector = projector) }
     val state by viewModel.state.collectAsState()
     AppBackHandler(enabled = true, onBack = onBack)
     CanvasEditor(
         state = state,
         onIntent = viewModel::dispatch,
         onBack = onBack,
-        onGoLive = onGoLive,
+        canProject = canProject,
+        onFrame = viewModel::showFrame,
         modifier = modifier,
     )
 }
@@ -70,8 +81,9 @@ internal fun CanvasEditor(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     onBack: () -> Unit,
-    onGoLive: (Boolean) -> Unit,
+    canProject: Boolean,
     modifier: Modifier = Modifier,
+    onFrame: (ImageBitmap, String) -> Unit = { _, _ -> },
 ) {
     val colors = canvasColors
     Column(
@@ -81,8 +93,13 @@ internal fun CanvasEditor(
             .navigationBarsPadding()
             .testTag(CanvasTags.SCREEN),
     ) {
-        CanvasTopBar(state = state, onIntent = onIntent, onBack = onBack, onGoLive = onGoLive)
-        CanvasWorkspace(state = state, onIntent = onIntent, modifier = Modifier.weight(1f).fillMaxWidth())
+        CanvasTopBar(state = state, onIntent = onIntent, onBack = onBack, canProject = canProject)
+        CanvasWorkspace(
+            state = state,
+            onIntent = onIntent,
+            onFrame = { onFrame(it, colors.board.toHex()) },
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+        )
     }
 }
 
@@ -95,7 +112,12 @@ internal fun CanvasEditor(
  * runs to the bottom edge, where the strip would sit under it.
  */
 @Composable
-private fun CanvasWorkspace(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, modifier: Modifier) {
+private fun CanvasWorkspace(
+    state: CanvasUiState,
+    onIntent: (CanvasIntent) -> Unit,
+    onFrame: (ImageBitmap) -> Unit,
+    modifier: Modifier,
+) {
     val density = LocalDensity.current
     // Where the workspace and the active tool's button are, in root pixels, so the
     // options panel can hang its pointer level with the button.
@@ -115,6 +137,7 @@ private fun CanvasWorkspace(state: CanvasUiState, onIntent: (CanvasIntent) -> Un
             textSizes = textSizes,
             paths = paths,
             modifier = Modifier.fillMaxSize(),
+            onFrame = onFrame,
         )
         CanvasToolRail(
             active = state.tool,

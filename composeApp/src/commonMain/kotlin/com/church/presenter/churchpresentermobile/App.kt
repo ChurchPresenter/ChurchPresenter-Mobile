@@ -55,6 +55,8 @@ import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.library.PlayLogRepository
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
+import com.church.presenter.churchpresentermobile.present.CanvasOutput
+import com.church.presenter.churchpresentermobile.present.CanvasProjector
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
 import com.church.presenter.churchpresentermobile.present.PlayRecorder
@@ -272,12 +274,17 @@ fun App(
     // need the same set: the screen that picks and projects them, and the
     // presentation server that serves the bytes to whatever is displaying.
     val photoLibrary = remember { PhotoLibrary(newId = { generateUUID() }) }
+    // The canvas's live page, served by the same server at the same address as the
+    // photos, so every output reaches it the way it reaches a photo.
+    val canvasOutput = remember(photoLibrary) { CanvasOutput(photoLibrary.baseUrl) }
+    val photoBaseUrl by photoLibrary.baseUrl.collectAsState()
     // Sink state as a stream. SinkRegistry.hasAttachedSink is a plain getter, so a screen
     // attaching or detaching would not have recomposed anything reading it.
     val sinkStatuses by sinkRegistry.statuses.collectAsState()
     val standaloneEngine = remember(sinkRegistry) {
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
+    val canvasProjector = remember(canvasOutput, standaloneEngine) { CanvasProjector(canvasOutput, standaloneEngine) }
     val projectionRouter = remember(standaloneEngine) {
         ProjectionRouter(AppModeHolder.mode, eventService, standaloneEngine)
     }
@@ -310,7 +317,7 @@ fun App(
                     // The same server that serves the display page serves the
                     // operator's photos, so the browser screen and the in-process
                     // one fetch an image from the identical address.
-                    photos = photoLibrary.source,
+                    photos = { id -> canvasOutput.source.photo(id) ?: photoLibrary.source.photo(id) },
                     onBaseUrl = { photoLibrary.serveFrom(it) },
                 )
             )
@@ -1302,8 +1309,10 @@ fun App(
             if (canvasOpen) {
                 CanvasScreen(
                     onBack = { moreDestination = null },
-                    // Projecting a canvas needs the backend, which is still to come.
-                    onGoLive = { },
+                    // Standalone projects the page itself. Remote has no way yet to hand
+                    // a canvas to the desktop, so Go Live is off there.
+                    projector = canvasProjector.takeIf { appMode == AppMode.STANDALONE },
+                    canProject = appMode == AppMode.STANDALONE && photoBaseUrl != null,
                 )
             }
             if (showSettings) {

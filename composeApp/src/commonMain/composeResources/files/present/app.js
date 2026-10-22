@@ -29,7 +29,8 @@
     standby: document.getElementById('standby'),
     standbyText: document.getElementById('standby-text'),
     web: document.getElementById('web'),
-    video: document.getElementById('video')
+    video: document.getElementById('video'),
+    canvas: document.getElementById('canvas')
   };
 
   // Envelopes may arrive out of order across a reconnect; anything not newer
@@ -150,7 +151,32 @@
       el.video.classList.add('hidden');
     }
 
-    return (kind === 'WEB' || kind === 'VIDEO') && url != null;
+    var canvasUrl = kind === 'CANVAS' ? ownPhoto(slide.mediaUrl) : null;
+    applyCanvas(canvasUrl && !hidden ? canvasUrl : null, slide.paper);
+
+    return ((kind === 'WEB' || kind === 'VIDEO') && url != null) || canvasUrl != null;
+  }
+
+  // A canvas page arrives as a fresh picture after every edit. Swapping the src
+  // straight away would blank the screen while each one loads, so the next frame
+  // is fetched off-screen and only then put up — the last one stays until it has.
+  var canvasWanted = null;
+  function applyCanvas(url, paper) {
+    canvasWanted = url;
+    if (!url) {
+      el.canvas.removeAttribute('src');
+      el.canvas.classList.add('hidden');
+      return;
+    }
+    el.canvas.style.background = safeColor(paper) || '#000';
+    if (el.canvas.getAttribute('src') === url) { el.canvas.classList.remove('hidden'); return; }
+    var next = new Image();
+    next.onload = function () {
+      if (canvasWanted !== url) { return; } // a newer frame was asked for meanwhile
+      el.canvas.setAttribute('src', url);
+      el.canvas.classList.remove('hidden');
+    };
+    next.src = url;
   }
 
   // An alignment this page does not know — an older or newer app, or a value

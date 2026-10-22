@@ -83,10 +83,14 @@ fun StandaloneOutputScreen(
             when (slide.kind) {
                 SlideKind.WEB -> OutputWebView(mediaUrl, Modifier.fillMaxSize())
                 SlideKind.VIDEO -> OutputVideoView(mediaUrl, Modifier.fillMaxSize())
+                SlideKind.CANVAS -> OutputCanvasFrame(
+                    url = mediaUrl,
+                    paper = slide.paper?.let { parseHexColor(it, DefaultCanvasPaper) } ?: DefaultCanvasPaper,
+                )
                 else -> Unit
             }
         }
-        val showsText = mediaUrl == null || slide.kind !in setOf(SlideKind.WEB, SlideKind.VIDEO)
+        val showsText = mediaUrl == null || slide.kind !in MEDIA_KINDS
 
         val textColor = parseHexColor(slide.theme.textColor, Color.White)
         val accentColor = parseHexColor(slide.theme.accentColor, Color.White)
@@ -370,3 +374,6 @@ private const val CORNER_PAD = 0.035f
 private val GRADIENT_TOP = Color(0xFF2A1D5E)
 private val GRADIENT_BOTTOM = Color(0xFF05060D)
 private val IMAGE_SCRIM = Color(0x99000000)
+
+/** The kinds whose media *is* the slide, so nothing of the text layer is drawn over it. */
+private val MEDIA_KINDS = setOf(SlideKind.WEB, SlideKind.VIDEO, SlideKind.CANVAS)

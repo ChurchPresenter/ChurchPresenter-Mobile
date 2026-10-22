@@ -76,7 +76,7 @@ internal fun CanvasTopBar(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     onBack: () -> Unit,
-    onGoLive: (Boolean) -> Unit,
+    canProject: Boolean,
 ) {
     val colors = canvasColors
     Column(modifier = Modifier.fillMaxWidth().background(colors.chrome).statusBarsPadding()) {
@@ -137,9 +137,9 @@ internal fun CanvasTopBar(
                     },
                 )
                 CanvasMoreMenu(state, onIntent)
-                GoLiveButton(live = state.live) {
+                // End Live always works; Go Live only where there is somewhere to project to.
+                GoLiveButton(live = state.live, enabled = state.live || canProject) {
                     onIntent(CanvasIntent.SetLive(!state.live))
-                    onGoLive(!state.live)
                 }
             }
         }
@@ -253,16 +253,17 @@ private fun ZoomStep(icon: ImageVector, description: String, tag: String, onClic
 
 /** Go Live, which turns into End Live — in the danger red — while the canvas is on screen. */
 @Composable
-private fun GoLiveButton(live: Boolean, onClick: () -> Unit) {
+private fun GoLiveButton(live: Boolean, enabled: Boolean, onClick: () -> Unit) {
     val colors = canvasColors
     val content = if (live) Color.White else colors.onAccent
     Row(
         modifier = Modifier
             .testTag(CanvasTags.GO_LIVE)
             .height(40.dp)
+            .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .clip(RoundedCornerShape(12.dp))
             .background(if (live) colors.danger else colors.accent)
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
