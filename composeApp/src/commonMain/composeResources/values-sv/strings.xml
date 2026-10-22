@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Gör om</string>
     <string name="canvas_zoom_out">Zooma ut</string>
     <string name="canvas_zoom_in">Zooma in</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Lager</string>
     <string name="canvas_more_options">Fler alternativ</string>
     <string name="canvas_go_live">Visa nu</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Opacitet</string>
     <string name="canvas_width">Bredd</string>
     <string name="canvas_size">Storlek</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Markering</string>
     <string name="canvas_section_arrange">Ordna</string>

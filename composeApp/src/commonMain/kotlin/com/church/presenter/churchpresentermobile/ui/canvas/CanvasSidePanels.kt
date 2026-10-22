@@ -331,6 +331,7 @@ private fun InsertSource(row: InsertRow, active: Boolean, onClick: () -> Unit) {
     val shape = RoundedCornerShape(13.dp)
     Row(
         modifier = Modifier
+            .testTag(CanvasTags.insertSource(row.source))
             .fillMaxWidth()
             .clip(shape)
             .background(if (active) colors.accentTint else Color.Transparent)

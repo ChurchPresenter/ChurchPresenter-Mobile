@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">重做</string>
     <string name="canvas_zoom_out">缩小</string>
     <string name="canvas_zoom_in">放大</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">图层</string>
     <string name="canvas_more_options">更多选项</string>
     <string name="canvas_go_live">立即投放</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">不透明度</string>
     <string name="canvas_width">宽度</string>
     <string name="canvas_size">大小</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">选区</string>
     <string name="canvas_section_arrange">排列</string>

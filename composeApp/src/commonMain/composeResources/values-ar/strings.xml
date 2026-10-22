@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">إعادة</string>
     <string name="canvas_zoom_out">تصغير</string>
     <string name="canvas_zoom_in">تكبير</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">الطبقات</string>
     <string name="canvas_more_options">خيارات أخرى</string>
     <string name="canvas_go_live">اعرض الآن</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">العتامة</string>
     <string name="canvas_width">العرض</string>
     <string name="canvas_size">الحجم</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d بكسل</string>
     <string name="canvas_section_selection">التحديد</string>
     <string name="canvas_section_arrange">ترتيب</string>

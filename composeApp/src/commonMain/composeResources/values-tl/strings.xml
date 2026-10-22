@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">I-redo</string>
     <string name="canvas_zoom_out">Mag-zoom out</string>
     <string name="canvas_zoom_in">Mag-zoom in</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Mga layer</string>
     <string name="canvas_more_options">Higit pang opsyon</string>
     <string name="canvas_go_live">Ipakita ngayon</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Opacity</string>
     <string name="canvas_width">Lapad</string>
     <string name="canvas_size">Laki</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Napili</string>
     <string name="canvas_section_arrange">Ayusin</string>

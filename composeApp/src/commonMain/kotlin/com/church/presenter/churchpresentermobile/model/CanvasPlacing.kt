@@ -10,9 +10,6 @@ import kotlin.math.sin
  * functions so a test can check a line's arrowhead or a note's size without a board.
  */
 
-/** What the image panel's Adjust row, and the selection bar's Crop, do to a picture. */
-enum class ImageAdjust { CROP, FLIP, ROTATE, REMOVE_BACKGROUND }
-
 /** A shape filling [bounds], drawn with the shape tool's current options. */
 internal fun shapeElement(id: String, bounds: CanvasBounds, options: ShapeOptions): CanvasElement.Shape =
     CanvasElement.Shape(

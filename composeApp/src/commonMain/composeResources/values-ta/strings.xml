@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">மீண்டும்செய்</string>
     <string name="canvas_zoom_out">சிறிதாக்கு</string>
     <string name="canvas_zoom_in">பெரிதாக்கு</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">அடுக்குகள்</string>
     <string name="canvas_more_options">மேலும் விருப்பங்கள்</string>
     <string name="canvas_go_live">இப்போது காட்டு</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">ஒளிபுகாமை</string>
     <string name="canvas_width">அகலம்</string>
     <string name="canvas_size">அளவு</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">தேர்வு</string>
     <string name="canvas_section_arrange">ஒழுங்கமை</string>

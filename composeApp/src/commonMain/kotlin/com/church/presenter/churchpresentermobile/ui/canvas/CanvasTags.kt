@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
 import com.church.presenter.churchpresentermobile.model.CanvasTool
+import com.church.presenter.churchpresentermobile.model.ImageSource
 import com.church.presenter.churchpresentermobile.viewmodel.SelectionAction
 
 /**
@@ -43,4 +44,5 @@ internal object CanvasTags {
     fun layerLock(id: String) = "canvas:layerLock:$id"
     fun layerVisibility(id: String) = "canvas:layerVisibility:$id"
     fun selection(action: SelectionAction) = "canvas:selection:${action.name.lowercase()}"
+    fun insertSource(source: ImageSource) = "canvas:insert:${source.name.lowercase()}"
 }

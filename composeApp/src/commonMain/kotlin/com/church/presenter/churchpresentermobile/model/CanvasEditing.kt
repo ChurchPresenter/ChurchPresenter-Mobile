@@ -66,7 +66,7 @@ private const val TENTHS = 10f
  */
 internal fun smoothed(points: List<CanvasPoint>, amount: Float): List<CanvasPoint> {
     val reach = kotlin.math.round(amount.coerceIn(0f, 1f) * MAX_SMOOTHING_REACH).toInt()
-    if (reach == 0 || points.size < 3) return points
+    if (reach == 0 || points.size < MIN_POINTS_TO_SMOOTH) return points
     return points.mapIndexed { i, point ->
         if (i == 0 || i == points.lastIndex) return@mapIndexed point
         val window = points.subList((i - reach).coerceAtLeast(0), (i + reach + 1).coerceAtMost(points.size))
@@ -78,6 +78,9 @@ internal fun smoothed(points: List<CanvasPoint>, amount: Float): List<CanvasPoin
 }
 
 private const val MAX_SMOOTHING_REACH = 4f
+
+/** A stroke needs a point between its two ends before there is anything to smooth. */
+private const val MIN_POINTS_TO_SMOOTH = 3
 
 /**
  * The zoom levels the − and + buttons step through, in percent.

@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">फिर से करें</string>
     <string name="canvas_zoom_out">ज़ूम आउट</string>
     <string name="canvas_zoom_in">ज़ूम इन</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">लेयर</string>
     <string name="canvas_more_options">अधिक विकल्प</string>
     <string name="canvas_go_live">अभी दिखाएँ</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">अपारदर्शिता</string>
     <string name="canvas_width">चौड़ाई</string>
     <string name="canvas_size">आकार</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">चयन</string>
     <string name="canvas_section_arrange">व्यवस्थित करें</string>

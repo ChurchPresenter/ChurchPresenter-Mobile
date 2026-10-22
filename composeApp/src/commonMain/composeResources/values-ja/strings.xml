@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">やり直す</string>
     <string name="canvas_zoom_out">縮小</string>
     <string name="canvas_zoom_in">拡大</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">レイヤー</string>
     <string name="canvas_more_options">その他のオプション</string>
     <string name="canvas_go_live">今すぐ表示</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">不透明度</string>
     <string name="canvas_width">太さ</string>
     <string name="canvas_size">サイズ</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">選択範囲</string>
     <string name="canvas_section_arrange">配置</string>

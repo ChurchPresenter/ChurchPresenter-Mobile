@@ -93,39 +93,7 @@ internal fun PenDock(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, mod
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (highlighter) {
-                HighlightColor.entries.forEach { color ->
-                    ColorSwatch(
-                        color = highlightColor(color),
-                        selected = color == options.highlighter.color && options.highlighter.custom == null,
-                        description = stringResource(color.label()),
-                        onClick = {
-                            val marker = options.highlighter.copy(color = color, custom = null)
-                            onIntent(CanvasIntent.SetOptions(options.copy(highlighter = marker)))
-                        },
-                        size = 30.dp,
-                        gap = colors.board,
-                        ringWidth = 3.dp,
-                    )
-                }
-            } else {
-                colors.dockInks().forEach { ink ->
-                    ColorSwatch(
-                        color = colors.inkSwatch(ink),
-                        selected = ink == options.pen.ink && options.pen.custom == null,
-                        description = stringResource(ink.label(colors.isDark)),
-                        onClick = {
-                            val pen = options.pen.copy(ink = ink, custom = null)
-                            onIntent(CanvasIntent.SetOptions(options.copy(pen = pen)))
-                        },
-                        size = 30.dp,
-                        gap = colors.board,
-                        ringWidth = 3.dp,
-                    )
-                }
-            }
-        }
+        DockSwatches(state, onIntent)
         DockDivider()
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             presets.forEachIndexed { index, preset ->
@@ -154,6 +122,47 @@ internal fun PenDock(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, mod
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier.widthIn(min = 34.dp),
             )
+        }
+    }
+}
+
+/** The dock's colours: the pen's inks, or the highlighter's colours while it is out. */
+@Composable
+private fun DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
+    val colors = canvasColors
+    val options = state.options
+    val highlighter = state.tool == CanvasTool.HIGHLIGHTER
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        if (highlighter) {
+            HighlightColor.entries.forEach { color ->
+                ColorSwatch(
+                    color = highlightColor(color),
+                    selected = color == options.highlighter.color && options.highlighter.custom == null,
+                    description = stringResource(color.label()),
+                    onClick = {
+                        val marker = options.highlighter.copy(color = color, custom = null)
+                        onIntent(CanvasIntent.SetOptions(options.copy(highlighter = marker)))
+                    },
+                    size = 30.dp,
+                    gap = colors.board,
+                    ringWidth = 3.dp,
+                )
+            }
+        } else {
+            colors.dockInks().forEach { ink ->
+                ColorSwatch(
+                    color = colors.inkSwatch(ink),
+                    selected = ink == options.pen.ink && options.pen.custom == null,
+                    description = stringResource(ink.label(colors.isDark)),
+                    onClick = {
+                        val pen = options.pen.copy(ink = ink, custom = null)
+                        onIntent(CanvasIntent.SetOptions(options.copy(pen = pen)))
+                    },
+                    size = 30.dp,
+                    gap = colors.board,
+                    ringWidth = 3.dp,
+                )
+            }
         }
     }
 }

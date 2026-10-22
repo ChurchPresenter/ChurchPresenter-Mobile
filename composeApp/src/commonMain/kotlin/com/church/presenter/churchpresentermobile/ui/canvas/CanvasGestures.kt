@@ -281,20 +281,30 @@ private fun GestureLayer(
                     points.clear()
                     points.add(down.position.toPoint())
                     try {
-                        while (true) {
-                            val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
-                            if (change.isConsumed) break
-                            if (!change.pressed) {
-                                if (dragging) dragEnd(points.toList(), pressure / points.size) else tap(points.first())
-                                break
-                            }
-                            val travelled = (change.position - down.position).getDistance()
-                            if (!dragging && travelled > viewConfiguration.touchSlop) dragging = true
-                            if (dragging) {
-                                change.consume()
-                                points.add(change.position.toPoint())
-                                pressure += change.pressure
-                                dragMove?.invoke(points.takeLast(2), session)
+                        var finished = false
+                        while (!finished) {
+                            val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id }
+                            when {
+                                // Gone, or taken by the board's two-finger pan: drop the stroke.
+                                change == null || change.isConsumed -> finished = true
+                                !change.pressed -> {
+                                    if (dragging) {
+                                        dragEnd(points.toList(), pressure / points.size)
+                                    } else {
+                                        tap(points.first())
+                                    }
+                                    finished = true
+                                }
+                                else -> {
+                                    val travelled = (change.position - down.position).getDistance()
+                                    if (!dragging && travelled > viewConfiguration.touchSlop) dragging = true
+                                    if (dragging) {
+                                        change.consume()
+                                        points.add(change.position.toPoint())
+                                        pressure += change.pressure
+                                        dragMove?.invoke(points.takeLast(2), session)
+                                    }
+                                }
                             }
                         }
                     } finally {

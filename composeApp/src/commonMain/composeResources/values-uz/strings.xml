@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Qaytarish</string>
     <string name="canvas_zoom_out">Kichraytirish</string>
     <string name="canvas_zoom_in">Kattalashtirish</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Qatlamlar</string>
     <string name="canvas_more_options">Boshqa amallar</string>
     <string name="canvas_go_live">Hozir ko'rsatish</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Shaffofsizlik</string>
     <string name="canvas_width">Qalinlik</string>
     <string name="canvas_size">O'lcham</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Belgilash</string>
     <string name="canvas_section_arrange">Joylashtirish</string>

@@ -74,9 +74,8 @@ class CanvasViewModel(
             viewModelScope.launch {
                 var wasShowing = false
                 p.showing.collect { showing ->
-                    if (wasShowing && !showing && _state.value.live && !takeOver) {
-                        _state.update { it.copy(live = false) }
-                    }
+                    val lostScreen = wasShowing && !showing
+                    if (lostScreen && _state.value.live && !takeOver) _state.update { it.copy(live = false) }
                     wasShowing = showing
                 }
             }

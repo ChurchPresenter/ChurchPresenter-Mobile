@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Повторить</string>
     <string name="canvas_zoom_out">Уменьшить</string>
     <string name="canvas_zoom_in">Увеличить</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Слои</string>
     <string name="canvas_more_options">Другие параметры</string>
     <string name="canvas_go_live">Показать на экране</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Непрозрачность</string>
     <string name="canvas_width">Толщина</string>
     <string name="canvas_size">Размер</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d пикс.</string>
     <string name="canvas_section_selection">Выделение</string>
     <string name="canvas_section_arrange">Упорядочить</string>

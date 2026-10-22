@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Қайталау</string>
     <string name="canvas_zoom_out">Кішірейту</string>
     <string name="canvas_zoom_in">Үлкейту</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Қабаттар</string>
     <string name="canvas_more_options">Басқа параметрлер</string>
     <string name="canvas_go_live">Экранға шығару</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Мөлдірсіздік</string>
     <string name="canvas_width">Қалыңдық</string>
     <string name="canvas_size">Өлшем</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Белгілеу</string>
     <string name="canvas_section_arrange">Реттеу</string>

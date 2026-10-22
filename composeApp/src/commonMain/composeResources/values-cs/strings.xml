@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Znovu</string>
     <string name="canvas_zoom_out">Oddálit</string>
     <string name="canvas_zoom_in">Přiblížit</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Vrstvy</string>
     <string name="canvas_more_options">Další možnosti</string>
     <string name="canvas_go_live">Promítnout</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Krytí</string>
     <string name="canvas_width">Šířka</string>
     <string name="canvas_size">Velikost</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Výběr</string>
     <string name="canvas_section_arrange">Uspořádání</string>

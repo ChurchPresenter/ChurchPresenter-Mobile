@@ -145,6 +145,20 @@ class AppNavigationRulesTest {
     }
 
     @Test
+    fun `the canvas stays open on a tablet and closes when the window narrows`() {
+        assertEquals(
+            MoreDestination.CANVAS,
+            settledMoreDestination(MoreDestination.CANVAS, AppMode.STANDALONE, tablet = true),
+        )
+        assertEquals(
+            MoreDestination.CANVAS,
+            settledMoreDestination(MoreDestination.CANVAS, AppMode.REMOTE, tablet = true),
+        )
+        assertNull(settledMoreDestination(MoreDestination.CANVAS, AppMode.STANDALONE, tablet = false))
+        assertNull(settledMoreDestination(MoreDestination.CANVAS, AppMode.CALENDAR, tablet = true))
+    }
+
+    @Test
     fun `the launcher grid stays the launcher grid`() {
         assertNull(settledMoreDestination(null, AppMode.REMOTE))
         assertNull(settledMoreDestination(null, AppMode.STANDALONE))
@@ -303,6 +317,7 @@ class AppNavigationRulesTest {
         // It is a form posting to a public endpoint, not a screen of the app's
         // own content.
         assertNull(moreScreenName(MoreDestination.CONTACT))
+        assertEquals(AnalyticsScreen.CANVAS, moreScreenName(MoreDestination.CANVAS))
     }
 
     @Test

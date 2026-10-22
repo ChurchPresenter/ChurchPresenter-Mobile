@@ -1183,7 +1183,7 @@
     <string name="canvas_redo">Redo</string>
     <string name="canvas_zoom_out">Zoom out</string>
     <string name="canvas_zoom_in">Zoom in</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Layers</string>
     <string name="canvas_more_options">More options</string>
     <string name="canvas_go_live">Go Live</string>
@@ -1217,7 +1217,7 @@
     <string name="canvas_opacity">Opacity</string>
     <string name="canvas_width">Width</string>
     <string name="canvas_size">Size</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Selection</string>
     <string name="canvas_section_arrange">Arrange</string>

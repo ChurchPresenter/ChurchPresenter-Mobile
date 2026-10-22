@@ -118,12 +118,12 @@ internal val canvasColors: CanvasColors
  */
 internal fun CanvasColors.inkColor(ink: CanvasInk): Color = when (ink) {
     CanvasInk.CONTRAST -> text
-    CanvasInk.INVERSE -> if (isDark) Color(0xFF18181B) else Color(0xFFFFFFFF)
-    CanvasInk.RED -> Color(0xFFEF4444)
-    CanvasInk.AMBER -> if (isDark) Color(0xFFF59E0B) else Color(0xFFD97706)
+    CanvasInk.INVERSE -> if (isDark) Zinc900 else White
+    CanvasInk.RED -> Red500
+    CanvasInk.AMBER -> if (isDark) Amber500 else Amber600
     CanvasInk.GREEN -> accent
-    CanvasInk.SKY -> if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
-    CanvasInk.VIOLET -> Color(0xFFA78BFA)
+    CanvasInk.SKY -> if (isDark) Sky400 else Sky600
+    CanvasInk.VIOLET -> Violet400
 }
 
 /** [ink] on this board, unless the operator mixed a [custom] colour, which wins. */
@@ -132,13 +132,13 @@ internal fun CanvasColors.inkColor(ink: CanvasInk, custom: String?): Color =
 
 /** The colour a swatch for [ink] shows — the pure colour, whichever board it will land on. */
 internal fun CanvasColors.inkSwatch(ink: CanvasInk): Color = when (ink) {
-    CanvasInk.CONTRAST -> if (isDark) Color(0xFFFAFAFA) else Color(0xFF18181B)
-    CanvasInk.INVERSE -> if (isDark) Color(0xFF18181B) else Color(0xFFFFFFFF)
-    CanvasInk.RED -> Color(0xFFEF4444)
-    CanvasInk.AMBER -> Color(0xFFF59E0B)
-    CanvasInk.GREEN -> Color(0xFF86EFAC)
-    CanvasInk.SKY -> Color(0xFF38BDF8)
-    CanvasInk.VIOLET -> Color(0xFFA78BFA)
+    CanvasInk.CONTRAST -> if (isDark) Zinc50 else Zinc900
+    CanvasInk.INVERSE -> if (isDark) Zinc900 else White
+    CanvasInk.RED -> Red500
+    CanvasInk.AMBER -> Amber500
+    CanvasInk.GREEN -> Green300
+    CanvasInk.SKY -> Sky400
+    CanvasInk.VIOLET -> Violet400
 }
 
 /**
@@ -150,29 +150,29 @@ internal fun CanvasColors.dockInks(): List<CanvasInk> =
     if (isDark) CanvasInk.entries else CanvasInk.entries - CanvasInk.INVERSE + CanvasInk.INVERSE
 
 internal fun highlightColor(color: HighlightColor): Color = when (color) {
-    HighlightColor.YELLOW -> Color(0xFFFDE047)
-    HighlightColor.GREEN -> Color(0xFF86EFAC)
-    HighlightColor.SKY -> Color(0xFF7DD3FC)
-    HighlightColor.PINK -> Color(0xFFF9A8D4)
-    HighlightColor.ORANGE -> Color(0xFFFDBA74)
+    HighlightColor.YELLOW -> Yellow300
+    HighlightColor.GREEN -> Green300
+    HighlightColor.SKY -> Sky300
+    HighlightColor.PINK -> Pink300
+    HighlightColor.ORANGE -> Orange300
 }
 
 /** A shape's fill swatch; [ShapeFill.NONE] has none, and is drawn as a slashed circle instead. */
 internal fun shapeFillColor(fill: ShapeFill): Color = when (fill) {
     ShapeFill.NONE -> Color.Transparent
-    ShapeFill.GREEN -> Color(0xFF86EFAC)
-    ShapeFill.SKY -> Color(0xFF38BDF8)
-    ShapeFill.YELLOW -> Color(0xFFFDE68A)
-    ShapeFill.PINK -> Color(0xFFFCA5A5)
+    ShapeFill.GREEN -> Green300
+    ShapeFill.SKY -> Sky400
+    ShapeFill.YELLOW -> Amber200
+    ShapeFill.PINK -> Red300
 }
 
 internal fun stickyColor(color: StickyColor): Color = when (color) {
-    StickyColor.YELLOW -> Color(0xFFFDE68A)
-    StickyColor.GREEN -> Color(0xFFBBF7D0)
-    StickyColor.BLUE -> Color(0xFFBAE6FD)
-    StickyColor.PINK -> Color(0xFFFBCFE8)
-    StickyColor.ORANGE -> Color(0xFFFED7AA)
-    StickyColor.PURPLE -> Color(0xFFE9D5FF)
+    StickyColor.YELLOW -> Amber200
+    StickyColor.GREEN -> Green200
+    StickyColor.BLUE -> Sky200
+    StickyColor.PINK -> Pink200
+    StickyColor.ORANGE -> Orange200
+    StickyColor.PURPLE -> Purple200
 }
 
 /** Sticky-note text: a dark brown that reads on every note colour, in either theme. */
@@ -187,3 +187,29 @@ internal val CustomSwatchColors = listOf(
     Color(0xFFA78BFA),
     Color(0xFFF87171),
 )
+
+/*
+ * The named colours the inks, highlighters, fills and notes are drawn from — the
+ * Tailwind shades the design is specified in.
+ */
+private val Zinc900 = Color(0xFF18181B)
+private val White = Color(0xFFFFFFFF)
+private val Red500 = Color(0xFFEF4444)
+private val Amber500 = Color(0xFFF59E0B)
+private val Amber600 = Color(0xFFD97706)
+private val Sky400 = Color(0xFF38BDF8)
+private val Sky600 = Color(0xFF0284C7)
+private val Violet400 = Color(0xFFA78BFA)
+private val Zinc50 = Color(0xFFFAFAFA)
+private val Green300 = Color(0xFF86EFAC)
+private val Yellow300 = Color(0xFFFDE047)
+private val Sky300 = Color(0xFF7DD3FC)
+private val Pink300 = Color(0xFFF9A8D4)
+private val Orange300 = Color(0xFFFDBA74)
+private val Amber200 = Color(0xFFFDE68A)
+private val Red300 = Color(0xFFFCA5A5)
+private val Green200 = Color(0xFFBBF7D0)
+private val Sky200 = Color(0xFFBAE6FD)
+private val Pink200 = Color(0xFFFBCFE8)
+private val Orange200 = Color(0xFFFED7AA)
+private val Purple200 = Color(0xFFE9D5FF)

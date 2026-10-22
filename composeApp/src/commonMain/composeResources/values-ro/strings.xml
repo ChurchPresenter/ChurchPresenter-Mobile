@@ -1147,7 +1147,7 @@
     <string name="canvas_redo">Refă</string>
     <string name="canvas_zoom_out">Micșorează</string>
     <string name="canvas_zoom_in">Mărește</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Straturi</string>
     <string name="canvas_more_options">Mai multe opțiuni</string>
     <string name="canvas_go_live">Transmite live</string>
@@ -1181,7 +1181,7 @@
     <string name="canvas_opacity">Opacitate</string>
     <string name="canvas_width">Grosime</string>
     <string name="canvas_size">Mărime</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Selecție</string>
     <string name="canvas_section_arrange">Aranjare</string>

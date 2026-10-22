@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Rudia</string>
     <string name="canvas_zoom_out">Punguza</string>
     <string name="canvas_zoom_in">Kuza</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Tabaka</string>
     <string name="canvas_more_options">Chaguo zaidi</string>
     <string name="canvas_go_live">Onyesha sasa</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Ukolezi</string>
     <string name="canvas_width">Upana</string>
     <string name="canvas_size">Ukubwa</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Uteuzi</string>
     <string name="canvas_section_arrange">Panga</string>

@@ -1147,7 +1147,7 @@
     <string name="canvas_redo">Opnieuw</string>
     <string name="canvas_zoom_out">Uitzoomen</string>
     <string name="canvas_zoom_in">Inzoomen</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Lagen</string>
     <string name="canvas_more_options">Meer opties</string>
     <string name="canvas_go_live">Live gaan</string>
@@ -1181,7 +1181,7 @@
     <string name="canvas_opacity">Dekking</string>
     <string name="canvas_width">Dikte</string>
     <string name="canvas_size">Grootte</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Selectie</string>
     <string name="canvas_section_arrange">Schikken</string>

@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">ทำซ้ำ</string>
     <string name="canvas_zoom_out">ซูมออก</string>
     <string name="canvas_zoom_in">ซูมเข้า</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">เลเยอร์</string>
     <string name="canvas_more_options">ตัวเลือกเพิ่มเติม</string>
     <string name="canvas_go_live">แสดงตอนนี้</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">ความทึบ</string>
     <string name="canvas_width">ความกว้าง</string>
     <string name="canvas_size">ขนาด</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">การเลือก</string>
     <string name="canvas_section_arrange">จัดเรียง</string>

@@ -49,13 +49,15 @@ internal fun Modifier.reorderLayers(
         drag.id = id
         drag.offset = 0f
         try {
-            while (true) {
-                val event = awaitPointerEvent(PointerEventPass.Initial)
-                val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                if (!change.pressed) break
-                drag.offset += change.positionChange().y
-                change.consume()
-                step(list, id, drag, onMove)
+            var pressed = true
+            while (pressed) {
+                val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == down.id }
+                pressed = change?.pressed == true
+                if (change != null && pressed) {
+                    drag.offset += change.positionChange().y
+                    change.consume()
+                    step(list, id, drag, onMove)
+                }
             }
         } finally {
             drag.id = null

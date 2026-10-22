@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Tee uudelleen</string>
     <string name="canvas_zoom_out">Loitonna</string>
     <string name="canvas_zoom_in">Lähennä</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Tasot</string>
     <string name="canvas_more_options">Lisää vaihtoehtoja</string>
     <string name="canvas_go_live">Näytä nyt</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Peittävyys</string>
     <string name="canvas_width">Leveys</string>
     <string name="canvas_size">Koko</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Valinta</string>
     <string name="canvas_section_arrange">Järjestä</string>

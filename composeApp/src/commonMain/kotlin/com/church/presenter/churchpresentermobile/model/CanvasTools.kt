@@ -159,3 +159,6 @@ data class ImageOptions(
     val shadow: Boolean = false,
     val opacity: Float = 1f,
 )
+
+/** What the image panel's Adjust row, and the selection bar's Crop, do to a picture. */
+enum class ImageAdjust { CROP, FLIP, ROTATE, REMOVE_BACKGROUND }

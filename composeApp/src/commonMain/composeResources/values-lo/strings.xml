@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">ເຮັດຊ້ຳ</string>
     <string name="canvas_zoom_out">ຊູມອອກ</string>
     <string name="canvas_zoom_in">ຊູມເຂົ້າ</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">ເລເຢີ</string>
     <string name="canvas_more_options">ຕົວເລືອກເພີ່ມເຕີມ</string>
     <string name="canvas_go_live">ສະແດງດຽວນີ້</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">ຄວາມທຶບ</string>
     <string name="canvas_width">ຄວາມກວ້າງ</string>
     <string name="canvas_size">ຂະໜາດ</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">ການເລືອກ</string>
     <string name="canvas_section_arrange">ຈັດລຽງ</string>

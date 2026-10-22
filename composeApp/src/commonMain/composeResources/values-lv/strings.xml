@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Atcelt atsaukšanu</string>
     <string name="canvas_zoom_out">Tālināt</string>
     <string name="canvas_zoom_in">Tuvināt</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Slāņi</string>
     <string name="canvas_more_options">Citas iespējas</string>
     <string name="canvas_go_live">Rādīt tagad</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Necaurredzamība</string>
     <string name="canvas_width">Platums</string>
     <string name="canvas_size">Izmērs</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Atlase</string>
     <string name="canvas_section_arrange">Kārtošana</string>

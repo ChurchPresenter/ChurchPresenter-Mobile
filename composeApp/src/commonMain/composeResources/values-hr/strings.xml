@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Ponovi</string>
     <string name="canvas_zoom_out">Smanji</string>
     <string name="canvas_zoom_in">Povećaj</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Slojevi</string>
     <string name="canvas_more_options">Više opcija</string>
     <string name="canvas_go_live">Prikaži odmah</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Neprozirnost</string>
     <string name="canvas_width">Širina</string>
     <string name="canvas_size">Veličina</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Odabir</string>
     <string name="canvas_section_arrange">Raspored</string>

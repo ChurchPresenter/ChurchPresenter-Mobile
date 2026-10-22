@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Buat semula</string>
     <string name="canvas_zoom_out">Zum keluar</string>
     <string name="canvas_zoom_in">Zum masuk</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Lapisan</string>
     <string name="canvas_more_options">Lagi pilihan</string>
     <string name="canvas_go_live">Paparkan sekarang</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Kelegapan</string>
     <string name="canvas_width">Lebar</string>
     <string name="canvas_size">Saiz</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Pilihan</string>
     <string name="canvas_section_arrange">Susun</string>

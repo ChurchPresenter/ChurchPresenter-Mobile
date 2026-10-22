@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Rétablir</string>
     <string name="canvas_zoom_out">Zoom arrière</string>
     <string name="canvas_zoom_in">Zoom avant</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Calques</string>
     <string name="canvas_more_options">Plus d'options</string>
     <string name="canvas_go_live">Diffuser</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Opacité</string>
     <string name="canvas_width">Épaisseur</string>
     <string name="canvas_size">Taille</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Sélection</string>
     <string name="canvas_section_arrange">Disposition</string>

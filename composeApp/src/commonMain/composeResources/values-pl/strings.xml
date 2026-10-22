@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Ponów</string>
     <string name="canvas_zoom_out">Pomniejsz</string>
     <string name="canvas_zoom_in">Powiększ</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Warstwy</string>
     <string name="canvas_more_options">Więcej opcji</string>
     <string name="canvas_go_live">Wyświetl na ekranie</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Krycie</string>
     <string name="canvas_width">Grubość</string>
     <string name="canvas_size">Rozmiar</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Zaznaczenie</string>
     <string name="canvas_section_arrange">Rozmieść</string>

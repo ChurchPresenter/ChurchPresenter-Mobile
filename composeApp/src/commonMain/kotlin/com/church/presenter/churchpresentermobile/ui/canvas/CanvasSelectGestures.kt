@@ -75,28 +75,35 @@ internal fun SelectGestures(
                     val grab = grab(latest, start, measured)
                     val drag = SelectDrag(latest, grab, start, measured, onIntent, GestureSessions.next())
                     var dragging = false
-                    while (true) {
-                        val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
-                        if (change.isConsumed) break
-                        val at = change.position.toPoint()
-                        if (!change.pressed) {
-                            if (dragging) {
-                                if (grab == Grab.Nothing) drag.finishMarquee(marquee.toList())
-                            } else {
-                                val pressFor = change.uptimeMillis - down.uptimeMillis
-                                val held = pressFor >= viewConfiguration.longPressTimeoutMillis
-                                lastTap = tapped(latest, grab, held, change.uptimeMillis, lastTap, onIntent)
+                    var finished = false
+                    while (!finished) {
+                        val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id }
+                        when {
+                            // Gone, or taken by the board's two-finger pan: drop the touch.
+                            change == null || change.isConsumed -> finished = true
+                            !change.pressed -> {
+                                if (dragging) {
+                                    if (grab == Grab.Nothing) drag.finishMarquee(marquee.toList())
+                                } else {
+                                    val pressFor = change.uptimeMillis - down.uptimeMillis
+                                    val held = pressFor >= viewConfiguration.longPressTimeoutMillis
+                                    val tap = Tap(held, change.uptimeMillis)
+                                    lastTap = tapped(latest, grab, tap, lastTap, onIntent)
+                                }
+                                finished = true
                             }
-                            break
-                        }
-                        val travelled = (change.position - down.position).getDistance()
-                        if (!dragging && travelled > viewConfiguration.touchSlop) {
-                            dragging = true
-                            if (grab == Grab.Nothing) marquee.add(start) else drag.begin()
-                        }
-                        if (dragging) {
-                            change.consume()
-                            if (grab == Grab.Nothing) marquee.add(at) else drag.to(at)
+                            else -> {
+                                val at = change.position.toPoint()
+                                val travelled = (change.position - down.position).getDistance()
+                                if (!dragging && travelled > viewConfiguration.touchSlop) {
+                                    dragging = true
+                                    if (grab == Grab.Nothing) marquee.add(start) else drag.begin()
+                                }
+                                if (dragging) {
+                                    change.consume()
+                                    if (grab == Grab.Nothing) marquee.add(at) else drag.to(at)
+                                }
+                            }
                         }
                     }
                     marquee.clear()
@@ -133,11 +140,12 @@ private const val HANDLE_REACH = 18f
 private fun tapped(
     state: CanvasUiState,
     grab: Grab,
-    held: Boolean,
-    time: Long,
+    tap: Tap,
     lastTap: Pair<String, Long>?,
     onIntent: (CanvasIntent) -> Unit,
 ): Pair<String, Long>? {
+    val held = tap.held
+    val time = tap.time
     when (grab) {
         Grab.Knob -> onIntent(CanvasIntent.AdjustImage(ImageAdjust.ROTATE))
         is Grab.Handle -> Unit
@@ -164,6 +172,9 @@ private fun tapped(
 }
 
 private const val DOUBLE_TAP_MS = 350L
+
+/** A touch that lifted without moving: whether it was held long enough to be a long press, and when it lifted. */
+private class Tap(val held: Boolean, val time: Long)
 
 /** One drag with the select tool: a move, a resize or a selection box. */
 private class SelectDrag(

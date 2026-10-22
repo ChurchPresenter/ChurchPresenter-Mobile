@@ -123,6 +123,10 @@ private fun InkElement(element: CanvasElement.Ink, paths: InkPaths, modifier: Mo
 private const val DASH = 3f
 private const val GAP = 2.5f
 
+/** A dashed outline's dash and gap, as multiples of its width. */
+private const val OUTLINE_DASH = 3f
+private const val OUTLINE_GAP = 2f
+
 /**
  * A placed picture. The image pipeline does not exist yet, so this is the design's
  * placeholder: a striped card naming the file, or where it came from. Rounded
@@ -204,7 +208,10 @@ private fun Modifier.dashedOutline(color: Color, shape: Shape, width: Float = 1.
     drawOutline(
         outline = shape.createOutline(size, layoutDirection, this),
         color = color,
-        style = Stroke(width = stroke, pathEffect = PathEffect.dashPathEffect(floatArrayOf(stroke * 3, stroke * 2))),
+        style = Stroke(
+            width = stroke,
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(stroke * OUTLINE_DASH, stroke * OUTLINE_GAP)),
+        ),
     )
 }
 

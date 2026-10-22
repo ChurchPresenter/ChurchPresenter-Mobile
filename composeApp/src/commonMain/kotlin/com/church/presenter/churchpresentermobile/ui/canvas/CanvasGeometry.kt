@@ -23,13 +23,16 @@ internal fun canvasShape(shape: CanvasShape): Shape = when (shape) {
     CanvasShape.RECTANGLE -> RectangleShape
     CanvasShape.ROUNDED, CanvasShape.SPEECH -> RoundedCornerShape(14.dp)
     CanvasShape.ELLIPSE -> GenericShape { size, _ -> addOval(Rect(Offset.Zero, size)) }
-    CanvasShape.TRIANGLE -> polygon(listOf(0.5f to 0f, 1f to 1f, 0f to 1f))
-    CanvasShape.DIAMOND -> polygon(listOf(0.5f to 0f, 1f to 0.5f, 0.5f to 1f, 0f to 0.5f))
-    CanvasShape.HEXAGON -> polygon(
-        listOf(0.25f to 0f, 0.75f to 0f, 1f to 0.5f, 0.75f to 1f, 0.25f to 1f, 0f to 0.5f),
-    )
-    CanvasShape.STAR -> polygon(starPoints())
+    CanvasShape.TRIANGLE -> polygon(TrianglePoints)
+    CanvasShape.DIAMOND -> polygon(DiamondPoints)
+    CanvasShape.HEXAGON -> polygon(HexagonPoints)
+    CanvasShape.STAR -> polygon(StarPoints)
 }
+
+/* Each outline's corners, as shares of the shape's width and height. */
+private val TrianglePoints = listOf(0.5f to 0f, 1f to 1f, 0f to 1f)
+private val DiamondPoints = listOf(0.5f to 0f, 1f to 0.5f, 0.5f to 1f, 0f to 0.5f)
+private val HexagonPoints = listOf(0.25f to 0f, 0.75f to 0f, 1f to 0.5f, 0.75f to 1f, 0.25f to 1f, 0f to 0.5f)
 
 /** A shape through [points], each a share of the width and height. */
 private fun polygon(points: List<Pair<Float, Float>>): Shape = GenericShape { size, _ ->
@@ -39,14 +42,16 @@ private fun polygon(points: List<Pair<Float, Float>>): Shape = GenericShape { si
     close()
 }
 
-/** A five-pointed star's ten corners, alternating the outer and inner radius. */
-private fun starPoints(): List<Pair<Float, Float>> = (0 until STAR_CORNERS).map { i ->
-    val radius = if (i % 2 == 0) 0.5f else STAR_INNER
+/** A five-pointed star's ten corners, alternating the outer and inner radius round the centre. */
+private val StarPoints: List<Pair<Float, Float>> = (0 until STAR_CORNERS).map { i ->
+    val radius = if (i % 2 == 0) STAR_OUTER else STAR_INNER
     val angle = -PI / 2 + i * PI / (STAR_CORNERS / 2)
-    (0.5f + radius * cos(angle).toFloat()) to (0.5f + radius * sin(angle).toFloat())
+    (STAR_CENTRE + radius * cos(angle).toFloat()) to (STAR_CENTRE + radius * sin(angle).toFloat())
 }
 
 private const val STAR_CORNERS = 10
+private const val STAR_CENTRE = 0.5f
+private const val STAR_OUTER = 0.5f
 private const val STAR_INNER = 0.2f
 
 /** Where [value] sits in [range], 0–1, for a slider's knob. */

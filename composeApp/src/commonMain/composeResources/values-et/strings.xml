@@ -1147,7 +1147,7 @@
     <string name="canvas_redo">Tee uuesti</string>
     <string name="canvas_zoom_out">Vähenda</string>
     <string name="canvas_zoom_in">Suurenda</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Kihid</string>
     <string name="canvas_more_options">Rohkem valikuid</string>
     <string name="canvas_go_live">Näita ekraanil</string>
@@ -1181,7 +1181,7 @@
     <string name="canvas_opacity">Läbipaistmatus</string>
     <string name="canvas_width">Laius</string>
     <string name="canvas_size">Suurus</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Valik</string>
     <string name="canvas_section_arrange">Paigutus</string>

@@ -1147,7 +1147,7 @@
     <string name="canvas_redo">Refazer</string>
     <string name="canvas_zoom_out">Diminuir zoom</string>
     <string name="canvas_zoom_in">Aumentar zoom</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Camadas</string>
     <string name="canvas_more_options">Mais opções</string>
     <string name="canvas_go_live">Exibir ao vivo</string>
@@ -1181,7 +1181,7 @@
     <string name="canvas_opacity">Opacidade</string>
     <string name="canvas_width">Espessura</string>
     <string name="canvas_size">Tamanho</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d px</string>
     <string name="canvas_section_selection">Seleção</string>
     <string name="canvas_section_arrange">Organizar</string>

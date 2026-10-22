@@ -1116,7 +1116,7 @@
     <string name="canvas_redo">Повторити</string>
     <string name="canvas_zoom_out">Зменшити</string>
     <string name="canvas_zoom_in">Збільшити</string>
-    <string name="canvas_zoom_value">%1$d%%</string>
+    <string name="canvas_zoom_value">%1$d%</string>
     <string name="canvas_layers">Шари</string>
     <string name="canvas_more_options">Інші параметри</string>
     <string name="canvas_go_live">Показати на екрані</string>
@@ -1150,7 +1150,7 @@
     <string name="canvas_opacity">Непрозорість</string>
     <string name="canvas_width">Товщина</string>
     <string name="canvas_size">Розмір</string>
-    <string name="canvas_percent">%1$d%%</string>
+    <string name="canvas_percent">%1$d%</string>
     <string name="canvas_px">%1$d пікс.</string>
     <string name="canvas_section_selection">Виділення</string>
     <string name="canvas_section_arrange">Упорядкувати</string>
