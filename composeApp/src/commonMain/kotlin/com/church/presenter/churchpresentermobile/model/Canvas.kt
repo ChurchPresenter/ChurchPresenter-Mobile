@@ -18,6 +18,12 @@ data class CanvasDocument(
 /** A point on a canvas page, in dp at 100% zoom from the page's top-left corner. */
 data class CanvasPoint(val x: Float, val y: Float)
 
+/** A rectangle on a canvas page, in the same units as [CanvasPoint]. */
+data class CanvasBounds(val left: Float, val top: Float, val right: Float, val bottom: Float) {
+    val width: Float get() = right - left
+    val height: Float get() = bottom - top
+}
+
 /** One page of a [CanvasDocument]: its elements, bottom-most first. */
 data class CanvasPage(val elements: List<CanvasElement> = emptyList())
 
@@ -30,36 +36,54 @@ data class CanvasPage(val elements: List<CanvasElement> = emptyList())
  * [label] is what the Layers panel lists it as. Null means "name it by its kind",
  * which the panel does in the operator's language — the operator only types a name
  * for the ones worth telling apart.
+ *
+ * [group] ties elements together: picking one picks them all, as Group promises.
+ *
+ * Colours are a [CanvasInk] with an optional `custom` override — a "#RRGGBB" the
+ * operator mixed in the colour picker — so the named inks can still follow the theme.
  */
 sealed interface CanvasElement {
     val id: String
     val label: String?
     val locked: Boolean
     val hidden: Boolean
+    val group: String?
 
     /** A copy with the editing flags changed — every element has them, whatever else it holds. */
     fun withFlags(locked: Boolean = this.locked, hidden: Boolean = this.hidden): CanvasElement
 
-    /** A copy moved by ([dx], [dy]) and given [newId], for Duplicate. */
-    fun duplicated(newId: String, dx: Float, dy: Float): CanvasElement
+    fun withGroup(group: String?): CanvasElement
 
-    /** Typed text; [style] picks between a heading and a line of body text. */
+    /** A copy moved by ([dx], [dy]). */
+    fun moved(dx: Float, dy: Float): CanvasElement
+
+    fun withId(id: String): CanvasElement
+
+    /**
+     * Typed text. [style] picks between the heading and body looks; [format], when
+     * set, is what the text tool typed it with and takes their place.
+     */
     data class Text(
         override val id: String,
         val x: Float,
         val y: Float,
         val text: String,
         val style: CanvasTextStyle = CanvasTextStyle.BODY,
+        val format: TextOptions? = null,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
+        override val group: String? = null,
     ) : CanvasElement {
         override fun withFlags(locked: Boolean, hidden: Boolean) = copy(locked = locked, hidden = hidden)
-        override fun duplicated(newId: String, dx: Float, dy: Float) = copy(id = newId, x = x + dx, y = y + dy)
+        override fun withGroup(group: String?) = copy(group = group)
+        override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
+        override fun withId(id: String) = copy(id = id)
     }
 
     /**
-     * Ink: a pen or highlighter stroke, or a drawn arrow.
+     * Ink: a pen or highlighter stroke, a drawn line or arrow, or a pixel eraser's
+     * stroke.
      *
      * The stroke is SVG path data relative to ([x], [y]) — the same notation the
      * design is drawn in, and one a hand-drawn stroke turns into without loss
@@ -76,15 +100,27 @@ sealed interface CanvasElement {
         val kind: InkKind = InkKind.PEN,
         /** A highlighter's colour, which takes the place of [ink]; null for every other stroke. */
         val highlight: HighlightColor? = null,
+        val custom: String? = null,
+        val dashed: Boolean = false,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
+        override val group: String? = null,
     ) : CanvasElement {
         override fun withFlags(locked: Boolean, hidden: Boolean) = copy(locked = locked, hidden = hidden)
-        override fun duplicated(newId: String, dx: Float, dy: Float) = copy(id = newId, x = x + dx, y = y + dy)
+        override fun withGroup(group: String?) = copy(group = group)
+        override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
+        override fun withId(id: String) = copy(id = id)
     }
 
-    /** A placed picture. Shown as a placeholder naming [fileName] until images are loaded for real. */
+    /**
+     * A placed picture. Shown as a placeholder naming [fileName] — or, for one
+     * inserted before pictures are loaded for real, the [source] it came from.
+     *
+     * @param rotation Quarter turns clockwise, in degrees.
+     * @param cutOut Whether Remove background has been applied: the placeholder
+     *   drops its backdrop.
+     */
     data class Image(
         override val id: String,
         val x: Float,
@@ -92,15 +128,25 @@ sealed interface CanvasElement {
         val width: Float,
         val height: Float,
         val fileName: String,
+        val source: ImageSource? = null,
+        val rounded: Boolean = true,
+        val shadow: Boolean = false,
+        val opacity: Float = 1f,
+        val flipped: Boolean = false,
+        val rotation: Int = 0,
+        val cutOut: Boolean = false,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
+        override val group: String? = null,
     ) : CanvasElement {
         override fun withFlags(locked: Boolean, hidden: Boolean) = copy(locked = locked, hidden = hidden)
-        override fun duplicated(newId: String, dx: Float, dy: Float) = copy(id = newId, x = x + dx, y = y + dy)
+        override fun withGroup(group: String?) = copy(group = group)
+        override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
+        override fun withId(id: String) = copy(id = id)
     }
 
-    /** An outlined shape with optional text centred in it. [filled] tints the inside with the outline's ink. */
+    /** An outlined shape with optional text centred in it. */
     data class Shape(
         override val id: String,
         val x: Float,
@@ -110,13 +156,20 @@ sealed interface CanvasElement {
         val shape: CanvasShape,
         val ink: CanvasInk,
         val text: String = "",
-        val filled: Boolean = false,
+        val fill: ShapeFill = ShapeFill.NONE,
+        val fillCustom: String? = null,
+        val border: BorderStyle = BorderStyle.SOLID,
+        val borderWidth: Float = 4f,
+        val custom: String? = null,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
+        override val group: String? = null,
     ) : CanvasElement {
         override fun withFlags(locked: Boolean, hidden: Boolean) = copy(locked = locked, hidden = hidden)
-        override fun duplicated(newId: String, dx: Float, dy: Float) = copy(id = newId, x = x + dx, y = y + dy)
+        override fun withGroup(group: String?) = copy(group = group)
+        override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
+        override fun withId(id: String) = copy(id = id)
     }
 
     /** A sticky note, slightly turned by [rotation] degrees so it reads as stuck on. */
@@ -129,19 +182,23 @@ sealed interface CanvasElement {
         val text: String,
         val color: StickyColor = StickyColor.YELLOW,
         val rotation: Float = 0f,
+        val font: StickyFont = StickyFont.MARKER,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
+        override val group: String? = null,
     ) : CanvasElement {
         override fun withFlags(locked: Boolean, hidden: Boolean) = copy(locked = locked, hidden = hidden)
-        override fun duplicated(newId: String, dx: Float, dy: Float) = copy(id = newId, x = x + dx, y = y + dy)
+        override fun withGroup(group: String?) = copy(group = group)
+        override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
+        override fun withId(id: String) = copy(id = id)
     }
 }
 
 enum class CanvasTextStyle { TITLE, BODY }
 
 /** What a stroke of [CanvasElement.Ink] was drawn with — it decides its icon in the Layers panel. */
-enum class InkKind { PEN, HIGHLIGHTER, ARROW }
+enum class InkKind { PEN, HIGHLIGHTER, ARROW, ERASER }
 
 enum class CanvasShape { RECTANGLE, ROUNDED, ELLIPSE, TRIANGLE, STAR, DIAMOND, HEXAGON, SPEECH }
 

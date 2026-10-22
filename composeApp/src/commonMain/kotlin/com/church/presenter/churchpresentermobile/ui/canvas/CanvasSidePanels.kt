@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,10 +29,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -59,6 +63,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_paste_clipboa
 import churchpresentermobile.composeapp.generated.resources.canvas_paste_clipboard_hint
 import churchpresentermobile.composeapp.generated.resources.canvas_photo_library
 import churchpresentermobile.composeapp.generated.resources.canvas_photo_library_hint
+import churchpresentermobile.composeapp.generated.resources.canvas_replace_image
 import churchpresentermobile.composeapp.generated.resources.canvas_show
 import churchpresentermobile.composeapp.generated.resources.canvas_source_files
 import churchpresentermobile.composeapp.generated.resources.canvas_take_photo
@@ -78,8 +83,8 @@ import org.jetbrains.compose.resources.stringResource
  * The page's elements, top-most first, as the design's Layers panel lists them.
  *
  * Tapping a row selects that element; the lock (shown only on a locked element)
- * unlocks it, and the eye hides or shows it. The drag handle is drawn ahead of
- * reordering, which arrives with the editing pass.
+ * unlocks it, the eye hides or shows it, and dragging a row by its handle moves
+ * it up or down the drawing order.
  */
 @Composable
 internal fun LayersPanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, modifier: Modifier = Modifier) {
@@ -114,21 +119,44 @@ internal fun LayersPanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit,
             )
         }
         HorizontalDivider(color = colors.divider)
-        LazyColumn(modifier = Modifier.padding(8.dp)) {
+        val list = rememberLazyListState()
+        val drag = remember { LayerDrag() }
+        LazyColumn(
+            state = list,
+            modifier = Modifier
+                .padding(8.dp)
+                .reorderLayers(list, HANDLE_ZONE, drag) { id, steps -> onIntent(CanvasIntent.MoveLayer(id, steps)) },
+        ) {
             items(state.page.elements.asReversed(), key = { it.id }) { element ->
-                LayerRow(element, selected = element.id == state.selectedId, onIntent = onIntent)
+                val dragged = drag.id == element.id
+                LayerRow(
+                    element = element,
+                    selected = element.id in state.selectedIds,
+                    onIntent = onIntent,
+                    modifier = Modifier
+                        .zIndex(if (dragged) 1f else 0f)
+                        .graphicsLayer { translationY = if (dragged) drag.offset else 0f },
+                )
             }
         }
     }
 }
 
+/** The strip down a layer row's leading edge that drags it: the handle and the row's padding round it. */
+private val HANDLE_ZONE = 40.dp
+
 @Composable
-private fun LayerRow(element: CanvasElement, selected: Boolean, onIntent: (CanvasIntent) -> Unit) {
+private fun LayerRow(
+    element: CanvasElement,
+    selected: Boolean,
+    onIntent: (CanvasIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = canvasColors
     val shape = RoundedCornerShape(11.dp)
     val spec = element.tool().spec()
     Row(
-        modifier = Modifier
+        modifier = modifier
             .testTag(CanvasTags.layer(element.id))
             .fillMaxWidth()
             .clip(shape)
@@ -200,6 +228,7 @@ private fun CanvasElement.tool(): CanvasTool = when (this) {
         InkKind.PEN -> CanvasTool.PEN
         InkKind.HIGHLIGHTER -> CanvasTool.HIGHLIGHTER
         InkKind.ARROW -> CanvasTool.LINE
+        InkKind.ERASER -> CanvasTool.ERASER
     }
     is CanvasElement.Image -> CanvasTool.IMAGE
     is CanvasElement.Shape -> CanvasTool.SHAPES
@@ -207,9 +236,10 @@ private fun CanvasElement.tool(): CanvasTool = when (this) {
 }
 
 /**
- * Where a picture can come from, shown while the image tool is out. Picking a
- * source marks it as the image tool's default; bringing a picture in through it
- * needs the picker plumbing, which arrives with the backend.
+ * Where a picture can come from, shown while the image tool is out or after
+ * Replace. Picking a source brings a picture in from it — or, for Replace, puts it
+ * in the selected picture's place — and makes it the image tool's default.
+ * Pictures are placeholders named for their source until the picker plumbing arrives.
  */
 @Composable
 internal fun InsertImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, modifier: Modifier = Modifier) {
@@ -223,7 +253,9 @@ internal fun InsertImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> 
             .padding(14.dp),
     ) {
         Text(
-            stringResource(Res.string.canvas_insert_image).uppercase(),
+            stringResource(
+                if (state.replaceTarget != null) Res.string.canvas_replace_image else Res.string.canvas_insert_image,
+            ).uppercase(),
             color = colors.muted,
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
@@ -258,6 +290,7 @@ internal fun InsertImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> 
         ).forEach { row ->
             InsertSource(row, active = image.source == row.source) {
                 onIntent(CanvasIntent.SetOptions(state.options.copy(image = image.copy(source = row.source))))
+                onIntent(CanvasIntent.InsertImage(row.source))
             }
         }
         Text(

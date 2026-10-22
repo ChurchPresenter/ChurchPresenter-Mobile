@@ -8,6 +8,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasInk
 import com.church.presenter.churchpresentermobile.model.HighlightColor
 import com.church.presenter.churchpresentermobile.model.ShapeFill
 import com.church.presenter.churchpresentermobile.model.StickyColor
+import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrNull
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 
 /**
@@ -124,6 +125,10 @@ internal fun CanvasColors.inkColor(ink: CanvasInk): Color = when (ink) {
     CanvasInk.SKY -> if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
     CanvasInk.VIOLET -> Color(0xFFA78BFA)
 }
+
+/** [ink] on this board, unless the operator mixed a [custom] colour, which wins. */
+internal fun CanvasColors.inkColor(ink: CanvasInk, custom: String?): Color =
+    custom?.let(::parseHexColorOrNull) ?: inkColor(ink)
 
 /** The colour a swatch for [ink] shows — the pure colour, whichever board it will land on. */
 internal fun CanvasColors.inkSwatch(ink: CanvasInk): Color = when (ink) {

@@ -1303,7 +1303,7 @@ fun App(
                 CanvasScreen(
                     onBack = { moreDestination = null },
                     // Projecting a canvas needs the backend, which is still to come.
-                    onGoLive = {},
+                    onGoLive = { },
                 )
             }
             if (showSettings) {

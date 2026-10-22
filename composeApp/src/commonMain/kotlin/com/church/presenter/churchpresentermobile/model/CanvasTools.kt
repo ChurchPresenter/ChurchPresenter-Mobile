@@ -54,6 +54,8 @@ data class PenOptions(
     val opacity: Float = 1f,
     val smoothing: Float = 0.6f,
     val pressure: Boolean = true,
+    /** A mixed "#RRGGBB" that takes the place of [ink], or null for the named ink. */
+    val custom: String? = null,
 )
 
 enum class HighlightColor { YELLOW, GREEN, SKY, PINK, ORANGE }
@@ -64,6 +66,7 @@ data class HighlighterOptions(
     val opacity: Float = 0.4f,
     val straightOnly: Boolean = false,
     val behindInk: Boolean = true,
+    val custom: String? = null,
 )
 
 enum class EraserMode { STROKE, PIXEL, AREA }
@@ -81,6 +84,8 @@ enum class BorderStyle { SOLID, DASHED, NONE }
 data class ShapeOptions(
     val shape: CanvasShape = CanvasShape.ROUNDED,
     val fill: ShapeFill = ShapeFill.GREEN,
+    /** A mixed fill that takes the place of [fill], or null. */
+    val fillCustom: String? = null,
     val border: BorderStyle = BorderStyle.SOLID,
     val borderWidth: Float = 3f,
     val snap: Boolean = true,
@@ -97,11 +102,16 @@ data class LineOptions(
     val ink: CanvasInk = CanvasInk.CONTRAST,
     val width: Float = 4f,
     val dashed: Boolean = false,
+    val custom: String? = null,
 )
 
 enum class CanvasTextAlign { LEFT, CENTER, RIGHT }
 
+/** The typefaces the text tool offers; the screen maps each to a font family. */
+enum class CanvasFont { SERIF, SANS, MONO, HANDWRITING }
+
 data class TextOptions(
+    val font: CanvasFont = CanvasFont.SERIF,
     val size: Int = 32,
     val bold: Boolean = true,
     val italic: Boolean = false,
@@ -111,6 +121,7 @@ data class TextOptions(
     val ink: CanvasInk = CanvasInk.CONTRAST,
     val highlight: Boolean = false,
     val bulleted: Boolean = false,
+    val custom: String? = null,
 )
 
 enum class StickySize { SMALL, MEDIUM, LARGE }

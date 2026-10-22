@@ -24,8 +24,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -160,19 +163,26 @@ internal fun SliderRow(label: String, value: String, fraction: Float, onFraction
 internal fun CanvasSlider(fraction: Float, onFraction: (Float) -> Unit, modifier: Modifier = Modifier) {
     val colors = canvasColors
     val clamped = fraction.coerceIn(0f, 1f)
+    // The gestures outlive a recomposition, so they read the latest callback rather
+    // than the one they started with — which would put back whatever the options
+    // were when the slider first appeared.
+    val latest by rememberUpdatedState(onFraction)
     BoxWithConstraints(
         modifier = modifier
             .height(18.dp)
             .semantics {
                 progressBarRangeInfo = ProgressBarRangeInfo(clamped, 0f..1f)
-                setProgress { onFraction(it.coerceIn(0f, 1f)); true }
+                setProgress { latest(it.coerceIn(0f, 1f)); true }
             }
             .pointerInput(Unit) {
-                detectTapGestures { onFraction((it.x / size.width).coerceIn(0f, 1f)) }
+                detectTapGestures { latest((it.x / size.width).coerceIn(0f, 1f)) }
             }
             .pointerInput(Unit) {
-                detectHorizontalDragGestures { change, _ ->
-                    onFraction((change.position.x / size.width).coerceIn(0f, 1f))
+                detectHorizontalDragGestures(
+                    onDragStart = { latest((it.x / size.width).coerceIn(0f, 1f)) },
+                ) { change, _ ->
+                    change.consume()
+                    latest((change.position.x / size.width).coerceIn(0f, 1f))
                 }
             },
         contentAlignment = Alignment.CenterStart,
@@ -249,7 +259,10 @@ internal fun CanvasSegmented(
     }
 }
 
-/** A small rounded button such as "Align" or "Crop"; [active] gives it the accent's tint. */
+/**
+ * A small rounded button such as "Align" or "Crop"; [active] gives it the accent's
+ * tint, and a chip with nothing to act on is faded and not pressable.
+ */
 @Composable
 internal fun CanvasChip(
     text: String?,
@@ -257,6 +270,7 @@ internal fun CanvasChip(
     active: Boolean = false,
     icon: ImageVector? = null,
     iconDescription: String? = null,
+    enabled: Boolean = true,
 ) {
     val colors = canvasColors
     val shape = RoundedCornerShape(9.dp)
@@ -267,7 +281,8 @@ internal fun CanvasChip(
             .background(if (active) colors.accentTint else colors.control)
             .border(1.dp, if (active) colors.accentBorder else colors.border, shape)
             .semantics { this.selected = active }
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
+            .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .padding(horizontal = 11.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),

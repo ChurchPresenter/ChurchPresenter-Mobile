@@ -1,209 +1,151 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
 import com.church.presenter.churchpresentermobile.model.CanvasTool
+import com.church.presenter.churchpresentermobile.model.LassoShape
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
+import kotlin.math.roundToInt
 
 /**
  * The page being drawn on: a dotted board with the page's elements on it, scaled
  * for zoom from its top-left corner.
  *
- * What a touch does depends on the tool. The select tool picks the element under
- * the finger (or clears the selection on empty board); the pen and highlighter
- * draw a stroke. The other tools have options to set but nothing to draw yet.
+ * What one finger does depends on the tool — see [SelectGestures] and
+ * [ToolGestures]. Two fingers pan the page and pinch to zoom.
+ *
+ * @param textSizes Where each text box landed once laid out, shared with the
+ *   screen so the Arrange buttons can measure the selection too.
  */
 @Composable
-internal fun CanvasBoard(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, modifier: Modifier = Modifier) {
+internal fun CanvasBoard(
+    state: CanvasUiState,
+    onIntent: (CanvasIntent) -> Unit,
+    textSizes: SnapshotStateMap<String, CanvasBounds>,
+    paths: InkPaths,
+    modifier: Modifier = Modifier,
+) {
     val colors = canvasColors
-    // Text has no size until it is laid out; selection needs one to draw its frame.
-    val textSizes = remember { mutableStateMapOf<String, Rect>() }
     val scale = state.zoom / PERCENT
     val visible = state.page.elements.filterNot { it.hidden }
+    val measure: (CanvasElement) -> CanvasBounds = { elementBounds(it, textSizes, paths) }
+    // The last lasso's outline stays drawn round what it picked up, as the design shows.
+    var lasso by remember { mutableStateOf(emptyList<CanvasPoint>()) }
+    // Where two fingers have moved the page to, in pixels.
+    var pan by remember { mutableStateOf(Offset.Zero) }
+    val zoom by rememberUpdatedState(state.zoom)
     Box(
         modifier = modifier
             .testTag(CanvasTags.BOARD)
             .clipToBounds()
             .background(colors.board)
-            .dotGrid(colors.boardDots),
+            .dotGrid(colors.boardDots)
+            .panAndPinch(
+                onPan = { pan += it },
+                onZoom = { factor, centroid ->
+                    val old = zoom / PERCENT
+                    val new = (old * factor).coerceIn(MIN_ZOOM, MAX_ZOOM)
+                    // Keep the point under the fingers where it is.
+                    pan = centroid - (centroid - pan) * (new / old)
+                    onIntent(CanvasIntent.SetZoom((new * PERCENT).roundToInt()))
+                },
+            ),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer {
+                    translationX = pan.x
+                    translationY = pan.y
                     scaleX = scale
                     scaleY = scale
                     transformOrigin = TransformOrigin(0f, 0f)
-                }
-                .then(
-                    if (state.tool == CanvasTool.SELECT) {
-                        Modifier.pointerInput(Unit) { detectTapGestures { onIntent(CanvasIntent.Select(null)) } }
-                    } else {
-                        Modifier
-                    },
-                ),
+                },
         ) {
             visible.forEach { element ->
-                key(element.id) { MeasuredElement(element, textSizes) }
+                key(element.id) {
+                    CanvasElementView(
+                        element = element,
+                        editing = element.id == state.editingId,
+                        paths = paths,
+                        onIntent = onIntent,
+                        onTextBounds = { id, bounds -> textSizes[id] = bounds },
+                    )
+                }
             }
-            when (state.tool) {
-                CanvasTool.SELECT -> SelectTargets(state, visible, textSizes, onIntent)
-                CanvasTool.PEN, CanvasTool.HIGHLIGHTER -> DrawingLayer(state, onIntent)
-                else -> Unit
+            if (state.tool == CanvasTool.SELECT) SelectGestures(state, onIntent, measure)
+            ToolGestures(state = state, onIntent = onIntent, measure = measure, paths = paths, onLasso = { lasso = it })
+            if (state.tool == CanvasTool.LASSO && state.selectedIds.isNotEmpty() && lasso.isNotEmpty()) {
+                val rectangle = state.options.lasso.shape == LassoShape.RECTANGLE
+                Canvas(Modifier.fillMaxSize()) { drawLasso(lasso, rectangle, colors.accent) }
             }
-            state.selected?.takeUnless { it.hidden }?.let { element ->
-                SelectionOverlay(element = element, bounds = elementBounds(element, textSizes), onIntent = onIntent)
+            union(state.selection.filterNot { it.hidden }.map(measure))?.let { bounds ->
+                SelectionOverlay(state = state, bounds = bounds, onIntent = onIntent)
             }
         }
     }
 }
 
 private const val PERCENT = 100f
+private const val MIN_ZOOM = 0.25f
+private const val MAX_ZOOM = 4f
 
-/** An element, with a text element's laid-out size noted in [textSizes] for its selection frame. */
-@Composable
-private fun MeasuredElement(element: CanvasElement, textSizes: SnapshotStateMap<String, Rect>) {
-    val density = LocalDensity.current
-    val modifier = if (element is CanvasElement.Text) {
-        Modifier.onSizeChanged { size ->
-            with(density) {
-                textSizes[element.id] = Rect(
-                    element.x,
-                    element.y,
-                    element.x + size.width.toDp().value,
-                    element.y + size.height.toDp().value,
-                )
+/**
+ * Two fingers on the board pan the page and pinch to zoom, whichever tool is out.
+ * Caught in the Initial pass, before the tool sees the touch, and only once a second
+ * finger is down — so one finger still draws, and a stroke a second finger joins is
+ * dropped rather than drawn across the page.
+ */
+private fun Modifier.panAndPinch(
+    onPan: (Offset) -> Unit,
+    onZoom: (factor: Float, centroid: Offset) -> Unit,
+): Modifier = pointerInput(Unit) {
+    awaitEachGesture {
+        awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+        while (true) {
+            val event = awaitPointerEvent(PointerEventPass.Initial)
+            val pressed = event.changes.filter { it.pressed }
+            if (pressed.isEmpty()) break
+            if (pressed.size >= 2) {
+                val factor = event.calculateZoom()
+                val panBy = event.calculatePan()
+                if (factor != 1f) onZoom(factor, event.calculateCentroid())
+                if (panBy != Offset.Zero) onPan(panBy)
+                event.changes.forEach { it.consume() }
             }
         }
-    } else {
-        Modifier
     }
-    CanvasElementView(element, modifier)
-}
-
-/**
- * Where [element] lies on the page, in dp.
- *
- * Composable because an ink stroke's bounds come from its parsed path, which is
- * remembered per stroke rather than parsed again on every frame.
- */
-@Composable
-internal fun elementBounds(element: CanvasElement, textSizes: Map<String, Rect>): Rect = when (element) {
-    is CanvasElement.Text -> textSizes[element.id] ?: Rect(element.x, element.y, element.x, element.y)
-    is CanvasElement.Ink -> inkBounds(element, rememberInkPath(element.pathData))
-    is CanvasElement.Image -> Rect(element.x, element.y, element.x + element.width, element.y + element.height)
-    is CanvasElement.Shape -> Rect(element.x, element.y, element.x + element.width, element.y + element.height)
-    is CanvasElement.Sticky -> Rect(element.x, element.y, element.x + element.width, element.y + element.height)
-}
-
-/**
- * A tap target over each element for the select tool, in drawing order so the
- * top-most element under a finger is the one picked. Locked elements are left
- * out unless the select options say to pick them up too.
- */
-@Composable
-private fun SelectTargets(
-    state: CanvasUiState,
-    visible: List<CanvasElement>,
-    textSizes: Map<String, Rect>,
-    onIntent: (CanvasIntent) -> Unit,
-) {
-    val selectable = visible.filter { !it.locked || state.options.select.selectLocked }
-    selectable.forEach { element ->
-        key(element.id) {
-            val bounds = elementBounds(element, textSizes)
-            Box(
-                modifier = Modifier
-                    .offset(bounds.left.dp, bounds.top.dp)
-                    .size(bounds.width.dp, bounds.height.dp)
-                    .clickable(interactionSource = null, indication = null) {
-                        onIntent(CanvasIntent.Select(element.id))
-                    },
-            )
-        }
-    }
-}
-
-/**
- * Catches a pen or highlighter stroke and draws it as it goes. The finished stroke
- * is handed over as points in dp on the page; a tap is a stroke of one point, a dot.
- */
-@Composable
-private fun DrawingLayer(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
-    val colors = canvasColors
-    val points = remember { mutableStateListOf<CanvasPoint>() }
-    val highlighter = state.tool == CanvasTool.HIGHLIGHTER
-    val color: Color = if (highlighter) {
-        highlightColor(state.options.highlighter.color)
-    } else {
-        colors.inkColor(state.options.pen.ink)
-    }
-    val width = if (highlighter) state.options.highlighter.width else state.options.pen.width
-    val opacity = if (highlighter) state.options.highlighter.opacity else state.options.pen.opacity
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(state.tool) {
-                fun Offset.toPoint() = CanvasPoint(x / density, y / density)
-                detectDragGestures(
-                    onDragStart = { points.clear(); points.add(it.toPoint()) },
-                    onDrag = { change, _ -> points.add(change.position.toPoint()) },
-                    onDragEnd = {
-                        onIntent(CanvasIntent.Stroke(points.toList()))
-                        points.clear()
-                    },
-                    onDragCancel = { points.clear() },
-                )
-            }
-            .pointerInput(state.tool) {
-                detectTapGestures { onIntent(CanvasIntent.Stroke(listOf(CanvasPoint(it.x / density, it.y / density)))) }
-            }
-            .drawBehind {
-                if (points.isEmpty()) return@drawBehind
-                val path = Path().apply {
-                    moveTo(points.first().x.dp.toPx(), points.first().y.dp.toPx())
-                    points.drop(1).forEach { lineTo(it.x.dp.toPx(), it.y.dp.toPx()) }
-                }
-                drawPath(
-                    path = path,
-                    color = color,
-                    alpha = opacity,
-                    style = Stroke(width = width.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
-                )
-            },
-    )
 }
 
 /** The design's dot grid: a faint dot every 28dp, which is what makes a blank board read as paper. */

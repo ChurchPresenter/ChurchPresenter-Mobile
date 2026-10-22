@@ -27,6 +27,12 @@ internal object CanvasTags {
     const val LAYERS_DONE = "canvas:layersDone"
     const val INSERT_PANEL = "canvas:insertPanel"
     const val SELECTION_BAR = "canvas:selectionBar"
+    const val MENU_RENAME = "canvas:menu:rename"
+    const val MENU_DUPLICATE_PAGE = "canvas:menu:duplicatePage"
+    const val MENU_DELETE_PAGE = "canvas:menu:deletePage"
+    const val MENU_CLEAR_PAGE = "canvas:menu:clearPage"
+    const val RENAME_FIELD = "canvas:rename:field"
+    const val RENAME_SAVE = "canvas:rename:save"
 
     fun tool(tool: CanvasTool) = "canvas:tool:${tool.name.lowercase()}"
     fun page(index: Int) = "canvas:page:$index"

@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
@@ -38,12 +40,13 @@ import kotlin.math.roundToInt
  *
  * Tablet only — the caller opens it only in the two-pane layout, where it fills the
  * window as the design draws it. Owns its [CanvasViewModel]; there is no backend
- * yet, so the canvas lives in memory and [onGoLive] is the caller's to wire.
+ * yet, so the canvas lives in memory. Go Live toggles the button's own state and
+ * tells [onGoLive] whether the canvas is now live, for the caller to project.
  *
  * @param onBack Back to the More launcher, from the "‹ More" link or the system back gesture.
  */
 @Composable
-fun CanvasScreen(onBack: () -> Unit, onGoLive: () -> Unit, modifier: Modifier = Modifier) {
+fun CanvasScreen(onBack: () -> Unit, onGoLive: (Boolean) -> Unit, modifier: Modifier = Modifier) {
     val viewModel: CanvasViewModel = viewModel { CanvasViewModel() }
     val state by viewModel.state.collectAsState()
     AppBackHandler(enabled = true, onBack = onBack)
@@ -51,7 +54,6 @@ fun CanvasScreen(onBack: () -> Unit, onGoLive: () -> Unit, modifier: Modifier = 
         state = state,
         onIntent = viewModel::dispatch,
         onBack = onBack,
-        onMore = {},
         onGoLive = onGoLive,
         modifier = modifier,
     )
@@ -68,8 +70,7 @@ internal fun CanvasEditor(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     onBack: () -> Unit,
-    onMore: () -> Unit,
-    onGoLive: () -> Unit,
+    onGoLive: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = canvasColors
@@ -80,7 +81,7 @@ internal fun CanvasEditor(
             .navigationBarsPadding()
             .testTag(CanvasTags.SCREEN),
     ) {
-        CanvasTopBar(state = state, onIntent = onIntent, onBack = onBack, onMore = onMore, onGoLive = onGoLive)
+        CanvasTopBar(state = state, onIntent = onIntent, onBack = onBack, onGoLive = onGoLive)
         CanvasWorkspace(state = state, onIntent = onIntent, modifier = Modifier.weight(1f).fillMaxWidth())
     }
 }
@@ -99,20 +100,32 @@ private fun CanvasWorkspace(state: CanvasUiState, onIntent: (CanvasIntent) -> Un
     // Where the workspace and the active tool's button are, in root pixels, so the
     // options panel can hang its pointer level with the button.
     var workspaceTop by remember { mutableFloatStateOf(0f) }
-    var toolCentre by remember { mutableFloatStateOf(0f) }
+    val toolCentres = remember { mutableStateMapOf<CanvasTool, Float>() }
     var optionsHeight by remember { mutableIntStateOf(0) }
+    // Shared by the board, which measures what it lays out, and the Arrange buttons, which act on it.
+    val textSizes = remember { mutableStateMapOf<String, CanvasBounds>() }
+    val paths = rememberInkPaths()
+    val measureSelection = {
+        state.selection.associate { it.id to elementBounds(it, textSizes, paths) }
+    }
     BoxWithConstraints(modifier = modifier.onGloballyPositioned { workspaceTop = it.boundsInRoot().top }) {
-        CanvasBoard(state = state, onIntent = onIntent, modifier = Modifier.fillMaxSize())
+        CanvasBoard(
+            state = state,
+            onIntent = onIntent,
+            textSizes = textSizes,
+            paths = paths,
+            modifier = Modifier.fillMaxSize(),
+        )
         CanvasToolRail(
             active = state.tool,
             onPick = { onIntent(CanvasIntent.PickTool(it)) },
-            onActiveCentre = { toolCentre = it },
+            onButtonCentre = { tool, y -> toolCentres[tool] = y },
             modifier = Modifier.align(Alignment.CenterStart).padding(start = 16.dp),
         )
         if (state.optionsOpen) {
             val placement = with(density) {
                 optionsPlacement(
-                    toolCentre = toolCentre - workspaceTop,
+                    toolCentre = (toolCentres[state.tool] ?: workspaceTop) - workspaceTop,
                     panelHeight = optionsHeight.toFloat(),
                     areaHeight = constraints.maxHeight.toFloat(),
                     margin = OPTIONS_MARGIN.toPx(),
@@ -120,9 +133,9 @@ private fun CanvasWorkspace(state: CanvasUiState, onIntent: (CanvasIntent) -> Un
                 )
             }
             ToolOptionsPanel(
-                tool = state.tool,
-                options = state.options,
-                onOptions = { onIntent(CanvasIntent.SetOptions(it)) },
+                state = state,
+                onIntent = onIntent,
+                measureSelection = measureSelection,
                 pointerY = with(density) { placement.pointer.toDp() },
                 modifier = Modifier
                     .offset { IntOffset(OPTIONS_LEFT.roundToPx(), placement.top.roundToInt()) }

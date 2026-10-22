@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
@@ -46,7 +47,6 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.canvas_align
 import churchpresentermobile.composeapp.generated.resources.canvas_back
 import churchpresentermobile.composeapp.generated.resources.canvas_clear_page
-import churchpresentermobile.composeapp.generated.resources.canvas_color_custom
 import churchpresentermobile.composeapp.generated.resources.canvas_distribute
 import churchpresentermobile.composeapp.generated.resources.canvas_draw_behind
 import churchpresentermobile.composeapp.generated.resources.canvas_erase_area
@@ -83,7 +83,9 @@ import churchpresentermobile.composeapp.generated.resources.canvas_smart_guides
 import churchpresentermobile.composeapp.generated.resources.canvas_smoothing
 import churchpresentermobile.composeapp.generated.resources.canvas_snap_to_grid
 import churchpresentermobile.composeapp.generated.resources.canvas_straight_only
+import churchpresentermobile.composeapp.generated.resources.canvas_ungroup
 import churchpresentermobile.composeapp.generated.resources.canvas_width
+import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasInk
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
@@ -92,6 +94,9 @@ import com.church.presenter.churchpresentermobile.model.HighlightColor
 import com.church.presenter.churchpresentermobile.model.LassoPicks
 import com.church.presenter.churchpresentermobile.model.LassoShape
 import com.church.presenter.churchpresentermobile.model.PenType
+import com.church.presenter.churchpresentermobile.viewmodel.ArrangeAction
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
@@ -100,18 +105,19 @@ import kotlin.math.roundToInt
  * The active tool's options, out beside the rail: a titled card with a pointer on
  * its left edge at [pointerY], level with the tool's button.
  *
+ * @param measureSelection Where each selected element lies, for the Arrange buttons.
  * @param pointerY Where the pointer sits, measured from the card's top.
  */
 @Composable
 internal fun ToolOptionsPanel(
-    tool: CanvasTool,
-    options: CanvasToolOptions,
-    onOptions: (CanvasToolOptions) -> Unit,
+    state: CanvasUiState,
+    onIntent: (CanvasIntent) -> Unit,
+    measureSelection: () -> Map<String, CanvasBounds>,
     pointerY: Dp,
     modifier: Modifier = Modifier,
 ) {
     val colors = canvasColors
-    val spec = tool.spec()
+    val spec = state.tool.spec()
     Box(modifier = modifier.testTag(CanvasTags.OPTIONS)) {
         Column(
             modifier = Modifier
@@ -139,7 +145,7 @@ internal fun ToolOptionsPanel(
                 )
             }
             HorizontalDivider(color = colors.divider)
-            Column(modifier = Modifier.padding(top = 12.dp)) { ToolOptionsBody(tool, options, onOptions) }
+            Column(modifier = Modifier.padding(top = 12.dp)) { ToolOptionsBody(state, onIntent, measureSelection) }
         }
         PanelPointer(Modifier.offset(x = (-7).dp, y = pointerY - 6.dp))
     }
@@ -168,29 +174,46 @@ private fun PanelPointer(modifier: Modifier) {
 private const val POINTER_TURN = 45f
 
 @Composable
-private fun ToolOptionsBody(tool: CanvasTool, options: CanvasToolOptions, onOptions: (CanvasToolOptions) -> Unit) {
-    when (tool) {
-        CanvasTool.SELECT -> SelectPanel(options, onOptions)
+private fun ToolOptionsBody(
+    state: CanvasUiState,
+    onIntent: (CanvasIntent) -> Unit,
+    measureSelection: () -> Map<String, CanvasBounds>,
+) {
+    val options = state.options
+    val onOptions: (CanvasToolOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(it)) }
+    when (state.tool) {
+        CanvasTool.SELECT -> SelectPanel(state, onIntent, measureSelection)
         CanvasTool.LASSO -> LassoPanel(options, onOptions)
         CanvasTool.PEN -> PenPanel(options, onOptions)
         CanvasTool.HIGHLIGHTER -> HighlighterPanel(options, onOptions)
-        CanvasTool.ERASER -> EraserPanel(options, onOptions)
+        CanvasTool.ERASER -> EraserPanel(state, onIntent)
         CanvasTool.SHAPES -> ShapesPanel(options, onOptions)
         CanvasTool.LINE -> LinePanel(options, onOptions)
         CanvasTool.TEXT -> TextPanel(options, onOptions)
         CanvasTool.STICKY -> StickyPanel(options, onOptions)
-        CanvasTool.IMAGE -> ImagePanel(options, onOptions)
+        CanvasTool.IMAGE -> ImagePanel(state, onIntent)
     }
 }
 
 /**
- * Select. Arrange's buttons act on a multi-selection, which arrives with the
- * editing pass; for now they are the design's controls with nothing behind them.
+ * Select. The Arrange buttons act on the selection, and each is pressable only
+ * when it has something to do: Align and Group need two, Distribute three, and
+ * Group turns into Ungroup on a selection that is already one group.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SelectPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) -> Unit) {
+private fun SelectPanel(
+    state: CanvasUiState,
+    onIntent: (CanvasIntent) -> Unit,
+    measureSelection: () -> Map<String, CanvasBounds>,
+) {
+    val options = state.options
+    val onOptions: (CanvasToolOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(it)) }
     val select = options.select
+    val count = state.selection.size
+    val groups = state.selection.map { it.group }.toSet()
+    val grouped = count > 0 && groups.size == 1 && groups.single() != null
+    val arrange: (ArrangeAction) -> Unit = { onIntent(CanvasIntent.Arrange(it, measureSelection())) }
     PanelSectionLabel(stringResource(Res.string.canvas_section_selection), first = true)
     ToggleRow(stringResource(Res.string.canvas_snap_to_grid), select.snapToGrid) {
         onOptions(options.copy(select = select.copy(snapToGrid = it)))
@@ -204,12 +227,18 @@ private fun SelectPanel(options: CanvasToolOptions, onOptions: (CanvasToolOption
     PanelSectionLabel(stringResource(Res.string.canvas_section_arrange))
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         listOf(
-            Res.string.canvas_align,
-            Res.string.canvas_distribute,
-            Res.string.canvas_group,
-            Res.string.canvas_front,
-            Res.string.canvas_back,
-        ).forEach { CanvasChip(stringResource(it), onClick = {}) }
+            Triple(ArrangeAction.ALIGN, Res.string.canvas_align, count >= 2),
+            Triple(ArrangeAction.DISTRIBUTE, Res.string.canvas_distribute, count >= MIN_TO_DISTRIBUTE),
+            Triple(
+                ArrangeAction.GROUP,
+                if (grouped) Res.string.canvas_ungroup else Res.string.canvas_group,
+                count >= 2 || grouped,
+            ),
+            Triple(ArrangeAction.FRONT, Res.string.canvas_front, count >= 1),
+            Triple(ArrangeAction.BACK, Res.string.canvas_back, count >= 1),
+        ).forEach { (action, label, enabled) ->
+            CanvasChip(stringResource(label), onClick = { arrange(action) }, enabled = enabled)
+        }
     }
     Text(
         stringResource(Res.string.canvas_select_hint),
@@ -270,7 +299,9 @@ private fun PenPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) 
     InkSwatches(
         inks = PanelInks,
         selected = pen.ink,
-        onPick = { onOptions(options.copy(pen = pen.copy(ink = it))) },
+        custom = pen.custom,
+        onPick = { onOptions(options.copy(pen = pen.copy(ink = it, custom = null))) },
+        onCustom = { onOptions(options.copy(pen = pen.copy(custom = it))) },
         size = 26.dp,
     )
     Box(Modifier.height(4.dp))
@@ -296,13 +327,13 @@ private fun HighlighterPanel(options: CanvasToolOptions, onOptions: (CanvasToolO
         HighlightColor.entries.forEach { color ->
             ColorSwatch(
                 color = highlightColor(color),
-                selected = marker.color == color,
+                selected = marker.color == color && marker.custom == null,
                 description = stringResource(color.label()),
-                onClick = { onOptions(options.copy(highlighter = marker.copy(color = color))) },
+                onClick = { onOptions(options.copy(highlighter = marker.copy(color = color, custom = null))) },
                 size = 26.dp,
             )
         }
-        CustomSwatch(stringResource(Res.string.canvas_color_custom), 26.dp)
+        CustomColorSwatch(marker.custom, 26.dp) { onOptions(options.copy(highlighter = marker.copy(custom = it))) }
     }
     Box(Modifier.height(4.dp))
     SliderRow(
@@ -321,10 +352,13 @@ private fun HighlighterPanel(options: CanvasToolOptions, onOptions: (CanvasToolO
     }
 }
 
-/** Eraser. Erasing itself, and Clear page, arrive with the editing pass; the settings are here now. */
+/** Eraser, with Clear page at the foot — pressable while the page has anything on it. */
 @Composable
-private fun EraserPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) -> Unit) {
+private fun EraserPanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
+    val options = state.options
+    val onOptions: (CanvasToolOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(it)) }
     val eraser = options.eraser
+    val canClear = state.page.elements.isNotEmpty()
     val colors = canvasColors
     PanelSectionLabel(stringResource(Res.string.canvas_section_mode), first = true)
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -360,7 +394,8 @@ private fun EraserPanel(options: CanvasToolOptions, onOptions: (CanvasToolOption
             .clip(shape)
             .background(colors.dangerTint)
             .border(1.dp, colors.dangerBorder, shape)
-            .clickable(role = Role.Button) {},
+            .clickable(enabled = canClear, role = Role.Button) { onIntent(CanvasIntent.ClearPage) }
+            .alpha(if (canClear) 1f else DISABLED_ALPHA),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -389,23 +424,38 @@ internal fun PercentSlider(
 
 private const val PERCENT = 100
 
-/** A row of ink swatches with the custom-colour swatch on the end. */
+/**
+ * A row of ink swatches with the custom-colour swatch on the end. A mixed
+ * [custom] colour, when there is one, is the one in use, so no named ink is ringed.
+ */
 @Composable
-internal fun InkSwatches(inks: List<CanvasInk>, selected: CanvasInk, onPick: (CanvasInk) -> Unit, size: Dp) {
+internal fun InkSwatches(
+    inks: List<CanvasInk>,
+    selected: CanvasInk,
+    custom: String?,
+    onPick: (CanvasInk) -> Unit,
+    onCustom: (String) -> Unit,
+    size: Dp,
+) {
     val colors = canvasColors
     Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
         inks.forEach { ink ->
             ColorSwatch(
                 color = colors.inkSwatch(ink),
-                selected = ink == selected,
+                selected = ink == selected && custom == null,
                 description = stringResource(ink.label(colors.isDark)),
                 onClick = { onPick(ink) },
                 size = size,
             )
         }
-        CustomSwatch(stringResource(Res.string.canvas_color_custom), size)
+        CustomColorSwatch(custom, size, onCustom)
     }
 }
+
+/** How faded a control is while it has nothing to act on. */
+internal const val DISABLED_ALPHA = 0.4f
+
+private const val MIN_TO_DISTRIBUTE = 3
 
 /** The inks a panel offers: the board's contrast ink and the five colours. */
 internal val PanelInks: List<CanvasInk> = CanvasInk.entries - CanvasInk.INVERSE

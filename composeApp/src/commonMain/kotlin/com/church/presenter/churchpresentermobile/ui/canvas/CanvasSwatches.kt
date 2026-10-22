@@ -7,6 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.SolidColor
+import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.canvas_color_custom
+import churchpresentermobile.composeapp.generated.resources.canvas_custom_color_title
+import com.church.presenter.churchpresentermobile.ui.standalone.ColorPickerDialog
+import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrNull
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -86,19 +97,45 @@ internal fun ColorSwatch(
 
 /**
  * The rainbow swatch at the end of a palette, for a colour of the operator's own.
- * The picker it opens is not built yet, so it does nothing when pressed.
+ * It opens the colour picker; once a colour is mixed the swatch shows it, ringed
+ * as the one in use, until a named colour is picked instead.
+ *
+ * @param current The mixed colour in use, as "#RRGGBB", or null when a named one is.
  */
 @Composable
-internal fun CustomSwatch(description: String, size: Dp, onClick: () -> Unit = {}) {
+internal fun CustomColorSwatch(current: String?, size: Dp, onPick: (String) -> Unit) {
+    val colors = canvasColors
+    var picking by remember { mutableStateOf(false) }
+    val title = stringResource(Res.string.canvas_custom_color_title)
+    val description = stringResource(Res.string.canvas_color_custom)
+    val mixed = current?.let(::parseHexColorOrNull)
     Box(
         modifier = Modifier
             .size(size)
+            .selectedRing(mixed != null, CircleShape, colors.panel, colors.accent, 2.dp)
             .clip(CircleShape)
-            .background(Brush.sweepGradient(CustomSwatchColors))
-            .semantics { contentDescription = description }
-            .clickable(role = Role.Button, onClick = onClick),
+            .background(if (mixed != null) SolidColor(mixed) else Brush.sweepGradient(CustomSwatchColors))
+            .semantics {
+                contentDescription = description
+                selected = mixed != null
+            }
+            .clickable(role = Role.Button) { picking = true },
     )
+    if (picking) {
+        ColorPickerDialog(
+            title = title,
+            initial = current ?: DEFAULT_CUSTOM,
+            onPick = {
+                onPick(it)
+                picking = false
+            },
+            onDismiss = { picking = false },
+        )
+    }
 }
+
+/** Where the picker starts when no colour has been mixed yet: the accent green. */
+private const val DEFAULT_CUSTOM = "#86EFAC"
 
 /** "No fill": a clear circle struck through in red. */
 @Composable

@@ -13,6 +13,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_color_red
 import churchpresentermobile.composeapp.generated.resources.canvas_color_white
 import churchpresentermobile.composeapp.generated.resources.canvas_color_yellow
 import churchpresentermobile.composeapp.generated.resources.canvas_layer_arrow
+import churchpresentermobile.composeapp.generated.resources.canvas_layer_eraser
 import churchpresentermobile.composeapp.generated.resources.canvas_layer_highlight
 import churchpresentermobile.composeapp.generated.resources.canvas_layer_ink
 import churchpresentermobile.composeapp.generated.resources.canvas_layer_shape
@@ -98,6 +99,7 @@ internal fun CanvasElement.kindLabel(): StringResource? = when (this) {
         InkKind.PEN -> Res.string.canvas_layer_ink
         InkKind.HIGHLIGHTER -> Res.string.canvas_layer_highlight
         InkKind.ARROW -> Res.string.canvas_layer_arrow
+        InkKind.ERASER -> Res.string.canvas_layer_eraser
     }
     is CanvasElement.Image -> null
     is CanvasElement.Shape -> Res.string.canvas_layer_shape

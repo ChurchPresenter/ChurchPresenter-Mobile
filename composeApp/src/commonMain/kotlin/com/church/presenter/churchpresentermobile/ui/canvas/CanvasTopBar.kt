@@ -22,8 +22,8 @@ import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Cast
+import androidx.compose.material.icons.outlined.CastConnected
 import androidx.compose.material.icons.outlined.Layers
-import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -45,9 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.canvas_end_live
 import churchpresentermobile.composeapp.generated.resources.canvas_go_live
 import churchpresentermobile.composeapp.generated.resources.canvas_layers
-import churchpresentermobile.composeapp.generated.resources.canvas_more_options
 import churchpresentermobile.composeapp.generated.resources.canvas_redo
 import churchpresentermobile.composeapp.generated.resources.canvas_subtitle
 import churchpresentermobile.composeapp.generated.resources.canvas_undo
@@ -76,8 +76,7 @@ internal fun CanvasTopBar(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     onBack: () -> Unit,
-    onMore: () -> Unit,
-    onGoLive: () -> Unit,
+    onGoLive: (Boolean) -> Unit,
 ) {
     val colors = canvasColors
     Column(modifier = Modifier.fillMaxWidth().background(colors.chrome).statusBarsPadding()) {
@@ -137,13 +136,11 @@ internal fun CanvasTopBar(
                         onIntent(CanvasIntent.ShowPanel(next))
                     },
                 )
-                BarIcon(
-                    icon = Icons.Outlined.MoreHoriz,
-                    description = stringResource(Res.string.canvas_more_options),
-                    tag = CanvasTags.MORE,
-                    onClick = onMore,
-                )
-                GoLiveButton(onGoLive)
+                CanvasMoreMenu(state, onIntent)
+                GoLiveButton(live = state.live) {
+                    onIntent(CanvasIntent.SetLive(!state.live))
+                    onGoLive(!state.live)
+                }
             }
         }
         HorizontalDivider(color = colors.border)
@@ -206,7 +203,6 @@ internal fun BarIcon(
     }
 }
 
-private const val DISABLED_ALPHA = 0.35f
 
 /** − 100% +, in one rounded well. */
 @Composable
@@ -255,25 +251,32 @@ private fun ZoomStep(icon: ImageVector, description: String, tag: String, onClic
     }
 }
 
+/** Go Live, which turns into End Live — in the danger red — while the canvas is on screen. */
 @Composable
-private fun GoLiveButton(onClick: () -> Unit) {
+private fun GoLiveButton(live: Boolean, onClick: () -> Unit) {
     val colors = canvasColors
+    val content = if (live) Color.White else colors.onAccent
     Row(
         modifier = Modifier
             .testTag(CanvasTags.GO_LIVE)
             .height(40.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(colors.accent)
+            .background(if (live) colors.danger else colors.accent)
             .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         // The words beside it say what it does; the icon is decoration.
-        Icon(Icons.Outlined.Cast, contentDescription = null, tint = colors.onAccent, modifier = Modifier.size(18.dp))
+        Icon(
+            if (live) Icons.Outlined.CastConnected else Icons.Outlined.Cast,
+            contentDescription = null,
+            tint = content,
+            modifier = Modifier.size(18.dp),
+        )
         Text(
-            stringResource(Res.string.canvas_go_live),
-            color = colors.onAccent,
+            stringResource(if (live) Res.string.canvas_end_live else Res.string.canvas_go_live),
+            color = content,
             fontSize = 14.sp,
             fontWeight = FontWeight.ExtraBold,
         )

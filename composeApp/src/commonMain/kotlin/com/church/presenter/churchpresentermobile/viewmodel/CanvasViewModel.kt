@@ -28,6 +28,13 @@ class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel()
     private var nextId = 1
 
     /**
+     * The run of intents the last change belonged to — a typing session, or one
+     * drag of an eraser, a move or a resize. A run is one step on the undo history:
+     * only its first change is recorded.
+     */
+    private var lastRun: String? = null
+
+    /**
      * Applies [intent]. Any change to the document goes on the undo history; a
      * change of tool, zoom or panel does not, as in every drawing app — Undo
      * takes back what was drawn, not where the operator looked.
@@ -39,9 +46,16 @@ class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel()
             CanvasIntent.Redo -> step(from = redoStack, to = undoStack)
             else -> {
                 val after = before.reduce(intent, ::newId)
-                if (after.document != before.document) {
+                val run = runOf(intent)
+                if (after.document != before.document && (run == null || run != lastRun)) {
                     undoStack.addLast(before.document)
                     redoStack.clear()
+                }
+                lastRun = when (intent) {
+                    // Placing a box already recorded the page without it: undoing the
+                    // typing should take the whole box away, not leave an empty one.
+                    is CanvasIntent.PlaceText, is CanvasIntent.PlaceSticky -> TYPING
+                    else -> run
                 }
                 _state.value = after.withHistory()
             }
@@ -55,8 +69,23 @@ class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel()
         to.addLast(s.document)
         // Keep the page and selection where they still exist in the restored document.
         val pageIndex = s.pageIndex.coerceAtMost(document.pages.lastIndex)
-        val selectedId = s.selectedId?.takeIf { id -> document.pages[pageIndex].elements.any { it.id == id } }
-        _state.value = s.copy(document = document, pageIndex = pageIndex, selectedId = selectedId).withHistory()
+        val ids = document.pages[pageIndex].elements.map { it.id }.toSet()
+        _state.value = s.copy(
+            document = document,
+            pageIndex = pageIndex,
+            selectedIds = s.selectedIds.filter { it in ids },
+            editingId = null,
+        ).withHistory()
+        lastRun = null
+    }
+
+    /** The run [intent] continues, or null for one that stands alone. */
+    private fun runOf(intent: CanvasIntent): String? = when (intent) {
+        is CanvasIntent.EditText -> TYPING
+        is CanvasIntent.Erase -> intent.session.takeIf { it != CanvasIntent.NO_SESSION }?.let { "erase:$it" }
+        is CanvasIntent.Move -> "move:${intent.session}"
+        is CanvasIntent.Resize -> "resize:${intent.session}"
+        else -> null
     }
 
     private fun CanvasUiState.withHistory() = copy(canUndo = undoStack.isNotEmpty(), canRedo = redoStack.isNotEmpty())
@@ -69,5 +98,9 @@ class CanvasViewModel(document: CanvasDocument = CanvasDocument()) : ViewModel()
             id = "canvas-${nextId++}"
         } while (id in taken)
         return id
+    }
+
+    private companion object {
+        const val TYPING = "typing"
     }
 }

@@ -32,14 +32,16 @@ import org.jetbrains.compose.resources.stringResource
  * The floating rail of tools down the board's left edge, in three groups split by
  * hairlines.
  *
- * @param onActiveCentre Where the active tool's button sits, as a y in root
- *   coordinates — the options panel hangs its pointer there.
+ * @param onButtonCentre Where each tool's button sits, as a y in root coordinates —
+ *   the options panel hangs its pointer level with its tool's. Every button reports,
+ *   not just the active one, so a newly picked tool's panel opens in the right place
+ *   rather than beside the tool picked before it.
  */
 @Composable
 internal fun CanvasToolRail(
     active: CanvasTool,
     onPick: (CanvasTool) -> Unit,
-    onActiveCentre: (Float) -> Unit,
+    onButtonCentre: (CanvasTool, Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = canvasColors
@@ -64,11 +66,7 @@ internal fun CanvasToolRail(
                     tool = tool,
                     active = tool == active,
                     onClick = { onPick(tool) },
-                    modifier = if (tool == active) {
-                        Modifier.onGloballyPositioned { onActiveCentre(it.boundsInRoot().center.y) }
-                    } else {
-                        Modifier
-                    },
+                    modifier = Modifier.onGloballyPositioned { onButtonCentre(tool, it.boundsInRoot().center.y) },
                 )
             }
         }

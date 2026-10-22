@@ -1,8 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowRightAlt
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.ChangeHistory
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Commit
@@ -36,13 +33,9 @@ import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,8 +50,6 @@ import churchpresentermobile.composeapp.generated.resources.canvas_border_none
 import churchpresentermobile.composeapp.generated.resources.canvas_border_solid
 import churchpresentermobile.composeapp.generated.resources.canvas_border_width
 import churchpresentermobile.composeapp.generated.resources.canvas_bulleted_list
-import churchpresentermobile.composeapp.generated.resources.canvas_choose_font
-import churchpresentermobile.composeapp.generated.resources.canvas_color_custom
 import churchpresentermobile.composeapp.generated.resources.canvas_crop
 import churchpresentermobile.composeapp.generated.resources.canvas_dashed
 import churchpresentermobile.composeapp.generated.resources.canvas_drop_shadow
@@ -66,7 +57,6 @@ import churchpresentermobile.composeapp.generated.resources.canvas_end_arrow
 import churchpresentermobile.composeapp.generated.resources.canvas_end_dot
 import churchpresentermobile.composeapp.generated.resources.canvas_end_none
 import churchpresentermobile.composeapp.generated.resources.canvas_flip
-import churchpresentermobile.composeapp.generated.resources.canvas_font_default
 import churchpresentermobile.composeapp.generated.resources.canvas_font_marker
 import churchpresentermobile.composeapp.generated.resources.canvas_font_neat
 import churchpresentermobile.composeapp.generated.resources.canvas_font_plain
@@ -110,6 +100,8 @@ import churchpresentermobile.composeapp.generated.resources.canvas_tilt_notes
 import churchpresentermobile.composeapp.generated.resources.canvas_underline
 import churchpresentermobile.composeapp.generated.resources.canvas_width
 import com.church.presenter.churchpresentermobile.model.BorderStyle
+import com.church.presenter.churchpresentermobile.model.CanvasElement
+import com.church.presenter.churchpresentermobile.model.ImageAdjust
 import com.church.presenter.churchpresentermobile.model.CanvasShape
 import com.church.presenter.churchpresentermobile.model.CanvasTextAlign
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
@@ -122,15 +114,15 @@ import com.church.presenter.churchpresentermobile.model.StickyColor
 import com.church.presenter.churchpresentermobile.model.StickyFont
 import com.church.presenter.churchpresentermobile.model.StickySize
 import com.church.presenter.churchpresentermobile.model.TextOptions
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 /*
  * The options panels for the tools that place things on the page — shapes, lines,
- * text, sticky notes and pictures. The pickers in these (font, custom colour) and
- * the image adjustments open nothing yet: they are the design's controls, waiting
- * for the editing pass behind them.
+ * text, sticky notes and pictures.
  */
 
 @Composable
@@ -157,14 +149,15 @@ internal fun ShapesPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptio
     PanelSectionLabel(stringResource(Res.string.canvas_section_fill))
     Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
         ShapeFill.entries.forEach { fill ->
-            val pick = { onOptions(options.copy(shapes = shapes.copy(fill = fill))) }
+            val pick = { onOptions(options.copy(shapes = shapes.copy(fill = fill, fillCustom = null))) }
+            val chosen = shapes.fill == fill && shapes.fillCustom == null
             if (fill == ShapeFill.NONE) {
-                NoFillSwatch(shapes.fill == fill, stringResource(fill.label()), 24.dp, pick)
+                NoFillSwatch(chosen, stringResource(fill.label()), 24.dp, pick)
             } else {
-                ColorSwatch(shapeFillColor(fill), shapes.fill == fill, stringResource(fill.label()), pick, 24.dp)
+                ColorSwatch(shapeFillColor(fill), chosen, stringResource(fill.label()), pick, 24.dp)
             }
         }
-        CustomSwatch(stringResource(Res.string.canvas_color_custom), 24.dp)
+        CustomColorSwatch(shapes.fillCustom, 24.dp) { onOptions(options.copy(shapes = shapes.copy(fillCustom = it))) }
     }
     PanelSectionLabel(stringResource(Res.string.canvas_section_border))
     CanvasSegmented(
@@ -232,7 +225,14 @@ internal fun LinePanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
         }
     }
     PanelSectionLabel(stringResource(Res.string.canvas_section_color))
-    InkSwatches(PanelInks, line.ink, { onOptions(options.copy(line = line.copy(ink = it))) }, 24.dp)
+    InkSwatches(
+        inks = PanelInks,
+        selected = line.ink,
+        custom = line.custom,
+        onPick = { onOptions(options.copy(line = line.copy(ink = it, custom = null))) },
+        onCustom = { onOptions(options.copy(line = line.copy(custom = it))) },
+        size = 24.dp,
+    )
     Box(Modifier.height(4.dp))
     SliderRow(
         stringResource(Res.string.canvas_width),
@@ -287,7 +287,7 @@ internal fun TextPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
     val text = options.text
     val set: (TextOptions) -> Unit = { onOptions(options.copy(text = it)) }
     PanelSectionLabel(stringResource(Res.string.canvas_section_font), first = true)
-    FontRow(text.size)
+    FontRow(text, set)
     PanelSectionLabel(stringResource(Res.string.canvas_section_style))
     val styles = listOf(
         Icons.Outlined.FormatBold to Res.string.canvas_bold,
@@ -328,63 +328,19 @@ internal fun TextPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
         onSelect = { set(text.copy(align = CanvasTextAlign.entries[it])) },
     )
     PanelSectionLabel(stringResource(Res.string.canvas_section_color))
-    InkSwatches(PanelInks, text.ink, { set(text.copy(ink = it)) }, 24.dp)
+    InkSwatches(
+        inks = PanelInks,
+        selected = text.ink,
+        custom = text.custom,
+        onPick = { set(text.copy(ink = it, custom = null)) },
+        onCustom = { set(text.copy(custom = it)) },
+        size = 24.dp,
+    )
     Box(Modifier.height(4.dp))
     ToggleRow(stringResource(Res.string.canvas_background_highlight), text.highlight) {
         set(text.copy(highlight = it))
     }
     ToggleRow(stringResource(Res.string.canvas_bulleted_list), text.bulleted) { set(text.copy(bulleted = it)) }
-}
-
-/** The font well and the size beside it. The font picker behind the well comes later. */
-@Composable
-private fun FontRow(size: Int) {
-    val colors = canvasColors
-    val shape = RoundedCornerShape(10.dp)
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .height(36.dp)
-                .clip(shape)
-                .background(colors.control)
-                .border(1.dp, colors.border, shape)
-                .clickable(role = Role.DropdownList) {}
-                .padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                stringResource(Res.string.canvas_font_default),
-                color = colors.text,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = FontFamily.Serif,
-            )
-            Icon(
-                Icons.Filled.ArrowDropDown,
-                contentDescription = stringResource(Res.string.canvas_choose_font),
-                tint = colors.text,
-                modifier = Modifier.size(18.dp),
-            )
-        }
-        Box(
-            modifier = Modifier
-                .width(76.dp)
-                .height(36.dp)
-                .clip(shape)
-                .background(colors.control)
-                .border(1.dp, colors.border, shape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                "$size",
-                color = colors.text,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-            )
-        }
-    }
 }
 
 @Composable
@@ -432,10 +388,19 @@ internal fun StickyPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptio
     }
 }
 
+/**
+ * Image. "Insert from" brings a picture in from there, and makes it where a tap on
+ * the board brings one from too; the
+ * Adjust row works on the selected picture — a newly placed one is selected — and
+ * is faded while there is none.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ImagePanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) -> Unit) {
+internal fun ImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
+    val options = state.options
+    val onOptions: (CanvasToolOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(it)) }
     val image = options.image
+    val hasImage = state.selection.any { it is CanvasElement.Image && !it.locked }
     PanelSectionLabel(stringResource(Res.string.canvas_section_insert_from), first = true)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         listOf(
@@ -447,7 +412,10 @@ internal fun ImagePanel(options: CanvasToolOptions, onOptions: (CanvasToolOption
             CanvasChip(
                 text = stringResource(label),
                 active = image.source == source,
-                onClick = { onOptions(options.copy(image = image.copy(source = source))) },
+                onClick = {
+                    onOptions(options.copy(image = image.copy(source = source)))
+                    onIntent(CanvasIntent.InsertImage(source))
+                },
             )
         }
     }
@@ -474,10 +442,16 @@ internal fun ImagePanel(options: CanvasToolOptions, onOptions: (CanvasToolOption
     PanelSectionLabel(stringResource(Res.string.canvas_section_adjust))
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         listOf(
-            Res.string.canvas_crop,
-            Res.string.canvas_flip,
-            Res.string.canvas_rotate,
-            Res.string.canvas_remove_background,
-        ).forEach { CanvasChip(stringResource(it), onClick = {}) }
+            ImageAdjust.CROP to Res.string.canvas_crop,
+            ImageAdjust.FLIP to Res.string.canvas_flip,
+            ImageAdjust.ROTATE to Res.string.canvas_rotate,
+            ImageAdjust.REMOVE_BACKGROUND to Res.string.canvas_remove_background,
+        ).forEach { (adjust, label) ->
+            CanvasChip(
+                stringResource(label),
+                onClick = { onIntent(CanvasIntent.AdjustImage(adjust)) },
+                enabled = hasImage,
+            )
+        }
     }
 }

@@ -98,10 +98,10 @@ internal fun PenDock(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, mod
                 HighlightColor.entries.forEach { color ->
                     ColorSwatch(
                         color = highlightColor(color),
-                        selected = color == options.highlighter.color,
+                        selected = color == options.highlighter.color && options.highlighter.custom == null,
                         description = stringResource(color.label()),
                         onClick = {
-                            val marker = options.highlighter.copy(color = color)
+                            val marker = options.highlighter.copy(color = color, custom = null)
                             onIntent(CanvasIntent.SetOptions(options.copy(highlighter = marker)))
                         },
                         size = 30.dp,
@@ -113,10 +113,11 @@ internal fun PenDock(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, mod
                 colors.dockInks().forEach { ink ->
                     ColorSwatch(
                         color = colors.inkSwatch(ink),
-                        selected = ink == options.pen.ink,
+                        selected = ink == options.pen.ink && options.pen.custom == null,
                         description = stringResource(ink.label(colors.isDark)),
                         onClick = {
-                            onIntent(CanvasIntent.SetOptions(options.copy(pen = options.pen.copy(ink = ink))))
+                            val pen = options.pen.copy(ink = ink, custom = null)
+                            onIntent(CanvasIntent.SetOptions(options.copy(pen = pen)))
                         },
                         size = 30.dp,
                         gap = colors.board,

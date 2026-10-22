@@ -21,32 +21,16 @@ internal fun CanvasDocument.editPage(
 /** The document with a blank page added after the last one. */
 internal fun CanvasDocument.withNewPage(): CanvasDocument = copy(pages = pages + CanvasPage())
 
-/** [elements] without the one called [id]. */
-internal fun List<CanvasElement>.without(id: String): List<CanvasElement> = filterNot { it.id == id }
-
-/** [elements] with [id] moved to the end, which is the top of the drawing order. */
-internal fun List<CanvasElement>.broughtToFront(id: String): List<CanvasElement> {
-    val element = firstOrNull { it.id == id } ?: return this
-    return without(id) + element
+/** The document with a copy of page [index] placed right after it. */
+internal fun CanvasDocument.withPageDuplicated(index: Int, newId: () -> String): CanvasDocument {
+    val page = pages.getOrNull(index) ?: return this
+    val copy = CanvasPage(page.elements.map { it.withId(newId()) })
+    return copy(pages = pages.take(index + 1) + copy + pages.drop(index + 1))
 }
 
-/** [elements] with the one called [id] replaced by [transform] of itself. */
-internal fun List<CanvasElement>.updated(id: String, transform: (CanvasElement) -> CanvasElement): List<CanvasElement> =
-    map { if (it.id == id) transform(it) else it }
-
-/**
- * [elements] with a copy of [id] placed just above it, nudged by [DUPLICATE_OFFSET]
- * so the copy is visibly a second item rather than hidden exactly behind the first.
- */
-internal fun List<CanvasElement>.withDuplicate(id: String, newId: String): List<CanvasElement> {
-    val index = indexOfFirst { it.id == id }
-    if (index < 0) return this
-    val copy = this[index].duplicated(newId, DUPLICATE_OFFSET, DUPLICATE_OFFSET)
-    return take(index + 1) + copy + drop(index + 1)
-}
-
-/** How far a duplicate lands from its original, in dp. */
-internal const val DUPLICATE_OFFSET = 24f
+/** The document without page [index] — unless it is the only page, which a canvas always keeps. */
+internal fun CanvasDocument.withoutPage(index: Int): CanvasDocument =
+    if (pages.size <= 1 || index !in pages.indices) this else copy(pages = pages.filterIndexed { i, _ -> i != index })
 
 /**
  * SVG path data for a hand-drawn stroke through [points]: a move to the first,
@@ -58,13 +42,13 @@ internal fun strokePathData(points: List<CanvasPoint>): String {
     val first = points.first()
     val rest = points.drop(1).ifEmpty { listOf(first) }
     return buildString {
-        append("M${first.x.svg()} ${first.y.svg()}")
-        rest.forEach { append(" L${it.x.svg()} ${it.y.svg()}") }
+        append("M${first.x.svgNumber()} ${first.y.svgNumber()}")
+        rest.forEach { append(" L${it.x.svgNumber()} ${it.y.svgNumber()}") }
     }
 }
 
 /** A coordinate to one decimal place, which is finer than a finger and keeps a long stroke's data short. */
-private fun Float.svg(): String {
+internal fun Float.svgNumber(): String {
     val tenths = kotlin.math.round(this * TENTHS).toLong()
     val whole = tenths / TENTHS.toLong()
     val fraction = kotlin.math.abs(tenths % TENTHS.toLong())
@@ -73,6 +57,27 @@ private fun Float.svg(): String {
 }
 
 private const val TENTHS = 10f
+
+/**
+ * [points] eased by a moving average, so a shaky hand draws a smooth line. [amount]
+ * runs 0–1: none leaves the stroke as drawn, full averages each point with up to
+ * [MAX_SMOOTHING_REACH] neighbours either side. The ends stay put, so a stroke
+ * still starts and stops exactly where the pen did.
+ */
+internal fun smoothed(points: List<CanvasPoint>, amount: Float): List<CanvasPoint> {
+    val reach = kotlin.math.round(amount.coerceIn(0f, 1f) * MAX_SMOOTHING_REACH).toInt()
+    if (reach == 0 || points.size < 3) return points
+    return points.mapIndexed { i, point ->
+        if (i == 0 || i == points.lastIndex) return@mapIndexed point
+        val window = points.subList((i - reach).coerceAtLeast(0), (i + reach + 1).coerceAtMost(points.size))
+        CanvasPoint(
+            x = window.sumOf { it.x.toDouble() }.toFloat() / window.size,
+            y = window.sumOf { it.y.toDouble() }.toFloat() / window.size,
+        )
+    }
+}
+
+private const val MAX_SMOOTHING_REACH = 4f
 
 /**
  * The zoom levels the − and + buttons step through, in percent.
