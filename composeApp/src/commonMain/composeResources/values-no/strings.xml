@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Viskestrek</string>
     <string name="canvas_type_here">Skriv her</string>
     <string name="canvas_custom_color_title">Egen farge</string>
+    <string name="canvas_saving">Lagrer…</string>
+    <string name="canvas_saved">Lagret</string>
+    <string name="canvas_not_saved">Ikke lagret</string>
+    <string name="canvas_clear_canvas">Tøm lerretet</string>
+    <string name="canvas_clear_canvas_title">Tømme hele lerretet?</string>
+    <string name="canvas_clear_canvas_body">Alle sider fjernes, og lerretet starter blankt igjen. Du kan angre dette.</string>
+    <string name="canvas_clear">Tøm</string>
 </resources>

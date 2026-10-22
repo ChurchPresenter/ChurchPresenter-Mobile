@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Tah gumy</string>
     <string name="canvas_type_here">Pište sem</string>
     <string name="canvas_custom_color_title">Vlastní barva</string>
+    <string name="canvas_saving">Ukládání…</string>
+    <string name="canvas_saved">Uloženo</string>
+    <string name="canvas_not_saved">Neuloženo</string>
+    <string name="canvas_clear_canvas">Vymazat plátno</string>
+    <string name="canvas_clear_canvas_title">Vymazat celé plátno?</string>
+    <string name="canvas_clear_canvas_body">Všechny stránky budou odstraněny a plátno začne znovu prázdné. Tuto akci můžete vrátit zpět.</string>
+    <string name="canvas_clear">Vymazat</string>
 </resources>

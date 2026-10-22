@@ -1329,4 +1329,11 @@
     <string name="canvas_layer_eraser">Gumstreek</string>
     <string name="canvas_type_here">Typ hier</string>
     <string name="canvas_custom_color_title">Aangepaste kleur</string>
+    <string name="canvas_saving">Opslaan…</string>
+    <string name="canvas_saved">Opgeslagen</string>
+    <string name="canvas_not_saved">Niet opgeslagen</string>
+    <string name="canvas_clear_canvas">Canvas wissen</string>
+    <string name="canvas_clear_canvas_title">Het hele canvas wissen?</string>
+    <string name="canvas_clear_canvas_body">Alle pagina's worden verwijderd en het canvas begint weer leeg. Je kunt dit ongedaan maken.</string>
+    <string name="canvas_clear">Wissen</string>
 </resources>

@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">O'chirg'ich izi</string>
     <string name="canvas_type_here">Shu yerga yozing</string>
     <string name="canvas_custom_color_title">Boshqa rang</string>
+    <string name="canvas_saving">Saqlanmoqda…</string>
+    <string name="canvas_saved">Saqlandi</string>
+    <string name="canvas_not_saved">Saqlanmadi</string>
+    <string name="canvas_clear_canvas">Kanvasni tozalash</string>
+    <string name="canvas_clear_canvas_title">Butun kanvas tozalansinmi?</string>
+    <string name="canvas_clear_canvas_body">Barcha sahifalar o'chiriladi va kanvas yana bo'sh holda boshlanadi. Buni bekor qilishingiz mumkin.</string>
+    <string name="canvas_clear">Tozalash</string>
 </resources>

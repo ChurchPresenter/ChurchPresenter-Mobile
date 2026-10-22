@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Ślad gumki</string>
     <string name="canvas_type_here">Wpisz tekst</string>
     <string name="canvas_custom_color_title">Własny kolor</string>
+    <string name="canvas_saving">Zapisywanie…</string>
+    <string name="canvas_saved">Zapisano</string>
+    <string name="canvas_not_saved">Nie zapisano</string>
+    <string name="canvas_clear_canvas">Wyczyść tablicę</string>
+    <string name="canvas_clear_canvas_title">Wyczyścić całą tablicę?</string>
+    <string name="canvas_clear_canvas_body">Wszystkie strony zostaną usunięte, a tablica zacznie się od nowa pusta. Możesz to cofnąć.</string>
+    <string name="canvas_clear">Wyczyść</string>
 </resources>

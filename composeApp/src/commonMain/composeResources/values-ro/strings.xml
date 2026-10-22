@@ -1329,4 +1329,11 @@
     <string name="canvas_layer_eraser">Trăsătură radieră</string>
     <string name="canvas_type_here">Scrie aici</string>
     <string name="canvas_custom_color_title">Culoare personalizată</string>
+    <string name="canvas_saving">Se salvează…</string>
+    <string name="canvas_saved">Salvat</string>
+    <string name="canvas_not_saved">Nesalvat</string>
+    <string name="canvas_clear_canvas">Golește planșa</string>
+    <string name="canvas_clear_canvas_title">Golești toată planșa?</string>
+    <string name="canvas_clear_canvas_body">Toate paginile sunt eliminate și planșa începe din nou goală. Poți anula această acțiune.</string>
+    <string name="canvas_clear">Golește</string>
 </resources>

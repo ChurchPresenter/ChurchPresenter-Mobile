@@ -1329,4 +1329,11 @@
     <string name="canvas_layer_eraser">Ťah gumy</string>
     <string name="canvas_type_here">Píšte sem</string>
     <string name="canvas_custom_color_title">Vlastná farba</string>
+    <string name="canvas_saving">Ukladá sa…</string>
+    <string name="canvas_saved">Uložené</string>
+    <string name="canvas_not_saved">Neuložené</string>
+    <string name="canvas_clear_canvas">Vymazať plátno</string>
+    <string name="canvas_clear_canvas_title">Vymazať celé plátno?</string>
+    <string name="canvas_clear_canvas_body">Všetky strany sa odstránia a plátno začne znova prázdne. Túto akciu môžete vrátiť späť.</string>
+    <string name="canvas_clear">Vymazať</string>
 </resources>

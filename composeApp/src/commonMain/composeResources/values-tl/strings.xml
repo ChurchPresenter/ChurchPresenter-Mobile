@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Guhit ng pambura</string>
     <string name="canvas_type_here">Mag-type dito</string>
     <string name="canvas_custom_color_title">Sariling kulay</string>
+    <string name="canvas_saving">Sine-save…</string>
+    <string name="canvas_saved">Naka-save</string>
+    <string name="canvas_not_saved">Hindi na-save</string>
+    <string name="canvas_clear_canvas">I-clear ang canvas</string>
+    <string name="canvas_clear_canvas_title">I-clear ang buong canvas?</string>
+    <string name="canvas_clear_canvas_body">Aalisin ang bawat pahina at magsisimulang muli nang blangko ang canvas. Maaari mo itong i-undo.</string>
+    <string name="canvas_clear">I-clear</string>
 </resources>

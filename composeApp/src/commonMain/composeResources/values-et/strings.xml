@@ -1329,4 +1329,11 @@
     <string name="canvas_layer_eraser">Kustutuskummi joon</string>
     <string name="canvas_type_here">Kirjuta siia</string>
     <string name="canvas_custom_color_title">Kohandatud värv</string>
+    <string name="canvas_saving">Salvestamine…</string>
+    <string name="canvas_saved">Salvestatud</string>
+    <string name="canvas_not_saved">Pole salvestatud</string>
+    <string name="canvas_clear_canvas">Tühjenda lõuend</string>
+    <string name="canvas_clear_canvas_title">Kas tühjendada kogu lõuend?</string>
+    <string name="canvas_clear_canvas_body">Kõik lehed eemaldatakse ja lõuend algab uuesti tühjalt. Saad selle tagasi võtta.</string>
+    <string name="canvas_clear">Tühjenda</string>
 </resources>

@@ -48,7 +48,10 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.canvas_end_live
 import churchpresentermobile.composeapp.generated.resources.canvas_go_live
 import churchpresentermobile.composeapp.generated.resources.canvas_layers
+import churchpresentermobile.composeapp.generated.resources.canvas_not_saved
 import churchpresentermobile.composeapp.generated.resources.canvas_redo
+import churchpresentermobile.composeapp.generated.resources.canvas_saved
+import churchpresentermobile.composeapp.generated.resources.canvas_saving
 import churchpresentermobile.composeapp.generated.resources.canvas_subtitle
 import churchpresentermobile.composeapp.generated.resources.canvas_undo
 import churchpresentermobile.composeapp.generated.resources.canvas_untitled
@@ -61,6 +64,7 @@ import com.church.presenter.churchpresentermobile.model.zoomedOut
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
+import com.church.presenter.churchpresentermobile.viewmodel.SaveStatus
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -100,8 +104,17 @@ internal fun CanvasTopBar(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                val saveNote = when (state.saveStatus) {
+                    SaveStatus.NONE -> null
+                    SaveStatus.SAVED -> Res.string.canvas_saved
+                    SaveStatus.SAVING -> Res.string.canvas_saving
+                    SaveStatus.FAILED -> Res.string.canvas_not_saved
+                }?.let { stringResource(it) }
                 Text(
-                    text = stringResource(Res.string.canvas_subtitle, state.pageIndex + 1, state.document.pages.size),
+                    text = listOfNotNull(
+                        stringResource(Res.string.canvas_subtitle, state.pageIndex + 1, state.document.pages.size),
+                        saveNote,
+                    ).joinToString(" · "),
                     color = colors.muted,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,

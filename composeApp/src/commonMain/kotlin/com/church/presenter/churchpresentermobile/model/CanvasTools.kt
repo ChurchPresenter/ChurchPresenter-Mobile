@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.model
 
+import kotlinx.serialization.Serializable
+
 /** The ten tools down the canvas's tool rail, top to bottom. */
 enum class CanvasTool { SELECT, LASSO, PEN, HIGHLIGHTER, ERASER, SHAPES, LINE, TEXT, STICKY, IMAGE }
 
@@ -10,6 +12,7 @@ enum class CanvasTool { SELECT, LASSO, PEN, HIGHLIGHTER, ERASER, SHAPES, LINE, T
  * part and cannot reach another tool's settings. Every default is the value the
  * design shows, which is also what a sensible first stroke looks like.
  */
+@Serializable
 data class CanvasToolOptions(
     val select: SelectOptions = SelectOptions(),
     val lasso: LassoOptions = LassoOptions(),
@@ -23,6 +26,7 @@ data class CanvasToolOptions(
     val image: ImageOptions = ImageOptions(),
 )
 
+@Serializable
 data class SelectOptions(
     val snapToGrid: Boolean = true,
     val smartGuides: Boolean = true,
@@ -33,6 +37,7 @@ enum class LassoShape { FREEFORM, RECTANGLE }
 
 enum class LassoPicks { EVERYTHING, INK, OBJECTS }
 
+@Serializable
 data class LassoOptions(
     val shape: LassoShape = LassoShape.FREEFORM,
     val picks: LassoPicks = LassoPicks.EVERYTHING,
@@ -47,6 +52,7 @@ enum class PenType { BALLPOINT, FOUNTAIN, BRUSH, PENCIL }
  * The dock under the board edits the same value as the pen's options panel, so
  * the two can never disagree about what the next stroke looks like.
  */
+@Serializable
 data class PenOptions(
     val type: PenType = PenType.BALLPOINT,
     val ink: CanvasInk = CanvasInk.GREEN,
@@ -60,6 +66,7 @@ data class PenOptions(
 
 enum class HighlightColor { YELLOW, GREEN, SKY, PINK, ORANGE }
 
+@Serializable
 data class HighlighterOptions(
     val color: HighlightColor = HighlightColor.YELLOW,
     val width: Float = 18f,
@@ -71,6 +78,7 @@ data class HighlighterOptions(
 
 enum class EraserMode { STROKE, PIXEL, AREA }
 
+@Serializable
 data class EraserOptions(
     val mode: EraserMode = EraserMode.STROKE,
     val size: Float = 24f,
@@ -81,6 +89,7 @@ enum class ShapeFill { NONE, GREEN, SKY, YELLOW, PINK }
 
 enum class BorderStyle { SOLID, DASHED, NONE }
 
+@Serializable
 data class ShapeOptions(
     val shape: CanvasShape = CanvasShape.ROUNDED,
     val fill: ShapeFill = ShapeFill.GREEN,
@@ -95,6 +104,7 @@ enum class LineStyle { STRAIGHT, CURVE, ELBOW }
 
 enum class LineEnd { NONE, ARROW, DOT }
 
+@Serializable
 data class LineOptions(
     val style: LineStyle = LineStyle.STRAIGHT,
     val start: LineEnd = LineEnd.NONE,
@@ -110,6 +120,7 @@ enum class CanvasTextAlign { LEFT, CENTER, RIGHT }
 /** The typefaces the text tool offers; the screen maps each to a font family. */
 enum class CanvasFont { SERIF, SANS, MONO, HANDWRITING }
 
+@Serializable
 data class TextOptions(
     val font: CanvasFont = CanvasFont.SERIF,
     val size: Int = 32,
@@ -128,6 +139,7 @@ enum class StickySize { SMALL, MEDIUM, LARGE }
 
 enum class StickyFont { MARKER, NEAT, PLAIN }
 
+@Serializable
 data class StickyOptions(
     val color: StickyColor = StickyColor.YELLOW,
     val size: StickySize = StickySize.MEDIUM,
@@ -139,6 +151,7 @@ enum class ImageSource { CLIPBOARD, PHOTOS, CAMERA, FILES }
 
 enum class ImagePlacement { FIT, FILL, ORIGINAL }
 
+@Serializable
 data class ImageOptions(
     val source: ImageSource = ImageSource.CLIPBOARD,
     val placement: ImagePlacement = ImagePlacement.FIT,

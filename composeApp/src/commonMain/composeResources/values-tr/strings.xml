@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Silgi izi</string>
     <string name="canvas_type_here">Buraya yazın</string>
     <string name="canvas_custom_color_title">Özel renk</string>
+    <string name="canvas_saving">Kaydediliyor…</string>
+    <string name="canvas_saved">Kaydedildi</string>
+    <string name="canvas_not_saved">Kaydedilmedi</string>
+    <string name="canvas_clear_canvas">Tuvali temizle</string>
+    <string name="canvas_clear_canvas_title">Tüm tuval temizlensin mi?</string>
+    <string name="canvas_clear_canvas_body">Tüm sayfalar kaldırılır ve tuval yeniden boş başlar. Bunu geri alabilirsiniz.</string>
+    <string name="canvas_clear">Temizle</string>
 </resources>

@@ -13,6 +13,17 @@ import com.church.presenter.churchpresentermobile.model.ImageSource
 /** The panel open down the right-hand side of the canvas, if any. */
 enum class CanvasPanel { NONE, LAYERS, INSERT_IMAGE }
 
+/** Where the canvas stands with the copy on this device's disk. */
+enum class SaveStatus {
+    /** Nothing to save to — a canvas opened without a store, as in a test. */
+    NONE,
+    SAVED,
+    /** A change is waiting to be written, or being written now. */
+    SAVING,
+    /** The last write failed; the next change tries again. */
+    FAILED,
+}
+
 /** What the bar over the selection can do to it. */
 enum class SelectionAction { CROP, REPLACE, BRING_TO_FRONT, DUPLICATE, LOCK, DELETE }
 
@@ -29,6 +40,7 @@ enum class ArrangeAction { ALIGN, DISTRIBUTE, GROUP, FRONT, BACK }
  * @param editingId The text box or sticky note being typed into, if any.
  * @param replaceTarget The picture Replace was pressed on, which the Insert panel's
  *   next choice replaces instead of adding a new one.
+ * @param saveStatus Whether the latest change has reached the disk.
  * @param live Whether the canvas is on screen. Nothing is projected yet — this is
  *   the button's state, ready for the output it will drive.
  */
@@ -44,6 +56,7 @@ data class CanvasUiState(
     val zoom: Int = 100,
     val options: CanvasToolOptions = CanvasToolOptions(),
     val live: Boolean = false,
+    val saveStatus: SaveStatus = SaveStatus.NONE,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
 ) {
@@ -86,6 +99,9 @@ sealed interface CanvasIntent {
     data object DeletePage : CanvasIntent
 
     data object ClearPage : CanvasIntent
+
+    /** Every page removed: the canvas starts again blank and untitled. Undoable, like any edit. */
+    data object ClearCanvas : CanvasIntent
 
     /** Selects an element and its group, or clears the selection for null. */
     data class Select(val id: String?) : CanvasIntent

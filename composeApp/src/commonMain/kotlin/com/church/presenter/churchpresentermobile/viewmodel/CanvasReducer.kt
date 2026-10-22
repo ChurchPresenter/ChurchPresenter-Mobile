@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import com.church.presenter.churchpresentermobile.model.CanvasDocument
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.editPage
@@ -45,6 +46,13 @@ internal fun CanvasUiState.reduce(intent: CanvasIntent, newId: () -> String): Ca
         copy(document = it, pageIndex = pageIndex.coerceAtMost(it.pages.lastIndex), selectedIds = emptyList())
     }.copy(editingId = null)
     CanvasIntent.ClearPage -> editPage { emptyList() }.copy(selectedIds = emptyList(), editingId = null)
+    CanvasIntent.ClearCanvas -> copy(
+        document = CanvasDocument(),
+        pageIndex = 0,
+        selectedIds = emptyList(),
+        editingId = null,
+        replaceTarget = null,
+    )
     is CanvasIntent.Select ->
         copy(selectedIds = intent.id?.let { page.elements.withGroupmates(listOf(it)) }.orEmpty()).withOptionsFrom()
     is CanvasIntent.ToggleSelect -> toggleSelect(intent.id).withOptionsFrom()

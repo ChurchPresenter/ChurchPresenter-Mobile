@@ -1365,4 +1365,11 @@
     <string name="canvas_layer_eraser">Eraser stroke</string>
     <string name="canvas_type_here">Type here</string>
     <string name="canvas_custom_color_title">Custom colour</string>
+    <string name="canvas_saving">Saving…</string>
+    <string name="canvas_saved">Saved</string>
+    <string name="canvas_not_saved">Not saved</string>
+    <string name="canvas_clear_canvas">Clear canvas</string>
+    <string name="canvas_clear_canvas_title">Clear the whole canvas?</string>
+    <string name="canvas_clear_canvas_body">Every page is removed and the canvas starts again blank. You can undo this.</string>
+    <string name="canvas_clear">Clear</string>
 </resources>

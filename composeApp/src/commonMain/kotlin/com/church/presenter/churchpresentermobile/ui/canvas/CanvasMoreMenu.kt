@@ -18,6 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.canvas_cancel
+import churchpresentermobile.composeapp.generated.resources.canvas_clear
+import churchpresentermobile.composeapp.generated.resources.canvas_clear_canvas
+import churchpresentermobile.composeapp.generated.resources.canvas_clear_canvas_body
+import churchpresentermobile.composeapp.generated.resources.canvas_clear_canvas_title
 import churchpresentermobile.composeapp.generated.resources.canvas_clear_page
 import churchpresentermobile.composeapp.generated.resources.canvas_delete_page
 import churchpresentermobile.composeapp.generated.resources.canvas_duplicate_page
@@ -32,15 +36,17 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The bar's "more" button and the menu it opens: rename the canvas, and duplicate,
- * delete or clear the page on screen. Delete is offered only while there is
- * another page to fall back to, and Clear only while the page has something on it.
+ * The bar's "more" button and the menu it opens: rename the canvas; duplicate,
+ * delete or clear the page on screen; or clear the whole canvas, after asking.
+ * Delete is offered only while there is another page to fall back to, and each
+ * Clear only while there is something for it to clear.
  */
 @Composable
 internal fun CanvasMoreMenu(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
     val colors = canvasColors
     var open by remember { mutableStateOf(false) }
     var renaming by remember { mutableStateOf(false) }
+    var clearing by remember { mutableStateOf(false) }
     Box {
         BarIcon(
             icon = Icons.Outlined.MoreHoriz,
@@ -76,7 +82,26 @@ internal fun CanvasMoreMenu(state: CanvasUiState, onIntent: (CanvasIntent) -> Un
                 open = false
                 onIntent(CanvasIntent.ClearPage)
             }
+            MenuItem(
+                Res.string.canvas_clear_canvas,
+                CanvasTags.MENU_CLEAR_CANVAS,
+                enabled = state.document.pages.size > 1 || state.page.elements.isNotEmpty() ||
+                    state.document.title != null,
+                danger = true,
+            ) {
+                open = false
+                clearing = true
+            }
         }
+    }
+    if (clearing) {
+        ClearCanvasDialog(
+            onClear = {
+                onIntent(CanvasIntent.ClearCanvas)
+                clearing = false
+            },
+            onDismiss = { clearing = false },
+        )
     }
     if (renaming) {
         RenameDialog(
@@ -113,6 +138,28 @@ private fun MenuItem(
         enabled = enabled,
         onClick = onClick,
         modifier = Modifier.testTag(tag),
+    )
+}
+
+/**
+ * Asks before clearing the whole canvas — every page goes, which is too much to
+ * lose to a slip of the finger, even though Undo would bring it back.
+ */
+@Composable
+private fun ClearCanvasDialog(onClear: () -> Unit, onDismiss: () -> Unit) {
+    val colors = canvasColors
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.canvas_clear_canvas_title)) },
+        text = { Text(stringResource(Res.string.canvas_clear_canvas_body)) },
+        confirmButton = {
+            TextButton(onClick = onClear, modifier = Modifier.testTag(CanvasTags.CLEAR_CANVAS_CONFIRM)) {
+                Text(stringResource(Res.string.canvas_clear), color = colors.danger)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.canvas_cancel)) }
+        },
     )
 }
 

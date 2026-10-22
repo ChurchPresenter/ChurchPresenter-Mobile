@@ -3,6 +3,8 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.library.CanvasRepository
+import com.church.presenter.churchpresentermobile.library.SavedCanvas
 import com.church.presenter.churchpresentermobile.model.CanvasDocument
 import com.church.presenter.churchpresentermobile.present.CanvasProjector
 import com.church.presenter.churchpresentermobile.present.encodeCanvasFrame
@@ -10,7 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,14 +37,20 @@ import kotlin.coroutines.CoroutineContext
  * @param document What to open. A blank, untitled canvas unless one is given.
  * @param projector Where frames go. Null outside standalone, where Go Live is off.
  * @param frameWork Where a frame is scaled and encoded: never the main thread.
+ * @param store Where the canvas is kept between sessions. What it holds is opened
+ *   in place of [document]; every change is written back [SAVE_DELAY_MS] after the
+ *   last one, so a burst of strokes is one write. Null keeps the canvas in memory.
+ * @param saveWork Where the canvas is written: never the main thread.
  */
 class CanvasViewModel(
     document: CanvasDocument = CanvasDocument(),
     private val projector: CanvasProjector? = null,
     private val frameWork: CoroutineContext = Dispatchers.Default,
+    private val store: CanvasRepository? = null,
+    private val saveWork: CoroutineContext = Dispatchers.Default,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CanvasUiState(document = document))
+    private val _state = MutableStateFlow(opening(document))
     val state: StateFlow<CanvasUiState> = _state.asStateFlow()
 
     private val undoStack = ArrayDeque<CanvasDocument>()
@@ -56,6 +69,7 @@ class CanvasViewModel(
     private var frameJob: Job? = null
 
     init {
+        if (store != null) autosave(store)
         projector?.let { p ->
             viewModelScope.launch {
                 var wasShowing = false
@@ -149,6 +163,49 @@ class CanvasViewModel(
         lastRun = null
     }
 
+    /** The canvas to open: the saved one if there is one, otherwise [document]. */
+    private fun opening(document: CanvasDocument): CanvasUiState {
+        val saved = store?.load() ?: return CanvasUiState(
+            document = document,
+            saveStatus = if (store != null) SaveStatus.SAVED else SaveStatus.NONE,
+        )
+        return CanvasUiState(
+            document = saved.document,
+            pageIndex = saved.pageIndex,
+            options = saved.options,
+            saveStatus = SaveStatus.SAVED,
+        )
+    }
+
+    /**
+     * Writes the canvas back after each change — the pages, the open page and the
+     * tool settings, but not passing things like the selection or zoom. Waits
+     * [SAVE_DELAY_MS] for the changes to stop, and a change arriving meanwhile
+     * restarts the wait rather than queueing a second write.
+     */
+    private fun autosave(store: CanvasRepository) {
+        viewModelScope.launch {
+            _state
+                .map { SavedCanvas(document = it.document, pageIndex = it.pageIndex, options = it.options) }
+                .distinctUntilChanged()
+                .drop(1)
+                .collectLatest { canvas ->
+                    _state.update { it.copy(saveStatus = SaveStatus.SAVING) }
+                    delay(SAVE_DELAY_MS)
+                    val saved = withContext(saveWork) { store.save(canvas) }
+                    _state.update { it.copy(saveStatus = if (saved) SaveStatus.SAVED else SaveStatus.FAILED) }
+                }
+        }
+    }
+
+    /** A change still waiting out [SAVE_DELAY_MS] is written now, rather than lost with the ViewModel. */
+    override fun onCleared() {
+        val s = _state.value
+        if (store != null && s.saveStatus == SaveStatus.SAVING) {
+            store.save(SavedCanvas(document = s.document, pageIndex = s.pageIndex, options = s.options))
+        }
+    }
+
     /** The run [intent] continues, or null for one that stands alone. */
     private fun runOf(intent: CanvasIntent): String? = when (intent) {
         is CanvasIntent.EditText -> TYPING
@@ -172,5 +229,8 @@ class CanvasViewModel(
 
     private companion object {
         const val TYPING = "typing"
+
+        /** How long the canvas waits for edits to stop before writing them, in ms. */
+        const val SAVE_DELAY_MS = 500L
     }
 }

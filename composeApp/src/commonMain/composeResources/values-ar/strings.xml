@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">أثر ممحاة</string>
     <string name="canvas_type_here">اكتب هنا</string>
     <string name="canvas_custom_color_title">لون مخصص</string>
+    <string name="canvas_saving">جارٍ الحفظ…</string>
+    <string name="canvas_saved">تم الحفظ</string>
+    <string name="canvas_not_saved">لم يُحفظ</string>
+    <string name="canvas_clear_canvas">مسح لوحة الرسم</string>
+    <string name="canvas_clear_canvas_title">مسح لوحة الرسم بالكامل؟</string>
+    <string name="canvas_clear_canvas_body">ستُزال كل الصفحات وتبدأ لوحة الرسم فارغة من جديد. يمكنك التراجع عن ذلك.</string>
+    <string name="canvas_clear">مسح</string>
 </resources>

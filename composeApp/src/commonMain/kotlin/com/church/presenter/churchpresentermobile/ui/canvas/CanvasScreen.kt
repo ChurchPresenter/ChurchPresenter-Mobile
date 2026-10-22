@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.present.CanvasProjector
@@ -41,23 +42,25 @@ import kotlin.math.roundToInt
  * The canvas: a whiteboard of pages to sketch a talk on and put on screen.
  *
  * Tablet only — the caller opens it only in the two-pane layout, where it fills the
- * window as the design draws it. Owns its [CanvasViewModel]. The canvas lives in
- * memory for now; Go Live puts the page on this device's outputs through
- * [projector] and keeps it up to date as it is drawn on.
+ * window as the design draws it. Owns its [CanvasViewModel]. The canvas is saved on
+ * this device as it is drawn on; Go Live puts the page on this device's outputs
+ * through [projector] and keeps it up to date.
  *
  * @param onBack Back to the More launcher, from the "‹ More" link or the system back gesture.
  * @param projector Where Go Live sends the page. Null outside standalone.
  * @param canProject Whether Go Live can work right now — standalone, with the
  *   presentation server running. Go Live is off while it cannot.
+ * @param store Where the canvas is kept, so it opens as it was left.
  */
 @Composable
 fun CanvasScreen(
     onBack: () -> Unit,
     projector: CanvasProjector?,
     canProject: Boolean,
+    store: CanvasRepository,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: CanvasViewModel = viewModel { CanvasViewModel(projector = projector) }
+    val viewModel: CanvasViewModel = viewModel { CanvasViewModel(projector = projector, store = store) }
     val state by viewModel.state.collectAsState()
     AppBackHandler(enabled = true, onBack = onBack)
     CanvasEditor(

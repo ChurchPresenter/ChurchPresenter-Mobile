@@ -51,6 +51,7 @@ import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.library.PlayLogRepository
@@ -285,6 +286,8 @@ fun App(
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
     val canvasProjector = remember(canvasOutput, standaloneEngine) { CanvasProjector(canvasOutput, standaloneEngine) }
+    // The canvas on this device's disk, kept apart from the library like the play log.
+    val canvasRepository = remember { CanvasRepository() }
     val projectionRouter = remember(standaloneEngine) {
         ProjectionRouter(AppModeHolder.mode, eventService, standaloneEngine)
     }
@@ -1313,6 +1316,7 @@ fun App(
                     // a canvas to the desktop, so Go Live is off there.
                     projector = canvasProjector.takeIf { appMode == AppMode.STANDALONE },
                     canProject = appMode == AppMode.STANDALONE && photoBaseUrl != null,
+                    store = canvasRepository,
                 )
             }
             if (showSettings) {

@@ -31,6 +31,8 @@ internal object CanvasTags {
     const val MENU_DUPLICATE_PAGE = "canvas:menu:duplicatePage"
     const val MENU_DELETE_PAGE = "canvas:menu:deletePage"
     const val MENU_CLEAR_PAGE = "canvas:menu:clearPage"
+    const val MENU_CLEAR_CANVAS = "canvas:menu:clearCanvas"
+    const val CLEAR_CANVAS_CONFIRM = "canvas:clearCanvas:confirm"
     const val RENAME_FIELD = "canvas:rename:field"
     const val RENAME_SAVE = "canvas:rename:save"
 

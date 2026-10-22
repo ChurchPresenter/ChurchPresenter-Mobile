@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 /**
  * A canvas: a whiteboard of pages the operator sketches on and puts on screen.
  *
@@ -10,21 +13,25 @@ package com.church.presenter.churchpresentermobile.model
  * @param title What the operator called it. Null for one never named, which the
  *   screen shows as "Untitled canvas" in the operator's own language.
  */
+@Serializable
 data class CanvasDocument(
     val title: String? = null,
     val pages: List<CanvasPage> = listOf(CanvasPage()),
 )
 
 /** A point on a canvas page, in dp at 100% zoom from the page's top-left corner. */
+@Serializable
 data class CanvasPoint(val x: Float, val y: Float)
 
 /** A rectangle on a canvas page, in the same units as [CanvasPoint]. */
+@Serializable
 data class CanvasBounds(val left: Float, val top: Float, val right: Float, val bottom: Float) {
     val width: Float get() = right - left
     val height: Float get() = bottom - top
 }
 
 /** One page of a [CanvasDocument]: its elements, bottom-most first. */
+@Serializable
 data class CanvasPage(val elements: List<CanvasElement> = emptyList())
 
 /**
@@ -42,6 +49,7 @@ data class CanvasPage(val elements: List<CanvasElement> = emptyList())
  * Colours are a [CanvasInk] with an optional `custom` override — a "#RRGGBB" the
  * operator mixed in the colour picker — so the named inks can still follow the theme.
  */
+@Serializable
 sealed interface CanvasElement {
     val id: String
     val label: String?
@@ -63,6 +71,8 @@ sealed interface CanvasElement {
      * Typed text. [style] picks between the heading and body looks; [format], when
      * set, is what the text tool typed it with and takes their place.
      */
+    @Serializable
+    @SerialName("text")
     data class Text(
         override val id: String,
         val x: Float,
@@ -89,6 +99,8 @@ sealed interface CanvasElement {
      * design is drawn in, and one a hand-drawn stroke turns into without loss
      * ("M x y L x y …"). A dot is a zero-length segment, drawn by its round cap.
      */
+    @Serializable
+    @SerialName("ink")
     data class Ink(
         override val id: String,
         val x: Float,
@@ -121,6 +133,8 @@ sealed interface CanvasElement {
      * @param cutOut Whether Remove background has been applied: the placeholder
      *   drops its backdrop.
      */
+    @Serializable
+    @SerialName("image")
     data class Image(
         override val id: String,
         val x: Float,
@@ -147,6 +161,8 @@ sealed interface CanvasElement {
     }
 
     /** An outlined shape with optional text centred in it. */
+    @Serializable
+    @SerialName("shape")
     data class Shape(
         override val id: String,
         val x: Float,
@@ -173,6 +189,8 @@ sealed interface CanvasElement {
     }
 
     /** A sticky note, slightly turned by [rotation] degrees so it reads as stuck on. */
+    @Serializable
+    @SerialName("sticky")
     data class Sticky(
         override val id: String,
         val x: Float,

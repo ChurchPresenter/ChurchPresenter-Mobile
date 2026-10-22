@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Potez gumice</string>
     <string name="canvas_type_here">Pišite ovdje</string>
     <string name="canvas_custom_color_title">Prilagođena boja</string>
+    <string name="canvas_saving">Spremanje…</string>
+    <string name="canvas_saved">Spremljeno</string>
+    <string name="canvas_not_saved">Nije spremljeno</string>
+    <string name="canvas_clear_canvas">Očisti platno</string>
+    <string name="canvas_clear_canvas_title">Očistiti cijelo platno?</string>
+    <string name="canvas_clear_canvas_body">Sve stranice bit će uklonjene i platno ponovno počinje prazno. Ovo možete poništiti.</string>
+    <string name="canvas_clear">Očisti</string>
 </resources>

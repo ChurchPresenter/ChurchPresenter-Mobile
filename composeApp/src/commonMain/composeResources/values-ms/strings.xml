@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Lorekan pemadam</string>
     <string name="canvas_type_here">Taip di sini</string>
     <string name="canvas_custom_color_title">Warna tersuai</string>
+    <string name="canvas_saving">Menyimpan…</string>
+    <string name="canvas_saved">Disimpan</string>
+    <string name="canvas_not_saved">Tidak disimpan</string>
+    <string name="canvas_clear_canvas">Kosongkan kanvas</string>
+    <string name="canvas_clear_canvas_title">Kosongkan seluruh kanvas?</string>
+    <string name="canvas_clear_canvas_body">Semua halaman dibuang dan kanvas bermula semula dalam keadaan kosong. Anda boleh membuat asal tindakan ini.</string>
+    <string name="canvas_clear">Kosongkan</string>
 </resources>

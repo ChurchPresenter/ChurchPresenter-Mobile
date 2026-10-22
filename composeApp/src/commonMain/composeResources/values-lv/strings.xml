@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Dzēšgumijas vilciens</string>
     <string name="canvas_type_here">Rakstiet šeit</string>
     <string name="canvas_custom_color_title">Pielāgota krāsa</string>
+    <string name="canvas_saving">Saglabā…</string>
+    <string name="canvas_saved">Saglabāts</string>
+    <string name="canvas_not_saved">Nav saglabāts</string>
+    <string name="canvas_clear_canvas">Notīrīt audeklu</string>
+    <string name="canvas_clear_canvas_title">Notīrīt visu audeklu?</string>
+    <string name="canvas_clear_canvas_body">Visas lapas tiek noņemtas, un audekls sākas no jauna tukšs. To var atsaukt.</string>
+    <string name="canvas_clear">Notīrīt</string>
 </resources>

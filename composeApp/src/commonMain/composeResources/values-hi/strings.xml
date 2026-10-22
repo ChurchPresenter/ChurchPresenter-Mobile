@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">इरेज़र स्ट्रोक</string>
     <string name="canvas_type_here">यहाँ टाइप करें</string>
     <string name="canvas_custom_color_title">कस्टम रंग</string>
+    <string name="canvas_saving">सहेजा जा रहा है…</string>
+    <string name="canvas_saved">सहेजा गया</string>
+    <string name="canvas_not_saved">सहेजा नहीं गया</string>
+    <string name="canvas_clear_canvas">कैनवास साफ़ करें</string>
+    <string name="canvas_clear_canvas_title">पूरा कैनवास साफ़ करें?</string>
+    <string name="canvas_clear_canvas_body">हर पृष्ठ हटा दिया जाएगा और कैनवास फिर से खाली शुरू होगा। आप इसे पूर्ववत कर सकते हैं।</string>
+    <string name="canvas_clear">साफ़ करें</string>
 </resources>

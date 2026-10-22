@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Suddstreck</string>
     <string name="canvas_type_here">Skriv här</string>
     <string name="canvas_custom_color_title">Egen färg</string>
+    <string name="canvas_saving">Sparar…</string>
+    <string name="canvas_saved">Sparad</string>
+    <string name="canvas_not_saved">Inte sparad</string>
+    <string name="canvas_clear_canvas">Rensa ritytan</string>
+    <string name="canvas_clear_canvas_title">Rensa hela ritytan?</string>
+    <string name="canvas_clear_canvas_body">Alla sidor tas bort och ritytan börjar om tom. Du kan ångra detta.</string>
+    <string name="canvas_clear">Rensa</string>
 </resources>

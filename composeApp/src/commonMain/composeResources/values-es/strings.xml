@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Trazo de borrador</string>
     <string name="canvas_type_here">Escriba aquí</string>
     <string name="canvas_custom_color_title">Color personalizado</string>
+    <string name="canvas_saving">Guardando…</string>
+    <string name="canvas_saved">Guardado</string>
+    <string name="canvas_not_saved">No guardado</string>
+    <string name="canvas_clear_canvas">Limpiar lienzo</string>
+    <string name="canvas_clear_canvas_title">¿Limpiar todo el lienzo?</string>
+    <string name="canvas_clear_canvas_body">Se eliminan todas las páginas y el lienzo vuelve a quedar en blanco. Puede deshacerlo.</string>
+    <string name="canvas_clear">Limpiar</string>
 </resources>

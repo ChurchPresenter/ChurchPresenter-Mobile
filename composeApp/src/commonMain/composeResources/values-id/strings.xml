@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Goresan penghapus</string>
     <string name="canvas_type_here">Ketik di sini</string>
     <string name="canvas_custom_color_title">Warna kustom</string>
+    <string name="canvas_saving">Menyimpan…</string>
+    <string name="canvas_saved">Tersimpan</string>
+    <string name="canvas_not_saved">Tidak tersimpan</string>
+    <string name="canvas_clear_canvas">Bersihkan kanvas</string>
+    <string name="canvas_clear_canvas_title">Bersihkan seluruh kanvas?</string>
+    <string name="canvas_clear_canvas_body">Semua halaman dihapus dan kanvas dimulai lagi dalam keadaan kosong. Anda dapat mengurungkannya.</string>
+    <string name="canvas_clear">Bersihkan</string>
 </resources>

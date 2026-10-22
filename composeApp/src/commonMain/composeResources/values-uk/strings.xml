@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Штрих гумки</string>
     <string name="canvas_type_here">Введіть текст</string>
     <string name="canvas_custom_color_title">Власний колір</string>
+    <string name="canvas_saving">Збереження…</string>
+    <string name="canvas_saved">Збережено</string>
+    <string name="canvas_not_saved">Не збережено</string>
+    <string name="canvas_clear_canvas">Очистити полотно</string>
+    <string name="canvas_clear_canvas_title">Очистити все полотно?</string>
+    <string name="canvas_clear_canvas_body">Усі сторінки буде видалено, і полотно почнеться знову порожнім. Цю дію можна скасувати.</string>
+    <string name="canvas_clear">Очистити</string>
 </resources>

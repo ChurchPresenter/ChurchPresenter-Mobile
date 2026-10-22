@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">خط پاک‌کن</string>
     <string name="canvas_type_here">اینجا بنویسید</string>
     <string name="canvas_custom_color_title">رنگ دلخواه</string>
+    <string name="canvas_saving">در حال ذخیره…</string>
+    <string name="canvas_saved">ذخیره شد</string>
+    <string name="canvas_not_saved">ذخیره نشد</string>
+    <string name="canvas_clear_canvas">پاک کردن بوم</string>
+    <string name="canvas_clear_canvas_title">کل بوم پاک شود؟</string>
+    <string name="canvas_clear_canvas_body">همهٔ صفحه‌ها حذف می‌شوند و بوم دوباره خالی شروع می‌شود. می‌توانید این کار را واگرد کنید.</string>
+    <string name="canvas_clear">پاک کردن</string>
 </resources>

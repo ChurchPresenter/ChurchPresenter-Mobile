@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">ຮອຍຢາງລຶບ</string>
     <string name="canvas_type_here">ພິມທີ່ນີ້</string>
     <string name="canvas_custom_color_title">ສີກຳນົດເອງ</string>
+    <string name="canvas_saving">ກຳລັງບັນທຶກ…</string>
+    <string name="canvas_saved">ບັນທຶກແລ້ວ</string>
+    <string name="canvas_not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="canvas_clear_canvas">ລ້າງແຄນວາສ</string>
+    <string name="canvas_clear_canvas_title">ລ້າງແຄນວາສທັງໝົດບໍ?</string>
+    <string name="canvas_clear_canvas_body">ທຸກໜ້າຈະຖືກລຶບອອກ ແລະ ແຄນວາສຈະເລີ່ມໃໝ່ແບບຫວ່າງເປົ່າ. ທ່ານສາມາດຍ້ອນກັບໄດ້.</string>
+    <string name="canvas_clear">ລ້າງ</string>
 </resources>

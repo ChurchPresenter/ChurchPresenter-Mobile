@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">Trait de gomme</string>
     <string name="canvas_type_here">Saisissez ici</string>
     <string name="canvas_custom_color_title">Couleur personnalisée</string>
+    <string name="canvas_saving">Enregistrement…</string>
+    <string name="canvas_saved">Enregistré</string>
+    <string name="canvas_not_saved">Non enregistré</string>
+    <string name="canvas_clear_canvas">Effacer le canevas</string>
+    <string name="canvas_clear_canvas_title">Effacer tout le canevas ?</string>
+    <string name="canvas_clear_canvas_body">Toutes les pages sont supprimées et le canevas repart vierge. Vous pouvez annuler cette action.</string>
+    <string name="canvas_clear">Effacer</string>
 </resources>

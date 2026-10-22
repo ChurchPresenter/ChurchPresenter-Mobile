@@ -1298,4 +1298,11 @@
     <string name="canvas_layer_eraser">அழிப்பான் கோடு</string>
     <string name="canvas_type_here">இங்கே தட்டச்சு செய்க</string>
     <string name="canvas_custom_color_title">தனிப்பயன் நிறம்</string>
+    <string name="canvas_saving">சேமிக்கிறது…</string>
+    <string name="canvas_saved">சேமிக்கப்பட்டது</string>
+    <string name="canvas_not_saved">சேமிக்கப்படவில்லை</string>
+    <string name="canvas_clear_canvas">கேன்வாஸை அழி</string>
+    <string name="canvas_clear_canvas_title">முழு கேன்வாஸையும் அழிக்கவா?</string>
+    <string name="canvas_clear_canvas_body">எல்லாப் பக்கங்களும் நீக்கப்பட்டு கேன்வாஸ் மீண்டும் வெறுமையாகத் தொடங்கும். இதைச் செயல்தவிர்க்கலாம்.</string>
+    <string name="canvas_clear">அழி</string>
 </resources>
