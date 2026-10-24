@@ -551,6 +551,7 @@ private fun ColorPickerDialog(initialHex: String, onPick: (String) -> Unit, onDi
             Modifier
                 .clip(RoundedCornerShape(20.dp))
                 .background(colors.sheetBackground)
+                .verticalScrollWithScrollbar(rememberScrollState())
                 .padding(20.dp),
         ) {
             Text(

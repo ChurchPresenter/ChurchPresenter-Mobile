@@ -11,6 +11,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasLogicFixtures.stic
 import com.church.presenter.churchpresentermobile.model.CanvasLogicFixtures.text
 import com.church.presenter.churchpresentermobile.model.CanvasPage
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
+import com.church.presenter.churchpresentermobile.model.StoredPicture
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.EraserMode
 import com.church.presenter.churchpresentermobile.model.ImageAdjust
@@ -498,5 +499,22 @@ class CanvasReducerTest {
         assertEquals(pen.options, pen.go(CanvasIntent.Select("k")).options, "a pen stroke has no options to load")
         val plain = state(text("t"))
         assertEquals(plain.options, plain.go(CanvasIntent.Select("t")).options, "text with no format of its own")
+    }
+
+    @Test
+    fun `rotate turns an element and leaves a locked one alone`() {
+        val s = state(shape("s"), shape("l").copy(locked = true))
+        assertEquals(45f, s.go(CanvasIntent.Rotate("s", 45f)).element("s").angle)
+        assertEquals(-90f, s.go(CanvasIntent.Rotate("s", 270f)).element("s").angle, "stored one way round")
+        assertEquals(0f, s.go(CanvasIntent.Rotate("l", 45f)).element("l").angle)
+    }
+
+    @Test
+    fun `a picked picture is placed with its key and its own shape`() {
+        val picture = StoredPicture("canvas-picture-1", width = 1000, height = 500)
+        val image = state().go(CanvasIntent.InsertImage(ImageSource.PHOTOS, CanvasPoint(500f, 400f), picture))
+            .page.elements.single() as CanvasElement.Image
+        assertEquals("canvas-picture-1", image.photo)
+        assertEquals(2f, image.width / image.height, "keeps the picture's shape")
     }
 }

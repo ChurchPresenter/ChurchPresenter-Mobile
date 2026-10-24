@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">承認待ち…</string>
     <string name="canvas_not_approved">承認されませんでした</string>
     <string name="canvas_live_failed">表示できませんでした</string>
+    <string name="canvas_picture_failed">画像を開けませんでした</string>
 </resources>

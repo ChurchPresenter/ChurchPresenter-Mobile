@@ -1339,4 +1339,5 @@
     <string name="canvas_waiting_approval">Wachten op goedkeuring…</string>
     <string name="canvas_not_approved">Niet goedgekeurd</string>
     <string name="canvas_live_failed">Live gaan mislukt</string>
+    <string name="canvas_picture_failed">Afbeelding kon niet worden geopend</string>
 </resources>

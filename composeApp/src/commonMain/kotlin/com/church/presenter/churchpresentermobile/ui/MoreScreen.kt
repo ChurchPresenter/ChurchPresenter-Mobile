@@ -35,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -106,8 +107,12 @@ private data class MoreEntry(
  * @param selected Drawn as the open tile. Only meaningful beside a detail pane —
  *   on a phone, opening a destination replaces this screen, so there is never a
  *   selected tile to see.
- * @param tablet Whether the window is the tablet's two-pane layout, which adds
- *   the tablet-only tools (the canvas) to the list.
+ * @param tablet Whether this is a tablet, in either orientation, which adds the
+ *   tablet-only tools (the canvas) to the list.
+ * @param newBadges The tools to tag "New" — see [NewBadges], which keeps each tag
+ *   to a single session.
+ * @param onBadgesShown Told which of [newBadges] were on screen, so they can be
+ *   left off next session.
  */
 @Composable
 fun MoreScreen(
@@ -116,23 +121,25 @@ fun MoreScreen(
     modifier: Modifier = Modifier,
     selected: MoreDestination? = null,
     tablet: Boolean = false,
+    newBadges: Set<MoreDestination> = NewFeatures,
+    onBadgesShown: (Set<MoreDestination>) -> Unit = {},
 ) {
-    val colors = LocalAppColors.current
     val available = MoreDestination.forMode(mode, tablet)
+    val badgeFor = rememberNewBadges(newBadges, available, onBadgesShown)
     val entries = listOf(
         MoreEntry(
             MoreDestination.CALENDAR,
             stringResource(Res.string.more_calendar_title),
             stringResource(Res.string.more_calendar_subtitle),
             Icons.Outlined.CalendarMonth,
-            badge = stringResource(Res.string.more_new_badge),
+            badge = badgeFor(MoreDestination.CALENDAR),
         ),
         MoreEntry(
             MoreDestination.CANVAS,
             stringResource(Res.string.more_canvas_title),
             stringResource(Res.string.more_canvas_subtitle),
             Icons.Outlined.Draw,
-            badge = stringResource(Res.string.more_new_badge),
+            badge = badgeFor(MoreDestination.CANVAS),
         ),
         MoreEntry(
             MoreDestination.PICTURES,
@@ -193,6 +200,18 @@ fun MoreScreen(
             Icons.Outlined.MailOutline,
         ),
     ).filter { it.destination in available }
+    MoreGrid(entries = entries, selected = selected, onSelect = onSelect, modifier = modifier)
+}
+
+/** [entries] as tiles, as many to a row as fit. */
+@Composable
+private fun MoreGrid(
+    entries: List<MoreEntry>,
+    selected: MoreDestination?,
+    onSelect: (MoreDestination) -> Unit,
+    modifier: Modifier,
+) {
+    val colors = LocalAppColors.current
     // Laid out by hand rather than with LazyVerticalGrid: a lazy grid sizes each
     // tile to its own text, so one subtitle wrapping to a second line made its
     // tile taller than the rest of its row. Seven tiles need no laziness, and a
@@ -223,6 +242,22 @@ fun MoreScreen(
             }
         }
     }
+}
+
+/**
+ * The "New" label for each tool in [newBadges] the launcher lists, null for the
+ * rest; the badged tools are reported to [onShown] once they are on screen.
+ */
+@Composable
+private fun rememberNewBadges(
+    newBadges: Set<MoreDestination>,
+    available: List<MoreDestination>,
+    onShown: (Set<MoreDestination>) -> Unit,
+): (MoreDestination) -> String? {
+    val label = stringResource(Res.string.more_new_badge)
+    val badged = newBadges.filterTo(LinkedHashSet()) { it in available }
+    LaunchedEffect(badged) { if (badged.isNotEmpty()) onShown(badged) }
+    return { destination -> label.takeIf { destination in badged } }
 }
 
 private val MoreGridPadding: Dp = 16.dp
@@ -338,6 +373,7 @@ fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
  * no back arrow and no single title that could name both halves — which is why
  * each pane carries its own header.
  *
+ * @param newBadges As [MoreScreen]'s, passed on to the launcher pane.
  * @param tool The open destination's screen. Built by the caller, because these
  *   are six unrelated screens with six unrelated sets of collaborators; this
  *   composable's job is where they go, not what they are.
@@ -351,6 +387,8 @@ fun MoreTwoPane(
     modifier: Modifier = Modifier,
     onMenu: (() -> Unit)? = null,
     onSettings: (() -> Unit)? = null,
+    newBadges: Set<MoreDestination> = NewFeatures,
+    onBadgesShown: (Set<MoreDestination>) -> Unit = {},
 ) {
     val colors = LocalAppColors.current
     Row(modifier = modifier.fillMaxSize().background(colors.background)) {
@@ -362,7 +400,14 @@ fun MoreTwoPane(
             )
             Box(modifier = Modifier.weight(1f)) {
                 // This split only exists in the two-pane layout, so the tablet-only tools belong in it.
-                MoreScreen(mode = mode, onSelect = onSelect, selected = selected, tablet = true)
+                MoreScreen(
+                    mode = mode,
+                    onSelect = onSelect,
+                    selected = selected,
+                    tablet = true,
+                    newBadges = newBadges,
+                    onBadgesShown = onBadgesShown,
+                )
             }
         }
 

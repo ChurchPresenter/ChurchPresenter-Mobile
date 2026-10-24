@@ -11,6 +11,7 @@ import com.church.presenter.churchpresentermobile.ui.click
 import com.church.presenter.churchpresentermobile.ui.exists
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
+import com.church.presenter.churchpresentermobile.viewmodel.PickableSources
 import com.church.presenter.churchpresentermobile.viewmodel.SelectionAction
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -75,10 +76,12 @@ class CanvasSidePanelsTest {
         val vm = showCanvas()
         pick(CanvasTool.IMAGE)
 
-        ImageSource.entries.forEach { click(CanvasTags.insertSource(it)) }
+        PickableSources.forEach { click(CanvasTags.insertSource(it)) }
 
         val inserted = vm.state.value.page.elements.filterIsInstance<CanvasElement.Image>().mapNotNull { it.source }
-        assertEquals(ImageSource.entries, inserted)
+        assertEquals(PickableSources, inserted)
+        assertFalse(exists(CanvasTags.insertSource(ImageSource.CAMERA)), "no camera until it can take one")
+        assertFalse(exists(CanvasTags.insertSource(ImageSource.CLIPBOARD)), "no clipboard until it can paste one")
     }
 
     @Test
@@ -89,11 +92,11 @@ class CanvasSidePanelsTest {
 
         click(CanvasTags.selection(SelectionAction.REPLACE))
         assertTrue(exists(CanvasTags.INSERT_PANEL), "Replace opens the panel")
-        click(CanvasTags.insertSource(ImageSource.CAMERA))
+        click(CanvasTags.insertSource(ImageSource.FILES))
 
         val images = vm.state.value.page.elements.filterIsInstance<CanvasElement.Image>()
         assertEquals(1, images.size, "replaced, not added")
-        assertEquals(ImageSource.CAMERA, images.single().source)
+        assertEquals(ImageSource.FILES, images.single().source)
         assertFalse(exists(CanvasTags.INSERT_PANEL))
     }
 

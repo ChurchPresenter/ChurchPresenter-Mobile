@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -33,6 +32,7 @@ import com.church.presenter.churchpresentermobile.ui.DesktopAddressFields
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -66,7 +66,7 @@ fun SyncSheet(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 // Two sections plus an address block overflow a phone screen.
-                .verticalScroll(rememberScrollState())
+                .verticalScrollWithScrollbar(rememberScrollState())
                 .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {

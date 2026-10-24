@@ -44,20 +44,20 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
  * frames refresh the page without asking again, until something else takes the screen.
  *
  * Whether the page is still up comes from the desktop's own `live_state_changed`
- * event ([liveContentType]), so the canvas notices at once when the operator puts
+ * event ([liveSlide]), so the canvas notices at once when the operator puts
  * something else up.
  *
- * @param liveContentType What the desktop's outputs are showing, from its events.
+ * @param liveSlide What the desktop's outputs are showing, from its events.
  */
 class RemoteCanvasProjector(
     private val settings: AppSettings,
-    liveContentType: StateFlow<String?>,
+    liveSlide: StateFlow<String?>,
     private val client: HttpClient = createActionHttpClient(),
 ) : CanvasProjection {
 
     override val asksFirst: Boolean = true
 
-    override val showing: Flow<Boolean> = liveContentType.map { it == DESKTOP_DRAWING }.distinctUntilChanged()
+    override val showing: Flow<Boolean> = liveSlide.map { it == DESKTOP_DRAWING }.distinctUntilChanged()
 
     override suspend fun show(png: ByteArray, paper: String, title: String, takeOver: Boolean): CanvasShowResult =
         runCatching {

@@ -140,22 +140,28 @@ private const val STICKY_LARGE = 260f
 private const val STICKY_ASPECT = 0.92f
 private const val STICKY_TILT = -2f
 
+/** A picture kept for the canvas: its key in the picture store and its size in pixels. */
+data class StoredPicture(val key: String, val width: Int, val height: Int)
+
 /**
  * A picture from [source] centred on [at], sized for the image tool's "When placed"
- * choice. Pictures are placeholders until they are loaded for real, so Fit, Fill
- * and Original are three sizes of the same card.
+ * choice: Fit and Fill keep the picture's shape inside a smaller or larger frame,
+ * and Original shows it pixel for pixel, as far as the page has room. Without a
+ * [picture] it is a placeholder card, and the three are sizes of the card.
  */
 internal fun imageElement(
     id: String,
     at: CanvasPoint,
     source: ImageSource,
     options: ImageOptions,
+    picture: StoredPicture? = null,
 ): CanvasElement.Image {
-    val (width, height) = when (options.placement) {
+    val frame = when (options.placement) {
         ImagePlacement.FIT -> FIT_SIZE
         ImagePlacement.FILL -> FILL_SIZE
         ImagePlacement.ORIGINAL -> ORIGINAL_SIZE
     }
+    val (width, height) = picture?.let { pictureSize(it, options.placement) } ?: frame
     return CanvasElement.Image(
         id = id,
         x = at.x - width / 2,
@@ -164,6 +170,7 @@ internal fun imageElement(
         height = height,
         fileName = "",
         source = source,
+        photo = picture?.key,
         rounded = options.rounded,
         shadow = options.shadow,
         opacity = options.opacity,
@@ -173,6 +180,25 @@ internal fun imageElement(
 private val FIT_SIZE = 300f to 210f
 private val FILL_SIZE = 420f to 295f
 private val ORIGINAL_SIZE = 240f to 168f
+
+/**
+ * How big [picture] is placed: as large as fits the placement's frame without
+ * changing its shape, or for Original its own size, shrunk only to fit the page.
+ */
+internal fun pictureSize(picture: StoredPicture, placement: ImagePlacement): Pair<Float, Float> {
+    val w = picture.width.coerceAtLeast(1).toFloat()
+    val h = picture.height.coerceAtLeast(1).toFloat()
+    val (frameW, frameH) = when (placement) {
+        ImagePlacement.FIT -> FIT_SIZE
+        ImagePlacement.FILL -> FILL_SIZE
+        ImagePlacement.ORIGINAL -> return (minOf(1f, ORIGINAL_MAX_EDGE / maxOf(w, h))).let { w * it to h * it }
+    }
+    val scale = minOf(frameW / w, frameH / h)
+    return w * scale to h * scale
+}
+
+/** The longest edge an Original picture is placed at, so a photo still lands on the page. */
+private const val ORIGINAL_MAX_EDGE = 640f
 
 /**
  * [image] after [adjust]: Crop trims it to a centred square, Flip mirrors it,
@@ -190,9 +216,7 @@ internal fun adjusted(image: CanvasElement.Image, adjust: ImageAdjust): CanvasEl
         )
     }
     ImageAdjust.FLIP -> image.copy(flipped = !image.flipped)
-    ImageAdjust.ROTATE -> image.copy(rotation = (image.rotation + QUARTER_TURN) % FULL_TURN)
+    ImageAdjust.ROTATE -> image.copy(angle = quarterTurned(image.angle))
     ImageAdjust.REMOVE_BACKGROUND -> image.copy(cutOut = !image.cutOut)
 }
 
-private const val QUARTER_TURN = 90
-private const val FULL_TURN = 360

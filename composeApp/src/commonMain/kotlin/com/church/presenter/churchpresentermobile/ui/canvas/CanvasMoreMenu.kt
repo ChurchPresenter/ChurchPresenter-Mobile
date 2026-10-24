@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreHoriz
@@ -55,7 +57,14 @@ internal fun CanvasMoreMenu(state: CanvasUiState, onIntent: (CanvasIntent) -> Un
             active = open,
             onClick = { open = true },
         )
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = colors.panel) {
+        val menuScroll = rememberScrollState()
+        DropdownMenu(
+            expanded = open,
+            onDismissRequest = { open = false },
+            containerColor = colors.panel,
+            modifier = Modifier.verticalScrollbar(menuScroll),
+            scrollState = menuScroll,
+        ) {
             MenuItem(Res.string.canvas_rename, CanvasTags.MENU_RENAME) {
                 open = false
                 renaming = true

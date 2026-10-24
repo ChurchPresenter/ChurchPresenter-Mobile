@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
 import com.church.presenter.churchpresentermobile.library.CANVAS_FILE
+import com.church.presenter.churchpresentermobile.library.CanvasPictures
 import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.library.FileStore
 import com.church.presenter.churchpresentermobile.library.SavedCanvas
@@ -13,6 +14,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasLogicFixtures.shap
 import com.church.presenter.churchpresentermobile.model.CanvasPage
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
 import com.church.presenter.churchpresentermobile.model.CanvasTool
+import com.church.presenter.churchpresentermobile.model.ImageSource
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.present.CanvasOutput
 import com.church.presenter.churchpresentermobile.present.CanvasProjector
@@ -30,6 +32,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -343,5 +346,106 @@ class CanvasViewModelTest {
         val saved = SavedCanvas()
         assertEquals(CanvasDocument(), saved.document)
         assertEquals(0, saved.pageIndex)
+    }
+
+    // ── Pictures ─────────────────────────────────────────────────────────
+
+    private fun pictureVm(
+        measure: (ByteArray) -> Pair<Int, Int>? = { 400 to 300 },
+    ): Pair<CanvasViewModel, CanvasPictures> {
+        var key = 0
+        val pictures = CanvasPictures(
+            InMemoryFileStorage(),
+            newKey = { "${++key}" },
+            prepare = { it },
+            measure = measure,
+        )
+        return CanvasViewModel(
+            document = doc,
+            frameWork = EmptyCoroutineContext,
+            saveWork = EmptyCoroutineContext,
+            pictures = pictures,
+        ) to pictures
+    }
+
+    @Test
+    fun insertingFromPhotosOpensThePickerAndPlacesWhatComesBack() = runVmTest {
+        val (vm, pictures) = pictureVm()
+        try {
+            vm.dispatch(CanvasIntent.InsertImage(ImageSource.PHOTOS, CanvasPoint(200f, 200f)))
+            assertEquals(ImagePick(ImageSource.PHOTOS, CanvasPoint(200f, 200f)), vm.state.value.picking)
+            assertEquals(1, vm.elements.size, "nothing placed until a picture is picked")
+
+            vm.picturePicked(byteArrayOf(9, 9))
+            advanceUntilIdle()
+
+            val image = vm.elements.filterIsInstance<CanvasElement.Image>().single()
+            assertNotNull(pictures.get(assertNotNull(image.photo)))
+            assertEquals(null, vm.state.value.picking)
+            assertTrue(vm.state.value.canUndo, "placing a picture is undoable")
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun aCancelledPickPlacesNothing() = runVmTest {
+        val (vm, _) = pictureVm()
+        try {
+            vm.dispatch(CanvasIntent.InsertImage(ImageSource.FILES))
+            vm.picturePicked(null)
+            advanceUntilIdle()
+            assertEquals(null, vm.state.value.picking)
+            assertEquals(1, vm.elements.size)
+            assertFalse(vm.state.value.pictureFailed)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun aPictureThatWillNotOpenSaysSo() = runVmTest {
+        val (vm, _) = pictureVm(measure = { null })
+        try {
+            vm.dispatch(CanvasIntent.InsertImage(ImageSource.PHOTOS))
+            vm.picturePicked(byteArrayOf(1))
+            advanceUntilIdle()
+            assertTrue(vm.state.value.pictureFailed)
+            assertEquals(1, vm.elements.size)
+
+            vm.dispatch(CanvasIntent.InsertImage(ImageSource.PHOTOS))
+            assertFalse(vm.state.value.pictureFailed, "cleared by the next pick")
+            vm.picturePicked(null, unreadable = true)
+            assertTrue(vm.state.value.pictureFailed)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun oneKnobDragIsOneUndoStep() = runVmTest {
+        val vm = vm()
+        try {
+            listOf(15f, 30f, 45f).forEach { vm.dispatch(CanvasIntent.Rotate("s", it, session = 7)) }
+            assertEquals(45f, vm.elements.single().angle)
+            vm.dispatch(CanvasIntent.Undo)
+            assertEquals(0f, vm.elements.single().angle)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun picturesNoLongerOnTheCanvasArePrunedWhenItOpens() = runVmTest {
+        val storage = InMemoryFileStorage()
+        val pictures = CanvasPictures(storage, newKey = { "k" }, prepare = { it }, measure = { 1 to 1 })
+        val orphan = assertNotNull(pictures.put(byteArrayOf(1)))
+        val vm = CanvasViewModel(document = doc, saveWork = EmptyCoroutineContext, pictures = pictures)
+        try {
+            advanceUntilIdle()
+            assertEquals(null, pictures.get(orphan.key))
+        } finally {
+            tearDown(vm)
+        }
     }
 }

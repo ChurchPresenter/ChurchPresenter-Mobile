@@ -116,6 +116,7 @@ import com.church.presenter.churchpresentermobile.model.StickySize
 import com.church.presenter.churchpresentermobile.model.TextOptions
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
+import com.church.presenter.churchpresentermobile.viewmodel.PickableSources
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
@@ -408,7 +409,7 @@ internal fun ImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) 
             ImageSource.PHOTOS to Res.string.canvas_source_photos,
             ImageSource.CAMERA to Res.string.canvas_source_camera,
             ImageSource.FILES to Res.string.canvas_source_files,
-        ).forEach { (source, label) ->
+        ).filter { (source, _) -> source in PickableSources }.forEach { (source, label) ->
             CanvasChip(
                 text = stringResource(label),
                 active = image.source == source,

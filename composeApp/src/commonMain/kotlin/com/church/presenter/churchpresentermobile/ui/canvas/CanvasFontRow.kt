@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -116,7 +118,14 @@ internal fun FontRow(text: TextOptions, onChange: (TextOptions) -> Unit) {
                     fontFamily = FontFamily.Monospace,
                 )
             }
-            DropdownMenu(expanded = sizes, onDismissRequest = { sizes = false }, containerColor = colors.panel) {
+            val sizeScroll = rememberScrollState()
+            DropdownMenu(
+                expanded = sizes,
+                onDismissRequest = { sizes = false },
+                containerColor = colors.panel,
+                modifier = Modifier.verticalScrollbar(sizeScroll),
+                scrollState = sizeScroll,
+            ) {
                 TextSizes.forEach { size ->
                     DropdownMenuItem(
                         text = { Text("$size", color = colors.text, fontFamily = FontFamily.Monospace) },

@@ -36,6 +36,7 @@ import churchpresentermobile.composeapp.generated.resources.color_green
 import churchpresentermobile.composeapp.generated.resources.color_red
 import churchpresentermobile.composeapp.generated.resources.qa_admin_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_save
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -74,7 +75,7 @@ internal fun ColorPickerDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
+            ScrollingDialogBody(verticalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 Box(
                     Modifier
                         .fillMaxWidth()

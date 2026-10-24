@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">Tasdiq kutilmoqda…</string>
     <string name="canvas_not_approved">Tasdiqlanmadi</string>
     <string name="canvas_live_failed">Ko'rsatib bo'lmadi</string>
+    <string name="canvas_picture_failed">Rasmni ochib bo'lmadi</string>
 </resources>

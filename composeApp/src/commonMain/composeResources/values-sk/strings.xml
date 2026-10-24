@@ -1339,4 +1339,5 @@
     <string name="canvas_waiting_approval">Čaká sa na schválenie…</string>
     <string name="canvas_not_approved">Neschválené</string>
     <string name="canvas_live_failed">Spustenie naživo zlyhalo</string>
+    <string name="canvas_picture_failed">Obrázok sa nepodarilo otvoriť</string>
 </resources>

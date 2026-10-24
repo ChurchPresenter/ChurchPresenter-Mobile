@@ -146,6 +146,28 @@ private class BinaryPickerDelegate : NSObject(), UIDocumentPickerDelegateProtoco
     }
 }
 
+/** Same picker as [BinaryDocumentPicker], showing only pictures. */
+@Composable
+actual fun ImageFilePicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+) {
+    val delegate = remember { BinaryPickerDelegate() }
+    delegate.onPicked = onPicked
+    delegate.onError = onError
+
+    content {
+        val controller = UIDocumentPickerViewController(
+            documentTypes = listOf("public.image"),
+            inMode = platform.UIKit.UIDocumentPickerMode.UIDocumentPickerModeImport,
+        )
+        controller.delegate = delegate
+        rootViewController()?.presentViewController(controller, animated = true, completion = null)
+            ?: onError("Could not open the file picker")
+    }
+}
+
 /**
  * Writes the export to a temporary file and raises the share sheet, which
  * covers both "save to Files" and "send it on" in one gesture.

@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">En attente d'approbation…</string>
     <string name="canvas_not_approved">Non approuvé</string>
     <string name="canvas_live_failed">Diffusion impossible</string>
+    <string name="canvas_picture_failed">Impossible d'ouvrir cette image</string>
 </resources>

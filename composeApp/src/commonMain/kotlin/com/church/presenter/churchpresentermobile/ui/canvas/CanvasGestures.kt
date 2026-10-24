@@ -27,6 +27,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.EraserMode
+import com.church.presenter.churchpresentermobile.model.ImageSource
 import com.church.presenter.churchpresentermobile.model.InkKind
 import com.church.presenter.churchpresentermobile.model.LassoPicks
 import com.church.presenter.churchpresentermobile.model.LassoShape
@@ -35,9 +36,11 @@ import com.church.presenter.churchpresentermobile.model.boundsHits
 import com.church.presenter.churchpresentermobile.model.boundsOf
 import com.church.presenter.churchpresentermobile.model.contains
 import com.church.presenter.churchpresentermobile.model.lassoPick
+import com.church.presenter.churchpresentermobile.model.rotatedPoint
 import com.church.presenter.churchpresentermobile.model.strokeHits
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
+import com.church.presenter.churchpresentermobile.viewmodel.PickableSources
 import kotlin.math.hypot
 
 /**
@@ -143,7 +146,11 @@ internal fun ToolGestures(
         }
         CanvasTool.IMAGE -> GestureLayer(
             key = state.tool,
-            onTap = { onIntent(CanvasIntent.InsertImage(options.image.source, it)) },
+            onTap = {
+                // A canvas saved when every source was offered may still have one that is not.
+                val source = options.image.source.takeIf { s -> s in PickableSources } ?: ImageSource.PHOTOS
+                onIntent(CanvasIntent.InsertImage(source, it))
+            },
             onDragEnd = { _, _ -> },
         ) {}
     }
@@ -187,7 +194,11 @@ private fun EraserGestures(
     val hits: (List<CanvasPoint>) -> List<String> = { path ->
         val dense = densified(path, radius / 2)
         val strokes = targets.filterIsInstance<CanvasElement.Ink>().associate { ink ->
-            val samples = paths.samples(ink.pathData).map { CanvasPoint(it.x + ink.x, it.y + ink.y) }
+            // Where the stroke is drawn: turned about its middle, as InkElement draws it.
+            val middle = paths.path(ink.pathData).getBounds().center
+            val pivot = CanvasPoint(ink.x + middle.x, ink.y + middle.y)
+            val samples = paths.samples(ink.pathData)
+                .map { rotatedPoint(CanvasPoint(it.x + ink.x, it.y + ink.y), ink.angle, pivot) }
             ink.id to (samples to ink.width / 2)
         }
         val boxes = targets.filterNot { it is CanvasElement.Ink }.associate { it.id to measure(it) }

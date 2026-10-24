@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -58,6 +59,8 @@ internal fun TextElement(
     val highlight = element.format?.highlight == true
     val measured = modifier
         .offset(element.x.dp, element.y.dp)
+        // Drawn turned; laid out, and so measured, upright — the frame turns it itself.
+        .rotate(element.angle)
         .then(if (highlight) Modifier.background(TextHighlight, RoundedCornerShape(4.dp)) else Modifier)
         .onSizeChanged { size ->
             with(density) {

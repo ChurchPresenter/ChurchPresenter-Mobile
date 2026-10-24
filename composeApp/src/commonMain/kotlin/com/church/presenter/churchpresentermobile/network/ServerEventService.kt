@@ -102,13 +102,19 @@ private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 internal const val LIVE_NOTHING = "NONE"
 
 /**
- * The `contentType` of a `live_state_changed` payload, or null when the payload
- * carries none that can be read. Pulled out as a plain function so the parsing is
- * testable without a socket.
+ * What a `live_state_changed` payload says the desktop's slide is showing — its
+ * `liveSlide`, or null when the payload carries nothing that can be read.
+ *
+ * `contentType` names what *changed*, which can be an overlay going up over a slide
+ * that is still there, so it is only a fallback for a desktop too old to send
+ * `liveSlide`. Pulled out as a plain function so the parsing is testable without a socket.
  */
-internal fun liveContentTypeOf(payload: String): String? = runCatching {
-    json.parseToJsonElement(payload).jsonObject["contentType"]?.jsonPrimitive?.contentOrNull
-}.getOrNull()?.takeIf { it.isNotBlank() }
+internal fun liveSlideOf(payload: String): String? = runCatching {
+    val state = json.parseToJsonElement(payload).jsonObject
+    listOf("liveSlide", "contentType").firstNotNullOfOrNull { field ->
+        state[field]?.jsonPrimitive?.contentOrNull?.takeIf { it.isNotBlank() }
+    }
+}.getOrNull()
 
 /**
  * Maintains a persistent WebSocket connection to the server and exposes
@@ -205,14 +211,14 @@ class ServerEventService(
     /** Emits [Unit] each time the server pushes a `questions_updated` event (Q&A question added/changed). */
     val questionsUpdated: SharedFlow<Unit> = _questionsUpdated.asSharedFlow()
 
-    private val _liveContentType = MutableStateFlow<String?>(null)
+    private val _liveSlide = MutableStateFlow<String?>(null)
 
     /**
-     * What the desktop's outputs are showing, by its own name for the kind of
-     * content — `"LYRICS"`, `"PICTURES"`, `"DRAWING"` (a canvas sent from a phone),
-     * `"NONE"` — from its `live_state_changed` event. Null until it has said.
+     * What the desktop's slide is showing, by its own name for the kind of content —
+     * `"LYRICS"`, `"PICTURES"`, `"DRAWING"` (a canvas sent from a phone), `"NONE"` —
+     * from its `live_state_changed` event ([liveSlideOf]). Null until it has said.
      */
-    val liveContentType: StateFlow<String?> = _liveContentType.asStateFlow()
+    val liveSlide: StateFlow<String?> = _liveSlide.asStateFlow()
 
     private val _mediaState = MutableStateFlow<MediaPlaybackState?>(null)
     /** Latest desktop media-player state pushed via `media_state_changed` (null when never reported). */
@@ -439,10 +445,10 @@ class ServerEventService(
                             "bible_updated"        -> _bibleUpdated.tryEmit(Unit)
                             "display_cleared"      -> {
                                 _displayCleared.tryEmit(Unit)
-                                _liveContentType.value = LIVE_NOTHING
+                                _liveSlide.value = LIVE_NOTHING
                             }
-                            "live_state_changed"   -> liveContentTypeOf(event.payload)?.let {
-                                _liveContentType.value = it
+                            "live_state_changed"   -> liveSlideOf(event.payload)?.let {
+                                _liveSlide.value = it
                             }
                             "presentation_updated" -> _presentationUpdated.tryEmit(Unit)
                             "pictures_updated"     -> _picturesUpdated.tryEmit(Unit)

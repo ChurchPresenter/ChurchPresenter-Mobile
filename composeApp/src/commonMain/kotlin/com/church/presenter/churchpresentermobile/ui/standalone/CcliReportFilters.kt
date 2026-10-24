@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -75,8 +76,10 @@ import churchpresentermobile.composeapp.generated.resources.report_to
 import com.church.presenter.churchpresentermobile.model.ReportDates
 import com.church.presenter.churchpresentermobile.model.ReportPreset
 import com.church.presenter.churchpresentermobile.ui.OutlineActionButton
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import com.church.presenter.churchpresentermobile.viewmodel.CcliReportViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.ReportData
 import com.church.presenter.churchpresentermobile.viewmodel.ReportTab
@@ -228,7 +231,13 @@ private fun YearMenu(years: List<Int>, selected: Boolean, onPick: (Int) -> Unit,
                 modifier = Modifier.size(18.dp),
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        val menuScroll = rememberScrollState()
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.verticalScrollbar(menuScroll),
+            scrollState = menuScroll,
+        ) {
             years.forEach { year ->
                 DropdownMenuItem(
                     text = { Text(year.toString()) },
@@ -335,7 +344,13 @@ private fun ContentFilterMenu(
                 modifier = Modifier.size(18.dp),
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        val menuScroll = rememberScrollState()
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.verticalScrollbar(menuScroll),
+            scrollState = menuScroll,
+        ) {
             DropdownMenuItem(
                 text = { Text(allLabel, fontWeight = if (selected == null) FontWeight.Bold else FontWeight.Normal) },
                 onClick = { onPick(null); expanded = false },
@@ -420,7 +435,7 @@ internal fun ClearStatisticsDialog(onConfirm: () -> Unit, onDismiss: () -> Unit)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.report_clear_title)) },
-        text = { Text(stringResource(Res.string.report_clear_body)) },
+        text = { ScrollingDialogBody { Text(stringResource(Res.string.report_clear_body)) } },
         confirmButton = {
             TextButton(onClick = onConfirm, modifier = Modifier.testTag(ReportTags.CLEAR_CONFIRM)) {
                 Text(stringResource(Res.string.report_clear_confirm))

@@ -153,7 +153,7 @@ enum class ImagePlacement { FIT, FILL, ORIGINAL }
 
 @Serializable
 data class ImageOptions(
-    val source: ImageSource = ImageSource.CLIPBOARD,
+    val source: ImageSource = ImageSource.PHOTOS,
     val placement: ImagePlacement = ImagePlacement.FIT,
     val rounded: Boolean = true,
     val shadow: Boolean = false,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.library.CanvasPictures
 import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasTool
@@ -41,8 +43,8 @@ import kotlin.math.roundToInt
 /**
  * The canvas: a whiteboard of pages to sketch a talk on and put on screen.
  *
- * Tablet only — the caller opens it only in the two-pane layout, where it fills the
- * window as the design draws it. Owns its [CanvasViewModel]. The canvas is saved on
+ * Tablet only — the caller opens it only on a tablet, in either orientation, where it
+ * fills the window as the design draws it. Owns its [CanvasViewModel]. The canvas is saved on
  * this device as it is drawn on; Go Live puts the page on screen through
  * [projector] — this device's outputs in standalone, the desktop's in remote, after
  * the operator there allows it — and keeps it up to date.
@@ -52,6 +54,7 @@ import kotlin.math.roundToInt
  * @param canProject Whether Go Live can work right now — the presentation server
  *   running in standalone, the desktop connected in remote. Go Live is off while it cannot.
  * @param store Where the canvas is kept, so it opens as it was left.
+ * @param pictures Where the pictures placed on it are kept.
  */
 @Composable
 fun CanvasScreen(
@@ -59,19 +62,29 @@ fun CanvasScreen(
     projector: CanvasProjection?,
     canProject: Boolean,
     store: CanvasRepository,
+    pictures: CanvasPictures,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: CanvasViewModel = viewModel { CanvasViewModel(projector = projector, store = store) }
+    val viewModel: CanvasViewModel = viewModel {
+        CanvasViewModel(projector = projector, store = store, pictures = pictures)
+    }
     val state by viewModel.state.collectAsState()
     AppBackHandler(enabled = true, onBack = onBack)
-    CanvasEditor(
-        state = state,
-        onIntent = viewModel::dispatch,
-        onBack = onBack,
-        canProject = canProject,
-        onFrame = viewModel::showFrame,
-        modifier = modifier,
+    PicturePickers(
+        picking = state.picking,
+        onPicked = viewModel::picturePicked,
+        onUnreadable = { viewModel.picturePicked(null, unreadable = true) },
     )
+    CompositionLocalProvider(LocalCanvasPictures provides pictures::get) {
+        CanvasEditor(
+            state = state,
+            onIntent = viewModel::dispatch,
+            onBack = onBack,
+            canProject = canProject,
+            onFrame = viewModel::showFrame,
+            modifier = modifier,
+        )
+    }
 }
 
 /**
@@ -170,10 +183,16 @@ private fun CanvasWorkspace(
             )
         }
         if (state.tool == CanvasTool.PEN || state.tool == CanvasTool.HIGHLIGHTER) {
+            // On an iPad held upright the dock and the page strip do not both fit along
+            // the bottom edge, so the dock sits on top of the strip instead.
+            val besideStrip = maxWidth >= DOCK_BESIDE_STRIP_WIDTH || state.panel != CanvasPanel.NONE
             PenDock(
                 state = state,
                 onIntent = onIntent,
-                modifier = Modifier.align(Alignment.BottomStart).padding(start = 96.dp, bottom = 18.dp),
+                modifier = Modifier.align(Alignment.BottomStart).padding(
+                    start = 96.dp,
+                    bottom = if (besideStrip) DOCK_BOTTOM else DOCK_BOTTOM + PAGE_STRIP_CLEARANCE,
+                ),
             )
         }
         when (state.panel) {
@@ -195,6 +214,14 @@ private fun CanvasWorkspace(
         }
     }
 }
+
+/** How wide the board must be for the pen dock and the page strip to share the bottom edge. */
+private val DOCK_BESIDE_STRIP_WIDTH = 1000.dp
+
+private val DOCK_BOTTOM = 18.dp
+
+/** How far the dock rises to clear the page strip below it: the strip's height and a gap. */
+private val PAGE_STRIP_CLEARANCE = 66.dp
 
 /** The options panel's left edge: past the rail (16 + 62) and a 12dp gap. */
 private val OPTIONS_LEFT = 90.dp

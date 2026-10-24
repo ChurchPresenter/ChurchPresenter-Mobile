@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.editPage
 import com.church.presenter.churchpresentermobile.model.lineElement
 import com.church.presenter.churchpresentermobile.model.movedInStack
+import com.church.presenter.churchpresentermobile.model.normalizedAngle
 import com.church.presenter.churchpresentermobile.model.resized
 import com.church.presenter.churchpresentermobile.model.shapeElement
 import com.church.presenter.churchpresentermobile.model.stickyElement
@@ -61,6 +62,9 @@ internal fun CanvasUiState.reduce(intent: CanvasIntent, newId: () -> String): Ca
     is CanvasIntent.Move -> {
         val movable = page.elements.filter { it.id in intent.ids && !it.locked }.map { it.id }
         editPage { it.updated(movable) { e -> e.moved(intent.dx, intent.dy) } }
+    }
+    is CanvasIntent.Rotate -> editPage { elements ->
+        elements.updated(listOf(intent.id)) { if (it.locked) it else it.withAngle(normalizedAngle(intent.angle)) }
     }
     is CanvasIntent.Resize -> editPage { elements ->
         elements.updated(listOf(intent.id)) { if (it.locked) it else resized(it, intent.bounds) }

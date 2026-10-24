@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -252,7 +253,13 @@ private fun SongsOverline(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            val menuScroll = rememberScrollState()
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.verticalScrollbar(menuScroll),
+                scrollState = menuScroll,
+            ) {
                 DropdownMenuItem(
                     text = {
                         Text(

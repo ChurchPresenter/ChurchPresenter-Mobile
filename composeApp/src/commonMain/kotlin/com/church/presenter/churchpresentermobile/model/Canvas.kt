@@ -62,8 +62,18 @@ sealed interface CanvasElement {
 
     fun withGroup(group: String?): CanvasElement
 
+    /**
+     * How far it is turned clockwise, in degrees, about the centre of its box —
+     * the rotate knob's free turn, on top of anything the element draws turned
+     * already (a sticky note's tilt).
+     */
+    val angle: Float
+
     /** A copy moved by ([dx], [dy]). */
     fun moved(dx: Float, dy: Float): CanvasElement
+
+    /** A copy turned to [angle] degrees. */
+    fun withAngle(angle: Float): CanvasElement
 
     fun withId(id: String): CanvasElement
 
@@ -80,6 +90,7 @@ sealed interface CanvasElement {
         val text: String,
         val style: CanvasTextStyle = CanvasTextStyle.BODY,
         val format: TextOptions? = null,
+        override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
@@ -89,6 +100,7 @@ sealed interface CanvasElement {
         override fun withGroup(group: String?) = copy(group = group)
         override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
         override fun withId(id: String) = copy(id = id)
+        override fun withAngle(angle: Float) = copy(angle = angle)
     }
 
     /**
@@ -114,6 +126,7 @@ sealed interface CanvasElement {
         val highlight: HighlightColor? = null,
         val custom: String? = null,
         val dashed: Boolean = false,
+        override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
@@ -123,13 +136,17 @@ sealed interface CanvasElement {
         override fun withGroup(group: String?) = copy(group = group)
         override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
         override fun withId(id: String) = copy(id = id)
+        override fun withAngle(angle: Float) = copy(angle = angle)
     }
 
     /**
-     * A placed picture. Shown as a placeholder naming [fileName] — or, for one
-     * inserted before pictures are loaded for real, the [source] it came from.
+     * A placed picture: the [photo] kept beside the canvas, drawn to fill its box.
+     * One without a photo — from a canvas saved before pictures were real — is
+     * shown as a placeholder naming [fileName], or the [source] it came from.
      *
-     * @param rotation Quarter turns clockwise, in degrees.
+     * @param photo The picture's key in the canvas's picture store, or null.
+     * @param rotation Quarter turns clockwise, in degrees. Only canvases saved
+     *   before the free [angle] carry one; Rotate turns [angle] now.
      * @param cutOut Whether Remove background has been applied: the placeholder
      *   drops its backdrop.
      */
@@ -143,12 +160,14 @@ sealed interface CanvasElement {
         val height: Float,
         val fileName: String,
         val source: ImageSource? = null,
+        val photo: String? = null,
         val rounded: Boolean = true,
         val shadow: Boolean = false,
         val opacity: Float = 1f,
         val flipped: Boolean = false,
         val rotation: Int = 0,
         val cutOut: Boolean = false,
+        override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
@@ -158,6 +177,7 @@ sealed interface CanvasElement {
         override fun withGroup(group: String?) = copy(group = group)
         override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
         override fun withId(id: String) = copy(id = id)
+        override fun withAngle(angle: Float) = copy(angle = angle)
     }
 
     /** An outlined shape with optional text centred in it. */
@@ -177,6 +197,7 @@ sealed interface CanvasElement {
         val border: BorderStyle = BorderStyle.SOLID,
         val borderWidth: Float = 4f,
         val custom: String? = null,
+        override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
@@ -186,6 +207,7 @@ sealed interface CanvasElement {
         override fun withGroup(group: String?) = copy(group = group)
         override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
         override fun withId(id: String) = copy(id = id)
+        override fun withAngle(angle: Float) = copy(angle = angle)
     }
 
     /** A sticky note, slightly turned by [rotation] degrees so it reads as stuck on. */
@@ -201,6 +223,7 @@ sealed interface CanvasElement {
         val color: StickyColor = StickyColor.YELLOW,
         val rotation: Float = 0f,
         val font: StickyFont = StickyFont.MARKER,
+        override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
         override val hidden: Boolean = false,
@@ -210,6 +233,7 @@ sealed interface CanvasElement {
         override fun withGroup(group: String?) = copy(group = group)
         override fun moved(dx: Float, dy: Float) = copy(x = x + dx, y = y + dy)
         override fun withId(id: String) = copy(id = id)
+        override fun withAngle(angle: Float) = copy(angle = angle)
     }
 }
 

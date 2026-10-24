@@ -16,11 +16,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
-import com.church.presenter.churchpresentermobile.model.ImageAdjust
-import com.church.presenter.churchpresentermobile.model.contains
 import com.church.presenter.churchpresentermobile.model.lassoPick
+import com.church.presenter.churchpresentermobile.model.ROTATE_SNAP
+import com.church.presenter.churchpresentermobile.model.centre
+import com.church.presenter.churchpresentermobile.model.knobAngle
+import com.church.presenter.churchpresentermobile.model.quarterTurned
 import com.church.presenter.churchpresentermobile.model.resizable
-import com.church.presenter.churchpresentermobile.model.resizedBounds
+import com.church.presenter.churchpresentermobile.model.rotatedPoint
+import com.church.presenter.churchpresentermobile.model.rotatedResize
+import com.church.presenter.churchpresentermobile.model.snappedAngle
+import com.church.presenter.churchpresentermobile.model.turnedContains
 import com.church.presenter.churchpresentermobile.model.snappedMove
 import com.church.presenter.churchpresentermobile.model.withGroupmates
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
@@ -29,11 +34,11 @@ import kotlin.math.hypot
 
 /** What a touch with the select tool landed on. */
 private sealed interface Grab {
-    /** One of the eight resize handles round a single picture, shape or note. */
-    data class Handle(val index: Int, val id: String, val start: CanvasBounds) : Grab
+    /** One of the eight resize handles round a single picture, shape or note, turned [angle] degrees. */
+    data class Handle(val index: Int, val id: String, val start: CanvasBounds, val angle: Float) : Grab
 
-    /** The round knob above a single picture, which turns it. */
-    data object Knob : Grab
+    /** The round knob above a single element, which turns it about [centre]. */
+    data class Knob(val id: String, val centre: CanvasPoint, val angle: Float) : Grab
 
     data class Element(val id: String) : Grab
 
@@ -50,7 +55,8 @@ private sealed interface Grab {
  * - **Long-press** adds to the selection, or takes out.
  * - **Drag** an element to move it — with the selection, if it is part of it —
  *   snapping to the grid and lining up with other elements as the select options say.
- * - **Drag a handle** to resize a picture, shape or note; **tap the knob** to turn a picture.
+ * - **Drag a handle** to resize a picture, shape or note. **Drag the knob** to turn
+ *   anything, in [ROTATE_SNAP]° steps; **tap it** for a quarter turn.
  * - **Drag on empty board** to draw a box; what it encloses is selected.
  */
 @Composable
@@ -58,10 +64,12 @@ internal fun SelectGestures(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     measure: (CanvasElement) -> CanvasBounds,
+    measureBox: (CanvasElement) -> CanvasBounds,
 ) {
     val colors = canvasColors
     val latest by rememberUpdatedState(state)
     val measured by rememberUpdatedState(measure)
+    val boxed by rememberUpdatedState(measureBox)
     val marquee = remember { mutableStateListOf<CanvasPoint>() }
     Box(
         modifier = Modifier
@@ -72,7 +80,7 @@ internal fun SelectGestures(
                 awaitEachGesture {
                     val down = awaitFirstDown()
                     val start = down.position.toPoint()
-                    val grab = grab(latest, start, measured)
+                    val grab = grab(latest, start, boxed)
                     val drag = SelectDrag(latest, grab, start, measured, onIntent, GestureSessions.next())
                     var dragging = false
                     var finished = false
@@ -113,21 +121,30 @@ internal fun SelectGestures(
     )
 }
 
-/** What lies under [at]: a handle or the knob of a single selection first, then the top-most element. */
-private fun grab(state: CanvasUiState, at: CanvasPoint, measure: (CanvasElement) -> CanvasBounds): Grab {
+/**
+ * What lies under [at]: a handle or the knob of a single selection first, then the
+ * top-most element. A turned element is hit where it is drawn, not by the upright
+ * box round it, so [at] is turned back into its frame before it is compared.
+ */
+private fun grab(state: CanvasUiState, at: CanvasPoint, measureBox: (CanvasElement) -> CanvasBounds): Grab {
     val single = state.selected?.takeIf { !it.locked && !it.hidden }
-    if (single != null && resizable(single)) {
-        val box = measure(single)
-        handlePoints(box).forEachIndexed { index, (x, y) ->
-            if (hypot(at.x - x, at.y - y) <= HANDLE_REACH) return Grab.Handle(index, single.id, box)
+    if (single != null) {
+        val box = measureBox(single)
+        val local = rotatedPoint(at, -single.angle, box.centre)
+        if (resizable(single)) {
+            handlePoints(box).forEachIndexed { index, (x, y) ->
+                if (hypot(local.x - x, local.y - y) <= HANDLE_REACH) {
+                    return Grab.Handle(index, single.id, box, single.angle)
+                }
+            }
         }
-        val knobX = (box.left + box.right) / 2
-        if (single is CanvasElement.Image && hypot(at.x - knobX, at.y - (box.top - KNOB_CENTRE)) <= HANDLE_REACH) {
-            return Grab.Knob
+        if (hypot(local.x - box.centre.x, local.y - (box.top - KNOB_CENTRE)) <= HANDLE_REACH) {
+            return Grab.Knob(single.id, box.centre, single.angle)
         }
     }
     val pickable = state.page.elements.filter { !it.hidden && (!it.locked || state.options.select.selectLocked) }
-    return pickable.lastOrNull { measure(it).contains(at) }?.let { Grab.Element(it.id) } ?: Grab.Nothing
+    return pickable.lastOrNull { turnedContains(measureBox(it), it.angle, at) }?.let { Grab.Element(it.id) }
+        ?: Grab.Nothing
 }
 
 /** How far from a handle's centre a finger still catches it, in dp. */
@@ -147,7 +164,7 @@ private fun tapped(
     val held = tap.held
     val time = tap.time
     when (grab) {
-        Grab.Knob -> onIntent(CanvasIntent.AdjustImage(ImageAdjust.ROTATE))
+        is Grab.Knob -> onIntent(CanvasIntent.Rotate(grab.id, quarterTurned(grab.angle)))
         is Grab.Handle -> Unit
         Grab.Nothing -> {
             onIntent(CanvasIntent.FinishEditing)
@@ -189,6 +206,7 @@ private class SelectDrag(
     private var startBox: CanvasBounds? = null
     private var guides: List<CanvasBounds> = emptyList()
     private var applied = 0f to 0f
+    private var turned: Float? = null
 
     /** Works out what the drag carries: the selection, if it grabbed part of it, or what it grabbed. */
     fun begin() {
@@ -212,8 +230,16 @@ private class SelectDrag(
         val dx = at.x - origin.x
         val dy = at.y - origin.y
         when (grab) {
-            is Grab.Handle ->
-                onIntent(CanvasIntent.Resize(grab.id, resizedBounds(grab.start, grab.index, dx, dy), session))
+            is Grab.Handle -> onIntent(
+                CanvasIntent.Resize(grab.id, rotatedResize(grab.start, grab.index, dx, dy, grab.angle), session),
+            )
+            is Grab.Knob -> {
+                val angle = snappedAngle(knobAngle(grab.centre, at))
+                if (angle != (turned ?: grab.angle)) {
+                    onIntent(CanvasIntent.Rotate(grab.id, angle, session))
+                    turned = angle
+                }
+            }
             is Grab.Element -> {
                 val box = startBox ?: return
                 val (x, y) = snappedMove(box, dx, dy, state.options.select.snapToGrid, guides)

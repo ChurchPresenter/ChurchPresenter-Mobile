@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">Ожидание одобрения…</string>
     <string name="canvas_not_approved">Не одобрено</string>
     <string name="canvas_live_failed">Не удалось показать на экране</string>
+    <string name="canvas_picture_failed">Не удалось открыть изображение</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -35,8 +37,10 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -97,24 +101,29 @@ private fun InkElement(element: CanvasElement.Ink, paths: InkPaths, modifier: Mo
         element.highlight != null && element.custom == null -> highlightColor(element.highlight)
         else -> colors.inkColor(element.ink, element.custom)
     }
+    val middle = path.getBounds().center
     Canvas(modifier.fillMaxSize()) {
-        translate(element.x.dp.toPx(), element.y.dp.toPx()) {
-            scale(density, pivot = Offset.Zero) {
-                drawPath(
-                    path = path,
-                    color = color,
-                    alpha = element.opacity,
-                    style = Stroke(
-                        width = element.width,
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round,
-                        pathEffect = if (element.dashed) {
-                            PathEffect.dashPathEffect(floatArrayOf(element.width * DASH, element.width * GAP))
-                        } else {
-                            null
-                        },
-                    ),
-                )
+        // Turned about the middle of the stroke, which is the middle of its selection frame.
+        val pivot = Offset((element.x + middle.x).dp.toPx(), (element.y + middle.y).dp.toPx())
+        rotate(element.angle, pivot) {
+            translate(element.x.dp.toPx(), element.y.dp.toPx()) {
+                scale(density, pivot = Offset.Zero) {
+                    drawPath(
+                        path = path,
+                        color = color,
+                        alpha = element.opacity,
+                        style = Stroke(
+                            width = element.width,
+                            cap = StrokeCap.Round,
+                            join = StrokeJoin.Round,
+                            pathEffect = if (element.dashed) {
+                                PathEffect.dashPathEffect(floatArrayOf(element.width * DASH, element.width * GAP))
+                            } else {
+                                null
+                            },
+                        ),
+                    )
+                }
             }
         }
     }
@@ -128,49 +137,69 @@ private const val OUTLINE_DASH = 3f
 private const val OUTLINE_GAP = 2f
 
 /**
- * A placed picture. The image pipeline does not exist yet, so this is the design's
- * placeholder: a striped card naming the file, or where it came from. Rounded
- * corners, shadow, opacity, flip, rotation and Remove background all show on it.
+ * A placed picture: the photo it holds, cropped to fill its frame, or — while it
+ * decodes, or for one saved before pictures were real — the design's placeholder,
+ * a striped card naming the file or where it came from. Rounded corners, shadow,
+ * opacity, flip, turning and Remove background all show on either.
  */
 @Composable
 private fun ImageElement(element: CanvasElement.Image, modifier: Modifier) {
     val colors = canvasColors
     val shape = if (element.rounded) RoundedCornerShape(14.dp) else RectangleShape
-    val name = element.fileName.ifEmpty { element.source?.let { stringResource(it.placeholderName()) }.orEmpty() }
+    val picture by rememberPicture(element.photo)
+    val bitmap = picture
     Box(
         modifier = modifier
             .offset(element.x.dp, element.y.dp)
             .size(element.width.dp, element.height.dp)
-            .rotate(element.rotation.toFloat())
+            .rotate(element.rotation + element.angle)
             .alpha(element.opacity)
             .then(if (element.shadow) Modifier.shadow(10.dp, shape) else Modifier)
             .clip(shape)
-            .then(if (element.cutOut) Modifier else Modifier.stripes(colors))
+            .then(if (element.cutOut || bitmap != null) Modifier else Modifier.stripes(colors))
             .then(
-                if (element.cutOut) {
-                    Modifier.dashedOutline(colors.border, shape)
-                } else {
-                    Modifier.border(1.dp, colors.border, shape)
+                when {
+                    element.cutOut -> Modifier.dashedOutline(colors.border, shape)
+                    bitmap != null -> Modifier
+                    else -> Modifier.border(1.dp, colors.border, shape)
                 },
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = if (element.flipped) Modifier.scale(scaleX = -1f, scaleY = 1f) else Modifier,
-        ) {
-            Icon(Icons.Outlined.Image, contentDescription = null, tint = colors.muted, modifier = Modifier.size(20.dp))
-            Text(
-                text = stringResource(Res.string.canvas_pasted_image) + "\n" + name,
-                color = colors.muted,
-                fontSize = 12.sp,
-                lineHeight = 15.6.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = FontFamily.Monospace,
-                textAlign = TextAlign.Center,
+        val flip = if (element.flipped) Modifier.scale(scaleX = -1f, scaleY = 1f) else Modifier
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = flip.fillMaxSize(),
             )
+        } else {
+            PicturePlaceholder(element, flip)
         }
+    }
+}
+
+/** The striped card's label: an icon over "Pasted image" and where the picture came from. */
+@Composable
+private fun PicturePlaceholder(element: CanvasElement.Image, modifier: Modifier) {
+    val colors = canvasColors
+    val name = element.fileName.ifEmpty { element.source?.let { stringResource(it.placeholderName()) }.orEmpty() }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier,
+    ) {
+        Icon(Icons.Outlined.Image, contentDescription = null, tint = colors.muted, modifier = Modifier.size(20.dp))
+        Text(
+            text = stringResource(Res.string.canvas_pasted_image) + "\n" + name,
+            color = colors.muted,
+            fontSize = 12.sp,
+            lineHeight = 15.6.sp,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
@@ -231,6 +260,7 @@ private fun ShapeElement(element: CanvasElement.Shape, modifier: Modifier) {
         modifier = modifier
             .offset(element.x.dp, element.y.dp)
             .size(element.width.dp, element.height.dp)
+            .rotate(element.angle)
             .clip(shape)
             .background(fill?.copy(alpha = SHAPE_FILL_ALPHA) ?: Color.Transparent)
             .then(border),
@@ -276,7 +306,7 @@ private fun StickyElement(
         modifier = modifier
             .offset(element.x.dp, element.y.dp)
             .size(element.width.dp, element.height.dp)
-            .rotate(element.rotation)
+            .rotate(element.rotation + element.angle)
             .shadow(8.dp, shape)
             .background(stickyColor(element.color), shape)
             .padding(18.dp),

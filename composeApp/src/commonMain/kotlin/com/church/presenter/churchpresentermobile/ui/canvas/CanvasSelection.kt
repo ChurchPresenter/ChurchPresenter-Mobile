@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +38,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_replace
 import churchpresentermobile.composeapp.generated.resources.canvas_unlock
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasElement
+import com.church.presenter.churchpresentermobile.model.centre
 import com.church.presenter.churchpresentermobile.model.resizable
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
@@ -47,37 +51,70 @@ import org.jetbrains.compose.resources.stringResource
  * square handles and a rotate knob above — with the bar of what can be done to
  * it underneath. The bar steps aside while a text box is typed into.
  *
- * The handles and knob are drawn only on a single element they work on, and the
- * select tool's gestures ([SelectGestures]) do the dragging and turning.
+ * A single element's frame is drawn round its own box and turned with it, knob
+ * and handles too; several are framed upright, by the box round them all. The
+ * handles are drawn only on what they resize, the knob on any single element, and
+ * the select tool's gestures ([SelectGestures]) do the dragging and turning.
+ *
+ * @param bounds The upright box round everything selected.
+ * @param single The one element selected, when there is exactly one.
  */
 @Composable
-internal fun SelectionOverlay(state: CanvasUiState, bounds: CanvasBounds, onIntent: (CanvasIntent) -> Unit) {
+internal fun SelectionOverlay(
+    state: CanvasUiState,
+    bounds: CanvasBounds,
+    single: TurnedBox?,
+    onIntent: (CanvasIntent) -> Unit,
+) {
     val colors = canvasColors
-    Box(
-        modifier = Modifier
-            .offset(bounds.left.dp, bounds.top.dp)
-            .size(bounds.width.dp, bounds.height.dp)
-            .border(2.dp, colors.accent, RoundedCornerShape(4.dp)),
-    )
-    // Handles only where they do something: resizing a single picture, shape or note,
-    // and the knob, which turns a picture a quarter at a time.
-    val single = state.selected?.takeIf { !it.locked }
-    if (single is CanvasElement.Image) {
+    val frame = single?.box ?: bounds
+    Box(Modifier.fillMaxSize().turnedAbout(frame, single?.angle ?: 0f)) {
         Box(
-            Modifier
-                .offset((bounds.centreX - 1).dp, (bounds.top - STALK_TOP).dp)
-                .size(2.dp, STALK_LENGTH.dp)
-                .background(colors.accent),
+            modifier = Modifier
+                .offset(frame.left.dp, frame.top.dp)
+                .size(frame.width.dp, frame.height.dp)
+                .border(2.dp, colors.accent, RoundedCornerShape(4.dp)),
         )
-        Handle(bounds.centreX, bounds.top - KNOB_CENTRE, KNOB.dp, CircleShape)
-    }
-    if (single != null && resizable(single)) {
-        handlePoints(bounds).forEach { (x, y) -> Handle(x, y, HANDLE.dp, RoundedCornerShape(4.dp)) }
+        val element = state.selected?.takeIf { !it.locked }
+        if (single != null && element != null) {
+            Box(
+                Modifier
+                    .offset((frame.centreX - 1).dp, (frame.top - STALK_TOP).dp)
+                    .size(2.dp, STALK_LENGTH.dp)
+                    .background(colors.accent),
+            )
+            Handle(
+                x = frame.centreX,
+                y = frame.top - KNOB_CENTRE,
+                size = KNOB.dp,
+                shape = CircleShape,
+                modifier = Modifier.testTag(CanvasTags.ROTATE_KNOB),
+            )
+            if (resizable(element)) {
+                handlePoints(frame).forEach { (x, y) -> Handle(x, y, HANDLE.dp, RoundedCornerShape(4.dp)) }
+            }
+        }
     }
     if (state.editingId == null) {
         SelectionBar(state, x = bounds.left, y = bounds.bottom + BAR_GAP, onIntent = onIntent)
     }
 }
+
+/** Draws what it holds turned [angle] degrees about the centre of [box], which is in dp on the page. */
+private fun Modifier.turnedAbout(box: CanvasBounds, angle: Float): Modifier =
+    if (angle == 0f) {
+        this
+    } else {
+        graphicsLayer {
+            rotationZ = angle
+            if (size.width > 0f && size.height > 0f) {
+                transformOrigin = TransformOrigin(
+                    pivotFractionX = box.centre.x.dp.toPx() / size.width,
+                    pivotFractionY = box.centre.y.dp.toPx() / size.height,
+                )
+            }
+        }
+    }
 
 /** The stalk runs from this far above the frame… */
 private const val STALK_TOP = 34f
@@ -105,10 +142,10 @@ internal fun handlePoints(bounds: CanvasBounds): List<Pair<Float, Float>> = list
 
 /** A white handle with an accent edge, centred on ([x], [y]). */
 @Composable
-private fun Handle(x: Float, y: Float, size: Dp, shape: Shape) {
+private fun Handle(x: Float, y: Float, size: Dp, shape: Shape, modifier: Modifier = Modifier) {
     val colors = canvasColors
     Box(
-        Modifier
+        modifier
             .offset(x.dp - size / 2, y.dp - size / 2)
             .size(size)
             .clip(shape)

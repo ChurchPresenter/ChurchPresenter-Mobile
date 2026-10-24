@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">กำลังรออนุมัติ…</string>
     <string name="canvas_not_approved">ไม่ได้รับอนุมัติ</string>
     <string name="canvas_live_failed">แสดงไม่ได้</string>
+    <string name="canvas_picture_failed">เปิดรูปภาพนี้ไม่ได้</string>
 </resources>

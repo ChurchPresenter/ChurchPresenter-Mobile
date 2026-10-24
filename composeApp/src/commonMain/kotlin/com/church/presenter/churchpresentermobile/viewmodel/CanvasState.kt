@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
 import com.church.presenter.churchpresentermobile.model.ImageAdjust
 import com.church.presenter.churchpresentermobile.model.ImageSource
+import com.church.presenter.churchpresentermobile.model.StoredPicture
 
 /** The panel open down the right-hand side of the canvas, if any. */
 enum class CanvasPanel { NONE, LAYERS, INSERT_IMAGE }
@@ -52,6 +53,8 @@ enum class ArrangeAction { ALIGN, DISTRIBUTE, GROUP, FRONT, BACK }
  * @param awaitingApproval Whether Go Live is waiting for the desktop operator to allow it.
  * @param liveNote Why the last Go Live did not stay on screen, until the next one.
  * @param saveStatus Whether the latest change has reached the disk.
+ * @param picking The picture picker the canvas is waiting on, if any — see [ImagePick].
+ * @param pictureFailed Whether the last picture picked could not be opened, until the next is.
  * @param live Whether the canvas is on screen. Nothing is projected yet — this is
  *   the button's state, ready for the output it will drive.
  */
@@ -70,6 +73,8 @@ data class CanvasUiState(
     val awaitingApproval: Boolean = false,
     val liveNote: LiveNote? = null,
     val saveStatus: SaveStatus = SaveStatus.NONE,
+    val picking: ImagePick? = null,
+    val pictureFailed: Boolean = false,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
 ) {
@@ -82,6 +87,15 @@ data class CanvasUiState(
     /** The selection when it is exactly one element — what Crop and Replace act on. */
     val selected: CanvasElement? get() = selection.singleOrNull()
 }
+
+/**
+ * A picture asked for from [source], to be placed at [at] — or in place of the
+ * replace target — once the platform's picker hands it back.
+ */
+data class ImagePick(val source: ImageSource, val at: CanvasPoint?)
+
+/** Where a picture can be picked from on this device: the photo library and the files. */
+val PickableSources: List<ImageSource> = listOf(ImageSource.PHOTOS, ImageSource.FILES)
 
 /**
  * Everything the operator can ask of the canvas.
@@ -141,6 +155,9 @@ sealed interface CanvasIntent {
     /** Moves [ids] by ([dx], [dy]) — a step of a drag, which is one undo step per [session]. */
     data class Move(val ids: List<String>, val dx: Float, val dy: Float, val session: Int) : CanvasIntent
 
+    /** Turns [id] to [angle] degrees — a step of a knob drag, one undo step per [session]. */
+    data class Rotate(val id: String, val angle: Float, val session: Int = NO_SESSION) : CanvasIntent
+
     /** Fits [id] to [bounds] — a step of a resize-handle drag, one undo step per [session]. */
     data class Resize(val id: String, val bounds: CanvasBounds, val session: Int) : CanvasIntent
 
@@ -156,8 +173,15 @@ sealed interface CanvasIntent {
      * Brings in a picture from [source], centred on [at] (or the middle of the
      * page's usual working area). Replaces the [CanvasUiState.replaceTarget] instead,
      * when there is one.
+     *
+     * Without a [picture] this asks for one: the ViewModel opens the picker for
+     * [source], and places what comes back with the picture filled in.
      */
-    data class InsertImage(val source: ImageSource, val at: CanvasPoint? = null) : CanvasIntent
+    data class InsertImage(
+        val source: ImageSource,
+        val at: CanvasPoint? = null,
+        val picture: StoredPicture? = null,
+    ) : CanvasIntent
 
     data class StartEditing(val id: String) : CanvasIntent
 

@@ -118,10 +118,12 @@ internal fun CanvasUiState.insertImage(intent: CanvasIntent.InsertImage, newId: 
     val target = replaceTarget?.let { id -> page.elements.firstOrNull { it.id == id } as? CanvasElement.Image }
     if (target != null) {
         return editPage { elements ->
-            elements.updated(listOf(target.id)) { target.copy(fileName = "", source = intent.source, cutOut = false) }
+            elements.updated(listOf(target.id)) {
+                target.copy(fileName = "", source = intent.source, photo = intent.picture?.key, cutOut = false)
+            }
         }.copy(replaceTarget = null, panel = CanvasPanel.NONE, selectedIds = listOf(target.id))
     }
-    val image = imageElement(newId(), intent.at ?: DEFAULT_IMAGE_CENTRE, intent.source, options.image)
+    val image = imageElement(newId(), intent.at ?: DEFAULT_IMAGE_CENTRE, intent.source, options.image, intent.picture)
     return finishEditing().editPage { it + image }.copy(selectedIds = listOf(image.id))
 }
 

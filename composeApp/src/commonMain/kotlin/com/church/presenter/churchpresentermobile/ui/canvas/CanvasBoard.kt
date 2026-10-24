@@ -63,6 +63,7 @@ internal fun CanvasBoard(
     val scale = state.zoom / PERCENT
     val visible = state.page.elements.filterNot { it.hidden }
     val measure: (CanvasElement) -> CanvasBounds = { elementBounds(it, textSizes, paths) }
+    val measureBox: (CanvasElement) -> CanvasBounds = { elementBox(it, textSizes, paths) }
     // The last lasso's outline stays drawn round what it picked up, as the design shows.
     var lasso by remember { mutableStateOf(emptyList<CanvasPoint>()) }
     // Where two fingers have moved the page to, in pixels.
@@ -114,14 +115,15 @@ internal fun CanvasBoard(
                     }
                 }
             }
-            if (state.tool == CanvasTool.SELECT) SelectGestures(state, onIntent, measure)
+            if (state.tool == CanvasTool.SELECT) SelectGestures(state, onIntent, measure, measureBox)
             ToolGestures(state = state, onIntent = onIntent, measure = measure, paths = paths, onLasso = { lasso = it })
             if (state.tool == CanvasTool.LASSO && state.selectedIds.isNotEmpty() && lasso.isNotEmpty()) {
                 val rectangle = state.options.lasso.shape == LassoShape.RECTANGLE
                 Canvas(Modifier.fillMaxSize()) { drawLasso(lasso, rectangle, colors.accent) }
             }
             union(state.selection.filterNot { it.hidden }.map(measure))?.let { bounds ->
-                SelectionOverlay(state = state, bounds = bounds, onIntent = onIntent)
+                val single = state.selected?.takeIf { !it.hidden }?.let { TurnedBox(measureBox(it), it.angle) }
+                SelectionOverlay(state = state, bounds = bounds, single = single, onIntent = onIntent)
             }
         }
     }

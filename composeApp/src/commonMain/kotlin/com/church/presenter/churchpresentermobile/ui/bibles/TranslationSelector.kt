@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -60,6 +59,7 @@ import androidx.compose.ui.window.PopupProperties
 import churchpresentermobile.composeapp.generated.resources.Res
 import com.church.presenter.churchpresentermobile.model.InstalledBible
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -274,7 +274,7 @@ internal fun TranslationList(
                 ),
             )
             Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false),
+                modifier = Modifier.weight(1f, fill = false).verticalScrollWithScrollbar(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 8.dp),
             ) {
                 installed.forEach { bible ->

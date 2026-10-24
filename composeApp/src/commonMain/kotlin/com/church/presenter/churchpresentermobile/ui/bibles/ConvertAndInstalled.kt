@@ -83,6 +83,7 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import com.church.presenter.churchpresentermobile.bibleimport.BibleXmlFormat
 import com.church.presenter.churchpresentermobile.library.InstallDetails
 import com.church.presenter.churchpresentermobile.model.InstalledBible
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.ConvertPhase
 import com.church.presenter.churchpresentermobile.viewmodel.PickedBible
@@ -460,7 +461,9 @@ internal fun InstalledList(
             onDismissRequest = { confirming = null },
             containerColor = colors.sheetBackground,
             title = { Text(stringResource(Res.string.bibles_remove_title, bible.title), color = colors.text) },
-            text = { Text(stringResource(Res.string.bibles_remove_body), color = colors.secondary) },
+            text = {
+                ScrollingDialogBody { Text(stringResource(Res.string.bibles_remove_body), color = colors.secondary) }
+            },
             confirmButton = {
                 TextButton(
                     onClick = { onRemove(bible.id); confirming = null },

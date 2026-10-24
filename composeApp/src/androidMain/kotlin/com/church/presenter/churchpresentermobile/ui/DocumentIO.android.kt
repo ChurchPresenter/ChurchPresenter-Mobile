@@ -131,6 +131,40 @@ actual fun BinaryDocumentPicker(
 }
 
 @Composable
+actual fun ImageFilePicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) { onPicked(null); return@rememberLauncherForActivityResult }
+
+        scope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    val bytes = context.contentResolver.openInputStream(uri)
+                        ?.use { it.readBytes() }
+                        ?: error("Could not read that picture")
+                    if (bytes.size > MAX_BINARY_DOCUMENT_BYTES) error("That picture is too large")
+                    PickedBinaryFile(bytes = bytes, fileName = uri.lastPathSegment ?: "picture")
+                }
+            }
+
+            result
+                .onSuccess(onPicked)
+                .onFailure { onPicked(null); onError(it.message ?: "Could not read that picture") }
+        }
+    }
+
+    content { launcher.launch(arrayOf("image/*")) }
+}
+
+@Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,
     content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,

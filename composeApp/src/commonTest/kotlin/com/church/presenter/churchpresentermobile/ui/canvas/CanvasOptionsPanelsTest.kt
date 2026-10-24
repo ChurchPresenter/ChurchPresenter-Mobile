@@ -124,7 +124,7 @@ class CanvasOptionsPanelsTest {
         assertEquals(before + INSERT_SOURCES, vm.state.value.page.elements.size, "one picture per source")
         val adjusted = images.last()
         assertTrue(adjusted.flipped, "Flip")
-        assertEquals(QUARTER_TURN, adjusted.rotation, "Rotate")
+        assertEquals(QUARTER_TURN, adjusted.angle, "Rotate")
         assertTrue(adjusted.cutOut, "Remove background")
         assertEquals(adjusted.width, adjusted.height, "Crop squared it")
     }
@@ -176,8 +176,9 @@ class CanvasOptionsPanelsTest {
         /** Half-way along the pen's 0–14dp width slider. */
         const val PEN_WIDTH_AT_SLIDER = 7f
         const val ARRANGE_BUTTONS = 5
-        const val INSERT_SOURCES = 4
-        const val QUARTER_TURN = 90
+        /** Photos and Files: the sources this device can pick from. */
+        const val INSERT_SOURCES = 2
+        const val QUARTER_TURN = 90f
         const val LARGEST_TEXT = 80
     }
 }

@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">स्वीकृतिको प्रतीक्षा…</string>
     <string name="canvas_not_approved">स्वीकृत भएन</string>
     <string name="canvas_live_failed">देखाउन सकिएन</string>
+    <string name="canvas_picture_failed">यो तस्बिर खोल्न सकिएन</string>
 </resources>

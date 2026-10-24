@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -53,8 +52,10 @@ import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.network.WsMessageType
 import com.church.presenter.churchpresentermobile.network.WsSender
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import com.church.presenter.churchpresentermobile.viewmodel.ClearOutcome
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryClearViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.formatBytes
@@ -105,7 +106,7 @@ fun ClearContentSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
+                .verticalScrollWithScrollbar(rememberScrollState())
                 .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {
@@ -240,7 +241,7 @@ private fun ClearConfirmDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
-        text = { Text(body) },
+        text = { ScrollingDialogBody { Text(body) } },
         confirmButton = {
             TextButton(onClick = onConfirm, modifier = Modifier.testTag(LibraryTags.CLEAR_CONFIRM)) {
                 Text(stringResource(Res.string.library_clear_action))

@@ -13,6 +13,7 @@ internal object CanvasTags {
     const val SCREEN = "canvas:screen"
     const val BACK = "canvas:back"
     const val UNDO = "canvas:undo"
+    const val ROTATE_KNOB = "canvas:rotateKnob"
     const val REDO = "canvas:redo"
     const val ZOOM_OUT = "canvas:zoomOut"
     const val ZOOM_IN = "canvas:zoomIn"

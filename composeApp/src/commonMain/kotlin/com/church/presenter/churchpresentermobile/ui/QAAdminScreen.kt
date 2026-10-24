@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -319,35 +320,13 @@ internal fun QuestionEditor(
     val colors = LocalAppColors.current
     var text by remember(question.id) { mutableStateOf(question.text) }
 
-    Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
-        // Header: Cancel / Edit question / Save
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                stringResource(Res.string.qa_admin_cancel),
-                color = colors.muted, fontSize = 15.sp,
-                modifier = Modifier.testTag(UiTags.QA_EDIT_CANCEL).clickable { onDismiss() },
-            )
-            Text(
-                stringResource(Res.string.qa_edit_question_title),
-                color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
-            )
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.accent)
-                    .testTag(UiTags.QA_EDIT_SAVE)
-                    .clickable { if (text.isNotBlank()) onSave(text.trim()) }
-                    .padding(horizontal = 18.dp, vertical = 8.dp),
-            ) {
-                Text(
-                    stringResource(Res.string.qa_admin_save),
-                    color = colors.onAccent,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-        }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .verticalScrollWithScrollbar(rememberScrollState())
+            .padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
+    ) {
+        QuestionEditorHeader(onSave = { if (text.isNotBlank()) onSave(text.trim()) }, onDismiss = onDismiss)
 
         Spacer(Modifier.height(16.dp))
         // Editable text field with accent focus ring
@@ -422,6 +401,39 @@ internal fun QuestionEditor(
     }
 }
 
+/** The editor's top bar: Cancel, the title, and Save. */
+@Composable
+private fun QuestionEditorHeader(onSave: () -> Unit, onDismiss: () -> Unit) {
+    val colors = LocalAppColors.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            stringResource(Res.string.qa_admin_cancel),
+            color = colors.muted, fontSize = 15.sp,
+            modifier = Modifier.testTag(UiTags.QA_EDIT_CANCEL).clickable { onDismiss() },
+        )
+        Text(
+            stringResource(Res.string.qa_edit_question_title),
+            color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
+        )
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(colors.accent)
+                .testTag(UiTags.QA_EDIT_SAVE)
+                .clickable(onClick = onSave)
+                .padding(horizontal = 18.dp, vertical = 8.dp),
+        ) {
+            Text(
+                stringResource(Res.string.qa_admin_save),
+                color = colors.onAccent,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
+}
+
 @Composable
 internal fun AddQuestionDialog(
     askForName: Boolean,
@@ -434,7 +446,7 @@ internal fun AddQuestionDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.qa_admin_add_question)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            ScrollingDialogBody(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },

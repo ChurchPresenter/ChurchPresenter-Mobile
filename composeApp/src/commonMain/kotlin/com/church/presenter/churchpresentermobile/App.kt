@@ -51,6 +51,7 @@ import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.library.CanvasPictures
 import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
@@ -99,6 +100,8 @@ import androidx.compose.ui.Alignment
 import com.church.presenter.churchpresentermobile.ui.UiTags
 import com.church.presenter.churchpresentermobile.ui.usesNavRail
 import com.church.presenter.churchpresentermobile.ui.usesTwoPaneLayout
+import com.church.presenter.churchpresentermobile.ui.isTabletWindow
+import com.church.presenter.churchpresentermobile.ui.NewBadges
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
@@ -294,12 +297,13 @@ fun App(
         CanvasProjectionRouter(
             mode = AppModeHolder.mode,
             standalone = CanvasProjector(canvasOutput, standaloneEngine),
-            remote = RemoteCanvasProjector(appSettings, eventService.liveContentType),
+            remote = RemoteCanvasProjector(appSettings, eventService.liveSlide),
         )
     }
     val desktopConnected by eventService.connected.collectAsState()
     // The canvas on this device's disk, kept apart from the library like the play log.
     val canvasRepository = remember { CanvasRepository() }
+    val canvasPictures = remember { CanvasPictures(newKey = { generateUUID() }) }
     val projectionRouter = remember(standaloneEngine) {
         ProjectionRouter(AppModeHolder.mode, eventService, standaloneEngine)
     }
@@ -582,11 +586,16 @@ fun App(
     // Read from the window rather than asked of the platform, so a window that
     // changes size — a foldable opening, a desktop browser being dragged wider,
     // an iPad entering Split View — moves between the two without a restart.
-    val windowWidthDp = with(LocalDensity.current) {
-        LocalWindowInfo.current.containerSize.width.toDp()
-    }
+    val windowSize = LocalWindowInfo.current.containerSize
+    val windowWidthDp = with(LocalDensity.current) { windowSize.width.toDp() }
+    val windowHeightDp = with(LocalDensity.current) { windowSize.height.toDp() }
     val useRail = usesNavRail(windowWidthDp)
     val twoPane = usesTwoPaneLayout(windowWidthDp)
+    // The canvas needs a tablet, not two panes: an iPad held upright is too narrow
+    // to split, but has all the room a drawing surface wants.
+    val tablet = isTabletWindow(windowWidthDp, windowHeightDp)
+    // "New" badges show for one session; see NewBadges.
+    val newBadges = remember(appSettings) { NewBadges(appSettings) }
 
     // Seed the initial tab from any pending shortcut/quick-action so that
     // rememberPagerState starts on the correct page immediately.  Without this,
@@ -646,13 +655,13 @@ fun App(
     // selectedTab is rememberSaveable, so after a mode switch it can still hold a
     // tab that is no longer in the strip. Every index lookup below is therefore
     // written to survive a -1, and this effect settles it on the next frame.
-    LaunchedEffect(appMode, twoPane) {
+    LaunchedEffect(appMode, tablet) {
         selectedTab = settledTab(selectedTab, tabs)
         // Same for a More destination opened before the switch: standalone cannot
         // fill the desktop-backed screens, so leaving one open would strand the
         // operator on a screen the launcher no longer offers a way back to. The
-        // canvas is tablet-only, so a window narrowing past two panes closes it.
-        moreDestination = settledMoreDestination(moreDestination, appMode, tablet = twoPane)
+        // canvas is tablet-only, so a window narrowing to a phone's — Split View — closes it.
+        moreDestination = settledMoreDestination(moreDestination, appMode, tablet = tablet)
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -749,7 +758,7 @@ fun App(
     val inMoreDetail = selectedTab == AppTab.MORE && moreDestination != null
     // The canvas fills the whole window over the shell, rail and all, as the tablet
     // design draws it — it is a drawing surface, and the rail would only crowd it.
-    val canvasOpen = twoPane && selectedTab == AppTab.MORE && moreDestination == MoreDestination.CANVAS
+    val canvasOpen = tablet && selectedTab == AppTab.MORE && moreDestination == MoreDestination.CANVAS
 
     // System back inside a More sub-screen returns to the More launcher grid. Not
     // in two panes, where the launcher never went away: back would empty the
@@ -1207,12 +1216,17 @@ fun App(
                                     onMenu = paneMenu,
                                     onSettings = paneSettings,
                                     modifier = Modifier.fillMaxSize(),
+                                    newBadges = newBadges.showing,
+                                    onBadgesShown = newBadges::shown,
                                 )
                             } else if (moreDestination == null) {
                                 MoreScreen(
                                     mode = appMode,
                                     onSelect = { moreDestination = it },
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
+                                    tablet = tablet,
+                                    newBadges = newBadges.showing,
+                                    onBadgesShown = newBadges::shown,
                                 )
                             } else {
                                 moreTool()
@@ -1333,6 +1347,7 @@ fun App(
                         AppMode.CALENDAR -> false
                     },
                     store = canvasRepository,
+                    pictures = canvasPictures,
                 )
             }
             if (showSettings) {

@@ -76,6 +76,7 @@ import com.church.presenter.churchpresentermobile.model.LibraryField
 import com.church.presenter.churchpresentermobile.model.SectionType
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.SCREEN_ASPECT_RATIO
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
 import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneOutputScreen
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
@@ -441,7 +442,7 @@ internal fun DiscardDialog(onDiscard: () -> Unit, onKeepEditing: () -> Unit) {
     AlertDialog(
         onDismissRequest = onKeepEditing,
         title = { Text(stringResource(Res.string.editor_discard_title)) },
-        text = { Text(stringResource(Res.string.editor_discard_body)) },
+        text = { ScrollingDialogBody { Text(stringResource(Res.string.editor_discard_body)) } },
         confirmButton = {
             TextButton(onClick = onDiscard, modifier = Modifier.testTag(LibraryTags.DISCARD)) {
                 Text(stringResource(Res.string.editor_discard_confirm))

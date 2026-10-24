@@ -41,6 +41,19 @@ expect fun BinaryDocumentPicker(
 )
 
 /**
+ * Opens a picture from the device's files — the Files app on iOS, the document
+ * browser on Android — as bytes. [BinaryDocumentPicker], filtered to images.
+ *
+ * @param onPicked Called with the file, or `null` when the user cancels.
+ */
+@Composable
+expect fun ImageFilePicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+)
+
+/**
  * Saves [text] as a file the user can keep or send on.
  *
  * On Android and iOS this raises the system share sheet, which covers both

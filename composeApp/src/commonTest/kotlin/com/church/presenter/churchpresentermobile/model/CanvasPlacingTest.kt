@@ -157,8 +157,8 @@ class CanvasPlacingTest {
         val picture = image("i")
         assertTrue(adjusted(picture, ImageAdjust.FLIP).flipped)
         assertFalse(adjusted(adjusted(picture, ImageAdjust.FLIP), ImageAdjust.FLIP).flipped)
-        assertEquals(90, adjusted(picture, ImageAdjust.ROTATE).rotation)
-        assertEquals(0, (1..4).fold(picture) { p, _ -> adjusted(p, ImageAdjust.ROTATE) }.rotation)
+        assertEquals(90f, adjusted(picture, ImageAdjust.ROTATE).angle)
+        assertEquals(0f, (1..4).fold(picture) { p, _ -> adjusted(p, ImageAdjust.ROTATE) }.angle)
         assertTrue(adjusted(picture, ImageAdjust.REMOVE_BACKGROUND).cutOut)
     }
 }

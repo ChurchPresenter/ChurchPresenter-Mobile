@@ -3,9 +3,11 @@ package com.church.presenter.churchpresentermobile.viewmodel
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.presenter.churchpresentermobile.library.CanvasPictures
 import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.library.SavedCanvas
 import com.church.presenter.churchpresentermobile.model.CanvasDocument
+import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.present.CanvasProjection
 import com.church.presenter.churchpresentermobile.present.CanvasShowResult
 import com.church.presenter.churchpresentermobile.present.encodeCanvasFrame
@@ -47,6 +49,8 @@ import kotlin.coroutines.CoroutineContext
  *   in place of [document]; every change is written back [SAVE_DELAY_MS] after the
  *   last one, so a burst of strokes is one write. Null keeps the canvas in memory.
  * @param saveWork Where the canvas is written: never the main thread.
+ * @param pictures Where placed pictures are kept. Without it, inserting a picture
+ *   places a placeholder card instead of opening a picker.
  */
 class CanvasViewModel(
     document: CanvasDocument = CanvasDocument(),
@@ -54,6 +58,7 @@ class CanvasViewModel(
     private val frameWork: CoroutineContext = Dispatchers.Default,
     private val store: CanvasRepository? = null,
     private val saveWork: CoroutineContext = Dispatchers.Default,
+    private val pictures: CanvasPictures? = null,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(opening(document))
@@ -81,6 +86,12 @@ class CanvasViewModel(
 
     init {
         if (store != null) autosave(store)
+        // Pictures whose elements were deleted in an earlier session go now; within
+        // a session Undo can still bring one back, so nothing is deleted while open.
+        pictures?.let { p ->
+            val placed = pictureKeys(_state.value.document)
+            viewModelScope.launch { withContext(saveWork) { p.prune(placed) } }
+        }
         projector?.let { p ->
             viewModelScope.launch {
                 var wasShowing = false
@@ -150,6 +161,11 @@ class CanvasViewModel(
      */
     fun dispatch(intent: CanvasIntent) {
         val before = _state.value
+        if (intent is CanvasIntent.InsertImage && asksForPicture(intent, canKeep = pictures != null)) {
+            // The picture comes from the platform's picker; see picturePicked.
+            _state.update { it.copy(picking = ImagePick(intent.source, intent.at), pictureFailed = false) }
+            return
+        }
         when (intent) {
             CanvasIntent.Undo -> step(from = undoStack, to = redoStack)
             CanvasIntent.Redo -> step(from = redoStack, to = undoStack)
@@ -176,10 +192,37 @@ class CanvasViewModel(
                 lastRun = when (intent) {
                     // Placing a box already recorded the page without it: undoing the
                     // typing should take the whole box away, not leave an empty one.
-                    is CanvasIntent.PlaceText, is CanvasIntent.PlaceSticky -> TYPING
+                    is CanvasIntent.PlaceText, is CanvasIntent.PlaceSticky -> TYPING_RUN
                     else -> run
                 }
                 _state.value = after.withHistory()
+            }
+        }
+    }
+
+    /**
+     * What the picker opened by [CanvasUiState.picking] handed back: the picture's
+     * bytes, or null when it was cancelled. The picture is shrunk and kept off the
+     * main thread, then placed where it was asked for.
+     *
+     * @param unreadable The picker could not read what was picked — said once in
+     *   the header, until the next picture.
+     */
+    fun picturePicked(bytes: ByteArray?, unreadable: Boolean = false) {
+        if (unreadable) {
+            _state.update { it.copy(picking = null, pictureFailed = true) }
+            return
+        }
+        val pick = _state.value.picking ?: return
+        _state.update { it.copy(picking = null) }
+        val store = pictures ?: return
+        if (bytes == null) return
+        viewModelScope.launch {
+            val picture = withContext(saveWork) { store.put(bytes) }
+            if (picture == null) {
+                _state.update { it.copy(pictureFailed = true) }
+            } else {
+                dispatch(CanvasIntent.InsertImage(pick.source, pick.at, picture))
             }
         }
     }
@@ -244,14 +287,6 @@ class CanvasViewModel(
         }
     }
 
-    /** The run [intent] continues, or null for one that stands alone. */
-    private fun runOf(intent: CanvasIntent): String? = when (intent) {
-        is CanvasIntent.EditText -> TYPING
-        is CanvasIntent.Erase -> intent.session.takeIf { it != CanvasIntent.NO_SESSION }?.let { "erase:$it" }
-        is CanvasIntent.Move -> "move:${intent.session}"
-        is CanvasIntent.Resize -> "resize:${intent.session}"
-        else -> null
-    }
 
     private fun CanvasUiState.withHistory() = copy(canUndo = undoStack.isNotEmpty(), canRedo = redoStack.isNotEmpty())
 
@@ -266,9 +301,31 @@ class CanvasViewModel(
     }
 
     private companion object {
-        const val TYPING = "typing"
-
         /** How long the canvas waits for edits to stop before writing them, in ms. */
         const val SAVE_DELAY_MS = 500L
     }
+}
+
+/** The keys of every picture placed anywhere in [document]. */
+internal fun pictureKeys(document: CanvasDocument): Set<String> =
+    document.pages.flatMap { page -> page.elements.mapNotNull { (it as? CanvasElement.Image)?.photo } }.toSet()
+
+/**
+ * Whether [intent] still needs its picture picked: one from a source this device
+ * can pick from, where there is somewhere to keep it ([canKeep]).
+ */
+internal fun asksForPicture(intent: CanvasIntent.InsertImage, canKeep: Boolean): Boolean =
+    intent.picture == null && canKeep && intent.source in PickableSources
+
+/** The undo run every keystroke of a typing session belongs to. */
+private const val TYPING_RUN = "typing"
+
+/** The run [intent] continues, or null for one that stands alone. */
+internal fun runOf(intent: CanvasIntent): String? = when (intent) {
+    is CanvasIntent.EditText -> TYPING_RUN
+    is CanvasIntent.Erase -> intent.session.takeIf { it != CanvasIntent.NO_SESSION }?.let { "erase:$it" }
+    is CanvasIntent.Move -> "move:${intent.session}"
+    is CanvasIntent.Resize -> "resize:${intent.session}"
+    is CanvasIntent.Rotate -> intent.session.takeIf { it != CanvasIntent.NO_SESSION }?.let { "rotate:$it" }
+    else -> null
 }

@@ -31,6 +31,7 @@ private const val KEY_SAVED_THEMES = "saved_themes"
 private const val KEY_CALENDAR_SYNC = "calendar_sync"
 private const val KEY_RELAY_CLIENT_KEY = "relay_client_key"
 private const val KEY_RELAY_CLIENT_KEY_AT = "relay_client_key_at"
+private const val KEY_SEEN_NEW_BADGES = "seen_new_badges"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -159,6 +160,14 @@ class AppSettings(
     var savedBookmarksJson: String
         get() = storage.getString(KEY_SAVED_BOOKMARKS, "[]")
         set(value) { storage.putString(KEY_SAVED_BOOKMARKS, value) }
+
+    /**
+     * The "New" badges already shown in an earlier session, by name. A badge is
+     * shown for one session only, so the set read at launch is what hides them.
+     */
+    var seenNewBadges: Set<String>
+        get() = storage.getString(KEY_SEEN_NEW_BADGES, "").split(',').filter { it.isNotBlank() }.toSet()
+        set(value) { storage.putString(KEY_SEEN_NEW_BADGES, value.sorted().joinToString(",")) }
 
     /** The user's preferred colour scheme. Defaults to [ThemeMode.SYSTEM]. */
     var themeMode: ThemeMode

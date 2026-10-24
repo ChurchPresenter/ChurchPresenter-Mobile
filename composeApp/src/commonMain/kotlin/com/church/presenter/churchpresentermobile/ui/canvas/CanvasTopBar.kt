@@ -49,6 +49,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_end_live
 import churchpresentermobile.composeapp.generated.resources.canvas_go_live
 import churchpresentermobile.composeapp.generated.resources.canvas_layers
 import churchpresentermobile.composeapp.generated.resources.canvas_live_failed
+import churchpresentermobile.composeapp.generated.resources.canvas_picture_failed
 import churchpresentermobile.composeapp.generated.resources.canvas_not_approved
 import churchpresentermobile.composeapp.generated.resources.canvas_not_saved
 import churchpresentermobile.composeapp.generated.resources.canvas_redo
@@ -124,6 +125,7 @@ internal fun CanvasTopBar(
                         stringResource(Res.string.canvas_subtitle, state.pageIndex + 1, state.document.pages.size),
                         saveNote,
                         liveNote,
+                        stringResource(Res.string.canvas_picture_failed).takeIf { state.pictureFailed },
                     ).joinToString(" · "),
                     color = colors.muted,
                     fontSize = 11.sp,

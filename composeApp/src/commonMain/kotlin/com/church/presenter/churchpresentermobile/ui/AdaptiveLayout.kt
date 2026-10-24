@@ -142,3 +142,16 @@ internal fun usesNavRail(width: Dp): Boolean = width >= NavRailMinWidth
 
 /** Whether [width] gets list and detail side by side. Implies [usesNavRail]. */
 internal fun usesTwoPaneLayout(width: Dp): Boolean = width >= TwoPaneMinWidth
+
+/**
+ * The shortest side a window needs to be a tablet: Android's `sw600dp`. Read off
+ * the shorter side, so turning the device does not change the answer.
+ */
+internal val TabletMinShortSide: Dp = 600.dp
+
+/**
+ * Whether a [width] × [height] window is a tablet's, in either orientation — what
+ * the tablet-only tools such as the canvas need, unlike the two-pane split, which
+ * an iPad held upright is too narrow for. A phone on its side is still a phone.
+ */
+internal fun isTabletWindow(width: Dp, height: Dp): Boolean = minOf(width, height) >= TabletMinShortSide

@@ -1308,4 +1308,5 @@
     <string name="canvas_waiting_approval">ກຳລັງລໍຖ້າການອະນຸມັດ…</string>
     <string name="canvas_not_approved">ບໍ່ໄດ້ຮັບອະນຸມັດ</string>
     <string name="canvas_live_failed">ບໍ່ສາມາດສະແດງໄດ້</string>
+    <string name="canvas_picture_failed">ບໍ່ສາມາດເປີດຮູບນີ້ໄດ້</string>
 </resources>

@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui.bibles
 import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,6 +52,7 @@ import com.church.presenter.churchpresentermobile.bibleimport.catalog.InstallPro
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.InstallState
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.InstallStep
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import org.jetbrains.compose.resources.stringResource
 
 /** Design 3a–3d on a phone: the install's progress, or its outcome, in a sheet over the catalogue. */
@@ -66,7 +68,10 @@ internal fun InstallSheet(state: InstallState, actions: InstallActions) {
         InstallView(
             state,
             actions,
-            Modifier.padding(start = 20.dp, end = 20.dp, bottom = 26.dp).navigationBarsPadding(),
+            Modifier
+                .verticalScrollWithScrollbar(rememberScrollState())
+                .padding(start = 20.dp, end = 20.dp, bottom = 26.dp)
+                .navigationBarsPadding(),
         )
     }
 }

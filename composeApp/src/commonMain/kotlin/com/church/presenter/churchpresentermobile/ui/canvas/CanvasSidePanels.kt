@@ -76,6 +76,7 @@ import com.church.presenter.churchpresentermobile.model.InkKind
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
+import com.church.presenter.churchpresentermobile.viewmodel.PickableSources
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -239,7 +240,7 @@ private fun CanvasElement.tool(): CanvasTool = when (this) {
  * Where a picture can come from, shown while the image tool is out or after
  * Replace. Picking a source brings a picture in from it — or, for Replace, puts it
  * in the selected picture's place — and makes it the image tool's default.
- * Pictures are placeholders named for their source until the picker plumbing arrives.
+ * Only the sources this device can pick from are offered ([PickableSources]).
  */
 @Composable
 internal fun InsertImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, modifier: Modifier = Modifier) {
@@ -287,7 +288,7 @@ internal fun InsertImagePanel(state: CanvasUiState, onIntent: (CanvasIntent) -> 
                 Res.string.canvas_source_files,
                 Res.string.canvas_files_hint,
             ),
-        ).forEach { row ->
+        ).filter { it.source in PickableSources }.forEach { row ->
             InsertSource(row, active = image.source == row.source) {
                 onIntent(CanvasIntent.SetOptions(state.options.copy(image = image.copy(source = row.source))))
                 onIntent(CanvasIntent.InsertImage(row.source))

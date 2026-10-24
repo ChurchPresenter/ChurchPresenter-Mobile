@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.vector.PathParser
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
+import com.church.presenter.churchpresentermobile.model.rotatedBounds
 
 /**
  * Ink paths parsed once per stroke and kept, along with points sampled along each
@@ -45,13 +46,27 @@ internal class InkPaths {
 @Composable
 internal fun rememberInkPaths(): InkPaths = remember { InkPaths() }
 
+/** A single selected element's own box and how far it is turned — what its frame is drawn round. */
+internal data class TurnedBox(val box: CanvasBounds, val angle: Float)
+
 /**
- * Where [element] lies on the page, in dp.
+ * Where [element] lies on the page, in dp: the upright box round it as turned —
+ * what it covers, for hit-testing, lassos, guides and arranging.
  *
  * @param textSizes Text has no size until it is laid out; the board notes each
  *   text box's laid-out bounds here.
  */
 internal fun elementBounds(
+    element: CanvasElement,
+    textSizes: Map<String, CanvasBounds>,
+    paths: InkPaths,
+): CanvasBounds = rotatedBounds(elementBox(element, textSizes, paths), element.angle)
+
+/**
+ * [element]'s own box, before it is turned — what its frame, handles and knob are
+ * drawn round, turned with it, and what it turns about the centre of.
+ */
+internal fun elementBox(
     element: CanvasElement,
     textSizes: Map<String, CanvasBounds>,
     paths: InkPaths,
