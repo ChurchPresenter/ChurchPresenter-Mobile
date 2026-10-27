@@ -64,20 +64,41 @@ class CanvasSelectingGesturesTest {
     }
 
     @Test
-    fun aTapSelectsAndALongPressAddsToTheSelection() = runComposeUiTest {
+    fun aTapSelectsWhatIsUnderIt() = runComposeUiTest {
         val vm = showCanvas()
         vm.given(CanvasIntent.PickTool(CanvasTool.SELECT), CanvasIntent.CloseOptions)
 
         onBoard { click(page(250f, 250f)) }
+
         assertEquals(listOf(Sample.IMAGE), vm.state.value.selectedIds)
+    }
+
+    @Test
+    fun aLongPressAddsToTheSelection() = runComposeUiTest {
+        val vm = showCanvas()
+        vm.given(
+            CanvasIntent.PickTool(CanvasTool.SELECT),
+            CanvasIntent.CloseOptions,
+            CanvasIntent.Select(Sample.IMAGE),
+        )
 
         onBoard { longClick(page(670f, 400f)) }
-        assertEquals(setOf(Sample.IMAGE, Sample.SHAPE), vm.state.value.selectedIds.toSet())
 
-        // Between the picture and the ink, well clear of the dock and the panels: the
-        // bottom-right of the board is where they float, and their text lays out wider
-        // on Linux, so a tap at (900, 600) landed on a control on CI and cleared nothing.
+        assertEquals(setOf(Sample.IMAGE, Sample.SHAPE), vm.state.value.selectedIds.toSet())
+    }
+
+    @Test
+    fun aTapOnEmptyBoardClearsTheSelection() = runComposeUiTest {
+        // Between the picture and the ink, clear of every element and of the dock.
+        val vm = showCanvas()
+        vm.given(
+            CanvasIntent.PickTool(CanvasTool.SELECT),
+            CanvasIntent.CloseOptions,
+            CanvasIntent.Select(Sample.IMAGE),
+        )
+
         onBoard { click(page(500f, 300f)) }
+
         assertTrue(vm.state.value.selectedIds.isEmpty(), "a tap on empty board clears the selection")
     }
 
