@@ -74,6 +74,22 @@ class CanvasDrawingGesturesTest {
     }
 
     @Test
+    fun aTouchThatWandersAStillPlacesANote() = runComposeUiTest {
+        // A fingertip or a Pencil rarely lands dead still; past the slop the touch used
+        // to count as a drag, which the sticky tool ignored, so nothing appeared at all.
+        val vm = showCanvas()
+        vm.given(CanvasIntent.PickTool(CanvasTool.STICKY), CanvasIntent.CloseOptions)
+        val before = vm.state.value.page.elements.size
+
+        onBoard { dragOnPage(820f, 160f, 840f, 175f) }
+
+        assertEquals(before + 1, vm.state.value.page.elements.size)
+        val note = vm.state.value.page.elements.last()
+        assertTrue(note is CanvasElement.Sticky)
+        assertEquals(note.id, vm.state.value.editingId)
+    }
+
+    @Test
     fun draggingWithTheShapeToolDrawsAShapeThatSize() = runComposeUiTest {
         val vm = showCanvas()
         vm.given(CanvasIntent.PickTool(CanvasTool.SHAPES), CanvasIntent.CloseOptions)

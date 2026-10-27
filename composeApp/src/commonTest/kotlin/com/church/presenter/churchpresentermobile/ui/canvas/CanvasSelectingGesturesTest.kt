@@ -7,6 +7,8 @@ import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasTool
+import com.church.presenter.churchpresentermobile.model.InkKind
+import com.church.presenter.churchpresentermobile.model.CanvasPoint
 import com.church.presenter.churchpresentermobile.model.EraserMode
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import kotlin.test.Test
@@ -72,7 +74,10 @@ class CanvasSelectingGesturesTest {
         onBoard { longClick(page(670f, 400f)) }
         assertEquals(setOf(Sample.IMAGE, Sample.SHAPE), vm.state.value.selectedIds.toSet())
 
-        onBoard { click(page(900f, 600f)) }
+        // Between the picture and the ink, well clear of the dock and the panels: the
+        // bottom-right of the board is where they float, and their text lays out wider
+        // on Linux, so a tap at (900, 600) landed on a control on CI and cleared nothing.
+        onBoard { click(page(500f, 300f)) }
         assertTrue(vm.state.value.selectedIds.isEmpty(), "a tap on empty board clears the selection")
     }
 
@@ -113,6 +118,79 @@ class CanvasSelectingGesturesTest {
     }
 
     @Test
+    fun aTapOnTheSelectedNoteStartsTyping() = runComposeUiTest {
+        // However slow the second tap: a double tap inside 350 ms was the only way in.
+        val vm = showCanvas()
+        vm.given(CanvasIntent.PickTool(CanvasTool.SELECT), CanvasIntent.CloseOptions)
+
+        onBoard { click(page(250f, 490f)) }
+        assertEquals(listOf(Sample.NOTE), vm.state.value.selectedIds)
+        assertEquals(null, vm.state.value.editingId, "the first tap only selects")
+        mainClock.advanceTimeBy(SLOW_SECOND_TAP_MS)
+        onBoard { click(page(250f, 490f)) }
+
+        assertEquals(Sample.NOTE, vm.state.value.editingId)
+    }
+
+    @Test
+    fun aTapInsideAStrokesBoxButOffItsLineSelectsWhatIsUnder() = runComposeUiTest {
+        // A loop drawn round the picture: its box covers the picture, its line does not.
+        // Smoothing is off so five corner points stay a rectangle rather than being
+        // averaged into a line across the middle.
+        val vm = showCanvas()
+        val options = vm.state.value.options
+        vm.given(
+            CanvasIntent.PickTool(CanvasTool.PEN),
+            CanvasIntent.SetOptions(options.copy(pen = options.pen.copy(smoothing = 0f))),
+            CanvasIntent.Stroke(
+                listOf(
+                    CanvasPoint(130f, 130f), CanvasPoint(470f, 130f), CanvasPoint(470f, 370f),
+                    CanvasPoint(130f, 370f), CanvasPoint(130f, 130f),
+                ),
+            ),
+            CanvasIntent.PickTool(CanvasTool.SELECT),
+            CanvasIntent.CloseOptions,
+        )
+
+        onBoard { click(page(300f, 250f)) }
+
+        assertEquals(listOf(Sample.IMAGE), vm.state.value.selectedIds)
+    }
+
+    @Test
+    fun aTapOnTheLoopsLineStillSelectsTheLoop() = runComposeUiTest {
+        val vm = showCanvas()
+        vm.given(
+            CanvasIntent.PickTool(CanvasTool.PEN),
+            CanvasIntent.Stroke(listOf(CanvasPoint(130f, 130f), CanvasPoint(470f, 130f))),
+            CanvasIntent.PickTool(CanvasTool.SELECT),
+            CanvasIntent.CloseOptions,
+        )
+        val loop = vm.state.value.page.elements.last().id
+
+        onBoard { click(page(300f, 132f)) }
+
+        assertEquals(listOf(loop), vm.state.value.selectedIds)
+    }
+
+    @Test
+    fun anEraserMarkCannotBeSelected() = runComposeUiTest {
+        // It is invisible, and deleting it brought back the ink it had erased.
+        val vm = showCanvas()
+        vm.given(CanvasIntent.PickTool(CanvasTool.ERASER), CanvasIntent.CloseOptions)
+        val options = vm.state.value.options
+        vm.given(CanvasIntent.SetOptions(options.copy(eraser = options.eraser.copy(mode = EraserMode.PIXEL))))
+        onBoard { dragOnPage(200f, 250f, 400f, 250f) }
+        val mark = vm.state.value.page.elements.last()
+        assertTrue(mark is CanvasElement.Ink && mark.kind == InkKind.ERASER, "the eraser left its mark")
+        vm.given(CanvasIntent.PickTool(CanvasTool.SELECT), CanvasIntent.CloseOptions)
+
+        onBoard { click(page(300f, 250f)) }
+
+        assertEquals(listOf(Sample.IMAGE), vm.state.value.selectedIds)
+    }
+
+    @Test
     fun draggingAHandleResizesTheSelectedPicture() = runComposeUiTest {
         val vm = showCanvas()
         vm.given(CanvasIntent.PickTool(CanvasTool.SELECT), CanvasIntent.CloseOptions, CanvasIntent.Select(Sample.IMAGE))
@@ -135,3 +213,6 @@ class CanvasSelectingGesturesTest {
         const val PICTURE_HEIGHT = 200f
     }
 }
+
+/** Well past a double tap, so the second tap is a tap of its own. */
+private const val SLOW_SECOND_TAP_MS = 1_000L

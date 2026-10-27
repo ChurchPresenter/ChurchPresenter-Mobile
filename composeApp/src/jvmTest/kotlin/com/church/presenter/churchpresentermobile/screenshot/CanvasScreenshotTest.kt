@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
+import com.church.presenter.churchpresentermobile.viewmodel.LiveNote
+import com.church.presenter.churchpresentermobile.model.CanvasShape
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
@@ -92,11 +94,27 @@ class CanvasScreenshotTest {
 
     /** A color mixed in the picker: the rainbow swatch shows it, ringed, and no named ink is. */
     @Test
-    fun customColour() = canvas(
-        "canvas__custom-colour",
+    fun customColor() = canvas(
+        "canvas__custom-color",
         sketch.copy(
             optionsOpen = true,
-            options = sketch.options.copy(pen = sketch.options.pen.copy(custom = "#F97316")),
+            options = sketch.options.copy(
+                pen = sketch.options.pen.copy(custom = "#F97316"),
+                mixedInks = listOf("#F97316"),
+            ),
+        ),
+    )
+
+    /** Three mixes at the front of the pen's row, the newest in use, pushing the last presets off the end. */
+    @Test
+    fun penOptionsWithMixes() = canvas(
+        "canvas__pen-options-mixed",
+        sketch.copy(
+            optionsOpen = true,
+            options = sketch.options.copy(
+                pen = sketch.options.pen.copy(custom = "#0EA5E9"),
+                mixedInks = listOf("#0EA5E9", "#9333EA", "#84CC16"),
+            ),
         ),
     )
 
@@ -149,6 +167,23 @@ class CanvasScreenshotTest {
         sketch.copy(tool = CanvasTool.SELECT, selectedIds = listOf(CanvasSketch.ELLIPSE)),
     )
 
+    /** The sketch's ellipse as a speech bubble — its tail showing — leaned back, with the skew sliders out. */
+    @Test
+    fun skewedSpeechBubble() {
+        val skew = -15f
+        canvas(
+            "canvas__speech-skewed",
+            withEllipse { it.copy(shape = CanvasShape.SPEECH, skewX = skew) }.copy(
+                tool = CanvasTool.SHAPES,
+                optionsOpen = true,
+                selectedIds = listOf(CanvasSketch.ELLIPSE),
+                options = sketch.options.copy(
+                    shapes = sketch.options.shapes.copy(shape = CanvasShape.SPEECH, skewX = skew),
+                ),
+            ),
+        )
+    }
+
     /** A text box being typed into, in the text tool's format, with its options out. */
     @Test
     fun editingText() {
@@ -174,6 +209,11 @@ class CanvasScreenshotTest {
     /** Go Live faded: remote mode, or the presentation server is not running. */
     @Test
     fun cannotGoLive() = canvas("canvas__go-live-off", sketch, canProject = false)
+
+    /** Go Live refused by a desktop too old to show drawings: the red note under the title. */
+    @Test
+    fun desktopCannotShowDrawings() =
+        canvas("canvas__desktop-unsupported", sketch.copy(liveNote = LiveNote.UNSUPPORTED))
 
     @Test
     fun saving() = canvas("canvas__saving", sketch.copy(saveStatus = SaveStatus.SAVING))
@@ -205,6 +245,22 @@ class CanvasScreenshotTest {
     }
 
     // ── Frame ────────────────────────────────────────────────────────────
+
+    /** The sketch with its ellipse changed by [change]. */
+    private fun withEllipse(change: (CanvasElement.Shape) -> CanvasElement.Shape): CanvasUiState {
+        val pages = sketch.document.pages.mapIndexed { index, page ->
+            if (index != CanvasSketch.SKETCH_PAGE) {
+                page
+            } else {
+                page.copy(
+                    elements = page.elements.map {
+                        if (it is CanvasElement.Shape && it.id == CanvasSketch.ELLIPSE) change(it) else it
+                    },
+                )
+            }
+        }
+        return sketch.copy(document = sketch.document.copy(pages = pages))
+    }
 
     /** [tool]'s options panel open beside the rail, over the sketch. */
     private fun options(tool: CanvasTool, panel: CanvasPanel = CanvasPanel.NONE) = canvas(
