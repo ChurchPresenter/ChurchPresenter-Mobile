@@ -189,6 +189,25 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         }
     }
 
+    // MARK: - External display (AirPlay / wired)
+
+    /// Claims the external-display scene so standalone mode can show its own
+    /// output on a TV instead of a mirror. The app is scene-based, so a window
+    /// only reaches the TV if it is created on this scene — see
+    /// `IosExternalDisplaySink`. Until that window exists, iOS keeps mirroring.
+    /// Every other role gets a plain configuration, which SwiftUI fills in.
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let config = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        if connectingSceneSession.role == .windowExternalDisplayNonInteractive {
+            config.delegateClass = ExternalDisplaySceneDelegate.self
+        }
+        return config
+    }
+
     // MARK: - Home-screen quick actions (long-press app icon)
 
     func application(
@@ -347,6 +366,28 @@ class AppDelegate: NSObject, UIApplicationDelegate,
 }
 
 // MARK: - Crashlytics bridge
+
+/**
+ * Delegate for the external-display scene (AirPlay or a wired adapter).
+ * Hands the scene to Kotlin's `ExternalDisplayScenes`, where the standalone
+ * output sink puts its window on it while presenting.
+ */
+final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
+
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        ExternalDisplayScenes.shared.connect(scene: windowScene)
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        ExternalDisplayScenes.shared.disconnect(scene: windowScene)
+    }
+}
 
 /**
  * Swift implementation of the Kotlin [IosCrashlyticsReporter] interface.
