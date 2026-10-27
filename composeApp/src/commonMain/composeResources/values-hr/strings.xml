@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Čeka se odobrenje…</string>
     <string name="canvas_not_approved">Nije odobreno</string>
     <string name="canvas_live_failed">Prikaz nije uspio</string>
+    <string name="canvas_live_unsupported">Računalo ne može prikazati crteže — ažurirajte ChurchPresenter</string>
     <string name="canvas_picture_failed">Slika se nije mogla otvoriti</string>
 </resources>

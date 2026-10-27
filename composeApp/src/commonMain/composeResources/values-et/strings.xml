@@ -1339,5 +1339,6 @@
     <string name="canvas_waiting_approval">Ootab kinnitust…</string>
     <string name="canvas_not_approved">Pole kinnitatud</string>
     <string name="canvas_live_failed">Ekraanil näitamine ebaõnnestus</string>
+    <string name="canvas_live_unsupported">Arvuti ei oska jooniseid näidata — uuenda ChurchPresenterit</string>
     <string name="canvas_picture_failed">Pilti ei õnnestunud avada</string>
 </resources>

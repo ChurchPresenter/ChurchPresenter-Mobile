@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Naghihintay ng pag-apruba…</string>
     <string name="canvas_not_approved">Hindi inaprubahan</string>
     <string name="canvas_live_failed">Hindi maipakita</string>
+    <string name="canvas_live_unsupported">Hindi kayang ipakita ng computer ang mga drawing — i-update ang ChurchPresenter</string>
     <string name="canvas_picture_failed">Hindi mabuksan ang larawang ito</string>
 </resources>

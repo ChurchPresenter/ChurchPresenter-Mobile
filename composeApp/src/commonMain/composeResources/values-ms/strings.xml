@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Menunggu kelulusan…</string>
     <string name="canvas_not_approved">Tidak diluluskan</string>
     <string name="canvas_live_failed">Gagal dipaparkan</string>
+    <string name="canvas_live_unsupported">Komputer tidak dapat memaparkan lukisan — kemas kini ChurchPresenter</string>
     <string name="canvas_picture_failed">Gambar tidak dapat dibuka</string>
 </resources>

@@ -151,6 +151,8 @@ class CanvasViewModel(
             CanvasShowResult.NOT_SHOWING -> s.copy(live = false, awaitingApproval = false)
             CanvasShowResult.DECLINED -> s.copy(live = false, awaitingApproval = false, liveNote = LiveNote.DECLINED)
             CanvasShowResult.FAILED -> s.copy(live = false, awaitingApproval = false, liveNote = LiveNote.FAILED)
+            CanvasShowResult.UNSUPPORTED ->
+                s.copy(live = false, awaitingApproval = false, liveNote = LiveNote.UNSUPPORTED)
         }
     }
 

@@ -21,6 +21,7 @@ internal object CanvasTags {
     const val LAYERS = "canvas:layers"
     const val MORE = "canvas:more"
     const val GO_LIVE = "canvas:goLive"
+    const val LIVE_NOTE = "canvas:liveNote"
     const val BOARD = "canvas:board"
     const val DOCK = "canvas:dock"
     const val ADD_PAGE = "canvas:addPage"

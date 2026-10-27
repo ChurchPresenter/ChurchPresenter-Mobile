@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Inasubiri idhini…</string>
     <string name="canvas_not_approved">Haijaidhinishwa</string>
     <string name="canvas_live_failed">Imeshindwa kuonyesha</string>
+    <string name="canvas_live_unsupported">Kompyuta haiwezi kuonyesha michoro — sasisha ChurchPresenter</string>
     <string name="canvas_picture_failed">Imeshindwa kufungua picha hii</string>
 </resources>

@@ -1339,5 +1339,6 @@
     <string name="canvas_waiting_approval">Se așteaptă aprobarea…</string>
     <string name="canvas_not_approved">Neaprobat</string>
     <string name="canvas_live_failed">Transmisia live a eșuat</string>
+    <string name="canvas_live_unsupported">Calculatorul nu poate afișa desene — actualizați ChurchPresenter</string>
     <string name="canvas_picture_failed">Imaginea nu a putut fi deschisă</string>
 </resources>

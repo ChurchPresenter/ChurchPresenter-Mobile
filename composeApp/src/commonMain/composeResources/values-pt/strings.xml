@@ -1339,5 +1339,6 @@
     <string name="canvas_waiting_approval">Aguardando aprovação…</string>
     <string name="canvas_not_approved">Não aprovado</string>
     <string name="canvas_live_failed">Não foi possível exibir ao vivo</string>
+    <string name="canvas_live_unsupported">O computador não exibe desenhos — atualize o ChurchPresenter</string>
     <string name="canvas_picture_failed">Não foi possível abrir a imagem</string>
 </resources>

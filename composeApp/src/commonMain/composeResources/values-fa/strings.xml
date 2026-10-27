@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">در انتظار تأیید…</string>
     <string name="canvas_not_approved">تأیید نشد</string>
     <string name="canvas_live_failed">نمایش ممکن نشد</string>
+    <string name="canvas_live_unsupported">رایانه نمی‌تواند نقاشی‌ها را نمایش دهد — ChurchPresenter را به‌روز کنید</string>
     <string name="canvas_picture_failed">باز کردن این تصویر ممکن نشد</string>
 </resources>

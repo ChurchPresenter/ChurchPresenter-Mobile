@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">بانتظار الموافقة…</string>
     <string name="canvas_not_approved">لم تتم الموافقة</string>
     <string name="canvas_live_failed">تعذّر العرض الآن</string>
+    <string name="canvas_live_unsupported">لا يدعم الحاسوب عرض الرسومات — حدّث ChurchPresenter</string>
     <string name="canvas_picture_failed">تعذّر فتح هذه الصورة</string>
 </resources>

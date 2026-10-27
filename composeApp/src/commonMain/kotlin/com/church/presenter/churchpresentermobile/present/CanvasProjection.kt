@@ -18,8 +18,11 @@ enum class CanvasShowResult {
     /** Not shown: the operator at the desktop said no. */
     DECLINED,
 
-    /** Not shown: nowhere to show it — the server is down, unreachable, or too old to know canvases. */
+    /** Not shown: nowhere to show it — the server is down or unreachable. */
     FAILED,
+
+    /** Not shown: the desktop is too old to know drawings, and answered 404. */
+    UNSUPPORTED,
 }
 
 /**

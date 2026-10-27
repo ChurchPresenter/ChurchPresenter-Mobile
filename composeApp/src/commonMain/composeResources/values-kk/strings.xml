@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Мақұлдау күтілуде…</string>
     <string name="canvas_not_approved">Мақұлданбады</string>
     <string name="canvas_live_failed">Экранға шығару мүмкін болмады</string>
+    <string name="canvas_live_unsupported">Компьютер суреттерді көрсете алмайды — ChurchPresenter жаңартыңыз</string>
     <string name="canvas_picture_failed">Суретті ашу мүмкін болмады</string>
 </resources>

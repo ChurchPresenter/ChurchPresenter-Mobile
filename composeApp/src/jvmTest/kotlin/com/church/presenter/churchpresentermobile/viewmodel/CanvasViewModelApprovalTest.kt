@@ -144,6 +144,24 @@ class CanvasViewModelApprovalTest {
     }
 
     @Test
+    fun anOldDesktopEndsLiveAndSaysItNeedsUpdating() = runVmTest {
+        val desk = Desk()
+        val vm = vm(desk)
+        try {
+            runCurrent()
+            vm.dispatch(CanvasIntent.SetLive(true))
+            vm.showFrame(frame, "#FFFFFF")
+            desk.answer.complete(CanvasShowResult.UNSUPPORTED)
+            advanceUntilIdle()
+            assertFalse(vm.state.value.live)
+            assertFalse(vm.state.value.awaitingApproval)
+            assertEquals(LiveNote.UNSUPPORTED, vm.state.value.liveNote)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
     fun endLiveWhileWaitingWithdrawsTheRequest() = runVmTest {
         val desk = Desk()
         val vm = vm(desk)

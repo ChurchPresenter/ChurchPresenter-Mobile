@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">स्वीकृति की प्रतीक्षा…</string>
     <string name="canvas_not_approved">स्वीकृत नहीं</string>
     <string name="canvas_live_failed">दिखाया नहीं जा सका</string>
+    <string name="canvas_live_unsupported">कंप्यूटर ड्रॉइंग नहीं दिखा सकता — ChurchPresenter अपडेट करें</string>
     <string name="canvas_picture_failed">यह चित्र नहीं खुल सका</string>
 </resources>

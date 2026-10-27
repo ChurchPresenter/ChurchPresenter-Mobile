@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Venter på godkjenning…</string>
     <string name="canvas_not_approved">Ikke godkjent</string>
     <string name="canvas_live_failed">Kunne ikke vise</string>
+    <string name="canvas_live_unsupported">Datamaskinen kan ikke vise tegninger — oppdater ChurchPresenter</string>
     <string name="canvas_picture_failed">Kunne ikke åpne bildet</string>
 </resources>

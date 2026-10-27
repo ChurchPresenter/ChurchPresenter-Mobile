@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Menunggu persetujuan…</string>
     <string name="canvas_not_approved">Tidak disetujui</string>
     <string name="canvas_live_failed">Gagal menampilkan</string>
+    <string name="canvas_live_unsupported">Komputer tidak bisa menampilkan gambar — perbarui ChurchPresenter</string>
     <string name="canvas_picture_failed">Gambar tidak dapat dibuka</string>
 </resources>

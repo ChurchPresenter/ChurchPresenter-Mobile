@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Väntar på godkännande…</string>
     <string name="canvas_not_approved">Inte godkänd</string>
     <string name="canvas_live_failed">Kunde inte visa</string>
+    <string name="canvas_live_unsupported">Datorn kan inte visa teckningar — uppdatera ChurchPresenter</string>
     <string name="canvas_picture_failed">Det gick inte att öppna bilden</string>
 </resources>

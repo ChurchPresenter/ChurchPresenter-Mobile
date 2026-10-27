@@ -79,9 +79,9 @@ class RemoteCanvasProjectorTest {
     }
 
     @Test
-    fun `an older desktop without the route fails rather than hangs`() = runTest {
+    fun `an older desktop without the route is unsupported rather than hanging`() = runTest {
         val old = projector(HttpStatusCode.NotFound, "Not Found")
-        assertEquals(CanvasShowResult.FAILED, old.show(byteArrayOf(1), "#000000", "", takeOver = true))
+        assertEquals(CanvasShowResult.UNSUPPORTED, old.show(byteArrayOf(1), "#000000", "", takeOver = true))
     }
 
     @Test
@@ -120,5 +120,6 @@ class RemoteCanvasProjectorTest {
             showResultOf(HttpStatusCode.PayloadTooLarge, """{"reason":"too_large"}"""),
         )
         assertEquals(CanvasShowResult.FAILED, showResultOf(HttpStatusCode.Unauthorized, ""))
+        assertEquals(CanvasShowResult.UNSUPPORTED, showResultOf(HttpStatusCode.NotFound, "Not Found"))
     }
 }

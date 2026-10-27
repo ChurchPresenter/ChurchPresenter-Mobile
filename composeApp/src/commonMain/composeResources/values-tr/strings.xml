@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Onay bekleniyor…</string>
     <string name="canvas_not_approved">Onaylanmadı</string>
     <string name="canvas_live_failed">Gösterilemedi</string>
+    <string name="canvas_live_unsupported">Bilgisayar çizimleri gösteremiyor — ChurchPresenter'ı güncelleyin</string>
     <string name="canvas_picture_failed">Resim açılamadı</string>
 </resources>

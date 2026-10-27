@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Čeká na schválení…</string>
     <string name="canvas_not_approved">Neschváleno</string>
     <string name="canvas_live_failed">Promítnutí se nezdařilo</string>
+    <string name="canvas_live_unsupported">Počítač neumí zobrazit kresby — aktualizujte ChurchPresenter</string>
     <string name="canvas_picture_failed">Obrázek se nepodařilo otevřít</string>
 </resources>

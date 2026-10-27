@@ -30,8 +30,11 @@ enum class LiveNote {
     /** The desktop operator declined to show it. */
     DECLINED,
 
-    /** It could not be shown: the server is down, unreachable, or too old to know canvases. */
+    /** It could not be shown: the server is down or unreachable. */
     FAILED,
+
+    /** The desktop is too old to show drawings, so it needs updating. */
+    UNSUPPORTED,
 }
 
 /** What the bar over the selection can do to it. */

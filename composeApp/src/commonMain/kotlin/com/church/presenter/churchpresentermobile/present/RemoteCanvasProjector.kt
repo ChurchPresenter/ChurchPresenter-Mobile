@@ -103,14 +103,15 @@ class RemoteCanvasProjector(
 /**
  * What a `/api/drawing/frame` answer means for the canvas: shown; not shown because
  * something else has the screen (or approval is still pending); declined by the
- * operator; or failed — including a desktop too old to know the route, which
- * answers 404. A plain function over the status and body, so it is testable
+ * operator; unsupported by a desktop too old to know the route, which answers
+ * 404; or failed. A plain function over the status and body, so it is testable
  * without a server.
  */
 internal fun showResultOf(status: HttpStatusCode, body: String): CanvasShowResult {
     val reason = fieldOf(body, "reason")
     return when {
         status == HttpStatusCode.Forbidden && reason == REASON_DENIED -> CanvasShowResult.DECLINED
+        status == HttpStatusCode.NotFound -> CanvasShowResult.UNSUPPORTED
         !status.isSuccess() -> CanvasShowResult.FAILED
         fieldOf(body, "showing")?.toBooleanStrictOrNull() == true -> CanvasShowResult.SHOWN
         else -> CanvasShowResult.NOT_SHOWING

@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Gaida apstiprinājumu…</string>
     <string name="canvas_not_approved">Nav apstiprināts</string>
     <string name="canvas_live_failed">Neizdevās parādīt</string>
+    <string name="canvas_live_unsupported">Dators nevar parādīt zīmējumus — atjauniniet ChurchPresenter</string>
     <string name="canvas_picture_failed">Attēlu neizdevās atvērt</string>
 </resources>

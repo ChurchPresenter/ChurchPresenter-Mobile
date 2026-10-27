@@ -1375,5 +1375,6 @@
     <string name="canvas_waiting_approval">Waiting for approval…</string>
     <string name="canvas_not_approved">Not approved</string>
     <string name="canvas_live_failed">Couldn't go live</string>
+    <string name="canvas_live_unsupported">Desktop can't show drawings — update ChurchPresenter</string>
     <string name="canvas_picture_failed">Couldn't open that picture</string>
 </resources>

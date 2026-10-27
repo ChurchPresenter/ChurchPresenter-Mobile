@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">等待批准…</string>
     <string name="canvas_not_approved">未获批准</string>
     <string name="canvas_live_failed">无法投放</string>
+    <string name="canvas_live_unsupported">电脑无法显示绘图 — 请更新 ChurchPresenter</string>
     <string name="canvas_picture_failed">无法打开该图片</string>
 </resources>

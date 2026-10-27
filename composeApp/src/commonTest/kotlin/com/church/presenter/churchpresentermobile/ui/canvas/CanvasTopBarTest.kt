@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -8,12 +11,16 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.CanvasDocument
 import com.church.presenter.churchpresentermobile.model.CanvasPoint
+import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.ui.click
+import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import com.church.presenter.churchpresentermobile.ui.exists
 import com.church.presenter.churchpresentermobile.ui.isShowing
 import com.church.presenter.churchpresentermobile.ui.type
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasPanel
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasViewModel
+import com.church.presenter.churchpresentermobile.viewmodel.LiveNote
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -126,5 +133,24 @@ class CanvasTopBarTest {
         val node = onNodeWithTag(CanvasTags.ZOOM_VALUE)
         // Empty on wasm, where compose-resources does not resolve; "100%" where it does.
         runCatching { node.assertTextEquals("100%") }.onFailure { node.assertTextEquals("") }
+    }
+
+    @Test
+    fun whyGoLiveFailedIsShownOnlyWhenThereIsANote() = runComposeUiTest {
+        val opened = CanvasViewModel(sampleCanvas()).state.value
+        setContent {
+            AppTheme(themeMode = ThemeMode.DARK) {
+                Box(Modifier.fillMaxSize()) {
+                    CanvasEditor(state = opened.copy(liveNote = LiveNote.UNSUPPORTED), onIntent = {}, onBack = {}, canProject = true)
+                }
+            }
+        }
+        assertTrue(exists(CanvasTags.LIVE_NOTE), "an old desktop's refusal is spelled out")
+    }
+
+    @Test
+    fun noNoteIsShownBeforeGoLiveHasFailed() = runComposeUiTest {
+        showCanvas(canProject = true)
+        assertFalse(exists(CanvasTags.LIVE_NOTE))
     }
 }

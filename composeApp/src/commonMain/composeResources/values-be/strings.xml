@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Чаканне ўхвалы…</string>
     <string name="canvas_not_approved">Не ўхвалена</string>
     <string name="canvas_live_failed">Не ўдалося паказаць на экране</string>
+    <string name="canvas_live_unsupported">Камп’ютар не паказвае малюнкі — абнавіце ChurchPresenter</string>
     <string name="canvas_picture_failed">Не ўдалося адкрыць гэты малюнак</string>
 </resources>

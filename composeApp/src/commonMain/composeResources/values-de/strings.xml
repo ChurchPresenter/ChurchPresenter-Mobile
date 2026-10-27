@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">Warte auf Genehmigung…</string>
     <string name="canvas_not_approved">Nicht genehmigt</string>
     <string name="canvas_live_failed">Live schalten fehlgeschlagen</string>
+    <string name="canvas_live_unsupported">Der Computer kann keine Zeichnungen zeigen — ChurchPresenter aktualisieren</string>
     <string name="canvas_picture_failed">Bild konnte nicht geöffnet werden</string>
 </resources>

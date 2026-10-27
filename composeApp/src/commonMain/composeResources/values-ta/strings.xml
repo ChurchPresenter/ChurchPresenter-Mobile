@@ -1308,5 +1308,6 @@
     <string name="canvas_waiting_approval">ஒப்புதலுக்குக் காத்திருக்கிறது…</string>
     <string name="canvas_not_approved">ஒப்புதல் கிடைக்கவில்லை</string>
     <string name="canvas_live_failed">காட்ட முடியவில்லை</string>
+    <string name="canvas_live_unsupported">கணினியால் வரைபடங்களைக் காட்ட முடியாது — ChurchPresenter-ஐப் புதுப்பிக்கவும்</string>
     <string name="canvas_picture_failed">இந்தப் படத்தைத் திறக்க முடியவில்லை</string>
 </resources>

@@ -49,6 +49,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_end_live
 import churchpresentermobile.composeapp.generated.resources.canvas_go_live
 import churchpresentermobile.composeapp.generated.resources.canvas_layers
 import churchpresentermobile.composeapp.generated.resources.canvas_live_failed
+import churchpresentermobile.composeapp.generated.resources.canvas_live_unsupported
 import churchpresentermobile.composeapp.generated.resources.canvas_picture_failed
 import churchpresentermobile.composeapp.generated.resources.canvas_not_approved
 import churchpresentermobile.composeapp.generated.resources.canvas_not_saved
@@ -118,19 +119,32 @@ internal fun CanvasTopBar(
                 val liveNote = when (state.liveNote) {
                     LiveNote.DECLINED -> Res.string.canvas_not_approved
                     LiveNote.FAILED -> Res.string.canvas_live_failed
+                    LiveNote.UNSUPPORTED -> Res.string.canvas_live_unsupported
                     null -> null
                 }?.let { stringResource(it) }
                 Text(
                     text = listOfNotNull(
                         stringResource(Res.string.canvas_subtitle, state.pageIndex + 1, state.document.pages.size),
                         saveNote,
-                        liveNote,
                         stringResource(Res.string.canvas_picture_failed).takeIf { state.pictureFailed },
                     ).joinToString(" · "),
                     color = colors.muted,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
                 )
+                // Why Go Live did not stay up, in the danger red: in the grey subtitle
+                // it read as the button merely flashing.
+                if (liveNote != null) {
+                    Text(
+                        text = liveNote,
+                        color = colors.danger,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.testTag(CanvasTags.LIVE_NOTE),
+                    )
+                }
             }
             Row(modifier = Modifier.padding(start = 8.dp), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 BarIcon(
