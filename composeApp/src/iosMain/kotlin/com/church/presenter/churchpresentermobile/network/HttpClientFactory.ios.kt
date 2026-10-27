@@ -56,6 +56,14 @@ actual fun createWebSocketClient(): HttpClient = HttpClient(Darwin) {
         // pingInterval is required for Ktor's Darwin (NSURLSessionWebSocketTask) engine —
         // without it the iOS WebSocket handshake can fail with NSURLErrorBadServerResponse (-1011).
         pingInterval = 20.seconds
+        // NSURLSessionWebSocketTask refuses any message over 1 MB by default and drops
+        // the socket with "Message too long". The desktop's songs_updated carries the
+        // whole catalog — 857 KB of mostly Cyrillic text, about 1.5 MB on the wire — so
+        // every connect died seconds later, and actions failed or were sent twice.
+        maxFrameSize = WS_MAX_MESSAGE_BYTES
     }
 }
+
+/** The largest message the iOS socket accepts: room for a catalog many times today's. */
+private const val WS_MAX_MESSAGE_BYTES = 32L * 1024 * 1024
 

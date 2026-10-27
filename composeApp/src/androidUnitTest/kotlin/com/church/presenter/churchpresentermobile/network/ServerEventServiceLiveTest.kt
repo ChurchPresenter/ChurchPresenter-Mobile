@@ -362,11 +362,17 @@ class ServerEventServiceLiveTest {
         // Settings saves used to start another loop each time. Two sockets meant
         // either one closing failed the action waiting on the other, which was
         // then sent again: the desktop added the song or verse twice.
+        // The second call waits instead, and takes over when the first loop ends —
+        // returning at once left no loop at all once the first caller went away.
         val svc = connected()
 
-        withTimeout(TIMEOUT_MS) { svc.listen() }
-
+        val second = scope.launch { svc.listen() }
         assertEquals(1, desktop.connections.value)
+        listening?.cancel()
+
+        withTimeout<Int>(RECONNECT_TIMEOUT_MS) { desktop.awaitConnections(2) }
+        assertTrue(withTimeout(RECONNECT_TIMEOUT_MS) { svc.connected.first { it } })
+        second.cancel()
     }
 
     @Test

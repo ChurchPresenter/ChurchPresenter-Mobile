@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
@@ -184,6 +186,13 @@ class ServerEventService(
      */
     private val listening = Mutex()
 
+    /**
+     * Wakes the [listen] loop out of its reconnect backoff: sent by [reconnect] and
+     * by an action that finds no connection, so neither waits out a delay of up to
+     * [MAX_RECONNECT_DELAY_MS] that grew while the desktop was away.
+     */
+    private val wake = Channel<Unit>(Channel.CONFLATED)
+
     /** Completed by the listen loop when it receives a response frame (has "ok" key). */
     private var pendingResponse: CompletableDeferred<WsResponse>? = null
 
@@ -268,6 +277,7 @@ class ServerEventService(
             // reconnect races, and connection drops that occur while queued behind actionMutex).
             if (!connectionReady.value) {
                 Logger.d(TAG, "sendAction — waiting for WebSocket connection (attempt ${attempt + 1})…")
+                wake.trySend(Unit)
                 try {
                     withTimeout(WS_CONNECTION_TIMEOUT_MS) {
                         connectionReady.first { it }
@@ -387,19 +397,17 @@ class ServerEventService(
     /**
      * Connects to `ws://<host>:<port>/ws` and listens for server-push events.
      * Automatically reconnects after any error or disconnection.
-     * Suspends until the calling coroutine is cancelled. A call made while a
-     * loop is already running returns at once — see [listening].
+     * Suspends until the calling coroutine is cancelled.
+     *
+     * A call made while a loop is already running waits, and takes over if that
+     * loop's caller goes away — so there is one socket at a time, and always one.
+     * Returning at once instead left no loop at all when the screen that started
+     * the first one was rebuilt: its loop ended after the new screen's call had
+     * already given up.
      */
     suspend fun listen() {
-        if (!listening.tryLock()) {
-            Logger.d(TAG, "listen — already listening, not opening a second socket")
-            return
-        }
-        try {
-            listenLoop()
-        } finally {
-            listening.unlock()
-        }
+        if (listening.isLocked) Logger.d(TAG, "listen — a loop is already running; waiting to take over")
+        listening.withLock { listenLoop() }
     }
 
     private suspend fun listenLoop() {
@@ -464,8 +472,13 @@ class ServerEventService(
                 connectionReady.value = false
                 activeSession = null
             }
-            delay(reconnectDelay)
-            reconnectDelay = (reconnectDelay * 2).coerceAtMost(MAX_RECONNECT_DELAY_MS)
+            // Back off before the next try, unless something wants the connection now.
+            val woken = withTimeoutOrNull(reconnectDelay) { wake.receive() } != null
+            reconnectDelay = if (woken) {
+                INITIAL_RECONNECT_DELAY_MS
+            } else {
+                (reconnectDelay * 2).coerceAtMost(MAX_RECONNECT_DELAY_MS)
+            }
         }
     }
 
@@ -550,6 +563,8 @@ class ServerEventService(
      */
     fun reconnect() {
         Logger.d(TAG, "reconnect — closing current session to force reconnect")
+        // With no session open the loop is backing off: try the new address now.
+        wake.trySend(Unit)
         val session = activeSession ?: return
         connectionReady.value = false
         activeSession = null
