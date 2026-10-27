@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 
 /**
  * The half of the announcement composer that decides how a notice *looks* —
- * the timers, the colours, the size and the animation.
+ * the timers, the colors, the size and the animation.
  *
  * The timer types are the part worth pinning hardest: each one asks for a
  * different set of numbers, and a stepper that runs past its limit sends the
@@ -353,7 +353,7 @@ class AnnouncementStylingTest {
         assertEquals(16, viewModel.form.value.fontSize)
     }
 
-    // ── Colours ──────────────────────────────────────────────────────────
+    // ── Colors ──────────────────────────────────────────────────────────
 
     @Test
     fun theTextColourSwatchesAreOffered() = runComposeUiTest {

@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Njano</string>
     <string name="canvas_color_pink">Waridi</string>
     <string name="canvas_color_orange">Chungwa</string>
+    <string name="canvas_color_teal">Kijani-bluu</string>
+    <string name="canvas_color_brown">Kahawia</string>
+    <string name="canvas_color_light_blue">Bluu hafifu</string>
+    <string name="canvas_color_lime">Kijani limau</string>
     <string name="canvas_color_custom">Rangi maalum</string>
+    <string name="canvas_color_mixed">Rangi maalum %1$s</string>
     <string name="canvas_color_none">Bila kujaza</string>
     <string name="canvas_width_thin">Nyembamba</string>
     <string name="canvas_width_medium">Wastani</string>

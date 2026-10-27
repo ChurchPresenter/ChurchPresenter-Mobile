@@ -187,7 +187,7 @@ class ScheduleItemWireTest {
     }
 
     @Test
-    fun `an announcement carries its text and its colours`() {
+    fun `an announcement carries its text and its colors`() {
         val item = decode(
             """{"type":"announcement","text":"Welcome","textColor":"#FFFFFF",
                "backgroundColor":"#000000","fontSize":48}"""

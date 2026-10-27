@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">黄</string>
     <string name="canvas_color_pink">ピンク</string>
     <string name="canvas_color_orange">オレンジ</string>
+    <string name="canvas_color_teal">ティール</string>
+    <string name="canvas_color_brown">茶</string>
+    <string name="canvas_color_light_blue">水色</string>
+    <string name="canvas_color_lime">ライム</string>
     <string name="canvas_color_custom">カスタムカラー</string>
+    <string name="canvas_color_mixed">カスタムカラー %1$s</string>
     <string name="canvas_color_none">塗りなし</string>
     <string name="canvas_width_thin">細い</string>
     <string name="canvas_width_medium">普通</string>

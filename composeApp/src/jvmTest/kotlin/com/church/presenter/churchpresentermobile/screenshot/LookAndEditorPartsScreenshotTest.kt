@@ -22,7 +22,7 @@ import kotlin.test.Test
  *
  * [EditorField] carries three states an operator can be looking at — plain, a
  * warning, and an error — and the warning is the one that only differs by
- * colour, which is precisely what no behavioural test can check.
+ * color, which is precisely what no behavioural test can check.
  */
 class LookAndEditorPartsScreenshotTest {
 

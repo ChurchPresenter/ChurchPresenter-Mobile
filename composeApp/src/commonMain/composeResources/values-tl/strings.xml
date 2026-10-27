@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Dilaw</string>
     <string name="canvas_color_pink">Rosas</string>
     <string name="canvas_color_orange">Kahel</string>
+    <string name="canvas_color_teal">Teal</string>
+    <string name="canvas_color_brown">Kayumanggi</string>
+    <string name="canvas_color_light_blue">Mapusyaw na asul</string>
+    <string name="canvas_color_lime">Lime</string>
     <string name="canvas_color_custom">Sariling kulay</string>
+    <string name="canvas_color_mixed">Sariling kulay %1$s</string>
     <string name="canvas_color_none">Walang fill</string>
     <string name="canvas_width_thin">Manipis</string>
     <string name="canvas_width_medium">Katamtaman</string>

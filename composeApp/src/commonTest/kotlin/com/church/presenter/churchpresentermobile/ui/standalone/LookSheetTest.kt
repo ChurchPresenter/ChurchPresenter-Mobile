@@ -107,7 +107,7 @@ class LookSheetTest {
     @Test
     fun tappingAPresetAdoptsIt() = runComposeUiTest {
         // Setting up on a Sunday morning should not mean assembling a readable
-        // screen out of six colour fields.
+        // screen out of six color fields.
         var applied: String? = null
         showLook(onApplyTheme = { applied = it.name })
 
@@ -202,7 +202,7 @@ class LookSheetTest {
         assertFalse(exists(LookTags.THEME_NAME))
     }
 
-    // ── Colours ──────────────────────────────────────────────────────────
+    // ── Colors ──────────────────────────────────────────────────────────
 
     @Test
     fun allFourColoursAreOffered() = runComposeUiTest {
@@ -268,7 +268,7 @@ class LookSheetTest {
 
         type(LookTags.TEXT_COLOUR, "#FFE")
 
-        // Three digits is a complete colour; four is not.
+        // Three digits is a complete color; four is not.
         type(LookTags.GRADIENT_TOP, "#12")
 
         assertEquals(before.gradientTop, state.theme.gradientTop)

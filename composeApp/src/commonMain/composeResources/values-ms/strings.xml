@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Kuning</string>
     <string name="canvas_color_pink">Merah jambu</string>
     <string name="canvas_color_orange">Jingga</string>
+    <string name="canvas_color_teal">Hijau kebiruan</string>
+    <string name="canvas_color_brown">Coklat</string>
+    <string name="canvas_color_light_blue">Biru muda</string>
+    <string name="canvas_color_lime">Hijau limau</string>
     <string name="canvas_color_custom">Warna tersuai</string>
+    <string name="canvas_color_mixed">Warna tersuai %1$s</string>
     <string name="canvas_color_none">Tiada isian</string>
     <string name="canvas_width_thin">Nipis</string>
     <string name="canvas_width_medium">Sederhana</string>

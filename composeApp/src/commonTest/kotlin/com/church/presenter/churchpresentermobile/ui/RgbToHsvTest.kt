@@ -7,8 +7,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * The colour wheel's coordinates for a colour — each sector of the hue
- * arithmetic, and the two colours that have no hue at all.
+ * The color wheel's coordinates for a color — each sector of the hue
+ * arithmetic, and the two colors that have no hue at all.
  */
 class RgbToHsvTest {
 

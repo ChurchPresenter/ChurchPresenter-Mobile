@@ -686,8 +686,8 @@
     <string name="standalone_look">Look</string>
     <string name="standalone_gradient_top">Gradient top</string>
     <string name="standalone_gradient_bottom">Gradient bottom</string>
-    <string name="standalone_text_colour">Text colour</string>
-    <string name="standalone_accent_colour">Reference colour</string>
+    <string name="standalone_text_colour">Text color</string>
+    <string name="standalone_accent_colour">Reference color</string>
     <string name="standalone_font">Font</string>
     <string name="standalone_font_serif">Serif</string>
     <string name="standalone_font_sans">Sans</string>
@@ -1209,7 +1209,12 @@
     <string name="canvas_color_yellow">Yellow</string>
     <string name="canvas_color_pink">Pink</string>
     <string name="canvas_color_orange">Orange</string>
-    <string name="canvas_color_custom">Custom colour</string>
+    <string name="canvas_color_teal">Teal</string>
+    <string name="canvas_color_brown">Brown</string>
+    <string name="canvas_color_light_blue">Light blue</string>
+    <string name="canvas_color_lime">Lime</string>
+    <string name="canvas_color_custom">Custom color</string>
+    <string name="canvas_color_mixed">Custom color %1$s</string>
     <string name="canvas_color_none">No fill</string>
     <string name="canvas_width_thin">Thin</string>
     <string name="canvas_width_medium">Medium</string>
@@ -1277,6 +1282,10 @@
     <string name="canvas_border_dashed">Dashed</string>
     <string name="canvas_border_none">None</string>
     <string name="canvas_border_width">Border width</string>
+    <string name="canvas_section_skew">Skew</string>
+    <string name="canvas_skew_horizontal">Horizontal</string>
+    <string name="canvas_skew_vertical">Vertical</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Snap rough drawings to shapes</string>
     <string name="canvas_line_straight">Straight</string>
     <string name="canvas_line_curve">Curve</string>
@@ -1364,7 +1373,7 @@
     <string name="canvas_image_file">file</string>
     <string name="canvas_layer_eraser">Eraser stroke</string>
     <string name="canvas_type_here">Type here</string>
-    <string name="canvas_custom_color_title">Custom colour</string>
+    <string name="canvas_custom_color_title">Custom color</string>
     <string name="canvas_saving">Saving…</string>
     <string name="canvas_saved">Saved</string>
     <string name="canvas_not_saved">Not saved</string>

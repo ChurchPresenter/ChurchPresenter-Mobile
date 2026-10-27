@@ -493,7 +493,7 @@ class ScheduleDestinationTest {
 
     @Test
     fun `an announcement row carries the whole item`() {
-        // The composer rebuilds itself from the timer and colour fields, so the
+        // The composer rebuilds itself from the timer and color fields, so the
         // row travels intact rather than as one string.
         val row = item("announcement") { copy(text = "Coffee", fontSize = 48, isTimer = true) }
 

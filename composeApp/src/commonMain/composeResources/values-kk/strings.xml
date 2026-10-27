@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Сары</string>
     <string name="canvas_color_pink">Қызғылт</string>
     <string name="canvas_color_orange">Қызғылт сары</string>
+    <string name="canvas_color_teal">Көгілдір-жасыл</string>
+    <string name="canvas_color_brown">Қоңыр</string>
+    <string name="canvas_color_light_blue">Ашық көк</string>
+    <string name="canvas_color_lime">Лайм</string>
     <string name="canvas_color_custom">Өз түсі</string>
+    <string name="canvas_color_mixed">Өз түсі %1$s</string>
     <string name="canvas_color_none">Құймасыз</string>
     <string name="canvas_width_thin">Жіңішке</string>
     <string name="canvas_width_medium">Орташа</string>

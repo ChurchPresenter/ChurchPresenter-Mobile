@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Žlutá</string>
     <string name="canvas_color_pink">Růžová</string>
     <string name="canvas_color_orange">Oranžová</string>
+    <string name="canvas_color_teal">Modrozelená</string>
+    <string name="canvas_color_brown">Hnědá</string>
+    <string name="canvas_color_light_blue">Světle modrá</string>
+    <string name="canvas_color_lime">Limetková</string>
     <string name="canvas_color_custom">Vlastní barva</string>
+    <string name="canvas_color_mixed">Vlastní barva %1$s</string>
     <string name="canvas_color_none">Bez výplně</string>
     <string name="canvas_width_thin">Tenká</string>
     <string name="canvas_width_medium">Střední</string>

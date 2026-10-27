@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -354,6 +355,34 @@ class ServerEventServiceLiveTest {
 
         val frames = withTimeout(TIMEOUT_MS) { List(3) { desktop.nextFrame() } }
         assertEquals(listOf(1, 2, 3), frames.map { it.substringAfter("n\\\":").first().digitToInt() })
+    }
+
+    @Test
+    fun `a second listen does not open a second socket`() = liveTest {
+        // Settings saves used to start another loop each time. Two sockets meant
+        // either one closing failed the action waiting on the other, which was
+        // then sent again: the desktop added the song or verse twice.
+        val svc = connected()
+
+        withTimeout(TIMEOUT_MS) { svc.listen() }
+
+        assertEquals(1, desktop.connections.value)
+    }
+
+    @Test
+    fun `an action whose session drops while it waits is not sent again`() = liveTest {
+        // The operator is still deciding when the socket drops. The desktop keeps
+        // the request, so sending it again on the new socket added it twice.
+        desktop.reply = { null }
+        val svc = connected()
+
+        val result = async { svc.sendAction(WsMessageType.ADD_TO_SCHEDULE, """{"n":1}""") }
+        withTimeout(TIMEOUT_MS) { desktop.nextFrame() }
+        svc.reconnect()
+
+        assertTrue(withTimeout(TIMEOUT_MS) { result.await() }.isFailure)
+        withTimeout<Int>(RECONNECT_TIMEOUT_MS) { desktop.awaitReady(2) }
+        assertNull(desktop.received.tryReceive().getOrNull(), "the add went to the desktop once")
     }
 
     // ── Losing and regaining the connection ──────────────────────────────

@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Keltainen</string>
     <string name="canvas_color_pink">Vaaleanpunainen</string>
     <string name="canvas_color_orange">Oranssi</string>
+    <string name="canvas_color_teal">Sinivihreä</string>
+    <string name="canvas_color_brown">Ruskea</string>
+    <string name="canvas_color_light_blue">Vaaleansininen</string>
+    <string name="canvas_color_lime">Limetinvihreä</string>
     <string name="canvas_color_custom">Oma väri</string>
+    <string name="canvas_color_mixed">Oma väri %1$s</string>
     <string name="canvas_color_none">Ei täyttöä</string>
     <string name="canvas_width_thin">Ohut</string>
     <string name="canvas_width_medium">Keskikoko</string>

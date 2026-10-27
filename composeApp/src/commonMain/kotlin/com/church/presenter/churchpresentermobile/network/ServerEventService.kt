@@ -176,6 +176,14 @@ class ServerEventService(
     /** Serialises approval-gated actions so only one waits for a response at a time. */
     private val actionMutex = Mutex()
 
+    /**
+     * Held by the one running [listen] loop. A second loop on the same service
+     * opened a second socket, and either socket closing failed the action the
+     * other was waiting on — which [sendAction] then sent again, so the desktop
+     * added the song or verse twice.
+     */
+    private val listening = Mutex()
+
     /** Completed by the listen loop when it receives a response frame (has "ok" key). */
     private var pendingResponse: CompletableDeferred<WsResponse>? = null
 
@@ -232,6 +240,11 @@ class ServerEventService(
      * @param fireAndForget  When `true`, sends the frame without waiting for a server response.
      *                       When `false` (default), waits for an `{"ok":…}` response frame —
      *                       required for approval-gated commands.
+     *
+     * Retries only while the frame has not reached the desktop. Once it has, a
+     * dropped session is reported as a failure rather than sent again: the desktop
+     * still holds the first request — perhaps in front of the operator — and a
+     * second copy would add the item twice.
      */
     override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result<Unit> {
         // In standalone every action is served locally by ProjectionRouter, so
@@ -246,6 +259,7 @@ class ServerEventService(
         Logger.d(TAG, "sendAction ▶ type=$type  url=${settings.wsBaseUrl}")
 
         var lastException: Throwable? = null
+        var delivered = false
         repeat(WS_MAX_ATTEMPTS) { attempt ->
             if (attempt > 0) {
                 Logger.d(TAG, "sendAction — retry attempt ${attempt + 1}/$WS_MAX_ATTEMPTS  type=$type")
@@ -286,6 +300,7 @@ class ServerEventService(
                         reconnect()
                         throw e
                     }
+                    delivered = true
                     Logger.d(TAG, "sendAction ◀ fire-and-forget completed  type=$type")
                 } else {
                     // Approval-gated: serialise so only one action waits at a time
@@ -303,6 +318,7 @@ class ServerEventService(
                                 reconnect()
                                 throw e
                             }
+                            delivered = true
                             val response = try {
                                 withTimeout(ACTION_RESPONSE_TIMEOUT_MS) {
                                     deferred.await()
@@ -331,12 +347,13 @@ class ServerEventService(
             if (result.isSuccess) return result
             lastException = result.exceptionOrNull()
             // Don't retry on application-level rejections (server said ok=false)
-            if (lastException is ApiException) {
+            // Neither a server rejection nor a frame the desktop already holds is sent again.
+            if (lastException is ApiException || delivered) {
                 // A 408 means the frame may never have reached the server — force reconnect
                 // so the broken send path is cleared before the next user action.
-                val status = (lastException as ApiException).httpStatus
+                val status = (lastException as? ApiException)?.httpStatus
                 if (status == HttpStatusCode.RequestTimeout.value) reconnect()
-                Logger.e(TAG, "sendAction — server rejection, not retrying: ${lastException?.message}")
+                Logger.e(TAG, "sendAction — not retrying  type=$type  delivered=$delivered: ${lastException?.message}")
                 return result
             }
             Logger.e(
@@ -370,9 +387,22 @@ class ServerEventService(
     /**
      * Connects to `ws://<host>:<port>/ws` and listens for server-push events.
      * Automatically reconnects after any error or disconnection.
-     * Suspends until the calling coroutine is cancelled.
+     * Suspends until the calling coroutine is cancelled. A call made while a
+     * loop is already running returns at once — see [listening].
      */
     suspend fun listen() {
+        if (!listening.tryLock()) {
+            Logger.d(TAG, "listen — already listening, not opening a second socket")
+            return
+        }
+        try {
+            listenLoop()
+        } finally {
+            listening.unlock()
+        }
+    }
+
+    private suspend fun listenLoop() {
         var everConnected = false
         var reconnectDelay = INITIAL_RECONNECT_DELAY_MS
         while (true) {
@@ -417,53 +447,7 @@ class ServerEventService(
                     everConnected = true
                     reconnectDelay = INITIAL_RECONNECT_DELAY_MS
                     for (frame in incoming) {
-                        if (frame !is Frame.Text) continue
-                        val text = frame.readText()
-
-                        // Route frame: response (has "ok") vs event (has "type")
-                        val jsonObj = runCatching {
-                            json.parseToJsonElement(text).jsonObject
-                        }.getOrNull()
-
-                        if (jsonObj != null && (jsonObj.containsKey("ok") || (!jsonObj.containsKey("type")))) {
-                            // Action response — complete the pending deferred
-                            val response = runCatching {
-                                json.decodeFromString<WsResponse>(text)
-                            }.getOrNull() ?: WsResponse(ok = true)
-                            pendingResponse?.complete(response)
-                            continue
-                        }
-
-                        val event = runCatching {
-                            json.decodeFromString<ServerEvent>(text)
-                        }.getOrNull() ?: continue
-
-                        Logger.d(TAG, "listen — event type=${event.type}")
-                        when (event.type) {
-                            "schedule_updated"     -> _scheduleUpdated.tryEmit(Unit)
-                            "songs_updated"        -> _songsUpdated.tryEmit(Unit)
-                            "bible_updated"        -> _bibleUpdated.tryEmit(Unit)
-                            "display_cleared"      -> {
-                                _displayCleared.tryEmit(Unit)
-                                _liveSlide.value = LIVE_NOTHING
-                            }
-                            "live_state_changed"   -> liveSlideOf(event.payload)?.let {
-                                _liveSlide.value = it
-                            }
-                            "presentation_updated" -> _presentationUpdated.tryEmit(Unit)
-                            "pictures_updated"     -> _picturesUpdated.tryEmit(Unit)
-                            "song_section_selected" -> {
-                                val index = event.payload?.toIntOrNull()
-                                if (index != null) _songSectionSelected.tryEmit(index)
-                            }
-                            "questions_updated" -> _questionsUpdated.tryEmit(Unit)
-                            "media_state_changed" -> {
-                                val state = runCatching {
-                                    json.decodeFromString<MediaPlaybackState>(event.payload)
-                                }.getOrNull()
-                                if (state != null) _mediaState.value = state
-                            }
-                        }
+                        if (frame is Frame.Text) handleFrame(frame.readText())
                     }
                     Logger.d(TAG, "listen — session closed normally")
                 }
@@ -471,28 +455,7 @@ class ServerEventService(
                 Logger.d(TAG, "listen — cancelled")
                 throw e
             } catch (e: Exception) {
-                Logger.e(TAG, "listen — connection lost: ${e.message} — retrying in ${reconnectDelay}ms", e)
-                val errorMsg = e.message?.take(200) ?: "unknown"
-                if (!everConnected && !e.isExpectedConnectivityError()) {
-                    CrashReporting.log(
-                        "[$TAG] listen — initial connect FAILED (${e::class.simpleName}): " +
-                            "$errorMsg url=${settings.wsBaseUrl}"
-                    )
-                    CrashReporting.setCustomKey("network_tag",        TAG)
-                    CrashReporting.setCustomKey("network_operation",  "listen/connect")
-                    CrashReporting.setCustomKey("network_error_type", e::class.simpleName ?: "Exception")
-                    CrashReporting.setCustomKey("network_error_msg",  errorMsg)
-                    CrashReporting.setCustomKey("ws_server_url",      settings.wsBaseUrl)
-                    CrashReporting.recordException(e)
-                } else if (!everConnected) {
-                    // Expected connectivity failure on first connect — log only.
-                    CrashReporting.log(
-                        "[$TAG] listen — initial connect FAILED (${e::class.simpleName}): " +
-                            "$errorMsg url=${settings.wsBaseUrl}"
-                    )
-                } else {
-                    CrashReporting.log("[$TAG] listen — session dropped (${e::class.simpleName}): $errorMsg")
-                }
+                reportListenFailure(e, everConnected, reconnectDelay)
             } finally {
                 // Complete any pending action — covers both exception and normal close.
                 // If the catch block already called completeExceptionally, this is a no-op.
@@ -503,6 +466,80 @@ class ServerEventService(
             }
             delay(reconnectDelay)
             reconnectDelay = (reconnectDelay * 2).coerceAtMost(MAX_RECONNECT_DELAY_MS)
+        }
+    }
+
+    /** One text frame from the desktop: the answer to a waiting action, or a push event. */
+    private fun handleFrame(text: String) {
+        // Route frame: response (has "ok") vs event (has "type")
+        val jsonObj = runCatching {
+            json.parseToJsonElement(text).jsonObject
+        }.getOrNull()
+
+        if (jsonObj != null && (jsonObj.containsKey("ok") || (!jsonObj.containsKey("type")))) {
+            // Action response — complete the pending deferred
+            val response = runCatching {
+                json.decodeFromString<WsResponse>(text)
+            }.getOrNull() ?: WsResponse(ok = true)
+            pendingResponse?.complete(response)
+            return
+        }
+
+        val event = runCatching {
+            json.decodeFromString<ServerEvent>(text)
+        }.getOrNull() ?: return
+
+        Logger.d(TAG, "listen — event type=${event.type}")
+        when (event.type) {
+            "schedule_updated"     -> _scheduleUpdated.tryEmit(Unit)
+            "songs_updated"        -> _songsUpdated.tryEmit(Unit)
+            "bible_updated"        -> _bibleUpdated.tryEmit(Unit)
+            "display_cleared"      -> {
+                _displayCleared.tryEmit(Unit)
+                _liveSlide.value = LIVE_NOTHING
+            }
+            "live_state_changed"   -> liveSlideOf(event.payload)?.let {
+                _liveSlide.value = it
+            }
+            "presentation_updated" -> _presentationUpdated.tryEmit(Unit)
+            "pictures_updated"     -> _picturesUpdated.tryEmit(Unit)
+            "song_section_selected" -> {
+                val index = event.payload?.toIntOrNull()
+                if (index != null) _songSectionSelected.tryEmit(index)
+            }
+            "questions_updated" -> _questionsUpdated.tryEmit(Unit)
+            "media_state_changed" -> {
+                val state = runCatching {
+                    json.decodeFromString<MediaPlaybackState>(event.payload)
+                }.getOrNull()
+                if (state != null) _mediaState.value = state
+            }
+        }
+    }
+
+    /** Logs a dropped or failed connection; only a first connect that fails unexpectedly is reported as an error. */
+    private fun reportListenFailure(e: Exception, everConnected: Boolean, reconnectDelay: Long) {
+        Logger.e(TAG, "listen — connection lost: ${e.message} — retrying in ${reconnectDelay}ms", e)
+        val errorMsg = e.message?.take(200) ?: "unknown"
+        if (!everConnected && !e.isExpectedConnectivityError()) {
+            CrashReporting.log(
+                "[$TAG] listen — initial connect FAILED (${e::class.simpleName}): " +
+                    "$errorMsg url=${settings.wsBaseUrl}"
+            )
+            CrashReporting.setCustomKey("network_tag",        TAG)
+            CrashReporting.setCustomKey("network_operation",  "listen/connect")
+            CrashReporting.setCustomKey("network_error_type", e::class.simpleName ?: "Exception")
+            CrashReporting.setCustomKey("network_error_msg",  errorMsg)
+            CrashReporting.setCustomKey("ws_server_url",      settings.wsBaseUrl)
+            CrashReporting.recordException(e)
+        } else if (!everConnected) {
+            // Expected connectivity failure on first connect — log only.
+            CrashReporting.log(
+                "[$TAG] listen — initial connect FAILED (${e::class.simpleName}): " +
+                    "$errorMsg url=${settings.wsBaseUrl}"
+            )
+        } else {
+            CrashReporting.log("[$TAG] listen — session dropped (${e::class.simpleName}): $errorMsg")
         }
     }
 

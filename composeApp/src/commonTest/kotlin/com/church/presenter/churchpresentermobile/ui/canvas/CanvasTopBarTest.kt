@@ -141,7 +141,12 @@ class CanvasTopBarTest {
         setContent {
             AppTheme(themeMode = ThemeMode.DARK) {
                 Box(Modifier.fillMaxSize()) {
-                    CanvasEditor(state = opened.copy(liveNote = LiveNote.UNSUPPORTED), onIntent = {}, onBack = {}, canProject = true)
+                    CanvasEditor(
+                        state = opened.copy(liveNote = LiveNote.UNSUPPORTED),
+                        onIntent = {},
+                        onBack = {},
+                        canProject = true,
+                    )
                 }
             }
         }

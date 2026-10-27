@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Žuta</string>
     <string name="canvas_color_pink">Ružičasta</string>
     <string name="canvas_color_orange">Narančasta</string>
+    <string name="canvas_color_teal">Tirkizna</string>
+    <string name="canvas_color_brown">Smeđa</string>
+    <string name="canvas_color_light_blue">Svijetloplava</string>
+    <string name="canvas_color_lime">Limeta</string>
     <string name="canvas_color_custom">Prilagođena boja</string>
+    <string name="canvas_color_mixed">Prilagođena boja %1$s</string>
     <string name="canvas_color_none">Bez ispune</string>
     <string name="canvas_width_thin">Tanka</string>
     <string name="canvas_width_medium">Srednja</string>

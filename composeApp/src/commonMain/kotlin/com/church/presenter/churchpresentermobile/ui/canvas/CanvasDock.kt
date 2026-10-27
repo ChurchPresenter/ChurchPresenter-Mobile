@@ -3,14 +3,17 @@ package com.church.presenter.churchpresentermobile.ui.canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,7 +44,12 @@ import churchpresentermobile.composeapp.generated.resources.canvas_width_medium
 import churchpresentermobile.composeapp.generated.resources.canvas_width_thick
 import churchpresentermobile.composeapp.generated.resources.canvas_width_thin
 import com.church.presenter.churchpresentermobile.model.CanvasTool
-import com.church.presenter.churchpresentermobile.model.HighlightColor
+import com.church.presenter.churchpresentermobile.model.HighlightPalette
+import com.church.presenter.churchpresentermobile.model.HighlighterOptions
+import com.church.presenter.churchpresentermobile.model.InkPalette
+import com.church.presenter.churchpresentermobile.model.PaletteSlot
+import com.church.presenter.churchpresentermobile.model.PenOptions
+import com.church.presenter.churchpresentermobile.model.paletteSlots
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
 import org.jetbrains.compose.resources.StringResource
@@ -49,7 +57,7 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 /**
- * The quick settings under the board while a pen is out: colour, three widths and
+ * The quick settings under the board while a pen is out: color, three widths and
  * opacity. The pen's options panel edits the same values in more detail.
  *
  * Shown for the pen and the highlighter; every other tool keeps its settings in
@@ -126,39 +134,55 @@ internal fun PenDock(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, mod
     }
 }
 
-/** The dock's colours: the pen's inks, or the highlighter's colours while it is out. */
+/**
+ * The dock's colors: the pen's inks, or the highlighter's colors while it is out —
+ * the same row as the tool's panel, mixes first. Scrolls rather than pushing the
+ * width and opacity controls off a narrow board.
+ */
 @Composable
-private fun DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
+private fun RowScope.DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit) {
     val colors = canvasColors
     val options = state.options
     val highlighter = state.tool == CanvasTool.HIGHLIGHTER
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(
+        modifier = Modifier.weight(1f, fill = false).horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
         if (highlighter) {
-            HighlightColor.entries.forEach { color ->
-                ColorSwatch(
-                    color = highlightColor(color),
-                    selected = color == options.highlighter.color && options.highlighter.custom == null,
-                    description = stringResource(color.label()),
-                    onClick = {
-                        val marker = options.highlighter.copy(color = color, custom = null)
-                        onIntent(CanvasIntent.SetOptions(options.copy(highlighter = marker)))
-                    },
-                    size = 30.dp,
+            val marker = options.highlighter
+            val set: (HighlighterOptions) -> Unit = {
+                onIntent(CanvasIntent.SetOptions(options.copy(highlighter = it)))
+            }
+            paletteSlots(options.mixedHighlights, HighlightPalette).forEach { slot ->
+                PaletteSwatch(
+                    slot = slot,
+                    custom = marker.custom,
+                    isPreset = { it == marker.color },
+                    presetColor = ::highlightColor,
+                    presetLabel = { stringResource(it.label()) },
+                    onPick = { set(marker.copy(color = it, custom = null)) },
+                    onReuse = { set(marker.copy(custom = it)) },
+                    size = DOCK_SWATCH,
                     gap = colors.board,
                     ringWidth = 3.dp,
                 )
             }
         } else {
-            colors.dockInks().forEach { ink ->
-                ColorSwatch(
-                    color = colors.inkSwatch(ink),
-                    selected = ink == options.pen.ink && options.pen.custom == null,
-                    description = stringResource(ink.label(colors.isDark)),
-                    onClick = {
-                        val pen = options.pen.copy(ink = ink, custom = null)
-                        onIntent(CanvasIntent.SetOptions(options.copy(pen = pen)))
-                    },
-                    size = 30.dp,
+            val pen = options.pen
+            val set: (PenOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(options.copy(pen = it))) }
+            val slots = colors.dockLeadingInks().map { PaletteSlot.Preset(it) } +
+                paletteSlots(options.mixedInks, InkPalette) +
+                colors.dockTrailingInks().map { PaletteSlot.Preset(it) }
+            slots.forEach { slot ->
+                PaletteSwatch(
+                    slot = slot,
+                    custom = pen.custom,
+                    isPreset = { it == pen.ink },
+                    presetColor = { colors.inkSwatch(it) },
+                    presetLabel = { stringResource(it.label(colors.isDark)) },
+                    onPick = { set(pen.copy(ink = it, custom = null)) },
+                    onReuse = { set(pen.copy(custom = it)) },
+                    size = DOCK_SWATCH,
                     gap = colors.board,
                     ringWidth = 3.dp,
                 )
@@ -166,6 +190,9 @@ private fun DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit)
         }
     }
 }
+
+/** Twelve of these fit beside the widths and opacity on an iPad held upright. */
+private val DOCK_SWATCH = 26.dp
 
 private const val PERCENT = 100
 

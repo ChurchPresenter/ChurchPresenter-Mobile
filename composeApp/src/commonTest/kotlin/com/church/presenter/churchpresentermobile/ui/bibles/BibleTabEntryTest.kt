@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
 
 /**
  * The Bible tab's way in — the selector, its sheet on a phone and its popover on a tablet — and
- * the screens again in the light theme, whose colours are a separate set of choices.
+ * the screens again in the light theme, whose colors are a separate set of choices.
  */
 @OptIn(ExperimentalTestApi::class)
 class BibleTabEntryTest {

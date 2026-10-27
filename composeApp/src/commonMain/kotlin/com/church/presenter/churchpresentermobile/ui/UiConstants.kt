@@ -7,5 +7,5 @@ package com.church.presenter.churchpresentermobile.ui
  */
 internal const val SCREEN_ASPECT_RATIO = 16f / 9f
 
-/** Base for parsing and printing the `#RRGGBB` colours operators type in. */
+/** Base for parsing and printing the `#RRGGBB` colors operators type in. */
 internal const val HEX_RADIX = 16

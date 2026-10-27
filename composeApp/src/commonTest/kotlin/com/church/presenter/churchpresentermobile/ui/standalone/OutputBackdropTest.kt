@@ -104,7 +104,7 @@ class OutputBackdropTest {
         // take the audience screen down.
         showScreen {
             StandaloneOutputScreen(
-                slide(theme = SlideTheme(gradientTop = "not a colour", gradientBottom = ""))
+                slide(theme = SlideTheme(gradientTop = "not a color", gradientBottom = ""))
             )
         }
 

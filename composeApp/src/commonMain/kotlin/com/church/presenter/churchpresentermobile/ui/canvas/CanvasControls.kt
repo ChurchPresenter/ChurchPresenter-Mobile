@@ -201,7 +201,7 @@ internal fun CanvasSlider(fraction: Float, onFraction: (Float) -> Unit, modifier
 }
 
 /**
- * A segmented control in the canvas's colours. Not the app's
+ * A segmented control in the canvas's colors. Not the app's
  * [com.church.presenter.churchpresentermobile.ui.SegmentedControl], whose track
  * and pill are the app's surfaces and disappear on a canvas panel.
  *

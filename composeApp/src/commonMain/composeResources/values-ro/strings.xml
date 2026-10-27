@@ -1173,7 +1173,12 @@
     <string name="canvas_color_yellow">Galben</string>
     <string name="canvas_color_pink">Roz</string>
     <string name="canvas_color_orange">Portocaliu</string>
+    <string name="canvas_color_teal">Turcoaz închis</string>
+    <string name="canvas_color_brown">Maro</string>
+    <string name="canvas_color_light_blue">Albastru deschis</string>
+    <string name="canvas_color_lime">Lime</string>
     <string name="canvas_color_custom">Culoare personalizată</string>
+    <string name="canvas_color_mixed">Culoare personalizată %1$s</string>
     <string name="canvas_color_none">Fără umplere</string>
     <string name="canvas_width_thin">Subțire</string>
     <string name="canvas_width_medium">Mediu</string>

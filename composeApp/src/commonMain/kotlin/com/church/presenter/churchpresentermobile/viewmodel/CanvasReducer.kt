@@ -115,7 +115,7 @@ private fun CanvasUiState.pickTool(tool: CanvasTool): CanvasUiState =
             tool = tool,
             optionsOpen = true,
             // Only the drawing tools drop the selection. The rest keep it, so their options
-            // panel restyles what is selected — a text box's font, a note's colour.
+            // panel restyles what is selected — a text box's font, a note's color.
             selectedIds = if (tool in DRAWING_TOOLS) emptyList() else selectedIds,
             replaceTarget = null,
             panel = when {

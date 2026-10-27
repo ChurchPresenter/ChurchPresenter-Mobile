@@ -49,6 +49,10 @@ import churchpresentermobile.composeapp.generated.resources.canvas_border_dashed
 import churchpresentermobile.composeapp.generated.resources.canvas_border_none
 import churchpresentermobile.composeapp.generated.resources.canvas_border_solid
 import churchpresentermobile.composeapp.generated.resources.canvas_border_width
+import churchpresentermobile.composeapp.generated.resources.canvas_degrees
+import churchpresentermobile.composeapp.generated.resources.canvas_section_skew
+import churchpresentermobile.composeapp.generated.resources.canvas_skew_horizontal
+import churchpresentermobile.composeapp.generated.resources.canvas_skew_vertical
 import churchpresentermobile.composeapp.generated.resources.canvas_bulleted_list
 import churchpresentermobile.composeapp.generated.resources.canvas_crop
 import churchpresentermobile.composeapp.generated.resources.canvas_dashed
@@ -101,10 +105,10 @@ import churchpresentermobile.composeapp.generated.resources.canvas_underline
 import churchpresentermobile.composeapp.generated.resources.canvas_width
 import com.church.presenter.churchpresentermobile.model.BorderStyle
 import com.church.presenter.churchpresentermobile.model.CanvasElement
-import com.church.presenter.churchpresentermobile.model.ImageAdjust
 import com.church.presenter.churchpresentermobile.model.CanvasShape
 import com.church.presenter.churchpresentermobile.model.CanvasTextAlign
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
+import com.church.presenter.churchpresentermobile.model.ImageAdjust
 import com.church.presenter.churchpresentermobile.model.ImagePlacement
 import com.church.presenter.churchpresentermobile.model.ImageSource
 import com.church.presenter.churchpresentermobile.model.LineEnd
@@ -114,6 +118,7 @@ import com.church.presenter.churchpresentermobile.model.StickyColor
 import com.church.presenter.churchpresentermobile.model.StickyFont
 import com.church.presenter.churchpresentermobile.model.StickySize
 import com.church.presenter.churchpresentermobile.model.TextOptions
+import com.church.presenter.churchpresentermobile.model.mixedInto
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
 import com.church.presenter.churchpresentermobile.viewmodel.PickableSources
@@ -176,6 +181,17 @@ internal fun ShapesPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptio
         stringResource(Res.string.canvas_px, shapes.borderWidth.roundToInt()),
         rangeFraction(shapes.borderWidth, BORDER_WIDTH),
     ) { onOptions(options.copy(shapes = shapes.copy(borderWidth = rangeValue(it, BORDER_WIDTH)))) }
+    PanelSectionLabel(stringResource(Res.string.canvas_section_skew))
+    SliderRow(
+        stringResource(Res.string.canvas_skew_horizontal),
+        stringResource(Res.string.canvas_degrees, shapes.skewX.roundToInt()),
+        rangeFraction(shapes.skewX, SKEW),
+    ) { onOptions(options.copy(shapes = shapes.copy(skewX = rangeValue(it, SKEW)))) }
+    SliderRow(
+        stringResource(Res.string.canvas_skew_vertical),
+        stringResource(Res.string.canvas_degrees, shapes.skewY.roundToInt()),
+        rangeFraction(shapes.skewY, SKEW),
+    ) { onOptions(options.copy(shapes = shapes.copy(skewY = rangeValue(it, SKEW)))) }
     ToggleRow(stringResource(Res.string.canvas_snap_shapes), shapes.snap) {
         onOptions(options.copy(shapes = shapes.copy(snap = it)))
     }
@@ -227,11 +243,14 @@ internal fun LinePanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
     }
     PanelSectionLabel(stringResource(Res.string.canvas_section_color))
     InkSwatches(
-        inks = PanelInks,
         selected = line.ink,
         custom = line.custom,
+        mixes = options.mixedInks,
         onPick = { onOptions(options.copy(line = line.copy(ink = it, custom = null))) },
-        onCustom = { onOptions(options.copy(line = line.copy(custom = it))) },
+        onReuse = { onOptions(options.copy(line = line.copy(custom = it))) },
+        onMix = {
+            onOptions(options.copy(line = line.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it)))
+        },
         size = 24.dp,
     )
     Box(Modifier.height(4.dp))
@@ -330,11 +349,14 @@ internal fun TextPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
     )
     PanelSectionLabel(stringResource(Res.string.canvas_section_color))
     InkSwatches(
-        inks = PanelInks,
         selected = text.ink,
         custom = text.custom,
+        mixes = options.mixedInks,
         onPick = { set(text.copy(ink = it, custom = null)) },
-        onCustom = { set(text.copy(custom = it)) },
+        onReuse = { set(text.copy(custom = it)) },
+        onMix = {
+            onOptions(options.copy(text = text.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it)))
+        },
         size = 24.dp,
     )
     Box(Modifier.height(4.dp))

@@ -44,14 +44,14 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 /**
- * Picking a colour by dragging rather than by knowing its hex.
+ * Picking a color by dragging rather than by knowing its hex.
  *
  * Red, green and blue as three sliders, each tinted along its own axis so the operator can see
  * where a drag is heading before making it. A wide preview sits above them, and the hex is shown
  * underneath — read-only here, because it is the thing being produced rather than another way to
  * enter one; [ColorField] keeps the typed route for anyone who already knows the value.
  *
- * The colour is only handed back on Save. Dragging a slider must not repaint an audience screen
+ * The color is only handed back on Save. Dragging a slider must not repaint an audience screen
  * live, which is what writing through on every frame would do.
  */
 @Composable
@@ -88,8 +88,8 @@ internal fun ColorPickerDialog(
                 ChannelSlider(
                     label = stringResource(Res.string.color_red),
                     value = red,
-                    // Each track runs from the colour with this channel at zero to the same
-                    // colour with it full, so the slider previews its own effect.
+                    // Each track runs from the color with this channel at zero to the same
+                    // color with it full, so the slider previews its own effect.
                     track = listOf(picked.copy(red = 0f), picked.copy(red = 1f)),
                     onValueChange = { red = it },
                 )

@@ -11,14 +11,14 @@ import kotlin.test.Test
 /**
  * Tests the reusable building blocks every screen is assembled from.
  *
- * They read colours from `LocalAppColors`, so each case wraps its content in
+ * They read colors from `LocalAppColors`, so each case wraps its content in
  * [AppTheme] — a bare `setContent` would take the composition-local default and
  * test a configuration the app never renders.
  */
 /**
  * Tests [OverlineRow] — the small-caps section headings.
  *
- * It reads colours from `LocalAppColors`, so every case renders inside [AppTheme]:
+ * It reads colors from `LocalAppColors`, so every case renders inside [AppTheme]:
  * a bare `setContent` would take the composition-local default and test a
  * configuration the app never shows.
  */
@@ -57,7 +57,7 @@ class OverlineRowTest {
 
     @Test
     fun theComponentsRenderInBothThemes() = runComposeUiTest {
-        // They read every colour from LocalAppColors, so a token missing from one
+        // They read every color from LocalAppColors, so a token missing from one
         // palette shows up here rather than on a phone.
         for (mode in listOf(ThemeMode.LIGHT, ThemeMode.DARK)) {
             setContent {

@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
  * the words — which lines appear, which are suppressed, and whether a reference
  * a church asked to hide stays hidden for the kind of slide they asked about.
  *
- * Nothing here asserts on colour, size or position. The same composable draws
+ * Nothing here asserts on color, size or position. The same composable draws
  * the phone's preview strip and a 65-inch screen, and every dimension it uses
  * is derived from the width it is handed.
  */
@@ -503,11 +503,11 @@ class OutputSlideTest {
 
     @Test
     fun aMalformedColourFallsBackRatherThanFailing() = runComposeUiTest {
-        // Themes are persisted as JSON and hand-edited; a bad colour must not
+        // Themes are persisted as JSON and hand-edited; a bad color must not
         // take the audience screen down mid-service.
         showScreen {
             StandaloneOutputScreen(
-                verse(theme = SlideTheme(textColor = "not-a-colour", gradientTop = "??"))
+                verse(theme = SlideTheme(textColor = "not-a-color", gradientTop = "??"))
             )
         }
 

@@ -427,16 +427,16 @@ internal object UiTags {
 
     fun stepperValue(tag: String) = "$tag:value"
 
-    /** One preset colour, by the swatch group it belongs to and its hex. */
+    /** One preset color, by the swatch group it belongs to and its hex. */
     fun announceSwatch(group: String, hex: String) = "announce:swatch:$group:$hex"
 
-    /** The "any other colour" tile at the end of a swatch group. */
+    /** The "any other color" tile at the end of a swatch group. */
     fun announceCustomSwatch(group: String) = "announce:swatch:$group:custom"
 
     /** One entry of the animation menu. */
     fun announceAnimation(name: String) = "announce:animation:$name"
 
-    // ── The colour picker ────────────────────────────────────────────────
+    // ── The color picker ────────────────────────────────────────────────
     const val COLOR_PICKER = "colorPicker"
     const val COLOR_PICKER_USE = "colorPicker:use"
     const val COLOR_PICKER_CANCEL = "colorPicker:cancel"

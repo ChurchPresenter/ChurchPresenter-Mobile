@@ -98,7 +98,7 @@ class ColorSchemeTest {
 
     @Test
     fun errorIsTellableFromPrimaryInBothSchemes() {
-        // Destructive actions are distinguished by colour alone in several places.
+        // Destructive actions are distinguished by color alone in several places.
         assertNotEquals(LightColorScheme.error, LightColorScheme.primary)
         assertNotEquals(DarkColorScheme.error, DarkColorScheme.primary)
     }

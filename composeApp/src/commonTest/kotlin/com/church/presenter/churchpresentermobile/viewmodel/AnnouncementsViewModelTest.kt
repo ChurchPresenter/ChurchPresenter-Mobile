@@ -311,8 +311,8 @@ class AnnouncementsViewModelTest {
     }
 
     @Test
-    fun `the timer reuses the announcement's own text colour`() = runVmTestUnconfined {
-        // One colour picker on screen drives both, so they must not diverge.
+    fun `the timer reuses the announcement's own text color`() = runVmTestUnconfined {
+        // One color picker on screen drives both, so they must not diverge.
         val (vm, ws) = sendingVm()
         try {
             vm.update { it.copy(type = AnnouncementType.COUNTDOWN) }

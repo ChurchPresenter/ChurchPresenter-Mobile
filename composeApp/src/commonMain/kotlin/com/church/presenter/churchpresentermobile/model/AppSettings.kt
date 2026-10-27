@@ -124,9 +124,9 @@ class AppSettings(
 
     /**
      * JSON of the operator's chosen look for the audience screen — gradient, text and accent
-     * colours, font, corner line, clock. Defaults to "{}", which decodes to the built-in look.
+     * colors, font, corner line, clock. Defaults to "{}", which decodes to the built-in look.
      *
-     * Persisted because a church sets its colours once and would otherwise find them reset every
+     * Persisted because a church sets its colors once and would otherwise find them reset every
      * Sunday morning. Same blob pattern as [savedAnnouncementsJson].
      */
     var slideThemeJson: String
@@ -169,7 +169,7 @@ class AppSettings(
         get() = storage.getString(KEY_SEEN_NEW_BADGES, "").split(',').filter { it.isNotBlank() }.toSet()
         set(value) { storage.putString(KEY_SEEN_NEW_BADGES, value.sorted().joinToString(",")) }
 
-    /** The user's preferred colour scheme. Defaults to [ThemeMode.SYSTEM]. */
+    /** The user's preferred color scheme. Defaults to [ThemeMode.SYSTEM]. */
     var themeMode: ThemeMode
         get() = storage.getString(KEY_THEME_MODE, ThemeMode.SYSTEM.name)
             .let { stored -> ThemeMode.entries.firstOrNull { it.name == stored } ?: ThemeMode.SYSTEM }

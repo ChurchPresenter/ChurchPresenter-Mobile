@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 
 /**
- * A canvas page filling the audience screen, on its own [paper] colour.
+ * A canvas page filling the audience screen, on its own [paper] color.
  *
  * Every edit while the canvas is live sends a new picture, and an image view that
  * goes blank while each loads would flash the projector on every stroke. So the

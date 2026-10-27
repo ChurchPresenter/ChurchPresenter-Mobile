@@ -31,7 +31,7 @@ import com.church.presenter.churchpresentermobile.model.without
 
 /**
  * A stroke through [points]: ink for the pen and highlighter, and for the eraser
- * in Pixel mode a stroke of the board's own colour over whatever is under it.
+ * in Pixel mode a stroke of the board's own color over whatever is under it.
  * Other tools place things rather than draw, and ignore a stroke.
  */
 internal fun CanvasUiState.stroke(
@@ -184,7 +184,7 @@ internal fun CanvasUiState.adjustImages(adjust: ImageAdjust): CanvasUiState {
 
 /**
  * New tool options, applied to what is selected too: changing the text tool's
- * bold, a note's colour or a shape's fill while one is selected changes it, as
+ * bold, a note's color or a shape's fill while one is selected changes it, as
  * the operator expects. Only the tool whose options changed touches anything.
  */
 internal fun CanvasUiState.withOptions(new: CanvasToolOptions): CanvasUiState {
@@ -214,6 +214,8 @@ private fun CanvasElement.restyled(old: CanvasToolOptions, new: CanvasToolOption
         borderWidth = new.shapes.borderWidth,
         ink = outlineFor(new.shapes.fill),
         custom = new.shapes.fillCustom,
+        skewX = new.shapes.skewX,
+        skewY = new.shapes.skewY,
     )
     this is CanvasElement.Image && new.image != old.image ->
         copy(rounded = new.image.rounded, shadow = new.image.shadow, opacity = new.image.opacity)
@@ -226,7 +228,7 @@ private const val STICKY_TILT = -2f
 
 /**
  * The options panel brought in line with a single selected element, so the panel
- * shows the selected text's font, the note's colour or the shape's fill — and
+ * shows the selected text's font, the note's color or the shape's fill — and
  * changing one starts from what is there.
  */
 internal fun CanvasUiState.withOptionsFrom(): CanvasUiState {
@@ -245,6 +247,8 @@ internal fun CanvasUiState.withOptionsFrom(): CanvasUiState {
                     fillCustom = element.fillCustom,
                     border = element.border,
                     borderWidth = element.borderWidth,
+                    skewX = element.skewX,
+                    skewY = element.skewY,
                 ),
             )
             is CanvasElement.Image ->

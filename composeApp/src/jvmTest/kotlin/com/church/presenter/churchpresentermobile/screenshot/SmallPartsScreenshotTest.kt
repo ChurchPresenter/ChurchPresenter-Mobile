@@ -118,7 +118,7 @@ class SmallPartsScreenshotTest {
 
     @Test
     fun colorSwatchEmpty() = screenshot("color-swatch__empty", width = null) {
-        // A null colour is "not set" and draws as an empty outline, not black.
+        // A null color is "not set" and draws as an empty outline, not black.
         Padded { ColorSwatch(color = null, onClick = {}) }
     }
 

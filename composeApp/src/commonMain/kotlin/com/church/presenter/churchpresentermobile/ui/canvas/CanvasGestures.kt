@@ -125,34 +125,40 @@ internal fun ToolGestures(
         }
         CanvasTool.TEXT, CanvasTool.STICKY -> {
             val text = state.tool == CanvasTool.TEXT
+            val place: (CanvasPoint) -> Unit = { at ->
+                // Tapping a box or note of the tool's own kind types into it; anywhere else starts a new one.
+                val hit = visible.lastOrNull { element ->
+                    val kind = if (text) element is CanvasElement.Text else element is CanvasElement.Sticky
+                    kind && !element.locked && measure(element).contains(at)
+                }
+                onIntent(
+                    when {
+                        hit != null -> CanvasIntent.StartEditing(hit.id)
+                        text -> CanvasIntent.PlaceText(at)
+                        else -> CanvasIntent.PlaceSticky(at)
+                    },
+                )
+            }
+            // A touch that wanders past the slop is still a tap to these tools: a fingertip
+            // or a Pencil rarely lands dead still, and a drag here used to do nothing at all.
             GestureLayer(
                 key = state.tool,
-                onTap = { at ->
-                    // Tapping a box or note of the tool's own kind types into it; anywhere else starts a new one.
-                    val hit = visible.lastOrNull { element ->
-                        val kind = if (text) element is CanvasElement.Text else element is CanvasElement.Sticky
-                        kind && !element.locked && measure(element).contains(at)
-                    }
-                    onIntent(
-                        when {
-                            hit != null -> CanvasIntent.StartEditing(hit.id)
-                            text -> CanvasIntent.PlaceText(at)
-                            else -> CanvasIntent.PlaceSticky(at)
-                        },
-                    )
-                },
-                onDragEnd = { _, _ -> },
+                onTap = place,
+                onDragEnd = { points, _ -> points.firstOrNull()?.let(place) },
             ) {}
         }
-        CanvasTool.IMAGE -> GestureLayer(
-            key = state.tool,
-            onTap = {
+        CanvasTool.IMAGE -> {
+            val insert: (CanvasPoint) -> Unit = {
                 // A canvas saved when every source was offered may still have one that is not.
                 val source = options.image.source.takeIf { s -> s in PickableSources } ?: ImageSource.PHOTOS
                 onIntent(CanvasIntent.InsertImage(source, it))
-            },
-            onDragEnd = { _, _ -> },
-        ) {}
+            }
+            GestureLayer(
+                key = state.tool,
+                onTap = insert,
+                onDragEnd = { points, _ -> points.firstOrNull()?.let(insert) },
+            ) {}
+        }
     }
 }
 

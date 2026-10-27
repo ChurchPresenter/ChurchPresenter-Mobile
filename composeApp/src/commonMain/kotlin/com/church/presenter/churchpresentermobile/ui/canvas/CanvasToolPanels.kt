@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
@@ -86,14 +86,15 @@ import churchpresentermobile.composeapp.generated.resources.canvas_straight_only
 import churchpresentermobile.composeapp.generated.resources.canvas_ungroup
 import churchpresentermobile.composeapp.generated.resources.canvas_width
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
-import com.church.presenter.churchpresentermobile.model.CanvasInk
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
 import com.church.presenter.churchpresentermobile.model.EraserMode
-import com.church.presenter.churchpresentermobile.model.HighlightColor
+import com.church.presenter.churchpresentermobile.model.HighlightPalette
 import com.church.presenter.churchpresentermobile.model.LassoPicks
 import com.church.presenter.churchpresentermobile.model.LassoShape
 import com.church.presenter.churchpresentermobile.model.PenType
+import com.church.presenter.churchpresentermobile.model.mixedInto
+import com.church.presenter.churchpresentermobile.model.paletteSlots
 import com.church.presenter.churchpresentermobile.viewmodel.ArrangeAction
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
@@ -297,11 +298,12 @@ private fun PenPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) 
     }
     PanelSectionLabel(stringResource(Res.string.canvas_section_color))
     InkSwatches(
-        inks = PanelInks,
         selected = pen.ink,
         custom = pen.custom,
+        mixes = options.mixedInks,
         onPick = { onOptions(options.copy(pen = pen.copy(ink = it, custom = null))) },
-        onCustom = { onOptions(options.copy(pen = pen.copy(custom = it))) },
+        onReuse = { onOptions(options.copy(pen = pen.copy(custom = it))) },
+        onMix = { onOptions(options.copy(pen = pen.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it))) },
         size = 26.dp,
     )
     Box(Modifier.height(4.dp))
@@ -323,17 +325,27 @@ private fun PenPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) 
 private fun HighlighterPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) -> Unit) {
     val marker = options.highlighter
     PanelSectionLabel(stringResource(Res.string.canvas_section_color), first = true)
-    Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-        HighlightColor.entries.forEach { color ->
-            ColorSwatch(
-                color = highlightColor(color),
-                selected = marker.color == color && marker.custom == null,
-                description = stringResource(color.label()),
-                onClick = { onOptions(options.copy(highlighter = marker.copy(color = color, custom = null))) },
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(7.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+        paletteSlots(options.mixedHighlights, HighlightPalette).forEach { slot ->
+            PaletteSwatch(
+                slot = slot,
+                custom = marker.custom,
+                isPreset = { it == marker.color },
+                presetColor = ::highlightColor,
+                presetLabel = { stringResource(it.label()) },
+                onPick = { onOptions(options.copy(highlighter = marker.copy(color = it, custom = null))) },
+                onReuse = { onOptions(options.copy(highlighter = marker.copy(custom = it))) },
                 size = 26.dp,
             )
         }
-        CustomColorSwatch(marker.custom, 26.dp) { onOptions(options.copy(highlighter = marker.copy(custom = it))) }
+        CustomColorSwatch(current = null, size = 26.dp, startFrom = marker.custom) {
+            onOptions(
+                options.copy(
+                    highlighter = marker.copy(custom = it),
+                    mixedHighlights = mixedInto(options.mixedHighlights, it),
+                ),
+            )
+        }
     }
     Box(Modifier.height(4.dp))
     SliderRow(
@@ -424,45 +436,18 @@ internal fun PercentSlider(
 
 private const val PERCENT = 100
 
-/**
- * A row of ink swatches with the custom-colour swatch on the end. A mixed
- * [custom] colour, when there is one, is the one in use, so no named ink is ringed.
- */
-@Composable
-internal fun InkSwatches(
-    inks: List<CanvasInk>,
-    selected: CanvasInk,
-    custom: String?,
-    onPick: (CanvasInk) -> Unit,
-    onCustom: (String) -> Unit,
-    size: Dp,
-) {
-    val colors = canvasColors
-    Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-        inks.forEach { ink ->
-            ColorSwatch(
-                color = colors.inkSwatch(ink),
-                selected = ink == selected && custom == null,
-                description = stringResource(ink.label(colors.isDark)),
-                onClick = { onPick(ink) },
-                size = size,
-            )
-        }
-        CustomColorSwatch(custom, size, onCustom)
-    }
-}
-
 /** How faded a control is while it has nothing to act on. */
 internal const val DISABLED_ALPHA = 0.4f
 
 private const val MIN_TO_DISTRIBUTE = 3
 
-/** The inks a panel offers: the board's contrast ink and the five colours. */
-internal val PanelInks: List<CanvasInk> = CanvasInk.entries - CanvasInk.INVERSE
 
 /** Each slider's range, set so the design's default lands where the design draws its knob. */
 internal val PEN_WIDTH = 0f..14f
 internal val HIGHLIGHTER_WIDTH = 6f..26f
 internal val ERASER_SIZE = 4f..54f
 internal val BORDER_WIDTH = 0f..10f
+
+/** How far a shape can lean either way, in degrees; past 45 it stops reading as the shape. */
+internal val SKEW = -45f..45f
 internal val LINE_WIDTH = 1f..11f

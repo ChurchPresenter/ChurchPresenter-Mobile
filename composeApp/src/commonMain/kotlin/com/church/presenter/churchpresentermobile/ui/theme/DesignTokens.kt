@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
  * which cannot express the semi-transparent surface/border layers this design relies on.
  */
 /**
- * One gradient layer of the splash's field: its colours, and where each sits
+ * One gradient layer of the splash's field: its colors, and where each sits
  * between the centre (0f) and the edge (1f).
  */
 @Immutable

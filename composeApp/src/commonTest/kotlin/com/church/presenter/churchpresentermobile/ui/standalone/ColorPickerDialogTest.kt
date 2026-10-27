@@ -13,12 +13,12 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Picking a colour by dragging rather than by knowing its hex.
+ * Picking a color by dragging rather than by knowing its hex.
  *
  * The rule the dialog exists to keep is that nothing reaches the audience
  * screen until Save: the theme rides inside every slide, so writing through on
  * each frame of a drag would repaint the wall while somebody is still choosing.
- * The other half is that it opens on the colour already set — starting from
+ * The other half is that it opens on the color already set — starting from
  * black every time makes a small adjustment impossible.
  */
 @OptIn(ExperimentalTestApi::class)
@@ -46,7 +46,7 @@ class ColorPickerDialogTest {
 
     @Test
     fun aShortFormColourOpensInFull() = runComposeUiTest {
-        // #F80 and #FF8800 are the same colour; the dialog works in the long form.
+        // #F80 and #FF8800 are the same color; the dialog works in the long form.
         showScreen {
             ColorPickerDialog(title = "Text", initial = "#F80", onPick = {}, onDismiss = {})
         }
@@ -122,7 +122,7 @@ class ColorPickerDialogTest {
 
     @Test
     fun theTitleNamesWhatIsBeingPicked() = runComposeUiTest {
-        // Four colour fields open the same dialog; without the title there is
+        // Four color fields open the same dialog; without the title there is
         // nothing to say which.
         showScreen {
             ColorPickerDialog(title = "Gradient top", initial = "#FF8800", onPick = {}, onDismiss = {})
@@ -164,7 +164,7 @@ class ColorPickerDialogTest {
 
     @Test
     fun savingAnUnreadableColourHandsBackBlack() = runComposeUiTest {
-        // Whatever it started from, what leaves is a colour.
+        // Whatever it started from, what leaves is a color.
         var picked: String? = null
         showScreen {
             ColorPickerDialog(title = "Text", initial = "nonsense", onPick = { picked = it }, onDismiss = {})
@@ -215,7 +215,7 @@ class ColorPickerDialogTest {
 
     @Test
     fun openingAloneChangesNothing() = runComposeUiTest {
-        // The colour is handed back on Save and at no other moment.
+        // The color is handed back on Save and at no other moment.
         var picked: String? = null
         showScreen {
             ColorPickerDialog(title = "Text", initial = "#FF8800", onPick = { picked = it }, onDismiss = {})
@@ -253,7 +253,7 @@ class ColorPickerDialogTest {
 
     @Test
     fun everyChannelIsTwoDigits() {
-        // "#123" would be a different colour entirely.
+        // "#123" would be a different color entirely.
         assertEquals(7, rgbToHex(1, 2, 3).length)
     }
 

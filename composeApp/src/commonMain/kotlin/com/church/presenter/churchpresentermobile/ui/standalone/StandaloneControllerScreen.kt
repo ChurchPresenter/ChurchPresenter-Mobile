@@ -224,7 +224,7 @@ fun StandaloneControllerScreen(
 /**
  * The backdrop picker and the way into the look sheet.
  *
- * Deliberately below the live surface and off the controls: the colours behind
+ * Deliberately below the live surface and off the controls: the colors behind
  * the words are set once, before a service, and nothing here should push Next
  * and Blank further from the thumb that reaches for them mid-verse.
  */

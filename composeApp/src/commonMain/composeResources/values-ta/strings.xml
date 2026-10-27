@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">மஞ்சள்</string>
     <string name="canvas_color_pink">இளஞ்சிவப்பு</string>
     <string name="canvas_color_orange">ஆரஞ்சு</string>
+    <string name="canvas_color_teal">நீலப்பச்சை</string>
+    <string name="canvas_color_brown">பழுப்பு</string>
+    <string name="canvas_color_light_blue">இளநீலம்</string>
+    <string name="canvas_color_lime">எலுமிச்சை பச்சை</string>
     <string name="canvas_color_custom">தனிப்பயன் நிறம்</string>
+    <string name="canvas_color_mixed">தனிப்பயன் நிறம் %1$s</string>
     <string name="canvas_color_none">நிரப்பு இல்லை</string>
     <string name="canvas_width_thin">மெல்லிய</string>
     <string name="canvas_width_medium">நடுத்தர</string>

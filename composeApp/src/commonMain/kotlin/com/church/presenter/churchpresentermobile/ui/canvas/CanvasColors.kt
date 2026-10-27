@@ -111,7 +111,7 @@ internal val canvasColors: CanvasColors
     get() = if (LocalAppColors.current.isDark) DarkCanvasColors else LightCanvasColors
 
 /**
- * The colour [ink] is drawn in on this theme's board.
+ * The color [ink] is drawn in on this theme's board.
  *
  * Contrast ink is white on the dark board and black on the light one; the bright
  * inks drop a shade on white so a thin stroke of them still reads.
@@ -124,13 +124,18 @@ internal fun CanvasColors.inkColor(ink: CanvasInk): Color = when (ink) {
     CanvasInk.GREEN -> accent
     CanvasInk.SKY -> if (isDark) Sky400 else Sky600
     CanvasInk.VIOLET -> Violet400
+    CanvasInk.ORANGE -> if (isDark) Orange500 else Orange600
+    CanvasInk.TEAL -> if (isDark) Teal400 else Teal600
+    CanvasInk.BLUE -> if (isDark) Blue500 else Blue600
+    CanvasInk.PINK -> if (isDark) Pink400 else Pink600
+    CanvasInk.BROWN -> if (isDark) BrownLight else BrownDark
 }
 
-/** [ink] on this board, unless the operator mixed a [custom] colour, which wins. */
+/** [ink] on this board, unless the operator mixed a [custom] color, which wins. */
 internal fun CanvasColors.inkColor(ink: CanvasInk, custom: String?): Color =
     custom?.let(::parseHexColorOrNull) ?: inkColor(ink)
 
-/** The colour a swatch for [ink] shows — the pure colour, whichever board it will land on. */
+/** The color a swatch for [ink] shows — the pure color, whichever board it will land on. */
 internal fun CanvasColors.inkSwatch(ink: CanvasInk): Color = when (ink) {
     CanvasInk.CONTRAST -> if (isDark) Zinc50 else Zinc900
     CanvasInk.INVERSE -> if (isDark) Zinc900 else White
@@ -139,15 +144,23 @@ internal fun CanvasColors.inkSwatch(ink: CanvasInk): Color = when (ink) {
     CanvasInk.GREEN -> Green300
     CanvasInk.SKY -> Sky400
     CanvasInk.VIOLET -> Violet400
+    CanvasInk.ORANGE -> Orange500
+    CanvasInk.TEAL -> Teal400
+    CanvasInk.BLUE -> Blue500
+    CanvasInk.PINK -> Pink400
+    CanvasInk.BROWN -> BrownSwatch
 }
 
 /**
- * The inks in the order the dock lists them: the board's contrast ink first, and
- * the inverse — useful only for knocking out — on the end in the light theme,
- * where it is white and least likely to be wanted.
+ * The plain inks either side of the dock's colors: the board's contrast ink first,
+ * and the inverse — useful only for knocking out — after it on the dark board but
+ * on the very end on the light one, where it is white and least likely to be wanted.
  */
-internal fun CanvasColors.dockInks(): List<CanvasInk> =
-    if (isDark) CanvasInk.entries else CanvasInk.entries - CanvasInk.INVERSE + CanvasInk.INVERSE
+internal fun CanvasColors.dockLeadingInks(): List<CanvasInk> =
+    if (isDark) listOf(CanvasInk.CONTRAST, CanvasInk.INVERSE) else listOf(CanvasInk.CONTRAST)
+
+internal fun CanvasColors.dockTrailingInks(): List<CanvasInk> =
+    if (isDark) emptyList() else listOf(CanvasInk.INVERSE)
 
 internal fun highlightColor(color: HighlightColor): Color = when (color) {
     HighlightColor.YELLOW -> Yellow300
@@ -155,6 +168,11 @@ internal fun highlightColor(color: HighlightColor): Color = when (color) {
     HighlightColor.SKY -> Sky300
     HighlightColor.PINK -> Pink300
     HighlightColor.ORANGE -> Orange300
+    HighlightColor.LIME -> Lime300
+    HighlightColor.TEAL -> Teal300
+    HighlightColor.PURPLE -> Purple300
+    HighlightColor.RED -> Red300
+    HighlightColor.BLUE -> Blue300
 }
 
 /** A shape's fill swatch; [ShapeFill.NONE] has none, and is drawn as a slashed circle instead. */
@@ -175,10 +193,10 @@ internal fun stickyColor(color: StickyColor): Color = when (color) {
     StickyColor.PURPLE -> Purple200
 }
 
-/** Sticky-note text: a dark brown that reads on every note colour, in either theme. */
+/** Sticky-note text: a dark brown that reads on every note color, in either theme. */
 internal val StickyInk = Color(0xFF4A3410)
 
-/** The spectrum on the "custom colour" swatch. */
+/** The spectrum on the "custom color" swatch. */
 internal val CustomSwatchColors = listOf(
     Color(0xFFF87171),
     Color(0xFFFACC15),
@@ -189,7 +207,7 @@ internal val CustomSwatchColors = listOf(
 )
 
 /*
- * The named colours the inks, highlighters, fills and notes are drawn from — the
+ * The named colors the inks, highlighters, fills and notes are drawn from — the
  * Tailwind shades the design is specified in.
  */
 private val Zinc900 = Color(0xFF18181B)
@@ -213,3 +231,20 @@ private val Sky200 = Color(0xFFBAE6FD)
 private val Pink200 = Color(0xFFFBCFE8)
 private val Orange200 = Color(0xFFFED7AA)
 private val Purple200 = Color(0xFFE9D5FF)
+private val Orange500 = Color(0xFFF97316)
+private val Orange600 = Color(0xFFEA580C)
+private val Teal300 = Color(0xFF5EEAD4)
+private val Teal400 = Color(0xFF2DD4BF)
+private val Teal600 = Color(0xFF0D9488)
+private val Blue300 = Color(0xFF93C5FD)
+private val Blue500 = Color(0xFF3B82F6)
+private val Blue600 = Color(0xFF2563EB)
+private val Pink400 = Color(0xFFF472B6)
+private val Pink600 = Color(0xFFDB2777)
+private val Lime300 = Color(0xFFBEF264)
+private val Purple300 = Color(0xFFD8B4FE)
+
+/* Brown has no Tailwind shade; these are a warm mid-brown and a lift and a drop of it. */
+private val BrownSwatch = Color(0xFFA0672F)
+private val BrownLight = Color(0xFFC08A55)
+private val BrownDark = Color(0xFF8B5A2B)

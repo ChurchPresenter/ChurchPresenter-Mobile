@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">ສີເຫຼືອງ</string>
     <string name="canvas_color_pink">ສີບົວ</string>
     <string name="canvas_color_orange">ສີສົ້ມ</string>
+    <string name="canvas_color_teal">ສີຂຽວອົມຟ້າ</string>
+    <string name="canvas_color_brown">ສີນ້ຳຕານ</string>
+    <string name="canvas_color_light_blue">ສີຟ້າອ່ອນ</string>
+    <string name="canvas_color_lime">ສີຂຽວໝາກນາວ</string>
     <string name="canvas_color_custom">ສີກຳນົດເອງ</string>
+    <string name="canvas_color_mixed">ສີກຳນົດເອງ %1$s</string>
     <string name="canvas_color_none">ບໍ່ມີສີຕື່ມ</string>
     <string name="canvas_width_thin">ບາງ</string>
     <string name="canvas_width_medium">ກາງ</string>

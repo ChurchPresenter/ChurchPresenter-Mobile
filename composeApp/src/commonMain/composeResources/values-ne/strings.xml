@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">पहेँलो</string>
     <string name="canvas_color_pink">गुलाबी</string>
     <string name="canvas_color_orange">सुन्तला</string>
+    <string name="canvas_color_teal">हरियो-निलो</string>
+    <string name="canvas_color_brown">खैरो</string>
+    <string name="canvas_color_light_blue">हल्का निलो</string>
+    <string name="canvas_color_lime">कागती हरियो</string>
     <string name="canvas_color_custom">कस्टम रङ</string>
+    <string name="canvas_color_mixed">कस्टम रङ %1$s</string>
     <string name="canvas_color_none">भराइ छैन</string>
     <string name="canvas_width_thin">पातलो</string>
     <string name="canvas_width_medium">मध्यम</string>

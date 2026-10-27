@@ -79,7 +79,7 @@ class CanvasOptionsPanelsTest {
             }
         }
 
-        assertNotNull(mixed, "saving the picker set a mixed colour on the pen")
+        assertNotNull(mixed, "saving the picker set a mixed color on the pen")
     }
 
     @Test

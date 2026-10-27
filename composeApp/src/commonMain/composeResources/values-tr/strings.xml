@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Sarı</string>
     <string name="canvas_color_pink">Pembe</string>
     <string name="canvas_color_orange">Turuncu</string>
+    <string name="canvas_color_teal">Deniz mavisi</string>
+    <string name="canvas_color_brown">Kahverengi</string>
+    <string name="canvas_color_light_blue">Açık mavi</string>
+    <string name="canvas_color_lime">Limon yeşili</string>
     <string name="canvas_color_custom">Özel renk</string>
+    <string name="canvas_color_mixed">Özel renk %1$s</string>
     <string name="canvas_color_none">Dolgu yok</string>
     <string name="canvas_width_thin">İnce</string>
     <string name="canvas_width_medium">Orta</string>

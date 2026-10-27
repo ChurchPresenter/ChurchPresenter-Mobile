@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">สีเหลือง</string>
     <string name="canvas_color_pink">สีชมพู</string>
     <string name="canvas_color_orange">สีส้ม</string>
+    <string name="canvas_color_teal">สีเขียวอมฟ้า</string>
+    <string name="canvas_color_brown">สีน้ำตาล</string>
+    <string name="canvas_color_light_blue">สีฟ้าอ่อน</string>
+    <string name="canvas_color_lime">สีเขียวมะนาว</string>
     <string name="canvas_color_custom">สีกำหนดเอง</string>
+    <string name="canvas_color_mixed">สีกำหนดเอง %1$s</string>
     <string name="canvas_color_none">ไม่มีสีเติม</string>
     <string name="canvas_width_thin">บาง</string>
     <string name="canvas_width_medium">กลาง</string>

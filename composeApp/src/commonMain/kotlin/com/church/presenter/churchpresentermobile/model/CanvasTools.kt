@@ -24,6 +24,10 @@ data class CanvasToolOptions(
     val text: TextOptions = TextOptions(),
     val sticky: StickyOptions = StickyOptions(),
     val image: ImageOptions = ImageOptions(),
+    /** Colors mixed for the pen, a line or text, newest first — see [mixedInto]. */
+    val mixedInks: List<String> = emptyList(),
+    /** Colors mixed for the highlighter, newest first. */
+    val mixedHighlights: List<String> = emptyList(),
 )
 
 @Serializable
@@ -64,7 +68,8 @@ data class PenOptions(
     val custom: String? = null,
 )
 
-enum class HighlightColor { YELLOW, GREEN, SKY, PINK, ORANGE }
+/** Saved by name, so new colors go on the end; the order a row shows them in is [HighlightPalette]. */
+enum class HighlightColor { YELLOW, GREEN, SKY, PINK, ORANGE, LIME, TEAL, PURPLE, RED, BLUE }
 
 @Serializable
 data class HighlighterOptions(
@@ -98,6 +103,9 @@ data class ShapeOptions(
     val border: BorderStyle = BorderStyle.SOLID,
     val borderWidth: Float = 3f,
     val snap: Boolean = true,
+    /** Degrees the shape leans sideways (top to the right for a positive value) and up or down. */
+    val skewX: Float = 0f,
+    val skewY: Float = 0f,
 )
 
 enum class LineStyle { STRAIGHT, CURVE, ELBOW }

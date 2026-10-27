@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">أصفر</string>
     <string name="canvas_color_pink">وردي</string>
     <string name="canvas_color_orange">برتقالي</string>
+    <string name="canvas_color_teal">أزرق مخضر</string>
+    <string name="canvas_color_brown">بني</string>
+    <string name="canvas_color_light_blue">أزرق فاتح</string>
+    <string name="canvas_color_lime">ليموني</string>
     <string name="canvas_color_custom">لون مخصص</string>
+    <string name="canvas_color_mixed">لون مخصص %1$s</string>
     <string name="canvas_color_none">بلا تعبئة</string>
     <string name="canvas_width_thin">رفيع</string>
     <string name="canvas_width_medium">متوسط</string>

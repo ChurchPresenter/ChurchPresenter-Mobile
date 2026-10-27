@@ -22,6 +22,7 @@ import com.church.presenter.churchpresentermobile.model.centre
 import com.church.presenter.churchpresentermobile.model.knobAngle
 import com.church.presenter.churchpresentermobile.model.quarterTurned
 import com.church.presenter.churchpresentermobile.model.resizable
+import com.church.presenter.churchpresentermobile.model.InkKind
 import com.church.presenter.churchpresentermobile.model.rotatedPoint
 import com.church.presenter.churchpresentermobile.model.rotatedResize
 import com.church.presenter.churchpresentermobile.model.snappedAngle
@@ -65,6 +66,7 @@ internal fun SelectGestures(
     onIntent: (CanvasIntent) -> Unit,
     measure: (CanvasElement) -> CanvasBounds,
     measureBox: (CanvasElement) -> CanvasBounds,
+    paths: InkPaths,
 ) {
     val colors = canvasColors
     val latest by rememberUpdatedState(state)
@@ -80,7 +82,7 @@ internal fun SelectGestures(
                 awaitEachGesture {
                     val down = awaitFirstDown()
                     val start = down.position.toPoint()
-                    val grab = grab(latest, start, boxed)
+                    val grab = grab(latest, start, boxed, paths)
                     val drag = SelectDrag(latest, grab, start, measured, onIntent, GestureSessions.next())
                     var dragging = false
                     var finished = false
@@ -126,7 +128,12 @@ internal fun SelectGestures(
  * top-most element. A turned element is hit where it is drawn, not by the upright
  * box round it, so [at] is turned back into its frame before it is compared.
  */
-private fun grab(state: CanvasUiState, at: CanvasPoint, measureBox: (CanvasElement) -> CanvasBounds): Grab {
+private fun grab(
+    state: CanvasUiState,
+    at: CanvasPoint,
+    measureBox: (CanvasElement) -> CanvasBounds,
+    paths: InkPaths,
+): Grab {
     val single = state.selected?.takeIf { !it.locked && !it.hidden }
     if (single != null) {
         val box = measureBox(single)
@@ -142,10 +149,44 @@ private fun grab(state: CanvasUiState, at: CanvasPoint, measureBox: (CanvasEleme
             return Grab.Knob(single.id, box.centre, single.angle)
         }
     }
-    val pickable = state.page.elements.filter { !it.hidden && (!it.locked || state.options.select.selectLocked) }
-    return pickable.lastOrNull { turnedContains(measureBox(it), it.angle, at) }?.let { Grab.Element(it.id) }
+    return pickable(state).lastOrNull { touches(it, at, measureBox, paths) }?.let { Grab.Element(it.id) }
         ?: Grab.Nothing
 }
+
+/**
+ * What Select can pick: nothing hidden, nothing locked unless the operator allows
+ * it, and never a pixel eraser's mark — it is invisible, and picking it instead of
+ * what it erased, then deleting it, brought the erased ink back.
+ */
+private fun pickable(state: CanvasUiState): List<CanvasElement> = state.page.elements.filter {
+    !it.hidden && (!it.locked || state.options.select.selectLocked) &&
+        !(it is CanvasElement.Ink && it.kind == InkKind.ERASER)
+}
+
+/**
+ * Whether [at] is on [element]. A stroke is hit along its line, not anywhere in
+ * the box round it: a circle or a long stroke drawn across a shape, note or
+ * picture used to catch every tap inside its box, so what lay under it could not
+ * be selected at all.
+ */
+private fun touches(
+    element: CanvasElement,
+    at: CanvasPoint,
+    measureBox: (CanvasElement) -> CanvasBounds,
+    paths: InkPaths,
+): Boolean {
+    val box = measureBox(element)
+    if (!turnedContains(box, element.angle, at)) return false
+    if (element !is CanvasElement.Ink) return true
+    val local = rotatedPoint(at, -element.angle, box.centre)
+    val reach = element.width / 2f + STROKE_TAP_REACH
+    return paths.samples(element.pathData).any {
+        hypot(element.x + it.x - local.x, element.y + it.y - local.y) <= reach
+    }
+}
+
+/** How far beside a stroke's edge a fingertip still picks it, in dp. */
+private const val STROKE_TAP_REACH = 12f
 
 /** How far from a handle's centre a finger still catches it, in dp. */
 private const val HANDLE_REACH = 18f
@@ -174,9 +215,12 @@ private fun tapped(
             val element = state.page.elements.firstOrNull { it.id == grab.id }
             val typeable = element is CanvasElement.Text || element is CanvasElement.Sticky
             val again = lastTap?.first == grab.id && time - lastTap.second <= DOUBLE_TAP_MS
+            // A note or text box already selected types on the next tap, however slow: a
+            // double tap inside 350 ms was the only way in, and it was easy to miss.
+            val alreadyPicked = state.selectedIds == listOf(grab.id)
             when {
                 held -> onIntent(CanvasIntent.ToggleSelect(grab.id))
-                again && typeable -> onIntent(CanvasIntent.StartEditing(grab.id))
+                (again || alreadyPicked) && typeable -> onIntent(CanvasIntent.StartEditing(grab.id))
                 else -> {
                     if (state.editingId != grab.id) onIntent(CanvasIntent.FinishEditing)
                     onIntent(CanvasIntent.Select(grab.id))
@@ -254,9 +298,7 @@ private class SelectDrag(
 
     /** The box dragged on empty board selects what it wholly encloses. */
     fun finishMarquee(points: List<CanvasPoint>) {
-        val candidates = state.page.elements
-            .filter { !it.hidden && (!it.locked || state.options.select.selectLocked) }
-            .associate { it.id to measure(it) }
+        val candidates = pickable(state).associate { it.id to measure(it) }
         onIntent(CanvasIntent.SelectMany(lassoPick(candidates, points, rectangle = true, partial = false)))
     }
 }

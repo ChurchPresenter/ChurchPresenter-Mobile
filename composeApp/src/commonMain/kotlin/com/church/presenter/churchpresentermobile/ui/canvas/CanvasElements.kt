@@ -1,5 +1,10 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import kotlin.math.tan
+import kotlin.math.PI
+import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -261,6 +266,7 @@ private fun ShapeElement(element: CanvasElement.Shape, modifier: Modifier) {
             .offset(element.x.dp, element.y.dp)
             .size(element.width.dp, element.height.dp)
             .rotate(element.angle)
+            .skewed(element.skewX, element.skewY)
             .clip(shape)
             .background(fill?.copy(alpha = SHAPE_FILL_ALPHA) ?: Color.Transparent)
             .then(border),
@@ -279,6 +285,32 @@ private fun ShapeElement(element: CanvasElement.Shape, modifier: Modifier) {
         }
     }
 }
+
+/**
+ * Leans everything drawn after it — the outline, the fill and the words — by
+ * [xDegrees] sideways and [yDegrees] up or down, about the middle. Only the
+ * drawing leans: the selection frame stays the upright box, as it does for a
+ * turned shape.
+ */
+private fun Modifier.skewed(xDegrees: Float, yDegrees: Float): Modifier =
+    if (xDegrees == 0f && yDegrees == 0f) {
+        this
+    } else {
+        drawWithContent {
+            val lean = Matrix().apply {
+                values[Matrix.SkewX] = tan(xDegrees * PI.toFloat() / HALF_TURN)
+                values[Matrix.SkewY] = tan(yDegrees * PI.toFloat() / HALF_TURN)
+            }
+            val middle = center
+            withTransform({
+                translate(middle.x, middle.y)
+                transform(lean)
+                translate(-middle.x, -middle.y)
+            }) { this@drawWithContent.drawContent() }
+        }
+    }
+
+private const val HALF_TURN = 180f
 
 /** How strongly a shape is tinted with its fill. */
 private const val SHAPE_FILL_ALPHA = 0.18f

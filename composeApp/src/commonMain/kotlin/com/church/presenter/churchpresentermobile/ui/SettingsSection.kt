@@ -108,10 +108,10 @@ internal fun settingsSections(
         add(SettingsSection.ABOUT)
     }
 
-/** How the one-word connection summary at the foot of the menu is coloured. */
+/** How the one-word connection summary at the foot of the menu is colored. */
 internal enum class ConnectionTone { GOOD, WARNING, BAD, PENDING }
 
-/** The one-word summary of a desktop connection, and its colour. */
+/** The one-word summary of a desktop connection, and its color. */
 internal class ConnectionSummary(val label: StringResource, val tone: ConnectionTone)
 
 /**

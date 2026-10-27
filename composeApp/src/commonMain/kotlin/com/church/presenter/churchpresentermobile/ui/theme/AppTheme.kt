@@ -43,7 +43,7 @@ private val md_dark_inverseSurface = Color(0xFFE2E2E6)
 private val md_dark_inverseOnSurface = Color(0xFF2F3033)
 private val md_dark_inversePrimary = Color(0xFF3D5A80)
 
-// ── Colour schemes ────────────────────────────────────────────────────────────
+// ── Color schemes ────────────────────────────────────────────────────────────
 
 // Design-token-aligned overrides so Material components (TextField, Snackbar,
 // TopAppBar, etc.) inherit the redesign palette even before a screen is migrated
@@ -123,7 +123,7 @@ internal val DarkColorScheme = darkColorScheme(
  * Applies [LightColorScheme] or [DarkColorScheme] based on [themeMode].
  * When [ThemeMode.SYSTEM] is set the device's current setting is used.
  *
- * @param themeMode The user's preferred colour scheme.
+ * @param themeMode The user's preferred color scheme.
  * @param content The composable content to be themed.
  */
 @Composable

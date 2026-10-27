@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">زرد</string>
     <string name="canvas_color_pink">صورتی</string>
     <string name="canvas_color_orange">نارنجی</string>
+    <string name="canvas_color_teal">سبزآبی</string>
+    <string name="canvas_color_brown">قهوه‌ای</string>
+    <string name="canvas_color_light_blue">آبی روشن</string>
+    <string name="canvas_color_lime">لیمویی</string>
     <string name="canvas_color_custom">رنگ دلخواه</string>
+    <string name="canvas_color_mixed">رنگ دلخواه %1$s</string>
     <string name="canvas_color_none">بدون پرشدگی</string>
     <string name="canvas_width_thin">نازک</string>
     <string name="canvas_width_medium">متوسط</string>

@@ -25,9 +25,11 @@ internal fun shapeElement(id: String, bounds: CanvasBounds, options: ShapeOption
         border = options.border,
         borderWidth = options.borderWidth,
         custom = options.fillCustom,
+        skewX = options.skewX,
+        skewY = options.skewY,
     )
 
-/** The outline that goes with a fill: the same colour family, so a shape reads as one thing. */
+/** The outline that goes with a fill: the same color family, so a shape reads as one thing. */
 internal fun outlineFor(fill: ShapeFill): CanvasInk = when (fill) {
     ShapeFill.NONE -> CanvasInk.CONTRAST
     ShapeFill.GREEN -> CanvasInk.GREEN
@@ -114,7 +116,7 @@ private const val ARROW_SPREAD = 0.5
 internal fun textElement(id: String, at: CanvasPoint, options: TextOptions): CanvasElement.Text =
     CanvasElement.Text(id = id, x = at.x, y = at.y, text = "", format = options)
 
-/** A blank sticky note centred on [at], in the sticky tool's colour, size and hand. */
+/** A blank sticky note centred on [at], in the sticky tool's color, size and hand. */
 internal fun stickyElement(id: String, at: CanvasPoint, options: StickyOptions): CanvasElement.Sticky {
     val side = when (options.size) {
         StickySize.SMALL -> STICKY_SMALL

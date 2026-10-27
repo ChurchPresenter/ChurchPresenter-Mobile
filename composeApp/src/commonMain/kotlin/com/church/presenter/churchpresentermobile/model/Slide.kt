@@ -88,8 +88,8 @@ enum class SlideVerticalAlign {
  * Presentation styling shared by every slide in a service.
  *
  * @property font Typeface family for the body text.
- * @property textColor Body text colour as `#RRGGBB`.
- * @property accentColor Colour used for the reference/footer line.
+ * @property textColor Body text color as `#RRGGBB`.
+ * @property accentColor Color used for the reference/footer line.
  * @property brandLine Optional church name rendered in the top-left corner.
  * @property showClock Whether the output shows a wall clock in the top-right corner.
  * @property showSongReference Whether a song's title and section line is shown.
@@ -171,11 +171,11 @@ const val DEFAULT_GRADIENT_BOTTOM: String = "#05060D"
  * @property sourceId Identifier of the originating item (song number, `John:3:16`, announcement id).
  * @property index Zero-based position within the owning [SlideDeck].
  * @property showReference Whether the line naming the song section or Bible verse is shown.
- * @property gradientTop Top colour of the gradient backdrop as `#RRGGBB`.
- * @property gradientBottom Bottom colour of the gradient backdrop as `#RRGGBB`.
+ * @property gradientTop Top color of the gradient backdrop as `#RRGGBB`.
+ * @property gradientBottom Bottom color of the gradient backdrop as `#RRGGBB`.
  * @property total Number of slides in the owning [SlideDeck].
- * @property paper The colour round a [SlideKind.CANVAS] frame where its shape and the
- *   screen's differ, as `#RRGGBB` — the canvas's own board colour, so the page reads
+ * @property paper The color round a [SlideKind.CANVAS] frame where its shape and the
+ *   screen's differ, as `#RRGGBB` — the canvas's own board color, so the page reads
  *   as filling the screen rather than floating in black bars.
  * @property songCredit The song this slide belongs to, for the CCLI report. Only on song slides.
  * @property verseCredit The verse this slide is, for the CCLI report. Only on Bible slides.

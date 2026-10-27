@@ -33,7 +33,7 @@ class CanvasPlacingTest {
     }
 
     @Test
-    fun `each fill picks an outline of its own colour family`() {
+    fun `each fill picks an outline of its own color family`() {
         assertEquals(CanvasInk.CONTRAST, outlineFor(ShapeFill.NONE))
         assertEquals(CanvasInk.GREEN, outlineFor(ShapeFill.GREEN))
         assertEquals(CanvasInk.SKY, outlineFor(ShapeFill.SKY))
@@ -42,7 +42,7 @@ class CanvasPlacingTest {
     }
 
     @Test
-    fun `a custom fill colours the outline too`() {
+    fun `a custom fill colors the outline too`() {
         val shape = shapeElement("s", CanvasBounds(0f, 0f, 10f, 10f), ShapeOptions(fillCustom = "#123456"))
         assertEquals("#123456", shape.fillCustom)
         assertEquals("#123456", shape.custom)
@@ -114,7 +114,7 @@ class CanvasPlacingTest {
     }
 
     @Test
-    fun `a sticky note keeps the tool's colour and hand`() {
+    fun `a sticky note keeps the tool's color and hand`() {
         val options = StickyOptions(color = StickyColor.PINK, font = StickyFont.NEAT)
         val note = stickyElement("n", CanvasPoint(0f, 0f), options)
         assertEquals(StickyColor.PINK, note.color)

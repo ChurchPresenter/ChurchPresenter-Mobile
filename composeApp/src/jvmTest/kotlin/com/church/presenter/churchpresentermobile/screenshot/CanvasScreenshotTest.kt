@@ -90,7 +90,7 @@ class CanvasScreenshotTest {
     /** The image tool brings its Insert panel with it, so its options are captured with it out. */
     @Test fun imageOptions() = options(CanvasTool.IMAGE, panel = CanvasPanel.INSERT_IMAGE)
 
-    /** A colour mixed in the picker: the rainbow swatch shows it, ringed, and no named ink is. */
+    /** A color mixed in the picker: the rainbow swatch shows it, ringed, and no named ink is. */
     @Test
     fun customColour() = canvas(
         "canvas__custom-colour",

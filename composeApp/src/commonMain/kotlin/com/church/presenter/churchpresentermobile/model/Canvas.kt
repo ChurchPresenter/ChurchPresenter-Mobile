@@ -46,8 +46,8 @@ data class CanvasPage(val elements: List<CanvasElement> = emptyList())
  *
  * [group] ties elements together: picking one picks them all, as Group promises.
  *
- * Colours are a [CanvasInk] with an optional `custom` override — a "#RRGGBB" the
- * operator mixed in the colour picker — so the named inks can still follow the theme.
+ * Colors are a [CanvasInk] with an optional `custom` override — a "#RRGGBB" the
+ * operator mixed in the color picker — so the named inks can still follow the theme.
  */
 @Serializable
 sealed interface CanvasElement {
@@ -122,7 +122,7 @@ sealed interface CanvasElement {
         val width: Float,
         val opacity: Float = 1f,
         val kind: InkKind = InkKind.PEN,
-        /** A highlighter's colour, which takes the place of [ink]; null for every other stroke. */
+        /** A highlighter's color, which takes the place of [ink]; null for every other stroke. */
         val highlight: HighlightColor? = null,
         val custom: String? = null,
         val dashed: Boolean = false,
@@ -197,6 +197,9 @@ sealed interface CanvasElement {
         val border: BorderStyle = BorderStyle.SOLID,
         val borderWidth: Float = 4f,
         val custom: String? = null,
+        /** Degrees of lean, sideways and up or down, about the shape's middle. */
+        val skewX: Float = 0f,
+        val skewY: Float = 0f,
         override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
@@ -245,13 +248,16 @@ enum class InkKind { PEN, HIGHLIGHTER, ARROW, ERASER }
 enum class CanvasShape { RECTANGLE, ROUNDED, ELLIPSE, TRIANGLE, STAR, DIAMOND, HEXAGON, SPEECH }
 
 /**
- * The ink colours a stroke or outline can take.
+ * The ink colors a stroke or outline can take.
  *
- * Named rather than stored as a colour because the board is drawn in both themes:
+ * Named rather than stored as a color because the board is drawn in both themes:
  * [CONTRAST] is white ink on the dark board and black ink on the light one, and the
  * bright inks darken a step on white paper so they still read. The screen maps each
- * to its colour for the theme it is drawing in.
+ * to its color for the theme it is drawing in.
+ *
+ * Saved by name, so new inks go on the end and none is ever renamed; the order a
+ * row shows them in is [InkPalette].
  */
-enum class CanvasInk { CONTRAST, INVERSE, RED, AMBER, GREEN, SKY, VIOLET }
+enum class CanvasInk { CONTRAST, INVERSE, RED, AMBER, GREEN, SKY, VIOLET, ORANGE, TEAL, BLUE, PINK, BROWN }
 
 enum class StickyColor { YELLOW, GREEN, BLUE, PINK, ORANGE, PURPLE }

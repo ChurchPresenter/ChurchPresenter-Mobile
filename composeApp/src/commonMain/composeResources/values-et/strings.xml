@@ -1173,7 +1173,12 @@
     <string name="canvas_color_yellow">Kollane</string>
     <string name="canvas_color_pink">Roosa</string>
     <string name="canvas_color_orange">Oranž</string>
+    <string name="canvas_color_teal">Sinakasroheline</string>
+    <string name="canvas_color_brown">Pruun</string>
+    <string name="canvas_color_light_blue">Helesinine</string>
+    <string name="canvas_color_lime">Laimiroheline</string>
     <string name="canvas_color_custom">Kohandatud värv</string>
+    <string name="canvas_color_mixed">Kohandatud värv %1$s</string>
     <string name="canvas_color_none">Täiteta</string>
     <string name="canvas_width_thin">Peenike</string>
     <string name="canvas_width_medium">Keskmine</string>

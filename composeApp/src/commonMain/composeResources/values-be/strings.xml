@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Жоўты</string>
     <string name="canvas_color_pink">Ружовы</string>
     <string name="canvas_color_orange">Аранжавы</string>
+    <string name="canvas_color_teal">Бірузовы</string>
+    <string name="canvas_color_brown">Карычневы</string>
+    <string name="canvas_color_light_blue">Блакітны</string>
+    <string name="canvas_color_lime">Лаймавы</string>
     <string name="canvas_color_custom">Свой колер</string>
+    <string name="canvas_color_mixed">Свой колер %1$s</string>
     <string name="canvas_color_none">Без залівання</string>
     <string name="canvas_width_thin">Тонкі</string>
     <string name="canvas_width_medium">Сярэдні</string>

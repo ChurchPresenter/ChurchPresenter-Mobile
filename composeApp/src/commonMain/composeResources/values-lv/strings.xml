@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Dzeltena</string>
     <string name="canvas_color_pink">Rozā</string>
     <string name="canvas_color_orange">Oranža</string>
+    <string name="canvas_color_teal">Zilganzaļa</string>
+    <string name="canvas_color_brown">Brūna</string>
+    <string name="canvas_color_light_blue">Gaiši zila</string>
+    <string name="canvas_color_lime">Laima</string>
     <string name="canvas_color_custom">Pielāgota krāsa</string>
+    <string name="canvas_color_mixed">Pielāgota krāsa %1$s</string>
     <string name="canvas_color_none">Bez aizpildījuma</string>
     <string name="canvas_width_thin">Plāna</string>
     <string name="canvas_width_medium">Vidēja</string>

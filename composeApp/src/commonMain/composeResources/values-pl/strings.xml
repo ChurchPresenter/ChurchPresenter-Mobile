@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Żółty</string>
     <string name="canvas_color_pink">Różowy</string>
     <string name="canvas_color_orange">Pomarańczowy</string>
+    <string name="canvas_color_teal">Morski</string>
+    <string name="canvas_color_brown">Brązowy</string>
+    <string name="canvas_color_light_blue">Jasnoniebieski</string>
+    <string name="canvas_color_lime">Limonkowy</string>
     <string name="canvas_color_custom">Własny kolor</string>
+    <string name="canvas_color_mixed">Własny kolor %1$s</string>
     <string name="canvas_color_none">Bez wypełnienia</string>
     <string name="canvas_width_thin">Cienka</string>
     <string name="canvas_width_medium">Średnia</string>

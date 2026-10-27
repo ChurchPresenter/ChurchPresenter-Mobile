@@ -47,7 +47,7 @@ import io.github.takahirom.roborazzi.captureRoboImage
  *
  * The behavioural UI tests next door in `commonTest` already assert what the
  * operator can read and press (see TESTING.md). These assert what the
- * behavioural ones deliberately do not: colour, spacing, type, elevation, and
+ * behavioural ones deliberately do not: color, spacing, type, elevation, and
  * every visual state a composable can be put in — the things a hand-written
  * assertion about a `dp` value could never keep up with.
  *
@@ -186,7 +186,7 @@ private const val CONTENT_TIMEOUT_MS = 5_000L
  * @param until Held until this is true before the shutter opens — for a screen
  *   whose content arrives from a ViewModel rather than from its arguments.
  *   Without it such a screen is photographed while still empty.
- * @param themes Which themes to capture. Both by default — a colour that only
+ * @param themes Which themes to capture. Both by default — a color that only
  *   goes wrong in the dark is exactly what this suite is for. Narrow it only
  *   for a subject that has no themed surface at all.
  * @param surface The window to render into, for a subject too wide for the
@@ -260,7 +260,7 @@ internal fun screenshot(
  * The root to photograph.
  *
  * A composable that puts its content in a `Dialog` — [UploadProgressOverlay],
- * the colour picker, the confirmation sheets — composes into a window of its
+ * the color picker, the confirmation sheets — composes into a window of its
  * own, so the tree has TWO roots and `onRoot()` fails outright with "expected
  * exactly 1 node but found 2". The parent root is the one left holding nothing:
  * zero height, because everything went to the dialog.

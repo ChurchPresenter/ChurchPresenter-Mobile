@@ -9,8 +9,8 @@ import kotlin.test.assertTrue
  * Tests the built-in looks a church picks from on a Sunday morning.
  *
  * Each preset has to be a complete, usable screen on its own — a preset with a
- * malformed colour in it renders as a blank wall in front of a congregation, so
- * the colours are checked rather than assumed.
+ * malformed color in it renders as a blank wall in front of a congregation, so
+ * the colors are checked rather than assumed.
  */
 class SlideThemePresetsTest {
 
@@ -31,7 +31,7 @@ class SlideThemePresetsTest {
     }
 
     @Test
-    fun `every preset colour is a six-digit hex`() {
+    fun `every preset color is a six-digit hex`() {
         for ((name, theme) in SlideThemePresets.all.map { it.name to it.theme }) {
             assertTrue(hex.matches(theme.textColor), "$name textColor: ${theme.textColor}")
             assertTrue(hex.matches(theme.accentColor), "$name accentColor: ${theme.accentColor}")
@@ -41,7 +41,7 @@ class SlideThemePresetsTest {
     }
 
     @Test
-    fun `no preset draws its text in its own background colour`() {
+    fun `no preset draws its text in its own background color`() {
         for ((name, theme) in SlideThemePresets.all.map { it.name to it.theme }) {
             assertNotEquals(theme.gradientTop.uppercase(), theme.textColor.uppercase(), "$name top")
             assertNotEquals(theme.gradientBottom.uppercase(), theme.textColor.uppercase(), "$name bottom")

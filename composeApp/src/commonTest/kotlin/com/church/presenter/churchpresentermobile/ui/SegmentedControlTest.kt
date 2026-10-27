@@ -14,14 +14,14 @@ import kotlin.test.assertEquals
 /**
  * Tests the reusable building blocks every screen is assembled from.
  *
- * They read colours from `LocalAppColors`, so each case wraps its content in
+ * They read colors from `LocalAppColors`, so each case wraps its content in
  * [AppTheme] — a bare `setContent` would take the composition-local default and
  * test a configuration the app never renders.
  */
 /**
  * Tests [SegmentedControl] — the filter pill above a list.
  *
- * It reads colours from `LocalAppColors`, so every case renders inside [AppTheme]:
+ * It reads colors from `LocalAppColors`, so every case renders inside [AppTheme]:
  * a bare `setContent` would take the composition-local default and test a
  * configuration the app never shows.
  */

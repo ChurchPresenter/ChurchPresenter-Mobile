@@ -192,7 +192,7 @@ private fun ColumnScope.MediaSendActions(
     }
 }
 
-/** One of the two filled send buttons; they differ only in colour and glyph. */
+/** One of the two filled send buttons; they differ only in color and glyph. */
 @Composable
 private fun RowScope.SendButton(
     icon: ImageVector,

@@ -101,7 +101,7 @@ import org.jetbrains.compose.resources.stringResource
  *
  * A sheet rather than more rows on the Present tab: that tab is the live surface during a
  * service, and Next, Blank and Live must not move further down the screen because someone once
- * wanted to change a colour.
+ * wanted to change a color.
  *
  * Every control writes straight through — the theme rides inside each slide, so the phone's own
  * output, an attached screen and any browser on the hosted page all follow the same edit without
@@ -188,7 +188,7 @@ internal fun LookSheetContent(
             )
 
             // A whole look in one tap. Setting up on a Sunday morning should not
-            // mean assembling a readable screen out of six colour fields.
+            // mean assembling a readable screen out of six color fields.
             OverlineRow(stringResource(Res.string.standalone_themes))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 presets.forEach { preset ->

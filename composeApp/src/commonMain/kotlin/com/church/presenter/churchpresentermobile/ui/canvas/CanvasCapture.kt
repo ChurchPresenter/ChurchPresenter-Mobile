@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 /**
  * The page's elements, and — while [live] — a picture of them for the outputs.
  *
- * What is drawn here is recorded into a layer on its [paper] colour: the elements
+ * What is drawn here is recorded into a layer on its [paper] color: the elements
  * alone, without the dot grid behind them or the selection, handles and previews
  * drawn over them, which are the operator's and not the audience's. Recording
  * happens only while live, so a canvas nobody is watching costs nothing extra.
@@ -58,7 +58,7 @@ internal fun CapturedPage(
 
 private const val FRAME_DELAY_MS = 150L
 
-/** [this] as `#RRGGBB`, the form a slide carries colours in. */
+/** [this] as `#RRGGBB`, the form a slide carries colors in. */
 internal fun Color.toHex(): String {
     val rgb = toArgb() and RGB_MASK
     return "#" + rgb.toString(HEX).uppercase().padStart(HEX_DIGITS, '0')

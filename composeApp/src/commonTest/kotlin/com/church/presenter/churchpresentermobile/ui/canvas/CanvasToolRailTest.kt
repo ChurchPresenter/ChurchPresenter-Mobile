@@ -79,7 +79,7 @@ class CanvasToolRailTest {
         // Every swatch and width in the dock is pressed once; the last of each wins.
         val dockControls = onAllNodes(hasClickAction() and hasAnyAncestor(hasTestTag(CanvasTags.DOCK)))
         val count = dockControls.fetchSemanticsNodes().size
-        assertTrue(count >= DOCK_CONTROLS, "colours and widths are pressable, found $count")
+        assertTrue(count >= DOCK_CONTROLS, "colors and widths are pressable, found $count")
         repeat(count) { i ->
             dockControls[i].performSemanticsAction(SemanticsActions.OnClick)
         }

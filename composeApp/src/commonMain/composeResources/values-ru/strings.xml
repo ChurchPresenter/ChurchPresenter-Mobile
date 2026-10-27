@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Жёлтый</string>
     <string name="canvas_color_pink">Розовый</string>
     <string name="canvas_color_orange">Оранжевый</string>
+    <string name="canvas_color_teal">Бирюзовый</string>
+    <string name="canvas_color_brown">Коричневый</string>
+    <string name="canvas_color_light_blue">Голубой</string>
+    <string name="canvas_color_lime">Лаймовый</string>
     <string name="canvas_color_custom">Свой цвет</string>
+    <string name="canvas_color_mixed">Свой цвет %1$s</string>
     <string name="canvas_color_none">Без заливки</string>
     <string name="canvas_width_thin">Тонкий</string>
     <string name="canvas_width_medium">Средний</string>

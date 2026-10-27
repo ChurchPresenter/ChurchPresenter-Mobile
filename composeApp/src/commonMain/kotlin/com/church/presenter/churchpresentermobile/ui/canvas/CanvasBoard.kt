@@ -115,7 +115,7 @@ internal fun CanvasBoard(
                     }
                 }
             }
-            if (state.tool == CanvasTool.SELECT) SelectGestures(state, onIntent, measure, measureBox)
+            if (state.tool == CanvasTool.SELECT) SelectGestures(state, onIntent, measure, measureBox, paths)
             ToolGestures(state = state, onIntent = onIntent, measure = measure, paths = paths, onLasso = { lasso = it })
             if (state.tool == CanvasTool.LASSO && state.selectedIds.isNotEmpty() && lasso.isNotEmpty()) {
                 val rectangle = state.options.lasso.shape == LassoShape.RECTANGLE

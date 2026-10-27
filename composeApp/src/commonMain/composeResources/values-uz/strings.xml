@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Sariq</string>
     <string name="canvas_color_pink">Pushti</string>
     <string name="canvas_color_orange">To'q sariq</string>
+    <string name="canvas_color_teal">Moviy-yashil</string>
+    <string name="canvas_color_brown">Jigarrang</string>
+    <string name="canvas_color_light_blue">Havorang</string>
+    <string name="canvas_color_lime">Laym</string>
     <string name="canvas_color_custom">Boshqa rang</string>
+    <string name="canvas_color_mixed">Boshqa rang %1$s</string>
     <string name="canvas_color_none">To'ldirishsiz</string>
     <string name="canvas_width_thin">Ingichka</string>
     <string name="canvas_width_medium">O'rtacha</string>

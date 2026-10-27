@@ -8,7 +8,7 @@ import com.church.presenter.churchpresentermobile.bibleimport.catalog.Testament
 import com.church.presenter.churchpresentermobile.ui.theme.AppColors
 
 /**
- * The Bible downloads design's own colours: one hue per archive, used on its format badge, its
+ * The Bible downloads design's own colors: one hue per archive, used on its format badge, its
  * testament mark and its dot in the tablet's source list — so a row says where it came from at a
  * glance. Values are design "Church Presenter Bible Downloads", dark and light.
  */
@@ -49,7 +49,7 @@ internal val AppColors.aheadInk: Color get() = if (isDark) Color(0xFF52525B) els
 
 internal fun AppColors.hueOf(source: BibleSource): SourceHue = hueOf(source.format)
 
-/** The testament mark's colour: green for a whole Bible, blue for NT, amber for OT. */
+/** The testament mark's color: green for a whole Bible, blue for NT, amber for OT. */
 internal fun AppColors.testamentColor(testament: Testament): Color = when (testament) {
     Testament.FULL -> accent
     Testament.NEW -> hueOf(BibleXmlFormat.USFX).fg
@@ -73,5 +73,5 @@ internal val AppColors.chosenEdge: Color get() = if (isDark) Color(0x4786EFAC) e
 /** The ink on an accent button — the design's near-black green on dark, white on light. */
 internal val AppColors.onAccentButton: Color get() = if (isDark) Color(0xFF08130C) else Color.White
 
-/** Behind an error's icon: the danger colour at 12% on dark, 8% on light. */
+/** Behind an error's icon: the danger color at 12% on dark, 8% on light. */
 internal val AppColors.errorTint: Color get() = danger.copy(alpha = if (isDark) 0.12f else 0.08f)

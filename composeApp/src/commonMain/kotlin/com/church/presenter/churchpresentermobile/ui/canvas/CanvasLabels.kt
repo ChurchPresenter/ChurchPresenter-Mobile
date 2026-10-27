@@ -4,12 +4,19 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.canvas_color_amber
 import churchpresentermobile.composeapp.generated.resources.canvas_color_black
 import churchpresentermobile.composeapp.generated.resources.canvas_color_blue
+import churchpresentermobile.composeapp.generated.resources.canvas_color_brown
+import churchpresentermobile.composeapp.generated.resources.canvas_color_light_blue
+import churchpresentermobile.composeapp.generated.resources.canvas_color_lime
+import churchpresentermobile.composeapp.generated.resources.canvas_color_light_blue
+import churchpresentermobile.composeapp.generated.resources.canvas_color_lime
 import churchpresentermobile.composeapp.generated.resources.canvas_color_green
 import churchpresentermobile.composeapp.generated.resources.canvas_color_none
 import churchpresentermobile.composeapp.generated.resources.canvas_color_orange
 import churchpresentermobile.composeapp.generated.resources.canvas_color_pink
 import churchpresentermobile.composeapp.generated.resources.canvas_color_purple
 import churchpresentermobile.composeapp.generated.resources.canvas_color_red
+import churchpresentermobile.composeapp.generated.resources.canvas_color_teal
+import churchpresentermobile.composeapp.generated.resources.canvas_color_teal
 import churchpresentermobile.composeapp.generated.resources.canvas_color_white
 import churchpresentermobile.composeapp.generated.resources.canvas_color_yellow
 import churchpresentermobile.composeapp.generated.resources.canvas_layer_arrow
@@ -37,28 +44,38 @@ import com.church.presenter.churchpresentermobile.model.StickyColor
 import org.jetbrains.compose.resources.StringResource
 
 /*
- * What a screen reader calls each colour and shape, and what the Layers panel
- * calls an element nobody named. A swatch is only a colour to look at, so its
+ * What a screen reader calls each color and shape, and what the Layers panel
+ * calls an element nobody named. A swatch is only a color to look at, so its
  * name is the only label a screen-reader user gets.
  */
 
-/** The ink's colour name on this theme — contrast ink is white on the dark board and black on the light one. */
+/** The ink's color name on this theme — contrast ink is white on the dark board and black on the light one. */
 internal fun CanvasInk.label(isDark: Boolean): StringResource = when (this) {
     CanvasInk.CONTRAST -> if (isDark) Res.string.canvas_color_white else Res.string.canvas_color_black
     CanvasInk.INVERSE -> if (isDark) Res.string.canvas_color_black else Res.string.canvas_color_white
     CanvasInk.RED -> Res.string.canvas_color_red
     CanvasInk.AMBER -> Res.string.canvas_color_amber
     CanvasInk.GREEN -> Res.string.canvas_color_green
-    CanvasInk.SKY -> Res.string.canvas_color_blue
+    CanvasInk.SKY -> Res.string.canvas_color_light_blue
     CanvasInk.VIOLET -> Res.string.canvas_color_purple
+    CanvasInk.ORANGE -> Res.string.canvas_color_orange
+    CanvasInk.TEAL -> Res.string.canvas_color_teal
+    CanvasInk.BLUE -> Res.string.canvas_color_blue
+    CanvasInk.PINK -> Res.string.canvas_color_pink
+    CanvasInk.BROWN -> Res.string.canvas_color_brown
 }
 
 internal fun HighlightColor.label(): StringResource = when (this) {
     HighlightColor.YELLOW -> Res.string.canvas_color_yellow
     HighlightColor.GREEN -> Res.string.canvas_color_green
-    HighlightColor.SKY -> Res.string.canvas_color_blue
+    HighlightColor.SKY -> Res.string.canvas_color_light_blue
     HighlightColor.PINK -> Res.string.canvas_color_pink
     HighlightColor.ORANGE -> Res.string.canvas_color_orange
+    HighlightColor.LIME -> Res.string.canvas_color_lime
+    HighlightColor.TEAL -> Res.string.canvas_color_teal
+    HighlightColor.PURPLE -> Res.string.canvas_color_purple
+    HighlightColor.RED -> Res.string.canvas_color_red
+    HighlightColor.BLUE -> Res.string.canvas_color_blue
 }
 
 internal fun ShapeFill.label(): StringResource = when (this) {

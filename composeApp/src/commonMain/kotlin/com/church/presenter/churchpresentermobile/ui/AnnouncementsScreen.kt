@@ -124,7 +124,7 @@ private const val PREVIEW_FONT_SCALE = 0.32f
 private const val PREVIEW_MIN_FONT_SP = 14f
 private const val PREVIEW_MAX_FONT_SP = 44f
 
-/** Widened for the UI tests, which press a swatch by the colour it carries. */
+/** Widened for the UI tests, which press a swatch by the color it carries. */
 internal val TEXT_SWATCHES = listOf("#FFFFFF", "#F5C518", "#22C55E")
 internal val BG_SWATCHES = listOf("#000000", "#1E3A8A", "#7F1D1D")
 
@@ -508,7 +508,7 @@ private fun SwatchGroup(
                         .clickable { onSelect(hex) },
                 )
             }
-            // Custom color picker — shows the current custom colour when active
+            // Custom color picker — shows the current custom color when active
             Box(
                 modifier = Modifier
                     .size(32.dp)

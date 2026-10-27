@@ -1173,7 +1173,12 @@
     <string name="canvas_color_yellow">Geel</string>
     <string name="canvas_color_pink">Roze</string>
     <string name="canvas_color_orange">Oranje</string>
+    <string name="canvas_color_teal">Blauwgroen</string>
+    <string name="canvas_color_brown">Bruin</string>
+    <string name="canvas_color_light_blue">Lichtblauw</string>
+    <string name="canvas_color_lime">Limoen</string>
     <string name="canvas_color_custom">Aangepaste kleur</string>
+    <string name="canvas_color_mixed">Aangepaste kleur %1$s</string>
     <string name="canvas_color_none">Geen vulling</string>
     <string name="canvas_width_thin">Dun</string>
     <string name="canvas_width_medium">Gemiddeld</string>

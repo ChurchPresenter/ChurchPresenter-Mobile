@@ -1142,7 +1142,12 @@
     <string name="canvas_color_yellow">Gul</string>
     <string name="canvas_color_pink">Rosa</string>
     <string name="canvas_color_orange">Orange</string>
+    <string name="canvas_color_teal">Blågrön</string>
+    <string name="canvas_color_brown">Brun</string>
+    <string name="canvas_color_light_blue">Ljusblå</string>
+    <string name="canvas_color_lime">Limegrön</string>
     <string name="canvas_color_custom">Egen färg</string>
+    <string name="canvas_color_mixed">Egen färg %1$s</string>
     <string name="canvas_color_none">Ingen fyllning</string>
     <string name="canvas_width_thin">Tunn</string>
     <string name="canvas_width_medium">Medel</string>
