@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">கோடிட்ட</string>
     <string name="canvas_border_none">இல்லை</string>
     <string name="canvas_border_width">எல்லை அகலம்</string>
+    <string name="canvas_section_skew">சாய்வு</string>
+    <string name="canvas_skew_horizontal">கிடைமட்டம்</string>
+    <string name="canvas_skew_vertical">செங்குத்து</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">கையால் வரைந்தவற்றை வடிவங்களாக்கு</string>
     <string name="canvas_line_straight">நேர்</string>
     <string name="canvas_line_curve">வளைவு</string>

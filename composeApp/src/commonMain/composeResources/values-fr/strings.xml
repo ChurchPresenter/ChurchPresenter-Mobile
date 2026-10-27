@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Tirets</string>
     <string name="canvas_border_none">Aucune</string>
     <string name="canvas_border_width">Épaisseur de bordure</string>
+    <string name="canvas_section_skew">Inclinaison</string>
+    <string name="canvas_skew_horizontal">Horizontale</string>
+    <string name="canvas_skew_vertical">Verticale</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Convertir les tracés approximatifs en formes</string>
     <string name="canvas_line_straight">Droite</string>
     <string name="canvas_line_curve">Courbe</string>

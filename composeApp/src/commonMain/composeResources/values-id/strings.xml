@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Putus-putus</string>
     <string name="canvas_border_none">Tidak ada</string>
     <string name="canvas_border_width">Lebar bingkai</string>
+    <string name="canvas_section_skew">Miringkan</string>
+    <string name="canvas_skew_horizontal">Horizontal</string>
+    <string name="canvas_skew_vertical">Vertikal</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Ubah gambar kasar menjadi bentuk</string>
     <string name="canvas_line_straight">Lurus</string>
     <string name="canvas_line_curve">Lengkung</string>

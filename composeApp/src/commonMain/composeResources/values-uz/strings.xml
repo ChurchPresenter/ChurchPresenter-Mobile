@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Punktir</string>
     <string name="canvas_border_none">Yo'q</string>
     <string name="canvas_border_width">Chegara qalinligi</string>
+    <string name="canvas_section_skew">Qiyshaytirish</string>
+    <string name="canvas_skew_horizontal">Gorizontal</string>
+    <string name="canvas_skew_vertical">Vertikal</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Qo'pol chizmalarni shaklga aylantirish</string>
     <string name="canvas_line_straight">To'g'ri</string>
     <string name="canvas_line_curve">Egri</string>

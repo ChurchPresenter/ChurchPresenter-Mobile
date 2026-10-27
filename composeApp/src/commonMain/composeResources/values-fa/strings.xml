@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">خط‌چین</string>
     <string name="canvas_border_none">هیچ</string>
     <string name="canvas_border_width">پهنای حاشیه</string>
+    <string name="canvas_section_skew">کج کردن</string>
+    <string name="canvas_skew_horizontal">افقی</string>
+    <string name="canvas_skew_vertical">عمودی</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">تبدیل طرح‌های دستی به شکل</string>
     <string name="canvas_line_straight">صاف</string>
     <string name="canvas_line_curve">منحنی</string>

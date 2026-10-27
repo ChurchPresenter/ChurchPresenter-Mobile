@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Svītrota</string>
     <string name="canvas_border_none">Nav</string>
     <string name="canvas_border_width">Apmales platums</string>
+    <string name="canvas_section_skew">Slīpums</string>
+    <string name="canvas_skew_horizontal">Horizontāli</string>
+    <string name="canvas_skew_vertical">Vertikāli</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Pārvērst skices figūrās</string>
     <string name="canvas_line_straight">Taisna</string>
     <string name="canvas_line_curve">Līkne</string>

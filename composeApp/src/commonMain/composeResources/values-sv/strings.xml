@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Streckad</string>
     <string name="canvas_border_none">Ingen</string>
     <string name="canvas_border_width">Kantbredd</string>
+    <string name="canvas_section_skew">Snedställ</string>
+    <string name="canvas_skew_horizontal">Vågrätt</string>
+    <string name="canvas_skew_vertical">Lodrätt</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Gör frihandsritningar till former</string>
     <string name="canvas_line_straight">Rak</string>
     <string name="canvas_line_curve">Kurva</string>

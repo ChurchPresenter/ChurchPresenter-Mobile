@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Katkoviiva</string>
     <string name="canvas_border_none">Ei mitään</string>
     <string name="canvas_border_width">Reunuksen leveys</string>
+    <string name="canvas_section_skew">Vinous</string>
+    <string name="canvas_skew_horizontal">Vaaka</string>
+    <string name="canvas_skew_vertical">Pysty</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Muunna käsin piirretyt muodoiksi</string>
     <string name="canvas_line_straight">Suora</string>
     <string name="canvas_line_curve">Kaari</string>

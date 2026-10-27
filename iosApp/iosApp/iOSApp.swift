@@ -89,9 +89,13 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         let defaults = UserDefaults.standard
         let openCount = defaults.integer(forKey: AppConstants.appOpenCountKey) + 1
         defaults.set(openCount, forKey: AppConstants.appOpenCountKey)
+        // Not in a development build: iOS always shows the prompt there, but its
+        // Submit does nothing, so it only gets in the way of testing.
+        #if !DEBUG
         if AppDelegate.shouldRequestReview(openCount: openCount) {
             requestReviewWhenActive()
         }
+        #endif
 
         // 3. Check App Store for a newer version (delayed to not block launch)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in

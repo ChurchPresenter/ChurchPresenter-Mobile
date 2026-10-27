@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Пункцір</string>
     <string name="canvas_border_none">Няма</string>
     <string name="canvas_border_width">Таўшчыня контуру</string>
+    <string name="canvas_section_skew">Нахіл</string>
+    <string name="canvas_skew_horizontal">Гарызантальна</string>
+    <string name="canvas_skew_vertical">Вертыкальна</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Ператвараць эскізы ў фігуры</string>
     <string name="canvas_line_straight">Прамая</string>
     <string name="canvas_line_curve">Крывая</string>

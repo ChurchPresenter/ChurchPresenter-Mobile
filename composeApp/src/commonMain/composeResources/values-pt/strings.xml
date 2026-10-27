@@ -1246,6 +1246,10 @@
     <string name="canvas_border_dashed">Tracejada</string>
     <string name="canvas_border_none">Nenhuma</string>
     <string name="canvas_border_width">Espessura da borda</string>
+    <string name="canvas_section_skew">Inclinar</string>
+    <string name="canvas_skew_horizontal">Horizontal</string>
+    <string name="canvas_skew_vertical">Vertical</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Converter desenhos à mão em formas</string>
     <string name="canvas_line_straight">Reta</string>
     <string name="canvas_line_curve">Curva</string>

@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">متقطع</string>
     <string name="canvas_border_none">بلا</string>
     <string name="canvas_border_width">عرض الحد</string>
+    <string name="canvas_section_skew">إمالة</string>
+    <string name="canvas_skew_horizontal">أفقي</string>
+    <string name="canvas_skew_vertical">عمودي</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">تحويل الرسوم التقريبية إلى أشكال</string>
     <string name="canvas_line_straight">مستقيم</string>
     <string name="canvas_line_curve">منحنٍ</string>

@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">डैश वाली</string>
     <string name="canvas_border_none">कोई नहीं</string>
     <string name="canvas_border_width">बॉर्डर की चौड़ाई</string>
+    <string name="canvas_section_skew">तिरछा</string>
+    <string name="canvas_skew_horizontal">क्षैतिज</string>
+    <string name="canvas_skew_vertical">ऊर्ध्वाधर</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">कच्ची ड्रॉइंग को आकृतियों में बदलें</string>
     <string name="canvas_line_straight">सीधी</string>
     <string name="canvas_line_curve">वक्र</string>

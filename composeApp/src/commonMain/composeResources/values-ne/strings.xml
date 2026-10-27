@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">ड्यास भएको</string>
     <string name="canvas_border_none">छैन</string>
     <string name="canvas_border_width">किनाराको चौडाइ</string>
+    <string name="canvas_section_skew">तिर्छो</string>
+    <string name="canvas_skew_horizontal">तेर्सो</string>
+    <string name="canvas_skew_vertical">ठाडो</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">कच्चा चित्रलाई आकृतिमा मिलाउनुहोस्</string>
     <string name="canvas_line_straight">सीधा</string>
     <string name="canvas_line_curve">वक्र</string>

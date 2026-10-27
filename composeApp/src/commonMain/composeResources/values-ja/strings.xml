@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">破線</string>
     <string name="canvas_border_none">なし</string>
     <string name="canvas_border_width">枠線の太さ</string>
+    <string name="canvas_section_skew">傾斜</string>
+    <string name="canvas_skew_horizontal">水平</string>
+    <string name="canvas_skew_vertical">垂直</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">手描きを図形に補正</string>
     <string name="canvas_line_straight">直線</string>
     <string name="canvas_line_curve">曲線</string>

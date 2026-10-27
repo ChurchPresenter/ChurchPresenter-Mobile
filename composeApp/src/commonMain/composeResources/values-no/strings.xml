@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Stiplet</string>
     <string name="canvas_border_none">Ingen</string>
     <string name="canvas_border_width">Kantbredde</string>
+    <string name="canvas_section_skew">Skråstill</string>
+    <string name="canvas_skew_horizontal">Vannrett</string>
+    <string name="canvas_skew_vertical">Loddrett</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Gjør grove tegninger om til former</string>
     <string name="canvas_line_straight">Rett</string>
     <string name="canvas_line_curve">Kurve</string>

@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">เส้นประ</string>
     <string name="canvas_border_none">ไม่มี</string>
     <string name="canvas_border_width">ความหนาเส้นขอบ</string>
+    <string name="canvas_section_skew">เอียง</string>
+    <string name="canvas_skew_horizontal">แนวนอน</string>
+    <string name="canvas_skew_vertical">แนวตั้ง</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">ปรับภาพวาดคร่าวๆ ให้เป็นรูปทรง</string>
     <string name="canvas_line_straight">ตรง</string>
     <string name="canvas_line_curve">โค้ง</string>

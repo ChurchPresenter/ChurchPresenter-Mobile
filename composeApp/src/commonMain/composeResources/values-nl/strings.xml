@@ -1246,6 +1246,10 @@
     <string name="canvas_border_dashed">Gestreept</string>
     <string name="canvas_border_none">Geen</string>
     <string name="canvas_border_width">Randdikte</string>
+    <string name="canvas_section_skew">Scheeftrekken</string>
+    <string name="canvas_skew_horizontal">Horizontaal</string>
+    <string name="canvas_skew_vertical">Verticaal</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Ruwe tekeningen omzetten in vormen</string>
     <string name="canvas_line_straight">Recht</string>
     <string name="canvas_line_curve">Curve</string>

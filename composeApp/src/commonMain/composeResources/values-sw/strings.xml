@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Vistari</string>
     <string name="canvas_border_none">Hakuna</string>
     <string name="canvas_border_width">Upana wa mpaka</string>
+    <string name="canvas_section_skew">Inamisha</string>
+    <string name="canvas_skew_horizontal">Mlalo</string>
+    <string name="canvas_skew_vertical">Wima</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Geuza michoro ya haraka kuwa maumbo</string>
     <string name="canvas_line_straight">Nyoofu</string>
     <string name="canvas_line_curve">Mkunjo</string>

@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Kesikli</string>
     <string name="canvas_border_none">Yok</string>
     <string name="canvas_border_width">Kenarlık genişliği</string>
+    <string name="canvas_section_skew">Eğme</string>
+    <string name="canvas_skew_horizontal">Yatay</string>
+    <string name="canvas_skew_vertical">Dikey</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Kaba çizimleri şekle dönüştür</string>
     <string name="canvas_line_straight">Düz</string>
     <string name="canvas_line_curve">Eğri</string>

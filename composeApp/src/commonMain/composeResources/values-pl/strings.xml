@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Kreskowane</string>
     <string name="canvas_border_none">Brak</string>
     <string name="canvas_border_width">Grubość obramowania</string>
+    <string name="canvas_section_skew">Pochylenie</string>
+    <string name="canvas_skew_horizontal">Poziomo</string>
+    <string name="canvas_skew_vertical">Pionowo</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Zamieniaj szkice w kształty</string>
     <string name="canvas_line_straight">Prosta</string>
     <string name="canvas_line_curve">Krzywa</string>

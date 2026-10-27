@@ -1246,6 +1246,10 @@
     <string name="canvas_border_dashed">Katkendlik</string>
     <string name="canvas_border_none">Puudub</string>
     <string name="canvas_border_width">Äärise laius</string>
+    <string name="canvas_section_skew">Kalle</string>
+    <string name="canvas_skew_horizontal">Horisontaalne</string>
+    <string name="canvas_skew_vertical">Vertikaalne</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Muuda visandid kujunditeks</string>
     <string name="canvas_line_straight">Sirge</string>
     <string name="canvas_line_curve">Kõver</string>

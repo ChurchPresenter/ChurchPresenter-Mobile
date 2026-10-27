@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Үзік</string>
     <string name="canvas_border_none">Жоқ</string>
     <string name="canvas_border_width">Жиек қалыңдығы</string>
+    <string name="canvas_section_skew">Қисайту</string>
+    <string name="canvas_skew_horizontal">Көлденең</string>
+    <string name="canvas_skew_vertical">Тік</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Нобайларды пішінге айналдыру</string>
     <string name="canvas_line_straight">Түзу</string>
     <string name="canvas_line_curve">Қисық</string>

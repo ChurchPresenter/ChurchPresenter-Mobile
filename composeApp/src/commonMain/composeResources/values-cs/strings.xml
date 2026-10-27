@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Čárkovaná</string>
     <string name="canvas_border_none">Žádné</string>
     <string name="canvas_border_width">Šířka ohraničení</string>
+    <string name="canvas_section_skew">Zkosení</string>
+    <string name="canvas_skew_horizontal">Vodorovně</string>
+    <string name="canvas_skew_vertical">Svisle</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Převádět náčrty na tvary</string>
     <string name="canvas_line_straight">Rovná</string>
     <string name="canvas_line_curve">Křivka</string>

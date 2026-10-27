@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Putus-putus</string>
     <string name="canvas_border_none">Tiada</string>
     <string name="canvas_border_width">Lebar sempadan</string>
+    <string name="canvas_section_skew">Condongkan</string>
+    <string name="canvas_skew_horizontal">Mendatar</string>
+    <string name="canvas_skew_vertical">Menegak</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Tukar lukisan kasar kepada bentuk</string>
     <string name="canvas_line_straight">Lurus</string>
     <string name="canvas_line_curve">Lengkung</string>

@@ -1246,6 +1246,10 @@
     <string name="canvas_border_dashed">Întrerupt</string>
     <string name="canvas_border_none">Fără</string>
     <string name="canvas_border_width">Grosime contur</string>
+    <string name="canvas_section_skew">Înclinare</string>
+    <string name="canvas_skew_horizontal">Orizontal</string>
+    <string name="canvas_skew_vertical">Vertical</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Transformă schițele în forme</string>
     <string name="canvas_line_straight">Dreaptă</string>
     <string name="canvas_line_curve">Curbă</string>

@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">ເສັ້ນປະ</string>
     <string name="canvas_border_none">ບໍ່ມີ</string>
     <string name="canvas_border_width">ຄວາມໜາຂອບ</string>
+    <string name="canvas_section_skew">ອຽງ</string>
+    <string name="canvas_skew_horizontal">ແນວນອນ</string>
+    <string name="canvas_skew_vertical">ແນວຕັ້ງ</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">ປັບຮູບແຕ້ມຫຍາບໃຫ້ເປັນຮູບຮ່າງ</string>
     <string name="canvas_line_straight">ຊື່</string>
     <string name="canvas_line_curve">ໂຄ້ງ</string>

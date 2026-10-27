@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Gestrichelt</string>
     <string name="canvas_border_none">Keiner</string>
     <string name="canvas_border_width">Rahmenbreite</string>
+    <string name="canvas_section_skew">Neigen</string>
+    <string name="canvas_skew_horizontal">Horizontal</string>
+    <string name="canvas_skew_vertical">Vertikal</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Grobe Zeichnungen in Formen umwandeln</string>
     <string name="canvas_line_straight">Gerade</string>
     <string name="canvas_line_curve">Kurve</string>

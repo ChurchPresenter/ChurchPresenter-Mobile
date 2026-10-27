@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Putul-putol</string>
     <string name="canvas_border_none">Wala</string>
     <string name="canvas_border_width">Lapad ng border</string>
+    <string name="canvas_section_skew">Ikiling</string>
+    <string name="canvas_skew_horizontal">Pahalang</string>
+    <string name="canvas_skew_vertical">Patayo</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Gawing hugis ang magaspang na guhit</string>
     <string name="canvas_line_straight">Tuwid</string>
     <string name="canvas_line_curve">Kurba</string>

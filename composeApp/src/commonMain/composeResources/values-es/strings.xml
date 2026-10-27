@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Discontinuo</string>
     <string name="canvas_border_none">Ninguno</string>
     <string name="canvas_border_width">Grosor del borde</string>
+    <string name="canvas_section_skew">Inclinar</string>
+    <string name="canvas_skew_horizontal">Horizontal</string>
+    <string name="canvas_skew_vertical">Vertical</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Convertir trazos aproximados en formas</string>
     <string name="canvas_line_straight">Recta</string>
     <string name="canvas_line_curve">Curva</string>

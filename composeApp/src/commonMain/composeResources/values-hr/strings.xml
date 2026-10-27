@@ -1215,6 +1215,10 @@
     <string name="canvas_border_dashed">Isprekidani</string>
     <string name="canvas_border_none">Bez</string>
     <string name="canvas_border_width">Širina obruba</string>
+    <string name="canvas_section_skew">Nagib</string>
+    <string name="canvas_skew_horizontal">Vodoravno</string>
+    <string name="canvas_skew_vertical">Okomito</string>
+    <string name="canvas_degrees">%1$d°</string>
     <string name="canvas_snap_shapes">Pretvori skice u oblike</string>
     <string name="canvas_line_straight">Ravna</string>
     <string name="canvas_line_curve">Krivulja</string>
