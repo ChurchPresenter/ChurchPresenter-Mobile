@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">أصفر</string>
     <string name="canvas_color_pink">وردي</string>
     <string name="canvas_color_orange">برتقالي</string>
+    <string name="canvas_color_gray">رمادي</string>
     <string name="canvas_color_teal">أزرق مخضر</string>
     <string name="canvas_color_brown">بني</string>
     <string name="canvas_color_light_blue">أزرق فاتح</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">أفقي</string>
     <string name="canvas_skew_vertical">عمودي</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">تحويل</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">تدوير</string>
+    <string name="canvas_hide_tools">إخفاء الأدوات</string>
+    <string name="canvas_show_tools">إظهار الأدوات</string>
+    <string name="canvas_hide_pen_bar">إخفاء شريط القلم</string>
+    <string name="canvas_show_pen_bar">إظهار شريط القلم</string>
+    <string name="canvas_minimize_panel">تصغير</string>
+    <string name="canvas_expand_panel">توسيع</string>
     <string name="canvas_snap_shapes">تحويل الرسوم التقريبية إلى أشكال</string>
     <string name="canvas_line_straight">مستقيم</string>
     <string name="canvas_line_curve">منحنٍ</string>

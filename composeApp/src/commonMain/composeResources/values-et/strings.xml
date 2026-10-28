@@ -1173,6 +1173,7 @@
     <string name="canvas_color_yellow">Kollane</string>
     <string name="canvas_color_pink">Roosa</string>
     <string name="canvas_color_orange">Oranž</string>
+    <string name="canvas_color_gray">Hall</string>
     <string name="canvas_color_teal">Sinakasroheline</string>
     <string name="canvas_color_brown">Pruun</string>
     <string name="canvas_color_light_blue">Helesinine</string>
@@ -1250,6 +1251,18 @@
     <string name="canvas_skew_horizontal">Horisontaalne</string>
     <string name="canvas_skew_vertical">Vertikaalne</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Teisendus</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Pööre</string>
+    <string name="canvas_hide_tools">Peida tööriistad</string>
+    <string name="canvas_show_tools">Näita tööriistu</string>
+    <string name="canvas_hide_pen_bar">Peida pliiatsiriba</string>
+    <string name="canvas_show_pen_bar">Näita pliiatsiriba</string>
+    <string name="canvas_minimize_panel">Minimeeri</string>
+    <string name="canvas_expand_panel">Laienda</string>
     <string name="canvas_snap_shapes">Muuda visandid kujunditeks</string>
     <string name="canvas_line_straight">Sirge</string>
     <string name="canvas_line_curve">Kõver</string>

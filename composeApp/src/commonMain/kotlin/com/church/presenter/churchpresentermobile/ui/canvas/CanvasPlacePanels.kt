@@ -153,17 +153,20 @@ internal fun ShapesPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptio
         }
     }
     PanelSectionLabel(stringResource(Res.string.canvas_section_fill))
-    Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+    // The design's ten fills — no fill first — and the picker, six to a line.
+    SwatchGrid {
         ShapeFill.entries.forEach { fill ->
             val pick = { onOptions(options.copy(shapes = shapes.copy(fill = fill, fillCustom = null))) }
             val chosen = shapes.fill == fill && shapes.fillCustom == null
             if (fill == ShapeFill.NONE) {
-                NoFillSwatch(chosen, stringResource(fill.label()), 24.dp, pick)
+                NoFillSwatch(chosen, stringResource(fill.label()), PANEL_SWATCH, pick)
             } else {
-                ColorSwatch(shapeFillColor(fill), chosen, stringResource(fill.label()), pick, 24.dp)
+                ColorSwatch(shapeFillColor(fill), chosen, stringResource(fill.label()), pick, PANEL_SWATCH)
             }
         }
-        CustomColorSwatch(shapes.fillCustom, 24.dp) { onOptions(options.copy(shapes = shapes.copy(fillCustom = it))) }
+        CustomColorSwatch(shapes.fillCustom, PANEL_SWATCH) {
+            onOptions(options.copy(shapes = shapes.copy(fillCustom = it)))
+        }
     }
     PanelSectionLabel(stringResource(Res.string.canvas_section_border))
     CanvasSegmented(
@@ -251,7 +254,7 @@ internal fun LinePanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
         onMix = {
             onOptions(options.copy(line = line.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it)))
         },
-        size = 24.dp,
+        size = PANEL_SWATCH,
     )
     Box(Modifier.height(4.dp))
     SliderRow(
@@ -357,7 +360,7 @@ internal fun TextPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions
         onMix = {
             onOptions(options.copy(text = text.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it)))
         },
-        size = 24.dp,
+        size = PANEL_SWATCH,
     )
     Box(Modifier.height(4.dp))
     ToggleRow(stringResource(Res.string.canvas_background_highlight), text.highlight) {

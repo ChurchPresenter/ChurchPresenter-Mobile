@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrNull
+import androidx.compose.ui.graphics.Color
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -156,12 +159,23 @@ private fun CanvasWorkspace(
             modifier = Modifier.fillMaxSize(),
             onFrame = onFrame,
         )
-        CanvasToolRail(
-            active = state.tool,
-            onPick = { onIntent(CanvasIntent.PickTool(it)) },
-            onButtonCentre = { tool, y -> toolCentres[tool] = y },
-            modifier = Modifier.align(Alignment.CenterStart).padding(start = 16.dp),
-        )
+        val railModifier = Modifier.align(Alignment.CenterStart).padding(start = 16.dp)
+        if (CanvasChrome.RAIL in state.minimized) {
+            MinimizedRail(
+                active = state.tool,
+                onPick = { onIntent(CanvasIntent.PickTool(it)) },
+                onRestore = { onIntent(CanvasIntent.Minimize(CanvasChrome.RAIL, false)) },
+                modifier = railModifier,
+            )
+        } else {
+            CanvasToolRail(
+                active = state.tool,
+                onPick = { onIntent(CanvasIntent.PickTool(it)) },
+                onButtonCentre = { tool, y -> toolCentres[tool] = y },
+                onMinimize = { onIntent(CanvasIntent.Minimize(CanvasChrome.RAIL, true)) },
+                modifier = railModifier,
+            )
+        }
         if (state.optionsOpen) {
             val placement = with(density) {
                 optionsPlacement(
@@ -176,6 +190,7 @@ private fun CanvasWorkspace(
                 state = state,
                 onIntent = onIntent,
                 measureSelection = measureSelection,
+                measureBox = { elementBox(it, textSizes, paths) },
                 pointerY = with(density) { placement.pointer.toDp() },
                 modifier = Modifier
                     .offset { IntOffset(OPTIONS_LEFT.roundToPx(), placement.top.roundToInt()) }
@@ -186,14 +201,19 @@ private fun CanvasWorkspace(
             // On an iPad held upright the dock and the page strip do not both fit along
             // the bottom edge, so the dock sits on top of the strip instead.
             val besideStrip = maxWidth >= DOCK_BESIDE_STRIP_WIDTH || state.panel != CanvasPanel.NONE
-            PenDock(
-                state = state,
-                onIntent = onIntent,
-                modifier = Modifier.align(Alignment.BottomStart).padding(
-                    start = 96.dp,
-                    bottom = if (besideStrip) DOCK_BOTTOM else DOCK_BOTTOM + PAGE_STRIP_CLEARANCE,
-                ),
+            val dockModifier = Modifier.align(Alignment.BottomStart).padding(
+                start = 96.dp,
+                bottom = if (besideStrip) DOCK_BOTTOM else DOCK_BOTTOM + PAGE_STRIP_CLEARANCE,
             )
+            if (CanvasChrome.DOCK in state.minimized) {
+                MinimizedDock(
+                    ink = inkInUse(state),
+                    onRestore = { onIntent(CanvasIntent.Minimize(CanvasChrome.DOCK, false)) },
+                    modifier = dockModifier,
+                )
+            } else {
+                PenDock(state = state, onIntent = onIntent, modifier = dockModifier)
+            }
         }
         when (state.panel) {
             CanvasPanel.LAYERS -> LayersPanel(
@@ -258,4 +278,16 @@ internal fun optionsPlacement(
     // The pointer stays on the panel's edge even when the tool has scrolled past it.
     val pointer = (toolCentre - top).coerceIn(pointerFromTop / 2, panelHeight.coerceAtLeast(pointerFromTop))
     return OptionsPlacement(top = top, pointer = pointer)
+}
+
+/** The color the pen — or the highlighter, while it is out — draws in now. */
+@Composable
+private fun inkInUse(state: CanvasUiState): Color {
+    val colors = canvasColors
+    val options = state.options
+    return if (state.tool == CanvasTool.HIGHLIGHTER) {
+        options.highlighter.custom?.let(::parseHexColorOrNull) ?: highlightColor(options.highlighter.color)
+    } else {
+        colors.inkColor(options.pen.ink, options.pen.custom)
+    }
 }

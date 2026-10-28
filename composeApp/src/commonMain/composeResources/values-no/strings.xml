@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Gul</string>
     <string name="canvas_color_pink">Rosa</string>
     <string name="canvas_color_orange">Oransje</string>
+    <string name="canvas_color_gray">Grå</string>
     <string name="canvas_color_teal">Blågrønn</string>
     <string name="canvas_color_brown">Brun</string>
     <string name="canvas_color_light_blue">Lyseblå</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Vannrett</string>
     <string name="canvas_skew_vertical">Loddrett</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformer</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotasjon</string>
+    <string name="canvas_hide_tools">Skjul verktøy</string>
+    <string name="canvas_show_tools">Vis verktøy</string>
+    <string name="canvas_hide_pen_bar">Skjul pennelinjen</string>
+    <string name="canvas_show_pen_bar">Vis pennelinjen</string>
+    <string name="canvas_minimize_panel">Minimer</string>
+    <string name="canvas_expand_panel">Utvid</string>
     <string name="canvas_snap_shapes">Gjør grove tegninger om til former</string>
     <string name="canvas_line_straight">Rett</string>
     <string name="canvas_line_curve">Kurve</string>

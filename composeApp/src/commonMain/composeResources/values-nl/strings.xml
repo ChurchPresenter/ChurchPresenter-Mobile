@@ -1173,6 +1173,7 @@
     <string name="canvas_color_yellow">Geel</string>
     <string name="canvas_color_pink">Roze</string>
     <string name="canvas_color_orange">Oranje</string>
+    <string name="canvas_color_gray">Grijs</string>
     <string name="canvas_color_teal">Blauwgroen</string>
     <string name="canvas_color_brown">Bruin</string>
     <string name="canvas_color_light_blue">Lichtblauw</string>
@@ -1250,6 +1251,18 @@
     <string name="canvas_skew_horizontal">Horizontaal</string>
     <string name="canvas_skew_vertical">Verticaal</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformeren</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotatie</string>
+    <string name="canvas_hide_tools">Gereedschap verbergen</string>
+    <string name="canvas_show_tools">Gereedschap tonen</string>
+    <string name="canvas_hide_pen_bar">Penbalk verbergen</string>
+    <string name="canvas_show_pen_bar">Penbalk tonen</string>
+    <string name="canvas_minimize_panel">Minimaliseren</string>
+    <string name="canvas_expand_panel">Uitvouwen</string>
     <string name="canvas_snap_shapes">Ruwe tekeningen omzetten in vormen</string>
     <string name="canvas_line_straight">Recht</string>
     <string name="canvas_line_curve">Curve</string>

@@ -90,7 +90,8 @@ data class EraserOptions(
     val highlighterOnly: Boolean = false,
 )
 
-enum class ShapeFill { NONE, GREEN, SKY, YELLOW, PINK }
+/** Saved by name, so new fills go on the end; the fill row shows them in this order. */
+enum class ShapeFill { NONE, GREEN, SKY, YELLOW, PINK, VIOLET, ORANGE, ROSE, GRAY, BLACK }
 
 enum class BorderStyle { SOLID, DASHED, NONE }
 

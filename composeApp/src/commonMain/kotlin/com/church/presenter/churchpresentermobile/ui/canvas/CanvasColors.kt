@@ -131,6 +131,9 @@ internal fun CanvasColors.inkColor(ink: CanvasInk): Color = when (ink) {
     CanvasInk.BLUE -> if (isDark) Blue500 else Blue600
     CanvasInk.PINK -> if (isDark) Pink400 else Pink600
     CanvasInk.BROWN -> if (isDark) BrownLight else BrownDark
+    CanvasInk.GRAY -> if (isDark) Gray400 else Gray500
+    CanvasInk.YELLOW -> if (isDark) Yellow400 else Yellow600
+    CanvasInk.PURPLE -> if (isDark) Purple500 else Purple600
 }
 
 /** [ink] on this board, unless the operator mixed a [custom] color, which wins. */
@@ -140,7 +143,7 @@ internal fun CanvasColors.inkColor(ink: CanvasInk, custom: String?): Color =
 /** The color a swatch for [ink] shows — the pure color, whichever board it will land on. */
 internal fun CanvasColors.inkSwatch(ink: CanvasInk): Color = when (ink) {
     CanvasInk.CONTRAST -> if (isDark) Zinc50 else Zinc900
-    CanvasInk.INVERSE -> if (isDark) Zinc900 else White
+    CanvasInk.INVERSE -> if (isDark) Zinc900 else Zinc50
     CanvasInk.RED -> Red500
     CanvasInk.AMBER -> Amber500
     CanvasInk.GREEN -> Green300
@@ -151,18 +154,10 @@ internal fun CanvasColors.inkSwatch(ink: CanvasInk): Color = when (ink) {
     CanvasInk.BLUE -> Blue500
     CanvasInk.PINK -> Pink400
     CanvasInk.BROWN -> BrownSwatch
+    CanvasInk.GRAY -> Gray400
+    CanvasInk.YELLOW -> Yellow400
+    CanvasInk.PURPLE -> Purple500
 }
-
-/**
- * The plain inks either side of the dock's colors: the board's contrast ink first,
- * and the inverse — useful only for knocking out — after it on the dark board but
- * on the very end on the light one, where it is white and least likely to be wanted.
- */
-internal fun CanvasColors.dockLeadingInks(): List<CanvasInk> =
-    if (isDark) listOf(CanvasInk.CONTRAST, CanvasInk.INVERSE) else listOf(CanvasInk.CONTRAST)
-
-internal fun CanvasColors.dockTrailingInks(): List<CanvasInk> =
-    if (isDark) emptyList() else listOf(CanvasInk.INVERSE)
 
 internal fun highlightColor(color: HighlightColor): Color = when (color) {
     HighlightColor.YELLOW -> Yellow300
@@ -173,8 +168,8 @@ internal fun highlightColor(color: HighlightColor): Color = when (color) {
     HighlightColor.LIME -> Lime300
     HighlightColor.TEAL -> Teal300
     HighlightColor.PURPLE -> Purple300
-    HighlightColor.RED -> Red300
-    HighlightColor.BLUE -> Blue300
+    HighlightColor.RED -> Rose300
+    HighlightColor.BLUE -> Indigo300
 }
 
 /** A shape's fill swatch; [ShapeFill.NONE] has none, and is drawn as a slashed circle instead. */
@@ -184,6 +179,11 @@ internal fun shapeFillColor(fill: ShapeFill): Color = when (fill) {
     ShapeFill.SKY -> Sky400
     ShapeFill.YELLOW -> Amber200
     ShapeFill.PINK -> Red300
+    ShapeFill.VIOLET -> Violet300
+    ShapeFill.ORANGE -> Orange300
+    ShapeFill.ROSE -> Pink300
+    ShapeFill.GRAY -> Zinc300
+    ShapeFill.BLACK -> Zinc900
 }
 
 internal fun stickyColor(color: StickyColor): Color = when (color) {
@@ -198,14 +198,14 @@ internal fun stickyColor(color: StickyColor): Color = when (color) {
 /** Sticky-note text: a dark brown that reads on every note color, in either theme. */
 internal val StickyInk = Color(0xFF4A3410)
 
-/** The spectrum on the "custom color" swatch. */
+/** The picker wheel's spectrum — the design's conic gradient, red at the top and round clockwise. */
 internal val CustomSwatchColors = listOf(
-    Color(0xFFF87171),
+    Color(0xFFEF4444),
     Color(0xFFFACC15),
-    Color(0xFF86EFAC),
-    Color(0xFF7DD3FC),
-    Color(0xFFA78BFA),
-    Color(0xFFF87171),
+    Color(0xFF22C55E),
+    Color(0xFF38BDF8),
+    Color(0xFFA855F7),
+    Color(0xFFEF4444),
 )
 
 /*
@@ -238,7 +238,16 @@ private val Orange600 = Color(0xFFEA580C)
 private val Teal300 = Color(0xFF5EEAD4)
 private val Teal400 = Color(0xFF2DD4BF)
 private val Teal600 = Color(0xFF0D9488)
-private val Blue300 = Color(0xFF93C5FD)
+private val Indigo300 = Color(0xFFA5B4FC)
+private val Rose300 = Color(0xFFFDA4AF)
+private val Violet300 = Color(0xFFC4B5FD)
+private val Zinc300 = Color(0xFFD4D4D8)
+private val Gray400 = Color(0xFF9CA3AF)
+private val Gray500 = Color(0xFF6B7280)
+private val Yellow400 = Color(0xFFFACC15)
+private val Yellow600 = Color(0xFFCA8A04)
+private val Purple500 = Color(0xFFA855F7)
+private val Purple600 = Color(0xFF9333EA)
 private val Blue500 = Color(0xFF3B82F6)
 private val Blue600 = Color(0xFF2563EB)
 private val Pink400 = Color(0xFFF472B6)

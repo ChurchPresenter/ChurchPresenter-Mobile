@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Keltainen</string>
     <string name="canvas_color_pink">Vaaleanpunainen</string>
     <string name="canvas_color_orange">Oranssi</string>
+    <string name="canvas_color_gray">Harmaa</string>
     <string name="canvas_color_teal">Sinivihreä</string>
     <string name="canvas_color_brown">Ruskea</string>
     <string name="canvas_color_light_blue">Vaaleansininen</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Vaaka</string>
     <string name="canvas_skew_vertical">Pysty</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Muunnos</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Kierto</string>
+    <string name="canvas_hide_tools">Piilota työkalut</string>
+    <string name="canvas_show_tools">Näytä työkalut</string>
+    <string name="canvas_hide_pen_bar">Piilota kynäpalkki</string>
+    <string name="canvas_show_pen_bar">Näytä kynäpalkki</string>
+    <string name="canvas_minimize_panel">Pienennä</string>
+    <string name="canvas_expand_panel">Laajenna</string>
     <string name="canvas_snap_shapes">Muunna käsin piirretyt muodoiksi</string>
     <string name="canvas_line_straight">Suora</string>
     <string name="canvas_line_curve">Kaari</string>

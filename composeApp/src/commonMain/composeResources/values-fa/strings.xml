@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">زرد</string>
     <string name="canvas_color_pink">صورتی</string>
     <string name="canvas_color_orange">نارنجی</string>
+    <string name="canvas_color_gray">خاکستری</string>
     <string name="canvas_color_teal">سبزآبی</string>
     <string name="canvas_color_brown">قهوه‌ای</string>
     <string name="canvas_color_light_blue">آبی روشن</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">افقی</string>
     <string name="canvas_skew_vertical">عمودی</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">تبدیل</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">چرخش</string>
+    <string name="canvas_hide_tools">پنهان کردن ابزارها</string>
+    <string name="canvas_show_tools">نمایش ابزارها</string>
+    <string name="canvas_hide_pen_bar">پنهان کردن نوار قلم</string>
+    <string name="canvas_show_pen_bar">نمایش نوار قلم</string>
+    <string name="canvas_minimize_panel">کوچک کردن</string>
+    <string name="canvas_expand_panel">بزرگ کردن</string>
     <string name="canvas_snap_shapes">تبدیل طرح‌های دستی به شکل</string>
     <string name="canvas_line_straight">صاف</string>
     <string name="canvas_line_curve">منحنی</string>

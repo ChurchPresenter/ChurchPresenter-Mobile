@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Жоўты</string>
     <string name="canvas_color_pink">Ружовы</string>
     <string name="canvas_color_orange">Аранжавы</string>
+    <string name="canvas_color_gray">Шэры</string>
     <string name="canvas_color_teal">Бірузовы</string>
     <string name="canvas_color_brown">Карычневы</string>
     <string name="canvas_color_light_blue">Блакітны</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Гарызантальна</string>
     <string name="canvas_skew_vertical">Вертыкальна</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Пераўтварэнне</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Паварот</string>
+    <string name="canvas_hide_tools">Схаваць інструменты</string>
+    <string name="canvas_show_tools">Паказаць інструменты</string>
+    <string name="canvas_hide_pen_bar">Схаваць панэль пяра</string>
+    <string name="canvas_show_pen_bar">Паказаць панэль пяра</string>
+    <string name="canvas_minimize_panel">Згарнуць</string>
+    <string name="canvas_expand_panel">Разгарнуць</string>
     <string name="canvas_snap_shapes">Ператвараць эскізы ў фігуры</string>
     <string name="canvas_line_straight">Прамая</string>
     <string name="canvas_line_curve">Крывая</string>

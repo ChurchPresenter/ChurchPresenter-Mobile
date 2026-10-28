@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Žuta</string>
     <string name="canvas_color_pink">Ružičasta</string>
     <string name="canvas_color_orange">Narančasta</string>
+    <string name="canvas_color_gray">Siva</string>
     <string name="canvas_color_teal">Tirkizna</string>
     <string name="canvas_color_brown">Smeđa</string>
     <string name="canvas_color_light_blue">Svijetloplava</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Vodoravno</string>
     <string name="canvas_skew_vertical">Okomito</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformacija</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotacija</string>
+    <string name="canvas_hide_tools">Sakrij alate</string>
+    <string name="canvas_show_tools">Prikaži alate</string>
+    <string name="canvas_hide_pen_bar">Sakrij traku olovke</string>
+    <string name="canvas_show_pen_bar">Prikaži traku olovke</string>
+    <string name="canvas_minimize_panel">Smanji</string>
+    <string name="canvas_expand_panel">Proširi</string>
     <string name="canvas_snap_shapes">Pretvori skice u oblike</string>
     <string name="canvas_line_straight">Ravna</string>
     <string name="canvas_line_curve">Krivulja</string>

@@ -3,11 +3,22 @@ package com.church.presenter.churchpresentermobile.model
 /** How many colors a pen or highlighter row offers, the operator's own mixes included. */
 const val PALETTE_SIZE = 10
 
-/** The ten inks a row offers before anything is mixed, in the order it shows them. */
-val InkPalette: List<CanvasInk> = listOf(
-    CanvasInk.RED, CanvasInk.ORANGE, CanvasInk.AMBER, CanvasInk.GREEN, CanvasInk.TEAL,
-    CanvasInk.SKY, CanvasInk.BLUE, CanvasInk.VIOLET, CanvasInk.PINK, CanvasInk.BROWN,
-)
+/**
+ * The ten inks a row offers before anything is mixed, in the design's order: white and black,
+ * then gray, red, orange, yellow, green, sky, blue and purple.
+ *
+ * White and black are the board's own contrast and inverse inks — white ink is [CanvasInk.CONTRAST]
+ * on the dark board and [CanvasInk.INVERSE] on the light one — so a drawing keeps reading when the
+ * theme changes. [isDark] says which board the row is for.
+ */
+fun inkPalette(isDark: Boolean): List<CanvasInk> {
+    val white = if (isDark) CanvasInk.CONTRAST else CanvasInk.INVERSE
+    val black = if (isDark) CanvasInk.INVERSE else CanvasInk.CONTRAST
+    return listOf(
+        white, black, CanvasInk.GRAY, CanvasInk.RED, CanvasInk.ORANGE,
+        CanvasInk.YELLOW, CanvasInk.GREEN, CanvasInk.SKY, CanvasInk.BLUE, CanvasInk.PURPLE,
+    )
+}
 
 /** The ten highlighter colors, in the order the row shows them. */
 val HighlightPalette: List<HighlightColor> = listOf(

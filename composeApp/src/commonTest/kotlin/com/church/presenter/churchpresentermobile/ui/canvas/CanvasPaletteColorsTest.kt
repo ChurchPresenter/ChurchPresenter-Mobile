@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -8,7 +9,8 @@ import com.church.presenter.churchpresentermobile.model.CanvasInk
 import com.church.presenter.churchpresentermobile.model.CanvasShape
 import com.church.presenter.churchpresentermobile.model.HighlightColor
 import com.church.presenter.churchpresentermobile.model.HighlightPalette
-import com.church.presenter.churchpresentermobile.model.InkPalette
+import com.church.presenter.churchpresentermobile.model.ShapeFill
+import com.church.presenter.churchpresentermobile.model.inkPalette
 import com.church.presenter.churchpresentermobile.model.PALETTE_SIZE
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,14 +25,15 @@ class CanvasPaletteColorsTest {
     @Test
     fun `the ten palette inks are ten different swatches on either board`() {
         boards.forEach { board ->
-            assertEquals(PALETTE_SIZE, InkPalette.map { board.inkSwatch(it) }.toSet().size)
-            assertEquals(PALETTE_SIZE, InkPalette.map { board.inkColor(it) }.toSet().size)
+            val row = inkPalette(board.isDark)
+            assertEquals(PALETTE_SIZE, row.map { board.inkSwatch(it) }.toSet().size)
+            assertEquals(PALETTE_SIZE, row.map { board.inkColor(it) }.toSet().size)
         }
     }
 
     @Test
-    fun `the new inks drop a shade on the white board so a thin line still reads`() {
-        listOf(CanvasInk.ORANGE, CanvasInk.TEAL, CanvasInk.BLUE, CanvasInk.PINK, CanvasInk.BROWN).forEach { ink ->
+    fun `the bright inks drop a shade on the white board so a thin line still reads`() {
+        listOf(CanvasInk.GRAY, CanvasInk.ORANGE, CanvasInk.YELLOW, CanvasInk.BLUE, CanvasInk.PURPLE).forEach { ink ->
             assertNotEquals(DarkCanvasColors.inkColor(ink), LightCanvasColors.inkColor(ink), "$ink")
         }
     }
@@ -57,7 +60,7 @@ class CanvasPaletteColorsTest {
     @Test
     fun `every ink and highlighter color is named, and no two in a row share a name`() {
         boards.forEach { board ->
-            assertEquals(PALETTE_SIZE, InkPalette.map { it.label(board.isDark) }.toSet().size, "light blue is not blue")
+            assertEquals(PALETTE_SIZE, inkPalette(board.isDark).map { it.label(board.isDark) }.toSet().size)
         }
         assertEquals(PALETTE_SIZE, HighlightPalette.map { it.label() }.toSet().size)
         assertEquals(CanvasInk.CONTRAST.label(isDark = true), CanvasInk.INVERSE.label(isDark = false))
@@ -70,11 +73,22 @@ class CanvasPaletteColorsTest {
     }
 
     @Test
-    fun `the dock leads with contrast ink and keeps white last on the light board`() {
-        assertEquals(listOf(CanvasInk.CONTRAST, CanvasInk.INVERSE), DarkCanvasColors.dockLeadingInks())
-        assertEquals(emptyList(), DarkCanvasColors.dockTrailingInks())
-        assertEquals(listOf(CanvasInk.CONTRAST), LightCanvasColors.dockLeadingInks())
-        assertEquals(listOf(CanvasInk.INVERSE), LightCanvasColors.dockTrailingInks())
+    fun `the row's swatches are the design's colors, white first on either board`() {
+        val design = listOf(
+            0xFFFAFAFA, 0xFF18181B, 0xFF9CA3AF, 0xFFEF4444, 0xFFF97316,
+            0xFFFACC15, 0xFF86EFAC, 0xFF38BDF8, 0xFF3B82F6, 0xFFA855F7,
+        ).map { Color(it) }
+        boards.forEach { board ->
+            assertEquals(design, inkPalette(board.isDark).map { board.inkSwatch(it) }, "board dark=${board.isDark}")
+        }
+    }
+
+    @Test
+    fun `the fill row is the design's ten, no fill first`() {
+        assertEquals(10, ShapeFill.entries.size)
+        assertEquals(ShapeFill.NONE, ShapeFill.entries.first())
+        assertEquals(ShapeFill.entries.size - 1, ShapeFill.entries.drop(1).map(::shapeFillColor).toSet().size)
+        assertEquals(ShapeFill.entries.size, ShapeFill.entries.map { it.label() }.toSet().size)
     }
 
     @Test

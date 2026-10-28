@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.ImageSource
 import com.church.presenter.churchpresentermobile.viewmodel.SelectionAction
@@ -41,7 +42,18 @@ internal object CanvasTags {
 
     fun tool(tool: CanvasTool) = "canvas:tool:${tool.name.lowercase()}"
     fun page(index: Int) = "canvas:page:$index"
+    const val MINIMIZED_RAIL = "canvas:minimizedRail"
+    const val MINIMIZED_DOCK = "canvas:minimizedDock"
+    const val TRANSFORM_X = "canvas:transform:x"
+    const val TRANSFORM_Y = "canvas:transform:y"
+    const val TRANSFORM_WIDTH = "canvas:transform:width"
+    const val TRANSFORM_HEIGHT = "canvas:transform:height"
+    const val TRANSFORM_ROTATION = "canvas:transform:rotation"
+    const val TRANSFORM_SKEW_X = "canvas:transform:skewX"
+    const val TRANSFORM_SKEW_Y = "canvas:transform:skewY"
+
     fun element(id: String) = "canvas:element:$id"
+
 
     /** A named color in a palette row — an ink or highlighter color by its enum name. */
     fun preset(name: String) = "canvas:preset:${name.lowercase()}"
@@ -54,3 +66,7 @@ internal object CanvasTags {
     fun selection(action: SelectionAction) = "canvas:selection:${action.name.lowercase()}"
     fun insertSource(source: ImageSource) = "canvas:insert:${source.name.lowercase()}"
 }
+
+/** The button that tucks a floating piece away, or — once it is [minimized] — brings it back. */
+internal fun CanvasTags.chrome(part: CanvasChrome, minimized: Boolean) =
+    "canvas:${if (minimized) "restore" else "minimize"}:${part.name.lowercase()}"

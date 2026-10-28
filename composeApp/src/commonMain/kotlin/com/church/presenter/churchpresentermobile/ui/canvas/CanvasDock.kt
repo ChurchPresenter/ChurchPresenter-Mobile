@@ -46,10 +46,10 @@ import churchpresentermobile.composeapp.generated.resources.canvas_width_thin
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.HighlightPalette
 import com.church.presenter.churchpresentermobile.model.HighlighterOptions
-import com.church.presenter.churchpresentermobile.model.InkPalette
-import com.church.presenter.churchpresentermobile.model.PaletteSlot
+import com.church.presenter.churchpresentermobile.model.inkPalette
 import com.church.presenter.churchpresentermobile.model.PenOptions
 import com.church.presenter.churchpresentermobile.model.paletteSlots
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
 import org.jetbrains.compose.resources.StringResource
@@ -131,6 +131,12 @@ internal fun PenDock(state: CanvasUiState, onIntent: (CanvasIntent) -> Unit, mod
                 modifier = Modifier.widthIn(min = 34.dp),
             )
         }
+        DockDivider()
+        ChromeToggle(
+            CanvasChrome.DOCK,
+            minimized = false,
+            onToggle = { onIntent(CanvasIntent.Minimize(CanvasChrome.DOCK, true)) },
+        )
     }
 }
 
@@ -146,7 +152,8 @@ private fun RowScope.DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent)
     val highlighter = state.tool == CanvasTool.HIGHLIGHTER
     Row(
         modifier = Modifier.weight(1f, fill = false).horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(DOCK_SWATCH_GAP),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (highlighter) {
             val marker = options.highlighter
@@ -170,9 +177,7 @@ private fun RowScope.DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent)
         } else {
             val pen = options.pen
             val set: (PenOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(options.copy(pen = it))) }
-            val slots = colors.dockLeadingInks().map { PaletteSlot.Preset(it) } +
-                paletteSlots(options.mixedInks, InkPalette) +
-                colors.dockTrailingInks().map { PaletteSlot.Preset(it) }
+            val slots = paletteSlots(options.mixedInks, inkPalette(colors.isDark))
             slots.forEach { slot ->
                 PaletteSwatch(
                     slot = slot,
@@ -191,8 +196,9 @@ private fun RowScope.DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent)
     }
 }
 
-/** Twelve of these fit beside the widths and opacity on an iPad held upright. */
+/** The dock's swatches as the design draws them: 26dp circles, 7dp apart. */
 private val DOCK_SWATCH = 26.dp
+private val DOCK_SWATCH_GAP = 7.dp
 
 private const val PERCENT = 100
 

@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">पीला</string>
     <string name="canvas_color_pink">गुलाबी</string>
     <string name="canvas_color_orange">नारंगी</string>
+    <string name="canvas_color_gray">स्लेटी</string>
     <string name="canvas_color_teal">हरा-नीला</string>
     <string name="canvas_color_brown">भूरा</string>
     <string name="canvas_color_light_blue">हल्का नीला</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">क्षैतिज</string>
     <string name="canvas_skew_vertical">ऊर्ध्वाधर</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">रूपांतरण</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">घुमाव</string>
+    <string name="canvas_hide_tools">टूल छिपाएँ</string>
+    <string name="canvas_show_tools">टूल दिखाएँ</string>
+    <string name="canvas_hide_pen_bar">पेन बार छिपाएँ</string>
+    <string name="canvas_show_pen_bar">पेन बार दिखाएँ</string>
+    <string name="canvas_minimize_panel">छोटा करें</string>
+    <string name="canvas_expand_panel">बड़ा करें</string>
     <string name="canvas_snap_shapes">कच्ची ड्रॉइंग को आकृतियों में बदलें</string>
     <string name="canvas_line_straight">सीधी</string>
     <string name="canvas_line_curve">वक्र</string>

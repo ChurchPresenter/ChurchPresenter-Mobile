@@ -30,6 +30,8 @@ internal fun CanvasUiState.reduce(intent: CanvasIntent, newId: () -> String): Ca
     CanvasIntent.CloseOptions -> copy(optionsOpen = false)
     is CanvasIntent.SetOptions -> withOptions(intent.options)
     is CanvasIntent.SetZoom -> copy(zoom = intent.percent)
+    is CanvasIntent.Minimize ->
+        copy(minimized = if (intent.minimized) minimized + intent.part else minimized - intent.part)
     is CanvasIntent.ShowPanel -> copy(panel = intent.panel, replaceTarget = null)
     is CanvasIntent.Rename -> copy(document = document.copy(title = intent.title.trim().ifEmpty { null }))
     is CanvasIntent.TurnToPage -> if (intent.index in document.pages.indices) {

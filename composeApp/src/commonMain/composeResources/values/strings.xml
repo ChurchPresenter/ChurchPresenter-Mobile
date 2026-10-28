@@ -1209,6 +1209,7 @@
     <string name="canvas_color_yellow">Yellow</string>
     <string name="canvas_color_pink">Pink</string>
     <string name="canvas_color_orange">Orange</string>
+    <string name="canvas_color_gray">Gray</string>
     <string name="canvas_color_teal">Teal</string>
     <string name="canvas_color_brown">Brown</string>
     <string name="canvas_color_light_blue">Light blue</string>
@@ -1286,6 +1287,18 @@
     <string name="canvas_skew_horizontal">Horizontal</string>
     <string name="canvas_skew_vertical">Vertical</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transform</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotation</string>
+    <string name="canvas_hide_tools">Hide tools</string>
+    <string name="canvas_show_tools">Show tools</string>
+    <string name="canvas_hide_pen_bar">Hide pen bar</string>
+    <string name="canvas_show_pen_bar">Show pen bar</string>
+    <string name="canvas_minimize_panel">Minimize</string>
+    <string name="canvas_expand_panel">Expand</string>
     <string name="canvas_snap_shapes">Snap rough drawings to shapes</string>
     <string name="canvas_line_straight">Straight</string>
     <string name="canvas_line_curve">Curve</string>

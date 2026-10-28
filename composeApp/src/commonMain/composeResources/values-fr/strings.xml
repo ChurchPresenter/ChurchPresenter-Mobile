@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Jaune</string>
     <string name="canvas_color_pink">Rose</string>
     <string name="canvas_color_orange">Orange</string>
+    <string name="canvas_color_gray">Gris</string>
     <string name="canvas_color_teal">Sarcelle</string>
     <string name="canvas_color_brown">Marron</string>
     <string name="canvas_color_light_blue">Bleu clair</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Horizontale</string>
     <string name="canvas_skew_vertical">Verticale</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformation</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotation</string>
+    <string name="canvas_hide_tools">Masquer les outils</string>
+    <string name="canvas_show_tools">Afficher les outils</string>
+    <string name="canvas_hide_pen_bar">Masquer la barre du stylo</string>
+    <string name="canvas_show_pen_bar">Afficher la barre du stylo</string>
+    <string name="canvas_minimize_panel">Réduire</string>
+    <string name="canvas_expand_panel">Développer</string>
     <string name="canvas_snap_shapes">Convertir les tracés approximatifs en formes</string>
     <string name="canvas_line_straight">Droite</string>
     <string name="canvas_line_curve">Courbe</string>

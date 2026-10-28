@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">สีเหลือง</string>
     <string name="canvas_color_pink">สีชมพู</string>
     <string name="canvas_color_orange">สีส้ม</string>
+    <string name="canvas_color_gray">สีเทา</string>
     <string name="canvas_color_teal">สีเขียวอมฟ้า</string>
     <string name="canvas_color_brown">สีน้ำตาล</string>
     <string name="canvas_color_light_blue">สีฟ้าอ่อน</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">แนวนอน</string>
     <string name="canvas_skew_vertical">แนวตั้ง</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">แปลงรูป</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">หมุน</string>
+    <string name="canvas_hide_tools">ซ่อนเครื่องมือ</string>
+    <string name="canvas_show_tools">แสดงเครื่องมือ</string>
+    <string name="canvas_hide_pen_bar">ซ่อนแถบปากกา</string>
+    <string name="canvas_show_pen_bar">แสดงแถบปากกา</string>
+    <string name="canvas_minimize_panel">ย่อ</string>
+    <string name="canvas_expand_panel">ขยาย</string>
     <string name="canvas_snap_shapes">ปรับภาพวาดคร่าวๆ ให้เป็นรูปทรง</string>
     <string name="canvas_line_straight">ตรง</string>
     <string name="canvas_line_curve">โค้ง</string>
