@@ -61,8 +61,12 @@ class CanvasPaletteColorsTest {
         }
         assertEquals(PALETTE_SIZE, HighlightPalette.map { it.label() }.toSet().size)
         assertEquals(CanvasInk.CONTRAST.label(isDark = true), CanvasInk.INVERSE.label(isDark = false))
-        assertEquals(CanvasInk.entries.size, CanvasInk.entries.count { true }, "every ink has a label")
-        HighlightColor.entries.forEach { it.label() }
+        // Only black and white swap names between the boards; every color is called the same on both.
+        CanvasInk.entries.forEach { ink ->
+            val swaps = ink == CanvasInk.CONTRAST || ink == CanvasInk.INVERSE
+            assertEquals(!swaps, ink.label(isDark = true) == ink.label(isDark = false), "$ink")
+        }
+        assertEquals(HighlightColor.entries.size, HighlightColor.entries.map { it.label() }.toSet().size)
     }
 
     @Test
@@ -80,7 +84,8 @@ class CanvasPaletteColorsTest {
             val outline = canvasShape(shape).createOutline(size, LayoutDirection.Ltr, Density(1f))
             val bounds = outline.bounds
             assertTrue(bounds.width > 0f && bounds.height > 0f, "$shape has an outline")
-            assertTrue(bounds.right <= size.width + 0.5f && bounds.bottom <= size.height + 0.5f, "$shape stays in its box")
+            val inside = bounds.right <= size.width + 0.5f && bounds.bottom <= size.height + 0.5f
+            assertTrue(inside, "$shape stays in its box")
         }
     }
 
