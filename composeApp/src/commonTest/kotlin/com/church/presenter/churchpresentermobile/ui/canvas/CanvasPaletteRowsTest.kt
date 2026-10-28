@@ -55,10 +55,10 @@ class CanvasPaletteRowsTest {
         vm.given(CanvasIntent.SetOptions(options.copy(pen = options.pen.copy(custom = "#9333EA"), mixedInks = mixes)))
         pick(CanvasTool.PEN)
 
-        press(CanvasTags.preset(CanvasInk.TEAL.name), within = CanvasTags.OPTIONS)
+        press(CanvasTags.preset(CanvasInk.YELLOW.name), within = CanvasTags.OPTIONS)
 
         assertNull(vm.state.value.options.pen.custom)
-        assertEquals(CanvasInk.TEAL, vm.state.value.options.pen.ink)
+        assertEquals(CanvasInk.YELLOW, vm.state.value.options.pen.ink)
     }
 
     @Test
@@ -68,9 +68,9 @@ class CanvasPaletteRowsTest {
         pick(CanvasTool.PEN)
 
         assertTrue(exists(CanvasTags.mix("#0EA5E9")))
-        assertTrue(exists(CanvasTags.preset(CanvasInk.VIOLET.name)), "the eighth preset still shows")
-        assertFalse(exists(CanvasTags.preset(CanvasInk.PINK.name)), "two mixes pushed the last two presets off")
-        assertFalse(exists(CanvasTags.preset(CanvasInk.BROWN.name)))
+        assertTrue(exists(CanvasTags.preset(CanvasInk.SKY.name)), "the eighth preset still shows")
+        assertFalse(exists(CanvasTags.preset(CanvasInk.BLUE.name)), "two mixes pushed the last two presets off")
+        assertFalse(exists(CanvasTags.preset(CanvasInk.PURPLE.name)))
     }
 
     @Test

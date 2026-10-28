@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,6 +43,7 @@ internal fun CanvasToolRail(
     active: CanvasTool,
     onPick: (CanvasTool) -> Unit,
     onButtonCentre: (CanvasTool, Float) -> Unit,
+    onMinimize: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = canvasColors
@@ -70,11 +72,14 @@ internal fun CanvasToolRail(
                 )
             }
         }
+        Box(Modifier.align(Alignment.CenterHorizontally)) {
+            ChromeToggle(CanvasChrome.RAIL, minimized = false, onToggle = { onMinimize() })
+        }
     }
 }
 
 @Composable
-private fun RailButton(tool: CanvasTool, active: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun RailButton(tool: CanvasTool, active: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = canvasColors
     val spec = tool.spec()
     val shape = RoundedCornerShape(12.dp)

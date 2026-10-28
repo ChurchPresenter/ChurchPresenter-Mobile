@@ -9,6 +9,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_color_light_b
 import churchpresentermobile.composeapp.generated.resources.canvas_color_lime
 import churchpresentermobile.composeapp.generated.resources.canvas_color_light_blue
 import churchpresentermobile.composeapp.generated.resources.canvas_color_lime
+import churchpresentermobile.composeapp.generated.resources.canvas_color_gray
 import churchpresentermobile.composeapp.generated.resources.canvas_color_green
 import churchpresentermobile.composeapp.generated.resources.canvas_color_none
 import churchpresentermobile.composeapp.generated.resources.canvas_color_orange
@@ -63,6 +64,9 @@ internal fun CanvasInk.label(isDark: Boolean): StringResource = when (this) {
     CanvasInk.BLUE -> Res.string.canvas_color_blue
     CanvasInk.PINK -> Res.string.canvas_color_pink
     CanvasInk.BROWN -> Res.string.canvas_color_brown
+    CanvasInk.GRAY -> Res.string.canvas_color_gray
+    CanvasInk.YELLOW -> Res.string.canvas_color_yellow
+    CanvasInk.PURPLE -> Res.string.canvas_color_purple
 }
 
 internal fun HighlightColor.label(): StringResource = when (this) {
@@ -83,7 +87,12 @@ internal fun ShapeFill.label(): StringResource = when (this) {
     ShapeFill.GREEN -> Res.string.canvas_color_green
     ShapeFill.SKY -> Res.string.canvas_color_blue
     ShapeFill.YELLOW -> Res.string.canvas_color_yellow
-    ShapeFill.PINK -> Res.string.canvas_color_pink
+    ShapeFill.PINK -> Res.string.canvas_color_red
+    ShapeFill.VIOLET -> Res.string.canvas_color_purple
+    ShapeFill.ORANGE -> Res.string.canvas_color_orange
+    ShapeFill.ROSE -> Res.string.canvas_color_pink
+    ShapeFill.GRAY -> Res.string.canvas_color_gray
+    ShapeFill.BLACK -> Res.string.canvas_color_black
 }
 
 internal fun StickyColor.label(): StringResource = when (this) {

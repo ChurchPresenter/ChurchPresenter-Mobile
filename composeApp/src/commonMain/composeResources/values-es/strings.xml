@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Amarillo</string>
     <string name="canvas_color_pink">Rosa</string>
     <string name="canvas_color_orange">Naranja</string>
+    <string name="canvas_color_gray">Gris</string>
     <string name="canvas_color_teal">Verde azulado</string>
     <string name="canvas_color_brown">Marrón</string>
     <string name="canvas_color_light_blue">Azul claro</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Horizontal</string>
     <string name="canvas_skew_vertical">Vertical</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformar</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotación</string>
+    <string name="canvas_hide_tools">Ocultar herramientas</string>
+    <string name="canvas_show_tools">Mostrar herramientas</string>
+    <string name="canvas_hide_pen_bar">Ocultar barra del lápiz</string>
+    <string name="canvas_show_pen_bar">Mostrar barra del lápiz</string>
+    <string name="canvas_minimize_panel">Minimizar</string>
+    <string name="canvas_expand_panel">Expandir</string>
     <string name="canvas_snap_shapes">Convertir trazos aproximados en formas</string>
     <string name="canvas_line_straight">Recta</string>
     <string name="canvas_line_curve">Curva</string>

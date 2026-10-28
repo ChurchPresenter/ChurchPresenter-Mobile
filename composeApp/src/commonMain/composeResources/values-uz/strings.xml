@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Sariq</string>
     <string name="canvas_color_pink">Pushti</string>
     <string name="canvas_color_orange">To'q sariq</string>
+    <string name="canvas_color_gray">Kulrang</string>
     <string name="canvas_color_teal">Moviy-yashil</string>
     <string name="canvas_color_brown">Jigarrang</string>
     <string name="canvas_color_light_blue">Havorang</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Gorizontal</string>
     <string name="canvas_skew_vertical">Vertikal</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">O'zgartirish</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Burish</string>
+    <string name="canvas_hide_tools">Asboblarni yashirish</string>
+    <string name="canvas_show_tools">Asboblarni ko'rsatish</string>
+    <string name="canvas_hide_pen_bar">Qalam panelini yashirish</string>
+    <string name="canvas_show_pen_bar">Qalam panelini ko'rsatish</string>
+    <string name="canvas_minimize_panel">Kichraytirish</string>
+    <string name="canvas_expand_panel">Kengaytirish</string>
     <string name="canvas_snap_shapes">Qo'pol chizmalarni shaklga aylantirish</string>
     <string name="canvas_line_straight">To'g'ri</string>
     <string name="canvas_line_curve">Egri</string>

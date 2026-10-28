@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Gul</string>
     <string name="canvas_color_pink">Rosa</string>
     <string name="canvas_color_orange">Orange</string>
+    <string name="canvas_color_gray">Grå</string>
     <string name="canvas_color_teal">Blågrön</string>
     <string name="canvas_color_brown">Brun</string>
     <string name="canvas_color_light_blue">Ljusblå</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Vågrätt</string>
     <string name="canvas_skew_vertical">Lodrätt</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformera</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotation</string>
+    <string name="canvas_hide_tools">Dölj verktyg</string>
+    <string name="canvas_show_tools">Visa verktyg</string>
+    <string name="canvas_hide_pen_bar">Dölj pennfältet</string>
+    <string name="canvas_show_pen_bar">Visa pennfältet</string>
+    <string name="canvas_minimize_panel">Minimera</string>
+    <string name="canvas_expand_panel">Expandera</string>
     <string name="canvas_snap_shapes">Gör frihandsritningar till former</string>
     <string name="canvas_line_straight">Rak</string>
     <string name="canvas_line_curve">Kurva</string>

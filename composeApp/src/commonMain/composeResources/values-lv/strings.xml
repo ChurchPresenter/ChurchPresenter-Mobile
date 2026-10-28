@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Dzeltena</string>
     <string name="canvas_color_pink">Rozā</string>
     <string name="canvas_color_orange">Oranža</string>
+    <string name="canvas_color_gray">Pelēka</string>
     <string name="canvas_color_teal">Zilganzaļa</string>
     <string name="canvas_color_brown">Brūna</string>
     <string name="canvas_color_light_blue">Gaiši zila</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Horizontāli</string>
     <string name="canvas_skew_vertical">Vertikāli</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Pārveidošana</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Pagrieziens</string>
+    <string name="canvas_hide_tools">Slēpt rīkus</string>
+    <string name="canvas_show_tools">Rādīt rīkus</string>
+    <string name="canvas_hide_pen_bar">Slēpt pildspalvas joslu</string>
+    <string name="canvas_show_pen_bar">Rādīt pildspalvas joslu</string>
+    <string name="canvas_minimize_panel">Minimizēt</string>
+    <string name="canvas_expand_panel">Izvērst</string>
     <string name="canvas_snap_shapes">Pārvērst skices figūrās</string>
     <string name="canvas_line_straight">Taisna</string>
     <string name="canvas_line_curve">Līkne</string>

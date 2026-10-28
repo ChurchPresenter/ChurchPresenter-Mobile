@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Kuning</string>
     <string name="canvas_color_pink">Merah jambu</string>
     <string name="canvas_color_orange">Jingga</string>
+    <string name="canvas_color_gray">Kelabu</string>
     <string name="canvas_color_teal">Hijau kebiruan</string>
     <string name="canvas_color_brown">Coklat</string>
     <string name="canvas_color_light_blue">Biru muda</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Mendatar</string>
     <string name="canvas_skew_vertical">Menegak</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Jelmaan</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Putaran</string>
+    <string name="canvas_hide_tools">Sembunyikan alat</string>
+    <string name="canvas_show_tools">Tunjukkan alat</string>
+    <string name="canvas_hide_pen_bar">Sembunyikan bar pen</string>
+    <string name="canvas_show_pen_bar">Tunjukkan bar pen</string>
+    <string name="canvas_minimize_panel">Kecilkan</string>
+    <string name="canvas_expand_panel">Kembangkan</string>
     <string name="canvas_snap_shapes">Tukar lukisan kasar kepada bentuk</string>
     <string name="canvas_line_straight">Lurus</string>
     <string name="canvas_line_curve">Lengkung</string>

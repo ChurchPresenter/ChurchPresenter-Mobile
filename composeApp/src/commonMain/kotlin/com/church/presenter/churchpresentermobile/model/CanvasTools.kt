@@ -90,7 +90,8 @@ data class EraserOptions(
     val highlighterOnly: Boolean = false,
 )
 
-enum class ShapeFill { NONE, GREEN, SKY, YELLOW, PINK }
+/** Saved by name, so new fills go on the end; the fill row shows them in this order. */
+enum class ShapeFill { NONE, GREEN, SKY, YELLOW, PINK, VIOLET, ORANGE, ROSE, GRAY, BLACK }
 
 enum class BorderStyle { SOLID, DASHED, NONE }
 
@@ -106,6 +107,8 @@ data class ShapeOptions(
     /** Degrees the shape leans sideways (top to the right for a positive value) and up or down. */
     val skewX: Float = 0f,
     val skewY: Float = 0f,
+    /** How solid the shape is drawn, 0–1: its outline, fill and words together. */
+    val opacity: Float = 1f,
 )
 
 enum class LineStyle { STRAIGHT, CURVE, ELBOW }

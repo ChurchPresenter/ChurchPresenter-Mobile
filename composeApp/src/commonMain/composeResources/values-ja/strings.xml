@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">黄</string>
     <string name="canvas_color_pink">ピンク</string>
     <string name="canvas_color_orange">オレンジ</string>
+    <string name="canvas_color_gray">グレー</string>
     <string name="canvas_color_teal">ティール</string>
     <string name="canvas_color_brown">茶</string>
     <string name="canvas_color_light_blue">水色</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">水平</string>
     <string name="canvas_skew_vertical">垂直</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">変形</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">回転</string>
+    <string name="canvas_hide_tools">ツールを隠す</string>
+    <string name="canvas_show_tools">ツールを表示</string>
+    <string name="canvas_hide_pen_bar">ペンバーを隠す</string>
+    <string name="canvas_show_pen_bar">ペンバーを表示</string>
+    <string name="canvas_minimize_panel">最小化</string>
+    <string name="canvas_expand_panel">展開</string>
     <string name="canvas_snap_shapes">手描きを図形に補正</string>
     <string name="canvas_line_straight">直線</string>
     <string name="canvas_line_curve">曲線</string>

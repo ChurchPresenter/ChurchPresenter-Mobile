@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Njano</string>
     <string name="canvas_color_pink">Waridi</string>
     <string name="canvas_color_orange">Chungwa</string>
+    <string name="canvas_color_gray">Kijivu</string>
     <string name="canvas_color_teal">Kijani-bluu</string>
     <string name="canvas_color_brown">Kahawia</string>
     <string name="canvas_color_light_blue">Bluu hafifu</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Mlalo</string>
     <string name="canvas_skew_vertical">Wima</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Badilisha umbo</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Mzunguko</string>
+    <string name="canvas_hide_tools">Ficha zana</string>
+    <string name="canvas_show_tools">Onyesha zana</string>
+    <string name="canvas_hide_pen_bar">Ficha upau wa kalamu</string>
+    <string name="canvas_show_pen_bar">Onyesha upau wa kalamu</string>
+    <string name="canvas_minimize_panel">Punguza</string>
+    <string name="canvas_expand_panel">Panua</string>
     <string name="canvas_snap_shapes">Geuza michoro ya haraka kuwa maumbo</string>
     <string name="canvas_line_straight">Nyoofu</string>
     <string name="canvas_line_curve">Mkunjo</string>

@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">ສີເຫຼືອງ</string>
     <string name="canvas_color_pink">ສີບົວ</string>
     <string name="canvas_color_orange">ສີສົ້ມ</string>
+    <string name="canvas_color_gray">ສີເທົາ</string>
     <string name="canvas_color_teal">ສີຂຽວອົມຟ້າ</string>
     <string name="canvas_color_brown">ສີນ້ຳຕານ</string>
     <string name="canvas_color_light_blue">ສີຟ້າອ່ອນ</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">ແນວນອນ</string>
     <string name="canvas_skew_vertical">ແນວຕັ້ງ</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">ປ່ຽນຮູບ</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">ໝຸນ</string>
+    <string name="canvas_hide_tools">ເຊື່ອງເຄື່ອງມື</string>
+    <string name="canvas_show_tools">ສະແດງເຄື່ອງມື</string>
+    <string name="canvas_hide_pen_bar">ເຊື່ອງແຖບປາກກາ</string>
+    <string name="canvas_show_pen_bar">ສະແດງແຖບປາກກາ</string>
+    <string name="canvas_minimize_panel">ຫຍໍ້ລົງ</string>
+    <string name="canvas_expand_panel">ຂະຫຍາຍ</string>
     <string name="canvas_snap_shapes">ປັບຮູບແຕ້ມຫຍາບໃຫ້ເປັນຮູບຮ່າງ</string>
     <string name="canvas_line_straight">ຊື່</string>
     <string name="canvas_line_curve">ໂຄ້ງ</string>

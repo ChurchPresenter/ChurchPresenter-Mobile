@@ -216,6 +216,7 @@ private fun CanvasElement.restyled(old: CanvasToolOptions, new: CanvasToolOption
         custom = new.shapes.fillCustom,
         skewX = new.shapes.skewX,
         skewY = new.shapes.skewY,
+        opacity = new.shapes.opacity,
     )
     this is CanvasElement.Image && new.image != old.image ->
         copy(rounded = new.image.rounded, shadow = new.image.shadow, opacity = new.image.opacity)
@@ -249,6 +250,7 @@ internal fun CanvasUiState.withOptionsFrom(): CanvasUiState {
                     borderWidth = element.borderWidth,
                     skewX = element.skewX,
                     skewY = element.skewY,
+                    opacity = element.opacity,
                 ),
             )
             is CanvasElement.Image ->

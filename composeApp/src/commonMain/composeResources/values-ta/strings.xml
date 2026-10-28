@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">மஞ்சள்</string>
     <string name="canvas_color_pink">இளஞ்சிவப்பு</string>
     <string name="canvas_color_orange">ஆரஞ்சு</string>
+    <string name="canvas_color_gray">சாம்பல்</string>
     <string name="canvas_color_teal">நீலப்பச்சை</string>
     <string name="canvas_color_brown">பழுப்பு</string>
     <string name="canvas_color_light_blue">இளநீலம்</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">கிடைமட்டம்</string>
     <string name="canvas_skew_vertical">செங்குத்து</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">உருமாற்றம்</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">சுழற்சி</string>
+    <string name="canvas_hide_tools">கருவிகளை மறை</string>
+    <string name="canvas_show_tools">கருவிகளைக் காட்டு</string>
+    <string name="canvas_hide_pen_bar">பேனா பட்டையை மறை</string>
+    <string name="canvas_show_pen_bar">பேனா பட்டையைக் காட்டு</string>
+    <string name="canvas_minimize_panel">சிறிதாக்கு</string>
+    <string name="canvas_expand_panel">விரிவாக்கு</string>
     <string name="canvas_snap_shapes">கையால் வரைந்தவற்றை வடிவங்களாக்கு</string>
     <string name="canvas_line_straight">நேர்</string>
     <string name="canvas_line_curve">வளைவு</string>

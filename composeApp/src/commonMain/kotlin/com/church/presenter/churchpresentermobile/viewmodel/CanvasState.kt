@@ -14,6 +14,9 @@ import com.church.presenter.churchpresentermobile.model.StoredPicture
 /** The panel open down the right-hand side of the canvas, if any. */
 enum class CanvasPanel { NONE, LAYERS, INSERT_IMAGE }
 
+/** The floating pieces round the board the operator can tuck away to draw on more of it. */
+enum class CanvasChrome { RAIL, DOCK, OPTIONS }
+
 /** Where the canvas stands with the copy on this device's disk. */
 enum class SaveStatus {
     /** Nothing to save to — a canvas opened without a store, as in a test. */
@@ -71,6 +74,8 @@ data class CanvasUiState(
     val editingId: String? = null,
     val replaceTarget: String? = null,
     val zoom: Int = 100,
+    /** What is tucked away: a minimized piece stays small until it is brought back. */
+    val minimized: Set<CanvasChrome> = emptySet(),
     val options: CanvasToolOptions = CanvasToolOptions(),
     val live: Boolean = false,
     val awaitingApproval: Boolean = false,
@@ -117,6 +122,9 @@ sealed interface CanvasIntent {
     data class SetZoom(val percent: Int) : CanvasIntent
 
     data class ShowPanel(val panel: CanvasPanel) : CanvasIntent
+
+    /** Tucks [part] away, or brings it back. */
+    data class Minimize(val part: CanvasChrome, val minimized: Boolean) : CanvasIntent
 
     data class Rename(val title: String) : CanvasIntent
 

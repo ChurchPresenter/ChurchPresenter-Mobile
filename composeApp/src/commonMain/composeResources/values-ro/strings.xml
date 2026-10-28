@@ -1173,6 +1173,7 @@
     <string name="canvas_color_yellow">Galben</string>
     <string name="canvas_color_pink">Roz</string>
     <string name="canvas_color_orange">Portocaliu</string>
+    <string name="canvas_color_gray">Gri</string>
     <string name="canvas_color_teal">Turcoaz închis</string>
     <string name="canvas_color_brown">Maro</string>
     <string name="canvas_color_light_blue">Albastru deschis</string>
@@ -1250,6 +1251,18 @@
     <string name="canvas_skew_horizontal">Orizontal</string>
     <string name="canvas_skew_vertical">Vertical</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformare</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Rotație</string>
+    <string name="canvas_hide_tools">Ascunde instrumentele</string>
+    <string name="canvas_show_tools">Arată instrumentele</string>
+    <string name="canvas_hide_pen_bar">Ascunde bara stiloului</string>
+    <string name="canvas_show_pen_bar">Arată bara stiloului</string>
+    <string name="canvas_minimize_panel">Minimizează</string>
+    <string name="canvas_expand_panel">Extinde</string>
     <string name="canvas_snap_shapes">Transformă schițele în forme</string>
     <string name="canvas_line_straight">Dreaptă</string>
     <string name="canvas_line_curve">Curbă</string>

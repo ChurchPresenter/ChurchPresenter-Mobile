@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Żółty</string>
     <string name="canvas_color_pink">Różowy</string>
     <string name="canvas_color_orange">Pomarańczowy</string>
+    <string name="canvas_color_gray">Szary</string>
     <string name="canvas_color_teal">Morski</string>
     <string name="canvas_color_brown">Brązowy</string>
     <string name="canvas_color_light_blue">Jasnoniebieski</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Poziomo</string>
     <string name="canvas_skew_vertical">Pionowo</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Przekształć</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Obrót</string>
+    <string name="canvas_hide_tools">Ukryj narzędzia</string>
+    <string name="canvas_show_tools">Pokaż narzędzia</string>
+    <string name="canvas_hide_pen_bar">Ukryj pasek pióra</string>
+    <string name="canvas_show_pen_bar">Pokaż pasek pióra</string>
+    <string name="canvas_minimize_panel">Minimalizuj</string>
+    <string name="canvas_expand_panel">Rozwiń</string>
     <string name="canvas_snap_shapes">Zamieniaj szkice w kształty</string>
     <string name="canvas_line_straight">Prosta</string>
     <string name="canvas_line_curve">Krzywa</string>

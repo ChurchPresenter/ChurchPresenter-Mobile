@@ -1173,6 +1173,7 @@
     <string name="canvas_color_yellow">Žltá</string>
     <string name="canvas_color_pink">Ružová</string>
     <string name="canvas_color_orange">Oranžová</string>
+    <string name="canvas_color_gray">Sivá</string>
     <string name="canvas_color_teal">Modrozelená</string>
     <string name="canvas_color_brown">Hnedá</string>
     <string name="canvas_color_light_blue">Svetlomodrá</string>
@@ -1250,6 +1251,18 @@
     <string name="canvas_skew_horizontal">Vodorovne</string>
     <string name="canvas_skew_vertical">Zvisle</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Transformácia</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Otočenie</string>
+    <string name="canvas_hide_tools">Skryť nástroje</string>
+    <string name="canvas_show_tools">Zobraziť nástroje</string>
+    <string name="canvas_hide_pen_bar">Skryť lištu pera</string>
+    <string name="canvas_show_pen_bar">Zobraziť lištu pera</string>
+    <string name="canvas_minimize_panel">Minimalizovať</string>
+    <string name="canvas_expand_panel">Rozbaliť</string>
     <string name="canvas_snap_shapes">Prevádzať náčrty na tvary</string>
     <string name="canvas_line_straight">Rovná</string>
     <string name="canvas_line_curve">Krivka</string>

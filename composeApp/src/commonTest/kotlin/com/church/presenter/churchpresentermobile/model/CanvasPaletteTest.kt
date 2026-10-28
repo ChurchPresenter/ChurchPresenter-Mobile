@@ -5,34 +5,46 @@ import kotlin.test.assertEquals
 
 class CanvasPaletteTest {
 
+    private val dark = inkPalette(isDark = true)
+
     @Test
     fun `before anything is mixed a row is the ten presets in order`() {
-        val slots = paletteSlots(emptyList(), InkPalette)
+        val slots = paletteSlots(emptyList(), dark)
 
         assertEquals(PALETTE_SIZE, slots.size)
-        assertEquals(InkPalette.map { PaletteSlot.Preset(it) }, slots)
+        assertEquals(dark.map { PaletteSlot.Preset(it) }, slots)
     }
 
     @Test
     fun `the presets are ten distinct colors`() {
-        assertEquals(PALETTE_SIZE, InkPalette.toSet().size)
+        assertEquals(PALETTE_SIZE, dark.toSet().size)
         assertEquals(PALETTE_SIZE, HighlightPalette.toSet().size)
     }
 
     @Test
+    fun `the ink row is the design's, white and black then gray to purple`() {
+        val colors = listOf(
+            CanvasInk.GRAY, CanvasInk.RED, CanvasInk.ORANGE, CanvasInk.YELLOW,
+            CanvasInk.GREEN, CanvasInk.SKY, CanvasInk.BLUE, CanvasInk.PURPLE,
+        )
+        assertEquals(listOf(CanvasInk.CONTRAST, CanvasInk.INVERSE) + colors, inkPalette(isDark = true))
+        assertEquals(listOf(CanvasInk.INVERSE, CanvasInk.CONTRAST) + colors, inkPalette(isDark = false))
+    }
+
+    @Test
     fun `mixes come first and push the last presets off the end`() {
-        val slots = paletteSlots(listOf("#111111", "#222222"), InkPalette)
+        val slots = paletteSlots(listOf("#111111", "#222222"), dark)
 
         assertEquals(PALETTE_SIZE, slots.size, "the row keeps its length")
         assertEquals(listOf(PaletteSlot.Mixed("#111111"), PaletteSlot.Mixed("#222222")), slots.take(2))
-        assertEquals(InkPalette.take(PALETTE_SIZE - 2).map { PaletteSlot.Preset(it) }, slots.drop(2))
+        assertEquals(dark.take(PALETTE_SIZE - 2).map { PaletteSlot.Preset(it) }, slots.drop(2))
     }
 
     @Test
     fun `ten mixes fill the row`() {
         val mixes = (0 until PALETTE_SIZE).map { "#00000$it" }
 
-        assertEquals(mixes.map { PaletteSlot.Mixed(it) }, paletteSlots(mixes, InkPalette))
+        assertEquals(mixes.map { PaletteSlot.Mixed(it) }, paletteSlots(mixes, dark))
     }
 
     @Test

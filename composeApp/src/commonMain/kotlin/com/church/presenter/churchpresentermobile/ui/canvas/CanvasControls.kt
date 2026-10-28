@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -61,6 +63,25 @@ internal fun Modifier.floatingPanel(colors: CanvasColors, shape: Shape): Modifie
     .clip(shape)
     .background(colors.panel)
     .border(1.dp, colors.border, shape)
+    .keepsTouches()
+
+/**
+ * Claims every touch that lands on this piece, so none reaches the board underneath. A touch
+ * on a panel's background — between its buttons, in its padding — used to fall through to
+ * the drawing layer, which drew a dot or placed a shape behind the panel.
+ *
+ * Taken after the piece's own buttons and sliders have had the touch (the main pass reaches a
+ * modifier's children first), so they work exactly as before.
+ */
+internal fun Modifier.keepsTouches(): Modifier = pointerInput(Unit) {
+    awaitEachGesture {
+        awaitFirstDown(requireUnconsumed = false).consume()
+        do {
+            val event = awaitPointerEvent()
+            event.changes.forEach { it.consume() }
+        } while (event.changes.any { it.pressed })
+    }
+}
 
 /** An overline such as "PEN TYPE" between a panel's groups. [first] sits closer to the panel's title. */
 @Composable

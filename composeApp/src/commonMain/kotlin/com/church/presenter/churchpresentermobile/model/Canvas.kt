@@ -200,6 +200,8 @@ sealed interface CanvasElement {
         /** Degrees of lean, sideways and up or down, about the shape's middle. */
         val skewX: Float = 0f,
         val skewY: Float = 0f,
+        /** How solid the whole shape is drawn, 0–1. */
+        val opacity: Float = 1f,
         override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,
@@ -258,6 +260,8 @@ enum class CanvasShape { RECTANGLE, ROUNDED, ELLIPSE, TRIANGLE, STAR, DIAMOND, H
  * Saved by name, so new inks go on the end and none is ever renamed; the order a
  * row shows them in is [InkPalette].
  */
-enum class CanvasInk { CONTRAST, INVERSE, RED, AMBER, GREEN, SKY, VIOLET, ORANGE, TEAL, BLUE, PINK, BROWN }
+enum class CanvasInk {
+    CONTRAST, INVERSE, RED, AMBER, GREEN, SKY, VIOLET, ORANGE, TEAL, BLUE, PINK, BROWN, GRAY, YELLOW, PURPLE,
+}
 
 enum class StickyColor { YELLOW, GREEN, BLUE, PINK, ORANGE, PURPLE }

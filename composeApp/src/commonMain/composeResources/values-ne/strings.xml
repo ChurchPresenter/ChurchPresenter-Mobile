@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">पहेँलो</string>
     <string name="canvas_color_pink">गुलाबी</string>
     <string name="canvas_color_orange">सुन्तला</string>
+    <string name="canvas_color_gray">खरानी</string>
     <string name="canvas_color_teal">हरियो-निलो</string>
     <string name="canvas_color_brown">खैरो</string>
     <string name="canvas_color_light_blue">हल्का निलो</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">तेर्सो</string>
     <string name="canvas_skew_vertical">ठाडो</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">रूपान्तरण</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">घुमाउनुहोस्</string>
+    <string name="canvas_hide_tools">उपकरण लुकाउनुहोस्</string>
+    <string name="canvas_show_tools">उपकरण देखाउनुहोस्</string>
+    <string name="canvas_hide_pen_bar">कलम पट्टी लुकाउनुहोस्</string>
+    <string name="canvas_show_pen_bar">कलम पट्टी देखाउनुहोस्</string>
+    <string name="canvas_minimize_panel">सानो बनाउनुहोस्</string>
+    <string name="canvas_expand_panel">विस्तार गर्नुहोस्</string>
     <string name="canvas_snap_shapes">कच्चा चित्रलाई आकृतिमा मिलाउनुहोस्</string>
     <string name="canvas_line_straight">सीधा</string>
     <string name="canvas_line_curve">वक्र</string>

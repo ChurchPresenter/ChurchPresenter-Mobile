@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import churchpresentermobile.composeapp.generated.resources.canvas_color_mixed
 import com.church.presenter.churchpresentermobile.model.CanvasInk
-import com.church.presenter.churchpresentermobile.model.InkPalette
+import com.church.presenter.churchpresentermobile.model.inkPalette
 import com.church.presenter.churchpresentermobile.model.PaletteSlot
 import com.church.presenter.churchpresentermobile.model.paletteSlots
 import androidx.compose.foundation.background
@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.SolidColor
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.canvas_color_custom
 import churchpresentermobile.composeapp.generated.resources.canvas_custom_color_title
@@ -27,6 +26,7 @@ import com.church.presenter.churchpresentermobile.ui.standalone.ColorPickerDialo
 import com.church.presenter.churchpresentermobile.ui.standalone.parseHexColorOrNull
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -130,13 +131,34 @@ internal fun CustomColorSwatch(
             .size(size)
             .selectedRing(mixed != null, CircleShape, colors.panel, colors.accent, 2.dp)
             .clip(CircleShape)
-            .background(if (mixed != null) SolidColor(mixed) else Brush.sweepGradient(CustomSwatchColors))
+            .then(
+                if (mixed != null) {
+                    Modifier.background(mixed)
+                } else {
+                    // A sweep starts at three o'clock; the design's conic gradient starts at twelve.
+                    Modifier.drawBehind {
+                        rotate(-QUARTER_TURN) { drawCircle(Brush.sweepGradient(CustomSwatchColors)) }
+                    }
+                },
+            )
             .semantics {
                 contentDescription = description
                 selected = mixed != null
             }
             .clickable(role = Role.Button) { picking = true },
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        // The design's wheel has a white dot at its heart — the mark of a picker, not a color.
+        if (mixed == null) {
+            Box(
+                Modifier
+                    .size(size * PICKER_DOT)
+                    .border(1.5.dp, PickerDotEdge, CircleShape)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+        }
+    }
     if (picking) {
         ColorPickerDialog(
             title = title,
@@ -149,6 +171,12 @@ internal fun CustomColorSwatch(
         )
     }
 }
+
+private const val QUARTER_TURN = 90f
+
+/** How big the picker wheel's white dot is, against the wheel. */
+private const val PICKER_DOT = 0.37f
+private val PickerDotEdge = Color(0x40000000)
 
 /** Where the picker starts when no color has been mixed yet: the accent green. */
 private const val DEFAULT_CUSTOM = "#86EFAC"
@@ -188,9 +216,9 @@ private const val SLASH_INSET = 0.15f
 private val SwatchEdge = Color(0x26000000)
 
 /**
- * An ink row: the board's contrast ink, the [PALETTE_SIZE] colors — the operator's
- * latest [mixes] first, then [InkPalette] — and the picker on the end. Wraps onto a
- * second line in a narrow panel.
+ * An ink row as the design draws it: the [PALETTE_SIZE] colors — the operator's latest
+ * [mixes] first, then the board's [inkPalette] — and the picker wheel on the end, six
+ * to a line in a panel.
  *
  * A mixed [custom] color, when there is one, is the one in use, so it is the mix
  * that is ringed rather than a named ink.
@@ -210,8 +238,8 @@ internal fun InkSwatches(
     size: Dp,
 ) {
     val colors = canvasColors
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(7.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-        listOf(PaletteSlot.Preset(CanvasInk.CONTRAST)).plus(paletteSlots(mixes, InkPalette)).forEach { slot ->
+    SwatchGrid {
+        paletteSlots(mixes, inkPalette(colors.isDark)).forEach { slot ->
             PaletteSwatch(
                 slot = slot,
                 custom = custom,
@@ -267,3 +295,18 @@ internal fun <T> PaletteSwatch(
         )
     }
 }
+
+/** The design's swatch grid in a panel: 30dp circles, 10dp apart across and 9dp down — six to a line. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun SwatchGrid(content: @Composable () -> Unit) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(SWATCH_GAP_ACROSS),
+        verticalArrangement = Arrangement.spacedBy(SWATCH_GAP_DOWN),
+    ) { content() }
+}
+
+/** A panel swatch, as the design sizes it. */
+internal val PANEL_SWATCH = 30.dp
+private val SWATCH_GAP_ACROSS = 10.dp
+private val SWATCH_GAP_DOWN = 9.dp

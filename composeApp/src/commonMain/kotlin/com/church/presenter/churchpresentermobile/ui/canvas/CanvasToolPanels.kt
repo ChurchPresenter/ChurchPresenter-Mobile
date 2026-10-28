@@ -86,6 +86,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_straight_only
 import churchpresentermobile.composeapp.generated.resources.canvas_ungroup
 import churchpresentermobile.composeapp.generated.resources.canvas_width
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
+import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
 import com.church.presenter.churchpresentermobile.model.EraserMode
@@ -96,6 +97,7 @@ import com.church.presenter.churchpresentermobile.model.PenType
 import com.church.presenter.churchpresentermobile.model.mixedInto
 import com.church.presenter.churchpresentermobile.model.paletteSlots
 import com.church.presenter.churchpresentermobile.viewmodel.ArrangeAction
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasUiState
 import org.jetbrains.compose.resources.StringResource
@@ -107,6 +109,7 @@ import kotlin.math.roundToInt
  * its left edge at [pointerY], level with the tool's button.
  *
  * @param measureSelection Where each selected element lies, for the Arrange buttons.
+ * @param measureBox An element's own upright box, for the Transform numbers.
  * @param pointerY Where the pointer sits, measured from the card's top.
  */
 @Composable
@@ -114,11 +117,13 @@ internal fun ToolOptionsPanel(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     measureSelection: () -> Map<String, CanvasBounds>,
+    measureBox: (CanvasElement) -> CanvasBounds,
     pointerY: Dp,
     modifier: Modifier = Modifier,
 ) {
     val colors = canvasColors
     val spec = state.tool.spec()
+    val minimized = CanvasChrome.OPTIONS in state.minimized
     Box(modifier = modifier.testTag(CanvasTags.OPTIONS)) {
         Column(
             modifier = Modifier
@@ -127,7 +132,7 @@ internal fun ToolOptionsPanel(
                 .padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 16.dp),
         ) {
             Row(
-                modifier = Modifier.padding(bottom = 10.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = if (minimized) 0.dp else 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -143,10 +148,21 @@ internal fun ToolOptionsPanel(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-0.02).em,
+                    modifier = Modifier.weight(1f),
+                )
+                ChromeToggle(
+                    CanvasChrome.OPTIONS,
+                    minimized,
+                    onToggle = { onIntent(CanvasIntent.Minimize(CanvasChrome.OPTIONS, it)) },
                 )
             }
-            HorizontalDivider(color = colors.divider)
-            Column(modifier = Modifier.padding(top = 12.dp)) { ToolOptionsBody(state, onIntent, measureSelection) }
+            // Minimized, the panel is its title bar: still there to reopen, out of the way of the board.
+            if (!minimized) {
+                HorizontalDivider(color = colors.divider)
+                Column(modifier = Modifier.padding(top = 12.dp)) {
+                    ToolOptionsBody(state, onIntent, measureSelection, measureBox)
+                }
+            }
         }
         PanelPointer(Modifier.offset(x = (-7).dp, y = pointerY - 6.dp))
     }
@@ -179,11 +195,12 @@ private fun ToolOptionsBody(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     measureSelection: () -> Map<String, CanvasBounds>,
+    measureBox: (CanvasElement) -> CanvasBounds,
 ) {
     val options = state.options
     val onOptions: (CanvasToolOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(it)) }
     when (state.tool) {
-        CanvasTool.SELECT -> SelectPanel(state, onIntent, measureSelection)
+        CanvasTool.SELECT -> SelectPanel(state, onIntent, measureSelection, measureBox)
         CanvasTool.LASSO -> LassoPanel(options, onOptions)
         CanvasTool.PEN -> PenPanel(options, onOptions)
         CanvasTool.HIGHLIGHTER -> HighlighterPanel(options, onOptions)
@@ -207,6 +224,7 @@ private fun SelectPanel(
     state: CanvasUiState,
     onIntent: (CanvasIntent) -> Unit,
     measureSelection: () -> Map<String, CanvasBounds>,
+    measureBox: (CanvasElement) -> CanvasBounds,
 ) {
     val options = state.options
     val onOptions: (CanvasToolOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(it)) }
@@ -240,6 +258,10 @@ private fun SelectPanel(
         ).forEach { (action, label, enabled) ->
             CanvasChip(stringResource(label), onClick = { arrange(action) }, enabled = enabled)
         }
+    }
+    // Exact numbers for one item; a locked one stays where it is.
+    state.selected?.takeIf { !it.locked && state.selection.size == 1 }?.let { single ->
+        TransformSection(single, measureBox(single), options, onIntent)
     }
     Text(
         stringResource(Res.string.canvas_select_hint),
@@ -304,7 +326,7 @@ private fun PenPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) 
         onPick = { onOptions(options.copy(pen = pen.copy(ink = it, custom = null))) },
         onReuse = { onOptions(options.copy(pen = pen.copy(custom = it))) },
         onMix = { onOptions(options.copy(pen = pen.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it))) },
-        size = 26.dp,
+        size = PANEL_SWATCH,
     )
     Box(Modifier.height(4.dp))
     SliderRow(
@@ -325,7 +347,7 @@ private fun PenPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) 
 private fun HighlighterPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptions) -> Unit) {
     val marker = options.highlighter
     PanelSectionLabel(stringResource(Res.string.canvas_section_color), first = true)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(7.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+    SwatchGrid {
         paletteSlots(options.mixedHighlights, HighlightPalette).forEach { slot ->
             PaletteSwatch(
                 slot = slot,
@@ -335,10 +357,10 @@ private fun HighlighterPanel(options: CanvasToolOptions, onOptions: (CanvasToolO
                 presetLabel = { stringResource(it.label()) },
                 onPick = { onOptions(options.copy(highlighter = marker.copy(color = it, custom = null))) },
                 onReuse = { onOptions(options.copy(highlighter = marker.copy(custom = it))) },
-                size = 26.dp,
+                size = PANEL_SWATCH,
             )
         }
-        CustomColorSwatch(current = null, size = 26.dp, startFrom = marker.custom) {
+        CustomColorSwatch(current = null, size = PANEL_SWATCH, startFrom = marker.custom) {
             onOptions(
                 options.copy(
                     highlighter = marker.copy(custom = it),

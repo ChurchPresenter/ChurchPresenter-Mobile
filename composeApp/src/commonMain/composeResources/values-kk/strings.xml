@@ -1142,6 +1142,7 @@
     <string name="canvas_color_yellow">Сары</string>
     <string name="canvas_color_pink">Қызғылт</string>
     <string name="canvas_color_orange">Қызғылт сары</string>
+    <string name="canvas_color_gray">Сұр</string>
     <string name="canvas_color_teal">Көгілдір-жасыл</string>
     <string name="canvas_color_brown">Қоңыр</string>
     <string name="canvas_color_light_blue">Ашық көк</string>
@@ -1219,6 +1220,18 @@
     <string name="canvas_skew_horizontal">Көлденең</string>
     <string name="canvas_skew_vertical">Тік</string>
     <string name="canvas_degrees">%1$d°</string>
+    <string name="canvas_section_transform">Түрлендіру</string>
+    <string name="canvas_transform_x">X</string>
+    <string name="canvas_transform_y">Y</string>
+    <string name="canvas_transform_width">W</string>
+    <string name="canvas_transform_height">H</string>
+    <string name="canvas_transform_rotation">Бұру</string>
+    <string name="canvas_hide_tools">Құралдарды жасыру</string>
+    <string name="canvas_show_tools">Құралдарды көрсету</string>
+    <string name="canvas_hide_pen_bar">Қалам тақтасын жасыру</string>
+    <string name="canvas_show_pen_bar">Қалам тақтасын көрсету</string>
+    <string name="canvas_minimize_panel">Кішірейту</string>
+    <string name="canvas_expand_panel">Кеңейту</string>
     <string name="canvas_snap_shapes">Нобайларды пішінге айналдыру</string>
     <string name="canvas_line_straight">Түзу</string>
     <string name="canvas_line_curve">Қисық</string>

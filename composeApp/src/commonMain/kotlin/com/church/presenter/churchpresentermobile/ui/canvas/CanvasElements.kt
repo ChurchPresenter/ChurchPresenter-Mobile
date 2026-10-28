@@ -266,16 +266,19 @@ private fun ShapeElement(element: CanvasElement.Shape, modifier: Modifier) {
             .offset(element.x.dp, element.y.dp)
             .size(element.width.dp, element.height.dp)
             .rotate(element.angle)
+            .alpha(element.opacity)
             .skewed(element.skewX, element.skewY)
             .clip(shape)
-            .background(fill?.copy(alpha = SHAPE_FILL_ALPHA) ?: Color.Transparent)
+            // Solid: how see-through a shape is, is its opacity alone. It used to be an 18% tint
+            // whatever the opacity said, so a shape at 100% still showed the board through it.
+            .background(fill ?: Color.Transparent)
             .then(border),
         contentAlignment = Alignment.Center,
     ) {
         if (element.text.isNotEmpty()) {
             Text(
                 text = element.text,
-                color = if (fill != null) outline else colors.text,
+                color = fill?.let(::textOn) ?: colors.text,
                 fontSize = if (fill != null) 22.sp else 24.sp,
                 lineHeight = 30.sp,
                 fontWeight = FontWeight.Bold,
@@ -312,8 +315,6 @@ private fun Modifier.skewed(xDegrees: Float, yDegrees: Float): Modifier =
 
 private const val HALF_TURN = 180f
 
-/** How strongly a shape is tinted with its fill. */
-private const val SHAPE_FILL_ALPHA = 0.18f
 
 @Composable
 private fun StickyElement(

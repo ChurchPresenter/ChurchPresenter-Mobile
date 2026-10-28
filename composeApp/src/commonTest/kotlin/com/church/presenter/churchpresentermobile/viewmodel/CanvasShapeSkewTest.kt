@@ -9,8 +9,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Skew is a shape option like its fill: new shapes take it, a selected one is
- * changed by it, and the panel shows it.
+ * Skew and opacity are shape options like its fill: new shapes take them, a selected
+ * one is changed by them, and the panel shows them.
  */
 class CanvasShapeSkewTest {
 
@@ -65,5 +65,41 @@ class CanvasShapeSkewTest {
 
         assertEquals(-30f, selected.options.shapes.skewX)
         assertEquals(5f, selected.options.shapes.skewY)
+    }
+
+    private fun CanvasUiState.faded(opacity: Float) =
+        go(CanvasIntent.SetOptions(options.copy(shapes = options.shapes.copy(opacity = opacity))))
+
+    @Test
+    fun `a new shape is drawn as solid as the options say`() {
+        val placed = shapesTool.faded(0.4f).go(CanvasIntent.PlaceShape(CanvasBounds(0f, 0f, 100f, 80f)))
+
+        assertEquals(0.4f, placed.onlyShape().opacity)
+    }
+
+    @Test
+    fun `a shape is solid unless told otherwise`() {
+        val placed = shapesTool.go(CanvasIntent.PlaceShape(CanvasBounds(0f, 0f, 100f, 80f)))
+
+        assertEquals(1f, placed.onlyShape().opacity)
+    }
+
+    @Test
+    fun `changing the opacity fades the selected shape`() {
+        val placed = shapesTool.go(CanvasIntent.PlaceShape(CanvasBounds(0f, 0f, 100f, 80f)))
+
+        val faded = placed.faded(0.25f)
+
+        assertEquals(0.25f, faded.onlyShape().opacity)
+    }
+
+    @Test
+    fun `selecting a faded shape shows its opacity in the panel`() {
+        val placed = shapesTool.faded(0.6f).go(CanvasIntent.PlaceShape(CanvasBounds(0f, 0f, 100f, 80f)))
+        val reset = placed.go(CanvasIntent.Select(null)).faded(1f)
+
+        val selected = reset.go(CanvasIntent.Select(reset.onlyShape().id))
+
+        assertEquals(0.6f, selected.options.shapes.opacity)
     }
 }

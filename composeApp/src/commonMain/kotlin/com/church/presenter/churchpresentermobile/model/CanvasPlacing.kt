@@ -27,6 +27,7 @@ internal fun shapeElement(id: String, bounds: CanvasBounds, options: ShapeOption
         custom = options.fillCustom,
         skewX = options.skewX,
         skewY = options.skewY,
+        opacity = options.opacity,
     )
 
 /** The outline that goes with a fill: the same color family, so a shape reads as one thing. */
@@ -36,6 +37,11 @@ internal fun outlineFor(fill: ShapeFill): CanvasInk = when (fill) {
     ShapeFill.SKY -> CanvasInk.SKY
     ShapeFill.YELLOW -> CanvasInk.AMBER
     ShapeFill.PINK -> CanvasInk.RED
+    ShapeFill.VIOLET -> CanvasInk.PURPLE
+    ShapeFill.ORANGE -> CanvasInk.ORANGE
+    ShapeFill.ROSE -> CanvasInk.PINK
+    ShapeFill.GRAY -> CanvasInk.GRAY
+    ShapeFill.BLACK -> CanvasInk.CONTRAST
 }
 
 /** A line from [start] to [end], shaped and capped as the line tool is set. */
