@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
@@ -86,10 +87,11 @@ internal fun ColorSwatch(
     shape: Shape = CircleShape,
     gap: Color = canvasColors.panel,
     ringWidth: Dp = 2.dp,
+    modifier: Modifier = Modifier,
 ) {
     val colors = canvasColors
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .selectedRing(selected, shape, gap, colors.accent, ringWidth)
             .clip(shape)
@@ -251,6 +253,7 @@ internal fun <T> PaletteSwatch(
             size = size,
             gap = gap,
             ringWidth = ringWidth,
+            modifier = Modifier.testTag(CanvasTags.preset(slot.value.toString())),
         )
         is PaletteSlot.Mixed -> ColorSwatch(
             color = parseHexColorOrNull(slot.hex) ?: Color.Transparent,
@@ -260,6 +263,7 @@ internal fun <T> PaletteSwatch(
             size = size,
             gap = gap,
             ringWidth = ringWidth,
+            modifier = Modifier.testTag(CanvasTags.mix(slot.hex)),
         )
     }
 }

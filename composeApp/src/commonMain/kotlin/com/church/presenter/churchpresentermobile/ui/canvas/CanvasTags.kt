@@ -42,6 +42,12 @@ internal object CanvasTags {
     fun tool(tool: CanvasTool) = "canvas:tool:${tool.name.lowercase()}"
     fun page(index: Int) = "canvas:page:$index"
     fun element(id: String) = "canvas:element:$id"
+
+    /** A named color in a palette row — an ink or highlighter color by its enum name. */
+    fun preset(name: String) = "canvas:preset:${name.lowercase()}"
+
+    /** A color the operator mixed, in a palette row. */
+    fun mix(hex: String) = "canvas:mix:${hex.lowercase()}"
     fun layer(id: String) = "canvas:layer:$id"
     fun layerLock(id: String) = "canvas:layerLock:$id"
     fun layerVisibility(id: String) = "canvas:layerVisibility:$id"

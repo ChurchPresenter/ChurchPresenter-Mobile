@@ -53,7 +53,8 @@ internal data class CanvasColors(
     val dangerBorder: Color,
 )
 
-private val DarkCanvasColors = CanvasColors(
+/** The dark board's palette. `internal`, not private, so tests can check every ink on it. */
+internal val DarkCanvasColors = CanvasColors(
     isDark = true,
     chrome = Color(0xFF0F1016),
     board = Color(0xFF1B1D26),
@@ -79,7 +80,8 @@ private val DarkCanvasColors = CanvasColors(
     dangerBorder = Color(0x4DEF4444),
 )
 
-private val LightCanvasColors = CanvasColors(
+/** The light board's palette. `internal`, not private, so tests can check every ink on it. */
+internal val LightCanvasColors = CanvasColors(
     isDark = false,
     chrome = Color(0xFFF5F5F3),
     board = Color(0xFFFFFFFF),
