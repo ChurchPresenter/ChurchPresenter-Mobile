@@ -1002,6 +1002,12 @@ kotlin {
             // images come from the same runtime — and the same composables — as the
             // behavioural UI tests next to them. No Robolectric: see AGENT.md.
             implementation(libs.roborazzi.composeDesktop)
+            // The fake desktop ServerEventServiceLiveTest talks to. That test lives here, not in
+            // androidUnitTest, because shared code is measured against the JVM class tree: run
+            // on Android, none of its thirty-odd tests counted towards ServerEventService.
+            implementation(libs.ktor.server.core)
+            implementation(libs.ktor.server.cio)
+            implementation(libs.ktor.server.websockets)
         }
     }
 }
