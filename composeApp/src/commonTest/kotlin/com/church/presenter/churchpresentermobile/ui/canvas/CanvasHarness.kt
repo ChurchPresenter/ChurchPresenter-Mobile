@@ -26,6 +26,7 @@ import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.present.CanvasProjector
 import com.church.presenter.churchpresentermobile.ui.click
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasViewModel
 
@@ -79,7 +80,11 @@ internal fun CanvasViewModel.given(vararg intents: CanvasIntent) = intents.forEa
 /** The pressable controls in the open options panel, as they stand now. */
 @OptIn(ExperimentalTestApi::class)
 internal fun ComposeUiTest.panelControls(): SemanticsNodeInteractionCollection =
-    onAllNodes(hasClickAction() and isEnabled() and hasAnyAncestor(hasTestTag(CanvasTags.OPTIONS)))
+    onAllNodes(
+        hasClickAction() and isEnabled() and hasAnyAncestor(hasTestTag(CanvasTags.OPTIONS)) and
+            // The panel's own minimize button folds every other control away; it is tested on its own.
+            !hasTestTag(CanvasTags.chrome(CanvasChrome.OPTIONS, minimized = false)),
+    )
 
 /**
  * Presses every pressable control in the open options panel once, top to bottom,

@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
+import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
 import com.church.presenter.churchpresentermobile.viewmodel.LiveNote
 import com.church.presenter.churchpresentermobile.model.CanvasShape
 import androidx.compose.ui.test.ComposeUiTest
@@ -209,6 +210,27 @@ class CanvasScreenshotTest {
     /** Go Live faded: remote mode, or the presentation server is not running. */
     @Test
     fun cannotGoLive() = canvas("canvas__go-live-off", sketch, canProject = false)
+
+    /** The sketch's ellipse selected with the Select panel out: its exact position, size, turn and lean. */
+    @Test
+    fun transformNumbers() = canvas(
+        "canvas__transform",
+        sketch.copy(tool = CanvasTool.SELECT, optionsOpen = true, selectedIds = listOf(CanvasSketch.ELLIPSE)),
+    )
+
+    /** The rail and the dock tucked away: the pen still in hand, its color in the dock's pill. */
+    @Test
+    fun railAndDockMinimized() = canvas(
+        "canvas__minimized",
+        sketch.copy(minimized = setOf(CanvasChrome.RAIL, CanvasChrome.DOCK)),
+    )
+
+    /** An options panel minimized to its title bar. */
+    @Test
+    fun panelMinimized() = canvas(
+        "canvas__panel-minimized",
+        sketch.copy(optionsOpen = true, minimized = setOf(CanvasChrome.OPTIONS)),
+    )
 
     /** Go Live refused by a desktop too old to show drawings: the red note under the title. */
     @Test

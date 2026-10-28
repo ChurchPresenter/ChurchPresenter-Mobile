@@ -47,6 +47,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.HighlightPalette
 import com.church.presenter.churchpresentermobile.model.HighlighterOptions
 import com.church.presenter.churchpresentermobile.model.inkPalette
+import com.church.presenter.churchpresentermobile.model.mixedInto
 import com.church.presenter.churchpresentermobile.model.PenOptions
 import com.church.presenter.churchpresentermobile.model.paletteSlots
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasChrome
@@ -174,6 +175,17 @@ private fun RowScope.DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent)
                     ringWidth = 3.dp,
                 )
             }
+            // The design ends the dock's row with the picker wheel, as it ends a panel's.
+            CustomColorSwatch(current = null, size = DOCK_SWATCH, startFrom = marker.custom) {
+                onIntent(
+                    CanvasIntent.SetOptions(
+                        options.copy(
+                            highlighter = marker.copy(custom = it),
+                            mixedHighlights = mixedInto(options.mixedHighlights, it),
+                        ),
+                    ),
+                )
+            }
         } else {
             val pen = options.pen
             val set: (PenOptions) -> Unit = { onIntent(CanvasIntent.SetOptions(options.copy(pen = it))) }
@@ -190,6 +202,13 @@ private fun RowScope.DockSwatches(state: CanvasUiState, onIntent: (CanvasIntent)
                     size = DOCK_SWATCH,
                     gap = colors.board,
                     ringWidth = 3.dp,
+                )
+            }
+            CustomColorSwatch(current = null, size = DOCK_SWATCH, startFrom = pen.custom) {
+                onIntent(
+                    CanvasIntent.SetOptions(
+                        options.copy(pen = pen.copy(custom = it), mixedInks = mixedInto(options.mixedInks, it)),
+                    ),
                 )
             }
         }
