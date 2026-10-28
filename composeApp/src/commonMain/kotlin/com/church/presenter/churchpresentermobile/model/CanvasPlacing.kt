@@ -27,6 +27,7 @@ internal fun shapeElement(id: String, bounds: CanvasBounds, options: ShapeOption
         custom = options.fillCustom,
         skewX = options.skewX,
         skewY = options.skewY,
+        opacity = options.opacity,
     )
 
 /** The outline that goes with a fill: the same color family, so a shape reads as one thing. */

@@ -184,6 +184,9 @@ internal fun ShapesPanel(options: CanvasToolOptions, onOptions: (CanvasToolOptio
         stringResource(Res.string.canvas_px, shapes.borderWidth.roundToInt()),
         rangeFraction(shapes.borderWidth, BORDER_WIDTH),
     ) { onOptions(options.copy(shapes = shapes.copy(borderWidth = rangeValue(it, BORDER_WIDTH)))) }
+    PercentSlider(Res.string.canvas_opacity, shapes.opacity) {
+        onOptions(options.copy(shapes = shapes.copy(opacity = it)))
+    }
     PanelSectionLabel(stringResource(Res.string.canvas_section_skew))
     SliderRow(
         stringResource(Res.string.canvas_skew_horizontal),

@@ -200,6 +200,8 @@ sealed interface CanvasElement {
         /** Degrees of lean, sideways and up or down, about the shape's middle. */
         val skewX: Float = 0f,
         val skewY: Float = 0f,
+        /** How solid the whole shape is drawn, 0–1. */
+        val opacity: Float = 1f,
         override val angle: Float = 0f,
         override val label: String? = null,
         override val locked: Boolean = false,

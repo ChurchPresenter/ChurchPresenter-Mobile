@@ -107,6 +107,8 @@ data class ShapeOptions(
     /** Degrees the shape leans sideways (top to the right for a positive value) and up or down. */
     val skewX: Float = 0f,
     val skewY: Float = 0f,
+    /** How solid the shape is drawn, 0–1: its outline, fill and words together. */
+    val opacity: Float = 1f,
 )
 
 enum class LineStyle { STRAIGHT, CURVE, ELBOW }

@@ -266,6 +266,7 @@ private fun ShapeElement(element: CanvasElement.Shape, modifier: Modifier) {
             .offset(element.x.dp, element.y.dp)
             .size(element.width.dp, element.height.dp)
             .rotate(element.angle)
+            .alpha(element.opacity)
             .skewed(element.skewX, element.skewY)
             .clip(shape)
             .background(fill?.copy(alpha = SHAPE_FILL_ALPHA) ?: Color.Transparent)
