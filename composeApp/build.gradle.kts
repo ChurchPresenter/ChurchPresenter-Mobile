@@ -2,6 +2,7 @@ import java.io.File
 import java.util.Properties
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -540,6 +541,15 @@ tasks.register("printCoverageLink") {
 tasks.withType<Test>().configureEach {
     filter {
         isFailOnNoMatchingTests = false
+    }
+    // A failure prints its message and stack, not just "AssertionError at Assert.java:89":
+    // CI keeps no test results, so the log is the only place a failure can be read, and the
+    // short form named only the line a test starts on — which sent a fix after the wrong
+    // assertion in CanvasSelectingGesturesTest.
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        showCauses = true
+        showStackTraces = true
     }
 }
 

@@ -82,7 +82,10 @@ class CanvasSelectingGesturesTest {
             CanvasIntent.Select(Sample.IMAGE),
         )
 
-        onBoard { longClick(page(670f, 400f)) }
+        // The ellipse's lower right, clear of the picture's toolbar: that runs from the
+        // picture's left edge under it, and on Linux its labels lay out wide enough to
+        // reach x 684 — a long press at (670, 400) landed on its Delete, not the shape.
+        onBoard { longClick(page(740f, 445f)) }
 
         assertEquals(setOf(Sample.IMAGE, Sample.SHAPE), vm.state.value.selectedIds.toSet())
     }
