@@ -45,6 +45,18 @@ class CanvasOutputTest {
     }
 
     @Test
+    fun `a new run never hands out an address an earlier run used`() {
+        // The screen's image cache is kept on disk: an address reused after a restart put up
+        // the earlier run's picture — shapes since deleted, and none of the new ones.
+        val earlier = (1..3).map { output.publish(png(it))!! }
+        val later = CanvasOutput(baseUrl)
+
+        val again = (1..3).map { later.publish(png(it))!! }
+
+        assertTrue(again.none { it in earlier }, "$again reuses one of $earlier")
+    }
+
+    @Test
     fun `the latest two frames are served as png, older ones are not`() {
         val first = output.publish(png(1))!!
         val second = output.publish(png(2))!!

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -35,28 +37,45 @@ internal fun CapturedPage(
 ) {
     val layer = rememberGraphicsLayer()
     val frame by rememberUpdatedState(onFrame)
+    // Read as state inside the draw, so going live redraws the board and records it. Read as a
+    // plain value, nothing redrew the board when Go Live was pressed on an iPad — only the top
+    // bar changed — so a page drawn before going live went out as an empty layer: a blank screen.
+    val recording by rememberUpdatedState(live)
+    // How many times the page has been recorded. Not snapshot state: a draw must not write any.
+    val recordings = remember { IntArray(1) }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .drawWithContent {
-                if (live) {
+                if (recording) {
                     layer.record {
                         drawRect(paper)
                         this@drawWithContent.drawContent()
                     }
+                    recordings[0]++
                 }
                 drawContent()
             },
     ) { content() }
     LaunchedEffect(live, changes, paper) {
         if (!live) return@LaunchedEffect
-        // Long enough for the change to have been drawn into the layer above.
+        val before = recordings[0]
+        // Long enough for a flurry of changes to settle into one picture.
         delay(FRAME_DELAY_MS)
+        // And never before the page has been drawn into the layer since this change.
+        var waited = 0
+        while (recordings[0] == before && waited < MAX_FRAMES_TO_WAIT) {
+            withFrameNanos { }
+            waited++
+        }
         frame(layer.toImageBitmap())
     }
 }
 
 private const val FRAME_DELAY_MS = 150L
+
+/** How many frames to wait for the page to be recorded before sending what there is. */
+private const val MAX_FRAMES_TO_WAIT = 10
 
 /** [this] as `#RRGGBB`, the form a slide carries colors in. */
 internal fun Color.toHex(): String {

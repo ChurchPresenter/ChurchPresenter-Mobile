@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.present
 
+import kotlin.random.Random
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.model.SlideKind
@@ -21,6 +22,9 @@ const val CANVAS_FRAME_PREFIX: String = "canvas-"
  *
  * Each frame gets a new address. An output fetches by URL, and one that had
  * cached the previous picture under the same address would go on showing it.
+ * The address carries a token new to each run as well as a count: the screen's
+ * image cache is kept on disk, so `canvas-1`, `canvas-2`… reused after a restart
+ * put up the pictures of an earlier run — shapes since deleted, and none added.
  * The frame before the latest is kept too: a screen may still be fetching it
  * when the next one arrives, and an answer of "not found" there is a blank
  * screen for a moment.
@@ -34,6 +38,9 @@ class CanvasOutput(private val baseUrl: StateFlow<String?>) {
     private var frames: List<Pair<String, ByteArray>> = emptyList()
     private var revision = 0
 
+    /** New each time this output is made, so no frame's address is ever one used before. */
+    private val run = Random.nextLong().toULong().toString(RADIX)
+
     /** Whether a frame put up now could be reached by the outputs. */
     val canServe: Boolean get() = baseUrl.value != null
 
@@ -43,7 +50,7 @@ class CanvasOutput(private val baseUrl: StateFlow<String?>) {
      */
     fun publish(png: ByteArray): String? {
         val base = baseUrl.value ?: return null
-        val id = "$CANVAS_FRAME_PREFIX${++revision}"
+        val id = "$CANVAS_FRAME_PREFIX$run-${++revision}"
         frames = (frames.takeLast(1) + (id to png))
         return "$base/$PHOTO_ROUTE/$id"
     }
@@ -64,6 +71,7 @@ class CanvasOutput(private val baseUrl: StateFlow<String?>) {
 
     private companion object {
         const val PNG = "image/png"
+        const val RADIX = 36
     }
 }
 
