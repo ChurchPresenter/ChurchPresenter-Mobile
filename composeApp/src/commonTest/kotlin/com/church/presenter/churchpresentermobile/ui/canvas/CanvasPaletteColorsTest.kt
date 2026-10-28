@@ -112,4 +112,15 @@ class CanvasPaletteColorsTest {
         assertEquals(size.height, outline.bounds.bottom, 0.5f)
         assertEquals(size.width, outline.bounds.right, 0.5f)
     }
+
+    @Test
+    fun `a shape's words read on its solid fill`() {
+        // Light fills take near-black words; the black fill takes white ones.
+        ShapeFill.entries.drop(1).forEach { fill ->
+            val color = shapeFillColor(fill)
+            val words = textOn(color)
+            assertNotEquals(color, words, "$fill")
+            assertEquals(if (fill == ShapeFill.BLACK) Color.White else Color(0xFF18181B), words, "$fill")
+        }
+    }
 }

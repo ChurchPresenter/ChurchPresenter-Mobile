@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import com.church.presenter.churchpresentermobile.model.CanvasInk
 import com.church.presenter.churchpresentermobile.model.HighlightColor
 import com.church.presenter.churchpresentermobile.model.ShapeFill
@@ -194,6 +195,27 @@ internal fun stickyColor(color: StickyColor): Color = when (color) {
     StickyColor.ORANGE -> Orange200
     StickyColor.PURPLE -> Purple200
 }
+
+/**
+ * Words that read on a solid [fill]: near-black or white, whichever stands out more. The
+ * outline's color — what the words were drawn in over the old faint tint — would vanish
+ * into a solid fill of the same family.
+ */
+internal fun textOn(fill: Color): Color =
+    if (contrast(fill, TextOnLight) >= contrast(fill, Color.White)) TextOnLight else Color.White
+
+/**
+ * The WCAG contrast ratio between [a] and [b], 1 to 21. Chosen by ratio rather than a
+ * brightness cut-off: sky blue is just under half bright, yet white on it reads at about 2:1
+ * and near-black at about 10:1.
+ */
+private fun contrast(a: Color, b: Color): Float {
+    val (light, dark) = listOf(a.luminance(), b.luminance()).sortedDescending()
+    return (light + CONTRAST_OFFSET) / (dark + CONTRAST_OFFSET)
+}
+
+private const val CONTRAST_OFFSET = 0.05f
+private val TextOnLight = Color(0xFF18181B)
 
 /** Sticky-note text: a dark brown that reads on every note color, in either theme. */
 internal val StickyInk = Color(0xFF4A3410)
