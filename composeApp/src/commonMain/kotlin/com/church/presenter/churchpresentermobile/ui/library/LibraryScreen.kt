@@ -90,6 +90,8 @@ import churchpresentermobile.composeapp.generated.resources.share_title
 import com.church.presenter.churchpresentermobile.SyncRequestHandler
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
+import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.LibrarySyncState
@@ -536,7 +538,7 @@ private fun AddChoiceDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_add)) },
-        text = { Text(stringResource(Res.string.library_empty_body)) },
+        text = { ScrollingDialogBody { Text(stringResource(Res.string.library_empty_body)) } },
         confirmButton = { TextButton(
             onClick = onSong,
             modifier = Modifier.testTag(LibraryTags.ADD_SONG),
@@ -555,7 +557,7 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.library_delete_confirm_title)) },
-        text = { Text(stringResource(Res.string.library_delete_confirm_body)) },
+        text = { ScrollingDialogBody { Text(stringResource(Res.string.library_delete_confirm_body)) } },
         confirmButton = {
             TextButton(onClick = onConfirm, modifier = Modifier.testTag(LibraryTags.DELETE_CONFIRM)) {
                 Text(stringResource(Res.string.library_delete))
@@ -627,9 +629,12 @@ private fun BibleChip(
             )
         }
 
+        val menuScroll = rememberScrollState()
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            modifier = Modifier.verticalScrollbar(menuScroll),
+            scrollState = menuScroll,
             containerColor = colors.sheetBackground,
         ) {
             Text(

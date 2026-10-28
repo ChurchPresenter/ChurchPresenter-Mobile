@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * These screens drive this phone's own outputs rather than a desktop, so the
  * thing worth asserting is what reached the screen: a real [StandaloneEngine]
  * with a [FakeOutputSink] behind it records the envelopes, which is a great
- * deal more honest than asserting that a button changed colour.
+ * deal more honest than asserting that a button changed color.
  */
 internal class StandaloneFixture {
     val registry = SinkRegistry()

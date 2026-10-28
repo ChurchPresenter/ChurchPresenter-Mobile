@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
@@ -94,6 +93,7 @@ import com.church.presenter.churchpresentermobile.ui.SegmentedControl
 import com.church.presenter.churchpresentermobile.ui.SettingsField
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -101,7 +101,7 @@ import org.jetbrains.compose.resources.stringResource
  *
  * A sheet rather than more rows on the Present tab: that tab is the live surface during a
  * service, and Next, Blank and Live must not move further down the screen because someone once
- * wanted to change a colour.
+ * wanted to change a color.
  *
  * Every control writes straight through — the theme rides inside each slide, so the phone's own
  * output, an attached screen and any browser on the hosted page all follow the same edit without
@@ -176,7 +176,7 @@ internal fun LookSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
+                .verticalScrollWithScrollbar(rememberScrollState())
                 .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {
@@ -188,7 +188,7 @@ internal fun LookSheetContent(
             )
 
             // A whole look in one tap. Setting up on a Sunday morning should not
-            // mean assembling a readable screen out of six colour fields.
+            // mean assembling a readable screen out of six color fields.
             OverlineRow(stringResource(Res.string.standalone_themes))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.space8)) {
                 presets.forEach { preset ->

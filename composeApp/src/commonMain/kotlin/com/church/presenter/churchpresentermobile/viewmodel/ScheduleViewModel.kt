@@ -106,8 +106,11 @@ class ScheduleViewModel(
     /**
      * Called when the user saves new settings.
      * Rebuilds the schedule service and reloads data against the new server.
-     * The shared [eventService] is rebuilt externally — this ViewModel just
-     * re-subscribes to its flows and restarts the listener.
+     * The listener started in `init` is still running, so dropping its session
+     * is enough for it to reconnect to the new server. `listen` is called again
+     * only in case that loop has ended; it returns at once while one is running.
+     * The `scheduleUpdated` collector from `init` stays too — a second one per
+     * save reloaded the schedule once more for every save.
      */
     fun onSettingsSaved() {
         if (isDemoMode) return
@@ -116,12 +119,6 @@ class ScheduleViewModel(
         scheduleService = serviceFactory(appSettings)
         eventService.reconnect()
         viewModelScope.launch { eventService.listen() }
-        viewModelScope.launch {
-            eventService.scheduleUpdated.collect {
-                Logger.d(TAG, "scheduleUpdated event received — reloading schedule")
-                loadSchedule()
-            }
-        }
         loadSchedule()
     }
 

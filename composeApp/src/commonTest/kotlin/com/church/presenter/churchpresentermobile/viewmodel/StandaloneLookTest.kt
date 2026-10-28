@@ -141,13 +141,13 @@ class StandaloneLookTest {
         assertEquals("#000000", rgbToHex(0, 0, 0))
         assertEquals("#FFFFFF", rgbToHex(255, 255, 255))
         assertEquals("#2A1D5E", rgbToHex(42, 29, 94))
-        // Single-digit channels must not lose their leading zero — "#F0F0F" is not a colour.
+        // Single-digit channels must not lose their leading zero — "#F0F0F" is not a color.
         assertEquals("#0F0F0F", rgbToHex(15, 15, 15))
     }
 
     @Test
     fun aColourSurvivesTheTripThroughTheSliders() {
-        // What the picker opens on must be what the field held, or every open nudges the colour.
+        // What the picker opens on must be what the field held, or every open nudges the color.
         val original = "#2A1D5E"
         val parsed = assertNotNull(parseHexColorOrNull(original))
 
@@ -436,7 +436,7 @@ class StandaloneLookTest {
 
     // ── Saved looks ──────────────────────────────────────────────────────
     //
-    // A church sets its colours once and expects them next Sunday. The store is
+    // A church sets its colors once and expects them next Sunday. The store is
     // a JSON blob in settings, written by whatever version of the app last ran,
     // so reading it has to survive anything.
 

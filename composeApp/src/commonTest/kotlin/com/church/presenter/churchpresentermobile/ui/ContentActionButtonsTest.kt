@@ -151,7 +151,7 @@ class ContentActionButtonsTest {
     @Test
     fun everyBadgeCountAndThemeRenders() = runComposeUiTest {
         // The badge shows how many screens are attached in standalone; both it and
-        // the stack read their colours from the palette.
+        // the stack read their colors from the palette.
         for (mode in listOf(ThemeMode.LIGHT, ThemeMode.DARK)) {
             for (count in BADGE_COUNTS) {
                 setContent {

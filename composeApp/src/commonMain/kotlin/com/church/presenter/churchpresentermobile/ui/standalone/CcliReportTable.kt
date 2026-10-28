@@ -112,7 +112,7 @@ private const val USED_COLUMN_VERSES = 3
  * columns are wider than the pane.
  *
  * @param tagFor Names row [rank] (1-based) for a UI test.
- * @param emphasis The colour a column's cells are drawn in, or null for the default.
+ * @param emphasis The color a column's cells are drawn in, or null for the default.
  */
 @Composable
 private fun ReportTable(

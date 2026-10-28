@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -52,6 +53,7 @@ import com.church.presenter.churchpresentermobile.ui.TextDocumentExporter
 import com.church.presenter.churchpresentermobile.ui.TextDocumentPicker
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryShareViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.ShareUiState
 import org.jetbrains.compose.resources.stringResource
@@ -107,6 +109,7 @@ internal fun ShareSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
+                .verticalScrollWithScrollbar(rememberScrollState())
                 .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {

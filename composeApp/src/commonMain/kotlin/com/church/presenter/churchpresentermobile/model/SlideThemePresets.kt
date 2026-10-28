@@ -10,7 +10,7 @@ data class NamedTheme(val name: String, val theme: SlideTheme)
  * Looks to start from.
  *
  * A church setting up on a Sunday morning should not have to build a readable
- * screen out of six separate colour fields. These are whole [SlideTheme]s, so
+ * screen out of six separate color fields. These are whole [SlideTheme]s, so
  * applying one is a single assignment and anything can be adjusted afterwards.
  *
  * The first entry is the app's own defaults, which makes "put it back" a tap

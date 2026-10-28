@@ -51,10 +51,16 @@ import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.library.CanvasPictures
+import com.church.presenter.churchpresentermobile.library.CanvasRepository
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.library.PlayLogRepository
 import com.church.presenter.churchpresentermobile.library.ServiceOrder
+import com.church.presenter.churchpresentermobile.present.CanvasOutput
+import com.church.presenter.churchpresentermobile.present.CanvasProjectionRouter
+import com.church.presenter.churchpresentermobile.present.CanvasProjector
+import com.church.presenter.churchpresentermobile.present.RemoteCanvasProjector
 import com.church.presenter.churchpresentermobile.present.PhotoLibrary
 import com.church.presenter.churchpresentermobile.present.ProjectionRouter
 import com.church.presenter.churchpresentermobile.present.PlayRecorder
@@ -94,6 +100,8 @@ import androidx.compose.ui.Alignment
 import com.church.presenter.churchpresentermobile.ui.UiTags
 import com.church.presenter.churchpresentermobile.ui.usesNavRail
 import com.church.presenter.churchpresentermobile.ui.usesTwoPaneLayout
+import com.church.presenter.churchpresentermobile.ui.isTabletWindow
+import com.church.presenter.churchpresentermobile.ui.NewBadges
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
@@ -108,6 +116,7 @@ import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.CcliReportScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
 import com.church.presenter.churchpresentermobile.ui.ContactOverlay
+import com.church.presenter.churchpresentermobile.ui.canvas.CanvasScreen
 import com.church.presenter.churchpresentermobile.ui.ContactScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
@@ -271,12 +280,30 @@ fun App(
     // need the same set: the screen that picks and projects them, and the
     // presentation server that serves the bytes to whatever is displaying.
     val photoLibrary = remember { PhotoLibrary(newId = { generateUUID() }) }
+    // The canvas's live page, served by the same server at the same address as the
+    // photos, so every output reaches it the way it reaches a photo.
+    val canvasOutput = remember(photoLibrary) { CanvasOutput(photoLibrary.baseUrl) }
+    val photoBaseUrl by photoLibrary.baseUrl.collectAsState()
     // Sink state as a stream. SinkRegistry.hasAttachedSink is a plain getter, so a screen
     // attaching or detaching would not have recomposed anything reading it.
     val sinkStatuses by sinkRegistry.statuses.collectAsState()
     val standaloneEngine = remember(sinkRegistry) {
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
+    // Where the canvas goes live: this device's outputs in standalone, the desktop's in
+    // remote (after the operator there allows it). One router, read per call, so a
+    // canvas left open across a mode switch follows the app, as every other screen does.
+    val canvasProjection = remember(canvasOutput, standaloneEngine, eventService) {
+        CanvasProjectionRouter(
+            mode = AppModeHolder.mode,
+            standalone = CanvasProjector(canvasOutput, standaloneEngine),
+            remote = RemoteCanvasProjector(appSettings, eventService.liveSlide),
+        )
+    }
+    val desktopConnected by eventService.connected.collectAsState()
+    // The canvas on this device's disk, kept apart from the library like the play log.
+    val canvasRepository = remember { CanvasRepository() }
+    val canvasPictures = remember { CanvasPictures(newKey = { generateUUID() }) }
     val projectionRouter = remember(standaloneEngine) {
         ProjectionRouter(AppModeHolder.mode, eventService, standaloneEngine)
     }
@@ -309,7 +336,7 @@ fun App(
                     // The same server that serves the display page serves the
                     // operator's photos, so the browser screen and the in-process
                     // one fetch an image from the identical address.
-                    photos = photoLibrary.source,
+                    photos = { id -> canvasOutput.source.photo(id) ?: photoLibrary.source.photo(id) },
                     onBaseUrl = { photoLibrary.serveFrom(it) },
                 )
             )
@@ -559,11 +586,16 @@ fun App(
     // Read from the window rather than asked of the platform, so a window that
     // changes size — a foldable opening, a desktop browser being dragged wider,
     // an iPad entering Split View — moves between the two without a restart.
-    val windowWidthDp = with(LocalDensity.current) {
-        LocalWindowInfo.current.containerSize.width.toDp()
-    }
+    val windowSize = LocalWindowInfo.current.containerSize
+    val windowWidthDp = with(LocalDensity.current) { windowSize.width.toDp() }
+    val windowHeightDp = with(LocalDensity.current) { windowSize.height.toDp() }
     val useRail = usesNavRail(windowWidthDp)
     val twoPane = usesTwoPaneLayout(windowWidthDp)
+    // The canvas needs a tablet, not two panes: an iPad held upright is too narrow
+    // to split, but has all the room a drawing surface wants.
+    val tablet = isTabletWindow(windowWidthDp, windowHeightDp)
+    // "New" badges show for one session; see NewBadges.
+    val newBadges = remember(appSettings) { NewBadges(appSettings) }
 
     // Seed the initial tab from any pending shortcut/quick-action so that
     // rememberPagerState starts on the correct page immediately.  Without this,
@@ -623,12 +655,13 @@ fun App(
     // selectedTab is rememberSaveable, so after a mode switch it can still hold a
     // tab that is no longer in the strip. Every index lookup below is therefore
     // written to survive a -1, and this effect settles it on the next frame.
-    LaunchedEffect(appMode) {
+    LaunchedEffect(appMode, tablet) {
         selectedTab = settledTab(selectedTab, tabs)
         // Same for a More destination opened before the switch: standalone cannot
         // fill the desktop-backed screens, so leaving one open would strand the
-        // operator on a screen the launcher no longer offers a way back to.
-        moreDestination = settledMoreDestination(moreDestination, appMode)
+        // operator on a screen the launcher no longer offers a way back to. The
+        // canvas is tablet-only, so a window narrowing to a phone's — Split View — closes it.
+        moreDestination = settledMoreDestination(moreDestination, appMode, tablet = tablet)
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -723,6 +756,9 @@ fun App(
     val inSongDetail = selectedTab == AppTab.SONGS && songDetailTitle != null
     val inBibleDetail = selectedTab == AppTab.BIBLE && bibleBook != null
     val inMoreDetail = selectedTab == AppTab.MORE && moreDestination != null
+    // The canvas fills the whole window over the shell, rail and all, as the tablet
+    // design draws it — it is a drawing surface, and the rail would only crowd it.
+    val canvasOpen = tablet && selectedTab == AppTab.MORE && moreDestination == MoreDestination.CANVAS
 
     // System back inside a More sub-screen returns to the More launcher grid. Not
     // in two panes, where the launcher never went away: back would empty the
@@ -1150,6 +1186,8 @@ fun App(
                                         repository = playLogRepository,
                                         modifier = Modifier.fillMaxSize(),
                                     )
+                                    // Drawn over the whole window instead; see canvasOpen.
+                                    MoreDestination.CANVAS -> Unit
                                     MoreDestination.CONTACT -> ContactScreen(
                                         modifier = Modifier.fillMaxSize()
                                     )
@@ -1166,6 +1204,9 @@ fun App(
                             // back arrow to the launcher.
                             if (twoPane && moreDestination == MoreDestination.CALENDAR) {
                                 moreTool()
+                            } else if (canvasOpen) {
+                                // Covered by the canvas, which the shell draws over everything.
+                                Unit
                             } else if (twoPane) {
                                 MoreTwoPane(
                                     mode = appMode,
@@ -1175,12 +1216,17 @@ fun App(
                                     onMenu = paneMenu,
                                     onSettings = paneSettings,
                                     modifier = Modifier.fillMaxSize(),
+                                    newBadges = newBadges.showing,
+                                    onBadgesShown = newBadges::shown,
                                 )
                             } else if (moreDestination == null) {
                                 MoreScreen(
                                     mode = appMode,
                                     onSelect = { moreDestination = it },
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
+                                    tablet = tablet,
+                                    newBadges = newBadges.showing,
+                                    onBadgesShown = newBadges::shown,
                                 )
                             } else {
                                 moreTool()
@@ -1289,6 +1335,21 @@ fun App(
                 }
             }
 
+            if (canvasOpen) {
+                CanvasScreen(
+                    onBack = { moreDestination = null },
+                    // Go Live needs somewhere to go: the presentation server in standalone,
+                    // a connected desktop in remote.
+                    projector = canvasProjection,
+                    canProject = when (appMode) {
+                        AppMode.STANDALONE -> photoBaseUrl != null
+                        AppMode.REMOTE -> desktopConnected
+                        AppMode.CALENDAR -> false
+                    },
+                    store = canvasRepository,
+                    pictures = canvasPictures,
+                )
+            }
             if (showSettings) {
                 SettingsScreen(
                     appSettings = appSettings,
@@ -1339,7 +1400,8 @@ fun App(
         } else {
             ModalNavigationDrawer(
                 drawerState = drawerState,
-                gesturesEnabled = true,
+                // Not over the canvas: a stroke started at the left edge would open the drawer.
+                gesturesEnabled = !canvasOpen,
                 scrimColor = LocalAppColors.current.scrim,
                 drawerContent = {
                     // Standalone's running order is this device's own list, so it gets

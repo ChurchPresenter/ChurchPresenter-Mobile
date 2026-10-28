@@ -21,7 +21,7 @@ enum class ContentOrigin {
     LOCAL_OVERRIDE,
 }
 
-/** The kind of a song section, used for labelling and stage colour. */
+/** The kind of a song section, used for labelling and stage color. */
 @Serializable
 enum class SectionType {
     VERSE,

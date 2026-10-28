@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.derivedStateOf
@@ -139,21 +140,58 @@ fun Modifier.verticalScrollbar(
     val thumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
     drawWithContent {
         drawContent()
-        val maxScroll = state.maxValue.toFloat()
-        val viewportH = size.height
-        if (maxScroll <= 0f || viewportH == 0f) return@drawWithContent
-
-        val contentH = viewportH + maxScroll
-        val thumbH = max(viewportH * (viewportH / contentH), minThumbHeight.toPx())
-        val thumbTop = (state.value / maxScroll).coerceIn(0f, 1f) * (viewportH - thumbH)
+        val thumb = scrollThumb(
+            viewportHeight = size.height,
+            maxScroll = state.maxValue.toFloat(),
+            scrollOffset = state.value.toFloat(),
+            minThumbHeight = minThumbHeight.toPx(),
+        ) ?: return@drawWithContent
 
         drawRoundRect(
             color        = thumbColor,
-            topLeft      = Offset(thumbX(layoutDirection, size.width, width.toPx()), thumbTop),
-            size         = Size(width.toPx(), thumbH),
+            topLeft      = Offset(thumbX(layoutDirection, size.width, width.toPx()), thumb.top),
+            size         = Size(width.toPx(), thumb.height),
             cornerRadius = CornerRadius(width.toPx() / 2)
         )
     }
+}
+
+/**
+ * Makes a column scroll vertically **and** shows the thumb while it overflows —
+ * the pair every dialog or sheet body that can run past the screen wants.
+ *
+ * Exists so the order cannot be got wrong: the scrollbar has to come before
+ * `verticalScroll` (see [verticalScrollbar]), and a caller writing them out by
+ * hand is one swap away from a thumb that scrolls off with the content.
+ */
+fun Modifier.verticalScrollWithScrollbar(state: ScrollState): Modifier =
+    verticalScrollbar(state).verticalScroll(state)
+
+/** Where a scroll thumb is drawn, in pixels from the top of the viewport. */
+internal data class ScrollThumb(val top: Float, val height: Float)
+
+/**
+ * The thumb for a plain scrolling column, or `null` when there is nothing to
+ * scroll and so nothing to draw.
+ *
+ * The thumb's share of the viewport is the viewport's share of the content
+ * (never less than [minThumbHeight], so it stays grabbable by eye on a very
+ * long body), and it travels the rest of the viewport in proportion to how far
+ * the content has scrolled. Plain numbers in, plain numbers out, so it is
+ * checkable without a Skia surface.
+ */
+internal fun scrollThumb(
+    viewportHeight: Float,
+    maxScroll: Float,
+    scrollOffset: Float,
+    minThumbHeight: Float,
+): ScrollThumb? {
+    if (maxScroll <= 0f || viewportHeight <= 0f) return null
+    val contentHeight = viewportHeight + maxScroll
+    val height = max(viewportHeight * (viewportHeight / contentHeight), minThumbHeight)
+        .coerceAtMost(viewportHeight)
+    val top = (scrollOffset / maxScroll).coerceIn(0f, 1f) * (viewportHeight - height)
+    return ScrollThumb(top = top, height = height)
 }
 
 /**

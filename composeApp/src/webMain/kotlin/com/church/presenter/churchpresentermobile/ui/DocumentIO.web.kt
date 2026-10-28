@@ -24,6 +24,15 @@ actual fun BinaryDocumentPicker(
 }
 
 @Composable
+actual fun ImageFilePicker(
+    onPicked: (PickedBinaryFile?) -> Unit,
+    onError: (String) -> Unit,
+    content: @Composable (launch: () -> Unit) -> Unit,
+) {
+    content { onError("Importing files is not available in the browser") }
+}
+
+@Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,
     content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,

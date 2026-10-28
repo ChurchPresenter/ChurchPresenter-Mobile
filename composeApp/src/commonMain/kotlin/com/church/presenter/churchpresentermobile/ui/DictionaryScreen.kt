@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -373,7 +372,13 @@ private fun RefDropdown(
                 modifier = Modifier.size(18.dp),
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        val menuScroll = rememberScrollState()
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.verticalScrollbar(menuScroll),
+            scrollState = menuScroll,
+        ) {
             options.forEachIndexed { idx, opt ->
                 DropdownMenuItem(
                     text = {
@@ -543,7 +548,7 @@ internal fun EntryDetail(
         modifier = Modifier
             .fillMaxWidth()
             .testTag(UiTags.DICT_SHEET)
-            .verticalScroll(rememberScrollState())
+            .verticalScrollWithScrollbar(rememberScrollState())
             .padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
     ) {
         // Header: solid number pill + language + actions

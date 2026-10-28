@@ -76,7 +76,7 @@ class StandaloneViewModel(
             ?: MutableStateFlow(false)
 
     init {
-        // A church sets its colours once. Without this they would be back to the built-in
+        // A church sets its colors once. Without this they would be back to the built-in
         // purple every Sunday morning.
         settings?.let { stored ->
             runCatching { themeJson.decodeFromString<SlideTheme>(stored.slideThemeJson) }

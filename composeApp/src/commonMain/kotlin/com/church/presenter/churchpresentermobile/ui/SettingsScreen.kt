@@ -518,13 +518,15 @@ internal fun ModeSwitchDialog(
             )
         },
         text = {
-            Text(
-                when (target) {
-                    AppMode.STANDALONE -> stringResource(Res.string.mode_switch_confirm_body)
-                    AppMode.REMOTE -> stringResource(Res.string.mode_switch_to_remote_body)
-                    AppMode.CALENDAR -> stringResource(Res.string.mode_switch_to_calendar_body)
-                }
-            )
+            ScrollingDialogBody {
+                Text(
+                    when (target) {
+                        AppMode.STANDALONE -> stringResource(Res.string.mode_switch_confirm_body)
+                        AppMode.REMOTE -> stringResource(Res.string.mode_switch_to_remote_body)
+                        AppMode.CALENDAR -> stringResource(Res.string.mode_switch_to_calendar_body)
+                    }
+                )
+            }
         },
         confirmButton = {
             TextButton(onClick = onConfirm, modifier = Modifier.testTag(UiTags.MODE_SWITCH_CONFIRM)) {

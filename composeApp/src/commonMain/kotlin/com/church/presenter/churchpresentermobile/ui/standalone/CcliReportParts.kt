@@ -46,7 +46,7 @@ import com.church.presenter.churchpresentermobile.viewmodel.ReportData
 import com.church.presenter.churchpresentermobile.viewmodel.ReportTab
 import org.jetbrains.compose.resources.stringResource
 
-/** How faint the tint behind a coloured tile or bar is. */
+/** How faint the tint behind a colored tile or bar is. */
 private const val TINT_ALPHA = 0.12f
 
 /** Between an author and a songbook, a translation and a date. */

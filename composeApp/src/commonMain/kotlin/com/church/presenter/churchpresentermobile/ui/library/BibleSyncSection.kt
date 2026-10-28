@@ -58,6 +58,7 @@ import churchpresentermobile.composeapp.generated.resources.qa_admin_cancel
 import com.church.presenter.churchpresentermobile.library.BibleSyncOutcome
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.BibleChoiceViewModel
@@ -296,7 +297,7 @@ internal fun BibleSyncSection(
         AlertDialog(
             onDismissRequest = { pendingRemoval = null },
             title = { Text(stringResource(Res.string.bible_sync_remove_confirm_title)) },
-            text = { Text(stringResource(Res.string.bible_sync_remove_confirm_body)) },
+            text = { ScrollingDialogBody { Text(stringResource(Res.string.bible_sync_remove_confirm_body)) } },
             confirmButton = {
                 TextButton(
                     onClick = { viewModel.remove(id); pendingRemoval = null },

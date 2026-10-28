@@ -91,7 +91,7 @@ class ScreenHeaderTest {
     @Test
     fun everyTitleSizeAndThemeRenders() = runComposeUiTest {
         // largeTitle is the top-level look, the compact one is used on sheets;
-        // both read their colours from the palette, so both are checked in both.
+        // both read their colors from the palette, so both are checked in both.
         for (mode in listOf(ThemeMode.LIGHT, ThemeMode.DARK)) {
             for (large in listOf(true, false)) {
                 setContent { AppTheme(themeMode = mode) { ScreenHeader("Songs", largeTitle = large) } }

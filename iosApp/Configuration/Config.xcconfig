@@ -8,12 +8,15 @@
 // silently discarded — every release build shipped with the sandbox entitlement.
 APS_ENVIRONMENT = development
 
+// Empty default for when Signing.xcconfig is absent. Set BEFORE the include for
+// the same reason as above: below it, this blanked the signing repo's team ID and
+// every device build failed with "requires a development team".
+TEAM_ID=
+
 // Signing.xcconfig is gitignored — it is a symlink created by scripts/setup_signing.sh
 // pointing to the signing repo's ios/signing.xcconfig.
 // The '?' makes this include optional so simulator/debug builds work without it.
 #include? "Signing.xcconfig"
-
-TEAM_ID=
 
 PRODUCT_NAME=churchpresentermobile
 PRODUCT_BUNDLE_IDENTIFIER=com.church.presenter.churchpresentermobile

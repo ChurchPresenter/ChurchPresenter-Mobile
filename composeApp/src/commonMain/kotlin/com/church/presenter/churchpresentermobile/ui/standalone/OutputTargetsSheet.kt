@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cast
@@ -53,6 +54,7 @@ import com.church.presenter.churchpresentermobile.present.sink.EXTERNAL_DISPLAY_
 import com.church.presenter.churchpresentermobile.ui.QrCodeImage
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -98,6 +100,7 @@ internal fun OutputTargetsContent(sinks: List<SinkStatus>) {
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
+                .verticalScrollWithScrollbar(rememberScrollState())
                 .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8)
                 .padding(bottom = AppDimens.space16),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),

@@ -83,10 +83,14 @@ fun StandaloneOutputScreen(
             when (slide.kind) {
                 SlideKind.WEB -> OutputWebView(mediaUrl, Modifier.fillMaxSize())
                 SlideKind.VIDEO -> OutputVideoView(mediaUrl, Modifier.fillMaxSize())
+                SlideKind.CANVAS -> OutputCanvasFrame(
+                    url = mediaUrl,
+                    paper = slide.paper?.let { parseHexColor(it, DefaultCanvasPaper) } ?: DefaultCanvasPaper,
+                )
                 else -> Unit
             }
         }
-        val showsText = mediaUrl == null || slide.kind !in setOf(SlideKind.WEB, SlideKind.VIDEO)
+        val showsText = mediaUrl == null || slide.kind !in MEDIA_KINDS
 
         val textColor = parseHexColor(slide.theme.textColor, Color.White)
         val accentColor = parseHexColor(slide.theme.accentColor, Color.White)
@@ -323,7 +327,7 @@ private fun scaledSp(widthDp: Float, size: SlideTextSize): TextUnit {
 /**
  * Parses `#RRGGBB` / `#AARRGGBB`, falling back to [fallback] on anything else.
  *
- * Colours arrive from a theme the user may have typed by hand, so a malformed
+ * Colors arrive from a theme the user may have typed by hand, so a malformed
  * value must degrade to a readable slide rather than crash the projector.
  */
 internal fun parseHexColor(hex: String, fallback: Color): Color {
@@ -343,7 +347,7 @@ private val LARGE_BODY = Triple(0.084f, 18f, 56f)
 private const val RGB_HEX_LENGTH = 6
 private const val ARGB_HEX_LENGTH = 8
 
-/** Alpha channel for a `#RRGGBB` colour, which carries none of its own. */
+/** Alpha channel for a `#RRGGBB` color, which carries none of its own. */
 private const val OPAQUE_ALPHA = 0xFF000000L
 
 /**
@@ -366,7 +370,10 @@ private const val REFERENCE_GAP = 0.045f
 private const val FOOTER_GAP = 0.02f
 private const val CORNER_PAD = 0.035f
 
-/** Only reached when a theme carries an unreadable colour — the defaults live in SlideTheme. */
+/** Only reached when a theme carries an unreadable color — the defaults live in SlideTheme. */
 private val GRADIENT_TOP = Color(0xFF2A1D5E)
 private val GRADIENT_BOTTOM = Color(0xFF05060D)
 private val IMAGE_SCRIM = Color(0x99000000)
+
+/** The kinds whose media *is* the slide, so nothing of the text layer is drawn over it. */
+private val MEDIA_KINDS = setOf(SlideKind.WEB, SlideKind.VIDEO, SlideKind.CANVAS)

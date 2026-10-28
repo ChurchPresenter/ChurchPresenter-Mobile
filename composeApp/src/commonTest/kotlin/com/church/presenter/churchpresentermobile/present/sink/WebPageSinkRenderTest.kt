@@ -214,7 +214,7 @@ class WebPageSinkRenderTest {
     @Test
     fun `the theme rides with the slide`() = runTest {
         // It is not sent separately, so a display that connects mid-song still
-        // draws the church's own colours.
+        // draws the church's own colors.
         val server = FakeDisplayServer()
         val sink = webSink(server = server)
         sink.attach()

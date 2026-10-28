@@ -47,7 +47,7 @@ class AnnouncementPayloadTest {
 
     @Test
     fun `a notice defaults to white on black`() {
-        // The colours a hall projector shows most legibly, and the ones the
+        // The colors a hall projector shows most legibly, and the ones the
         // composer opens on.
         val payload = notice()
 
@@ -56,7 +56,7 @@ class AnnouncementPayloadTest {
     }
 
     @Test
-    fun `chosen colours reach the wire`() {
+    fun `chosen colors reach the wire`() {
         val encoded = encode(notice().copy(textColor = "#FFCC00", backgroundColor = "#101010"))
 
         assertTrue(""""textColor":"#FFCC00"""" in encoded, encoded)
@@ -109,7 +109,7 @@ class AnnouncementPayloadTest {
     }
 
     @Test
-    fun `a countdown carries its own text colour`() {
+    fun `a countdown carries its own text color`() {
         // Separate from the notice's, so a timer can be green over the same
         // background a notice is white on.
         assertEquals("#00FF00", countdown().timerTextColor)

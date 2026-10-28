@@ -21,7 +21,7 @@ class DesignTokensTest {
     private val dark = appColorsFor(isDark = true)
     private val light = appColorsFor(isDark = false)
 
-    /** Every colour token on [AppColors], so a new one cannot be missed here. */
+    /** Every color token on [AppColors], so a new one cannot be missed here. */
     private fun colorsOf(c: AppColors): Map<String, Color> = mapOf(
         "background" to c.background,
         "surface" to c.surface,
@@ -171,7 +171,7 @@ class DesignTokensTest {
 
     @Test
     fun hebrewAndGreekAccentsAreTellableApart() {
-        // Strong's numbers are colour-coded by language; one colour for both
+        // Strong's numbers are color-coded by language; one color for both
         // makes the distinction invisible.
         assertNotEquals(dark.accent, dark.greekAccent)
         assertNotEquals(light.accent, light.greekAccent)
@@ -201,7 +201,7 @@ class DesignTokensTest {
             assertNotEquals(c.schedulePictureFg, c.schedulePictureBg, "$label picture")
             // …and the three types are distinguishable from each other.
             val fgs = listOf(c.scheduleSongFg, c.scheduleBibleFg, c.schedulePictureFg)
-            assertEquals(fgs.size, fgs.toSet().size, "$label schedule colours collide")
+            assertEquals(fgs.size, fgs.toSet().size, "$label schedule colors collide")
         }
     }
 

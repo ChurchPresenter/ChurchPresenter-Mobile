@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.model
 
 /**
- * The user's preferred colour scheme for the app.
+ * The user's preferred color scheme for the app.
  */
 enum class ThemeMode {
     /** Follow the device's system setting. */

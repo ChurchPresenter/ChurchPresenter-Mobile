@@ -413,7 +413,7 @@ private fun PictureCell(
             .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp)
             .aspectRatio(1f)
             .clip(RoundedCornerShape(8.dp))
-            // The highlight on the picture being shown is a border colour, which
+            // The highlight on the picture being shown is a border color, which
             // no test can read. Saying "selected" out loud states the same thing
             // to a screen reader and to a test.
             .semantics { selected = isSelected }

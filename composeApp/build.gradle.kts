@@ -2,6 +2,7 @@ import java.io.File
 import java.util.Properties
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -541,6 +542,15 @@ tasks.withType<Test>().configureEach {
     filter {
         isFailOnNoMatchingTests = false
     }
+    // A failure prints its message and stack, not just "AssertionError at Assert.java:89":
+    // CI keeps no test results, so the log is the only place a failure can be read, and the
+    // short form named only the line a test starts on — which sent a fix after the wrong
+    // assertion in CanvasSelectingGesturesTest.
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        showCauses = true
+        showStackTraces = true
+    }
 }
 
 // The Compose UI tests in the ui package need a Skia surface, and two of the
@@ -576,6 +586,9 @@ val viewModelBackedUiTests = listOf(
     // and waits for it. On the single-threaded wasm runtime that request cannot
     // complete inside the Compose test clock, so the wait can only expire.
     "com.church.presenter.churchpresentermobile.ui.AppShellTest",
+    // Go Live encodes the canvas frame on a worker thread and waits for the engine
+    // to show it — work the single-threaded wasm runtime cannot finish in the test clock.
+    "com.church.presenter.churchpresentermobile.ui.canvas.CanvasGoLiveTest",
 )
 
 // configureEach on the supertype rather than tasks.named: the Android unit-test
@@ -989,6 +1002,12 @@ kotlin {
             // images come from the same runtime — and the same composables — as the
             // behavioural UI tests next to them. No Robolectric: see AGENT.md.
             implementation(libs.roborazzi.composeDesktop)
+            // The fake desktop ServerEventServiceLiveTest talks to. That test lives here, not in
+            // androidUnitTest, because shared code is measured against the JVM class tree: run
+            // on Android, none of its thirty-odd tests counted towards ServerEventService.
+            implementation(libs.ktor.server.core)
+            implementation(libs.ktor.server.cio)
+            implementation(libs.ktor.server.websockets)
         }
     }
 }

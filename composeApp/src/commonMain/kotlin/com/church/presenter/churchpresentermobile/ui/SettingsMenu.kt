@@ -237,7 +237,7 @@ private fun MenuRow(section: SettingsSection, onClick: () -> Unit, modifier: Mod
     }
 }
 
-/** A coloured dot, the connection in one word, and the address under it. */
+/** A colored dot, the connection in one word, and the address under it. */
 @Composable
 internal fun ConnectionLine(
     status: StatusUiState,

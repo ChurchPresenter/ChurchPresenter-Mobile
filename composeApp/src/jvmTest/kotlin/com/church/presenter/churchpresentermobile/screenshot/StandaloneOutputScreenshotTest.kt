@@ -176,7 +176,7 @@ class StandaloneOutputScreenshotTest {
         OutputTargetsContent(sinks = emptyList())
     }
 
-    // ── The colour picker ────────────────────────────────────────────────
+    // ── The color picker ────────────────────────────────────────────────
 
     @Test
     fun colorPicker() = screenshot("color-picker__opened", dialog = true) {

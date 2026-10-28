@@ -31,6 +31,7 @@ private const val KEY_SAVED_THEMES = "saved_themes"
 private const val KEY_CALENDAR_SYNC = "calendar_sync"
 private const val KEY_RELAY_CLIENT_KEY = "relay_client_key"
 private const val KEY_RELAY_CLIENT_KEY_AT = "relay_client_key_at"
+private const val KEY_SEEN_NEW_BADGES = "seen_new_badges"
 
 /**
  * Increment this whenever DEFAULT_HOST or DEFAULT_PORT changes.
@@ -123,9 +124,9 @@ class AppSettings(
 
     /**
      * JSON of the operator's chosen look for the audience screen — gradient, text and accent
-     * colours, font, corner line, clock. Defaults to "{}", which decodes to the built-in look.
+     * colors, font, corner line, clock. Defaults to "{}", which decodes to the built-in look.
      *
-     * Persisted because a church sets its colours once and would otherwise find them reset every
+     * Persisted because a church sets its colors once and would otherwise find them reset every
      * Sunday morning. Same blob pattern as [savedAnnouncementsJson].
      */
     var slideThemeJson: String
@@ -160,7 +161,15 @@ class AppSettings(
         get() = storage.getString(KEY_SAVED_BOOKMARKS, "[]")
         set(value) { storage.putString(KEY_SAVED_BOOKMARKS, value) }
 
-    /** The user's preferred colour scheme. Defaults to [ThemeMode.SYSTEM]. */
+    /**
+     * The "New" badges already shown in an earlier session, by name. A badge is
+     * shown for one session only, so the set read at launch is what hides them.
+     */
+    var seenNewBadges: Set<String>
+        get() = storage.getString(KEY_SEEN_NEW_BADGES, "").split(',').filter { it.isNotBlank() }.toSet()
+        set(value) { storage.putString(KEY_SEEN_NEW_BADGES, value.sorted().joinToString(",")) }
+
+    /** The user's preferred color scheme. Defaults to [ThemeMode.SYSTEM]. */
     var themeMode: ThemeMode
         get() = storage.getString(KEY_THEME_MODE, ThemeMode.SYSTEM.name)
             .let { stored -> ThemeMode.entries.firstOrNull { it.name == stored } ?: ThemeMode.SYSTEM }

@@ -63,7 +63,7 @@ class CalendarSheetsScreenshotTest {
     @Test
     fun rowEditorSong() = rowEditor("calendar-row__song", 1)
 
-    /** A heading: a name and a colour, and no timing at all. */
+    /** A heading: a name and a color, and no timing at all. */
     @Test
     fun rowEditorSection() = rowEditor("calendar-row__section", 0)
 

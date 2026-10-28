@@ -295,6 +295,18 @@ object SlideDeckBuilder {
     }
 
     /**
+     * A one-slide deck showing a canvas page: the picture of it at [url], framed
+     * by [paper] where the screen's shape and the page's differ.
+     */
+    fun fromCanvas(url: String, paper: String, title: String = ""): SlideDeck = SlideDeck(
+        kind = SlideKind.CANVAS,
+        title = title,
+        slides = listOf(
+            Slide(kind = SlideKind.CANVAS, mediaUrl = url, paper = paper, sourceId = url, index = 0, total = 1),
+        ),
+    )
+
+    /**
      * Builds a deck where each entry is its own slide — used for a list of
      * announcements the operator steps through.
      */

@@ -32,15 +32,15 @@ import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 
 /**
- * One colour of the look, as a live swatch beside the hex that produced it.
+ * One color of the look, as a live swatch beside the hex that produced it.
  *
  * Two ways in, because operators arrive in two states. Someone who already knows the value —
- * the church's own colour, or one copied off the desktop — types it, and the swatch confirms it
+ * the church's own color, or one copied off the desktop — types it, and the swatch confirms it
  * on every keystroke that parses. Someone who does not taps the swatch and drags until it looks
  * right.
  *
  * Half-typed input is kept on screen but not published: "#2A1D" is on the way to something, not a
- * colour to project.
+ * color to project.
  */
 @Composable
 internal fun ColorField(

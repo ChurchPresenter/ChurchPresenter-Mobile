@@ -16,12 +16,12 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Choosing a colour for the audience screen.
+ * Choosing a color for the audience screen.
  *
  * Someone who knows the hex types it; someone who does not drags the sliders.
  * Both routes end at the same place, and the rule that keeps the screen usable
  * while they get there is that a half-typed value is *kept on screen but not
- * published*: "#2A1D" is on the way to something, not a colour to project.
+ * published*: "#2A1D" is on the way to something, not a color to project.
  */
 @OptIn(ExperimentalTestApi::class)
 class ColorFieldTest {
@@ -110,7 +110,7 @@ class ColorFieldTest {
 
     @Test
     fun aStoredColourIsUpperCase() {
-        // Every renderer sees the same shape, so two equal colours compare equal.
+        // Every renderer sees the same shape, so two equal colors compare equal.
         assertEquals("#2A1D5E", normaliseHex("#2a1d5e"))
     }
 

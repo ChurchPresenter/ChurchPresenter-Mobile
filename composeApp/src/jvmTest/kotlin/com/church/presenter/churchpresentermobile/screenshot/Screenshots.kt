@@ -47,7 +47,7 @@ import io.github.takahirom.roborazzi.captureRoboImage
  *
  * The behavioural UI tests next door in `commonTest` already assert what the
  * operator can read and press (see TESTING.md). These assert what the
- * behavioural ones deliberately do not: colour, spacing, type, elevation, and
+ * behavioural ones deliberately do not: color, spacing, type, elevation, and
  * every visual state a composable can be put in — the things a hand-written
  * assertion about a `dp` value could never keep up with.
  *
@@ -186,7 +186,7 @@ private const val CONTENT_TIMEOUT_MS = 5_000L
  * @param until Held until this is true before the shutter opens — for a screen
  *   whose content arrives from a ViewModel rather than from its arguments.
  *   Without it such a screen is photographed while still empty.
- * @param themes Which themes to capture. Both by default — a colour that only
+ * @param themes Which themes to capture. Both by default — a color that only
  *   goes wrong in the dark is exactly what this suite is for. Narrow it only
  *   for a subject that has no themed surface at all.
  * @param surface The window to render into, for a subject too wide for the
@@ -197,6 +197,12 @@ private const val CONTENT_TIMEOUT_MS = 5_000L
  * @param layoutDirection Which way round to lay the subject out. Only worth
  *   setting for a golden whose whole point is the mirroring — everything else
  *   would double the suite for no extra coverage.
+ * @param prepare Run on the composed subject before the shutter opens — for a
+ *   state only reached by pressing something, such as a menu or a dialog a
+ *   button opens.
+ * @param popup Photograph the window a menu or dialog opened *over* the subject
+ *   — the topmost root — rather than the subject. [dialog] cannot: it wants the
+ *   one root with content, and here the subject underneath has content too.
  */
 @OptIn(ExperimentalTestApi::class)
 internal fun screenshot(
@@ -207,6 +213,8 @@ internal fun screenshot(
     surface: DpSize? = null,
     layoutDirection: LayoutDirection = LayoutDirection.Ltr,
     until: (ComposeUiTest.() -> Boolean)? = null,
+    prepare: (ComposeUiTest.() -> Unit)? = null,
+    popup: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     themes.forEach { theme ->
@@ -230,7 +238,12 @@ internal fun screenshot(
             // without this the capture is a spinner, recorded as the golden for
             // a populated screen and green forever after.
             until?.let { waitUntil(timeoutMillis = CONTENT_TIMEOUT_MS) { it() } }
-            drawnRoot(dialog).captureRoboImage(goldenPath(name, theme))
+            prepare?.let {
+                it()
+                waitForIdle()
+            }
+            val root = if (popup) topmostRoot() else drawnRoot(dialog)
+            root.captureRoboImage(goldenPath(name, theme))
         }
         if (surface == null) {
             runComposeUiTest { capture() }
@@ -247,7 +260,7 @@ internal fun screenshot(
  * The root to photograph.
  *
  * A composable that puts its content in a `Dialog` — [UploadProgressOverlay],
- * the colour picker, the confirmation sheets — composes into a window of its
+ * the color picker, the confirmation sheets — composes into a window of its
  * own, so the tree has TWO roots and `onRoot()` fails outright with "expected
  * exactly 1 node but found 2". The parent root is the one left holding nothing:
  * zero height, because everything went to the dialog.
@@ -267,6 +280,15 @@ private fun ComposeUiTest.drawnRoot(dialog: Boolean): SemanticsNodeInteraction {
             "Either the subject does not open a dialog, or it opened more than one."
     }
     return roots[drawn.single().index]
+}
+
+/** The most recently opened window — a menu or dialog over the subject. */
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.topmostRoot(): SemanticsNodeInteraction {
+    val roots = onAllNodes(isRoot())
+    val count = roots.fetchSemanticsNodes().size
+    check(count > 1) { "popup = true expects a menu or dialog open over the subject, found $count root(s)." }
+    return roots[count - 1]
 }
 
 /**

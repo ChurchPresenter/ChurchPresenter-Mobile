@@ -68,7 +68,11 @@ class AppTabTest {
     @Test
     fun `remote keeps every More destination but the report`() {
         // The CCLI report is about what this device projected, which in remote mode is nothing.
-        assertEquals(MoreDestination.entries - MoreDestination.REPORT, MoreDestination.forMode(AppMode.REMOTE))
+        // …and but the canvas, which is tablet-only.
+        assertEquals(
+            MoreDestination.entries - MoreDestination.REPORT - MoreDestination.CANVAS,
+            MoreDestination.forMode(AppMode.REMOTE),
+        )
     }
 
     @Test
