@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasSetTextAction
@@ -127,4 +130,21 @@ class CanvasDrawingGesturesTest {
         /** Comfortably over the 20dp below which a drag counts as a tap. */
         const val MIN_DRAWN = 50f
     }
+
+    @Test
+    fun aTapOnAPanelOrTheDockDrawsNothingBehindIt() = runComposeUiTest {
+        // A touch on a panel's background — between its controls, in its padding — used to
+        // reach the board underneath and draw there.
+        val vm = showCanvas()
+        pick(CanvasTool.PEN)
+        val before = vm.state.value.page.elements.size
+
+        onNodeWithTag(CanvasTags.OPTIONS).performTouchInput { click(Offset(PADDING, PADDING)) }
+        onNodeWithTag(CanvasTags.DOCK).performTouchInput { click(Offset(PADDING, PADDING)) }
+
+        assertEquals(before, vm.state.value.page.elements.size, "nothing was drawn behind them")
+    }
 }
+
+/** A point inside a floating piece's padding, clear of its controls. */
+private const val PADDING = 6f
