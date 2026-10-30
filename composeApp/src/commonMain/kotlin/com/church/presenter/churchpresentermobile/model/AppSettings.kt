@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.tv.PhoneSource
 import com.church.presenter.churchpresentermobile.deviceName
 import com.church.presenter.churchpresentermobile.generateUUID
 import com.church.presenter.churchpresentermobile.network.ApiConstants
@@ -25,6 +26,7 @@ private const val KEY_TELEMETRY_ENABLED = "telemetry_enabled"
 private const val KEY_APP_MODE         = "app_mode"
 private const val KEY_MODE_CHOSEN      = "mode_chosen"
 private const val KEY_LIVE_BAR_COLLAPSED = "live_bar_collapsed"
+private const val KEY_TV_LAST_SOURCE = "tv_last_source"
 private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
@@ -296,6 +298,18 @@ class AppSettings(
     var liveBarCollapsed: Boolean
         get() = storage.getInt(KEY_LIVE_BAR_COLLAPSED, 0) == 1
         set(value) { storage.putInt(KEY_LIVE_BAR_COLLAPSED, if (value) 1 else 0) }
+
+    /**
+     * On a TV: the phone it was last showing, or null. Kept so a lobby TV goes
+     * straight back to it after a power cut; cleared when someone backs out of
+     * it on purpose. Stored as `name|host|port`.
+     */
+    var tvLastSource: PhoneSource?
+        get() = storage.getString(KEY_TV_LAST_SOURCE, "").split('|').takeIf { it.size == 3 }
+            ?.let { (name, host, port) -> port.toIntOrNull()?.let { PhoneSource(name, host, it) } }
+        set(value) {
+            storage.putString(KEY_TV_LAST_SOURCE, value?.let { "${it.name}|${it.host}|${it.port}" }.orEmpty())
+        }
 
     /**
      * Port the standalone presentation web server last bound successfully.

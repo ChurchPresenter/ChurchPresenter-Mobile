@@ -1412,4 +1412,21 @@
     <string name="live_state_live">LIVE</string>
     <string name="live_state_blank">BLANK</string>
     <string name="live_state_off">OFF</string>
+
+    <!-- TV mode -->
+    <string name="tv_live_title">Live screen</string>
+    <string name="tv_live_body">Show what a phone running ChurchPresenter is presenting</string>
+    <string name="tv_signage_title">Signage</string>
+    <string name="tv_signage_body">After-hours playlists from the church computer — coming soon</string>
+    <string name="tv_pick_title">Choose a phone</string>
+    <string name="tv_pick_searching">Looking for phones presenting on this network…</string>
+    <string name="tv_pick_hint">On the phone, open ChurchPresenter in standalone mode. It appears here by itself.</string>
+    <string name="tv_enter_address">Or enter its address</string>
+    <string name="tv_address_hint">e.g. 192.168.1.20</string>
+    <string name="tv_address_invalid">That isn’t an address. Try one like 192.168.1.20 or 192.168.1.20:8766.</string>
+    <string name="tv_connect">Connect</string>
+    <string name="tv_connecting">Connecting to %1$s…</string>
+    <string name="tv_reconnecting">Reconnecting to %1$s…</string>
+    <string name="tv_ended">The presentation has ended</string>
+    <string name="tv_too_new">Update ChurchPresenter on this TV to show this phone</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import kotlinx.coroutines.flow.update
 import com.church.presenter.churchpresentermobile.network.WsSender
 import kotlinx.coroutines.CompletableDeferred
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -412,13 +413,22 @@ class SongsViewModelTest {
      */
     private class DecidingDesktop(private val held: String) : WsSender {
         val answer = CompletableDeferred<Result<Unit>>()
-        val sent = mutableListOf<String>()
+
+        // A StateFlow, not a list: the request is sent from a worker thread,
+        // and the test waits on it arriving rather than polling.
+        private val _sent = MutableStateFlow<List<String>>(emptyList())
+        val sent: List<String> get() = _sent.value
 
         /** How many [held] requests reached the desktop. */
         val heldCount: Int get() = sent.count { it == held }
 
+        /** Suspends until the [held] request has reached the desktop. */
+        suspend fun awaitHeld() {
+            _sent.first { held in it }
+        }
+
         override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result<Unit> {
-            sent += type
+            _sent.update { it + type }
             return if (type == held) answer.await() else Result.success(Unit)
         }
     }
@@ -433,7 +443,10 @@ class SongsViewModelTest {
         try {
             vm.openFirstSong()
             vm.toggleProjecting()
-            vm.pendingRequests.first { DesktopRequest.PROJECT in it }
+            // Waited on the request reaching the desktop, not on the pending
+            // flag: the flag is set on the press, the send happens a moment later
+            // on a worker thread, and counting before then raced it.
+            desktop.awaitHeld()
 
             vm.toggleProjecting()
             vm.toggleProjecting()
@@ -456,7 +469,7 @@ class SongsViewModelTest {
         try {
             vm.openFirstSong()
             vm.addSongToSchedule()
-            vm.pendingRequests.first { DesktopRequest.SCHEDULE in it }
+            desktop.awaitHeld()
 
             vm.addSongToSchedule()
 
