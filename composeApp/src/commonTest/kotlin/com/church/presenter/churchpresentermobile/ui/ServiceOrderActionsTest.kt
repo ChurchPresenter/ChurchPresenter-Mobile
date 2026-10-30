@@ -173,14 +173,14 @@ class ServiceOrderActionsTest {
         assertTrue(exists(UiTags.orderMoveDown(1)))
     }
 
-    // ── Clearing and closing ─────────────────────────────────────────────
+    // ── Clearing ─────────────────────────────────────────────────────
 
     @Test
     fun theOrderCanBeCleared() = runComposeUiTest {
         var cleared = false
         showServiceOrder(onClear = { cleared = true })
 
-        click(UiTags.DRAWER_CLEAR)
+        click(UiTags.SCHEDULE_CLEAR)
 
         assertTrue(cleared)
     }
@@ -189,38 +189,6 @@ class ServiceOrderActionsTest {
     fun clearIsNotOfferedWhenThereIsNothingToClear() = runComposeUiTest {
         showServiceOrder(entries = emptyList())
 
-        assertFalse(exists(UiTags.DRAWER_CLEAR))
-    }
-
-    @Test
-    fun theDrawerCanBeClosed() = runComposeUiTest {
-        var closed = false
-        showServiceOrder(onClose = { closed = true })
-
-        click(UiTags.DRAWER_CLOSE)
-
-        assertTrue(closed)
-    }
-
-    @Test
-    fun theDrawerCanStillBeClosedWhenTheOrderIsEmpty() = runComposeUiTest {
-        // The empty state returns early from the column; the header above it
-        // has to survive that.
-        var closed = false
-        showServiceOrder(entries = emptyList(), onClose = { closed = true })
-
-        click(UiTags.DRAWER_CLOSE)
-
-        assertTrue(closed)
-    }
-
-    @Test
-    fun closingDoesNotClearTheOrder() = runComposeUiTest {
-        var cleared = false
-        showServiceOrder(onClear = { cleared = true })
-
-        click(UiTags.DRAWER_CLOSE)
-
-        assertFalse(cleared)
+        assertFalse(exists(UiTags.SCHEDULE_CLEAR))
     }
 }

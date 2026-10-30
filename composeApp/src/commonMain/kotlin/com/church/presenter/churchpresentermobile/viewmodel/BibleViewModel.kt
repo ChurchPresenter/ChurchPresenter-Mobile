@@ -152,6 +152,16 @@ class BibleViewModel(
     private val _toastEvent = MutableStateFlow<ToastEvent?>(null)
     val toastEvent = _toastEvent.asStateFlow()
 
+    // Requests on their way to the desktop, which may be waiting on its
+    // operator's approval for up to two minutes. See [DesktopRequests].
+    private val requests = DesktopRequests()
+
+    /** Which buttons have a request out — each shows a spinner and ignores taps. */
+    val pendingRequests: StateFlow<Set<DesktopRequest>> = requests.pending
+
+    /** Said when a request has not been answered at once — likely an approval prompt. */
+    private val waitingForDesktop: () -> Unit = { _toastEvent.value = ToastEvent.WaitingForDesktop }
+
     // ── Loading / error ───────────────────────────────────────────────────────
 
     private val _isLoading = MutableStateFlow(false)
@@ -466,6 +476,8 @@ class BibleViewModel(
             projectLocally(presenter)
             return
         }
+        // Pressed again while the last press is still waiting on the desktop.
+        if (requests.isPending(DesktopRequest.PROJECT)) return
         if (_isProjecting.value) {
             _isProjecting.value        = false
             _projectedVerseIndex.value = null
@@ -475,7 +487,7 @@ class BibleViewModel(
                 return
             }
             Logger.d(TAG, "toggleProjecting OFF — firing clearDisplay")
-            viewModelScope.launch {
+            requests.launch(viewModelScope, DesktopRequest.PROJECT) {
                 bibleService.clearDisplay()
                     .onSuccess { Logger.d(TAG, "clearDisplay — success") }
                     .onFailure { e ->
@@ -511,7 +523,7 @@ class BibleViewModel(
             "toggleProjecting ON — firing selectBibleVerse " +
                 "${book.displayName} $chapter:${firstVerse.number} range=$verseRange",
         )
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.PROJECT, onSlow = waitingForDesktop) {
             bibleService.selectBibleVerse(
                 bookName    = book.displayName,
                 chapter     = chapter,
@@ -712,7 +724,7 @@ class BibleViewModel(
             return
         }
         Logger.d(TAG, "addToSchedule — firing addBibleToSchedule for $ref (${selectedVerses.size} verses)")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.SCHEDULE, onSlow = waitingForDesktop) {
             bibleService.addBibleToSchedule(
                 bookName = book.displayName,
                 chapter  = chapter,

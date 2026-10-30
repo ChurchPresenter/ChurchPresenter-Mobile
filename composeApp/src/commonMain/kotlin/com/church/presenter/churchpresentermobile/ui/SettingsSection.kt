@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Info
@@ -22,11 +23,13 @@ import churchpresentermobile.composeapp.generated.resources.settings_connection_
 import churchpresentermobile.composeapp.generated.resources.settings_connection_wrong_server
 import churchpresentermobile.composeapp.generated.resources.settings_device_section
 import churchpresentermobile.composeapp.generated.resources.settings_diagnostics_section
+import churchpresentermobile.composeapp.generated.resources.settings_display_section
 import churchpresentermobile.composeapp.generated.resources.settings_section_about_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_appearance_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_computer_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_device_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_diagnostics_subtitle
+import churchpresentermobile.composeapp.generated.resources.settings_section_display_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_mode_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_server_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_server_section
@@ -51,6 +54,12 @@ enum class SettingsSection(
         Res.string.mode_section_title,
         Res.string.settings_section_mode_subtitle,
         Icons.Outlined.SwapHoriz,
+    ),
+    /** Standalone only: the screens projected onto, and how the words on them look. */
+    DISPLAY(
+        Res.string.settings_display_section,
+        Res.string.settings_section_display_subtitle,
+        Icons.Outlined.Cast,
     ),
     SERVER(
         Res.string.settings_server_section,
@@ -91,17 +100,26 @@ enum class SettingsSection(
  * page that draws nothing: the mode page only exists where standalone is
  * possible, a desktop's address is a *server* in remote mode and a *computer*
  * to copy from in standalone, and the device names only mean something to a
- * desktop that asks for them.
+ * desktop that asks for them. Calendar mode has neither: it plans through the
+ * cloud relay and copies no songs or Bibles, so it gets no address page at all.
  */
 internal fun settingsSections(
     hasDesktop: Boolean,
     supportsStandalone: Boolean,
     /** True where the app is in a mode other than remote, which always has a way back out. */
     canLeaveMode: Boolean = false,
+    /** False in calendar mode, which neither drives a desktop nor copies from one. */
+    usesComputer: Boolean = true,
+    /** True in standalone, the one mode that projects onto this device's own screens. */
+    hasDisplay: Boolean = false,
 ): List<SettingsSection> =
     buildList {
         if (supportsStandalone || canLeaveMode) add(SettingsSection.MODE)
-        add(if (hasDesktop) SettingsSection.SERVER else SettingsSection.COMPUTER)
+        if (hasDisplay) add(SettingsSection.DISPLAY)
+        when {
+            hasDesktop -> add(SettingsSection.SERVER)
+            usesComputer -> add(SettingsSection.COMPUTER)
+        }
         if (hasDesktop) add(SettingsSection.DEVICE)
         add(SettingsSection.APPEARANCE)
         add(SettingsSection.DIAGNOSTICS)

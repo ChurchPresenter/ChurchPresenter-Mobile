@@ -81,7 +81,7 @@ class CanvasOutput(private val baseUrl: StateFlow<String?>) {
  *
  * The canvas follows its own edits while live: each new frame replaces the slide.
  * But only while the canvas is still what is on screen — once the operator has
- * put a song up from the Present tab, a stroke on the canvas must not take the
+ * put a song up from the Songs tab, a stroke on the canvas must not take the
  * screen back. [show] with `takeOver` is the one exception: that is Go Live.
  */
 class CanvasProjector(

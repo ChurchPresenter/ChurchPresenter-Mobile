@@ -774,10 +774,8 @@
     <string name="standalone_blank">ブランク</string>
     <string name="standalone_live">ライブ</string>
     <string name="standalone_clear">クリア</string>
-    <string name="web_refuses_framing">%1$s は他のページ内での表示を許可していないため、ブラウザー画面にはエラーが表示されます。この端末に接続した画面には表示されます。</string>
     <string name="standalone_preview">プレビュー</string>
     <string name="standalone_no_output">画面が接続されていません</string>
-    <string name="standalone_output_count">%1$s 台の画面</string>
     <string name="standalone_empty_title">何も読み込まれていません</string>
     <string name="standalone_empty_body">賛美歌または聖書の章を開き、「表示」をタップするとここに読み込まれます。</string>
     <string name="standalone_slide_position">%1$s / %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">教会名（上隅）</string>
     <string name="standalone_brand_line_hint">表示しない場合は空欄のまま</string>
     <string name="standalone_show_clock">時計を表示</string>
-    <string name="web_not_a_link">Web アドレスを入力してください（例: example.com）</string>
     <string name="standalone_show_reference">参照行を表示</string>
     <string name="standalone_show_reference_hint">歌詞の下に表示される賛美歌のセクションまたは節。</string>
     <string name="standalone_look_reset">外観をリセット</string>

@@ -6,8 +6,6 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideTheme
 import com.church.presenter.churchpresentermobile.model.SlideThemePresets
-import com.church.presenter.churchpresentermobile.present.SinkState
-import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -17,7 +15,6 @@ import com.church.presenter.churchpresentermobile.ui.library.SyncSheet
 import com.church.presenter.churchpresentermobile.ui.library.libraryOf
 import com.church.presenter.churchpresentermobile.ui.library.song
 import com.church.presenter.churchpresentermobile.ui.standalone.LookSheet
-import com.church.presenter.churchpresentermobile.ui.standalone.OutputTargetsSheet
 import kotlin.test.Test
 
 /**
@@ -77,17 +74,6 @@ class SheetsScreenshotTest {
             onApplyTheme = {},
             onSaveTheme = {},
             onDeleteTheme = {},
-            onDismiss = {},
-        )
-    }
-
-    @Test
-    fun outputTargetsSheet() = screenshot("output-targets-sheet__opened", dialog = true) {
-        OutputTargetsSheet(
-            sinks = listOf(
-                SinkStatus("web", "Web page", SinkState.ATTACHED, detail = "2 viewers", clientCount = 2),
-                SinkStatus("hdmi", "HDMI display", SinkState.DETACHED),
-            ),
             onDismiss = {},
         )
     }

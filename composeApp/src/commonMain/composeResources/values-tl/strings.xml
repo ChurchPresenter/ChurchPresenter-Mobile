@@ -774,10 +774,8 @@
     <string name="standalone_blank">Blangko</string>
     <string name="standalone_live">Live</string>
     <string name="standalone_clear">I-clear</string>
-    <string name="web_refuses_framing">Hindi pinapayagan ng %1$s na maipakita ito sa loob ng ibang pahina, kaya error ang ipinapakita ng browser screen. Ipinapakita pa rin ito ng screen na nakakabit sa teleponong ito.</string>
     <string name="standalone_preview">Preview</string>
     <string name="standalone_no_output">Walang nakakonektang screen</string>
-    <string name="standalone_output_count">%1$s screen</string>
     <string name="standalone_empty_title">Walang naka-load</string>
     <string name="standalone_empty_body">Magbukas ng awit o kabanata ng Bibliya at i-tap ang Ipakita para i-load ito rito.</string>
     <string name="standalone_slide_position">%1$s sa %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Pangalan ng simbahan (itaas na sulok)</string>
     <string name="standalone_brand_line_hint">Iwanang blangko kung wala</string>
     <string name="standalone_show_clock">Magpakita ng orasan</string>
-    <string name="web_not_a_link">Mag-type ng web address, tulad ng example.com</string>
     <string name="standalone_show_reference">Ipakita ang linya ng reference</string>
     <string name="standalone_show_reference_hint">Ang bahagi ng awit o talatang ipinapakita sa ilalim ng mga salita.</string>
     <string name="standalone_look_reset">I-reset ang hitsura</string>

@@ -24,6 +24,7 @@ private const val KEY_CONNECT_SETUP    = "connect_setup_done"
 private const val KEY_TELEMETRY_ENABLED = "telemetry_enabled"
 private const val KEY_APP_MODE         = "app_mode"
 private const val KEY_MODE_CHOSEN      = "mode_chosen"
+private const val KEY_LIVE_BAR_COLLAPSED = "live_bar_collapsed"
 private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
@@ -286,6 +287,15 @@ class AppSettings(
     var isModeChosen: Boolean
         get() = storage.getInt(KEY_MODE_CHOSEN, 0) == 1
         set(value) { storage.putInt(KEY_MODE_CHOSEN, if (value) 1 else 0) }
+
+    /**
+     * Whether standalone's live bar is folded away into the header's live chip.
+     * Remembered because it is a preference about the screen, not about one
+     * service: an operator who wants the room has wanted it every time.
+     */
+    var liveBarCollapsed: Boolean
+        get() = storage.getInt(KEY_LIVE_BAR_COLLAPSED, 0) == 1
+        set(value) { storage.putInt(KEY_LIVE_BAR_COLLAPSED, if (value) 1 else 0) }
 
     /**
      * Port the standalone presentation web server last bound successfully.

@@ -1,8 +1,10 @@
 package com.church.presenter.churchpresentermobile
 
 import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -646,5 +648,38 @@ class ScheduleDestinationTest {
         // Opening the launcher grid over the operator's screen would be worse
         // than ignoring the tap.
         assertNull(destinationFor(item("unknown")).moreDestination)
+    }
+
+    // ── Standalone's Schedule tab ────────────────────────────────────────
+
+    @Test
+    fun `a scheduled song opens on its own page in songs`() {
+        val destination = destinationFor(
+            LocalSetlistEntry(type = SetlistEntryType.SONG, reference = "song-1", title = "Amazing Grace"),
+        )
+
+        assertEquals(AppTab.SONGS, destination.tab)
+        assertEquals("Amazing Grace", destination.songTitle)
+    }
+
+    @Test
+    fun `a scheduled passage opens the bible tab`() {
+        val destination = destinationFor(
+            LocalSetlistEntry(type = SetlistEntryType.BIBLE, reference = "John 3:16", title = "John 3:16"),
+        )
+
+        assertEquals(AppTab.BIBLE, destination.tab)
+    }
+
+    @Test
+    fun `a scheduled notice opens notices under more`() {
+        // It used to open the Library tab, which no longer exists; Notices is
+        // where a notice goes live.
+        val destination = destinationFor(
+            LocalSetlistEntry(type = SetlistEntryType.ANNOUNCEMENT, reference = "n1", title = "Welcome"),
+        )
+
+        assertEquals(AppTab.MORE, destination.tab)
+        assertEquals(MoreDestination.ANNOUNCEMENTS, destination.moreDestination)
     }
 }

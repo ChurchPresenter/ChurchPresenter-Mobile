@@ -774,10 +774,8 @@
     <string name="standalone_blank">En blanco</string>
     <string name="standalone_live">En vivo</string>
     <string name="standalone_clear">Borrar</string>
-    <string name="web_refuses_framing">%1$s no permite mostrarse dentro de otra página, así que la pantalla del navegador muestra un error en su lugar. Una pantalla conectada a este teléfono sí la muestra.</string>
     <string name="standalone_preview">Vista previa</string>
     <string name="standalone_no_output">Ninguna pantalla conectada</string>
-    <string name="standalone_output_count">%1$s pantalla(s)</string>
     <string name="standalone_empty_title">Nada cargado</string>
     <string name="standalone_empty_body">Abra una canción o un capítulo de la Biblia y toque Presentar para cargarlo aquí.</string>
     <string name="standalone_slide_position">%1$s de %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Nombre de la iglesia (esquina superior)</string>
     <string name="standalone_brand_line_hint">Déjelo en blanco para no mostrar ninguno</string>
     <string name="standalone_show_clock">Mostrar un reloj</string>
-    <string name="web_not_a_link">Escriba una dirección web, como example.com</string>
     <string name="standalone_show_reference">Mostrar la línea de referencia</string>
     <string name="standalone_show_reference_hint">La sección de la canción o el versículo que aparece bajo el texto.</string>
     <string name="standalone_look_reset">Restablecer el aspecto</string>

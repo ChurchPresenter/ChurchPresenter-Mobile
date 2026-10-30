@@ -2,17 +2,18 @@ package com.church.presenter.churchpresentermobile.screenshot
 
 import androidx.compose.runtime.Composable
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalNoticesScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalPhotosScreen
-import com.church.presenter.churchpresentermobile.ui.standalone.LocalWebScreen
-import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.DisplaySettingsPage
+import com.church.presenter.churchpresentermobile.ui.standalone.LiveBar
+import com.church.presenter.churchpresentermobile.ui.standalone.LiveChip
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneFixture
 import com.church.presenter.churchpresentermobile.ui.standalone.libraryWith
 import com.church.presenter.churchpresentermobile.ui.standalone.notice
 import com.church.presenter.churchpresentermobile.ui.standalone.photoLibraryWith
 import com.church.presenter.churchpresentermobile.viewmodel.LocalPhotosViewModel
-import com.church.presenter.churchpresentermobile.viewmodel.LocalWebViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StandaloneViewModel
 import kotlin.test.Test
 
@@ -20,8 +21,8 @@ import kotlin.test.Test
  * Standalone mode's own screens — the phone driving the room by itself.
  *
  * Built on `StandaloneFixture`, the engine-and-registry pair the behavioural
- * standalone tests use, so the controller is looking at a real registry with a
- * real sink in it.
+ * standalone tests use, so the live bar and Display page are looking at a real
+ * registry with a real sink in it.
  *
  * The state that matters most across these is whether there is an output at
  * all: with nothing attached, projecting is not something the operator should
@@ -29,12 +30,57 @@ import kotlin.test.Test
  */
 class StandaloneScreensScreenshotTest {
 
-    private fun controller(photoCount: Int? = null): @Composable () -> Unit {
+    /** A hymn loaded on the fixture's engine, as the live bar is only drawn with something up. */
+    private fun loaded(): Pair<StandaloneFixture, AppSettings> {
+        val fixture = StandaloneFixture()
+        fixture.engine.setDeck(
+            SlideDeckBuilder.fromAnnouncements(
+                items = listOf("Amazing grace, how sweet the sound", "That saved a wretch like me"),
+                title = "Amazing Grace",
+            )
+        )
+        return fixture to AppSettings(InMemorySettingsStorage())
+    }
+
+    private fun liveBar(blank: Boolean = false): @Composable () -> Unit {
+        val (fixture, settings) = loaded()
+        if (blank) fixture.engine.toggleBlank()
+        return {
+            LiveBar(
+                engine = fixture.engine,
+                registry = fixture.registry,
+                settings = settings,
+                onCollapse = {},
+                onOpenScreens = {},
+                providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, settings, null),
+            )
+        }
+    }
+
+    @Test
+    fun liveBarLoaded() = screenshot("live-bar__loaded", content = liveBar())
+
+    @Test
+    fun liveBarBlank() = screenshot("live-bar__blank", content = liveBar(blank = true))
+
+    @Test
+    fun liveChip() = screenshot("live-chip__loaded") {
+        val (fixture, settings) = loaded()
+        LiveChip(
+            engine = fixture.engine,
+            registry = fixture.registry,
+            settings = settings,
+            onExpand = {},
+            providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, settings, null),
+        )
+    }
+
+    private fun displayPage(photoCount: Int? = null): @Composable () -> Unit {
         val fixture = StandaloneFixture()
         val settings = AppSettings(InMemorySettingsStorage())
         val photos = photoCount?.let { photoLibraryWith(it) }
         return {
-            StandaloneControllerScreen(
+            DisplaySettingsPage(
                 engine = fixture.engine,
                 registry = fixture.registry,
                 settings = settings,
@@ -45,12 +91,12 @@ class StandaloneScreensScreenshotTest {
     }
 
     @Test
-    fun controllerScreen() = screenshot("standalone-controller__idle", content = controller())
+    fun displaySettings() = screenshot("display-settings__idle", content = displayPage())
 
     @Test
-    fun controllerWithPhotos() = screenshot(
-        "standalone-controller__with-photos",
-        content = controller(photoCount = 4),
+    fun displaySettingsWithPhotos() = screenshot(
+        "display-settings__with-photos",
+        content = displayPage(photoCount = 4),
     )
 
     @Test
@@ -116,26 +162,6 @@ class StandaloneScreensScreenshotTest {
             library = library,
             presenter = fixture.engine,
             providedViewModel = LocalPhotosViewModel(library, fixture.engine),
-        )
-    }
-
-    @Test
-    fun webPage() = screenshot("local-web__ready") {
-        val fixture = StandaloneFixture()
-        LocalWebScreen(
-            presenter = fixture.engine,
-            hasOutput = true,
-            providedViewModel = LocalWebViewModel(presenter = fixture.engine, refusesFraming = { false }),
-        )
-    }
-
-    @Test
-    fun webPageWithNoOutput() = screenshot("local-web__no-output") {
-        val fixture = StandaloneFixture()
-        LocalWebScreen(
-            presenter = fixture.engine,
-            hasOutput = false,
-            providedViewModel = LocalWebViewModel(presenter = fixture.engine, refusesFraming = { false }),
         )
     }
 }

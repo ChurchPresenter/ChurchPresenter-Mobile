@@ -5,7 +5,7 @@ import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
 import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import com.church.presenter.churchpresentermobile.ui.ModePickerScreen
 import com.church.presenter.churchpresentermobile.ui.MoreScreen
-import com.church.presenter.churchpresentermobile.ui.ServiceOrderDrawerContent
+import com.church.presenter.churchpresentermobile.ui.ServiceScheduleScreen
 import kotlin.test.Test
 
 /**
@@ -65,18 +65,18 @@ class NavigationScreenshotTest {
 
     @Test
     fun serviceOrderPopulated() = screenshot("service-order__populated") {
-        ServiceOrderDrawerContent(entries = entries)
+        ServiceScheduleScreen(entries = entries)
     }
 
     @Test
     fun serviceOrderSingleEntry() = screenshot("service-order__single-entry") {
         // One row is both first and last, so both reorder controls are disabled
         // — a state the four-row capture cannot show.
-        ServiceOrderDrawerContent(entries = entries.take(1))
+        ServiceScheduleScreen(entries = entries.take(1))
     }
 
     @Test
     fun serviceOrderEmpty() = screenshot("service-order__empty") {
-        ServiceOrderDrawerContent(entries = emptyList())
+        ServiceScheduleScreen(entries = emptyList())
     }
 }

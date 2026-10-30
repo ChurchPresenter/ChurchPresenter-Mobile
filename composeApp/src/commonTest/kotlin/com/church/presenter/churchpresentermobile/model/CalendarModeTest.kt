@@ -25,7 +25,7 @@ class CalendarModeTest {
         val tabs = AppTab.forMode(AppMode.CALENDAR)
 
         assertEquals(listOf(AppTab.CALENDAR), tabs)
-        assertFalse(AppTab.PRESENT in tabs, "nothing is projected from this phone")
+        assertFalse(AppTab.SCHEDULE in tabs, "nothing is projected from this phone")
         assertFalse(AppTab.SONGS in tabs, "the songs tab drives a desktop; the picker reads the catalog")
         assertFalse(AppTab.MEDIA in tabs)
         assertFalse(AppTab.PRESENTATION in tabs)
@@ -70,7 +70,7 @@ class CalendarModeTest {
 
         // The strip is rememberSaveable, so after a switch it can still name a tab that is gone.
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.SONGS, tabs))
-        assertEquals(AppTab.CALENDAR, settledTab(AppTab.PRESENT, tabs))
+        assertEquals(AppTab.CALENDAR, settledTab(AppTab.SCHEDULE, tabs))
         assertEquals(AppTab.CALENDAR, settledTab(AppTab.MORE, tabs))
     }
 

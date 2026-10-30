@@ -3,7 +3,6 @@ package com.church.presenter.churchpresentermobile.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,8 +10,8 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import com.church.presenter.churchpresentermobile.MainActivity
 import com.church.presenter.churchpresentermobile.R
+import com.church.presenter.churchpresentermobile.present.NowShowing
 import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 
@@ -30,7 +29,9 @@ private const val TAG = "PresentationService"
  *
  * The notification is not decoration: a foreground service is the only way
  * Android permits this, and it also gives the operator a visible, tappable
- * reminder that the phone is currently driving a screen.
+ * reminder that the phone is currently driving a screen. It reads like a music
+ * player's — the slide where the album art goes, the song as the title, the
+ * words on screen under it — and follows every slide change ([show]).
  */
 class PresentationForegroundService : Service() {
 
@@ -60,8 +61,9 @@ class PresentationForegroundService : Service() {
         // keep-alive degrades the feature; crashing the operator's phone
         // mid-service is far worse. Caught as Exception rather than by type so
         // no API 31+ class is referenced on older devices.
+        url = intent.getStringExtra(EXTRA_URL)
         val started = runCatching {
-            startForeground(NOTIFICATION_ID, buildNotification(intent.getStringExtra(EXTRA_URL)))
+            startForeground(NOTIFICATION_ID, buildNotification(url))
         }
         if (started.isFailure) {
             val e = started.exceptionOrNull()
@@ -71,6 +73,7 @@ class PresentationForegroundService : Service() {
             return START_NOT_STICKY
         }
 
+        running = true
         acquireLocks()
         Logger.d(TAG, "presentation service started")
         // Deliberately not sticky: see the null-intent branch above.
@@ -78,6 +81,7 @@ class PresentationForegroundService : Service() {
     }
 
     override fun onDestroy() {
+        running = false
         releaseLocks()
         Logger.d(TAG, "presentation service stopped")
         super.onDestroy()
@@ -111,38 +115,20 @@ class PresentationForegroundService : Service() {
         wifiLock = null
     }
 
+    // A seam rather than an inline call: PresentationLocksTest stubs it, since a
+    // working Notification.Builder is the one thing the unit-test android.jar lacks.
     private fun buildNotification(url: String?): Notification {
         createChannel()
-        val openApp = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
-
-        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(this, CHANNEL_ID)
-        } else {
-            @Suppress("DEPRECATION")
-            Notification.Builder(this)
-        }
-
-        return builder
-            .setContentTitle(getString(R.string.presentation_service_title))
-            .setContentText(url ?: getString(R.string.presentation_service_text))
-            .setSmallIcon(android.R.drawable.ic_menu_slideshow)
-            .setOngoing(true)
-            .setContentIntent(openApp)
-            .build()
+        return buildPresentationNotification(this, url, nowShowing)
     }
 
     private fun createChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = getSystemService(NotificationManager::class.java) ?: return
-        if (manager.getNotificationChannel(CHANNEL_ID) != null) return
+        if (manager.getNotificationChannel(PRESENTATION_CHANNEL_ID) != null) return
         manager.createNotificationChannel(
             NotificationChannel(
-                CHANNEL_ID,
+                PRESENTATION_CHANNEL_ID,
                 getString(R.string.presentation_service_channel),
                 // LOW: persistent, silent, no heads-up. It is a status indicator,
                 // not an alert — an operator must never be buzzed mid-service.
@@ -152,7 +138,6 @@ class PresentationForegroundService : Service() {
     }
 
     companion object {
-        private const val CHANNEL_ID = "presentation_server"
         private const val NOTIFICATION_ID = 4711
         private const val WAKE_LOCK_TAG = "ChurchPresenter::presentation"
         private const val WIFI_LOCK_TAG = "ChurchPresenter::presentation-wifi"
@@ -160,6 +145,26 @@ class PresentationForegroundService : Service() {
 
         /** Longest a single service run holds the CPU awake — a very long service. */
         private const val MAX_HOLD_MS = 6 * 60 * 60 * 1000L
+
+        // What the notification pictures. Held here rather than on the instance
+        // because the slide changes while the service runs, from code that has
+        // a Context but no handle on the service.
+        @Volatile private var url: String? = null
+        @Volatile private var nowShowing: NowShowing? = null
+        @Volatile private var running = false
+
+        /**
+         * Redraws the notification for what the screens now show. Remembered
+         * when the service is not running, so it starts already showing it.
+         */
+        fun show(context: Context, nowShowing: NowShowing?) {
+            this.nowShowing = nowShowing
+            if (!running) return
+            runCatching {
+                context.getSystemService(NotificationManager::class.java)
+                    ?.notify(NOTIFICATION_ID, buildPresentationNotification(context, url, nowShowing))
+            }.onFailure { Logger.e(TAG, "could not update the notification: ${it.message}") }
+        }
 
         fun start(context: Context, url: String?) {
             val intent = Intent(context, PresentationForegroundService::class.java)

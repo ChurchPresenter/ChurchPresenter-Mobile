@@ -28,7 +28,6 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -169,7 +168,7 @@ fun WebScreen(
             Spacer(Modifier.height(24.dp))
         }
 
-        SnackbarHost(snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
+        ToastHost(snackbarHostState)
     }
 }
 

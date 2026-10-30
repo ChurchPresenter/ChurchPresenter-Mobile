@@ -14,4 +14,11 @@ expect object PresentationKeepAlive {
     fun start(detail: String?)
 
     fun stop()
+
+    /**
+     * What the screens are showing now, for the indicator to picture — or null
+     * with nothing loaded. Called on every change; a platform with no indicator
+     * ignores it.
+     */
+    fun show(nowShowing: NowShowing?)
 }

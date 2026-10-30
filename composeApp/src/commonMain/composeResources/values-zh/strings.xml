@@ -774,10 +774,8 @@
     <string name="standalone_blank">黑屏</string>
     <string name="standalone_live">直播</string>
     <string name="standalone_clear">清除</string>
-    <string name="web_refuses_framing">%1$s 不允许在其他页面中显示，因此浏览器屏幕会显示错误。连接到这台手机的屏幕仍可正常显示。</string>
     <string name="standalone_preview">预览</string>
     <string name="standalone_no_output">未连接屏幕</string>
-    <string name="standalone_output_count">%1$s 个屏幕</string>
     <string name="standalone_empty_title">未加载任何内容</string>
     <string name="standalone_empty_body">打开一首诗歌或一章圣经，点按“投放”即可加载到这里。</string>
     <string name="standalone_slide_position">第 %1$s / %2$s 张</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">教会名称（顶部角落）</string>
     <string name="standalone_brand_line_hint">留空则不显示</string>
     <string name="standalone_show_clock">显示时钟</string>
-    <string name="web_not_a_link">请输入网址，例如 example.com</string>
     <string name="standalone_show_reference">显示出处行</string>
     <string name="standalone_show_reference_hint">显示在歌词或经文下方的诗歌段落或经节。</string>
     <string name="standalone_look_reset">重置外观</string>

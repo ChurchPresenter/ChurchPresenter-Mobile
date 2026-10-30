@@ -102,6 +102,11 @@ internal object UiTags {
     const val DRAWER_ERROR = "drawer:error"
     const val DRAWER_CLEAR = "drawer:clear"
 
+    // ── Standalone's Schedule tab ────────────────────────────────────────
+    const val SCHEDULE_COUNT = "schedule:count"
+    const val SCHEDULE_EMPTY = "schedule:empty"
+    const val SCHEDULE_CLEAR = "schedule:clear"
+
     /** One row of the standalone running order, by its position. */
     fun orderRow(index: Int) = "order:row:$index"
 
@@ -374,6 +379,8 @@ internal object UiTags {
     const val SETTINGS_SERVER_SECTION = "settings:serverSection"
     const val SETTINGS_COMPUTER_SECTION = "settings:computerSection"
     const val SETTINGS_MODE_SECTION = "settings:modeSection"
+    const val SETTINGS_DISPLAY_SECTION = "settings:displaySection"
+    const val TOAST_HOST = "toastHost"
     const val SETTINGS_TEST_ERROR = "settings:testError"
     const val SETTINGS_TEST_ERROR_SENT = "settings:testErrorSent"
 

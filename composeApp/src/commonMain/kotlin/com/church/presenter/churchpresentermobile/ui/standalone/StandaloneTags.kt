@@ -10,8 +10,18 @@ package com.church.presenter.churchpresentermobile.ui.standalone
  */
 internal object StandaloneTags {
 
-    // ── The live controller ──────────────────────────────────────────────
-    const val OUTPUT_CHIP = "controller:outputs"
+    // ── The live bar, and the chip it folds into ─────────────────────────
+    const val LIVE_BAR = "liveBar"
+    const val LIVE_BAR_PREVIEW = "liveBar:preview"
+    const val LIVE_BAR_PREV = "liveBar:prev"
+    const val LIVE_BAR_NEXT = "liveBar:next"
+    const val LIVE_BAR_BLANK = "liveBar:blank"
+    const val LIVE_BAR_STATUS = "liveBar:status"
+    const val LIVE_BAR_COLLAPSE = "liveBar:collapse"
+    const val LIVE_CHIP = "liveChip"
+
+    // ── The full live view, and the pieces it shares with the bar ────────
+    const val LIVE_VIEW = "liveView"
     const val PREVIEW = "controller:preview"
     const val EMPTY_DECK = "controller:emptyDeck"
     const val PREV = "controller:prev"
@@ -33,7 +43,8 @@ internal object StandaloneTags {
     /** One photo offered as a backdrop. */
     fun backdropPhoto(id: String) = "controller:backdrop:photo:$id"
 
-    // ── The outputs sheet ────────────────────────────────────────────────
+    // ── Settings → Display ───────────────────────────────────────────────
+    const val DISPLAY_OUTPUTS = "display:outputs"
     const val OUTPUTS_EMPTY = "outputs:empty"
     const val OUTPUTS_GUIDANCE = "outputs:guidance"
 
@@ -64,13 +75,4 @@ internal object StandaloneTags {
     fun photoRemove(id: String) = "localPhotos:photo:$id:remove"
 
     fun photoLive(id: String) = "localPhotos:photo:$id:live"
-
-    // ── A link shown by this device ──────────────────────────────────────
-    const val WEB_URL = "localWeb:url"
-    const val WEB_GO_LIVE = "localWeb:goLive"
-    const val WEB_CLEAR = "localWeb:clear"
-    const val WEB_NOT_A_LINK = "localWeb:notALink"
-    const val WEB_NO_OUTPUT = "localWeb:noOutput"
-    const val WEB_REFUSES_FRAMING = "localWeb:refusesFraming"
-    const val WEB_LIVE_URL = "localWeb:liveUrl"
 }

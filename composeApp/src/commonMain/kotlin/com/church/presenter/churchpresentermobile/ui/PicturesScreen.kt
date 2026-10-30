@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -44,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.viewmodel.DesktopRequest
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.pictures_loading_error
@@ -134,6 +134,7 @@ fun PicturesScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val isProjecting by viewModel.isProjecting.collectAsState()
+    val pendingRequests by viewModel.pendingRequests.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
     val isUploading by viewModel.isUploading.collectAsState()
     val uploadProgress by viewModel.uploadProgress.collectAsState()
@@ -276,6 +277,8 @@ fun PicturesScreen(
                 }
             ) { launchPicker ->
                 ContentActionButtons(
+                    projectBusy        = DesktopRequest.PROJECT in pendingRequests,
+                    scheduleBusy       = DesktopRequest.SCHEDULE in pendingRequests,
                     isProjecting       = isProjecting,
                     onToggleProjecting = {
                         if (isProjecting) viewModel.clearDisplay()
@@ -324,6 +327,8 @@ fun PicturesScreen(
             // Tapping it shows the "upload disabled" snackbar; the OS picker is
             // never registered and therefore can never be presented.
             ContentActionButtons(
+                projectBusy        = DesktopRequest.PROJECT in pendingRequests,
+                scheduleBusy       = DesktopRequest.SCHEDULE in pendingRequests,
                 isProjecting       = isProjecting,
                 onToggleProjecting = {
                     if (isProjecting) viewModel.clearDisplay()
@@ -355,10 +360,7 @@ fun PicturesScreen(
         }
 
         // Non-dismissible upload overlay — shown until the upload completes
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier  = Modifier.align(Alignment.BottomCenter),
-        )
+        ToastHost(snackbarHostState)
 
         if (isUploading) {
             val detail = if (uploadPhotoTotal > 1) {

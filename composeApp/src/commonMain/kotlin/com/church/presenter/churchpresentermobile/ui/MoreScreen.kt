@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.HorizontalDivider
@@ -52,6 +53,7 @@ import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import churchpresentermobile.composeapp.generated.resources.more_pane_empty_body
 import churchpresentermobile.composeapp.generated.resources.more_pane_empty_title
 import churchpresentermobile.composeapp.generated.resources.strongs_dictionary_title
+import churchpresentermobile.composeapp.generated.resources.tab_library
 import churchpresentermobile.composeapp.generated.resources.tab_more
 import churchpresentermobile.composeapp.generated.resources.tab_qa_admin
 import churchpresentermobile.composeapp.generated.resources.web_title
@@ -59,6 +61,7 @@ import churchpresentermobile.composeapp.generated.resources.more_announcements_s
 import churchpresentermobile.composeapp.generated.resources.more_announcements_title
 import churchpresentermobile.composeapp.generated.resources.more_contact_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_contact_title
+import churchpresentermobile.composeapp.generated.resources.more_library_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_notices_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_notices_title
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_subtitle
@@ -127,6 +130,13 @@ fun MoreScreen(
     val available = MoreDestination.forMode(mode, tablet)
     val badgeFor = rememberNewBadges(newBadges, available, onBadgesShown)
     val entries = listOf(
+        // Standalone only, and first: it was a tab before the redesign.
+        MoreEntry(
+            MoreDestination.LIBRARY,
+            stringResource(Res.string.tab_library),
+            stringResource(Res.string.more_library_subtitle),
+            Icons.Outlined.LibraryMusic,
+        ),
         MoreEntry(
             MoreDestination.CALENDAR,
             stringResource(Res.string.more_calendar_title),
@@ -350,6 +360,7 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, 
 @Composable
 fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
     when (destination) {
+        MoreDestination.LIBRARY -> stringResource(Res.string.tab_library)
         MoreDestination.CALENDAR -> stringResource(Res.string.more_calendar_title)
         MoreDestination.CANVAS -> stringResource(Res.string.more_canvas_title)
         MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)

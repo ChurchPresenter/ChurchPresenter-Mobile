@@ -25,10 +25,16 @@ class AppHeaderOwnershipTest {
 
     @Test
     fun `a split tab draws its own`() {
-        listOf(AppTab.SONGS, AppTab.BIBLE, AppTab.MEDIA, AppTab.MORE, AppTab.LIBRARY, AppTab.PRESENT)
+        listOf(AppTab.SONGS, AppTab.BIBLE, AppTab.MEDIA, AppTab.MORE)
             .forEach { tab ->
                 assertTrue(tabDrawsOwnHeader(tab, twoPane = true), "$tab lays itself out in panes")
             }
+    }
+
+    @Test
+    fun `the schedule tab leaves its header to the shell`() {
+        // A single list, so the shell's one header serves it on a tablet too.
+        assertFalse(tabDrawsOwnHeader(AppTab.SCHEDULE, twoPane = true))
     }
 
     @Test

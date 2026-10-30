@@ -774,10 +774,8 @@
     <string name="standalone_blank">Boş</string>
     <string name="standalone_live">Canlı</string>
     <string name="standalone_clear">Temizle</string>
-    <string name="web_refuses_framing">%1$s başka bir sayfanın içinde gösterilmeye izin vermiyor, bu yüzden tarayıcı ekranı bunun yerine bir hata gösterir. Bu telefona bağlı bir ekran ise onu yine de gösterir.</string>
     <string name="standalone_preview">Önizleme</string>
     <string name="standalone_no_output">Bağlı ekran yok</string>
-    <string name="standalone_output_count">%1$s ekran</string>
     <string name="standalone_empty_title">Hiçbir şey yüklenmedi</string>
     <string name="standalone_empty_body">Buraya yüklemek için bir ilahi ya da Kutsal Kitap bölümü açıp Sun'a dokunun.</string>
     <string name="standalone_slide_position">%1$s / %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Kilise adı (üst köşe)</string>
     <string name="standalone_brand_line_hint">Hiçbiri için boş bırakın</string>
     <string name="standalone_show_clock">Saat göster</string>
-    <string name="web_not_a_link">Bir web adresi yazın, örn. example.com</string>
     <string name="standalone_show_reference">Referans satırını göster</string>
     <string name="standalone_show_reference_hint">Sözlerin altında gösterilen ilahi bölümü ya da ayet.</string>
     <string name="standalone_look_reset">Görünümü sıfırla</string>

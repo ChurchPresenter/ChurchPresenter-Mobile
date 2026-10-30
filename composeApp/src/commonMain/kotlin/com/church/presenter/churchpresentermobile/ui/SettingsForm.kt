@@ -105,6 +105,8 @@ internal fun SettingsPage(
     onCheckStatus: () -> Unit,
     onContact: () -> Unit,
     twoPane: Boolean,
+    /** Settings → Display, built by the shell, which owns the engine and the screens it drives. */
+    displayPage: @Composable () -> Unit = {},
 ) {
     val scroll = rememberScrollState()
     Column(
@@ -117,6 +119,10 @@ internal fun SettingsPage(
     ) {
         when (section) {
             SettingsSection.MODE -> ModeSection(appMode = appMode, onModeTapped = onModeTapped)
+            SettingsSection.DISPLAY -> {
+                SectionTitle(SettingsSection.DISPLAY.title, tag = UiTags.SETTINGS_DISPLAY_SECTION)
+                displayPage()
+            }
             SettingsSection.SERVER -> ServerSection(
                 appSettings = appSettings,
                 activeUrl = activeUrl,

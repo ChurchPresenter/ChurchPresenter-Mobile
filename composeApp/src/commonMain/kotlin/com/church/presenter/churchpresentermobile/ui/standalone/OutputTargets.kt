@@ -5,21 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.CastConnected
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,11 +49,11 @@ import com.church.presenter.churchpresentermobile.present.sink.EXTERNAL_DISPLAY_
 import com.church.presenter.churchpresentermobile.ui.QrCodeImage
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
-import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Lists every screen the phone can project onto, and what each is doing.
+ * Every screen the phone can project onto, and what each is doing — the list
+ * Settings → Display shows.
  *
  * Sinks appear even when nothing is connected — an "External display — waiting
  * for a screen" row tells the operator the feature exists and what to do next,
@@ -68,41 +63,18 @@ import org.jetbrains.compose.resources.stringResource
  * inside the app — the operator has to go out to Control Centre or quick
  * settings — so while the external display is unattached its row carries the
  * platform's own instructions for getting there.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun OutputTargetsSheet(
-    sinks: List<SinkStatus>,
-    onDismiss: () -> Unit,
-) {
-    val colors = LocalAppColors.current
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = colors.sheetBackground,
-    ) {
-        OutputTargetsContent(sinks)
-    }
-}
-
-/**
- * The sheet's list, without the sheet around it.
  *
- * `internal` so the rows can be exercised directly: which row carries the
- * address, and which carries the "go to Control Centre" guidance, is decided
- * per sink and cannot be reached through a `ModalBottomSheet`'s animation.
+ * It was a bottom sheet over the Present tab. Picking a screen is set-up, done
+ * once before a service, so it lives in Settings now; the live bar's status dot
+ * is the shortcut back here. It does not scroll on its own — the settings page
+ * around it does.
  */
 @Composable
-internal fun OutputTargetsContent(sinks: List<SinkStatus>) {
+internal fun OutputTargetsContent(sinks: List<SinkStatus>, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     run {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .verticalScrollWithScrollbar(rememberScrollState())
-                .padding(horizontal = AppDimens.space20, vertical = AppDimens.space8)
-                .padding(bottom = AppDimens.space16),
+            modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {
             Text(

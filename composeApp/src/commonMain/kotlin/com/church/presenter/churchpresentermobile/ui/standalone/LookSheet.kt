@@ -99,9 +99,8 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Everything about how the audience screen looks.
  *
- * A sheet rather than more rows on the Present tab: that tab is the live surface during a
- * service, and Next, Blank and Live must not move further down the screen because someone once
- * wanted to change a color.
+ * A sheet opened from Settings → Display rather than more rows on that page: a theme is a dozen
+ * controls, and the screens list and backdrop above it should stay in view while choosing one.
  *
  * Every control writes straight through — the theme rides inside each slide, so the phone's own
  * output, an attached screen and any browser on the hosted page all follow the same edit without

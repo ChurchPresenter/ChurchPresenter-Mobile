@@ -774,10 +774,8 @@
     <string name="standalone_blank">வெற்றுத் திரை</string>
     <string name="standalone_live">நேரலை</string>
     <string name="standalone_clear">அழி</string>
-    <string name="web_refuses_framing">%1$s தன்னை வேறொரு பக்கத்திற்குள் காட்ட அனுமதிக்காது, எனவே உலாவித் திரை அதற்குப் பதிலாகப் பிழையைக் காட்டுகிறது. இந்தத் தொலைபேசியுடன் இணைக்கப்பட்ட திரையில் அது இன்னும் காட்டப்படும்.</string>
     <string name="standalone_preview">முன்னோட்டம்</string>
     <string name="standalone_no_output">திரை எதுவும் இணைக்கப்படவில்லை</string>
-    <string name="standalone_output_count">%1$s திரை(கள்)</string>
     <string name="standalone_empty_title">எதுவும் ஏற்றப்படவில்லை</string>
     <string name="standalone_empty_body">ஒரு பாடலையோ பைபிள் அதிகாரத்தையோ திறந்து, இங்கே ஏற்ற காட்சி என்பதைத் தட்டவும்.</string>
     <string name="standalone_slide_position">%2$s இல் %1$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">சபையின் பெயர் (மேல் மூலை)</string>
     <string name="standalone_brand_line_hint">எதுவும் வேண்டாமெனில் காலியாக விடவும்</string>
     <string name="standalone_show_clock">கடிகாரத்தைக் காட்டு</string>
-    <string name="web_not_a_link">example.com போன்ற ஒரு இணைய முகவரியைத் தட்டச்சு செய்யவும்</string>
     <string name="standalone_show_reference">குறிப்பு வரியைக் காட்டு</string>
     <string name="standalone_show_reference_hint">வரிகளுக்குக் கீழே காட்டப்படும் பாடல் பகுதி அல்லது வசனம்.</string>
     <string name="standalone_look_reset">தோற்றத்தை மீட்டமை</string>

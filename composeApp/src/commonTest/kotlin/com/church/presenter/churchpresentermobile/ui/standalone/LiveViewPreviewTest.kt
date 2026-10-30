@@ -24,7 +24,7 @@ import kotlin.test.assertTrue
  * the next.
  */
 @OptIn(ExperimentalTestApi::class)
-class ControllerPreviewTest {
+class LiveViewPreviewTest {
 
     private fun StandaloneFixture.load(vararg items: String, title: String = "Notices") {
         engine.setDeck(SlideDeckBuilder.fromAnnouncements(items.toList(), title))
@@ -36,7 +36,7 @@ class ControllerPreviewTest {
     fun thePreviewIsAlwaysOnScreen() = runComposeUiTest {
         val f = StandaloneFixture()
 
-        showController(f)
+        showLiveView(f)
 
         assertTrue(exists(StandaloneTags.PREVIEW))
     }
@@ -44,7 +44,7 @@ class ControllerPreviewTest {
     @Test
     fun thePreviewShowsTheLiveSlidesWords() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
 
         f.load("First slide", "Second slide")
 
@@ -54,7 +54,7 @@ class ControllerPreviewTest {
     @Test
     fun thePreviewFollowsAStep() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide")
         awaitThat { isShowing("First slide") }
 
@@ -66,7 +66,7 @@ class ControllerPreviewTest {
     @Test
     fun thePreviewFollowsASectionTap() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide", "Third slide")
         awaitThat { exists(StandaloneTags.section(2)) }
 
@@ -80,7 +80,7 @@ class ControllerPreviewTest {
         // The preview fades with the wall rather than dropping the words, so the
         // thing to assert is the slide it is handed.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide")
         awaitThat { isShowing("First slide") }
 
@@ -92,7 +92,7 @@ class ControllerPreviewTest {
     @Test
     fun unblankingPutsTheSlideBack() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide")
         click(StandaloneTags.BLANK)
         awaitThat { f.engine.isBlank.value }
@@ -105,7 +105,7 @@ class ControllerPreviewTest {
     @Test
     fun holdingBackReachesTheSlideThePreviewDraws() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide")
         awaitThat { isShowing("First slide") }
 
@@ -117,7 +117,7 @@ class ControllerPreviewTest {
     @Test
     fun thePreviewEmptiesWhenTheDeckIsCleared() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide")
         awaitThat { isShowing("First slide") }
 
@@ -130,7 +130,7 @@ class ControllerPreviewTest {
     fun steppingWhileBlankedStillMovesUnderneath() = runComposeUiTest {
         // Lining the next slide up behind a blank is how a service is run.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide")
         click(StandaloneTags.BLANK)
         awaitThat { f.engine.isBlank.value }
@@ -143,7 +143,7 @@ class ControllerPreviewTest {
     @Test
     fun unblankingAfterAStepShowsTheNewSlide() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide")
         click(StandaloneTags.BLANK)
         awaitThat { f.engine.isBlank.value }
@@ -160,7 +160,7 @@ class ControllerPreviewTest {
     @Test
     fun theLiveSectionIsMarked() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide")
         awaitThat { exists(StandaloneTags.section(0)) }
 
@@ -170,7 +170,7 @@ class ControllerPreviewTest {
     @Test
     fun theMarkFollowsAStep() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide")
         awaitThat { exists(StandaloneTags.section(1)) }
 
@@ -183,7 +183,7 @@ class ControllerPreviewTest {
     @Test
     fun theMarkFollowsATap() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide", "Third slide")
         awaitThat { exists(StandaloneTags.section(2)) }
 
@@ -198,7 +198,7 @@ class ControllerPreviewTest {
         // It is how the operator finds the verse they want without stepping
         // through the whole song on the wall.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
 
         f.load("First slide", "Second slide")
 
@@ -208,7 +208,7 @@ class ControllerPreviewTest {
     @Test
     fun aSecondDeckReplacesTheFirstsSections() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide", "Third slide")
         awaitThat { exists(StandaloneTags.section(2)) }
 
@@ -222,7 +222,7 @@ class ControllerPreviewTest {
         // Landing on slide three of a one-slide song is how a blank screen
         // happens mid-service.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide", "Second slide", "Third slide")
         awaitThat { exists(StandaloneTags.section(2)) }
         click(StandaloneTags.section(2))
@@ -236,7 +236,7 @@ class ControllerPreviewTest {
     @Test
     fun aSecondDeckShowsItsOwnFirstSlide() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("First slide")
         awaitThat { isShowing("First slide") }
 
@@ -248,7 +248,7 @@ class ControllerPreviewTest {
     @Test
     fun aSingleSlideDeckHasOneSection() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
 
         f.load("Only one")
 
@@ -259,7 +259,7 @@ class ControllerPreviewTest {
     @Test
     fun aLongDeckListsItsLaterSections() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
 
         f.load("One", "Two", "Three", "Four", "Five")
 
@@ -269,7 +269,7 @@ class ControllerPreviewTest {
     @Test
     fun steppingThroughALongDeckEndsOnTheLast() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", "Two", "Three", "Four", "Five")
         awaitThat { exists(StandaloneTags.section(4)) }
 
@@ -281,7 +281,7 @@ class ControllerPreviewTest {
     @Test
     fun steppingBackFromTheEndWalksBack() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", "Two", "Three")
         awaitThat { exists(StandaloneTags.section(2)) }
         click(StandaloneTags.section(2))
@@ -296,7 +296,7 @@ class ControllerPreviewTest {
     @Test
     fun steppingBackPastTheStartStaysAtTheStart() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", "Two")
         awaitThat { exists(StandaloneTags.section(1)) }
 
@@ -308,7 +308,7 @@ class ControllerPreviewTest {
     @Test
     fun anEmptyDeckHasNothingToStepThrough() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
 
         click(StandaloneTags.NEXT)
 
@@ -318,7 +318,7 @@ class ControllerPreviewTest {
     @Test
     fun clearingAfterSteppingResetsThePosition() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", "Two", "Three")
         awaitThat { exists(StandaloneTags.section(2)) }
         click(StandaloneTags.section(2))
@@ -333,7 +333,7 @@ class ControllerPreviewTest {
     @Test
     fun aDeckLoadedAfterClearingStartsFresh() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", "Two")
         awaitThat { exists(StandaloneTags.section(1)) }
         click(StandaloneTags.CLEAR)
@@ -347,7 +347,7 @@ class ControllerPreviewTest {
     @Test
     fun theTransportSurvivesADeckChange() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", "Two")
         awaitThat { exists(StandaloneTags.section(1)) }
 
@@ -362,7 +362,7 @@ class ControllerPreviewTest {
         // Projecting is the deliberate "show this" press; leaving the screen
         // black after it would read as a dead projector.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One")
         click(StandaloneTags.BLANK)
         awaitThat { f.engine.isBlank.value }
@@ -377,7 +377,7 @@ class ControllerPreviewTest {
         // Opening a song to see its verses is not projecting it — that is the
         // difference between loading a deck and setting one.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One")
         awaitThat { isShowing("One") }
         val framesBefore = f.sink.rendered.size
@@ -391,7 +391,7 @@ class ControllerPreviewTest {
     @Test
     fun aHeldBackScreenStaysHeldBackAcrossADeckChange() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One")
         click(StandaloneTags.LIVE)
         awaitThat { !f.engine.isLive.value }
@@ -404,7 +404,7 @@ class ControllerPreviewTest {
     @Test
     fun theDeckTitleFollowsTheDeck() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One", title = "Notices")
         awaitThat { isShowing("NOTICES") }
 
@@ -416,7 +416,7 @@ class ControllerPreviewTest {
     @Test
     fun theEmptyHintReturnsAfterTheLastDeckIsCleared() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
         f.load("One")
         awaitThat { exists(StandaloneTags.section(0)) }
 
@@ -430,7 +430,7 @@ class ControllerPreviewTest {
         // Blanking with nothing loaded is harmless, and stays that way when a
         // deck arrives.
         val f = StandaloneFixture()
-        showController(f)
+        showLiveView(f)
 
         click(StandaloneTags.BLANK)
 

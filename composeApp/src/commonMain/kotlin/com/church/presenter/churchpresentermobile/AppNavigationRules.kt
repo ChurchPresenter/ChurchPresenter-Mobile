@@ -50,8 +50,7 @@ internal fun tabForPage(page: Int, tabs: List<AppTab>): AppTab =
 
 /** The name a tab reports to the "Pages and screens" report. */
 internal fun tabScreenName(tab: AppTab): String = when (tab) {
-    AppTab.PRESENT -> AnalyticsScreen.STANDALONE
-    AppTab.LIBRARY -> AnalyticsScreen.LIBRARY
+    AppTab.SCHEDULE -> AnalyticsScreen.SCHEDULE
     AppTab.SONGS -> AnalyticsScreen.SONGS
     AppTab.BIBLE -> AnalyticsScreen.BIBLE_BOOKS
     AppTab.MEDIA -> AnalyticsScreen.MEDIA
@@ -67,6 +66,7 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
  * own data, and the launcher grid itself is already covered by the More tab.
  */
 internal fun moreScreenName(destination: MoreDestination?): String? = when (destination) {
+    MoreDestination.LIBRARY -> AnalyticsScreen.LIBRARY
     MoreDestination.CALENDAR -> AnalyticsScreen.CALENDAR
     MoreDestination.CANVAS -> AnalyticsScreen.CANVAS
     MoreDestination.PICTURES -> AnalyticsScreen.PICTURES
@@ -128,15 +128,14 @@ internal fun tabDrawsOwnHeader(tab: AppTab, twoPane: Boolean): Boolean =
  * The tabs that lay themselves out in panes.
  *
  * Everything but [AppTab.PRESENTATION], which the tablet design does not cover —
- * it keeps the single bar and the one-screen layout until it does.
+ * it keeps the single bar and the one-screen layout until it does — and
+ * [AppTab.SCHEDULE], a single list that the shell's one header serves.
  */
 private val TABS_WITH_PANE_HEADERS = setOf(
-    AppTab.PRESENT,
     AppTab.SONGS,
     AppTab.BIBLE,
     AppTab.MEDIA,
     AppTab.MORE,
-    AppTab.LIBRARY,
     AppTab.CALENDAR,
 )
 

@@ -17,4 +17,10 @@ actual object PresentationKeepAlive {
         val context = ActivityHolder.current?.applicationContext ?: return
         PresentationForegroundService.stop(context)
     }
+
+    /** Redraws the notification — the slide as its picture, the song as its title. */
+    actual fun show(nowShowing: NowShowing?) {
+        val context = ActivityHolder.current?.applicationContext ?: return
+        PresentationForegroundService.show(context, nowShowing)
+    }
 }

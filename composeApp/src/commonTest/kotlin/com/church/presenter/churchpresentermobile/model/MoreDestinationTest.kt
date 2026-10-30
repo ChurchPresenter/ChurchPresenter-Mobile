@@ -18,11 +18,12 @@ class MoreDestinationTest {
     private val standalone = MoreDestination.forMode(AppMode.STANDALONE)
 
     @Test
-    fun remoteOffersEveryDestinationButTheReport() {
+    fun remoteOffersEveryDestinationButTheReportAndTheLibrary() {
         // The report counts what *this device* projected; in remote mode the
-        // desktop does the projecting and keeps its own. The canvas is tablet-only.
+        // desktop does the projecting and keeps its own. The Library is content
+        // this device projects itself. The canvas is tablet-only.
         assertEquals(
-            MoreDestination.entries.toSet() - MoreDestination.REPORT - MoreDestination.CANVAS,
+            MoreDestination.entries.toSet() - MoreDestination.REPORT - MoreDestination.LIBRARY - MoreDestination.CANVAS,
             remote.toSet(),
         )
     }
@@ -43,10 +44,14 @@ class MoreDestinationTest {
     }
 
     @Test
-    fun onlyTheReportIsUniqueToStandalone() {
-        // Everything else standalone offers has a remote counterpart. The report is
-        // the one screen about this device's own output, which remote does not have.
-        assertEquals(listOf(MoreDestination.REPORT), standalone - remote.toSet())
+    fun onlyTheLibraryAndTheReportAreUniqueToStandalone() {
+        // Everything else standalone offers has a remote counterpart. The Library
+        // holds what this device projects, and the report is about this device's
+        // own output; remote has neither — the desktop holds and reports its own.
+        assertEquals(
+            listOf(MoreDestination.LIBRARY, MoreDestination.REPORT),
+            standalone - remote.toSet(),
+        )
     }
 
     @Test
@@ -72,10 +77,16 @@ class MoreDestinationTest {
     }
 
     @Test
-    fun photosAndWebSurviveIntoStandalone() {
-        // Both have local equivalents: pick from this device, present from here.
+    fun photosSurviveIntoStandalone() {
+        // A local equivalent: pick from this device, present from here.
         assertTrue(MoreDestination.PICTURES in standalone)
-        assertTrue(MoreDestination.WEB in standalone)
+    }
+
+    @Test
+    fun webIsRemoteOnly() {
+        // It hands a page to the desktop; standalone has no page screen of its own.
+        assertTrue(MoreDestination.WEB in remote)
+        assertFalse(MoreDestination.WEB in standalone)
     }
 
     @Test

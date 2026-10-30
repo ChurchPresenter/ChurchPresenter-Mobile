@@ -37,10 +37,9 @@ class NavRailTest {
 
     @Test
     fun standaloneGetsItsOwnTabsAndNotTheDesktopOnes() = runComposeUiTest {
-        showRail(selected = AppTab.PRESENT, tabs = AppTab.forMode(AppMode.STANDALONE))
+        showRail(selected = AppTab.SCHEDULE, tabs = AppTab.forMode(AppMode.STANDALONE))
 
-        assertTrue(exists(UiTags.tab(AppTab.PRESENT)))
-        assertTrue(exists(UiTags.tab(AppTab.LIBRARY)))
+        assertTrue(exists(UiTags.tab(AppTab.SCHEDULE)))
         // Media casting and the desktop's decks mean nothing with no desktop.
         assertFalse(exists(UiTags.tab(AppTab.MEDIA)), "Media has no place in standalone")
         assertFalse(exists(UiTags.tab(AppTab.PRESENTATION)), "decks have no place in standalone")

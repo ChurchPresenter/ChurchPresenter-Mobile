@@ -53,7 +53,7 @@ class ServiceOrderListingTest {
     fun theCountIsShown() = runComposeUiTest {
         showServiceOrder()
 
-        assertTrue(exists(UiTags.DRAWER_COUNT))
+        assertTrue(exists(UiTags.SCHEDULE_COUNT))
     }
 
     @Test
@@ -88,14 +88,14 @@ class ServiceOrderListingTest {
     fun anEmptyOrderSaysSo() = runComposeUiTest {
         showServiceOrder(entries = emptyList())
 
-        assertTrue(exists(UiTags.DRAWER_EMPTY))
+        assertTrue(exists(UiTags.SCHEDULE_EMPTY))
     }
 
     @Test
     fun theEmptyMessageIsGoneOnceThereIsAnEntry() = runComposeUiTest {
         showServiceOrder()
 
-        assertFalse(exists(UiTags.DRAWER_EMPTY))
+        assertFalse(exists(UiTags.SCHEDULE_EMPTY))
     }
 
     @Test
@@ -106,10 +106,12 @@ class ServiceOrderListingTest {
     }
 
     @Test
-    fun theCountIsStillShownWhenTheOrderIsEmpty() = runComposeUiTest {
-        // "0 items" is information; a missing line reads as a broken drawer.
+    fun anEmptyOrderExplainsHowToFillItInsteadOfCountingNothing() = runComposeUiTest {
+        // A whole tab of "0 items" says nothing useful; the empty state says
+        // where entries come from.
         showServiceOrder(entries = emptyList())
 
-        assertTrue(exists(UiTags.DRAWER_COUNT))
+        assertFalse(exists(UiTags.SCHEDULE_COUNT))
+        assertTrue(exists(UiTags.SCHEDULE_EMPTY))
     }
 }

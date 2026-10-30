@@ -805,10 +805,8 @@
     <string name="standalone_blank">Ecran gol</string>
     <string name="standalone_live">Live</string>
     <string name="standalone_clear">Golește</string>
-    <string name="web_refuses_framing">%1$s nu permite să fie afișat în interiorul altei pagini, așa că ecranul din browser arată o eroare. Un ecran conectat la acest telefon îl afișează în continuare.</string>
     <string name="standalone_preview">Previzualizare</string>
     <string name="standalone_no_output">Niciun ecran conectat</string>
-    <string name="standalone_output_count">%1$s ecran(e)</string>
     <string name="standalone_empty_title">Nimic încărcat</string>
     <string name="standalone_empty_body">Deschide un cântec sau un capitol din Biblie și atinge Prezintă pentru a-l încărca aici.</string>
     <string name="standalone_slide_position">%1$s din %2$s</string>
@@ -917,7 +915,6 @@
     <string name="standalone_brand_line">Numele bisericii (colțul de sus)</string>
     <string name="standalone_brand_line_hint">Lasă gol pentru niciunul</string>
     <string name="standalone_show_clock">Arată un ceas</string>
-    <string name="web_not_a_link">Scrie o adresă web, de exemplu example.com</string>
     <string name="standalone_show_reference">Arată rândul de referință</string>
     <string name="standalone_show_reference_hint">Secțiunea cântecului sau versetul afișat sub text.</string>
     <string name="standalone_look_reset">Resetează aspectul</string>

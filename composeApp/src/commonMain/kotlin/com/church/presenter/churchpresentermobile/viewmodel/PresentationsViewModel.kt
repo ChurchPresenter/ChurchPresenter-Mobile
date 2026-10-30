@@ -104,6 +104,16 @@ class PresentationsViewModel(
     private val _toastEvent = MutableStateFlow<ToastEvent?>(null)
     val toastEvent: StateFlow<ToastEvent?> = _toastEvent.asStateFlow()
 
+    // Requests on their way to the desktop, which may be waiting on its
+    // operator's approval for up to two minutes. See [DesktopRequests].
+    private val requests = DesktopRequests()
+
+    /** Which buttons have a request out — each shows a spinner and ignores taps. */
+    val pendingRequests: StateFlow<Set<DesktopRequest>> = requests.pending
+
+    /** Said when a request has not been answered at once — likely an approval prompt. */
+    private val waitingForDesktop: () -> Unit = { _toastEvent.value = ToastEvent.WaitingForDesktop }
+
     init {
         loadPresentations()
     }
@@ -192,6 +202,9 @@ class PresentationsViewModel(
      * @param slideIndex   The zero-based index of the slide that was tapped.
      */
     fun selectPresentation(presentation: Presentation, slideIndex: Int) {
+        // The last one is still waiting on the desktop; another would queue behind
+        // its approval and land out of order.
+        if (requests.isPending(DesktopRequest.PROJECT)) return
         _selectedPresentation.value = presentation
         _selectedSlideIndex.value = slideIndex
         _isProjecting.value = true
@@ -206,7 +219,7 @@ class PresentationsViewModel(
             return
         }
         Logger.d(TAG, "selectPresentation — id=$id name=${presentation.displayName} slideIndex=$slideIndex")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.PROJECT, onSlow = waitingForDesktop) {
             presentationService.selectPresentation(id, slideIndex)
                 .onSuccess {
                     Logger.d(TAG, "selectPresentation — success")
@@ -247,6 +260,7 @@ class PresentationsViewModel(
 
     /** POSTs /api/clear and resets projection state. */
     fun clearDisplay() {
+        if (requests.isPending(DesktopRequest.PROJECT)) return
         _isProjecting.value = false
         // _selectedPresentation and _selectedSlideIndex are intentionally kept so
         // the Cast button can re-project and Add-to-Schedule still has a target.
@@ -255,7 +269,7 @@ class PresentationsViewModel(
             Logger.d(TAG, "clearDisplay — DEMO MODE")
             return
         }
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.PROJECT) {
             presentationService.clearDisplay()
                 .onSuccess { Logger.d(TAG, "clearDisplay — success") }
                 .onFailure { e ->
@@ -275,7 +289,7 @@ class PresentationsViewModel(
             return
         }
         Logger.d(TAG, "addToSchedule — id=${presentation.displayId}")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.SCHEDULE, onSlow = waitingForDesktop) {
             presentationService.addToSchedule(presentation)
                 .onSuccess {
                     Logger.d(TAG, "addToSchedule — success")

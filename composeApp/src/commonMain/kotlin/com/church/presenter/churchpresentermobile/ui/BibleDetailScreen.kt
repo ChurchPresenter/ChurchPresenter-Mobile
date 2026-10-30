@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.bible_multi_select_count
 import churchpresentermobile.composeapp.generated.resources.bible_no_verses
+import com.church.presenter.churchpresentermobile.viewmodel.DesktopRequest
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -75,7 +76,9 @@ fun BibleDetailScreen(
     onToggleHold: () -> Unit = {},
     onClearDisplay: () -> Unit = {},
     onAddToSchedule: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Requests still waiting on the desktop; their buttons spin and take no taps. */
+    pendingRequests: Set<DesktopRequest> = emptySet(),
 ) {
     if (selectedChapter != null) {
         BibleVersesPane(
@@ -96,6 +99,7 @@ fun BibleDetailScreen(
             onClearDisplay = onClearDisplay,
             onAddToSchedule = onAddToSchedule,
             modifier = modifier,
+            pendingRequests = pendingRequests,
         )
     } else {
         ChaptersGrid(
@@ -133,6 +137,8 @@ internal fun BibleVersesPane(
     onToggleMultiSelect: () -> Unit = {},
     onToggleHold: () -> Unit = {},
     onClearDisplay: () -> Unit = {},
+    /** Requests still waiting on the desktop; their buttons spin and take no taps. */
+    pendingRequests: Set<DesktopRequest> = emptySet(),
 ) {
     val colors = LocalAppColors.current
     run {
@@ -200,6 +206,8 @@ internal fun BibleVersesPane(
                 onToggleHold       = onToggleHold,
                 onClearDisplay     = onClearDisplay,
                 onToggleMultiSelect = onToggleMultiSelect,
+                projectBusy        = DesktopRequest.PROJECT in pendingRequests,
+                scheduleBusy       = DesktopRequest.SCHEDULE in pendingRequests,
             )
         }
     }

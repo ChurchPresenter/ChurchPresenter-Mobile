@@ -6,23 +6,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Campaign
@@ -43,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.action_clear
-import churchpresentermobile.composeapp.generated.resources.cd_close
 import churchpresentermobile.composeapp.generated.resources.cd_delete
-import churchpresentermobile.composeapp.generated.resources.schedule_drawer_empty
 import churchpresentermobile.composeapp.generated.resources.schedule_drawer_item_count
-import churchpresentermobile.composeapp.generated.resources.schedule_drawer_title
+import churchpresentermobile.composeapp.generated.resources.schedule_empty_body
+import churchpresentermobile.composeapp.generated.resources.schedule_empty_title
 import churchpresentermobile.composeapp.generated.resources.service_order_move_down
 import churchpresentermobile.composeapp.generated.resources.service_order_move_up
 import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
@@ -56,98 +48,69 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The standalone running order, in the same drawer remote uses for the
- * desktop's schedule.
+ * Standalone's Schedule tab: the running order this device will present.
  *
- * Same gesture, same place, same shape — the operator should not have to learn
- * a second idea of "what we're doing today" just because the phone is doing the
- * presenting. What differs is that this list is editable here: it is this
- * device's list, so removing and reordering belong to the drawer rather than to
- * a machine somewhere else.
+ * It was a drawer — the remote one, reused — but a drawer opened by swiping
+ * right on whichever tab happened to be first fought the pager, and nothing else
+ * in the app worked that way. The running order is what a service is *run*
+ * from, so it is a tab, and the first one.
+ *
+ * The list is this device's own, so it is edited in place: reordered, trimmed,
+ * cleared. Tapping an entry opens it on the tab that owns it, where its verses
+ * go live with a tap.
  *
  * @param entries The running order, in order.
  * @param onItemClick Opens the entry on the tab that owns it.
  */
 @Composable
-fun ServiceOrderDrawerContent(
+fun ServiceScheduleScreen(
     entries: List<LocalSetlistEntry>,
     onItemClick: (LocalSetlistEntry) -> Unit = {},
     onMove: (from: Int, to: Int) -> Unit = { _, _ -> },
     onRemove: (index: Int) -> Unit = {},
     onClear: () -> Unit = {},
-    onClose: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
 
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(320.dp)
-            .background(colors.background)
-    ) {
+    if (entries.isEmpty()) {
+        EmptyState(
+            title = stringResource(Res.string.schedule_empty_title),
+            body = stringResource(Res.string.schedule_empty_body),
+            modifier = modifier.background(colors.background).testTag(UiTags.SCHEDULE_EMPTY),
+        )
+        return
+    }
+
+    Column(modifier = modifier.fillMaxSize().background(colors.background)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 12.dp),
+                .padding(start = 20.dp, end = 12.dp, top = 4.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(Res.string.schedule_drawer_title),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.text,
-                )
-                Text(
-                    text = stringResource(Res.string.schedule_drawer_item_count, entries.size),
-                    fontSize = 11.sp,
-                    color = colors.muted,
-                    modifier = Modifier.testTag(UiTags.DRAWER_COUNT),
-                )
-            }
-            if (entries.isNotEmpty()) {
-                Text(
-                    text = stringResource(Res.string.action_clear),
-                    fontSize = 12.sp,
-                    color = colors.muted,
-                    modifier = Modifier
-                        .testTag(UiTags.DRAWER_CLEAR)
-                        .clickable(onClick = onClear)
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                )
-            }
-            IconTileButton(
-                icon = Icons.Filled.Close,
-                contentDescription = stringResource(Res.string.cd_close),
-                tint = colors.muted,
-                onClick = onClose,
-                modifier = Modifier.size(32.dp).testTag(UiTags.DRAWER_CLOSE),
+            Text(
+                text = stringResource(Res.string.schedule_drawer_item_count, entries.size),
+                fontSize = 12.sp,
+                color = colors.muted,
+                modifier = Modifier.weight(1f).testTag(UiTags.SCHEDULE_COUNT),
+            )
+            Text(
+                text = stringResource(Res.string.action_clear),
+                fontSize = 12.sp,
+                color = colors.muted,
+                modifier = Modifier
+                    .testTag(UiTags.SCHEDULE_CLEAR)
+                    .clickable(onClick = onClear)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             )
         }
 
         HorizontalDivider(color = colors.borderSubtle)
 
-        if (entries.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(32.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(Res.string.schedule_drawer_empty),
-                    color = colors.muted,
-                    fontSize = 14.sp,
-                    modifier = Modifier.testTag(UiTags.DRAWER_EMPTY),
-                )
-            }
-            return@Column
-        }
-
         val listState = rememberLazyListState()
         LazyColumn(
             state = listState,
-            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
             modifier = Modifier.weight(1f).fillMaxWidth().verticalScrollbar(listState),
         ) {
             items(entries.size) { index ->

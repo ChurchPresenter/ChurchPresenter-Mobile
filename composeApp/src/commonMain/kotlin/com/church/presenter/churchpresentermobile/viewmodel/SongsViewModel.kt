@@ -149,6 +149,16 @@ class SongsViewModel(
     private val _toastEvent = MutableStateFlow<ToastEvent?>(null)
     val toastEvent = _toastEvent.asStateFlow()
 
+    // Requests on their way to the desktop, which may be waiting on its
+    // operator's approval for up to two minutes. See [DesktopRequests].
+    private val requests = DesktopRequests()
+
+    /** Which buttons have a request out — each shows a spinner and ignores taps. */
+    val pendingRequests: StateFlow<Set<DesktopRequest>> = requests.pending
+
+    /** Said when a request has not been answered at once — likely an approval prompt. */
+    private val waitingForDesktop: () -> Unit = { _toastEvent.value = ToastEvent.WaitingForDesktop }
+
     private val _scheduleRefreshTrigger = MutableStateFlow(0)
     val scheduleRefreshTrigger = _scheduleRefreshTrigger.asStateFlow()
 
@@ -420,6 +430,9 @@ class SongsViewModel(
             projectLocally(presenter)
             return
         }
+        // Pressed again while the last press is still waiting on the desktop: a
+        // second toggle here would send a clear behind the go-live.
+        if (requests.isPending(DesktopRequest.PROJECT)) return
         val nowProjecting = !_isProjecting.value
         _isProjecting.value = nowProjecting
         if (!nowProjecting) {
@@ -430,7 +443,7 @@ class SongsViewModel(
                 return
             }
             Logger.d(TAG, "toggleProjecting OFF — firing clearDisplay")
-            viewModelScope.launch {
+            requests.launch(viewModelScope, DesktopRequest.PROJECT) {
                 songService.clearDisplay()
                     .onSuccess { Logger.d(TAG, "clearDisplay — success") }
                     .onFailure { e ->
@@ -452,7 +465,7 @@ class SongsViewModel(
             return
         }
         Logger.d(TAG, "toggleProjecting — firing projectSong for ${song.number}")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.PROJECT, onSlow = waitingForDesktop) {
             songService.projectSong(song)
                 .onSuccess {
                     Logger.d(TAG, "projectSong — success")
@@ -539,7 +552,7 @@ class SongsViewModel(
             return
         }
         Logger.d(TAG, "addSongToSchedule — firing for ${song.number} / ${song.title}")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.SCHEDULE, onSlow = waitingForDesktop) {
             songService.addSongToSchedule(song)
                 .onSuccess {
                     Logger.d(TAG, "addSongToSchedule — success")

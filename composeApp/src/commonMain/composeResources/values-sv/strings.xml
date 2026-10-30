@@ -774,10 +774,8 @@
     <string name="standalone_blank">Tom</string>
     <string name="standalone_live">Live</string>
     <string name="standalone_clear">Rensa</string>
-    <string name="web_refuses_framing">%1$s tillåter inte att den visas inuti en annan sida, så webbläsarskärmen visar ett fel i stället. En skärm som är ansluten till den här telefonen visar den ändå.</string>
     <string name="standalone_preview">Förhandsvisning</string>
     <string name="standalone_no_output">Ingen skärm ansluten</string>
-    <string name="standalone_output_count">%1$s skärm(ar)</string>
     <string name="standalone_empty_title">Inget inläst</string>
     <string name="standalone_empty_body">Öppna en sång eller ett bibelkapitel och tryck på Presentera för att läsa in det här.</string>
     <string name="standalone_slide_position">%1$s av %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Församlingens namn (övre hörnet)</string>
     <string name="standalone_brand_line_hint">Lämna tomt för inget</string>
     <string name="standalone_show_clock">Visa en klocka</string>
-    <string name="web_not_a_link">Skriv en webbadress, t.ex. example.com</string>
     <string name="standalone_show_reference">Visa referensraden</string>
     <string name="standalone_show_reference_hint">Sångavsnittet eller versen som visas under texten.</string>
     <string name="standalone_look_reset">Återställ utseendet</string>

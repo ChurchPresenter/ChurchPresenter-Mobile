@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import com.church.presenter.churchpresentermobile.network.WsSender
+import kotlinx.coroutines.CompletableDeferred
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -346,7 +348,7 @@ class SongsViewModelTest {
                    {"label":"Chorus","lines":["How sweet the sound"]}]}
     """.trimIndent()
 
-    private fun liveVm(ws: FakeWsSender = FakeWsSender()): SongsViewModel {
+    private fun liveVm(ws: WsSender = FakeWsSender()): SongsViewModel {
         val settings = AppSettings(InMemorySettingsStorage())
         val reader = SongService(settings, ws, mockClient { path ->
             if (path.contains("/songs/")) respond(detailJson) else respond(catalogueJson)
@@ -398,6 +400,69 @@ class SongsViewModelTest {
 
             assertTrue(vm.songDetail.value?.hasLyrics == true)
             assertFalse(vm.isLoadingDetail.value)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    /**
+     * A desktop with its approval prompt up for [held] — `project` and
+     * `add_to_schedule` are the two that wait on one. Everything else it
+     * answers at once, as the real desktop does.
+     */
+    private class DecidingDesktop(private val held: String) : WsSender {
+        val answer = CompletableDeferred<Result<Unit>>()
+        val sent = mutableListOf<String>()
+
+        /** How many [held] requests reached the desktop. */
+        val heldCount: Int get() = sent.count { it == held }
+
+        override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result<Unit> {
+            sent += type
+            return if (type == held) answer.await() else Result.success(Unit)
+        }
+    }
+
+    @Test
+    fun `pressing go live again while the desktop decides sends nothing more`() = runVmTestUnconfined {
+        // The bug: the button looked untouched while the desktop's approval
+        // prompt was up, so it was pressed again — and the second toggle sent
+        // a clear behind the go-live.
+        val desktop = DecidingDesktop(held = WsMessageType.PROJECT)
+        val vm = liveVm(desktop)
+        try {
+            vm.openFirstSong()
+            vm.toggleProjecting()
+            vm.pendingRequests.first { DesktopRequest.PROJECT in it }
+
+            vm.toggleProjecting()
+            vm.toggleProjecting()
+
+            assertEquals(1, desktop.heldCount)
+            assertFalse(WsMessageType.CLEAR in desktop.sent, "a second press must not clear")
+            assertTrue(vm.isProjecting.value, "still going live, not cleared")
+
+            desktop.answer.complete(Result.success(Unit))
+            vm.pendingRequests.first { it.isEmpty() }
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun `adding to the schedule again while the desktop decides adds it once`() = runVmTestUnconfined {
+        val desktop = DecidingDesktop(held = WsMessageType.ADD_TO_SCHEDULE)
+        val vm = liveVm(desktop)
+        try {
+            vm.openFirstSong()
+            vm.addSongToSchedule()
+            vm.pendingRequests.first { DesktopRequest.SCHEDULE in it }
+
+            vm.addSongToSchedule()
+
+            assertEquals(1, desktop.heldCount)
+            desktop.answer.complete(Result.success(Unit))
+            vm.pendingRequests.first { it.isEmpty() }
         } finally {
             tearDown(vm)
         }

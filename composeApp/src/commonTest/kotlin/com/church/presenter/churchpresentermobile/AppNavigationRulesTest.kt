@@ -33,23 +33,18 @@ class AppNavigationRulesTest {
 
     @Test
     fun `a tab the strip has lost falls back to the first`() {
-        // MEDIA is remote-only; standalone opens on the live controller.
-        assertEquals(AppTab.PRESENT, settledTab(AppTab.MEDIA, standaloneTabs))
+        // MEDIA is remote-only; standalone opens on its running order.
+        assertEquals(AppTab.SCHEDULE, settledTab(AppTab.MEDIA, standaloneTabs))
     }
 
     @Test
     fun `a standalone-only tab falls back when going remote`() {
-        assertEquals(AppTab.SONGS, settledTab(AppTab.PRESENT, remoteTabs))
-    }
-
-    @Test
-    fun `the library tab falls back when going remote`() {
-        assertEquals(AppTab.SONGS, settledTab(AppTab.LIBRARY, remoteTabs))
+        assertEquals(AppTab.SONGS, settledTab(AppTab.SCHEDULE, remoteTabs))
     }
 
     @Test
     fun `the presentation tab falls back when going standalone`() {
-        assertEquals(AppTab.PRESENT, settledTab(AppTab.PRESENTATION, standaloneTabs))
+        assertEquals(AppTab.SCHEDULE, settledTab(AppTab.PRESENTATION, standaloneTabs))
     }
 
     @Test
@@ -116,11 +111,9 @@ class AppNavigationRulesTest {
     }
 
     @Test
-    fun `the web screen stays open across a switch to standalone`() {
-        assertEquals(
-            MoreDestination.WEB,
-            settledMoreDestination(MoreDestination.WEB, AppMode.STANDALONE),
-        )
+    fun `the web screen closes on a switch to standalone`() {
+        // Web is remote-only, so one left open would strand the operator.
+        assertNull(settledMoreDestination(MoreDestination.WEB, AppMode.STANDALONE))
     }
 
     @Test
@@ -182,10 +175,10 @@ class AppNavigationRulesTest {
 
     @Test
     fun `the same tab has a different page in each mode`() {
-        // Songs is first in remote and second in standalone; a pager left on
+        // Songs is first in remote and third in standalone; a pager left on
         // the old index shows a different tab than the strip highlights.
         assertEquals(0, pageForTab(AppTab.SONGS, remoteTabs))
-        assertEquals(1, pageForTab(AppTab.SONGS, standaloneTabs))
+        assertEquals(2, pageForTab(AppTab.SONGS, standaloneTabs))
     }
 
     @Test
@@ -244,13 +237,13 @@ class AppNavigationRulesTest {
     }
 
     @Test
-    fun `the live controller reports the standalone screen`() {
-        assertEquals(AnalyticsScreen.STANDALONE, tabScreenName(AppTab.PRESENT))
+    fun `the schedule tab reports the schedule screen`() {
+        assertEquals(AnalyticsScreen.SCHEDULE, tabScreenName(AppTab.SCHEDULE))
     }
 
     @Test
-    fun `the library tab reports the library screen`() {
-        assertEquals(AnalyticsScreen.LIBRARY, tabScreenName(AppTab.LIBRARY))
+    fun `the library reports the library screen from more`() {
+        assertEquals(AnalyticsScreen.LIBRARY, moreScreenName(MoreDestination.LIBRARY))
     }
 
     @Test

@@ -65,9 +65,6 @@ internal val LibraryListPaneWidth: Dp = 420.dp
 /** Fixed width of the Media tab's send-and-load pane; the player takes the rest. */
 internal val MediaSendPaneWidth: Dp = 340.dp
 
-/** Fixed width of the Present tab's deck-and-look pane; the live surface takes the rest. */
-internal val PresentSidePaneWidth: Dp = 380.dp
-
 /** Fixed width of the Bible books pane, leftmost of that tab's three. */
 internal val BibleBooksPaneWidth: Dp = 280.dp
 

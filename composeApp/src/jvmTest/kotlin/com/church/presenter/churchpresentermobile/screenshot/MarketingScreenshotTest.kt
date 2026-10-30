@@ -1,5 +1,12 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
+import com.church.presenter.churchpresentermobile.ui.ServiceScheduleScreen
 import androidx.compose.ui.test.hasText
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -21,7 +28,7 @@ import com.church.presenter.churchpresentermobile.ui.genesis
 import com.church.presenter.churchpresentermobile.ui.library.LibraryScreen
 import com.church.presenter.churchpresentermobile.ui.library.biblesWith
 import com.church.presenter.churchpresentermobile.ui.library.libraryOf
-import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.LiveBar
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneFixture
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneOutputScreen
 import com.church.presenter.churchpresentermobile.ui.standalone.TestSink
@@ -160,9 +167,9 @@ class MarketingScreenshotTest {
     @Test
     fun library() = marketingShot(
         "06-library",
-        tab = AppTab.LIBRARY,
+        tab = AppTab.MORE,
         tabs = AppTab.forMode(AppMode.STANDALONE),
-        header = { ScreenHeader(title = "Library", onMenu = {}, onSettings = {}) },
+        header = { ScreenHeader(title = "Library", onBack = {}, onSettings = {}) },
     ) {
         LibraryScreen(
             repository = libraryOf(
@@ -178,30 +185,13 @@ class MarketingScreenshotTest {
     }
 
     @Test
-    fun standaloneController() = marketingShot(
-        "07-standalone-controller",
-        tab = AppTab.PRESENT,
+    fun standaloneSchedule() = marketingShot(
+        "07-standalone-schedule",
+        tab = AppTab.SCHEDULE,
         tabs = AppTab.forMode(AppMode.STANDALONE),
-        header = { ScreenHeader(title = "Present", onMenu = {}, onSettings = {}) },
+        header = { ScreenHeader(title = "Schedule", onSettings = {}) },
     ) {
-        val fixture = StandaloneFixture()
-        val appSettings = settings()
-        // A screen attached and a hymn loaded and live. Left as the fixture
-        // builds it, this captures "No screen connected / Nothing loaded" over
-        // an empty preview — the app's blank state, and the worst possible frame
-        // for a listing: it advertises the feature doing nothing.
-        fixture.registry.register(
-            TestSink(id = "hall", displayName = "The hall screen", state = SinkState.ATTACHED),
-        )
-        fixture.engine.setDeck(MarketingContent.amazingGraceDeck)
-        fixture.engine.goLive()
-        StandaloneControllerScreen(
-            engine = fixture.engine,
-            registry = fixture.registry,
-            settings = appSettings,
-            photos = null,
-            providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, appSettings, null),
-        )
+        RunningTheService()
     }
 
     // ── What the congregation sees ───────────────────────────────────────
@@ -220,6 +210,43 @@ class MarketingScreenshotTest {
                     "that whosoever believeth in him should not perish, but have everlasting life.",
                 reference = "John 3:16",
             ),
+        )
+    }
+}
+
+/**
+ * Standalone mid-service, for the store listings: the running order, and the
+ * live bar under it with a hymn up on a connected screen.
+ *
+ * Left as a fresh fixture builds it this would be an empty list over no bar at
+ * all — the app's blank state, and the worst possible frame for a listing.
+ */
+@Composable
+internal fun RunningTheService() {
+    val fixture = StandaloneFixture()
+    val appSettings = AppSettings(InMemorySettingsStorage())
+    fixture.registry.register(
+        TestSink(id = "hall", displayName = "The hall screen", state = SinkState.ATTACHED),
+    )
+    fixture.engine.setDeck(MarketingContent.amazingGraceDeck)
+    fixture.engine.goLive()
+    Column(modifier = Modifier.fillMaxSize()) {
+        ServiceScheduleScreen(
+            entries = listOf(
+                LocalSetlistEntry(SetlistEntryType.ANNOUNCEMENT, "welcome", "Welcome & notices"),
+                LocalSetlistEntry(SetlistEntryType.SONG, "amazing-grace", "Amazing Grace"),
+                LocalSetlistEntry(SetlistEntryType.BIBLE, "John 3:16-17", "John 3:16–17"),
+                LocalSetlistEntry(SetlistEntryType.SONG, "how-great", "How Great Thou Art"),
+            ),
+            modifier = Modifier.weight(1f),
+        )
+        LiveBar(
+            engine = fixture.engine,
+            registry = fixture.registry,
+            settings = appSettings,
+            onCollapse = {},
+            onOpenScreens = {},
+            providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, appSettings, null),
         )
     }
 }

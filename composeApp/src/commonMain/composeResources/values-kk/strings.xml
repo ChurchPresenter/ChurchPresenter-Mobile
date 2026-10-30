@@ -774,10 +774,8 @@
     <string name="standalone_blank">Бос</string>
     <string name="standalone_live">Эфир</string>
     <string name="standalone_clear">Тазалау</string>
-    <string name="web_refuses_framing">%1$s басқа беттің ішінде көрсетілуге рұқсат бермейді, сондықтан браузер экранында қате көрсетіледі. Осы телефонға қосылған экранда ол бәрібір көрсетіледі.</string>
     <string name="standalone_preview">Алдын ала қарау</string>
     <string name="standalone_no_output">Экран қосылмаған</string>
-    <string name="standalone_output_count">%1$s экран</string>
     <string name="standalone_empty_title">Ештеңе жүктелмеген</string>
     <string name="standalone_empty_body">Мұнда жүктеу үшін әнді немесе Інжіл тарауын ашып, «Көрсету» түймесін басыңыз.</string>
     <string name="standalone_slide_position">%1$s / %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Шіркеу атауы (жоғарғы бұрыш)</string>
     <string name="standalone_brand_line_hint">Көрсетпеу үшін бос қалдырыңыз</string>
     <string name="standalone_show_clock">Сағатты көрсету</string>
-    <string name="web_not_a_link">Веб-мекенжайды теріңіз, мысалы example.com</string>
     <string name="standalone_show_reference">Сілтеме жолын көрсету</string>
     <string name="standalone_show_reference_hint">Сөздердің астында көрсетілетін ән бөлімі немесе аят.</string>
     <string name="standalone_look_reset">Көріністі қалпына келтіру</string>

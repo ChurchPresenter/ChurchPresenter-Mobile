@@ -20,8 +20,13 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone leads with the live controller`() {
-        assertEquals(AppTab.PRESENT, AppTab.forMode(AppMode.STANDALONE).first())
+    fun `standalone is schedule, bible, songs and more`() {
+        // The running order leads: a service is run from it. The live controls
+        // ride along every tab rather than having one, and the Library is under More.
+        assertEquals(
+            listOf(AppTab.SCHEDULE, AppTab.BIBLE, AppTab.SONGS, AppTab.MORE),
+            AppTab.forMode(AppMode.STANDALONE),
+        )
     }
 
     @Test
@@ -32,16 +37,17 @@ class AppTabTest {
     }
 
     @Test
-    fun `the present tab exists only in standalone`() {
-        assertFalse(AppTab.PRESENT in AppTab.forMode(AppMode.REMOTE))
-        assertTrue(AppTab.PRESENT in AppTab.forMode(AppMode.STANDALONE))
+    fun `the schedule tab exists only in standalone`() {
+        // Remote's schedule is the desktop's, in the drawer.
+        assertFalse(AppTab.SCHEDULE in AppTab.forMode(AppMode.REMOTE))
+        assertTrue(AppTab.SCHEDULE in AppTab.forMode(AppMode.STANDALONE))
     }
 
     /** The library is on-device content, which only standalone mode can present. */
     @Test
-    fun `the library tab exists only in standalone`() {
-        assertFalse(AppTab.LIBRARY in AppTab.forMode(AppMode.REMOTE))
-        assertTrue(AppTab.LIBRARY in AppTab.forMode(AppMode.STANDALONE))
+    fun `the library is first in standalone's more and absent from remote's`() {
+        assertEquals(MoreDestination.LIBRARY, MoreDestination.forMode(AppMode.STANDALONE).first())
+        assertFalse(MoreDestination.LIBRARY in MoreDestination.forMode(AppMode.REMOTE))
     }
 
     @Test
@@ -66,20 +72,21 @@ class AppTabTest {
     // ── More destinations ────────────────────────────────────────────────
 
     @Test
-    fun `remote keeps every More destination but the report`() {
-        // The CCLI report is about what this device projected, which in remote mode is nothing.
-        // …and but the canvas, which is tablet-only.
+    fun `remote keeps every More destination but the report and the library`() {
+        // The CCLI report is about what this device projected, which in remote mode is nothing,
+        // and the Library is content this device projects itself. The canvas is tablet-only.
         assertEquals(
-            MoreDestination.entries - MoreDestination.REPORT - MoreDestination.CANVAS,
+            MoreDestination.entries - MoreDestination.REPORT - MoreDestination.LIBRARY - MoreDestination.CANVAS,
             MoreDestination.forMode(AppMode.REMOTE),
         )
     }
 
     @Test
     fun `standalone keeps only the More destinations it can serve itself`() {
-        // Photos, Notices and Web are local — picked, written or typed on this
-        // device and projected by it. Q&A and the dictionary need the desktop's
-        // data, so they stay out.
+        // The Library leads: it was a tab, and is where songs and notices are
+        // written. Photos and Notices are local — picked or written on this
+        // device and projected by it. Q&A, the dictionary and Web need the
+        // desktop, so they stay out.
         //
         // ANNOUNCEMENTS is the same slot serving two different screens: the
         // remote composer writes to the desktop's schedule, while standalone
@@ -93,10 +100,10 @@ class AppTabTest {
         // only enters through the relay, which standalone can enroll with too.
         assertEquals(
             listOf(
+                MoreDestination.LIBRARY,
                 MoreDestination.CALENDAR,
                 MoreDestination.PICTURES,
                 MoreDestination.ANNOUNCEMENTS,
-                MoreDestination.WEB,
                 MoreDestination.REPORT,
                 MoreDestination.CONTACT,
             ),

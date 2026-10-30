@@ -774,10 +774,8 @@
     <string name="standalone_blank">Kosong</string>
     <string name="standalone_live">Langsung</string>
     <string name="standalone_clear">Kosongkan</string>
-    <string name="web_refuses_framing">%1$s tidak membenarkan dirinya dipaparkan di dalam halaman lain, jadi skrin pelayar memaparkan ralat. Skrin yang disambungkan ke telefon ini masih memaparkannya.</string>
     <string name="standalone_preview">Pratonton</string>
     <string name="standalone_no_output">Tiada skrin disambungkan</string>
-    <string name="standalone_output_count">%1$s skrin</string>
     <string name="standalone_empty_title">Tiada apa dimuatkan</string>
     <string name="standalone_empty_body">Buka lagu atau pasal Alkitab dan ketik Paparkan untuk memuatkannya di sini.</string>
     <string name="standalone_slide_position">%1$s daripada %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Nama gereja (sudut atas)</string>
     <string name="standalone_brand_line_hint">Biarkan kosong jika tiada</string>
     <string name="standalone_show_clock">Tunjukkan jam</string>
-    <string name="web_not_a_link">Taip alamat web, seperti example.com</string>
     <string name="standalone_show_reference">Tunjukkan baris rujukan</string>
     <string name="standalone_show_reference_hint">Bahagian lagu atau ayat yang dipaparkan di bawah perkataan.</string>
     <string name="standalone_look_reset">Tetapkan semula rupa</string>

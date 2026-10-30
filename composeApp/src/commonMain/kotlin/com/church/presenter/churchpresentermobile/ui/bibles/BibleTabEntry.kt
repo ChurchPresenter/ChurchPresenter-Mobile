@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.church.presenter.churchpresentermobile.SyncRequestHandler
 import com.church.presenter.churchpresentermobile.TabNavigationHandler
-import com.church.presenter.churchpresentermobile.model.AppTab
+import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.ui.library.SyncSection
 import androidx.compose.material.icons.filled.CloudDownload
 import churchpresentermobile.composeapp.generated.resources.empty_action_get_bible
@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The web build's way to a first Bible, which cannot download one: copy it from the desktop.
- * The Library tab owns that sheet, so ask it to open on the Bible half.
+ * The Library owns that sheet, so ask it to open on the Bible half.
  */
 @Composable
 internal fun CopyFromDesktopButton() {
@@ -36,7 +36,7 @@ internal fun CopyFromDesktopButton() {
         icon = Icons.Filled.CloudDownload,
         onClick = {
             SyncRequestHandler.request(SyncSection.BIBLE)
-            TabNavigationHandler.navigateTo(AppTab.LIBRARY)
+            TabNavigationHandler.navigateToMore(MoreDestination.LIBRARY)
         },
     )
 }

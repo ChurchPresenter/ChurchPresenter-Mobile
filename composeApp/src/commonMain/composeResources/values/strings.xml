@@ -224,6 +224,8 @@
     <string name="toast_failed_to_project">Failed to project song: %1$s</string>
     <string name="toast_failed_to_add_schedule">Failed to add to schedule: %1$s</string>
     <string name="toast_request_denied">Request was denied</string>
+    <string name="toast_waiting_for_desktop">Sent — waiting for the desktop to accept</string>
+    <string name="cd_waiting_for_desktop">Waiting for the desktop</string>
     <string name="toast_session_blocked">Session is blocked — no further requests will be accepted</string>
     <string name="toast_request_rejected">Request rejected by server (HTTP %1$s)</string>
     <string name="toast_request_rejected_reason">Request rejected: %1$s</string>
@@ -594,10 +596,8 @@
     <string name="standalone_blank">Blank</string>
     <string name="standalone_live">Live</string>
     <string name="standalone_clear">Clear</string>
-    <string name="web_refuses_framing">%1$s will not allow itself to be shown inside another page, so the browser screen shows an error instead. A screen plugged into this phone still shows it.</string>
     <string name="standalone_preview">Preview</string>
     <string name="standalone_no_output">No screen connected</string>
-    <string name="standalone_output_count">%1$s screen(s)</string>
     <string name="standalone_empty_title">Nothing loaded</string>
     <string name="standalone_empty_body">Open a song or a Bible chapter and tap Present to load it here.</string>
     <string name="standalone_slide_position">%1$s of %2$s</string>
@@ -721,7 +721,6 @@
     <string name="standalone_brand_line">Church name (top corner)</string>
     <string name="standalone_brand_line_hint">Leave blank for none</string>
     <string name="standalone_show_clock">Show a clock</string>
-    <string name="web_not_a_link">Type a web address, like example.com</string>
     <string name="standalone_show_reference">Show the reference line</string>
     <string name="standalone_show_reference_hint">The song section or verse shown under the words.</string>
     <string name="standalone_look_reset">Reset the look</string>
@@ -1399,4 +1398,18 @@
     <string name="canvas_live_failed">Couldn't go live</string>
     <string name="canvas_live_unsupported">Desktop can't show drawings — update ChurchPresenter</string>
     <string name="canvas_picture_failed">Couldn't open that picture</string>
+    <!-- Standalone redesign: Schedule tab, live bar, Settings → Display -->
+    <string name="tab_schedule">Schedule</string>
+    <string name="more_library_subtitle">Write songs and notices, copy from your computer</string>
+    <string name="schedule_empty_title">Nothing scheduled yet</string>
+    <string name="schedule_empty_body">Open a song, a Bible passage or a notice and tap Add to schedule. It appears here, in order, ready to run.</string>
+    <string name="settings_display_section">Display</string>
+    <string name="settings_section_display_subtitle">Screens, backdrop and look</string>
+    <string name="cd_live_open">Open live view</string>
+    <string name="cd_live_collapse">Hide live controls</string>
+    <string name="cd_live_expand">Show live controls</string>
+    <string name="cd_live_screens">Screens</string>
+    <string name="live_state_live">LIVE</string>
+    <string name="live_state_blank">BLANK</string>
+    <string name="live_state_off">OFF</string>
 </resources>

@@ -774,10 +774,8 @@
     <string name="standalone_blank">فارغ</string>
     <string name="standalone_live">مباشر</string>
     <string name="standalone_clear">مسح</string>
-    <string name="web_refuses_framing">لا يسمح %1$s بعرضه داخل صفحة أخرى، لذا تعرض شاشة المتصفح خطأً بدلًا منه. أما الشاشة الموصولة بهذا الهاتف فتعرضه رغم ذلك.</string>
     <string name="standalone_preview">معاينة</string>
     <string name="standalone_no_output">لا توجد شاشة متصلة</string>
-    <string name="standalone_output_count">الشاشات: %1$s</string>
     <string name="standalone_empty_title">لم يُحمَّل شيء</string>
     <string name="standalone_empty_body">افتح ترنيمة أو إصحاحًا من الكتاب المقدس واضغط على اعرض لتحميله هنا.</string>
     <string name="standalone_slide_position">%1$s من %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">اسم الكنيسة (الزاوية العليا)</string>
     <string name="standalone_brand_line_hint">اتركه فارغًا لعدم إظهار شيء</string>
     <string name="standalone_show_clock">إظهار ساعة</string>
-    <string name="web_not_a_link">اكتب عنوان ويب، مثل example.com</string>
     <string name="standalone_show_reference">إظهار سطر المرجع</string>
     <string name="standalone_show_reference_hint">مقطع الترنيمة أو الآية المعروض تحت الكلمات.</string>
     <string name="standalone_look_reset">إعادة ضبط المظهر</string>

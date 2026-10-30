@@ -13,6 +13,7 @@ import com.church.presenter.churchpresentermobile.model.StatusWarning
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 /**
  * The settings menu's contents, and the one-word connection summary at its
@@ -50,6 +51,45 @@ class SettingsSectionTest {
             listOf(
                 SettingsSection.MODE,
                 SettingsSection.COMPUTER,
+                SettingsSection.APPEARANCE,
+                SettingsSection.DIAGNOSTICS,
+                SettingsSection.ABOUT,
+            ),
+            sections,
+        )
+    }
+
+    @Test
+    fun standaloneListsDisplayRightAfterTheMode() {
+        // The screens projected onto and how they look: only standalone projects
+        // from this device, and it is the page an operator needs before a service.
+        val sections = settingsSections(hasDesktop = false, supportsStandalone = true, hasDisplay = true)
+
+        assertEquals(listOf(SettingsSection.MODE, SettingsSection.DISPLAY), sections.take(2))
+    }
+
+    @Test
+    fun noOtherModeHasADisplayPage() {
+        listOf(true, false).forEach { desktop ->
+            val sections = settingsSections(hasDesktop = desktop, supportsStandalone = true)
+            assertFalse(SettingsSection.DISPLAY in sections, "desktop=$desktop")
+        }
+    }
+
+    @Test
+    fun calendarModeHasNoComputerPage() {
+        // Calendar mode plans through the cloud relay and copies nothing from a
+        // computer, so an address page there would configure nothing.
+        val sections = settingsSections(
+            hasDesktop = false,
+            supportsStandalone = true,
+            canLeaveMode = true,
+            usesComputer = false,
+        )
+
+        assertEquals(
+            listOf(
+                SettingsSection.MODE,
                 SettingsSection.APPEARANCE,
                 SettingsSection.DIAGNOSTICS,
                 SettingsSection.ABOUT,

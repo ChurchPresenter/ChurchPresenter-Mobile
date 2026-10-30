@@ -774,10 +774,8 @@
     <string name="standalone_blank">खाली</string>
     <string name="standalone_live">प्रत्यक्ष</string>
     <string name="standalone_clear">हटाउनुहोस्</string>
-    <string name="web_refuses_framing">%1$s ले आफूलाई अर्को पृष्ठभित्र देखाउन दिँदैन, त्यसैले ब्राउजर पर्दामा त्रुटि देखिन्छ। यो फोनमा जोडिएको पर्दामा भने यो देखिन्छ।</string>
     <string name="standalone_preview">पूर्वावलोकन</string>
     <string name="standalone_no_output">कुनै पर्दा जोडिएको छैन</string>
-    <string name="standalone_output_count">%1$s पर्दा</string>
     <string name="standalone_empty_title">केही लोड गरिएको छैन</string>
     <string name="standalone_empty_body">भजन वा बाइबलको अध्याय खोल्नुहोस् र यहाँ लोड गर्न प्रस्तुत गर्नुहोस् थिच्नुहोस्।</string>
     <string name="standalone_slide_position">%2$s मध्ये %1$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">मण्डलीको नाम (माथिल्लो कुना)</string>
     <string name="standalone_brand_line_hint">नचाहिए खाली छोड्नुहोस्</string>
     <string name="standalone_show_clock">घडी देखाउनुहोस्</string>
-    <string name="web_not_a_link">वेब ठेगाना टाइप गर्नुहोस्, जस्तै example.com</string>
     <string name="standalone_show_reference">सन्दर्भ लाइन देखाउनुहोस्</string>
     <string name="standalone_show_reference_hint">शब्दहरूको तल देखाइने भजनको खण्ड वा पद।</string>
     <string name="standalone_look_reset">रूप रिसेट गर्नुहोस्</string>

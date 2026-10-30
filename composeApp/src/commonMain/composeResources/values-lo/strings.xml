@@ -774,10 +774,8 @@
     <string name="standalone_blank">ຈໍວ່າງ</string>
     <string name="standalone_live">ສົດ</string>
     <string name="standalone_clear">ລ້າງ</string>
-    <string name="web_refuses_framing">%1$s ບໍ່ອະນຸຍາດໃຫ້ສະແດງພາຍໃນໜ້າອື່ນ ດັ່ງນັ້ນຈໍ browser ຈຶ່ງສະແດງຂໍ້ຜິດພາດແທນ. ຈໍທີ່ຕໍ່ກັບໂທລະສັບນີ້ຍັງສະແດງມັນໄດ້.</string>
     <string name="standalone_preview">ຕົວຢ່າງ</string>
     <string name="standalone_no_output">ບໍ່ມີຈໍເຊື່ອມຕໍ່</string>
-    <string name="standalone_output_count">%1$s ຈໍ</string>
     <string name="standalone_empty_title">ບໍ່ມີຫຍັງໂຫຼດ</string>
     <string name="standalone_empty_body">ເປີດເພງ ຫຼື ບົດພຣະຄຳພີ ແລ້ວແຕະ ສະແດງ ເພື່ອໂຫຼດມັນມາບ່ອນນີ້.</string>
     <string name="standalone_slide_position">%1$s ຈາກ %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">ຊື່ຄຣິສຕະຈັກ (ມຸມເທິງ)</string>
     <string name="standalone_brand_line_hint">ປະຫວ່າງໄວ້ຖ້າບໍ່ຕ້ອງການ</string>
     <string name="standalone_show_clock">ສະແດງໂມງ</string>
-    <string name="web_not_a_link">ພິມທີ່ຢູ່ເວັບ ເຊັ່ນ example.com</string>
     <string name="standalone_show_reference">ສະແດງແຖວອ້າງອີງ</string>
     <string name="standalone_show_reference_hint">ພາກສ່ວນເພງ ຫຼື ຂໍ້ພຣະຄຳພີທີ່ສະແດງໃຕ້ຂໍ້ຄວາມ.</string>
     <string name="standalone_look_reset">ຣີເຊັດຮູບແບບ</string>

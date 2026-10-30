@@ -774,10 +774,8 @@
     <string name="standalone_blank">Tyhjä</string>
     <string name="standalone_live">Näytöllä</string>
     <string name="standalone_clear">Tyhjennä</string>
-    <string name="web_refuses_framing">%1$s ei salli näyttämistään toisen sivun sisällä, joten selainnäyttö näyttää sen sijaan virheen. Tähän puhelimeen liitetty näyttö näyttää sen silti.</string>
     <string name="standalone_preview">Esikatselu</string>
     <string name="standalone_no_output">Näyttöä ei ole liitetty</string>
-    <string name="standalone_output_count">%1$s näyttö(ä)</string>
     <string name="standalone_empty_title">Mitään ei ole ladattu</string>
     <string name="standalone_empty_body">Avaa laulu tai Raamatun luku ja napauta Esitä ladataksesi sen tänne.</string>
     <string name="standalone_slide_position">%1$s / %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Seurakunnan nimi (yläkulmassa)</string>
     <string name="standalone_brand_line_hint">Jätä tyhjäksi, jos et halua mitään</string>
     <string name="standalone_show_clock">Näytä kello</string>
-    <string name="web_not_a_link">Kirjoita verkko-osoite, esim. example.com</string>
     <string name="standalone_show_reference">Näytä viiterivi</string>
     <string name="standalone_show_reference_hint">Laulun osa tai jae, joka näytetään sanojen alla.</string>
     <string name="standalone_look_reset">Palauta ulkoasu</string>

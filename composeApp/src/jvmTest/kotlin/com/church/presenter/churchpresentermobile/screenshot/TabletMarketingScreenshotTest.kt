@@ -21,7 +21,6 @@ import com.church.presenter.churchpresentermobile.model.MediaPlaybackState
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideKind
-import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.ui.BibleBooksScreen
@@ -43,12 +42,8 @@ import com.church.presenter.churchpresentermobile.ui.library.LibraryTwoPane
 import com.church.presenter.churchpresentermobile.ui.library.SongEditorScreen
 import com.church.presenter.churchpresentermobile.ui.library.biblesWith
 import com.church.presenter.churchpresentermobile.ui.library.libraryOf
-import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
-import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneFixture
 import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneOutputScreen
-import com.church.presenter.churchpresentermobile.ui.standalone.TestSink
 import com.church.presenter.churchpresentermobile.viewmodel.MediaSource
-import com.church.presenter.churchpresentermobile.viewmodel.StandaloneViewModel
 import kotlin.test.Test
 
 /**
@@ -238,7 +233,7 @@ class TabletMarketingScreenshotTest {
     @Test
     fun library() = tabletShot(
         "05-library",
-        tab = AppTab.LIBRARY,
+        tab = AppTab.MORE,
         tabs = AppTab.forMode(AppMode.STANDALONE),
         // The editor's slide preview is blank until a section is edited, and a
         // blank black panel is most of the pane. So edit the first verse and
@@ -283,28 +278,12 @@ class TabletMarketingScreenshotTest {
     }
 
     @Test
-    fun standaloneController() = tabletShot(
-        "06-standalone-controller",
-        tab = AppTab.PRESENT,
+    fun standaloneSchedule() = tabletShot(
+        "06-standalone-schedule",
+        tab = AppTab.SCHEDULE,
         tabs = AppTab.forMode(AppMode.STANDALONE),
     ) {
-        val fixture = StandaloneFixture()
-        val appSettings = settings()
-        // A screen attached and a hymn live, as the phone image has — the blank
-        // "No screen connected" state is the worst frame a listing could show.
-        fixture.registry.register(
-            TestSink(id = "hall", displayName = "The hall screen", state = SinkState.ATTACHED),
-        )
-        fixture.engine.setDeck(MarketingContent.amazingGraceDeck)
-        fixture.engine.goLive()
-        StandaloneControllerScreen(
-            engine = fixture.engine,
-            registry = fixture.registry,
-            settings = appSettings,
-            photos = null,
-            twoPane = true,
-            providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, appSettings, null),
-        )
+        RunningTheService()
     }
 
     // ── What the congregation sees ───────────────────────────────────────

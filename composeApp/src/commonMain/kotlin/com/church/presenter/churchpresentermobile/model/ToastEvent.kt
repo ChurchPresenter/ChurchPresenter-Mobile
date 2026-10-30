@@ -11,6 +11,8 @@ sealed class ToastEvent {
     data object NoSongSelected    : ToastEvent()
     data object RequestDenied     : ToastEvent()
     data object SessionBlocked    : ToastEvent()
+    /** A request reached the desktop and is waiting there — likely on its operator's approval. */
+    data object WaitingForDesktop : ToastEvent()
 
     // ── Dynamic messages (carry data resolved by the UI) ──────────────────
     data class SongAddedToSchedule(val title: String)  : ToastEvent()

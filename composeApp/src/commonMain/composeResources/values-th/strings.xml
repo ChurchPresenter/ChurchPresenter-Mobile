@@ -774,10 +774,8 @@
     <string name="standalone_blank">จอว่าง</string>
     <string name="standalone_live">สด</string>
     <string name="standalone_clear">ล้าง</string>
-    <string name="web_refuses_framing">%1$s ไม่อนุญาตให้แสดงภายในหน้าอื่น หน้าจอเบราว์เซอร์จึงแสดงข้อผิดพลาดแทน แต่หน้าจอที่ต่อกับโทรศัพท์นี้ยังแสดงได้ตามปกติ</string>
     <string name="standalone_preview">ตัวอย่าง</string>
     <string name="standalone_no_output">ไม่มีหน้าจอที่เชื่อมต่อ</string>
-    <string name="standalone_output_count">%1$s หน้าจอ</string>
     <string name="standalone_empty_title">ยังไม่ได้โหลดอะไร</string>
     <string name="standalone_empty_body">เปิดเพลงหรือบทพระคัมภีร์ แล้วแตะ แสดง เพื่อโหลดที่นี่</string>
     <string name="standalone_slide_position">%1$s จาก %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">ชื่อคริสตจักร (มุมบน)</string>
     <string name="standalone_brand_line_hint">เว้นว่างไว้หากไม่ต้องการ</string>
     <string name="standalone_show_clock">แสดงนาฬิกา</string>
-    <string name="web_not_a_link">พิมพ์ที่อยู่เว็บ เช่น example.com</string>
     <string name="standalone_show_reference">แสดงบรรทัดอ้างอิง</string>
     <string name="standalone_show_reference_hint">ท่อนเพลงหรือข้อพระคัมภีร์ที่แสดงใต้ข้อความ</string>
     <string name="standalone_look_reset">รีเซ็ตรูปแบบ</string>

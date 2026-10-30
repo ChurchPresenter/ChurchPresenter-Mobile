@@ -69,7 +69,7 @@ class BottomTabBarTest {
             BottomTabBar(selectedTab = tabs.first(), onTabSelected = {}, tabs = tabs)
         })
 
-        assertTrue(AppTab.PRESENT in tabs)
+        assertTrue(AppTab.SCHEDULE in tabs)
         assertTrue(AppTab.MEDIA !in tabs, "media needs a desktop")
     }
 

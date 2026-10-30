@@ -863,8 +863,10 @@ private const val HOUR_MS = 3_600_000L
 private const val DAY_MS = 86_400_000L
 
 /**
- * The tablet's arrangement for the Library tab: the list on the left, whatever
- * is being edited filling what is left.
+ * The tablet's arrangement for the Library: the list on the left, whatever is
+ * being edited filling what is left. Opened from More, it takes the whole
+ * window as the calendar does — beside the launcher both panes were too narrow
+ * — so its header carries the way back ([onBack]).
  *
  * Unlike the other split tabs this one needs no header for its detail pane — the
  * editors already draw their own, with the back arrow that closes them. What
@@ -882,12 +884,14 @@ fun LibraryTwoPane(
     modifier: Modifier = Modifier,
     onMenu: (() -> Unit)? = null,
     onSettings: (() -> Unit)? = null,
+    onBack: (() -> Unit)? = null,
 ) {
     val colors = LocalAppColors.current
     Row(modifier = modifier.fillMaxSize().background(colors.background)) {
         Column(modifier = Modifier.width(LibraryListPaneWidth).fillMaxHeight()) {
             ScreenHeader(
                 title = stringResource(Res.string.tab_library),
+                onBack = onBack,
                 onMenu = onMenu,
                 onSettings = onSettings,
             )

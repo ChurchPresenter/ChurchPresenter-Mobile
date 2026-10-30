@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
  * this catches is a sheet whose edits stop at the sheet.
  */
 @OptIn(ExperimentalTestApi::class)
-class ControllerLookTest {
+class DisplayLookTest {
 
     private fun StandaloneFixture.loadDeck() {
         engine.setDeck(SlideDeckBuilder.fromAnnouncements(listOf("One", "Two"), "Notices"))
@@ -32,10 +32,10 @@ class ControllerLookTest {
     // ── Getting into it ──────────────────────────────────────────────────
 
     @Test
-    fun theControllerOffersTheLook() = runComposeUiTest {
+    fun theDisplayPageOffersTheLook() = runComposeUiTest {
         val f = StandaloneFixture()
 
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         assertTrue(exists(StandaloneTags.LOOK))
     }
@@ -45,7 +45,7 @@ class ControllerLookTest {
         // It would cover the transport controls, which must stay reachable.
         val f = StandaloneFixture()
 
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         assertFalse(exists(LookTags.GRADIENT_TOP))
     }
@@ -53,7 +53,7 @@ class ControllerLookTest {
     @Test
     fun openingTheLookShowsItsControls() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         click(StandaloneTags.LOOK)
 
@@ -63,7 +63,7 @@ class ControllerLookTest {
     @Test
     fun openingTheLookOffersTheTextSizes() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         click(StandaloneTags.LOOK)
 
@@ -73,7 +73,7 @@ class ControllerLookTest {
     @Test
     fun openingTheLookOffersTheFonts() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         click(StandaloneTags.LOOK)
 
@@ -83,7 +83,7 @@ class ControllerLookTest {
     @Test
     fun openingTheLookOffersTheReferenceSwitches() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         click(StandaloneTags.LOOK)
 
@@ -93,9 +93,9 @@ class ControllerLookTest {
     @Test
     fun theLookOpensOverALoadedDeck() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         f.loadDeck()
-        awaitThat { exists(StandaloneTags.section(0)) }
+        awaitThat { !f.engine.deck.value.isEmpty }
 
         click(StandaloneTags.LOOK)
 
@@ -106,7 +106,7 @@ class ControllerLookTest {
     fun theLookOpensOverAnEmptyDeck() = runComposeUiTest {
         // Setting the church's look before the first song is normal.
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         click(StandaloneTags.LOOK)
 
@@ -118,7 +118,7 @@ class ControllerLookTest {
     @Test
     fun theTextSizeReachesTheEngine() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.textSize(0)) }
 
@@ -130,7 +130,7 @@ class ControllerLookTest {
     @Test
     fun theLargestTextSizeReachesTheEngine() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.textSize(2)) }
 
@@ -142,7 +142,7 @@ class ControllerLookTest {
     @Test
     fun theGradientTopReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.GRADIENT_TOP) }
 
@@ -154,7 +154,7 @@ class ControllerLookTest {
     @Test
     fun theGradientBottomReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.GRADIENT_BOTTOM) }
 
@@ -166,7 +166,7 @@ class ControllerLookTest {
     @Test
     fun theTextColourReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.TEXT_COLOUR) }
 
@@ -178,7 +178,7 @@ class ControllerLookTest {
     @Test
     fun theBrandLineReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.BRAND_LINE) }
 
@@ -190,7 +190,7 @@ class ControllerLookTest {
     @Test
     fun turningOffTheSongReferenceReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.SHOW_SONG_REFERENCE) }
 
@@ -202,7 +202,7 @@ class ControllerLookTest {
     @Test
     fun turningOffTheBibleReferenceReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.SHOW_BIBLE_REFERENCE) }
 
@@ -214,7 +214,7 @@ class ControllerLookTest {
     @Test
     fun turningTheClockOffReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.SHOW_CLOCK) }
 
@@ -226,7 +226,7 @@ class ControllerLookTest {
     @Test
     fun ignoringLineBreaksReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.IGNORE_BREAKS) }
 
@@ -238,7 +238,7 @@ class ControllerLookTest {
     @Test
     fun anAlignmentReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.align(0)) }
 
@@ -250,7 +250,7 @@ class ControllerLookTest {
     @Test
     fun aMarginReachesTheTheme() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.margin(0)) }
 
@@ -263,9 +263,9 @@ class ControllerLookTest {
     fun aThemeEditReachesAScreenAlreadyShowingASlide() = runComposeUiTest {
         // The theme rides inside the slide, so the screen has to be told again.
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         f.loadDeck()
-        awaitThat { exists(StandaloneTags.section(0)) }
+        awaitThat { !f.engine.deck.value.isEmpty }
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.TEXT_COLOUR) }
 
@@ -277,9 +277,9 @@ class ControllerLookTest {
     @Test
     fun aTextSizeEditReachesAScreenAlreadyShowingASlide() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         f.loadDeck()
-        awaitThat { exists(StandaloneTags.section(0)) }
+        awaitThat { !f.engine.deck.value.isEmpty }
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.textSize(2)) }
 
@@ -292,7 +292,7 @@ class ControllerLookTest {
     fun aPresetReachesTheTheme() = runComposeUiTest {
         // The presets are the fastest way to a look that reads from the back.
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.GRADIENT_TOP) }
         val before = f.engine.theme.value
@@ -306,9 +306,9 @@ class ControllerLookTest {
     fun theLookLeavesTheDeckAlone() = runComposeUiTest {
         // Changing how it looks is not changing what is on it.
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         f.loadDeck()
-        awaitThat { exists(StandaloneTags.section(0)) }
+        awaitThat { !f.engine.deck.value.isEmpty }
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.textSize(2)) }
 
@@ -320,10 +320,10 @@ class ControllerLookTest {
     @Test
     fun theLookLeavesTheCurrentSlideAlone() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         f.loadDeck()
-        awaitThat { exists(StandaloneTags.section(1)) }
-        click(StandaloneTags.section(1))
+        awaitThat { !f.engine.deck.value.isEmpty }
+        f.engine.showSlide(1)
         awaitThat { f.engine.index.value == 1 }
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.textSize(0)) }
@@ -336,7 +336,7 @@ class ControllerLookTest {
     @Test
     fun theLookLeavesTheBackdropAlone() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.backdrop(2))
         awaitThat { f.engine.backdrop.value == SlideBackdrop.BLACK }
         click(StandaloneTags.LOOK)
@@ -350,7 +350,7 @@ class ControllerLookTest {
     @Test
     fun twoEditsBothStick() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.TEXT_COLOUR) }
 
@@ -367,7 +367,7 @@ class ControllerLookTest {
     fun anUnreadableColourIsNotWrittenIntoTheTheme() = runComposeUiTest {
         // Half a hex code is what the field looks like mid-typing.
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.TEXT_COLOUR) }
         val before = f.engine.theme.value.textColor
@@ -380,7 +380,7 @@ class ControllerLookTest {
     @Test
     fun theChordSwitchReachesTheViewModel() = runComposeUiTest {
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.SHOW_CHORDS) }
 
@@ -390,13 +390,14 @@ class ControllerLookTest {
     }
 
     @Test
-    fun theTransportIsStillThereAfterTheLookIsOpened() = runComposeUiTest {
+    fun theScreensListIsStillThereAfterTheLookIsOpened() = runComposeUiTest {
+        // The look opens over the page, not instead of it.
         val f = StandaloneFixture()
-        showController(f)
+        showDisplaySettings(f.engine, f.registry)
 
         click(StandaloneTags.LOOK)
 
         awaitThat { exists(LookTags.GRADIENT_TOP) }
-        assertTrue(exists(StandaloneTags.NEXT))
+        assertTrue(exists(StandaloneTags.DISPLAY_OUTPUTS))
     }
 }

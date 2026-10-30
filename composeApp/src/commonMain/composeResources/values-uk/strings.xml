@@ -774,10 +774,8 @@
     <string name="standalone_blank">Порожній</string>
     <string name="standalone_live">Наживо</string>
     <string name="standalone_clear">Очистити</string>
-    <string name="web_refuses_framing">%1$s не дозволяє показувати себе всередині іншої сторінки, тому екран браузера натомість показує помилку. Екран, підключений до цього телефона, все одно її показує.</string>
     <string name="standalone_preview">Попередній перегляд</string>
     <string name="standalone_no_output">Екран не підключено</string>
-    <string name="standalone_output_count">Екранів: %1$s</string>
     <string name="standalone_empty_title">Нічого не завантажено</string>
     <string name="standalone_empty_body">Відкрийте пісню або розділ Біблії та натисніть «Показати», щоб завантажити їх сюди.</string>
     <string name="standalone_slide_position">%1$s з %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Назва церкви (у верхньому куті)</string>
     <string name="standalone_brand_line_hint">Залиште порожнім, щоб не показувати</string>
     <string name="standalone_show_clock">Показувати годинник</string>
-    <string name="web_not_a_link">Введіть веб-адресу, наприклад example.com</string>
     <string name="standalone_show_reference">Показувати рядок посилання</string>
     <string name="standalone_show_reference_hint">Частина пісні або вірш, що показується під словами.</string>
     <string name="standalone_look_reset">Скинути вигляд</string>

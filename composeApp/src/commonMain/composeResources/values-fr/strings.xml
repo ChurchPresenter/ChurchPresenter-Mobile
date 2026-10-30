@@ -774,10 +774,8 @@
     <string name="standalone_blank">Écran vide</string>
     <string name="standalone_live">En direct</string>
     <string name="standalone_clear">Effacer</string>
-    <string name="web_refuses_framing">%1$s n'autorise pas son affichage dans une autre page, l'écran du navigateur affiche donc une erreur à la place. Un écran branché sur ce téléphone l'affiche quand même.</string>
     <string name="standalone_preview">Aperçu</string>
     <string name="standalone_no_output">Aucun écran connecté</string>
-    <string name="standalone_output_count">%1$s écran(s)</string>
     <string name="standalone_empty_title">Rien de chargé</string>
     <string name="standalone_empty_body">Ouvrez un chant ou un chapitre de la Bible et appuyez sur Présenter pour le charger ici.</string>
     <string name="standalone_slide_position">%1$s sur %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Nom de l'église (coin supérieur)</string>
     <string name="standalone_brand_line_hint">Laisser vide pour aucun</string>
     <string name="standalone_show_clock">Afficher une horloge</string>
-    <string name="web_not_a_link">Saisissez une adresse web, par ex. example.com</string>
     <string name="standalone_show_reference">Afficher la ligne de référence</string>
     <string name="standalone_show_reference_hint">La section du chant ou le verset affiché sous les paroles.</string>
     <string name="standalone_look_reset">Réinitialiser l'apparence</string>

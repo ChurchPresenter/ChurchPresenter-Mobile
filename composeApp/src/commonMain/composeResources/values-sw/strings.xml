@@ -774,10 +774,8 @@
     <string name="standalone_blank">Tupu</string>
     <string name="standalone_live">Moja kwa moja</string>
     <string name="standalone_clear">Futa</string>
-    <string name="web_refuses_framing">%1$s hairuhusu kuonyeshwa ndani ya ukurasa mwingine, kwa hiyo skrini ya kivinjari inaonyesha hitilafu badala yake. Skrini iliyochomekwa kwenye simu hii bado inaionyesha.</string>
     <string name="standalone_preview">Onyesho la awali</string>
     <string name="standalone_no_output">Hakuna skrini iliyounganishwa</string>
-    <string name="standalone_output_count">Skrini %1$s</string>
     <string name="standalone_empty_title">Hakuna kilichopakiwa</string>
     <string name="standalone_empty_body">Fungua wimbo au sura ya Biblia kisha gusa Wasilisha ili kuipakia hapa.</string>
     <string name="standalone_slide_position">%1$s kati ya %2$s</string>
@@ -886,7 +884,6 @@
     <string name="standalone_brand_line">Jina la kanisa (kona ya juu)</string>
     <string name="standalone_brand_line_hint">Acha wazi kwa kutokuwa na jina</string>
     <string name="standalone_show_clock">Onyesha saa</string>
-    <string name="web_not_a_link">Andika anwani ya wavuti, kama example.com</string>
     <string name="standalone_show_reference">Onyesha mstari wa marejeo</string>
     <string name="standalone_show_reference_hint">Sehemu ya wimbo au mstari unaoonyeshwa chini ya maneno.</string>
     <string name="standalone_look_reset">Weka upya mwonekano</string>

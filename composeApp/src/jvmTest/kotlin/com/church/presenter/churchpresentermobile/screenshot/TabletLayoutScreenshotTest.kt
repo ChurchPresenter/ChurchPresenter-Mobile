@@ -46,10 +46,7 @@ import com.church.presenter.churchpresentermobile.ui.library.SongEditorScreen
 import com.church.presenter.churchpresentermobile.ui.library.amazingGrace
 import com.church.presenter.churchpresentermobile.ui.library.libraryOf
 import com.church.presenter.churchpresentermobile.ui.library.song
-import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneControllerScreen
-import com.church.presenter.churchpresentermobile.ui.standalone.StandaloneFixture
 import com.church.presenter.churchpresentermobile.viewmodel.MediaSource
-import com.church.presenter.churchpresentermobile.viewmodel.StandaloneViewModel
 import kotlin.test.Test
 
 /**
@@ -90,9 +87,9 @@ class TabletLayoutScreenshotTest {
     fun railStandalone() = screenshot(
         "nav-rail__standalone",
         width = null,
-        // A different tab set entirely — Present and Library replace Media and
-        // the desktop's decks, exactly as in the bottom strip.
-        content = rail(AppTab.PRESENT, AppTab.forMode(AppMode.STANDALONE)),
+        // A different tab set entirely — the running order leads and Media and
+        // the desktop's decks are gone, exactly as in the bottom strip.
+        content = rail(AppTab.SCHEDULE, AppTab.forMode(AppMode.STANDALONE)),
     )
 
     // ── Songs ────────────────────────────────────────────────────────────
@@ -358,26 +355,6 @@ class TabletLayoutScreenshotTest {
             snackbarHostState = SnackbarHostState(),
             onMenu = {},
             onSettings = {},
-        )
-    }
-
-    // ── Present ──────────────────────────────────────────────────────────
-
-    @Test
-    fun presentController() = tablet("present-two-pane__idle") {
-        // The real screen with `twoPane` set, on the same in-memory engine the
-        // phone golden uses — so this captures the arrangement the app actually
-        // builds rather than one assembled by hand.
-        val fixture = StandaloneFixture()
-        val settings = AppSettings(InMemorySettingsStorage())
-        StandaloneControllerScreen(
-            engine = fixture.engine,
-            registry = fixture.registry,
-            settings = settings,
-            twoPane = true,
-            onMenu = {},
-            onSettings = {},
-            providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, settings, null),
         )
     }
 
