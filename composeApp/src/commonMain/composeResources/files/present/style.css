@@ -96,7 +96,7 @@ html, body {
   white-space: pre-line;
   line-height: 1.32;
   text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
-  font-size: clamp(15px, 6.6vw, 128px);
+  font-size: clamp(15px, min(6.6vw, 11.73vh), 128px);
 }
 
 /*
@@ -104,15 +104,20 @@ html, body {
  * preview shows the size the screen will show. They had drifted: this page was
  * on 4.4vw where the phone was on 6.6, making every word about a third smaller
  * here than in the preview the operator was judging it by.
+ *
+ * Each is capped by the same fraction of a 16:9 frame's *height* (vw × 16/9 in
+ * vh). On a 16:9 screen the two are equal and nothing changes; in a window wider
+ * than that — a browser with its toolbars, an ultrawide monitor — sizing by width
+ * alone made the words taller than the screen and ran them off the bottom.
  */
-.size-small  .body { font-size: clamp(12px, 5.2vw, 100px); }
-.size-medium .body { font-size: clamp(15px, 6.6vw, 128px); }
-.size-large  .body { font-size: clamp(18px, 8.4vw, 164px); }
+.size-small  .body { font-size: clamp(12px, min(5.2vw, 9.24vh), 100px); }
+.size-medium .body { font-size: clamp(15px, min(6.6vw, 11.73vh), 128px); }
+.size-large  .body { font-size: clamp(18px, min(8.4vw, 14.93vh), 164px); }
 
 .reference {
   margin: .7em 0 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(10px, 1.7vw, 30px);
+  font-size: clamp(10px, min(1.7vw, 3.02vh), 30px);
   letter-spacing: .14em;
   text-transform: uppercase;
   opacity: .72;
@@ -121,7 +126,7 @@ html, body {
 .footer {
   margin: .5em 0 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(8px, 1.1vw, 18px);
+  font-size: clamp(8px, min(1.1vw, 1.96vh), 18px);
   opacity: .55;
 }
 

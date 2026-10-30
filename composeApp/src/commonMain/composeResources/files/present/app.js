@@ -39,6 +39,8 @@
   var socket = null;
   var reconnectDelay = RECONNECT_MIN_MS;
   var showClock = false;
+  // Whether the slide on screen asked to be shrunk to fit, so a resize can redo it.
+  var fitWanted = false;
 
   // ── Rendering ──────────────────────────────────────────────────────────
 
@@ -356,7 +358,8 @@
     // Shrink to fit after the text and every size that affects it are set, and
     // only then: it measures the laid-out page, so anything decided afterwards
     // would be measured against the wrong thing.
-    fitTextToScreen(theme.autoFitText === true);
+    fitWanted = theme.autoFitText === true;
+    fitTextToScreen(fitWanted);
 
     applyBackdrop(slide);
 
@@ -458,6 +461,11 @@
     var m = String(now.getMinutes()).padStart(2, '0');
     el.clock.textContent = h + ':' + m;
   }
+
+  // The fit was measured against the window as it was. A browser resized,
+  // rotated or sent full-screen after the slide arrived has a different height,
+  // and a verse that fitted the old one can hang off the bottom of the new.
+  window.addEventListener('resize', function () { fitTextToScreen(fitWanted); });
 
   tick();
   window.setInterval(tick, 10000);

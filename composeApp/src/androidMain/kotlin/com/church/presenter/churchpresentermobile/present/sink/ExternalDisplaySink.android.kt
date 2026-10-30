@@ -7,7 +7,9 @@ import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.view.Display
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
@@ -181,6 +183,18 @@ internal class SlidePresentation(
 ) : Presentation(activity, screen) {
 
     private val owners = PresentationOwners()
+    private val nudgeHandler = Handler(Looper.getMainLooper())
+    private val nudgeToken = Any()
+    private var content: ComposeView? = null
+
+    // A Cast receiver can show black until the slide changes — see FrameNudger.
+    private val nudger = FrameNudger(
+        repaint = { content?.invalidate() },
+        schedule = { delayMs, action ->
+            nudgeHandler.postAtTime(action, nudgeToken, SystemClock.uptimeMillis() + delayMs)
+        },
+        cancelAll = { nudgeHandler.removeCallbacksAndMessages(nudgeToken) },
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -189,18 +203,29 @@ internal class SlidePresentation(
         window?.decorView?.let(owners::attachTo)
         owners.onShow()
 
-        setContentView(
-            ComposeView(context).apply {
-                setContent {
-                    val envelope by SlideBus.current.collectAsState()
-                    StandaloneOutputScreen(envelope.slide ?: Slide.BLANK)
-                }
+        val view = ComposeView(context).apply {
+            setContent {
+                val envelope by SlideBus.current.collectAsState()
+                // A slide change is a few frames of fade and then nothing, and a
+                // Cast receiver can hold the last frame back until another one
+                // follows — the TV ran a verse behind. Redraw after every change.
+                LaunchedEffect(envelope) { nudger.start() }
+                StandaloneOutputScreen(envelope.slide ?: Slide.BLANK)
             }
-        )
+        }
+        content = view
+        setContentView(view)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        nudger.start()
     }
 
     override fun onStop() {
+        nudger.stop()
         owners.onDismiss()
         super.onStop()
     }
+
 }
