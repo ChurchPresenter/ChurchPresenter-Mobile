@@ -117,6 +117,8 @@
     <string name="song_detail_fab_close_actions">Fechar ações</string>
     <string name="song_detail_projecting_badge">▶  Projetando</string>
     <string name="song_detail_no_lyrics">Nenhuma letra disponível</string>
+    <string name="song_notes_tag">Música</string>
+    <string name="song_section_cue">Deixa da seção</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Adicionar à programação</string>

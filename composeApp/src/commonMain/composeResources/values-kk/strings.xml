@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">Әрекеттерді жабу</string>
     <string name="song_detail_projecting_badge">▶  Трансляцияда</string>
     <string name="song_detail_no_lyrics">Ән мәтіні жоқ</string>
+    <string name="song_notes_tag">Ән</string>
+    <string name="song_section_cue">Бөлім белгісі</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Бағдарламаға қосу</string>

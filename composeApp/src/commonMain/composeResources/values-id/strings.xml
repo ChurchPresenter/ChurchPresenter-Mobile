@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">Tutup tindakan</string>
     <string name="song_detail_projecting_badge">▶  Ditampilkan</string>
     <string name="song_detail_no_lyrics">Tidak ada lirik tersedia</string>
+    <string name="song_notes_tag">Lagu</string>
+    <string name="song_section_cue">Aba-aba bagian</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Tambahkan ke jadwal</string>

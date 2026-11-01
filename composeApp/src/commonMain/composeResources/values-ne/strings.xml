@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">कार्यहरू बन्द गर्नुहोस्</string>
     <string name="song_detail_projecting_badge">▶  देखाइँदै</string>
     <string name="song_detail_no_lyrics">कुनै गीतका शब्द उपलब्ध छैनन्</string>
+    <string name="song_notes_tag">गीत</string>
+    <string name="song_section_cue">खण्ड संकेत</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">कार्यक्रममा थप्नुहोस्</string>
