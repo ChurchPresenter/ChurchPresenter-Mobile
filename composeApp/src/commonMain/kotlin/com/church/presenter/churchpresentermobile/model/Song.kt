@@ -154,10 +154,15 @@ data class SongVerse(
     @SerialName("verseText") val verseTextCamel: String? = null,
     @SerialName("slide-text") val slideText: String? = null,
     @SerialName("lyric-text") val lyricText: String? = null,
+    /** The desktop's key for this section — what [SongDetail.playOrder] and [SongDetail.cues] name it by. */
+    val key: String? = null,
     // Set only on the entries of [SongDetail.slideVerses]: which slide of its section this is,
     // 0-based, out of how many. A section without a manual break is slide 0 of 1.
     @Transient val part: Int = 0,
     @Transient val parts: Int = 1,
+    // Set only on the entries of [SongDetail.slideVerses]: a written section the song's order
+    // leaves out. The desktop still lists it, after the ones it plays, so it can be called for.
+    @Transient val skipped: Boolean = false,
 ) {
     /** The verse number/label to display (e.g. "1", "Chorus"). */
     val displayLabel: String?
@@ -207,6 +212,17 @@ data class SongDetail(
     val body: String? = null,
     @SerialName("lyrics-text")  val lyricsTextKebab: String? = null,
     @SerialName("lyricsText")   val lyricsTextCamel: String? = null,
+    /** The order the song is sung in, by section [SongVerse.key]; empty when sung as written. */
+    val order: List<String> = emptyList(),
+    /** The operator's notes on the song, for the team; never presented. */
+    val notes: String? = null,
+    /** A short cue per section, by [SongVerse.key]; never presented. */
+    val cues: Map<String, String> = emptyMap(),
+    /**
+     * The sections in the order the desktop steps through them, by [SongVerse.key]: its order
+     * with repeats, then the sections the order leaves out. Empty from a desktop that predates it.
+     */
+    val playOrder: List<String> = emptyList(),
 ) {
     val bookName: String?
         get() = listOfNotNull(bookNameKebab, bookNameCamel, bookNameSnake, songbook, songBookKebab)
@@ -218,18 +234,45 @@ data class SongDetail(
         ).firstOrNull { it.isNotEmpty() } ?: emptyList()
 
     /**
-     * [allVerses] as the desktop's slides: a verse with a manual break (`[---]`) becomes one
-     * entry per slide, and chord-only lines ride on the slide they lead into. Index into this,
-     * not [allVerses], whenever an index is shared with the desktop or a projected deck —
-     * see [SlideBreaks].
+     * [allVerses] as the desktop's slides, in the order the desktop steps through them: a verse
+     * with a manual break (`[---]`) becomes one entry per slide, chord-only lines ride on the slide
+     * they lead into, and a section the desktop plays twice is listed twice. Index into this, not
+     * [allVerses], whenever an index is shared with the desktop or a projected deck — see
+     * [SlideBreaks] and [playOrder].
      */
     val slideVerses: List<SongVerse>
         get() {
             val verses = allVerses
-            return SlideBreaks.pieces(verses.map { it.displayText }).map { piece ->
-                verses[piece.source].copy(lines = piece.text.lines(), part = piece.part, parts = piece.parts)
+            val slidesOf = SlideBreaks.pieces(verses.map { it.displayText }).groupBy { it.source }
+            val played = playedSections(verses)
+            return played.flatMap { source ->
+                val skipped = order.isNotEmpty() && verses[source].key !in order
+                slidesOf[source].orEmpty().map { piece ->
+                    verses[source].copy(
+                        lines = piece.text.lines(),
+                        part = piece.part,
+                        parts = piece.parts,
+                        skipped = skipped,
+                    )
+                }
             }
         }
+
+    /**
+     * The positions in [verses] the desktop plays, in its order: [playOrder] resolved by key, or
+     * each section once, as written, when the desktop sent none or named a section it did not send
+     * — a list that disagrees with the desktop's is worse than the written one it replaces.
+     */
+    private fun playedSections(verses: List<SongVerse>): List<Int> {
+        val asWritten = verses.indices.toList()
+        if (playOrder.isEmpty()) return asWritten
+        val byKey = verses.withIndex().filter { it.value.key != null }.associate { it.value.key to it.index }
+        val played = playOrder.map { byKey[it] ?: return asWritten }
+        return played
+    }
+
+    /** [cues] for the section [verse] belongs to; null when it has none. */
+    fun cueFor(verse: SongVerse): String? = verse.key?.let { cues[it] }?.takeIf { it.isNotBlank() }
 
     val hasLyrics: Boolean
         get() = allVerses.isNotEmpty() || plainText != null

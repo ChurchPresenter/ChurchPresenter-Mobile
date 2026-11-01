@@ -160,6 +160,8 @@
     <string name="song_detail_fab_close_actions">Close actions</string>
     <string name="song_detail_projecting_badge">▶  Projecting</string>
     <string name="song_detail_no_lyrics">No lyrics available</string>
+    <string name="song_notes_tag">Song</string>
+    <string name="song_section_cue">Section cue</string>
     <string name="songs_pane_empty_title">No song open</string>
     <string name="more_pane_empty_title">No tool open</string>
     <string name="library_pane_empty_title">Nothing being edited</string>

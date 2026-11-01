@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">Isara ang mga aksyon</string>
     <string name="song_detail_projecting_badge">▶  Ipinapakita</string>
     <string name="song_detail_no_lyrics">Walang available na liriko</string>
+    <string name="song_notes_tag">Awit</string>
+    <string name="song_section_cue">Hudyat ng bahagi</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Idagdag sa iskedyul</string>

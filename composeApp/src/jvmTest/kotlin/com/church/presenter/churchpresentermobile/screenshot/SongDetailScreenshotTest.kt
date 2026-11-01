@@ -69,6 +69,40 @@ class SongDetailScreenshotTest {
         ) + detail.verses.orEmpty().drop(1),
     )
 
+    // An order of its own that sings the chorus twice and leaves verse 3 out, with the song's notes
+    // and a cue on two sections: what the desktop sends once a song has been arranged.
+    private val arranged = SongDetail(
+        number = "12",
+        title = "Amazing Grace",
+        songbook = "Hymns",
+        sections = listOf(
+            SongVerse(
+                label = "Verse 1",
+                key = "[Verse 1]",
+                lines = listOf("Amazing grace! how sweet the sound", "That saved a wretch like me!"),
+            ),
+            SongVerse(
+                label = "Chorus",
+                key = "{Chorus}",
+                lines = listOf("Praise the Lord, praise the Lord", "Let the earth hear His voice"),
+            ),
+            SongVerse(
+                label = "Verse 2",
+                key = "[Verse 2]",
+                lines = listOf("'Twas grace that taught my heart to fear,", "And grace my fears relieved;"),
+            ),
+            SongVerse(
+                label = "Verse 3",
+                key = "[Verse 3]",
+                lines = listOf("Through many dangers, toils and snares,", "I have already come;"),
+            ),
+        ),
+        order = listOf("[Verse 1]", "{Chorus}", "[Verse 2]", "{Chorus}"),
+        playOrder = listOf("[Verse 1]", "{Chorus}", "[Verse 2]", "{Chorus}", "[Verse 3]"),
+        notes = "Capo 2 for the band. Piano intro, 4 bars. Last verse a cappella, then full band.",
+        cues = mapOf("[Verse 1]" to "Piano only", "[Verse 2]" to "Key change"),
+    )
+
     private fun songDetail(
         detail: SongDetail? = this.detail,
         isLoading: Boolean = false,
@@ -130,6 +164,16 @@ class SongDetailScreenshotTest {
     fun standalone() = screenshot(
         "song-detail__standalone",
         content = songDetail(standalone = true),
+    )
+
+    @Test
+    fun arranged() = screenshot("song-detail__arranged", content = songDetail(detail = arranged))
+
+    @Test
+    fun arrangedChorusLiveAgain() = screenshot(
+        "song-detail__arranged-live",
+        // Live on the chorus the second time round: the fourth card, not the second.
+        content = songDetail(detail = arranged, selectedVerseIndex = 3, isProjecting = true),
     )
 
     @Test

@@ -117,6 +117,8 @@
     <string name="song_detail_fab_close_actions">Acties sluiten</string>
     <string name="song_detail_projecting_badge">▶  Projecteren</string>
     <string name="song_detail_no_lyrics">Geen songtekst beschikbaar</string>
+    <string name="song_notes_tag">Lied</string>
+    <string name="song_section_cue">Aanwijzing bij deel</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Toevoegen aan schema</string>

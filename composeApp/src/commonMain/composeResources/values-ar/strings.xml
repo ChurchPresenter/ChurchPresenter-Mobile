@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">إغلاق الإجراءات</string>
     <string name="song_detail_projecting_badge">▶  قيد العرض</string>
     <string name="song_detail_no_lyrics">لا توجد كلمات متاحة</string>
+    <string name="song_notes_tag">ترنيمة</string>
+    <string name="song_section_cue">إشارة المقطع</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">أضف إلى البرنامج</string>

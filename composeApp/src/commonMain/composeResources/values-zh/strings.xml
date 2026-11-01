@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">关闭操作</string>
     <string name="song_detail_projecting_badge">▶  投放中</string>
     <string name="song_detail_no_lyrics">没有可用的歌词</string>
+    <string name="song_notes_tag">歌曲</string>
+    <string name="song_section_cue">段落提示</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">加入程序单</string>

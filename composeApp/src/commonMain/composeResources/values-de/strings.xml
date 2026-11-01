@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">Aktionen schließen</string>
     <string name="song_detail_projecting_badge">▶  Wird projiziert</string>
     <string name="song_detail_no_lyrics">Keine Liedtexte verfügbar</string>
+    <string name="song_notes_tag">Lied</string>
+    <string name="song_section_cue">Hinweis zum Teil</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Zum Programm hinzufügen</string>

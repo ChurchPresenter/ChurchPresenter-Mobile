@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">操作を閉じる</string>
     <string name="song_detail_projecting_badge">▶  表示中</string>
     <string name="song_detail_no_lyrics">歌詞がありません</string>
+    <string name="song_notes_tag">曲</string>
+    <string name="song_section_cue">セクションの合図</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">式次第に追加</string>

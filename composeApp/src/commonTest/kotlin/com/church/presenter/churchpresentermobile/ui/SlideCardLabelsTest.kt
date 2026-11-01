@@ -42,4 +42,27 @@ class SlideCardLabelsTest {
 
         assertEquals(listOf("Verse (1/2)", "Verse (2/2)", "Chorus"), labels)
     }
+
+    @Test
+    fun aSectionPlayedAgainKeepsTheLabelItGotTheFirstTime() {
+        val labels = slideCardLabels(
+            listOf(
+                SongVerse(label = "Verse", key = "[Verse 1]"),
+                SongVerse(label = "Chorus", key = "{Chorus}"),
+                SongVerse(label = "Verse", key = "[Verse 2]"),
+                SongVerse(label = "Chorus", key = "{Chorus}"),
+            ),
+        )
+
+        assertEquals(listOf("Verse 1", "Chorus", "Verse 2", "Chorus"), labels)
+    }
+
+    @Test
+    fun twoDifferentSectionsOfOneTypeAreStillNumbered() {
+        val labels = slideCardLabels(
+            listOf(SongVerse(label = "Chorus", key = "{Chorus}"), SongVerse(label = "Chorus", key = "{Chorus}#2")),
+        )
+
+        assertEquals(listOf("Chorus 1", "Chorus 2"), labels)
+    }
 }
