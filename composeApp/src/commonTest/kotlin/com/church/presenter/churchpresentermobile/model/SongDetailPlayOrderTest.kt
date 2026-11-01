@@ -82,8 +82,10 @@ class SongDetailPlayOrderTest {
     fun `the arrangement reads from the desktop's json, and an older desktop's reads without it`() {
         val json = Json { ignoreUnknownKeys = true }
         val detail = json.decodeFromString<SongDetail>(
-            """{"number":"12","title":"T","sections":[{"type":"verse","label":"Verse 1","key":"[Verse 1]","lines":["a"]}],
-               "order":["[Verse 1]"],"notes":"Capo 2","cues":{"[Verse 1]":"Piano"},"playOrder":["[Verse 1]","[Verse 1]"]}""",
+            """{"number":"12","title":"T",
+               "sections":[{"type":"verse","label":"Verse 1","key":"[Verse 1]","lines":["a"]}],
+               "order":["[Verse 1]"],"notes":"Capo 2","cues":{"[Verse 1]":"Piano"},
+               "playOrder":["[Verse 1]","[Verse 1]"]}""",
         )
         assertEquals("[Verse 1]", detail.allVerses.single().key)
         assertEquals("Capo 2", detail.notes)
