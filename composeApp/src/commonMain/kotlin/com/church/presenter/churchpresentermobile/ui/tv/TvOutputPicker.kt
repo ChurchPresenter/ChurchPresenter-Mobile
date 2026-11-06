@@ -32,15 +32,23 @@ import com.church.presenter.churchpresentermobile.tv.DesktopOutput
 import com.church.presenter.churchpresentermobile.tv.TvSource
 import com.church.presenter.churchpresentermobile.tv.findOutputs
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import io.ktor.client.HttpClient
 import org.jetbrains.compose.resources.stringResource
 
 /**
  * Which of a desktop's outputs to show. Goes straight on when there is only one
  * to choose; says what to do on the computer when there are none, since a
  * desktop only serves an output set to Browser Source.
+ *
+ * @param find Asks the desktop what it has. A seam so each answer can be tested
+ *   without a desktop on the network.
  */
 @Composable
-internal fun OutputPicker(desktop: TvSource, onPick: (TvSource) -> Unit) {
+internal fun OutputPicker(
+    desktop: TvSource,
+    onPick: (TvSource) -> Unit,
+    find: suspend (TvSource, HttpClient) -> List<DesktopOutput> = { source, http -> findOutputs(source, http) },
+) {
     val colors = LocalAppColors.current
     val client = remember { createActionHttpClient() }
     DisposableEffect(client) { onDispose { client.close() } }
@@ -48,7 +56,7 @@ internal fun OutputPicker(desktop: TvSource, onPick: (TvSource) -> Unit) {
     var key by remember(desktop) { mutableStateOf(desktop.apiKey) }
     var attempt by remember(desktop) { mutableStateOf(0) }
     LaunchedEffect(desktop, attempt) {
-        val found = findOutputs(desktop, client)
+        val found = find(desktop, client)
         outputs = found
         found.singleOrNull()?.takeUnless { it.needsKey }?.let { onPick(desktop.copy(output = it.number)) }
     }

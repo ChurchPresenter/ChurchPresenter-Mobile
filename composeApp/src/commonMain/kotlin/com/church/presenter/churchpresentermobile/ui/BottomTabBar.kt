@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -97,9 +98,17 @@ fun BottomTabBar(
                             modifier = Modifier.size(20.dp),
                         )
                     }
+                    // One line whatever the word: "Announcements" and most translated
+                    // labels are wider than a fifth of a phone, and wrapping broke them
+                    // mid-word and pushed the icon out of line with its neighbours.
                     Text(
                         text = label,
-                        fontSize = 10.sp,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = 7.sp,
+                            maxFontSize = 10.sp,
+                            stepSize = 0.25.sp,
+                        ),
+                        maxLines = 1,
                         fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
                         color = contentColor,
                         modifier = Modifier.padding(top = 5.dp),
