@@ -13,11 +13,20 @@ actual object PhoneAdvert {
     actual fun stop() = Unit
 }
 
-/** TV mode is Android-only; an iPhone never looks for phones. */
-actual class PhoneFinder actual constructor() {
-    actual val found: StateFlow<List<PhoneSource>> = MutableStateFlow(emptyList())
+/** Not browsed yet, so an iPhone's TV list stays empty; see [PhoneAdvert]. */
+actual class ServiceFinder actual constructor(serviceType: String) {
+    actual val found: StateFlow<List<FoundService>> = MutableStateFlow(emptyList())
     actual fun start() = Unit
     actual fun stop() = Unit
+}
+
+/** TV mode is Android-only; nothing listens here. */
+actual class TvControlServer actual constructor() {
+    actual val requested: StateFlow<TvSource?> = MutableStateFlow(null)
+    actual val home: StateFlow<Int> = MutableStateFlow(0)
+    actual fun start() = Unit
+    actual fun stop() = Unit
+    actual fun consume() = Unit
 }
 
 /** TV mode is Android-only; nothing to keep awake here. */

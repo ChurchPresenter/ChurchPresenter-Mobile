@@ -207,9 +207,10 @@ fun LiveBar(
  * The live bar folded into the header, beside the settings gear.
  *
  * Costs no height at all, and still answers the one question that matters
- * mid-service — is something up, and is it blanked — with a thumbnail of the
- * output and a dot. Tapping it brings the bar back. Draws nothing while nothing
- * is loaded, like the bar.
+ * mid-service — is something up, is it blanked, and how far through — in words.
+ * Words rather than a thumbnail: a slide shrunk to the height of a header is
+ * unreadable, and its text scales badly at that size. Tapping it brings the bar
+ * back. Draws nothing while nothing is loaded, like the bar.
  */
 @Composable
 fun LiveChip(
@@ -225,7 +226,7 @@ fun LiveChip(
     val viewModel: StandaloneViewModel = providedViewModel
         ?: viewModel(key = "standalone") { StandaloneViewModel(engine, registry, settings, photos) }
     val deck by viewModel.deck.collectAsState()
-    val slide by viewModel.currentSlide.collectAsState()
+    val index by viewModel.index.collectAsState()
     val isBlank by viewModel.isBlank.collectAsState()
     val isLive by viewModel.isLive.collectAsState()
     if (deck.isEmpty) return
@@ -240,12 +241,14 @@ fun LiveChip(
             .background(colors.surface)
             .border(1.dp, colors.border, RoundedCornerShape(10.dp))
             .clickable(onClick = onExpand)
-            .padding(start = 4.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Thumbnail(slide = slide, width = 46.dp)
         StateLabel(isLive = isLive, isBlank = isBlank)
+        if (deck.slides.size > 1) {
+            Text(text = "${index + 1}/${deck.slides.size}", color = colors.muted, fontSize = 11.sp, maxLines = 1)
+        }
     }
 }
 

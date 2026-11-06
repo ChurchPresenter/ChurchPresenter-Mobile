@@ -759,8 +759,6 @@
     <string name="status_unauthorized_body">Serverul poate fi accesat, dar a refuzat cererea. Verifică cheia API în Setări.</string>
     <string name="status_not_churchpresenter_title">Nu este un server ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">La această adresă răspunde un dispozitiv, dar pe el nu rulează ChurchPresenter. Verifică adresa IP și portul.</string>
-    <string name="more_notices_title">Anunțuri</string>
-    <string name="more_notices_subtitle">Afișează pe ecran un anunț din biblioteca ta</string>
     <string name="more_contact_title">Contactează-ne</string>
     <string name="more_contact_subtitle">Trimite o cerere, raportează o problemă sau spune salut</string>
     <string name="standalone_backdrop_pick">Alege o fotografie pentru fundal</string>

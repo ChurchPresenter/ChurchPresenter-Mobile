@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
 import com.church.presenter.churchpresentermobile.model.SetlistEntryType
-import com.church.presenter.churchpresentermobile.ui.ServiceScheduleScreen
+import com.church.presenter.churchpresentermobile.ui.ServiceOrderDrawerContent
 import androidx.compose.ui.test.hasText
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -167,9 +167,9 @@ class MarketingScreenshotTest {
     @Test
     fun library() = marketingShot(
         "06-library",
-        tab = AppTab.MORE,
+        tab = AppTab.LIBRARY,
         tabs = AppTab.forMode(AppMode.STANDALONE),
-        header = { ScreenHeader(title = "Library", onBack = {}, onSettings = {}) },
+        header = { ScreenHeader(title = "Library", onMenu = {}, onSettings = {}) },
     ) {
         LibraryScreen(
             repository = libraryOf(
@@ -187,9 +187,9 @@ class MarketingScreenshotTest {
     @Test
     fun standaloneSchedule() = marketingShot(
         "07-standalone-schedule",
-        tab = AppTab.SCHEDULE,
+        tab = AppTab.SONGS,
         tabs = AppTab.forMode(AppMode.STANDALONE),
-        header = { ScreenHeader(title = "Schedule", onSettings = {}) },
+        header = { ScreenHeader(title = "Songs", onMenu = {}, onSettings = {}) },
     ) {
         RunningTheService()
     }
@@ -231,7 +231,8 @@ internal fun RunningTheService() {
     fixture.engine.setDeck(MarketingContent.amazingGraceDeck)
     fixture.engine.goLive()
     Column(modifier = Modifier.fillMaxSize()) {
-        ServiceScheduleScreen(
+        ServiceOrderDrawerContent(
+            liveTitle = "Amazing Grace",
             entries = listOf(
                 LocalSetlistEntry(SetlistEntryType.ANNOUNCEMENT, "welcome", "Welcome & notices"),
                 LocalSetlistEntry(SetlistEntryType.SONG, "amazing-grace", "Amazing Grace"),

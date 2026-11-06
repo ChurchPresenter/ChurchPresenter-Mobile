@@ -98,17 +98,17 @@ internal fun destinationFor(item: ScheduleItem): ScheduleDestination =
     }
 
 /**
- * Where a tap on a row of standalone's Schedule tab takes the operator.
+ * Where a tap on a row of standalone's schedule drawer takes the operator.
  *
  * A song opens on its own page in Songs, where its verses go live with a tap. A
- * passage opens the Bible tab. A notice opens Notices under More — the Library
- * used to be a tab and took these, but Notices is where one goes live.
+ * passage opens on its own verses in the Bible tab, or on the tab if its title
+ * cannot be read. A notice opens Announcements, where it goes live.
  */
 internal fun destinationFor(entry: LocalSetlistEntry): ScheduleDestination = when (entry.type) {
     SetlistEntryType.SONG -> ScheduleDestination(tab = AppTab.SONGS, songTitle = entry.title)
-    SetlistEntryType.BIBLE -> ScheduleDestination(tab = AppTab.BIBLE)
-    SetlistEntryType.ANNOUNCEMENT ->
-        ScheduleDestination(tab = AppTab.MORE, moreDestination = MoreDestination.ANNOUNCEMENTS)
+    SetlistEntryType.BIBLE -> bibleDestination(ScheduleItem(title = entry.title))
+        .takeIf { it.navigates } ?: ScheduleDestination(tab = AppTab.BIBLE)
+    SetlistEntryType.ANNOUNCEMENT -> ScheduleDestination(tab = AppTab.ANNOUNCEMENTS)
 }
 
 /**

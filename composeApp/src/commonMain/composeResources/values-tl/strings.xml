@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Naaabot ang server pero tinanggihan nito ang kahilingan. Suriin ang API key sa Mga setting.</string>
     <string name="status_not_churchpresenter_title">Hindi ito ChurchPresenter server</string>
     <string name="status_not_churchpresenter_body">May naabot na device sa address na ito, pero hindi ito nagpapatakbo ng ChurchPresenter. Suriin ang IP address at port.</string>
-    <string name="more_notices_title">Mga anunsyo</string>
-    <string name="more_notices_subtitle">Ipakita sa screen ang isang anunsyo mula sa library mo</string>
     <string name="more_contact_title">Makipag-ugnayan sa amin</string>
     <string name="more_contact_subtitle">Magpadala ng kahilingan, mag-ulat ng problema o bumati</string>
     <string name="standalone_backdrop_pick">Pumili ng larawan para sa background</string>

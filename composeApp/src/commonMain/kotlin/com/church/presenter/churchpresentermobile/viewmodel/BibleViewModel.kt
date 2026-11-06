@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.ApiException
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
+import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
@@ -67,6 +68,8 @@ class BibleViewModel(
      * tests can drive them without a desktop; [catalog] already covers reading.
      */
     private val serviceFactory: (AppSettings) -> BibleService = { BibleService(it, eventService) },
+    /** The running order on this device, which standalone adds to in place of a desktop's schedule. */
+    private val service: ServiceOrder? = null,
 ) : ViewModel() {
     private var bibleService = serviceFactory(appSettings)
 
@@ -718,6 +721,17 @@ class BibleViewModel(
         }
         if (isDemoMode) {
             Logger.d(TAG, "addToSchedule — DEMO MODE, simulating success")
+            _scheduleAdded.value = true
+            _scheduleRefreshTrigger.value++
+            _toastEvent.value = ToastEvent.BibleAddedToSchedule(ref)
+            return
+        }
+        // Standalone: the running order is on this device, so the add is a local
+        // write with nothing to fail and nothing to wait for.
+        val service = service
+        if (catalog.isLocal && service != null) {
+            service.addPassage("${book.displayName}:$chapter:${verseRangeString(nums) ?: nums.first()}", ref)
+            Analytics.logEvent(AnalyticsEvent.BIBLE_ADDED_TO_SCHEDULE)
             _scheduleAdded.value = true
             _scheduleRefreshTrigger.value++
             _toastEvent.value = ToastEvent.BibleAddedToSchedule(ref)

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
@@ -31,7 +30,7 @@ import coil3.compose.AsyncImage
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.standalone_look
+import churchpresentermobile.composeapp.generated.resources.standalone_advanced
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_black
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_gradient
@@ -39,6 +38,7 @@ import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_needs_server
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_no_photos
 import churchpresentermobile.composeapp.generated.resources.standalone_backdrop_pick
+import churchpresentermobile.composeapp.generated.resources.standalone_themes
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
@@ -51,6 +51,10 @@ import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.StandaloneViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.church.presenter.churchpresentermobile.present.SinkStatus
+import com.church.presenter.churchpresentermobile.present.sink.WEB_PAGE_SINK_ID
+import com.church.presenter.churchpresentermobile.tv.TvSource
+import com.church.presenter.churchpresentermobile.tv.parseAddress
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -97,31 +101,65 @@ fun DisplaySettingsPage(
             onShowChordsChange = viewModel::setShowChords,
             textSize = textSize,
             onTextSizeChange = viewModel::setTextSize,
-            presets = viewModel.presets,
-            savedThemes = savedThemes,
-            onApplyTheme = viewModel::applyTheme,
             onSaveTheme = viewModel::saveCurrentTheme,
-            onDeleteTheme = viewModel::deleteSavedTheme,
             onDismiss = { showLook = false },
+            backdropControls = {
+                BackdropControls(
+                    backdrop = backdrop,
+                    backdropPhotos = backdropPhotos,
+                    backdropUrl = backdropUrl,
+                    canUsePhotoBackdrop = canUsePhotoBackdrop,
+                    urlFor = { photos?.urlFor(it) },
+                    onBackdropChange = viewModel::setBackdrop,
+                    onPickImage = viewModel::setImageBackdrop,
+                )
+            },
         )
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(AppDimens.space12)) {
         OutputTargetsContent(sinks, Modifier.testTag(StandaloneTags.DISPLAY_OUTPUTS))
-        BackdropControls(
-            backdrop = backdrop,
-            backdropPhotos = backdropPhotos,
-            backdropUrl = backdropUrl,
-            canUsePhotoBackdrop = canUsePhotoBackdrop,
-            urlFor = { photos?.urlFor(it) },
-            onBackdropChange = viewModel::setBackdrop,
-            onPickImage = viewModel::setImageBackdrop,
-            onOpenLook = { showLook = true },
+        TvPicker(source = phoneSource(sinks, settings.reportedDeviceName))
+        LookHeader(onOpenAdvanced = { showLook = true })
+        LookPresets(
+            presets = viewModel.presets,
+            savedThemes = savedThemes,
+            current = theme,
+            onPreset = viewModel::applyPreset,
+            onSaved = viewModel::applyTheme,
+            onDeleteSaved = viewModel::deleteSavedTheme,
         )
     }
 }
 
-/** The backdrop picker and the way into the look sheet. */
+/** The presets' heading, and the way into everything a preset does not cover. */
+@Composable
+private fun LookHeader(onOpenAdvanced: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        OverlineRow(stringResource(Res.string.standalone_themes), modifier = Modifier.weight(1f))
+        Text(
+            text = stringResource(Res.string.standalone_advanced),
+            color = LocalAppColors.current.accent,
+            fontSize = 12.sp,
+            modifier = Modifier.testTag(StandaloneTags.LOOK).clickable { onOpenAdvanced() },
+        )
+    }
+}
+
+/**
+ * This phone as a TV reaches it, or null until its display server is up — it is
+ * the address the browser sink is serving on.
+ */
+internal fun phoneSource(sinks: List<SinkStatus>, name: String): TvSource? =
+    sinks.firstOrNull { it.id == WEB_PAGE_SINK_ID && it.isAttached }
+        ?.detail?.let(::parseAddress)
+        ?.copy(name = name)
+
+/** What goes behind the words. */
 @Composable
 private fun ColumnScope.BackdropControls(
     backdrop: SlideBackdrop,
@@ -131,22 +169,8 @@ private fun ColumnScope.BackdropControls(
     urlFor: (String) -> String?,
     onBackdropChange: (SlideBackdrop) -> Unit,
     onPickImage: (StoredPhoto) -> Unit,
-    onOpenLook: () -> Unit,
 ) {
-    val colors = LocalAppColors.current
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        OverlineRow(stringResource(Res.string.standalone_backdrop), modifier = Modifier.weight(1f))
-        Text(
-            text = stringResource(Res.string.standalone_look),
-            color = colors.accent,
-            fontSize = 12.sp,
-            modifier = Modifier.testTag(StandaloneTags.LOOK).clickable { onOpenLook() },
-        )
-    }
+    OverlineRow(stringResource(Res.string.standalone_backdrop))
     SegmentedControl(
         options = listOf(
             stringResource(Res.string.standalone_backdrop_gradient),

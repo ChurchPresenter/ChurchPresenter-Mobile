@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Pelayan dapat dicapai tetapi menolak permintaan. Semak kunci API dalam Tetapan.</string>
     <string name="status_not_churchpresenter_title">Bukan pelayan ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Terdapat peranti pada alamat ini, tetapi ia tidak menjalankan ChurchPresenter. Semak alamat IP dan port.</string>
-    <string name="more_notices_title">Pengumuman</string>
-    <string name="more_notices_subtitle">Paparkan pengumuman dari pustaka anda pada skrin</string>
     <string name="more_contact_title">Hubungi kami</string>
     <string name="more_contact_subtitle">Hantar permintaan, laporkan masalah atau sekadar bertanya khabar</string>
     <string name="standalone_backdrop_pick">Pilih foto untuk latar belakang</string>

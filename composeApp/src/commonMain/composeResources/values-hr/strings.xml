@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Poslužitelj je dostupan, ali je odbio zahtjev. Provjerite API ključ u Postavkama.</string>
     <string name="status_not_churchpresenter_title">Nije ChurchPresenter poslužitelj</string>
     <string name="status_not_churchpresenter_body">Na ovoj adresi pronađen je uređaj, ali na njemu ne radi ChurchPresenter. Provjerite IP adresu i port.</string>
-    <string name="more_notices_title">Obavijesti</string>
-    <string name="more_notices_subtitle">Prikažite obavijest iz svoje knjižnice na zaslonu</string>
     <string name="more_contact_title">Kontaktirajte nas</string>
     <string name="more_contact_subtitle">Pošaljite zahtjev, prijavite problem ili se samo javite</string>
     <string name="standalone_backdrop_pick">Odaberite fotografiju za pozadinu</string>

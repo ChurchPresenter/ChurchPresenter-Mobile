@@ -20,11 +20,11 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone is schedule, bible, songs and more`() {
-        // The running order leads: a service is run from it. The live controls
-        // ride along every tab rather than having one, and the Library is under More.
+    fun `standalone is bible, songs, library, announcements and more`() {
+        // The live controls ride along every tab rather than having one, and the
+        // running order is the schedule drawer, as in remote.
         assertEquals(
-            listOf(AppTab.SCHEDULE, AppTab.BIBLE, AppTab.SONGS, AppTab.MORE),
+            listOf(AppTab.BIBLE, AppTab.SONGS, AppTab.LIBRARY, AppTab.ANNOUNCEMENTS, AppTab.MORE),
             AppTab.forMode(AppMode.STANDALONE),
         )
     }
@@ -37,17 +37,17 @@ class AppTabTest {
     }
 
     @Test
-    fun `the schedule tab exists only in standalone`() {
-        // Remote's schedule is the desktop's, in the drawer.
-        assertFalse(AppTab.SCHEDULE in AppTab.forMode(AppMode.REMOTE))
-        assertTrue(AppTab.SCHEDULE in AppTab.forMode(AppMode.STANDALONE))
+    fun `the announcements tab exists only in standalone`() {
+        // Remote's composer is a More screen that drives the desktop.
+        assertFalse(AppTab.ANNOUNCEMENTS in AppTab.forMode(AppMode.REMOTE))
+        assertTrue(AppTab.ANNOUNCEMENTS in AppTab.forMode(AppMode.STANDALONE))
     }
 
     /** The library is on-device content, which only standalone mode can present. */
     @Test
-    fun `the library is first in standalone's more and absent from remote's`() {
-        assertEquals(MoreDestination.LIBRARY, MoreDestination.forMode(AppMode.STANDALONE).first())
-        assertFalse(MoreDestination.LIBRARY in MoreDestination.forMode(AppMode.REMOTE))
+    fun `the library tab exists only in standalone`() {
+        assertFalse(AppTab.LIBRARY in AppTab.forMode(AppMode.REMOTE))
+        assertTrue(AppTab.LIBRARY in AppTab.forMode(AppMode.STANDALONE))
     }
 
     @Test
@@ -72,26 +72,20 @@ class AppTabTest {
     // ── More destinations ────────────────────────────────────────────────
 
     @Test
-    fun `remote keeps every More destination but the report and the library`() {
-        // The CCLI report is about what this device projected, which in remote mode is nothing,
-        // and the Library is content this device projects itself. The canvas is tablet-only.
+    fun `remote keeps every More destination but the report`() {
+        // The CCLI report is about what this device projected, which in remote mode is nothing.
+        // …and but the canvas, which is tablet-only.
         assertEquals(
-            MoreDestination.entries - MoreDestination.REPORT - MoreDestination.LIBRARY - MoreDestination.CANVAS,
+            MoreDestination.entries - MoreDestination.REPORT - MoreDestination.CANVAS,
             MoreDestination.forMode(AppMode.REMOTE),
         )
     }
 
     @Test
     fun `standalone keeps only the More destinations it can serve itself`() {
-        // The Library leads: it was a tab, and is where songs and notices are
-        // written. Photos and Notices are local — picked or written on this
-        // device and projected by it. Q&A, the dictionary and Web need the
-        // desktop, so they stay out.
-        //
-        // ANNOUNCEMENTS is the same slot serving two different screens: the
-        // remote composer writes to the desktop's schedule, while standalone
-        // gets the local notices list. It is here because the Library stopped
-        // projecting — going live needs a surface of its own.
+        // Photos are local — picked on this device and projected by it. Q&A, the
+        // dictionary and Web need the desktop, so they stay out, and Announcements
+        // here is the remote composer: standalone has a tab of its own.
         //
         // REPORT is the CCLI report of what this device put on a screen, which
         // only standalone has: in remote mode the desktop projects and reports.
@@ -100,10 +94,8 @@ class AppTabTest {
         // only enters through the relay, which standalone can enroll with too.
         assertEquals(
             listOf(
-                MoreDestination.LIBRARY,
                 MoreDestination.CALENDAR,
                 MoreDestination.PICTURES,
-                MoreDestination.ANNOUNCEMENTS,
                 MoreDestination.REPORT,
                 MoreDestination.CONTACT,
             ),

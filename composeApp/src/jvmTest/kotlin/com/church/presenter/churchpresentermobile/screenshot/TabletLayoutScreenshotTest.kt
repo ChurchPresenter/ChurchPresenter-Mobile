@@ -87,9 +87,9 @@ class TabletLayoutScreenshotTest {
     fun railStandalone() = screenshot(
         "nav-rail__standalone",
         width = null,
-        // A different tab set entirely — the running order leads and Media and
-        // the desktop's decks are gone, exactly as in the bottom strip.
-        content = rail(AppTab.SCHEDULE, AppTab.forMode(AppMode.STANDALONE)),
+        // A different tab set entirely — the Library and Announcements replace
+        // Media and the desktop's decks, exactly as in the bottom strip.
+        content = rail(AppTab.LIBRARY, AppTab.forMode(AppMode.STANDALONE)),
     )
 
     // ── Songs ────────────────────────────────────────────────────────────

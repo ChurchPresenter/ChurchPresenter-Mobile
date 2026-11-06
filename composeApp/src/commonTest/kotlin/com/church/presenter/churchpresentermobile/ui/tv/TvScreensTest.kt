@@ -10,7 +10,7 @@ import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.tv.LiveState
-import com.church.presenter.churchpresentermobile.tv.PhoneSource
+import com.church.presenter.churchpresentermobile.tv.TvSource
 import com.church.presenter.churchpresentermobile.ui.awaitThat
 import com.church.presenter.churchpresentermobile.ui.click
 import com.church.presenter.churchpresentermobile.ui.exists
@@ -88,7 +88,7 @@ class TvScreensTest {
     fun aTvThatWasShowingAPhoneGoesStraightBackToIt() = runComposeUiTest {
         // A lobby TV after a power cut, with nobody there to choose again.
         val settings = settings()
-        settings.tvLastSource = PhoneSource("Pixel", "192.168.1.20", 8766)
+        settings.tvLastSource = TvSource("Pixel", "192.168.1.20", 8766)
 
         showScreen { TvApp(settings) }
 

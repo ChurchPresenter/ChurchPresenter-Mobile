@@ -53,7 +53,7 @@ import churchpresentermobile.composeapp.generated.resources.songs_table_search_p
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.SyncRequestHandler
 import com.church.presenter.churchpresentermobile.TabNavigationHandler
-import com.church.presenter.churchpresentermobile.model.MoreDestination
+import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.ui.library.SyncSection
 import androidx.compose.material.icons.filled.CloudDownload
 import churchpresentermobile.composeapp.generated.resources.empty_action_get_songs
@@ -152,10 +152,10 @@ fun SongsListScreen(
                     actionIcon = Icons.Filled.CloudDownload,
                     onAction = {
                         SyncRequestHandler.request(SyncSection.SONGS)
-                        TabNavigationHandler.navigateToMore(MoreDestination.LIBRARY)
+                        TabNavigationHandler.navigateTo(AppTab.LIBRARY)
                     },
                     secondaryLabel = stringResource(Res.string.empty_action_write_song),
-                    onSecondary = { TabNavigationHandler.navigateToMore(MoreDestination.LIBRARY) },
+                    onSecondary = { TabNavigationHandler.navigateTo(AppTab.LIBRARY) },
                 )
                 !isLoading -> Box(
                     modifier = Modifier

@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Сервер доступен, но отклонил запрос. Проверьте API-ключ в Настройках.</string>
     <string name="status_not_churchpresenter_title">Это не сервер ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">По этому адресу есть устройство, но на нём не запущен ChurchPresenter. Проверьте IP-адрес и порт.</string>
-    <string name="more_notices_title">Объявления</string>
-    <string name="more_notices_subtitle">Показать на экране объявление из библиотеки</string>
     <string name="more_contact_title">Связаться с нами</string>
     <string name="more_contact_subtitle">Отправьте запрос, сообщите о проблеме или просто поздоровайтесь</string>
     <string name="standalone_backdrop_pick">Выберите фото для фона</string>

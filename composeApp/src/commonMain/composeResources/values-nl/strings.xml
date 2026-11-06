@@ -759,8 +759,6 @@
     <string name="status_unauthorized_body">De server is bereikbaar maar weigerde het verzoek. Controleer de API-sleutel in Instellingen.</string>
     <string name="status_not_churchpresenter_title">Geen ChurchPresenter-server</string>
     <string name="status_not_churchpresenter_body">Er is een apparaat op dit adres gevonden, maar daarop draait geen ChurchPresenter. Controleer het IP-adres en de poort.</string>
-    <string name="more_notices_title">Mededelingen</string>
-    <string name="more_notices_subtitle">Zet een mededeling uit je bibliotheek op het scherm</string>
     <string name="more_contact_title">Contact</string>
     <string name="more_contact_subtitle">Stuur een verzoek, meld een probleem of zeg gewoon hallo</string>
     <string name="standalone_backdrop_pick">Kies een foto als achtergrond</string>

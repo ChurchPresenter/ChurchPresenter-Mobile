@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">الخادم متاح لكنه رفض الطلب. تحقّق من مفتاح API في الإعدادات.</string>
     <string name="status_not_churchpresenter_title">ليس خادم ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">تم الوصول إلى جهاز على هذا العنوان، لكنه لا يشغّل ChurchPresenter. تحقّق من عنوان IP والمنفذ.</string>
-    <string name="more_notices_title">الإعلانات</string>
-    <string name="more_notices_subtitle">اعرض إعلانًا من مكتبتك على الشاشة</string>
     <string name="more_contact_title">اتصل بنا</string>
     <string name="more_contact_subtitle">أرسل طلبًا أو أبلغ عن مشكلة أو ألقِ التحية</string>
     <string name="standalone_backdrop_pick">اختر صورة للخلفية</string>

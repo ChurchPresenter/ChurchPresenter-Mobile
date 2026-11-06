@@ -44,21 +44,36 @@ import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.app_title
 import churchpresentermobile.composeapp.generated.resources.tv_address_hint
 import churchpresentermobile.composeapp.generated.resources.tv_address_invalid
+import churchpresentermobile.composeapp.generated.resources.tv_boot_off
+import churchpresentermobile.composeapp.generated.resources.tv_boot_on
+import churchpresentermobile.composeapp.generated.resources.tv_boot_title
 import churchpresentermobile.composeapp.generated.resources.tv_connect
 import churchpresentermobile.composeapp.generated.resources.tv_enter_address
+import churchpresentermobile.composeapp.generated.resources.tv_kind_computer
+import churchpresentermobile.composeapp.generated.resources.tv_kind_phone
 import churchpresentermobile.composeapp.generated.resources.tv_live_body
 import churchpresentermobile.composeapp.generated.resources.tv_live_title
 import churchpresentermobile.composeapp.generated.resources.tv_pick_hint
 import churchpresentermobile.composeapp.generated.resources.tv_pick_searching
 import churchpresentermobile.composeapp.generated.resources.tv_pick_title
 import churchpresentermobile.composeapp.generated.resources.tv_signage_body
+import churchpresentermobile.composeapp.generated.resources.tv_signage_soon
 import churchpresentermobile.composeapp.generated.resources.tv_signage_title
 import com.church.presenter.churchpresentermobile.model.AppSettings
-import com.church.presenter.churchpresentermobile.tv.PhoneFinder
-import com.church.presenter.churchpresentermobile.tv.PhoneSource
+import com.church.presenter.churchpresentermobile.tv.DESKTOP_SERVICE_TYPE
+import com.church.presenter.churchpresentermobile.tv.FoundService
+import com.church.presenter.churchpresentermobile.tv.PHONE_SERVICE_TYPE
+import com.church.presenter.churchpresentermobile.tv.ServiceFinder
+import com.church.presenter.churchpresentermobile.tv.SourceKind
+import com.church.presenter.churchpresentermobile.tv.TvControlServer
+import com.church.presenter.churchpresentermobile.tv.TvSource
 import com.church.presenter.churchpresentermobile.tv.parseAddress
 import com.church.presenter.churchpresentermobile.ui.AppBackHandler
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
+import com.church.presenter.churchpresentermobile.util.RemoteConfig
+import com.church.presenter.churchpresentermobile.util.RemoteConfigDefaults
+import com.church.presenter.churchpresentermobile.util.RemoteConfigKeys
+import com.church.presenter.churchpresentermobile.util.isDebugBuild
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import org.jetbrains.compose.resources.stringResource
@@ -67,35 +82,97 @@ import org.jetbrains.compose.resources.stringResource
 private sealed interface TvPage {
     data object Home : TvPage
     data object Pick : TvPage
-    data class Live(val source: PhoneSource) : TvPage
+
+    /** Playing the desktop's signage; a mode of its own, separate from live. */
+    data object Signage : TvPage
+
+    /** A desktop was chosen; which of its outputs? */
+    data class Outputs(val desktop: TvSource) : TvPage
+    data class Live(val source: TvSource) : TvPage
 }
+
 
 /**
  * ChurchPresenter on a TV: not the phone app on a big screen, but a screen.
  *
  * Driven entirely with a remote — every control is a large focusable card, and
- * Back always goes one step out. A TV that was last showing a phone goes
+ * Back always goes one step out. A TV that was last showing something goes
  * straight back to it when it starts, so a lobby TV recovers from a power cut
  * with nobody touching it.
+ *
+ * It can also be sent something from a phone: [TvControlServer] listens on every
+ * page, so nobody has to find the remote at all.
  */
 @Composable
 fun TvApp(settings: AppSettings = remember { AppSettings() }) {
     var page by remember {
-        mutableStateOf<TvPage>(settings.tvLastSource?.let { TvPage.Live(it) } ?: TvPage.Home)
+        mutableStateOf(
+            when {
+                settings.tvSignageOn && signageOffered() -> TvPage.Signage
+                else -> settings.tvLastSource?.let { TvPage.Live(it) } ?: TvPage.Home
+            }
+        )
+    }
+    var startOnBoot by remember { mutableStateOf(settings.tvStartOnBoot) }
+    val control = remember { TvControlServer() }
+    DisposableEffect(control) {
+        control.start()
+        onDispose { control.stop() }
+    }
+    val show: (TvSource) -> Unit = { source ->
+        settings.tvLastSource = source
+        settings.tvSignageOn = false
+        page = TvPage.Live(source)
+    }
+    // A phone is shown at once; a desktop has outputs to pick from first.
+    val choose: (TvSource) -> Unit = { source ->
+        if (source.kind == SourceKind.DESKTOP) page = TvPage.Outputs(source) else show(source)
+    }
+    val requested by control.requested.collectAsState()
+    LaunchedEffect(requested) {
+        requested?.let { source ->
+            choose(source)
+            control.consume()
+        }
+    }
+    val homeRequests by control.home.collectAsState()
+    LaunchedEffect(homeRequests) {
+        if (homeRequests > 0) {
+            settings.tvLastSource = null
+            settings.tvSignageOn = false
+            page = TvPage.Home
+        }
     }
     // Dark always: a TV is in a room with the lights down, and white would glare.
     AppTheme(themeMode = ThemeMode.DARK) {
         when (val current = page) {
-            TvPage.Home -> TvHome(onLive = { page = TvPage.Pick })
+            TvPage.Home -> TvHome(
+                onLive = { page = TvPage.Pick },
+                onSignage = if (signageOffered()) ({
+                    settings.tvSignageOn = true
+                    page = TvPage.Signage
+                }) else null,
+                startOnBoot = startOnBoot,
+                onToggleBoot = {
+                    startOnBoot = !startOnBoot
+                    settings.tvStartOnBoot = startOnBoot
+                },
+            )
+            TvPage.Signage -> {
+                // Back leaves signage on purpose, so a restart stays on the home screen.
+                AppBackHandler {
+                    settings.tvSignageOn = false
+                    page = TvPage.Home
+                }
+                SignageMode(settings)
+            }
             TvPage.Pick -> {
                 AppBackHandler { page = TvPage.Home }
-                PhonePicker(
-                    last = settings.tvLastSource,
-                    onPick = { source ->
-                        settings.tvLastSource = source
-                        page = TvPage.Live(source)
-                    },
-                )
+                SourcePicker(last = settings.tvLastSource, onPick = choose)
+            }
+            is TvPage.Outputs -> {
+                AppBackHandler { page = TvPage.Pick }
+                OutputPicker(current.desktop, onPick = show)
             }
             is TvPage.Live -> {
                 // Back means "show something else": forget the source, so a
@@ -110,8 +187,23 @@ fun TvApp(settings: AppSettings = remember { AppSettings() }) {
     }
 }
 
+/**
+ * Whether to offer Signage. It needs a desktop that knows an Android TV player,
+ * so it stays off behind a flag until a release with that has shipped; a debug
+ * build always has it, for testing against a desktop built from the branch.
+ */
+private fun signageOffered(): Boolean {
+    val flag = RemoteConfig.getBoolean(RemoteConfigKeys.FEATURE_TV_SIGNAGE, RemoteConfigDefaults.FEATURE_TV_SIGNAGE)
+    return signageSupported && (isDebugBuild || flag)
+}
+
 @Composable
-private fun TvHome(onLive: () -> Unit) {
+private fun TvHome(
+    onLive: () -> Unit,
+    onSignage: (() -> Unit)?,
+    startOnBoot: Boolean,
+    onToggleBoot: () -> Unit,
+) {
     val colors = LocalAppColors.current
     val first = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
@@ -120,36 +212,43 @@ private fun TvHome(onLive: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
         Text(stringResource(Res.string.app_title), color = colors.text, fontSize = 36.sp, fontWeight = FontWeight.Bold)
-        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             TvCard(
                 title = stringResource(Res.string.tv_live_title),
                 body = stringResource(Res.string.tv_live_body),
                 onClick = onLive,
-                modifier = Modifier.width(420.dp).focusRequester(first).testTag(TvTags.HOME_LIVE),
+                modifier = Modifier.weight(1f).focusRequester(first).testTag(TvTags.HOME_LIVE),
             )
-            // Phase 3. Shown, not hidden, so a church that came for signage sees
-            // it is on its way rather than missing.
+            // Shown even when it cannot be chosen yet, so a church that came for
+            // signage sees it is on its way rather than missing.
             TvCard(
                 title = stringResource(Res.string.tv_signage_title),
-                body = stringResource(Res.string.tv_signage_body),
-                onClick = null,
-                modifier = Modifier.width(420.dp).testTag(TvTags.HOME_SIGNAGE),
+                body = stringResource(
+                    if (onSignage != null) Res.string.tv_signage_body else Res.string.tv_signage_soon
+                ),
+                onClick = onSignage,
+                modifier = Modifier.weight(1f).testTag(TvTags.HOME_SIGNAGE),
             )
         }
+        TvCard(
+            title = stringResource(Res.string.tv_boot_title),
+            body = stringResource(if (startOnBoot) Res.string.tv_boot_on else Res.string.tv_boot_off),
+            onClick = onToggleBoot,
+            modifier = Modifier.fillMaxWidth().testTag(TvTags.HOME_BOOT),
+        )
     }
 }
 
+/** Everything on the network a TV can show: computers first, then phones. */
 @Composable
-private fun PhonePicker(last: PhoneSource?, onPick: (PhoneSource) -> Unit) {
+private fun SourcePicker(last: TvSource?, onPick: (TvSource) -> Unit) {
     val colors = LocalAppColors.current
-    val finder = remember { PhoneFinder() }
-    DisposableEffect(finder) {
-        finder.start()
-        onDispose { finder.stop() }
-    }
-    val found by finder.found.collectAsState()
+    val phones = rememberFound(PHONE_SERVICE_TYPE)
+    val desktops = rememberFound(DESKTOP_SERVICE_TYPE)
+    val sources = desktops.map { TvSource(it.name, it.host, it.port, SourceKind.DESKTOP) } +
+        phones.map { TvSource(it.name, it.host, it.port, SourceKind.PHONE) }
     val first = remember { FocusRequester() }
-    LaunchedEffect(found.isEmpty()) { runCatching { first.requestFocus() } }
+    LaunchedEffect(sources.isEmpty()) { runCatching { first.requestFocus() } }
 
     Row(
         modifier = Modifier.fillMaxSize().background(colors.background).padding(64.dp),
@@ -162,19 +261,22 @@ private fun PhonePicker(last: PhoneSource?, onPick: (PhoneSource) -> Unit) {
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
             )
-            if (found.isEmpty()) {
+            if (sources.isEmpty()) {
                 Text(stringResource(Res.string.tv_pick_searching), color = colors.text, fontSize = 18.sp)
                 Text(stringResource(Res.string.tv_pick_hint), color = colors.muted, fontSize = 16.sp)
             }
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(found, key = { it.name }) { source ->
+                items(sources, key = { it.name }) { source ->
                     TvCard(
                         title = source.name,
-                        body = "${source.host}:${source.port}",
+                        body = stringResource(
+                            if (source.kind == SourceKind.DESKTOP) Res.string.tv_kind_computer
+                            else Res.string.tv_kind_phone
+                        ),
                         onClick = { onPick(source) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .then(if (source == found.first()) Modifier.focusRequester(first) else Modifier)
+                            .then(if (source == sources.first()) Modifier.focusRequester(first) else Modifier)
                             .testTag(TvTags.source(source.name)),
                     )
                 }
@@ -184,16 +286,27 @@ private fun PhonePicker(last: PhoneSource?, onPick: (PhoneSource) -> Unit) {
             initial = last?.let { "${it.host}:${it.port}" }.orEmpty(),
             onConnect = onPick,
             modifier = Modifier.width(380.dp),
-            focus = if (found.isEmpty()) first else null,
+            focus = if (sources.isEmpty()) first else null,
         )
     }
 }
 
-/** The fallback: a phone on another network, or one that is not advertising. */
+/** What advertises [serviceType] now, browsed for as long as the caller is on screen. */
+@Composable
+private fun rememberFound(serviceType: String): List<FoundService> {
+    val finder = remember(serviceType) { ServiceFinder(serviceType) }
+    DisposableEffect(finder) {
+        finder.start()
+        onDispose { finder.stop() }
+    }
+    return finder.found.collectAsState().value
+}
+
+/** The fallback: something on another network, or not advertising. */
 @Composable
 private fun AddressEntry(
     initial: String,
-    onConnect: (PhoneSource) -> Unit,
+    onConnect: (TvSource) -> Unit,
     modifier: Modifier = Modifier,
     focus: FocusRequester? = null,
 ) {
@@ -286,13 +399,22 @@ internal fun TvCard(
 internal object TvTags {
     const val HOME_LIVE = "tv:home:live"
     const val HOME_SIGNAGE = "tv:home:signage"
+    const val HOME_BOOT = "tv:home:boot"
     const val ADDRESS = "tv:pick:address"
     const val ADDRESS_INVALID = "tv:pick:addressInvalid"
     const val CONNECT = "tv:pick:connect"
+    const val NO_OUTPUTS = "tv:outputs:none"
+    const val OUTPUTS_RETRY = "tv:outputs:retry"
+    const val OUTPUT_KEY = "tv:outputs:key"
     const val LIVE = "tv:live"
     const val STATUS = "tv:live:status"
+    const val INFO = "tv:live:info"
+    const val SIGNAGE = "tv:signage"
+    const val PAIRING_CODE = "tv:signage:code"
 
     fun source(name: String) = "tv:pick:source:$name"
+
+    fun output(number: Int) = "tv:outputs:output:$number"
 }
 
 /** The page behind a TV that is not showing a slide: plain, dark, centred words. */

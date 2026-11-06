@@ -9,13 +9,17 @@ import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.present.sink.WEB_PAGE_SINK_ID
 import com.church.presenter.churchpresentermobile.ui.awaitThat
 import com.church.presenter.churchpresentermobile.ui.click
 import com.church.presenter.churchpresentermobile.ui.exists
 import com.church.presenter.churchpresentermobile.ui.tagged
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -88,6 +92,27 @@ class DisplaySettingsPageTest {
         assertTrue(exists(StandaloneTags.sinkUrl("web_page")))
     }
 
+    @Test
+    fun `this phone's address is what a TV is sent`() {
+        val sink = SinkStatus(
+            id = WEB_PAGE_SINK_ID,
+            displayName = "Browser",
+            state = SinkState.ATTACHED,
+            detail = "http://192.168.1.50:8766",
+        )
+
+        val source = assertNotNull(phoneSource(listOf(sink), "Pixel"))
+
+        assertEquals("192.168.1.50", source.host)
+        assertEquals(8766, source.port)
+        assertEquals("Pixel", source.name)
+    }
+
+    @Test
+    fun `there is nothing to send until the display server is up`() {
+        assertNull(phoneSource(listOf(SinkStatus(WEB_PAGE_SINK_ID, "Browser")), "Pixel"))
+    }
+
     // ── Backdrop ─────────────────────────────────────────────────────────
 
     @Test
@@ -95,6 +120,8 @@ class DisplaySettingsPageTest {
         val f = StandaloneFixture()
 
         showDisplaySettings(f.engine, f.registry)
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
 
         tagged(StandaloneTags.backdrop(0)).assertIsSelected()
     }
@@ -103,6 +130,8 @@ class DisplaySettingsPageTest {
     fun theBackdropCanBeMadeBlack() = runComposeUiTest {
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry)
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
 
         click(StandaloneTags.backdrop(2))
 
@@ -113,6 +142,8 @@ class DisplaySettingsPageTest {
     fun theBackdropCanGoBackToAGradient() = runComposeUiTest {
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry)
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
         click(StandaloneTags.backdrop(2))
         awaitThat { f.engine.backdrop.value == SlideBackdrop.BLACK }
 
@@ -127,6 +158,8 @@ class DisplaySettingsPageTest {
         // audience page falls back to the gradient and the option looks broken.
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry, photos = photoLibraryWith(2))
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
 
         click(StandaloneTags.backdrop(1))
 
@@ -138,6 +171,8 @@ class DisplaySettingsPageTest {
         val f = StandaloneFixture()
 
         showDisplaySettings(f.engine, f.registry, photos = photoLibraryWith(2))
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
 
         assertFalse(exists(StandaloneTags.backdropPhoto("p0")))
     }
@@ -146,6 +181,8 @@ class DisplaySettingsPageTest {
     fun anImageBackdropWithNoPhotosSaysSo() = runComposeUiTest {
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry, photos = photoLibraryWith(0))
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
 
         click(StandaloneTags.backdrop(1))
 
@@ -158,6 +195,8 @@ class DisplaySettingsPageTest {
         // thing worth asserting.
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry, photos = photoLibraryWith(2))
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
         click(StandaloneTags.backdrop(1))
         awaitThat { exists(StandaloneTags.backdropPhoto("p1")) }
 
@@ -171,6 +210,8 @@ class DisplaySettingsPageTest {
         // Until the phone's own server is up there is no address to send.
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry, photos = photoLibraryWith(2, baseUrl = null))
+        click(StandaloneTags.LOOK)
+        awaitThat { exists(LookTags.GRADIENT_TOP) }
 
         click(StandaloneTags.backdrop(1))
 

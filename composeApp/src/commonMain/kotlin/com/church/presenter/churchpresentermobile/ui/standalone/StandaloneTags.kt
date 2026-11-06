@@ -45,6 +45,15 @@ internal object StandaloneTags {
 
     // ── Settings → Display ───────────────────────────────────────────────
     const val DISPLAY_OUTPUTS = "display:outputs"
+    const val TVS_EMPTY = "display:tvs:empty"
+    const val TVS_NEED_SOURCE = "display:tvs:needSource"
+
+    /** One TV on the network. */
+    fun tv(name: String) = "display:tv:$name"
+
+    fun tvStop(name: String) = "display:tv:$name:stop"
+
+    fun tvFailed(name: String) = "display:tv:$name:failed"
     const val OUTPUTS_EMPTY = "outputs:empty"
     const val OUTPUTS_GUIDANCE = "outputs:guidance"
 

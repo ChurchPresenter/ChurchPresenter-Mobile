@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Servern går att nå men nekade begäran. Kontrollera API-nyckeln i Inställningar.</string>
     <string name="status_not_churchpresenter_title">Inte en ChurchPresenter-server</string>
     <string name="status_not_churchpresenter_body">En enhet svarade på den här adressen, men den kör inte ChurchPresenter. Kontrollera IP-adressen och porten.</string>
-    <string name="more_notices_title">Meddelanden</string>
-    <string name="more_notices_subtitle">Visa ett meddelande från ditt bibliotek på skärmen</string>
     <string name="more_contact_title">Kontakta oss</string>
     <string name="more_contact_subtitle">Skicka en önskan, rapportera ett problem eller säg hej</string>
     <string name="standalone_backdrop_pick">Välj ett foto som bakgrund</string>

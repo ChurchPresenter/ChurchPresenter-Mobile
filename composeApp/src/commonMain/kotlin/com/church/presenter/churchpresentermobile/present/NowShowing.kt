@@ -23,6 +23,7 @@ enum class ScreenState { LIVE, BLANK, OFF }
  * @property position "2/5", or null for a single slide.
  * @property backgroundTop The backdrop's colours as `#RRGGBB`, top then bottom.
  * @property serif Whether the words are set in the serif face.
+ * @property slide The slide itself, for a platform that draws a picture of it.
  */
 data class NowShowing(
     val title: String,
@@ -33,6 +34,7 @@ data class NowShowing(
     val backgroundBottom: String,
     val textColor: String,
     val serif: Boolean,
+    val slide: Slide = Slide.BLANK,
 )
 
 /** How many lines of a slide the shade has room for before it is a paragraph. */
@@ -63,6 +65,7 @@ internal fun nowShowing(deckTitle: String, slide: Slide): NowShowing? {
         backgroundBottom = if (black) BLACK else slide.theme.gradientBottom,
         textColor = slide.theme.textColor,
         serif = slide.theme.font == SlideFont.SERIF,
+        slide = slide,
     )
 }
 

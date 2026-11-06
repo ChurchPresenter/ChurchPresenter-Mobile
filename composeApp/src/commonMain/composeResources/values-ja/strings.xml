@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">サーバーには接続できましたが、リクエストが拒否されました。設定で API キーを確認してください。</string>
     <string name="status_not_churchpresenter_title">ChurchPresenter サーバーではありません</string>
     <string name="status_not_churchpresenter_body">このアドレスの端末には接続できましたが、ChurchPresenter が動作していません。IP アドレスとポートを確認してください。</string>
-    <string name="more_notices_title">お知らせ</string>
-    <string name="more_notices_subtitle">ライブラリのお知らせを画面に表示</string>
     <string name="more_contact_title">お問い合わせ</string>
     <string name="more_contact_subtitle">要望の送信、問題の報告、ご挨拶など</string>
     <string name="standalone_backdrop_pick">背景にする写真を選択</string>

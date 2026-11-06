@@ -250,11 +250,11 @@ class StandaloneLookTest {
     // ── Alignment ────────────────────────────────────────────────────────────
 
     @Test
-    fun theWordsStartCentredOnBothAxes() = runVmTest {
+    fun theWordsStartCentredFromTheTop() = runVmTest {
         val (viewModel, _) = vm()
 
         assertEquals(SlideTextAlign.CENTER, viewModel.theme.value.textAlign)
-        assertEquals(SlideVerticalAlign.MIDDLE, viewModel.theme.value.verticalAlign)
+        assertEquals(SlideVerticalAlign.TOP, viewModel.theme.value.verticalAlign)
     }
 
     @Test
@@ -294,7 +294,7 @@ class StandaloneLookTest {
 
         assertEquals(SlideFont.SANS, viewModel.theme.value.font, "the old fields must survive")
         assertEquals(SlideTextAlign.CENTER, viewModel.theme.value.textAlign)
-        assertEquals(SlideVerticalAlign.MIDDLE, viewModel.theme.value.verticalAlign)
+        assertEquals(SlideVerticalAlign.TOP, viewModel.theme.value.verticalAlign)
     }
 
     // ── Themes and the chord toggle ──────────────────────────────────────────

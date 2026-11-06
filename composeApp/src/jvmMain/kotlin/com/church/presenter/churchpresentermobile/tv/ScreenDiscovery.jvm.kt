@@ -11,10 +11,19 @@ actual object PhoneAdvert {
 }
 
 /** No service discovery here: the picker offers only "Enter address". */
-actual class PhoneFinder actual constructor() {
-    actual val found: StateFlow<List<PhoneSource>> = MutableStateFlow(emptyList())
+actual class ServiceFinder actual constructor(serviceType: String) {
+    actual val found: StateFlow<List<FoundService>> = MutableStateFlow(emptyList())
     actual fun start() = Unit
     actual fun stop() = Unit
+}
+
+/** TV mode is Android-only; nothing listens here. */
+actual class TvControlServer actual constructor() {
+    actual val requested: StateFlow<TvSource?> = MutableStateFlow(null)
+    actual val home: StateFlow<Int> = MutableStateFlow(0)
+    actual fun start() = Unit
+    actual fun stop() = Unit
+    actual fun consume() = Unit
 }
 
 /** TV mode is Android-only; nothing to keep awake here. */

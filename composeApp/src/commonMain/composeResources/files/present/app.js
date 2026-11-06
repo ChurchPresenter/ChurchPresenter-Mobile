@@ -323,7 +323,7 @@
     var theme = slide.theme || {};
 
     el.screen.className = (theme.font === 'SANS' ? 'sans' : 'serif')
-      + ' v-' + alignClass(theme.verticalAlign, ['TOP', 'MIDDLE', 'BOTTOM'], 'middle');
+      + ' v-' + alignClass(theme.verticalAlign, ['TOP', 'MIDDLE', 'BOTTOM'], 'top');
     el.content.className = 'content'
       + ' size-' + String(slide.textSize || 'MEDIUM').toLowerCase()
       + ' h-' + alignClass(theme.textAlign, ['LEFT', 'CENTER', 'RIGHT'], 'center');

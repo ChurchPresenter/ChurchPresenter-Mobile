@@ -759,8 +759,6 @@
     <string name="status_unauthorized_body">O servidor está acessível, mas recusou a solicitação. Verifique a chave de API nas Configurações.</string>
     <string name="status_not_churchpresenter_title">Não é um servidor ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Há um dispositivo neste endereço, mas ele não está executando o ChurchPresenter. Verifique o endereço IP e a porta.</string>
-    <string name="more_notices_title">Avisos</string>
-    <string name="more_notices_subtitle">Coloque na tela um aviso da sua biblioteca</string>
     <string name="more_contact_title">Fale conosco</string>
     <string name="more_contact_subtitle">Envie um pedido, relate um problema ou diga olá</string>
     <string name="standalone_backdrop_pick">Escolha uma foto para o fundo</string>

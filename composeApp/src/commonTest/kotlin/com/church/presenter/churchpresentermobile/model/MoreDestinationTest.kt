@@ -18,12 +18,11 @@ class MoreDestinationTest {
     private val standalone = MoreDestination.forMode(AppMode.STANDALONE)
 
     @Test
-    fun remoteOffersEveryDestinationButTheReportAndTheLibrary() {
+    fun remoteOffersEveryDestinationButTheReport() {
         // The report counts what *this device* projected; in remote mode the
-        // desktop does the projecting and keeps its own. The Library is content
-        // this device projects itself. The canvas is tablet-only.
+        // desktop does the projecting and keeps its own. The canvas is tablet-only.
         assertEquals(
-            MoreDestination.entries.toSet() - MoreDestination.REPORT - MoreDestination.LIBRARY - MoreDestination.CANVAS,
+            MoreDestination.entries.toSet() - MoreDestination.REPORT - MoreDestination.CANVAS,
             remote.toSet(),
         )
     }
@@ -44,14 +43,10 @@ class MoreDestinationTest {
     }
 
     @Test
-    fun onlyTheLibraryAndTheReportAreUniqueToStandalone() {
-        // Everything else standalone offers has a remote counterpart. The Library
-        // holds what this device projects, and the report is about this device's
-        // own output; remote has neither — the desktop holds and reports its own.
-        assertEquals(
-            listOf(MoreDestination.LIBRARY, MoreDestination.REPORT),
-            standalone - remote.toSet(),
-        )
+    fun onlyTheReportIsUniqueToStandalone() {
+        // Everything else standalone offers has a remote counterpart. The report is
+        // the one screen about this device's own output, which remote does not have.
+        assertEquals(listOf(MoreDestination.REPORT), standalone - remote.toSet())
     }
 
     @Test
@@ -68,11 +63,10 @@ class MoreDestinationTest {
     }
 
     @Test
-    fun announcementsSurviveIntoStandaloneAsADifferentScreen() {
-        // Same destination, two screens: remote adds to the desktop's schedule and
-        // has timer types with no local renderer; standalone gets Notices, which
-        // projects a notice written in the Library onto this device's own outputs.
-        assertTrue(MoreDestination.ANNOUNCEMENTS in standalone)
+    fun announcementsAreATabInStandaloneNotAMoreScreen() {
+        // The More screen is remote's composer, which adds to the desktop's schedule
+        // and has timer types with no local renderer.
+        assertFalse(MoreDestination.ANNOUNCEMENTS in standalone)
         assertTrue(MoreDestination.ANNOUNCEMENTS in remote)
     }
 

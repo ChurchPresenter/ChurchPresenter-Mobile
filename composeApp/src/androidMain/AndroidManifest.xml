@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- A TV set to start with ChurchPresenter; see TvBootReceiver. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- The in-app QR scanner. Not required: a device with no camera still installs, and the
          scan button hides itself there (hasCameraAvailable). -->
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -155,6 +157,15 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/file_paths"/>
         </provider>
+
+        <!-- Opens the app when a TV starts, if it was asked to. -->
+        <receiver
+                android:name=".tv.TvBootReceiver"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
         <!-- Firebase Cloud Messaging receiver -->
         <service

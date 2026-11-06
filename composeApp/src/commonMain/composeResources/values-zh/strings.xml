@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">可以连接到服务器，但请求被拒绝。请在设置中检查 API 密钥。</string>
     <string name="status_not_churchpresenter_title">不是 ChurchPresenter 服务器</string>
     <string name="status_not_churchpresenter_body">该地址上有设备，但它没有运行 ChurchPresenter。请检查 IP 地址和端口。</string>
-    <string name="more_notices_title">公告</string>
-    <string name="more_notices_subtitle">将资料库中的公告投放到屏幕上</string>
     <string name="more_contact_title">联系我们</string>
     <string name="more_contact_subtitle">提交请求、报告问题或打个招呼</string>
     <string name="standalone_backdrop_pick">选择一张照片作为背景</string>

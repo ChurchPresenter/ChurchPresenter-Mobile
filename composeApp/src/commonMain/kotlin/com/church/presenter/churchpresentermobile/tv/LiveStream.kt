@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.tv
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.church.presenter.churchpresentermobile.model.SLIDE_PROTOCOL_VERSION
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
@@ -14,20 +15,55 @@ import io.ktor.websocket.readText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-private const val TAG = "PhoneLiveStream"
+private const val TAG = "LiveStream"
 
 /** Shortest and longest wait between reconnect attempts — the same as the browser page's. */
 internal const val RECONNECT_MIN_MS = 500L
 internal const val RECONNECT_MAX_MS = 5_000L
 
+/** What a TV shows, and so which of the two streams it reads. */
+enum class SourceKind {
+    /** A phone presenting standalone: slides as data, drawn by the TV. */
+    PHONE,
+
+    /** ChurchPresenter on a computer: an output's finished pictures, shown as they are. */
+    DESKTOP,
+}
+
 /**
- * A phone presenting in standalone, as a TV reaches it: the display server the
- * phone already runs for browsers, whose `/live` socket pushes every slide.
+ * Something a TV can show, as the TV reaches it.
+ *
+ * A phone is the display server it already runs for browsers, whose `/live`
+ * socket pushes every slide. A desktop is one of its Browser Source outputs,
+ * whose socket pushes the rendered output as pictures — so the TV matches the
+ * projector exactly, with nothing to re-draw.
+ *
+ * @property output The desktop output to show, counted from 1 as Projection
+ *   Settings counts them. Unused for a phone.
+ * @property apiKey Needed only for an output with *Require API key* on.
  */
-data class PhoneSource(val name: String, val host: String, val port: Int) {
-    val liveUrl: String get() = "ws://$host:$port/live"
+@Serializable
+data class TvSource(
+    val name: String,
+    val host: String,
+    val port: Int,
+    val kind: SourceKind = SourceKind.PHONE,
+    val output: Int = 1,
+    val apiKey: String = "",
+) {
+    val liveUrl: String
+        get() = when (kind) {
+            SourceKind.PHONE -> "ws://$host:$port/live"
+            SourceKind.DESKTOP -> "ws://$host:$port/api/browser-source/$output/ws" + keyQuery
+        }
+
+    /** The output's page, which answers 200, 401 or 404 — how a TV learns what exists. */
+    fun outputPageUrl(number: Int): String = "http://$host:$port/browser-source/$number$keyQuery"
+
+    private val keyQuery: String get() = if (apiKey.isBlank()) "" else "?apiKey=$apiKey"
 }
 
 /**
@@ -35,17 +71,21 @@ data class PhoneSource(val name: String, val host: String, val port: Int) {
  * phone had to take another port — or null for anything that is not one.
  * A remote's keyboard is slow; a mistyped address should say so before the TV
  * spends five seconds failing to reach it.
+ *
+ * The desktop's own port means a desktop; anything else is a phone.
  */
-internal fun parseAddress(
+fun parseAddress(
     text: String,
     defaultPort: Int = ApiConstants.STANDALONE_HTTP_PORT_DEFAULT,
-): PhoneSource? {
+): TvSource? {
     val trimmed = text.trim().removePrefix("http://").removePrefix("ws://").trimEnd('/')
     val host = trimmed.substringBefore(':')
     val portText = trimmed.substringAfter(':', missingDelimiterValue = "")
     val port = if (portText.isEmpty()) defaultPort else portText.toIntOrNull()
     val valid = host.isNotEmpty() && host.none { it.isWhitespace() } && port != null && port in 1..65_535
-    return if (valid && port != null) PhoneSource(name = host, host = host, port = port) else null
+    if (!valid || port == null) return null
+    val kind = if (port == ApiConstants.DESKTOP_PORT_DEFAULT) SourceKind.DESKTOP else SourceKind.PHONE
+    return TvSource(name = host, host = host, port = port, kind = kind)
 }
 
 /** What the TV is showing, as the connection to the phone stands. */
@@ -57,11 +97,17 @@ sealed interface LiveState {
     data class Showing(val slide: Slide) : LiveState
 
     /**
-     * The phone went away — locked, out of Wi-Fi, closed. The last slide stays
-     * on screen while the TV keeps trying: blacking out the room mid-song is
-     * worse than a slide that is a few seconds stale.
+     * A desktop's output, as a finished picture. [version] moves with every
+     * change, because the picture is painted over in place rather than replaced.
      */
-    data class Lost(val lastSlide: Slide?) : LiveState
+    data class Picture(val image: ImageBitmap, val version: Int) : LiveState
+
+    /**
+     * The source went away — locked, out of Wi-Fi, closed. What it last showed
+     * stays on screen while the TV keeps trying: blacking out the room mid-song
+     * is worse than a slide that is a few seconds stale.
+     */
+    data class Lost(val lastSlide: Slide?, val lastPicture: ImageBitmap? = null) : LiveState
 
     /** The phone ended the presentation. */
     data object Ended : LiveState
@@ -120,7 +166,7 @@ internal fun nextReconnectDelay(current: Long): Long =
  *   without a phone.
  */
 internal fun phoneLiveStates(
-    source: PhoneSource,
+    source: TvSource,
     connect: suspend (url: String, onText: suspend (String) -> Unit) -> Unit,
 ): Flow<LiveState> = channelFlow {
     var lastSlide: Slide? = null
@@ -154,7 +200,7 @@ internal fun phoneLiveStates(
 }
 
 /** [phoneLiveStates] over a real WebSocket client. */
-fun phoneLiveStates(source: PhoneSource, client: HttpClient): Flow<LiveState> =
+fun phoneLiveStates(source: TvSource, client: HttpClient): Flow<LiveState> =
     phoneLiveStates(source) { url, onText ->
         client.webSocket(urlString = url) {
             for (frame in incoming) {

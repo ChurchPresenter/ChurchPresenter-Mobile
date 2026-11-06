@@ -337,10 +337,10 @@ class DisplayLookTest {
     fun theLookLeavesTheBackdropAlone() = runComposeUiTest {
         val f = StandaloneFixture()
         showDisplaySettings(f.engine, f.registry)
-        click(StandaloneTags.backdrop(2))
-        awaitThat { f.engine.backdrop.value == SlideBackdrop.BLACK }
         click(StandaloneTags.LOOK)
         awaitThat { exists(LookTags.textSize(0)) }
+        click(StandaloneTags.backdrop(2))
+        awaitThat { f.engine.backdrop.value == SlideBackdrop.BLACK }
 
         click(LookTags.textSize(0))
 

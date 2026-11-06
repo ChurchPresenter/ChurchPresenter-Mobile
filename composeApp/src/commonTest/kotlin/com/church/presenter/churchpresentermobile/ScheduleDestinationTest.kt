@@ -650,7 +650,7 @@ class ScheduleDestinationTest {
         assertNull(destinationFor(item("unknown")).moreDestination)
     }
 
-    // ── Standalone's Schedule tab ────────────────────────────────────────
+    // ── Standalone's schedule drawer ─────────────────────────────────────
 
     @Test
     fun `a scheduled song opens on its own page in songs`() {
@@ -663,6 +663,26 @@ class ScheduleDestinationTest {
     }
 
     @Test
+    fun `a scheduled passage opens on its own verses`() {
+        val destination = destinationFor(
+            LocalSetlistEntry(SetlistEntryType.BIBLE, reference = "1 Kings:17:3,4", title = "1 Kings 17:3,4"),
+        )
+
+        assertEquals("1 Kings", destination.bibleBookName)
+        assertEquals(17, destination.bibleChapter)
+        assertEquals(setOf(3, 4), destination.bibleVerses)
+    }
+
+    @Test
+    fun `a passage whose title cannot be read still opens the bible tab`() {
+        val destination = destinationFor(
+            LocalSetlistEntry(SetlistEntryType.BIBLE, reference = "x", title = "Sermon reading"),
+        )
+
+        assertEquals(AppTab.BIBLE, destination.tab)
+    }
+
+    @Test
     fun `a scheduled passage opens the bible tab`() {
         val destination = destinationFor(
             LocalSetlistEntry(type = SetlistEntryType.BIBLE, reference = "John 3:16", title = "John 3:16"),
@@ -672,14 +692,12 @@ class ScheduleDestinationTest {
     }
 
     @Test
-    fun `a scheduled notice opens notices under more`() {
-        // It used to open the Library tab, which no longer exists; Notices is
-        // where a notice goes live.
+    fun `a scheduled notice opens the announcements tab`() {
+        // That is where a notice goes live.
         val destination = destinationFor(
             LocalSetlistEntry(type = SetlistEntryType.ANNOUNCEMENT, reference = "n1", title = "Welcome"),
         )
 
-        assertEquals(AppTab.MORE, destination.tab)
-        assertEquals(MoreDestination.ANNOUNCEMENTS, destination.moreDestination)
+        assertEquals(AppTab.ANNOUNCEMENTS, destination.tab)
     }
 }

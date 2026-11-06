@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Server je dostupný, ale požadavek odmítl. Zkontrolujte API klíč v Nastavení.</string>
     <string name="status_not_churchpresenter_title">Nejde o server ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Na této adrese bylo nalezeno zařízení, ale neběží na něm ChurchPresenter. Zkontrolujte IP adresu a port.</string>
-    <string name="more_notices_title">Oznámení</string>
-    <string name="more_notices_subtitle">Zobrazit na obrazovce oznámení z vaší knihovny</string>
     <string name="more_contact_title">Kontaktujte nás</string>
     <string name="more_contact_subtitle">Pošlete požadavek, nahlaste problém nebo nás jen pozdravte</string>
     <string name="standalone_backdrop_pick">Vyberte fotku na pozadí</string>

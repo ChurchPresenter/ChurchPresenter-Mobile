@@ -759,8 +759,6 @@
     <string name="status_unauthorized_body">Server on kättesaadav, kuid keeldus päringust. Kontrolli API-võtit seadetes.</string>
     <string name="status_not_churchpresenter_title">See pole ChurchPresenteri server</string>
     <string name="status_not_churchpresenter_body">Sellel aadressil vastas seade, kuid sellel ei tööta ChurchPresenter. Kontrolli IP-aadressi ja porti.</string>
-    <string name="more_notices_title">Teated</string>
-    <string name="more_notices_subtitle">Kuva teade oma kogust ekraanile</string>
     <string name="more_contact_title">Võta ühendust</string>
     <string name="more_contact_subtitle">Saada soov, teata probleemist või ütle tere</string>
     <string name="standalone_backdrop_pick">Vali taustaks foto</string>

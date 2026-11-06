@@ -3,15 +3,20 @@ package com.church.presenter.churchpresentermobile.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
+import android.os.Process
 import com.church.presenter.churchpresentermobile.R
 import com.church.presenter.churchpresentermobile.present.NowShowing
+import com.church.presenter.churchpresentermobile.util.ActivityHolder
 import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 
@@ -29,9 +34,9 @@ private const val TAG = "PresentationService"
  *
  * The notification is not decoration: a foreground service is the only way
  * Android permits this, and it also gives the operator a visible, tappable
- * reminder that the phone is currently driving a screen. It reads like a music
- * player's — the slide where the album art goes, the song as the title, the
- * words on screen under it — and follows every slide change ([show]).
+ * reminder that the phone is currently driving a screen. It is a media player,
+ * with the slide as its album art and Close as its button, and follows every
+ * slide change ([show]).
  */
 class PresentationForegroundService : Service() {
 
@@ -52,6 +57,11 @@ class PresentationForegroundService : Service() {
         if (intent == null) {
             Logger.d(TAG, "system restart with no intent — standing down")
             stopSelf(startId)
+            return START_NOT_STICKY
+        }
+
+        if (intent.action == ACTION_CLOSE_APP) {
+            closeApp()
             return START_NOT_STICKY
         }
 
@@ -83,8 +93,22 @@ class PresentationForegroundService : Service() {
     override fun onDestroy() {
         running = false
         releaseLocks()
+        releaseMedia()
         Logger.d(TAG, "presentation service stopped")
         super.onDestroy()
+    }
+
+    /**
+     * The notification's Close button: stops presenting and ends the app. The
+     * display server lives in this process, so ending the process is what takes
+     * it down; finishing the screen alone would leave it serving.
+     */
+    private fun closeApp() {
+        Logger.d(TAG, "closing the app from the notification")
+        ActivityHolder.current?.finishAndRemoveTask()
+        releaseMedia()
+        stopSelf()
+        Handler(Looper.getMainLooper()).post { Process.killProcess(Process.myPid()) }
     }
 
     private fun acquireLocks() {
@@ -119,7 +143,13 @@ class PresentationForegroundService : Service() {
     // working Notification.Builder is the one thing the unit-test android.jar lacks.
     private fun buildNotification(url: String?): Notification {
         createChannel()
-        return buildPresentationNotification(this, url, nowShowing)
+        val session = media ?: PresentationMediaSession(this, ::closeApp).also { media = it }
+        return buildPresentationNotification(this, url, nowShowing, session)
+    }
+
+    private fun releaseMedia() {
+        media?.release()
+        media = null
     }
 
     private fun createChannel() {
@@ -142,6 +172,7 @@ class PresentationForegroundService : Service() {
         private const val WAKE_LOCK_TAG = "ChurchPresenter::presentation"
         private const val WIFI_LOCK_TAG = "ChurchPresenter::presentation-wifi"
         private const val EXTRA_URL = "url"
+        private const val ACTION_CLOSE_APP = "com.church.presenter.churchpresentermobile.CLOSE_APP"
 
         /** Longest a single service run holds the CPU awake — a very long service. */
         private const val MAX_HOLD_MS = 6 * 60 * 60 * 1000L
@@ -152,6 +183,7 @@ class PresentationForegroundService : Service() {
         @Volatile private var url: String? = null
         @Volatile private var nowShowing: NowShowing? = null
         @Volatile private var running = false
+        @Volatile private var media: PresentationMediaSession? = null
 
         /**
          * Redraws the notification for what the screens now show. Remembered
@@ -162,9 +194,17 @@ class PresentationForegroundService : Service() {
             if (!running) return
             runCatching {
                 context.getSystemService(NotificationManager::class.java)
-                    ?.notify(NOTIFICATION_ID, buildPresentationNotification(context, url, nowShowing))
+                    ?.notify(NOTIFICATION_ID, buildPresentationNotification(context, url, nowShowing, media))
             }.onFailure { Logger.e(TAG, "could not update the notification: ${it.message}") }
         }
+
+        /** What the notification's Close button sends this service. */
+        internal fun closeAppIntent(context: Context): PendingIntent = PendingIntent.getService(
+            context,
+            0,
+            Intent(context, PresentationForegroundService::class.java).setAction(ACTION_CLOSE_APP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
 
         fun start(context: Context, url: String?) {
             val intent = Intent(context, PresentationForegroundService::class.java)

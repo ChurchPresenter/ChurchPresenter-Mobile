@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Serveren kan nås, men avviste forespørselen. Sjekk API-nøkkelen i Innstillinger.</string>
     <string name="status_not_churchpresenter_title">Ikke en ChurchPresenter-server</string>
     <string name="status_not_churchpresenter_body">Fant en enhet på denne adressen, men den kjører ikke ChurchPresenter. Sjekk IP-adressen og porten.</string>
-    <string name="more_notices_title">Kunngjøringer</string>
-    <string name="more_notices_subtitle">Vis en kunngjøring fra biblioteket ditt på skjermen</string>
     <string name="more_contact_title">Kontakt oss</string>
     <string name="more_contact_subtitle">Send en forespørsel, meld fra om et problem eller si hei</string>
     <string name="standalone_backdrop_pick">Velg et bilde som bakgrunn</string>

@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Le serveur est joignable mais a refusé la requête. Vérifiez la clé API dans les Paramètres.</string>
     <string name="status_not_churchpresenter_title">Ce n'est pas un serveur ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Un appareil a répondu à cette adresse, mais ChurchPresenter n'y est pas lancé. Vérifiez l'adresse IP et le port.</string>
-    <string name="more_notices_title">Annonces</string>
-    <string name="more_notices_subtitle">Afficher à l'écran une annonce de votre bibliothèque</string>
     <string name="more_contact_title">Nous contacter</string>
     <string name="more_contact_subtitle">Envoyer une demande, signaler un problème ou dire bonjour</string>
     <string name="standalone_backdrop_pick">Choisir une photo d'arrière-plan</string>

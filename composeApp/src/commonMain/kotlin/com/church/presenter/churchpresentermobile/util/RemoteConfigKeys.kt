@@ -12,6 +12,8 @@ object RemoteConfigKeys {
     const val FEATURE_SONGS_ENABLED         = "feature_songs_enabled"
     const val FEATURE_PICTURES_ENABLED      = "feature_pictures_enabled"
     const val FEATURE_PRESENTATION_ENABLED  = "feature_presentation_enabled"
+    /** Offers Signage on a TV. Turn on once a desktop release knows an Android TV player. */
+    const val FEATURE_TV_SIGNAGE            = "feature_tv_signage"
     /** When true the app displays pre-built demo content without making any API calls. */
     const val IS_DEMO_MODE                  = "is_demo_mode"
     /** Where the calendar relay's client key is fetched. Not in the source: set in the Firebase console. */
@@ -30,6 +32,7 @@ object RemoteConfigDefaults {
     const val FEATURE_SONGS_ENABLED         = true
     const val FEATURE_PICTURES_ENABLED      = true
     const val FEATURE_PRESENTATION_ENABLED  = true
+    const val FEATURE_TV_SIGNAGE            = false
     /** Demo mode is off by default. */
     const val IS_DEMO_MODE                  = false
     /** Empty: without the console's value there is no key to fetch, and calendar sync says so. */

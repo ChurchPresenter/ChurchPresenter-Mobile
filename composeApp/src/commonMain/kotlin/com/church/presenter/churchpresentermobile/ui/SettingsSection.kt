@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material.icons.outlined.SwapHoriz
+import androidx.compose.material.icons.outlined.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.mode_section_title
@@ -33,6 +34,8 @@ import churchpresentermobile.composeapp.generated.resources.settings_section_dis
 import churchpresentermobile.composeapp.generated.resources.settings_section_mode_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_section_server_subtitle
 import churchpresentermobile.composeapp.generated.resources.settings_server_section
+import churchpresentermobile.composeapp.generated.resources.settings_section_tvs_subtitle
+import churchpresentermobile.composeapp.generated.resources.settings_tvs_section
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import org.jetbrains.compose.resources.StringResource
 
@@ -70,6 +73,12 @@ enum class SettingsSection(
         Res.string.settings_computer_section,
         Res.string.settings_section_computer_subtitle,
         Icons.Outlined.Computer,
+    ),
+    /** Remote only: sends the computer's output to a TV. Standalone has this on Display. */
+    TVS(
+        Res.string.settings_tvs_section,
+        Res.string.settings_section_tvs_subtitle,
+        Icons.Outlined.Tv,
     ),
     DEVICE(
         Res.string.settings_device_section,
@@ -120,6 +129,7 @@ internal fun settingsSections(
             hasDesktop -> add(SettingsSection.SERVER)
             usesComputer -> add(SettingsSection.COMPUTER)
         }
+        if (hasDesktop) add(SettingsSection.TVS)
         if (hasDesktop) add(SettingsSection.DEVICE)
         add(SettingsSection.APPEARANCE)
         add(SettingsSection.DIAGNOSTICS)

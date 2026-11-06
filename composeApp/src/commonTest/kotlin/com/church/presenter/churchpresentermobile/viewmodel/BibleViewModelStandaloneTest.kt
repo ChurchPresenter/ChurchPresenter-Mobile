@@ -1,9 +1,12 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
+import com.church.presenter.churchpresentermobile.library.ServiceOrder
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleReader
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
@@ -72,6 +75,39 @@ class BibleViewModelStandaloneTest {
     }
 
     // ── The tab that stayed empty ────────────────────────────────────────────
+
+    @Test
+    fun standaloneAddsVersesToTheRunningOrderOnThisDevice() = runVmTest {
+        // There is no desktop to send them to: this used to go nowhere.
+        val bibles = LocalBibleRepository(InMemoryFileStorage()) { 1_700_000_000_000 }
+        bibles.install("en_KJV.spb", module("King James Version"))
+        val mode = MutableStateFlow(AppMode.STANDALONE)
+        val sender = FakeWsSender()
+        val order = ServiceOrder(LibraryRepository(InMemoryFileStorage()) { 1_700_000_000_000 })
+        val vm = BibleViewModel(
+            appSettings = AppSettings(InMemorySettingsStorage()),
+            eventService = sender,
+            isDemoMode = false,
+            presenter = null,
+            mode = mode,
+            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles),
+            service = order,
+        )
+        advanceUntilIdle()
+        vm.selectBook(vm.books.value.first())
+        advanceUntilIdle()
+        vm.selectChapter(1)
+        advanceUntilIdle()
+        vm.toggleVerseSelection(0)
+
+        vm.addToSchedule()
+        advanceUntilIdle()
+
+        val entry = order.current.single()
+        assertEquals(SetlistEntryType.BIBLE, entry.type)
+        assertEquals("Genesis 1:1", entry.title)
+        assertEquals("Genesis:1:1", entry.reference)
+    }
 
     private fun module(title: String) = """
         ##Title: $title

@@ -29,9 +29,9 @@ class ChromeScreenshotTest {
     @Test
     fun bottomBarStandaloneMode() = screenshot("bottom-tab-bar__standalone") {
         // A different tab set entirely — the phone drives its own output, so
-        // its running order leads and Media and the desktop's decks are gone.
+        // the Library and Announcements replace Media and the desktop's decks.
         BottomTabBar(
-            selectedTab = AppTab.SCHEDULE,
+            selectedTab = AppTab.LIBRARY,
             onTabSelected = {},
             tabs = AppTab.forMode(AppMode.STANDALONE),
         )

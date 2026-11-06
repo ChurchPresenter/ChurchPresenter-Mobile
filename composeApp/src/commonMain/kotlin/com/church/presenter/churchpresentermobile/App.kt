@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -46,7 +47,8 @@ import churchpresentermobile.composeapp.generated.resources.deep_link_connected
 import churchpresentermobile.composeapp.generated.resources.media_title
 import churchpresentermobile.composeapp.generated.resources.tab_bible
 import churchpresentermobile.composeapp.generated.resources.tab_more
-import churchpresentermobile.composeapp.generated.resources.tab_schedule
+import churchpresentermobile.composeapp.generated.resources.announcements_title
+import churchpresentermobile.composeapp.generated.resources.tab_library
 import churchpresentermobile.composeapp.generated.resources.tab_presentation
 import churchpresentermobile.composeapp.generated.resources.tab_songs
 import coil3.request.crossfade
@@ -108,7 +110,8 @@ import com.church.presenter.churchpresentermobile.ui.isTabletWindow
 import com.church.presenter.churchpresentermobile.ui.NewBadges
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.LocalHeaderAccessory
-import com.church.presenter.churchpresentermobile.ui.ServiceScheduleScreen
+import com.church.presenter.churchpresentermobile.ui.ModeBadge
+import com.church.presenter.churchpresentermobile.ui.ServiceOrderDrawerContent
 import com.church.presenter.churchpresentermobile.ui.SettingsSection
 import com.church.presenter.churchpresentermobile.ui.ConnectSetupScreen
 import com.church.presenter.churchpresentermobile.ui.PicturesScreen
@@ -408,18 +411,19 @@ fun App(
             bibles = bibleRepository,
         )
     }
+    // What "add to schedule" writes to in standalone: an ordered list on this
+    // device, in place of a desktop schedule that isn't there.
+    val serviceOrder = remember(libraryRepository) { ServiceOrder(libraryRepository) }
     val bibleViewModel: BibleViewModel = viewModel(key = "bible_$isDemoMode") {
         BibleViewModel(
             appSettings, projectionRouter, isDemoMode, standaloneEngine,
             catalog = bibleCatalog,
+            service = serviceOrder,
         )
     }
     // Where song content is read from, decided per call by the current mode —
     // the desktop in remote, this device's library in standalone. The same idea
     // as projectionRouter above, applied to reads instead of actions.
-    // What "add to schedule" writes to in standalone: an ordered list on this
-    // device, in place of a desktop schedule that isn't there.
-    val serviceOrder = remember(libraryRepository) { ServiceOrder(libraryRepository) }
     val songCatalog = remember(appSettings, libraryRepository) {
         SongCatalog(
             mode = AppModeHolder.mode,
@@ -617,7 +621,7 @@ fun App(
     // rememberPagerState starts on the correct page immediately.  Without this,
     // the snapshotFlow's first emission (settledPage == 0) races against the
     // LaunchedEffect(shortcutTab) and can reset navigation back to Songs.
-    val initialTab = TabNavigationHandler.requestedTab.value ?: AppTab.SONGS
+    val initialTab = startTab(TabNavigationHandler.requestedTab.value, tabs)
     var selectedTab by rememberSaveable { mutableStateOf(initialTab) }
 
     // Selecting a tab, hoisted because both strips do it: the phone's bottom bar
@@ -686,9 +690,9 @@ fun App(
     // hamburger is at the rail's top-left and the gear at the window's
     // top-right, drawn once by the shell, so every pane header on a tablet
     // starts and ends with its title.
-    // Only remote has a drawer: it is the desktop's schedule. Standalone's running
-    // order is its Schedule tab, and calendar mode has neither.
-    val hasDrawer = appMode == AppMode.REMOTE
+    // Calendar mode has no drawer: the remote one is the desktop's schedule and the
+    // standalone one is this device's running order, and it has neither.
+    val hasDrawer = appMode != AppMode.CALENDAR
     val paneMenu: (() -> Unit)? =
         if (useRail || !hasDrawer) null else ({ coroutineScope.launch { drawerState.open() } })
     val paneSettings: (() -> Unit)? = if (useRail) null else ({ showSettings = true })
@@ -701,15 +705,6 @@ fun App(
         shortcutTab?.let { tab ->
             selectedTab = tab
             TabNavigationHandler.consume()
-        }
-    }
-    // A screen's link into a More screen — the Library, from an empty Songs tab.
-    val requestedMore by TabNavigationHandler.requestedMore.collectAsState()
-    LaunchedEffect(requestedMore) {
-        requestedMore?.let { destination ->
-            selectedTab = AppTab.MORE
-            moreDestination = destination
-            TabNavigationHandler.consumeMore()
         }
     }
 
@@ -989,19 +984,25 @@ fun App(
                     // Armed switch, neither of which the shell's bar has room for.
                     inMoreDetail && moreDestination == MoreDestination.CALENDAR -> Unit
                     // A Library editor draws its own header, with the back arrow that closes it.
-                    inMoreDetail && moreDestination == MoreDestination.LIBRARY &&
+                    selectedTab == AppTab.LIBRARY &&
                         (editingSongId != null || creatingSong ||
                             editingAnnouncementId != null || creatingAnnouncement) -> Unit
                     selectedTab == AppTab.CALENDAR -> Unit
                     inMoreDetail -> ScreenHeader(
-                        title = moreDestinationTitle(moreDestination, appMode),
+                        title = moreDestinationTitle(moreDestination),
                         onBack = { moreDestination = null },
                         // Q&A keeps the settings gear; the dictionary header (screen 11) has none.
                         onSettings = if (moreDestination == MoreDestination.QA) paneSettings else null
                     )
                     else -> when (selectedTab) {
-                        AppTab.SCHEDULE -> ScreenHeader(
-                            title = stringResource(Res.string.tab_schedule),
+                        AppTab.LIBRARY -> ScreenHeader(
+                            title = stringResource(Res.string.tab_library),
+                            onMenu = paneMenu,
+                            onSettings = paneSettings
+                        )
+                        AppTab.ANNOUNCEMENTS -> ScreenHeader(
+                            title = stringResource(Res.string.announcements_title),
+                            onMenu = paneMenu,
                             onSettings = paneSettings
                         )
                         AppTab.SONGS -> ScreenHeader(
@@ -1056,24 +1057,20 @@ fun App(
                     }
                 }
             ) { innerPadding ->
+                // Consumed as well as applied: the bars stay behind the keyboard, so an
+                // editor's imePadding counts only the part of the keyboard above them.
                 // One tab's screen. Hoisted so the phone's pager and the tablet's
                 // single pane draw it from the same place — two copies of this
                 // `when` would drift the first time a screen gained an argument.
                 val renderTab: @Composable (AppTab) -> Unit = { tab ->
                     when (tab) {
-                        // Standalone's running order: this device's own list, edited in
-                        // place, each row opening on the tab that projects it.
-                        AppTab.SCHEDULE -> {
-                            val serviceEntries by serviceOrder.entries.collectAsState(initial = serviceOrder.current)
-                            ServiceScheduleScreen(
-                                entries = serviceEntries,
-                                onItemClick = { openScheduleItem(destinationFor(it)) },
-                                onMove = { from, to -> serviceOrder.move(from, to) },
-                                onRemove = { index -> serviceOrder.removeAt(index) },
-                                onClear = { serviceOrder.clear() },
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
+                        // A notice written in the Library, put on this device's own outputs.
+                        AppTab.ANNOUNCEMENTS -> LocalNoticesScreen(
+                            repository = libraryRepository,
+                            presenter = standaloneEngine,
+                            hasOutput = sinkStatuses.any { it.isAttached },
+                            modifier = Modifier.fillMaxSize(),
+                        )
                         AppTab.SONGS -> SongsTable(
                             providedViewModel = songsViewModel,
                             appSettings = appSettings,
@@ -1160,47 +1157,6 @@ fun App(
                             modifier = Modifier.fillMaxSize(),
                         )
                         AppTab.MORE -> {
-                            // The Library, under More since the standalone redesign. Its
-                            // editor is open or not; null is what the tablet's right-hand
-                            // pane shows as "nothing being edited" and what the phone shows
-                            // as the list.
-                            val libraryEditor: (@Composable () -> Unit)? = when {
-                                editingSongId != null || creatingSong -> ({
-                                    SongEditorScreen(
-                                        repository = libraryRepository,
-                                        songId = editingSongId,
-                                        onClose = { editingSongId = null; creatingSong = false },
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                })
-                                editingAnnouncementId != null || creatingAnnouncement -> ({
-                                    AnnouncementEditorScreen(
-                                        repository = libraryRepository,
-                                        announcementId = editingAnnouncementId,
-                                        onClose = { editingAnnouncementId = null; creatingAnnouncement = false },
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                })
-                                else -> null
-                            }
-                            val libraryList: @Composable () -> Unit = {
-                                LibraryScreen(
-                                    repository = libraryRepository,
-                                    bibles = bibleRepository,
-                                    settings = appSettings,
-                                    sender = projectionRouter,
-                                    onEditSong = { id ->
-                                        editingSongId = id
-                                        creatingSong = id == null
-                                    },
-                                    onEditAnnouncement = { id ->
-                                        editingAnnouncementId = id
-                                        creatingAnnouncement = id == null
-                                    },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-
                             // The open tool, named once: the phone shows it *instead of*
                             // the launcher and the tablet shows it *beside* one, and these
                             // six screens each take their own collaborators to build.
@@ -1209,7 +1165,6 @@ fun App(
                                     // Works in both modes: the plan lives on this device, and
                                     // the picker reads songs and verses from wherever the
                                     // catalogs currently do.
-                                    MoreDestination.LIBRARY -> (libraryEditor ?: libraryList)()
                                     MoreDestination.CALENDAR -> CalendarScreen(
                                         repository = calendarRepository,
                                         catalogStore = songCatalogStore,
@@ -1257,16 +1212,6 @@ fun App(
                                         settingsSaveToken = settingsSaveToken,
                                         modifier = Modifier.fillMaxSize()
                                     )
-                                    // Standalone has no desktop schedule to add to, so this
-                                    // is the local notices list: a notice written in the
-                                    // Library, put on this device's own outputs.
-                                    MoreDestination.ANNOUNCEMENTS if appMode == AppMode.STANDALONE ->
-                                        LocalNoticesScreen(
-                                            repository = libraryRepository,
-                                            presenter = standaloneEngine,
-                                            hasOutput = sinkStatuses.any { it.isAttached },
-                                            modifier = Modifier.fillMaxSize(),
-                                        )
                                     MoreDestination.ANNOUNCEMENTS -> AnnouncementsScreen(
                                         viewModel = announcementsViewModel,
                                         modifier = Modifier.fillMaxSize()
@@ -1294,15 +1239,6 @@ fun App(
                             // back arrow to the launcher.
                             if (twoPane && moreDestination == MoreDestination.CALENDAR) {
                                 moreTool()
-                            } else if (twoPane && moreDestination == MoreDestination.LIBRARY) {
-                                // Likewise the Library, whose list and editor are panes of their own.
-                                LibraryTwoPane(
-                                    list = libraryList,
-                                    editor = libraryEditor,
-                                    onBack = { moreDestination = null },
-                                    onSettings = paneSettings,
-                                    modifier = Modifier.fillMaxSize(),
-                                )
                             } else if (canvasOpen) {
                                 // Covered by the canvas, which the shell draws over everything.
                                 Unit
@@ -1331,11 +1267,64 @@ fun App(
                                 moreTool()
                             }
                         }
+                        AppTab.LIBRARY -> {
+                            // Whichever editor is open, or null for none. Null is
+                            // what the tablet's right-hand pane shows as "nothing
+                            // being edited" and what the phone shows as the list.
+                            val libraryEditor: (@Composable () -> Unit)? = when {
+                                editingSongId != null || creatingSong -> ({
+                                    SongEditorScreen(
+                                        repository = libraryRepository,
+                                        songId = editingSongId,
+                                        onClose = { editingSongId = null; creatingSong = false },
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                })
+                                editingAnnouncementId != null || creatingAnnouncement -> ({
+                                    AnnouncementEditorScreen(
+                                        repository = libraryRepository,
+                                        announcementId = editingAnnouncementId,
+                                        onClose = { editingAnnouncementId = null; creatingAnnouncement = false },
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                })
+                                else -> null
+                            }
+                            val libraryList: @Composable () -> Unit = {
+                                LibraryScreen(
+                                    repository = libraryRepository,
+                                    bibles = bibleRepository,
+                                    settings = appSettings,
+                                    sender = projectionRouter,
+                                    onEditSong = { id ->
+                                        editingSongId = id
+                                        creatingSong = id == null
+                                    },
+                                    onEditAnnouncement = { id ->
+                                        editingAnnouncementId = id
+                                        creatingAnnouncement = id == null
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
+                            if (twoPane) {
+                                LibraryTwoPane(
+                                    list = libraryList,
+                                    editor = libraryEditor,
+                                    onMenu = paneMenu,
+                                    onSettings = paneSettings,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            } else {
+                                (libraryEditor ?: libraryList)()
+                            }
+                        }
                     }
                 }
 
                 if (useRail) {
-                    Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                    Row(modifier = Modifier.fillMaxSize().padding(innerPadding).consumeWindowInsets(innerPadding)) {
                         if (showsTabBar(tabs) || hasDrawer) NavRail(
                             selectedTab = selectedTab,
                             tabs = if (showsTabBar(tabs)) tabs else emptyList(),
@@ -1380,7 +1369,7 @@ fun App(
                     HorizontalPager(
                         state = pagerState,
                         userScrollEnabled = !inSongDetail && !inBibleDetail && !inMoreDetail,
-                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        modifier = Modifier.fillMaxSize().padding(innerPadding).consumeWindowInsets(innerPadding),
                         beyondViewportPageCount = 0  // only compose the visible page
                     ) { page ->
                         renderTab(tabs.getOrNull(page) ?: tabs.first())
@@ -1459,8 +1448,17 @@ fun App(
             }
             if (showContact) ContactOverlay(onClose = { showContact = false })
         }
+        val headerAccessory: @Composable () -> Unit = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                liveChip?.invoke()
+                ModeBadge(appMode)
+            }
+        }
         val chippedShell: @Composable () -> Unit = {
-            CompositionLocalProvider(LocalHeaderAccessory provides liveChip, content = shell)
+            CompositionLocalProvider(LocalHeaderAccessory provides headerAccessory, content = shell)
         }
         if (!hasDrawer) {
             chippedShell()
@@ -1471,6 +1469,28 @@ fun App(
                 gesturesEnabled = !canvasOpen,
                 scrimColor = LocalAppColors.current.scrim,
                 drawerContent = {
+                    // Standalone's running order is this device's own list, so it gets
+                    // the same drawer rather than a second idea of "today" somewhere
+                    // else — and, being local, it is editable in place.
+                    if (appMode == AppMode.STANDALONE) {
+                        val serviceEntries by serviceOrder.entries.collectAsState(initial = serviceOrder.current)
+                        val liveDeck by standaloneEngine.deck.collectAsState()
+                        ServiceOrderDrawerContent(
+                            entries = serviceEntries,
+                            liveTitle = liveDeck.title.takeUnless { liveDeck.isEmpty },
+                            onMove = { from, to -> serviceOrder.move(from, to) },
+                            onRemove = { index -> serviceOrder.removeAt(index) },
+                            onClear = { serviceOrder.clear() },
+                            onClose = { coroutineScope.launch { drawerState.close() } },
+                            onItemClick = { entry ->
+                                coroutineScope.launch {
+                                    drawerState.close()
+                                    openScheduleItem(destinationFor(entry))
+                                }
+                            },
+                        )
+                        return@ModalNavigationDrawer
+                    }
                     ScheduleDrawerContent(
                         appSettings = appSettings,
                         isDemoMode = isDemoMode,

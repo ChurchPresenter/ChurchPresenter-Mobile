@@ -5,7 +5,6 @@ import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideTheme
-import com.church.presenter.churchpresentermobile.model.SlideThemePresets
 import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
@@ -69,11 +68,7 @@ class SheetsScreenshotTest {
             onShowChordsChange = {},
             textSize = SlideTextSize.MEDIUM,
             onTextSizeChange = {},
-            presets = SlideThemePresets.all,
-            savedThemes = emptyList(),
-            onApplyTheme = {},
             onSaveTheme = {},
-            onDeleteTheme = {},
             onDismiss = {},
         )
     }

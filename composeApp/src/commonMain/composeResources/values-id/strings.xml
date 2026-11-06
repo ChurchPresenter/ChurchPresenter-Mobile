@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Server dapat dijangkau tetapi menolak permintaan. Periksa kunci API di Pengaturan.</string>
     <string name="status_not_churchpresenter_title">Bukan server ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Terhubung ke perangkat di alamat ini, tetapi perangkat itu tidak menjalankan ChurchPresenter. Periksa alamat IP dan port.</string>
-    <string name="more_notices_title">Pengumuman</string>
-    <string name="more_notices_subtitle">Tampilkan pengumuman dari pustaka Anda di layar</string>
     <string name="more_contact_title">Hubungi kami</string>
     <string name="more_contact_subtitle">Kirim permintaan, laporkan masalah, atau sekadar menyapa</string>
     <string name="standalone_backdrop_pick">Pilih foto untuk latar</string>

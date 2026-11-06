@@ -14,7 +14,9 @@ data class NamedTheme(val name: String, val theme: SlideTheme)
  * applying one is a single assignment and anything can be adjusted afterwards.
  *
  * The first entry is the app's own defaults, which makes "put it back" a tap
- * rather than a memory test.
+ * rather than a memory test. Each starts the words from a fixed line, top or
+ * bottom, so they stay put when one slide has more lines than the next; middled
+ * words cannot, because the middle of a block moves with its height.
  */
 object SlideThemePresets {
 
@@ -27,6 +29,8 @@ object SlideThemePresets {
                 gradientBottom = "#000000",
                 textColor = "#FFFFFF",
                 accentColor = "#9AA0A6",
+                verticalAlign = SlideVerticalAlign.TOP,
+                margin = SlideMargin.THICK,
             ),
         ),
         NamedTheme(
@@ -37,6 +41,8 @@ object SlideThemePresets {
                 gradientBottom = "#EDE7DA",
                 textColor = "#1A1A1A",
                 accentColor = "#7A5C2E",
+                verticalAlign = SlideVerticalAlign.TOP,
+                margin = SlideMargin.THICK,
             ),
         ),
         NamedTheme(
@@ -46,6 +52,8 @@ object SlideThemePresets {
                 gradientBottom = "#02060F",
                 textColor = "#FFFFFF",
                 accentColor = "#5AA9E6",
+                verticalAlign = SlideVerticalAlign.TOP,
+                margin = SlideMargin.THICK,
             ),
         ),
         NamedTheme(
@@ -55,6 +63,20 @@ object SlideThemePresets {
                 gradientBottom = "#120806",
                 textColor = "#FFF3E6",
                 accentColor = "#E8A33D",
+                verticalAlign = SlideVerticalAlign.TOP,
+                margin = SlideMargin.THICK,
+            ),
+        ),
+        NamedTheme(
+            "Lower third",
+            // Words along the bottom, for a screen that also shows a stage or a camera.
+            SlideTheme(
+                gradientTop = "#000000",
+                gradientBottom = "#1C1C1E",
+                textColor = "#FFFFFF",
+                accentColor = "#9AA0A6",
+                font = SlideFont.SANS,
+                verticalAlign = SlideVerticalAlign.BOTTOM,
             ),
         ),
     )

@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">เชื่อมต่อเซิร์ฟเวอร์ได้แต่ถูกปฏิเสธคำขอ ตรวจสอบคีย์ API ในการตั้งค่า</string>
     <string name="status_not_churchpresenter_title">ไม่ใช่เซิร์ฟเวอร์ ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">พบอุปกรณ์ที่ที่อยู่นี้ แต่ไม่ได้รัน ChurchPresenter ตรวจสอบที่อยู่ IP และพอร์ต</string>
-    <string name="more_notices_title">ประกาศ</string>
-    <string name="more_notices_subtitle">แสดงประกาศจากคลังของคุณบนจอ</string>
     <string name="more_contact_title">ติดต่อเรา</string>
     <string name="more_contact_subtitle">ส่งคำขอ แจ้งปัญหา หรือทักทาย</string>
     <string name="standalone_backdrop_pick">เลือกรูปภาพสำหรับพื้นหลัง</string>

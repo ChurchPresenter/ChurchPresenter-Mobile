@@ -17,6 +17,9 @@ object ApiConstants {
      */
     const val STANDALONE_HTTP_PORT_DEFAULT = 8766
 
+    /** The port ChurchPresenter on a computer serves on unless told otherwise. */
+    const val DESKTOP_PORT_DEFAULT = 8765
+
     /**
      * Ports tried in order when [STANDALONE_HTTP_PORT_DEFAULT] is already taken
      * (a second instance, or another app). If every candidate is busy the

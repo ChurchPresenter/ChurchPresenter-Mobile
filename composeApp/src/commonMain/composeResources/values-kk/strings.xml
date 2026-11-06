@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Сервер қолжетімді, бірақ сұранысты қабылдамады. Параметрлерде API кілтін тексеріңіз.</string>
     <string name="status_not_churchpresenter_title">Бұл ChurchPresenter сервері емес</string>
     <string name="status_not_churchpresenter_body">Бұл мекенжайдағы құрылғыға қосылды, бірақ онда ChurchPresenter іске қосылмаған. IP-мекенжай мен портты тексеріңіз.</string>
-    <string name="more_notices_title">Хабарландырулар</string>
-    <string name="more_notices_subtitle">Кітапханадағы хабарландыруды экранға шығару</string>
     <string name="more_contact_title">Бізбен байланыс</string>
     <string name="more_contact_subtitle">Сұраныс жіберіңіз, мәселе туралы хабарлаңыз немесе сәлем айтыңыз</string>
     <string name="standalone_backdrop_pick">Фонға сурет таңдаңыз</string>

@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Serwer jest osiągalny, ale odrzucił żądanie. Sprawdź klucz API w Ustawieniach.</string>
     <string name="status_not_churchpresenter_title">To nie jest serwer ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Pod tym adresem jest urządzenie, ale nie działa na nim ChurchPresenter. Sprawdź adres IP i port.</string>
-    <string name="more_notices_title">Ogłoszenia</string>
-    <string name="more_notices_subtitle">Wyświetl na ekranie ogłoszenie z biblioteki</string>
     <string name="more_contact_title">Kontakt</string>
     <string name="more_contact_subtitle">Wyślij prośbę, zgłoś problem lub po prostu się przywitaj</string>
     <string name="standalone_backdrop_pick">Wybierz zdjęcie na tło</string>

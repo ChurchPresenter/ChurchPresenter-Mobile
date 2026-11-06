@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
+import com.church.presenter.churchpresentermobile.ui.standalone.LocalFixedClock
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,9 @@ import com.church.presenter.churchpresentermobile.ui.GearButton
 import com.church.presenter.churchpresentermobile.ui.NavRail
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import io.github.takahirom.roborazzi.captureRoboImage
+
+/** The time on every output in a golden, whenever it is taken. */
+private const val FIXED_CLOCK = "10:30"
 
 /**
  * The screenshot suite's one way of taking a picture.
@@ -222,7 +226,10 @@ internal fun screenshot(
         // by exactly the same theme and background as a phone-width one.
         val capture: ComposeUiTest.() -> Unit = {
             setContent {
-                CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                CompositionLocalProvider(
+                    LocalLayoutDirection provides layoutDirection,
+                    LocalFixedClock provides FIXED_CLOCK,
+                ) {
                     AppTheme(themeMode = theme) {
                         // An explicit surface, because the capture takes the root
                         // node's bounds and a transparent background would leave

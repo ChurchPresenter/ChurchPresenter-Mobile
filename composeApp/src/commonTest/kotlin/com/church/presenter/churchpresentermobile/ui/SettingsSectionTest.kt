@@ -32,6 +32,7 @@ class SettingsSectionTest {
             listOf(
                 SettingsSection.MODE,
                 SettingsSection.SERVER,
+                SettingsSection.TVS,
                 SettingsSection.DEVICE,
                 SettingsSection.APPEARANCE,
                 SettingsSection.DIAGNOSTICS,

@@ -10,11 +10,11 @@ import kotlin.test.assertEquals
  */
 class PhoneListTest {
 
-    private val pixel = PhoneSource("ChurchPresenter · Pixel", "192.168.1.20", 8766)
+    private val pixel = FoundService("ChurchPresenter · Pixel", "192.168.1.20", 8766)
 
     @Test
     fun `a new phone is added`() {
-        assertEquals(listOf(pixel), emptyList<PhoneSource>().withFound(pixel))
+        assertEquals(listOf(pixel), emptyList<FoundService>().withFound(pixel))
     }
 
     @Test
@@ -26,7 +26,7 @@ class PhoneListTest {
 
     @Test
     fun `a phone that stops advertising drops off`() {
-        val other = PhoneSource("ChurchPresenter · Galaxy", "192.168.1.21", 8766)
+        val other = FoundService("ChurchPresenter · Galaxy", "192.168.1.21", 8766)
 
         assertEquals(listOf(other), listOf(pixel, other).withoutLost(pixel.name))
     }

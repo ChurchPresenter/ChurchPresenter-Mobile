@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">सर्वर तक पहुँच है, लेकिन उसने अनुरोध अस्वीकार कर दिया। सेटिंग में API कुंजी जाँचें।</string>
     <string name="status_not_churchpresenter_title">यह ChurchPresenter सर्वर नहीं है</string>
     <string name="status_not_churchpresenter_body">इस पते पर एक डिवाइस मिला, लेकिन उस पर ChurchPresenter नहीं चल रहा है। IP पता और पोर्ट जाँचें।</string>
-    <string name="more_notices_title">घोषणाएँ</string>
-    <string name="more_notices_subtitle">अपनी लाइब्रेरी से कोई घोषणा स्क्रीन पर दिखाएँ</string>
     <string name="more_contact_title">हमसे संपर्क करें</string>
     <string name="more_contact_subtitle">अनुरोध भेजें, समस्या बताएँ या नमस्ते कहें</string>
     <string name="standalone_backdrop_pick">पृष्ठभूमि के लिए एक फ़ोटो चुनें</string>

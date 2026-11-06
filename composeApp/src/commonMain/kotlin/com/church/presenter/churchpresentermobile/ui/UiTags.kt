@@ -96,16 +96,12 @@ internal object UiTags {
     fun bookmarkLive(id: String) = "web:bookmark:$id:live"
 
     // ── The running-order drawer ─────────────────────────────────────────
+    const val HEADER_MODE = "header:mode"
     const val DRAWER_CLOSE = "drawer:close"
     const val DRAWER_COUNT = "drawer:count"
     const val DRAWER_EMPTY = "drawer:empty"
     const val DRAWER_ERROR = "drawer:error"
     const val DRAWER_CLEAR = "drawer:clear"
-
-    // ── Standalone's Schedule tab ────────────────────────────────────────
-    const val SCHEDULE_COUNT = "schedule:count"
-    const val SCHEDULE_EMPTY = "schedule:empty"
-    const val SCHEDULE_CLEAR = "schedule:clear"
 
     /** One row of the standalone running order, by its position. */
     fun orderRow(index: Int) = "order:row:$index"
@@ -380,6 +376,7 @@ internal object UiTags {
     const val SETTINGS_COMPUTER_SECTION = "settings:computerSection"
     const val SETTINGS_MODE_SECTION = "settings:modeSection"
     const val SETTINGS_DISPLAY_SECTION = "settings:displaySection"
+    const val SETTINGS_TVS_SECTION = "settings:tvsSection"
     const val TOAST_HOST = "toastHost"
     const val SETTINGS_TEST_ERROR = "settings:testError"
     const val SETTINGS_TEST_ERROR_SENT = "settings:testErrorSent"

@@ -395,8 +395,6 @@
     <string name="more_dictionary_subtitle">Strong's Hebrew &amp; Greek lexicon</string>
     <string name="more_announcements_title">Announcements</string>
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
-    <string name="more_notices_title">Announcements</string>
-    <string name="more_notices_subtitle">Put an announcement from your library on the screen</string>
     <string name="more_contact_title">Contact us</string>
     <string name="more_contact_subtitle">Send a request, report a problem or say hello</string>
     <string name="standalone_backdrop_pick">Pick a photo for the backdrop</string>
@@ -683,7 +681,7 @@
     <string name="color_red">Red</string>
     <string name="color_green">Green</string>
     <string name="color_blue">Blue</string>
-    <string name="standalone_look">Look</string>
+    <string name="standalone_advanced">Advanced</string>
     <string name="standalone_gradient_top">Gradient top</string>
     <string name="standalone_gradient_bottom">Gradient bottom</string>
     <string name="standalone_text_colour">Text color</string>
@@ -709,8 +707,7 @@
     <string name="standalone_ignore_breaks_hint">Let the words wrap to the screen instead of breaking where the songbook did.</string>
     <string name="standalone_show_chords">Show chords</string>
     <string name="standalone_show_chords_hint">On this phone and on every screen.</string>
-    <string name="standalone_themes">Themes</string>
-    <string name="standalone_themes_saved">Your saved looks</string>
+    <string name="standalone_themes">Presets</string>
     <string name="standalone_theme_save">Save current look…</string>
     <string name="standalone_theme_name">Name this look</string>
     <string name="standalone_theme_save_action">Save</string>
@@ -1399,10 +1396,6 @@
     <string name="canvas_live_unsupported">Desktop can't show drawings — update ChurchPresenter</string>
     <string name="canvas_picture_failed">Couldn't open that picture</string>
     <!-- Standalone redesign: Schedule tab, live bar, Settings → Display -->
-    <string name="tab_schedule">Schedule</string>
-    <string name="more_library_subtitle">Write songs and notices, copy from your computer</string>
-    <string name="schedule_empty_title">Nothing scheduled yet</string>
-    <string name="schedule_empty_body">Open a song, a Bible passage or a notice and tap Add to schedule. It appears here, in order, ready to run.</string>
     <string name="settings_display_section">Display</string>
     <string name="settings_section_display_subtitle">Screens, backdrop and look</string>
     <string name="cd_live_open">Open live view</string>
@@ -1414,16 +1407,40 @@
     <string name="live_state_off">OFF</string>
 
     <!-- TV mode -->
+    <string name="settings_tvs_section">TVs</string>
+    <string name="settings_section_tvs_subtitle">Show the computer on a TV</string>
+    <string name="tv_picker_title">TVs</string>
+    <string name="tv_picker_hint">Open ChurchPresenter on the TV. It appears here by itself.</string>
+    <string name="tv_picker_needs_source">Start presenting to send to a TV.</string>
+    <string name="tv_picker_showing">Showing on this TV</string>
+    <string name="tv_picker_failed">Couldn’t reach this TV</string>
+    <string name="tv_picker_stop">Stop</string>
     <string name="tv_live_title">Live screen</string>
-    <string name="tv_live_body">Show what a phone running ChurchPresenter is presenting</string>
+    <string name="tv_live_body">Show what a computer or phone running ChurchPresenter is presenting</string>
     <string name="tv_signage_title">Signage</string>
-    <string name="tv_signage_body">After-hours playlists from the church computer — coming soon</string>
-    <string name="tv_pick_title">Choose a phone</string>
-    <string name="tv_pick_searching">Looking for phones presenting on this network…</string>
-    <string name="tv_pick_hint">On the phone, open ChurchPresenter in standalone mode. It appears here by itself.</string>
+    <string name="tv_signage_body">Play the church computer’s playlists and schedule on their own</string>
+    <string name="tv_signage_soon">After-hours playlists from the church computer — coming soon</string>
+    <string name="tv_signage_searching">Looking for ChurchPresenter on this network…</string>
+    <string name="tv_signage_pair_title">Pairing code</string>
+    <string name="tv_signage_pair_body">Approve this code in ChurchPresenter’s Signage tab</string>
+    <string name="tv_boot_title">Start with the TV</string>
+    <string name="tv_boot_on">On: opens by itself and goes back to what it was showing</string>
+    <string name="tv_boot_off">Off: open ChurchPresenter from the TV’s home screen</string>
+    <string name="tv_info_showing">Showing</string>
+    <string name="tv_pick_title">Choose what to show</string>
+    <string name="tv_pick_searching">Looking on this network…</string>
+    <string name="tv_pick_hint">Open ChurchPresenter on the computer, or in standalone mode on a phone. It appears here by itself.</string>
+    <string name="tv_kind_computer">Computer</string>
+    <string name="tv_kind_phone">Phone</string>
+    <string name="tv_outputs_checking">Checking this computer’s outputs…</string>
+    <string name="tv_outputs_none">This computer has no output to show. In ChurchPresenter, set an output to Browser Source in Projection Settings.</string>
+    <string name="tv_outputs_retry">Check again</string>
+    <string name="tv_output_number">Output %1$d</string>
+    <string name="tv_output_needs_key">Needs the API key</string>
+    <string name="tv_output_key">API key</string>
     <string name="tv_enter_address">Or enter its address</string>
     <string name="tv_address_hint">e.g. 192.168.1.20</string>
-    <string name="tv_address_invalid">That isn’t an address. Try one like 192.168.1.20 or 192.168.1.20:8766.</string>
+    <string name="tv_address_invalid">That isn’t an address. Try 192.168.1.20 for a phone, or 192.168.1.20:8765 for a computer.</string>
     <string name="tv_connect">Connect</string>
     <string name="tv_connecting">Connecting to %1$s…</string>
     <string name="tv_reconnecting">Reconnecting to %1$s…</string>

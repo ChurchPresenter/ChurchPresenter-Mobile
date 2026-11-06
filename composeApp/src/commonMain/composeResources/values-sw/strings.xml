@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Seva inafikika lakini imekataa ombi. Kagua ufunguo wa API katika Mipangilio.</string>
     <string name="status_not_churchpresenter_title">Si seva ya ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Kifaa kimefikiwa kwenye anwani hii, lakini hakiendeshi ChurchPresenter. Kagua anwani ya IP na mlango.</string>
-    <string name="more_notices_title">Matangazo</string>
-    <string name="more_notices_subtitle">Weka tangazo kutoka maktaba yako kwenye skrini</string>
     <string name="more_contact_title">Wasiliana nasi</string>
     <string name="more_contact_subtitle">Tuma ombi, ripoti tatizo au tusalimie</string>
     <string name="standalone_backdrop_pick">Chagua picha ya mandharinyuma</string>

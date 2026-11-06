@@ -728,8 +728,6 @@
     <string name="status_unauthorized_body">Сервер даступны, але адхіліў запыт. Праверце API-ключ у Наладах.</string>
     <string name="status_not_churchpresenter_title">Гэта не сервер ChurchPresenter</string>
     <string name="status_not_churchpresenter_body">Па гэтым адрасе знойдзена прылада, але на ёй не працуе ChurchPresenter. Праверце IP-адрас і порт.</string>
-    <string name="more_notices_title">Аб'явы</string>
-    <string name="more_notices_subtitle">Вывесці на экран аб'яву з вашай бібліятэкі</string>
     <string name="more_contact_title">Звязацца з намі</string>
     <string name="more_contact_subtitle">Адпраўце запыт, паведаміце пра праблему або проста прывітайцеся</string>
     <string name="standalone_backdrop_pick">Выберыце фота для фону</string>

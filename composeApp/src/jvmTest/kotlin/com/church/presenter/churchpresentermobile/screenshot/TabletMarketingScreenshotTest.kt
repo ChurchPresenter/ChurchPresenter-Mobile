@@ -233,7 +233,7 @@ class TabletMarketingScreenshotTest {
     @Test
     fun library() = tabletShot(
         "05-library",
-        tab = AppTab.MORE,
+        tab = AppTab.LIBRARY,
         tabs = AppTab.forMode(AppMode.STANDALONE),
         // The editor's slide preview is blank until a section is edited, and a
         // blank black panel is most of the pane. So edit the first verse and
@@ -280,7 +280,7 @@ class TabletMarketingScreenshotTest {
     @Test
     fun standaloneSchedule() = tabletShot(
         "06-standalone-schedule",
-        tab = AppTab.SCHEDULE,
+        tab = AppTab.SONGS,
         tabs = AppTab.forMode(AppMode.STANDALONE),
     ) {
         RunningTheService()

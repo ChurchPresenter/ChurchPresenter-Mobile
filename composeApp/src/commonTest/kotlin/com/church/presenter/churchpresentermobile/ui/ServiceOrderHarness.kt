@@ -5,7 +5,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
 import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 
-/** Setup for standalone's Schedule tab, the running order. */
+/** Setup for the standalone running-order drawer. */
 internal fun entry(
     title: String,
     type: SetlistEntryType = SetlistEntryType.SONG,
@@ -25,12 +25,14 @@ internal fun ComposeUiTest.showServiceOrder(
     onMove: (from: Int, to: Int) -> Unit = { _, _ -> },
     onRemove: (index: Int) -> Unit = {},
     onClear: () -> Unit = {},
+    onClose: () -> Unit = {},
 ) = showScreen {
-    ServiceScheduleScreen(
+    ServiceOrderDrawerContent(
         entries = entries,
         onItemClick = onItemClick,
         onMove = onMove,
         onRemove = onRemove,
         onClear = onClear,
+        onClose = onClose,
     )
 }

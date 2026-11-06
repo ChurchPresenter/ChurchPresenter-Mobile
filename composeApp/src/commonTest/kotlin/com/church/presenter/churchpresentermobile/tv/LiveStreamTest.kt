@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
  * same phone must never disagree — and the failure worth catching is a black
  * room: the TV dropping the slide because the phone locked for a moment.
  */
-class PhoneLiveStreamTest {
+class LiveStreamTest {
 
     private val json = Json { encodeDefaults = true }
 
@@ -44,6 +44,12 @@ class PhoneLiveStreamTest {
         assertEquals("192.168.1.20", source?.host)
         assertEquals(8766, source?.port)
         assertEquals("ws://192.168.1.20:8766/live", source?.liveUrl)
+    }
+
+    @Test
+    fun `the desktop's port means a computer`() {
+        assertEquals(SourceKind.DESKTOP, parseAddress("192.168.1.10:8765")?.kind)
+        assertEquals(SourceKind.PHONE, parseAddress("192.168.1.20")?.kind)
     }
 
     @Test
@@ -121,7 +127,7 @@ class PhoneLiveStreamTest {
 
     @Test
     fun `a dropped phone keeps its last slide on screen and is tried again`() = runTest {
-        val source = PhoneSource("Pixel", "192.168.1.20", 8766)
+        val source = TvSource("Pixel", "192.168.1.20", 8766)
         var attempts = 0
         val states = phoneLiveStates(source) { _, onText ->
             attempts++
@@ -141,7 +147,7 @@ class PhoneLiveStreamTest {
     fun `each new connection starts its revisions afresh`() = runTest {
         // The phone's counter restarts when its server does; a TV that kept
         // the old one would ignore every slide after the phone came back.
-        val source = PhoneSource("Pixel", "192.168.1.20", 8766)
+        val source = TvSource("Pixel", "192.168.1.20", 8766)
         var attempts = 0
         val states = phoneLiveStates(source) { _, onText ->
             attempts++
