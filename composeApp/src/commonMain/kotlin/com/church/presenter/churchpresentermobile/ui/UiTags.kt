@@ -54,6 +54,8 @@ internal object UiTags {
     const val SONG_DETAIL_ERROR = "songDetail:error"
     const val SONG_DETAIL_NO_LYRICS = "songDetail:noLyrics"
     const val SONG_DETAIL_PLAIN_TEXT = "songDetail:plainText"
+    const val SONG_DETAIL_NOTES = "songDetail:notes"
+    fun verseCue(index: Int) = "songDetail:verse:$index:cue"
 
     /** One verse card, by its position in the song. */
     fun verseCard(index: Int) = "songDetail:verse:$index"

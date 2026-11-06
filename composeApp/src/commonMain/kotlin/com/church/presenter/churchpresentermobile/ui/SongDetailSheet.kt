@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.selection.selectable
@@ -52,6 +53,9 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Verses are dimmed until projecting is on — a tap would not reach the screen. */
 private const val IDLE_VERSES_ALPHA = 0.6f
+
+/** How far a verse the song's order leaves out is faded. */
+private const val SKIPPED_VERSE_ALPHA = 0.5f
 
 /**
  * Full-screen song detail view with selectable verse cards.
@@ -121,6 +125,8 @@ fun SongDetailScreen(
                         VerseGrid(
                             slides = slides,
                             labels = sectionLabels,
+                            notes = detail.notes?.takeIf { it.isNotBlank() },
+                            cues = remember(slides) { slides.map { if (it.part == 0) detail.cueFor(it) else null } },
                             selectedVerseIndex = selectedVerseIndex,
                             isProjecting = isProjecting,
                             showChords = showChords,
@@ -177,6 +183,8 @@ fun SongDetailScreen(
 private fun VerseGrid(
     slides: List<SongVerse>,
     labels: List<String>,
+    notes: String?,
+    cues: List<String?>,
     selectedVerseIndex: Int?,
     isProjecting: Boolean,
     showChords: Boolean,
@@ -201,11 +209,15 @@ private fun VerseGrid(
                 start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp
             )
         ) {
+            if (notes != null) {
+                item(span = { GridItemSpan(maxLineSpan) }) { SongNotesCard(notes) }
+            }
             itemsIndexed(slides) { index, verse ->
                 VerseCard(
                     verse = verse,
                     index = index,
                     label = labels.getOrElse(index) { (index + 1).toString() },
+                    cue = cues.getOrNull(index),
                     isSelected = isProjecting && selectedVerseIndex == index,
                     isProjecting = isProjecting,
                     showChords = showChords,
@@ -221,38 +233,36 @@ private fun VerseGrid(
  *
  * Counted per section, so both halves of a split verse share its label
  * and add "(1/2)", "(2/2)", as the desktop numbers a split section's slides.
+ * A section the desktop plays more than once keeps the label it got the first time:
+ * the chorus sung after every verse is still "Chorus", not "Chorus 3".
  */
 internal fun slideCardLabels(slides: List<SongVerse>): List<String> {
-    val typeCounts = mutableMapOf<String, Int>()
-    return slides.filter { it.part == 0 }.map { v ->
-        val rawType = (v.label ?: v.type ?: v.name)
+    val starts = slides.filter { it.part == 0 }
+    // The first time each section is played; later plays reuse its label.
+    val firstPlay = starts.mapIndexed { i, v -> v.key?.let { key -> starts.indexOfFirst { it.key == key } } ?: i }
+    val firsts = starts.indices.filter { firstPlay[it] == it }
+    val distinct = firsts.map { starts[it] }
+    val positionOf = firsts.withIndex().associate { (position, start) -> start to position }
+    val typeOf = { v: SongVerse ->
+        (v.label ?: v.type ?: v.name)
             ?.trim()
             ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-        if (rawType != null) {
-            val count = (typeCounts[rawType] ?: 0) + 1
-            typeCounts[rawType] = count
-            rawType to count
-        } else null
-    }.let { pairs ->
-        // Only append number if there are multiple sections of that type
-        val totalPerType = mutableMapOf<String, Int>()
-        pairs.forEach { p ->
-            if (p != null) totalPerType[p.first] = (totalPerType[p.first] ?: 0) + 1
-        }
-        pairs.mapIndexed { i, p ->
-            when {
-                p == null -> (i + 1).toString()
-                totalPerType[p.first] == 1 -> p.first
-                else -> "${p.first} ${p.second}"
-            }
-        }
-    }.let { perSection ->
-        var section = -1
-        slides.map { v ->
-            if (v.part == 0) section++
-            val label = perSection.getOrElse(section) { (section + 1).toString() }
-            SlideDeckBuilder.partLabel(label, v.part, v.parts)
-        }
+    }
+    // Only number a type that occurs in more than one section.
+    val totalPerType = distinct.mapNotNull(typeOf).groupingBy { it }.eachCount()
+    val seenPerType = mutableMapOf<String, Int>()
+    val distinctLabels = distinct.mapIndexed { i, v ->
+        val type = typeOf(v) ?: return@mapIndexed (i + 1).toString()
+        val count = (seenPerType[type] ?: 0) + 1
+        seenPerType[type] = count
+        if (totalPerType[type] == 1) type else "$type $count"
+    }
+    val perSection = starts.indices.map { i -> distinctLabels[positionOf.getValue(firstPlay[i])] }
+    var section = -1
+    return slides.map { v ->
+        if (v.part == 0) section++
+        val label = perSection.getOrElse(section) { (section + 1).toString() }
+        SlideDeckBuilder.partLabel(label, v.part, v.parts)
     }
 }
 
@@ -261,6 +271,7 @@ private fun VerseCard(
     verse: SongVerse,
     index: Int,
     label: String = (index + 1).toString(),
+    cue: String? = null,
     isSelected: Boolean,
     isProjecting: Boolean,
     showChords: Boolean,
@@ -281,10 +292,12 @@ private fun VerseCard(
                 shape = shape
             )
             .padding(horizontal = 16.dp, vertical = 12.dp)
+            // A section the song's order leaves out is still listed, faded, so it can be called for.
+            .alpha(if (verse.skipped && !isSelected) SKIPPED_VERSE_ALPHA else 1f)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
@@ -294,6 +307,8 @@ private fun VerseCard(
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.05.em,
             )
+            if (cue != null) SectionCueChip(cue, Modifier.weight(1f, fill = false).testTag(UiTags.verseCue(index)))
+            Spacer(modifier = Modifier.weight(1f))
             if (isSelected) LivePill(modifier = Modifier.testTag(UiTags.verseLivePill(index)))
         }
         Spacer(modifier = Modifier.height(8.dp))

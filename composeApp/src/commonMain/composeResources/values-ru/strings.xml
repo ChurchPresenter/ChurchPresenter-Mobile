@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">Закрыть действия</string>
     <string name="song_detail_projecting_badge">▶  Показывается</string>
     <string name="song_detail_no_lyrics">Текст песни отсутствует</string>
+    <string name="song_notes_tag">Песня</string>
+    <string name="song_section_cue">Подсказка к части</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Добавить в программу</string>

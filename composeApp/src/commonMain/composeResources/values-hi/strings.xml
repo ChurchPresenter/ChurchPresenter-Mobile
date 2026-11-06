@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">क्रियाएँ बंद करें</string>
     <string name="song_detail_projecting_badge">▶  दिखाया जा रहा है</string>
     <string name="song_detail_no_lyrics">कोई बोल उपलब्ध नहीं</string>
+    <string name="song_notes_tag">गीत</string>
+    <string name="song_section_cue">भाग संकेत</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">कार्यक्रम में जोड़ें</string>

@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">Zatvori radnje</string>
     <string name="song_detail_projecting_badge">▶  Prikazuje se</string>
     <string name="song_detail_no_lyrics">Nema dostupnog teksta</string>
+    <string name="song_notes_tag">Pjesma</string>
+    <string name="song_section_cue">Uputa za dio</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Dodaj u raspored</string>

@@ -89,6 +89,8 @@
     <string name="song_detail_fab_close_actions">İşlemleri kapat</string>
     <string name="song_detail_projecting_badge">▶  Gösteriliyor</string>
     <string name="song_detail_no_lyrics">Kullanılabilir söz yok</string>
+    <string name="song_notes_tag">İlahi</string>
+    <string name="song_section_cue">Bölüm işareti</string>
 
     <!-- Bible Detail FAB -->
     <string name="bible_detail_add_to_schedule">Programa ekle</string>
