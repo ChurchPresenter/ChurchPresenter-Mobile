@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -33,6 +31,7 @@ import churchpresentermobile.composeapp.generated.resources.toast_request_failed
 import churchpresentermobile.composeapp.generated.resources.toast_request_rejected
 import churchpresentermobile.composeapp.generated.resources.toast_request_rejected_reason
 import churchpresentermobile.composeapp.generated.resources.toast_session_blocked
+import churchpresentermobile.composeapp.generated.resources.toast_waiting_for_desktop
 import churchpresentermobile.composeapp.generated.resources.toast_song_added_to_schedule
 import churchpresentermobile.composeapp.generated.resources.toast_song_live
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -99,6 +98,7 @@ fun SongsTable(
     val detailError        by vm.detailError.collectAsState()
     val selectedVerseIndex by vm.selectedVerseIndex.collectAsState()
     val isProjecting       by vm.isProjecting.collectAsState()
+    val pendingRequests    by vm.pendingRequests.collectAsState()
     val toastEvent         by vm.toastEvent.collectAsState()
     val scheduleRefreshTrigger by vm.scheduleRefreshTrigger.collectAsState()
     val scheduleAdded      by vm.scheduleAdded.collectAsState()
@@ -171,6 +171,7 @@ fun SongsTable(
             // and the swallowed action would report cheerful success.
             onAddToSchedule = if (canAddToSchedule) ({ vm.addSongToSchedule() }) else null,
             onClearDisplay = { vm.clearDisplay() },
+            pendingRequests = pendingRequests,
             showChords = showChords,
             modifier = Modifier.fillMaxSize()
         )
@@ -191,10 +192,7 @@ fun SongsTable(
             else -> listPane()
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        ToastHost(snackbarHostState)
     }
 }
 
@@ -314,6 +312,7 @@ internal fun ToastEvent.songToastMessage(): String = when (this) {
     is ToastEvent.NoSongSelected            -> stringResource(Res.string.toast_no_song_selected)
     is ToastEvent.RequestDenied             -> stringResource(Res.string.toast_request_denied)
     is ToastEvent.SessionBlocked            -> stringResource(Res.string.toast_session_blocked)
+    is ToastEvent.WaitingForDesktop         -> stringResource(Res.string.toast_waiting_for_desktop)
     is ToastEvent.SongAddedToSchedule       -> stringResource(Res.string.toast_song_added_to_schedule, title)
     is ToastEvent.FailedToProject           -> stringResource(Res.string.toast_failed_to_project, reason)
     is ToastEvent.FailedToAddSchedule       -> stringResource(Res.string.toast_failed_to_add_schedule, reason)

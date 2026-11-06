@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
@@ -25,7 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.church.presenter.churchpresentermobile.model.Slide
@@ -37,8 +40,17 @@ import com.church.presenter.churchpresentermobile.model.displayBody
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideFont
-import com.church.presenter.churchpresentermobile.model.SlideTextSize
+import com.church.presenter.churchpresentermobile.model.AUTO_FIT_FLOOR
+import com.church.presenter.churchpresentermobile.model.BODY_LINE_HEIGHT
+import com.church.presenter.churchpresentermobile.model.CORNER_WIDTH_FRACTION
+import com.church.presenter.churchpresentermobile.model.FOOTER_GAP
+import com.church.presenter.churchpresentermobile.model.FOOTER_WIDTH_FRACTION
+import com.church.presenter.churchpresentermobile.model.REFERENCE_GAP
+import com.church.presenter.churchpresentermobile.model.REFERENCE_TRACKING
+import com.church.presenter.churchpresentermobile.model.REFERENCE_WIDTH_FRACTION
+import com.church.presenter.churchpresentermobile.model.widthFraction
 import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
+import com.church.presenter.churchpresentermobile.ui.SCREEN_ASPECT_RATIO
 
 /**
  * Renders one [Slide] full-bleed — the audience view.
@@ -48,22 +60,28 @@ import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
  * display scene; the latter two live outside `App()`'s Compose tree and cannot
  * be handed a ViewModel, so everything they need arrives in [slide].
  *
- * Type scales with the available width rather than using fixed sp, so a 16:9
- * preview strip on a phone and a 65" TV both look like the same design — the
- * web equivalent of the mockup's `clamp(15px, 3.5vw, 42px)`.
+ * Everything is a fraction of the output (see `SlideScale.kt`), with no minimum,
+ * maximum or system font scale in it, so a preview strip on a phone and a 65" TV
+ * are one picture at two sizes. The width is capped at 16:9 of the height, as on
+ * the browser page, so a wider window does not run the words off the bottom.
+ *
+ * @param showClock False for a thumbnail that is not a real output: a preset's.
  */
 @Composable
 fun StandaloneOutputScreen(
     slide: Slide,
     modifier: Modifier = Modifier,
+    showClock: Boolean = true,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val boxWidth = maxWidth
         val boxHeight = maxHeight
-        val widthPx = boxWidth.value
-        val bodySize = scaledSp(widthPx, slide.textSize)
-        val referenceSize = (bodySize.value * REFERENCE_RATIO).coerceIn(8f, 22f).sp
-        val cornerSize = (bodySize.value * CORNER_RATIO).coerceIn(7f, 15f).sp
+        val scaleWidth = minOf(boxWidth, boxHeight * SCREEN_ASPECT_RATIO).coerceAtLeast(1.dp)
+        val density = LocalDensity.current
+        val bodySize = with(density) { (scaleWidth * slide.textSize.widthFraction).toSp() }
+        val referenceSize = with(density) { (scaleWidth * REFERENCE_WIDTH_FRACTION).toSp() }
+        val footerSize = with(density) { (scaleWidth * FOOTER_WIDTH_FRACTION).toSp() }
+        val cornerSize = with(density) { (scaleWidth * CORNER_WIDTH_FRACTION).toSp() }
 
         // Fade rather than cut, matching the mockup's 450ms opacity transition —
         // a hard cut to black reads as a crash on a projector.
@@ -107,74 +125,38 @@ fun StandaloneOutputScreen(
                     vertical = boxHeight * slide.theme.margin.vertical,
                 ),
             horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
-            verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
         ) {
-            val chordText = slide.chordBody?.takeIf { slide.theme.showChords }
-            if (chordText != null) {
-                OutputChordChart(
-                    text = chordText,
-                    bodySize = bodySize,
-                    textColor = textColor,
-                    chordColor = accentColor,
-                    fontFamily = slide.theme.font.toFontFamily(),
-                    horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
-                )
-            } else if (slide.body.isNotBlank()) {
-                val bodyText = slide.displayBody()
-                val bodyStyle = TextStyle(
-                    fontSize = bodySize,
-                    lineHeight = bodySize * BODY_LINE_HEIGHT,
-                    fontFamily = slide.theme.font.toFontFamily(),
-                    color = textColor,
+            // The words have a zone of their own, and the reference and footer always
+            // take their place below it, even when empty: a slide of four lines and a
+            // slide of six put them in the same spot, so nothing under the words moves.
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
+                verticalArrangement = slide.theme.verticalAlign.toVerticalArrangement(),
+            ) {
+                SlideWords(slide, bodySize, textColor, accentColor)
+            }
+            Text(
+                text = slide.reference?.takeIf { slide.showsReference() }.orEmpty().uppercase().ifBlank { " " },
+                style = TextStyle(
+                    fontSize = referenceSize,
+                    letterSpacing = referenceSize * REFERENCE_TRACKING,
+                    fontFamily = FontFamily.SansSerif,
+                    color = accentColor.copy(alpha = REFERENCE_ALPHA),
                     textAlign = bodyAlign,
-                )
-                if (slide.theme.autoFitText) {
-                    // weight(fill = false) hands the text the height that is left
-                    // as a limit without making it fill that height, so the words
-                    // shrink to fit while the chosen vertical alignment still
-                    // decides where the block sits.
-                    BasicText(
-                        text = bodyText,
-                        style = bodyStyle,
-                        autoSize = TextAutoSize.StepBased(
-                            minFontSize = bodySize * AUTO_FIT_FLOOR,
-                            maxFontSize = bodySize,
-                        ),
-                        modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
-                    )
-                } else {
-                    Text(
-                        text = bodyText,
-                        style = bodyStyle,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
-            slide.reference?.takeIf { it.isNotBlank() && slide.showsReference() }?.let { reference ->
-                Text(
-                    text = reference.uppercase(),
-                    style = TextStyle(
-                        fontSize = referenceSize,
-                        letterSpacing = referenceSize * REFERENCE_TRACKING,
-                        fontFamily = FontFamily.SansSerif,
-                        color = accentColor.copy(alpha = REFERENCE_ALPHA),
-                        textAlign = bodyAlign,
-                    ),
-                    modifier = Modifier.padding(top = boxHeight * REFERENCE_GAP),
-                )
-            }
-            slide.footer?.takeIf { it.isNotBlank() }?.let { footer ->
-                Text(
-                    text = footer,
-                    style = TextStyle(
-                        fontSize = cornerSize,
-                        fontFamily = FontFamily.SansSerif,
-                        color = textColor.copy(alpha = FOOTER_ALPHA),
-                        textAlign = TextAlign.Center,
-                    ),
-                    modifier = Modifier.padding(top = boxHeight * FOOTER_GAP),
-                )
-            }
+                ),
+                modifier = Modifier.padding(top = boxHeight * REFERENCE_GAP),
+            )
+            Text(
+                text = slide.footer.orEmpty().ifBlank { " " },
+                style = TextStyle(
+                    fontSize = footerSize,
+                    fontFamily = FontFamily.SansSerif,
+                    color = textColor.copy(alpha = FOOTER_ALPHA),
+                    textAlign = TextAlign.Center,
+                ),
+                modifier = Modifier.padding(top = boxHeight * FOOTER_GAP),
+            )
         }
 
         // Corner furniture stays visible while the slide is blanked: a black
@@ -189,6 +171,63 @@ fun StandaloneOutputScreen(
                     color = textColor.copy(alpha = CORNER_ALPHA),
                 ),
                 modifier = Modifier.align(Alignment.TopStart).padding(boxWidth * CORNER_PAD),
+            )
+        }
+        rememberClockText(showClock && slide.theme.showClock)?.let { time ->
+            Text(
+                text = time,
+                style = TextStyle(
+                    fontSize = cornerSize,
+                    fontFamily = FontFamily.SansSerif,
+                    color = textColor.copy(alpha = CORNER_ALPHA),
+                ),
+                modifier = Modifier.align(Alignment.TopEnd).padding(boxWidth * CORNER_PAD),
+            )
+        }
+    }
+}
+
+/** The words, with their chords when asked for; auto-fit shrinks them to the height they are given. */
+@Composable
+private fun ColumnScope.SlideWords(slide: Slide, bodySize: TextUnit, textColor: Color, accentColor: Color) {
+    val chordText = slide.chordBody?.takeIf { slide.theme.showChords }
+    if (chordText != null) {
+        OutputChordChart(
+            text = chordText,
+            bodySize = bodySize,
+            textColor = textColor,
+            chordColor = accentColor,
+            fontFamily = slide.theme.font.toFontFamily(),
+            horizontalAlignment = slide.theme.textAlign.toHorizontalAlignment(),
+        )
+    } else if (slide.body.isNotBlank()) {
+        val bodyText = slide.displayBody()
+        val bodyStyle = TextStyle(
+            fontSize = bodySize,
+            lineHeight = bodySize * BODY_LINE_HEIGHT,
+            fontFamily = slide.theme.font.toFontFamily(),
+            color = textColor,
+            textAlign = slide.theme.textAlign.toTextAlign(),
+        )
+        if (slide.theme.autoFitText) {
+            // weight(fill = false) hands the text the height that is left
+            // as a limit without making it fill that height, so the words
+            // shrink to fit while the chosen vertical alignment still
+            // decides where the block sits.
+            BasicText(
+                text = bodyText,
+                style = bodyStyle,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = bodySize * AUTO_FIT_FLOOR,
+                    maxFontSize = bodySize,
+                ),
+                modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
+            )
+        } else {
+            Text(
+                text = bodyText,
+                style = bodyStyle,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -314,16 +353,6 @@ private fun SlideFont.toFontFamily(): FontFamily = when (this) {
     SlideFont.SANS -> FontFamily.SansSerif
 }
 
-/** Body type as a fraction of the rendered width, clamped like the mockup's `clamp()`. */
-private fun scaledSp(widthDp: Float, size: SlideTextSize): TextUnit {
-    val (ratio, min, max) = when (size) {
-        SlideTextSize.SMALL -> SMALL_BODY
-        SlideTextSize.MEDIUM -> MEDIUM_BODY
-        SlideTextSize.LARGE -> LARGE_BODY
-    }
-    return (widthDp * ratio).coerceIn(min, max).sp
-}
-
 /**
  * Parses `#RRGGBB` / `#AARRGGBB`, falling back to [fallback] on anything else.
  *
@@ -339,35 +368,16 @@ internal fun parseHexColor(hex: String, fallback: Color): Color {
 
 private const val HIDE_FADE_MS = 450
 
-/** Body type per size: fraction of the rendered width, then the sp floor and ceiling. */
-private val SMALL_BODY = Triple(0.052f, 12f, 34f)
-private val MEDIUM_BODY = Triple(0.066f, 15f, 44f)
-private val LARGE_BODY = Triple(0.084f, 18f, 56f)
-
 private const val RGB_HEX_LENGTH = 6
 private const val ARGB_HEX_LENGTH = 8
 
 /** Alpha channel for a `#RRGGBB` color, which carries none of its own. */
 private const val OPAQUE_ALPHA = 0xFF000000L
 
-/**
- * How far auto-fit may shrink the words before it stops.
- *
- * A floor rather than no limit: text small enough to fit anything is text nobody
- * at the back can read, and a verse that will not fit at this size is better
- * clipped than shown illegibly — the operator can split it or choose Small.
- */
-private const val AUTO_FIT_FLOOR = 0.45f
-private const val BODY_LINE_HEIGHT = 1.32f
-private const val REFERENCE_RATIO = 0.46f
-private const val REFERENCE_TRACKING = 0.14f
 private const val REFERENCE_ALPHA = 0.72f
-private const val CORNER_RATIO = 0.30f
 private const val CORNER_ALPHA = 0.45f
 private const val BRAND_TRACKING = 0.22f
 private const val FOOTER_ALPHA = 0.55f
-private const val REFERENCE_GAP = 0.045f
-private const val FOOTER_GAP = 0.02f
 private const val CORNER_PAD = 0.035f
 
 /** Only reached when a theme carries an unreadable color — the defaults live in SlideTheme. */

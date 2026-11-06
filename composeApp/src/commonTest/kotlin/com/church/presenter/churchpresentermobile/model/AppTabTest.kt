@@ -20,8 +20,13 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone leads with the live controller`() {
-        assertEquals(AppTab.PRESENT, AppTab.forMode(AppMode.STANDALONE).first())
+    fun `standalone is bible, songs, library, announcements and more`() {
+        // The live controls ride along every tab rather than having one, and the
+        // running order is the schedule drawer, as in remote.
+        assertEquals(
+            listOf(AppTab.BIBLE, AppTab.SONGS, AppTab.LIBRARY, AppTab.ANNOUNCEMENTS, AppTab.MORE),
+            AppTab.forMode(AppMode.STANDALONE),
+        )
     }
 
     @Test
@@ -32,9 +37,10 @@ class AppTabTest {
     }
 
     @Test
-    fun `the present tab exists only in standalone`() {
-        assertFalse(AppTab.PRESENT in AppTab.forMode(AppMode.REMOTE))
-        assertTrue(AppTab.PRESENT in AppTab.forMode(AppMode.STANDALONE))
+    fun `the announcements tab exists only in standalone`() {
+        // Remote's composer is a More screen that drives the desktop.
+        assertFalse(AppTab.ANNOUNCEMENTS in AppTab.forMode(AppMode.REMOTE))
+        assertTrue(AppTab.ANNOUNCEMENTS in AppTab.forMode(AppMode.STANDALONE))
     }
 
     /** The library is on-device content, which only standalone mode can present. */
@@ -77,14 +83,9 @@ class AppTabTest {
 
     @Test
     fun `standalone keeps only the More destinations it can serve itself`() {
-        // Photos, Notices and Web are local — picked, written or typed on this
-        // device and projected by it. Q&A and the dictionary need the desktop's
-        // data, so they stay out.
-        //
-        // ANNOUNCEMENTS is the same slot serving two different screens: the
-        // remote composer writes to the desktop's schedule, while standalone
-        // gets the local notices list. It is here because the Library stopped
-        // projecting — going live needs a surface of its own.
+        // Photos are local — picked on this device and projected by it. Q&A, the
+        // dictionary and Web need the desktop, so they stay out, and Announcements
+        // here is the remote composer: standalone has a tab of its own.
         //
         // REPORT is the CCLI report of what this device put on a screen, which
         // only standalone has: in remote mode the desktop projects and reports.
@@ -95,8 +96,6 @@ class AppTabTest {
             listOf(
                 MoreDestination.CALENDAR,
                 MoreDestination.PICTURES,
-                MoreDestination.ANNOUNCEMENTS,
-                MoreDestination.WEB,
                 MoreDestination.REPORT,
                 MoreDestination.CONTACT,
             ),

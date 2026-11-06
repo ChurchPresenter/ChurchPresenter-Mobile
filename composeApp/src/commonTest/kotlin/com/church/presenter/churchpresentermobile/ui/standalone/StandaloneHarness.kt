@@ -20,7 +20,6 @@ import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStora
 import com.church.presenter.churchpresentermobile.ui.showScreen
 import com.church.presenter.churchpresentermobile.viewmodel.LocalPhotosViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.StandaloneViewModel
-import com.church.presenter.churchpresentermobile.viewmodel.LocalWebViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -94,18 +93,63 @@ internal fun libraryWith(vararg notices: LocalAnnouncement) =
 internal fun notice(id: String, title: String = "Welcome", body: String = "Coffee in the hall") =
     LocalAnnouncement(id = id, title = title, body = body)
 
+/** The live bar over [fixture]'s engine, as the shell draws it above the tabs. */
 @OptIn(ExperimentalTestApi::class)
-internal fun ComposeUiTest.showController(
+internal fun ComposeUiTest.showLiveBar(
     fixture: StandaloneFixture,
-    photos: PhotoLibrary? = null,
+    onCollapse: () -> Unit = {},
+    onOpenScreens: () -> Unit = {},
     settings: AppSettings = AppSettings(InMemorySettingsStorage()),
 ) = showScreen {
-    StandaloneControllerScreen(
+    LiveBar(
         engine = fixture.engine,
         registry = fixture.registry,
         settings = settings,
+        onCollapse = onCollapse,
+        onOpenScreens = onOpenScreens,
+        providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, settings, null),
+    )
+}
+
+/** The full live view over [fixture]'s engine, without the sheet it opens in. */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.showLiveView(
+    fixture: StandaloneFixture,
+    settings: AppSettings = AppSettings(InMemorySettingsStorage()),
+) = showScreen {
+    LiveViewContent(StandaloneViewModel(fixture.engine, fixture.registry, settings, null))
+}
+
+/** The chip the bar folds into, as a header shows it beside the gear. */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.showLiveChip(
+    fixture: StandaloneFixture,
+    onExpand: () -> Unit = {},
+    settings: AppSettings = AppSettings(InMemorySettingsStorage()),
+) = showScreen {
+    LiveChip(
+        engine = fixture.engine,
+        registry = fixture.registry,
+        settings = settings,
+        onExpand = onExpand,
+        providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, settings, null),
+    )
+}
+
+/** Settings → Display over [engine] and [registry]. */
+@OptIn(ExperimentalTestApi::class)
+internal fun ComposeUiTest.showDisplaySettings(
+    engine: StandaloneEngine,
+    registry: SinkRegistry,
+    photos: PhotoLibrary? = null,
+    settings: AppSettings = AppSettings(InMemorySettingsStorage()),
+) = showScreen {
+    DisplaySettingsPage(
+        engine = engine,
+        registry = registry,
+        settings = settings,
         photos = photos,
-        providedViewModel = StandaloneViewModel(fixture.engine, fixture.registry, settings, photos),
+        providedViewModel = StandaloneViewModel(engine, registry, settings, photos),
     )
 }
 
@@ -145,18 +189,5 @@ internal fun ComposeUiTest.showLocalPhotos(
         library = library,
         presenter = engine,
         providedViewModel = LocalPhotosViewModel(library, engine),
-    )
-}
-
-@OptIn(ExperimentalTestApi::class)
-internal fun ComposeUiTest.showLocalWeb(
-    engine: StandaloneEngine?,
-    hasOutput: Boolean = true,
-    refusesFraming: suspend (String) -> Boolean = { false },
-) = showScreen {
-    LocalWebScreen(
-        presenter = engine,
-        hasOutput = hasOutput,
-        providedViewModel = LocalWebViewModel(presenter = engine, refusesFraming = refusesFraming),
     )
 }

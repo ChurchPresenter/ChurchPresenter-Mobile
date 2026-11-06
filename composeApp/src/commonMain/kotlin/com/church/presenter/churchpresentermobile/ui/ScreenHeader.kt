@@ -20,6 +20,8 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +38,17 @@ import churchpresentermobile.composeapp.generated.resources.cd_schedule
 import churchpresentermobile.composeapp.generated.resources.cd_settings
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
+
+/**
+ * Something the shell wants beside every header's settings gear, or null.
+ *
+ * Standalone's live chip lives here when the live bar is folded away. A local
+ * rather than a parameter because the headers are drawn by a dozen screens —
+ * the shell's bar on a phone, each pane's own on a tablet — and a chip threaded
+ * through all of them would be forgotten by the next one written.
+ */
+val LocalHeaderAccessory: ProvidableCompositionLocal<(@Composable () -> Unit)?> =
+    compositionLocalOf { null }
 
 /**
  * Shared top header for content screens in the redesign.
@@ -114,6 +127,10 @@ fun ScreenHeader(
         }
 
         if (onSettings != null) {
+            LocalHeaderAccessory.current?.let { accessory ->
+                Spacer(Modifier.width(12.dp))
+                accessory()
+            }
             Spacer(Modifier.width(12.dp))
             GearButton(onClick = onSettings, modifier = Modifier.testTag(UiTags.HEADER_SETTINGS))
         }

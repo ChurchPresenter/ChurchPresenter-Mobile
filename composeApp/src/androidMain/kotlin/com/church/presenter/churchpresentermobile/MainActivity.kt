@@ -13,6 +13,8 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.church.presenter.churchpresentermobile.tv.isTelevision
+import com.church.presenter.churchpresentermobile.ui.tv.TvApp
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.initSettingsContext
@@ -84,7 +86,9 @@ class MainActivity : ComponentActivity() {
         // Push notifications — request runtime permission (Android 13+)
         requestNotificationPermission()
 
-        setContent { App() }
+        // A TV is a screen, not a remote: it gets its own app, and the phone's
+        // tabs, mode picker and connect flow never start there.
+        setContent { if (isTelevision()) TvApp() else App() }
 
         // Deep link from cold-start is picked up in onResume (see below).
     }

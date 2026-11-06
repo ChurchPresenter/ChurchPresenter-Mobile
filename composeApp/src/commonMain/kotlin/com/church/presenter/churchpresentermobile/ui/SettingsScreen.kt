@@ -116,11 +116,16 @@ fun SettingsScreen(
     providedStatusViewModel: StatusViewModel? = null,
     twoPane: Boolean = false,
     /**
-     * The section to open with, for a test that wants to photograph one page
-     * without tapping through the menu. The app leaves it null: a tablet opens
-     * on the first section, a phone on the menu.
+     * The section to open with, or null for the usual start: a tablet opens on
+     * the first section, a phone on the menu. The live bar's screens dot opens
+     * on Display; a test uses it to photograph one page without tapping through.
      */
     initialSection: SettingsSection? = null,
+    /**
+     * Settings → Display, built by the shell: it owns the engine and the screens
+     * that page drives, which this dialog has no business constructing.
+     */
+    displayPage: @Composable () -> Unit = {},
 ) {
     val viewModel: SettingsViewModel = providedViewModel
         ?: viewModel { SettingsViewModel(appSettings) }
@@ -211,6 +216,7 @@ fun SettingsScreen(
             onCheckStatus = { statusViewModel.recheck(); showStatusDialog = true },
             onContact = onContact,
             twoPane = twoPane,
+            displayPage = displayPage,
         )
     }
     SettingsSheet(
@@ -218,6 +224,8 @@ fun SettingsScreen(
             hasDesktop = hasDesktop,
             supportsStandalone = supportsStandalone,
             canLeaveMode = appMode != AppMode.REMOTE,
+            usesComputer = appMode != AppMode.CALENDAR,
+            hasDisplay = appMode == AppMode.STANDALONE,
         ),
         status = statusState.takeIf { hasDesktop },
         address = "${appSettings.host}:${appSettings.port}",

@@ -36,7 +36,6 @@
     <ID>NewLineAtEndOfFile:main.kt$com.church.presenter.churchpresentermobile.main.kt</ID>
     <ID>ReturnCount:BibleViewModel.kt$BibleViewModel$fun toggleProjecting()</ID>
     <ID>ReturnCount:DeepLinkHandler.kt$DeepLinkHandler$fun handle(url: String, settings: AppSettings): Boolean</ID>
-    <ID>ReturnCount:FramingCheck.kt$FramingCheck$internal fun refusesFramingFrom(xFrameOptions: String?, csp: String?): Boolean</ID>
     <ID>ReturnCount:MediaViewModel.kt$MediaViewModel$private fun buildPayload(): MediaItemPayload?</ID>
     <ID>ReturnCount:NetworkErrorMapper.kt$fun Throwable.toFriendlyNetworkMessage(): String</ID>
     <ID>ReturnCount:SongsViewModel.kt$SongsViewModel$fun toggleProjecting()</ID>

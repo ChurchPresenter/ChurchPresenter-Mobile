@@ -1,5 +1,7 @@
 package com.church.presenter.churchpresentermobile.model
 
+import com.church.presenter.churchpresentermobile.tv.TvSource
+import kotlinx.serialization.json.Json
 import com.church.presenter.churchpresentermobile.deviceName
 import com.church.presenter.churchpresentermobile.generateUUID
 import com.church.presenter.churchpresentermobile.network.ApiConstants
@@ -24,6 +26,10 @@ private const val KEY_CONNECT_SETUP    = "connect_setup_done"
 private const val KEY_TELEMETRY_ENABLED = "telemetry_enabled"
 private const val KEY_APP_MODE         = "app_mode"
 private const val KEY_MODE_CHOSEN      = "mode_chosen"
+private const val KEY_LIVE_BAR_COLLAPSED = "live_bar_collapsed"
+private const val KEY_TV_LAST_SOURCE = "tv_last_source"
+private const val KEY_TV_SIGNAGE_ON = "tv_signage_on"
+private const val KEY_TV_START_ON_BOOT = "tv_start_on_boot"
 private const val KEY_STANDALONE_PORT  = "standalone_port"
 private const val KEY_LIBRARY_SYNC      = "library_sync_state"
 private const val KEY_SLIDE_THEME       = "slide_theme"
@@ -286,6 +292,42 @@ class AppSettings(
     var isModeChosen: Boolean
         get() = storage.getInt(KEY_MODE_CHOSEN, 0) == 1
         set(value) { storage.putInt(KEY_MODE_CHOSEN, if (value) 1 else 0) }
+
+    /**
+     * Whether standalone's live bar is folded away into the header's live chip.
+     * Remembered because it is a preference about the screen, not about one
+     * service: an operator who wants the room has wanted it every time.
+     */
+    var liveBarCollapsed: Boolean
+        get() = storage.getInt(KEY_LIVE_BAR_COLLAPSED, 0) == 1
+        set(value) { storage.putInt(KEY_LIVE_BAR_COLLAPSED, if (value) 1 else 0) }
+
+    /** On a TV: it is a signage player, and goes back to being one after a restart. */
+    var tvSignageOn: Boolean
+        get() = storage.getInt(KEY_TV_SIGNAGE_ON, 0) == 1
+        set(value) { storage.putInt(KEY_TV_SIGNAGE_ON, if (value) 1 else 0) }
+
+    /** On a TV: open by itself when the TV starts. Off until someone asks for it. */
+    var tvStartOnBoot: Boolean
+        get() = storage.getInt(KEY_TV_START_ON_BOOT, 0) == 1
+        set(value) { storage.putInt(KEY_TV_START_ON_BOOT, if (value) 1 else 0) }
+
+    /** Whether to open at boot: only when asked to, and with something to go back to. */
+    val tvResumesOnBoot: Boolean
+        get() = tvStartOnBoot && (tvSignageOn || tvLastSource != null)
+
+    /**
+     * On a TV: what it was last showing, or null. Kept so a lobby TV goes straight
+     * back to it after a power cut; cleared when someone backs out of it on purpose.
+     */
+    var tvLastSource: TvSource?
+        get() = runCatching {
+            Json.decodeFromString<TvSource>(storage.getString(KEY_TV_LAST_SOURCE, ""))
+        }.getOrNull()
+        set(value) {
+            val json = value?.let { Json.encodeToString(TvSource.serializer(), it) }
+            storage.putString(KEY_TV_LAST_SOURCE, json.orEmpty())
+        }
 
     /**
      * Port the standalone presentation web server last bound successfully.

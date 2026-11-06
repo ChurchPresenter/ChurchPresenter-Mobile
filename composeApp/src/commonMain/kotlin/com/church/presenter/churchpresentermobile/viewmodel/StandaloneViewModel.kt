@@ -163,6 +163,17 @@ class StandaloneViewModel(
      */
     fun applyTheme(named: NamedTheme) = updateTheme { named.theme }
 
+    /**
+     * Adopts a built-in look. The church's name and the chords are not part of a
+     * look, and its gradient only shows on the gradient backdrop.
+     */
+    fun applyPreset(named: NamedTheme) {
+        updateTheme { current ->
+            named.theme.copy(brandLine = current.brandLine, showChords = current.showChords)
+        }
+        setBackdrop(SlideBackdrop.GRADIENT)
+    }
+
     /** Saves the current look under [name], replacing any saved look of that name. */
     fun saveCurrentTheme(name: String) {
         val trimmed = name.trim()

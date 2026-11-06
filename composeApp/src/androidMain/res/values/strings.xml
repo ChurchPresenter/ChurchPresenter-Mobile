@@ -18,4 +18,5 @@
     <string name="presentation_service_channel">Presenting</string>
     <string name="presentation_service_title">Presenting to a screen</string>
     <string name="presentation_service_text">Your screens stay connected while this is running.</string>
+    <string name="presentation_close_app">Close app</string>
 </resources>

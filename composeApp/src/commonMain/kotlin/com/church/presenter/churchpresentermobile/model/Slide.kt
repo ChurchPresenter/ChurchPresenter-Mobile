@@ -127,7 +127,7 @@ data class SlideTheme(
     val gradientTop: String = DEFAULT_GRADIENT_TOP,
     val gradientBottom: String = DEFAULT_GRADIENT_BOTTOM,
     val textAlign: SlideTextAlign = SlideTextAlign.CENTER,
-    val verticalAlign: SlideVerticalAlign = SlideVerticalAlign.MIDDLE,
+    val verticalAlign: SlideVerticalAlign = SlideVerticalAlign.TOP,
     val margin: SlideMargin = SlideMargin.MEDIUM,
     val autoFitText: Boolean = false,
     val ignoreLineBreaks: Boolean = false,

@@ -17,6 +17,9 @@ actual object PresentationKeepAlive {
 
     actual fun stop() = setIdleTimerDisabled(false)
 
+    /** Nothing to draw it in: iOS has no persistent indicator for this. */
+    actual fun show(nowShowing: NowShowing?) = Unit
+
     private fun setIdleTimerDisabled(disabled: Boolean) {
         dispatch_async(dispatch_get_main_queue()) {
             UIApplication.sharedApplication.idleTimerDisabled = disabled

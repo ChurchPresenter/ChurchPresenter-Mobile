@@ -730,8 +730,6 @@
     <string name="status_unauthorized_body">سرور در دسترس است اما درخواست را رد کرد. کلید API را در تنظیمات بررسی کنید.</string>
     <string name="status_not_churchpresenter_title">این سرور ChurchPresenter نیست</string>
     <string name="status_not_churchpresenter_body">دستگاهی در این نشانی پاسخ داد، اما ChurchPresenter روی آن اجرا نمی‌شود. نشانی IP و درگاه را بررسی کنید.</string>
-    <string name="more_notices_title">اعلان‌ها</string>
-    <string name="more_notices_subtitle">یک اعلان از کتابخانه‌تان را روی صفحه نمایش دهید</string>
     <string name="more_contact_title">تماس با ما</string>
     <string name="more_contact_subtitle">درخواست بفرستید، مشکلی را گزارش دهید یا سلام کنید</string>
     <string name="standalone_backdrop_pick">یک عکس برای پس‌زمینه انتخاب کنید</string>
@@ -776,10 +774,8 @@
     <string name="standalone_blank">خالی</string>
     <string name="standalone_live">زنده</string>
     <string name="standalone_clear">پاک کردن</string>
-    <string name="web_refuses_framing">%1$s اجازه نمی‌دهد درون صفحهٔ دیگری نمایش داده شود، بنابراین صفحهٔ مرورگر به‌جای آن خطا نشان می‌دهد. صفحه‌ای که به این گوشی وصل است همچنان آن را نشان می‌دهد.</string>
     <string name="standalone_preview">پیش‌نمایش</string>
     <string name="standalone_no_output">هیچ صفحه‌ای وصل نیست</string>
-    <string name="standalone_output_count">%1$s صفحه</string>
     <string name="standalone_empty_title">چیزی بارگذاری نشده</string>
     <string name="standalone_empty_body">یک سرود یا فصلی از کتاب‌مقدس را باز کنید و «نمایش» را بزنید تا اینجا بارگذاری شود.</string>
     <string name="standalone_slide_position">%1$s از %2$s</string>
@@ -888,7 +884,6 @@
     <string name="standalone_brand_line">نام کلیسا (گوشهٔ بالا)</string>
     <string name="standalone_brand_line_hint">برای هیچ، خالی بگذارید</string>
     <string name="standalone_show_clock">نمایش ساعت</string>
-    <string name="web_not_a_link">یک نشانی وب وارد کنید، مثل example.com</string>
     <string name="standalone_show_reference">نمایش خط مرجع</string>
     <string name="standalone_show_reference_hint">بخش سرود یا آیه‌ای که زیر متن نمایش داده می‌شود.</string>
     <string name="standalone_look_reset">بازنشانی ظاهر</string>

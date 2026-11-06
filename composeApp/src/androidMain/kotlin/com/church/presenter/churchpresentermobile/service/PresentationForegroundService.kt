@@ -9,10 +9,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
-import com.church.presenter.churchpresentermobile.MainActivity
+import android.os.Process
 import com.church.presenter.churchpresentermobile.R
+import com.church.presenter.churchpresentermobile.present.NowShowing
+import com.church.presenter.churchpresentermobile.util.ActivityHolder
 import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 
@@ -30,7 +34,9 @@ private const val TAG = "PresentationService"
  *
  * The notification is not decoration: a foreground service is the only way
  * Android permits this, and it also gives the operator a visible, tappable
- * reminder that the phone is currently driving a screen.
+ * reminder that the phone is currently driving a screen. It is a media player,
+ * with the slide as its album art and Close as its button, and follows every
+ * slide change ([show]).
  */
 class PresentationForegroundService : Service() {
 
@@ -54,14 +60,20 @@ class PresentationForegroundService : Service() {
             return START_NOT_STICKY
         }
 
+        if (intent.action == ACTION_CLOSE_APP) {
+            closeApp()
+            return START_NOT_STICKY
+        }
+
         // Even a legitimate start can be denied: startForegroundService() only
         // buys a few seconds of grace, and if the app is backgrounded or the
         // device dozes before this runs, the allowance is gone. Losing the
         // keep-alive degrades the feature; crashing the operator's phone
         // mid-service is far worse. Caught as Exception rather than by type so
         // no API 31+ class is referenced on older devices.
+        url = intent.getStringExtra(EXTRA_URL)
         val started = runCatching {
-            startForeground(NOTIFICATION_ID, buildNotification(intent.getStringExtra(EXTRA_URL)))
+            startForeground(NOTIFICATION_ID, buildNotification(url))
         }
         if (started.isFailure) {
             val e = started.exceptionOrNull()
@@ -71,6 +83,7 @@ class PresentationForegroundService : Service() {
             return START_NOT_STICKY
         }
 
+        running = true
         acquireLocks()
         Logger.d(TAG, "presentation service started")
         // Deliberately not sticky: see the null-intent branch above.
@@ -78,9 +91,24 @@ class PresentationForegroundService : Service() {
     }
 
     override fun onDestroy() {
+        running = false
         releaseLocks()
+        releaseMedia()
         Logger.d(TAG, "presentation service stopped")
         super.onDestroy()
+    }
+
+    /**
+     * The notification's Close button: stops presenting and ends the app. The
+     * display server lives in this process, so ending the process is what takes
+     * it down; finishing the screen alone would leave it serving.
+     */
+    private fun closeApp() {
+        Logger.d(TAG, "closing the app from the notification")
+        ActivityHolder.current?.finishAndRemoveTask()
+        releaseMedia()
+        stopSelf()
+        Handler(Looper.getMainLooper()).post { Process.killProcess(Process.myPid()) }
     }
 
     private fun acquireLocks() {
@@ -111,38 +139,26 @@ class PresentationForegroundService : Service() {
         wifiLock = null
     }
 
+    // A seam rather than an inline call: PresentationLocksTest stubs it, since a
+    // working Notification.Builder is the one thing the unit-test android.jar lacks.
     private fun buildNotification(url: String?): Notification {
         createChannel()
-        val openApp = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
+        val session = media ?: PresentationMediaSession(this, ::closeApp).also { media = it }
+        return buildPresentationNotification(this, url, nowShowing, session)
+    }
 
-        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(this, CHANNEL_ID)
-        } else {
-            @Suppress("DEPRECATION")
-            Notification.Builder(this)
-        }
-
-        return builder
-            .setContentTitle(getString(R.string.presentation_service_title))
-            .setContentText(url ?: getString(R.string.presentation_service_text))
-            .setSmallIcon(android.R.drawable.ic_menu_slideshow)
-            .setOngoing(true)
-            .setContentIntent(openApp)
-            .build()
+    private fun releaseMedia() {
+        media?.release()
+        media = null
     }
 
     private fun createChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = getSystemService(NotificationManager::class.java) ?: return
-        if (manager.getNotificationChannel(CHANNEL_ID) != null) return
+        if (manager.getNotificationChannel(PRESENTATION_CHANNEL_ID) != null) return
         manager.createNotificationChannel(
             NotificationChannel(
-                CHANNEL_ID,
+                PRESENTATION_CHANNEL_ID,
                 getString(R.string.presentation_service_channel),
                 // LOW: persistent, silent, no heads-up. It is a status indicator,
                 // not an alert — an operator must never be buzzed mid-service.
@@ -152,14 +168,43 @@ class PresentationForegroundService : Service() {
     }
 
     companion object {
-        private const val CHANNEL_ID = "presentation_server"
         private const val NOTIFICATION_ID = 4711
         private const val WAKE_LOCK_TAG = "ChurchPresenter::presentation"
         private const val WIFI_LOCK_TAG = "ChurchPresenter::presentation-wifi"
         private const val EXTRA_URL = "url"
+        private const val ACTION_CLOSE_APP = "com.church.presenter.churchpresentermobile.CLOSE_APP"
 
         /** Longest a single service run holds the CPU awake — a very long service. */
         private const val MAX_HOLD_MS = 6 * 60 * 60 * 1000L
+
+        // What the notification pictures. Held here rather than on the instance
+        // because the slide changes while the service runs, from code that has
+        // a Context but no handle on the service.
+        @Volatile private var url: String? = null
+        @Volatile private var nowShowing: NowShowing? = null
+        @Volatile private var running = false
+        @Volatile private var media: PresentationMediaSession? = null
+
+        /**
+         * Redraws the notification for what the screens now show. Remembered
+         * when the service is not running, so it starts already showing it.
+         */
+        fun show(context: Context, nowShowing: NowShowing?) {
+            this.nowShowing = nowShowing
+            if (!running) return
+            runCatching {
+                context.getSystemService(NotificationManager::class.java)
+                    ?.notify(NOTIFICATION_ID, buildPresentationNotification(context, url, nowShowing, media))
+            }.onFailure { Logger.e(TAG, "could not update the notification: ${it.message}") }
+        }
+
+        /** What the notification's Close button sends this service. */
+        internal fun closeAppIntent(context: Context): PendingIntent = PendingIntent.getService(
+            context,
+            0,
+            Intent(context, PresentationForegroundService::class.java).setAction(ACTION_CLOSE_APP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
 
         fun start(context: Context, url: String?) {
             val intent = Intent(context, PresentationForegroundService::class.java)

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The TV home screen's 16:9 tile (320x180dp). The splash's near-black, with the
+    launcher's own mark centred on it, so the app reads the same on a TV as it
+    does on a phone.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="320dp"
+        android:height="180dp">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0E0E17"/>
+        </shape>
+    </item>
+    <item
+            android:drawable="@drawable/ic_launcher_foreground"
+            android:width="180dp"
+            android:height="180dp"
+            android:gravity="center"/>
+</layer-list>

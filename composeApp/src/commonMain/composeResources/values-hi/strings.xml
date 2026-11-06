@@ -730,8 +730,6 @@
     <string name="status_unauthorized_body">सर्वर तक पहुँच है, लेकिन उसने अनुरोध अस्वीकार कर दिया। सेटिंग में API कुंजी जाँचें।</string>
     <string name="status_not_churchpresenter_title">यह ChurchPresenter सर्वर नहीं है</string>
     <string name="status_not_churchpresenter_body">इस पते पर एक डिवाइस मिला, लेकिन उस पर ChurchPresenter नहीं चल रहा है। IP पता और पोर्ट जाँचें।</string>
-    <string name="more_notices_title">घोषणाएँ</string>
-    <string name="more_notices_subtitle">अपनी लाइब्रेरी से कोई घोषणा स्क्रीन पर दिखाएँ</string>
     <string name="more_contact_title">हमसे संपर्क करें</string>
     <string name="more_contact_subtitle">अनुरोध भेजें, समस्या बताएँ या नमस्ते कहें</string>
     <string name="standalone_backdrop_pick">पृष्ठभूमि के लिए एक फ़ोटो चुनें</string>
@@ -776,10 +774,8 @@
     <string name="standalone_blank">खाली</string>
     <string name="standalone_live">लाइव</string>
     <string name="standalone_clear">साफ़ करें</string>
-    <string name="web_refuses_framing">%1$s खुद को किसी दूसरे पेज के अंदर दिखाने की अनुमति नहीं देता, इसलिए ब्राउज़र स्क्रीन उसकी जगह त्रुटि दिखाती है। इस फ़ोन से जुड़ी स्क्रीन पर यह फिर भी दिखता है।</string>
     <string name="standalone_preview">पूर्वावलोकन</string>
     <string name="standalone_no_output">कोई स्क्रीन जुड़ी नहीं है</string>
-    <string name="standalone_output_count">%1$s स्क्रीन</string>
     <string name="standalone_empty_title">कुछ लोड नहीं है</string>
     <string name="standalone_empty_body">कोई भजन या बाइबल अध्याय खोलें और उसे यहाँ लोड करने के लिए दिखाएँ पर टैप करें।</string>
     <string name="standalone_slide_position">%2$s में से %1$s</string>
@@ -888,7 +884,6 @@
     <string name="standalone_brand_line">कलीसिया का नाम (ऊपरी कोना)</string>
     <string name="standalone_brand_line_hint">कुछ न दिखाने के लिए खाली छोड़ें</string>
     <string name="standalone_show_clock">घड़ी दिखाएँ</string>
-    <string name="web_not_a_link">वेब पता लिखें, जैसे example.com</string>
     <string name="standalone_show_reference">संदर्भ पंक्ति दिखाएँ</string>
     <string name="standalone_show_reference_hint">शब्दों के नीचे दिखाया जाने वाला भजन का भाग या पद।</string>
     <string name="standalone_look_reset">रूप रीसेट करें</string>

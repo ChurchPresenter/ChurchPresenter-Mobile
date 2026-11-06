@@ -17,6 +17,7 @@ import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -59,6 +60,13 @@ class PicturesViewModel(
     val error = _error.asStateFlow()
 
     /** True after a picture has been sent to the display via [selectPicture]. */
+    // Requests on their way to the desktop, which may be waiting on its
+    // operator's approval for up to two minutes. See [DesktopRequests].
+    private val requests = DesktopRequests()
+
+    /** Which buttons have a request out — each shows a spinner and ignores taps. */
+    val pendingRequests: StateFlow<Set<DesktopRequest>> = requests.pending
+
     private val _isProjecting = MutableStateFlow(false)
     val isProjecting = _isProjecting.asStateFlow()
 
@@ -193,6 +201,9 @@ class PicturesViewModel(
      * @param image The image object from the current folder response.
      */
     fun selectPicture(image: PictureImage) {
+        // The last one is still waiting on the desktop; another would queue behind
+        // its approval and land out of order.
+        if (requests.isPending(DesktopRequest.PROJECT)) return
         _selectedImage.value = image
         _scheduleAdded.value = false
         val folderId = _folder.value?.folderId ?: run {
@@ -206,7 +217,7 @@ class PicturesViewModel(
             return
         }
         Logger.d(TAG, "selectPicture — folderId=$folderId fileName=${image.fileName} index=${image.index}")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.PROJECT) {
             picturesService.selectPicture(folderId, image.fileName, image.index)
                 .onSuccess { Logger.d(TAG, "selectPicture — success") }
                 .onFailure { e ->
@@ -218,6 +229,7 @@ class PicturesViewModel(
 
     /** POSTs /api/clear and resets projection state. */
     fun clearDisplay() {
+        if (requests.isPending(DesktopRequest.PROJECT)) return
         _isProjecting.value = false
         // _selectedImage is intentionally kept so the Cast button can re-project
         // the same image and Add-to-Schedule still has a target.
@@ -226,7 +238,7 @@ class PicturesViewModel(
             Logger.d(TAG, "clearDisplay — DEMO MODE")
             return
         }
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.PROJECT) {
             picturesService.clearDisplay()
                 .onSuccess { Logger.d(TAG, "clearDisplay — success") }
                 .onFailure { e -> Logger.e(TAG, "clearDisplay — FAILED: ${e.message}", e) }
@@ -246,7 +258,7 @@ class PicturesViewModel(
             return
         }
         Logger.d(TAG, "addToSchedule — folderId=$folderId index=${image.index} label=$label")
-        viewModelScope.launch {
+        requests.launch(viewModelScope, DesktopRequest.SCHEDULE) {
             picturesService.addToSchedule(folderId, image.index, label)
                 .onSuccess {
                     Logger.d(TAG, "addToSchedule — success")

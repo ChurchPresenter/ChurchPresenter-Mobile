@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.church.presenter.churchpresentermobile.model.NamedTheme
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideTheme
-import com.church.presenter.churchpresentermobile.model.SlideThemePresets
 import com.church.presenter.churchpresentermobile.ui.library.DiscardDialog
 import com.church.presenter.churchpresentermobile.ui.library.EditorActions
 import com.church.presenter.churchpresentermobile.ui.library.EditorField
@@ -34,11 +32,6 @@ class LookAndEditorPartsScreenshotTest {
         ) { content() }
     }
 
-    private val saved = listOf(
-        NamedTheme("Sunday morning", SlideTheme()),
-        NamedTheme("Evening service", SlideTheme(textColor = "#F5F5DC")),
-    )
-
     // ── The look sheet ───────────────────────────────────────────────────
 
     @Test
@@ -50,28 +43,7 @@ class LookAndEditorPartsScreenshotTest {
             onShowChordsChange = {},
             textSize = SlideTextSize.MEDIUM,
             onTextSizeChange = {},
-            presets = SlideThemePresets.all,
-            savedThemes = emptyList(),
-            onApplyTheme = {},
             onSaveTheme = {},
-            onDeleteTheme = {},
-        )
-    }
-
-    @Test
-    fun lookSheetWithSavedThemes() = screenshot("look-sheet__saved-themes") {
-        LookSheetContent(
-            theme = SlideTheme(),
-            onThemeChange = {},
-            showChords = true,
-            onShowChordsChange = {},
-            textSize = SlideTextSize.LARGE,
-            onTextSizeChange = {},
-            presets = SlideThemePresets.all,
-            savedThemes = saved,
-            onApplyTheme = {},
-            onSaveTheme = {},
-            onDeleteTheme = {},
         )
     }
 

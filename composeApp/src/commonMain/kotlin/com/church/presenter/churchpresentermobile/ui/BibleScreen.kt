@@ -26,7 +26,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -68,6 +67,7 @@ import churchpresentermobile.composeapp.generated.resources.toast_request_denied
 import churchpresentermobile.composeapp.generated.resources.toast_request_rejected
 import churchpresentermobile.composeapp.generated.resources.toast_request_rejected_reason
 import churchpresentermobile.composeapp.generated.resources.toast_session_blocked
+import churchpresentermobile.composeapp.generated.resources.toast_waiting_for_desktop
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.ToastEvent
@@ -131,6 +131,7 @@ fun BibleScreen(
     val isLoading           by vm.isLoading.collectAsState()
     val error               by vm.error.collectAsState()
     val isProjecting        by vm.isProjecting.collectAsState()
+    val pendingRequests     by vm.pendingRequests.collectAsState()
     val isHolding           by vm.isHolding.collectAsState()
     val selectedVerseIndices by vm.selectedVerseIndices.collectAsState()
     val projectedVerseIndex  by vm.projectedVerseIndex.collectAsState()
@@ -153,12 +154,9 @@ fun BibleScreen(
     // for back to return to.
     AppBackHandler(enabled = selectedBook != null && !twoPane, onBack = vm::navigateBack)
 
-    // ── Schedule-driven navigation ────────────────────────────────────────
-    LaunchedEffect(pendingNavBookName, pendingNavChapter) {
-        if (pendingNavBookName == null || pendingNavChapter == null) return@LaunchedEffect
-        vm.navigateToBookAndChapter(pendingNavBookName, pendingNavChapter, pendingNavVerses)
-        onPendingNavHandled()
-    }
+    FollowScheduleNavigation(
+        pendingNavBookName, pendingNavChapter, pendingNavVerses, vm::navigateToBookAndChapter, onPendingNavHandled,
+    )
 
     val colors = LocalAppColors.current
 
@@ -191,6 +189,7 @@ fun BibleScreen(
             onVerseToggleSelection = vm::toggleVerseSelection,
             onToggleProjecting = vm::toggleProjecting,
             onAddToSchedule = vm::addToSchedule,
+            pendingRequests = pendingRequests,
             modifier = Modifier.fillMaxSize(),
             isLoading = isLoading,
             isHolding = isHolding,
@@ -226,7 +225,7 @@ fun BibleScreen(
                 versesPane = versesPane,
             )
         }
-        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
+        ToastHost(snackbarHostState)
     }
 }
 
@@ -362,9 +361,26 @@ internal fun ToastEvent.bibleToastMessage(): String = when (this) {
     is ToastEvent.FailedToAddBibleSchedule  -> stringResource(Res.string.toast_failed_to_add_bible_schedule, reason)
     is ToastEvent.RequestDenied             -> stringResource(Res.string.toast_request_denied)
     is ToastEvent.SessionBlocked            -> stringResource(Res.string.toast_session_blocked)
+    is ToastEvent.WaitingForDesktop         -> stringResource(Res.string.toast_waiting_for_desktop)
     is ToastEvent.RequestRejected           -> stringResource(Res.string.toast_request_rejected, httpStatus.toString())
     is ToastEvent.RequestRejectedWithReason -> stringResource(Res.string.toast_request_rejected_reason, reason)
     else                                    -> ""
+}
+
+/** Opens the book and chapter a schedule row asked for, once, then says it is done. */
+@Composable
+private fun FollowScheduleNavigation(
+    bookName: String?,
+    chapter: Int?,
+    verses: Set<Int>,
+    navigate: (bookName: String, chapter: Int, verses: Set<Int>) -> Unit,
+    onHandled: () -> Unit,
+) {
+    LaunchedEffect(bookName, chapter) {
+        if (bookName == null || chapter == null) return@LaunchedEffect
+        navigate(bookName, chapter, verses)
+        onHandled()
+    }
 }
 
 /**

@@ -63,6 +63,9 @@ import churchpresentermobile.composeapp.generated.resources.settings_theme_light
 import churchpresentermobile.composeapp.generated.resources.settings_theme_system
 import churchpresentermobile.composeapp.generated.resources.settings_theme_title
 import churchpresentermobile.composeapp.generated.resources.settings_this_device
+import com.church.presenter.churchpresentermobile.tv.SourceKind
+import com.church.presenter.churchpresentermobile.tv.TvSource
+import com.church.presenter.churchpresentermobile.ui.standalone.TvPicker
 import com.church.presenter.churchpresentermobile.deviceName
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -105,6 +108,8 @@ internal fun SettingsPage(
     onCheckStatus: () -> Unit,
     onContact: () -> Unit,
     twoPane: Boolean,
+    /** Settings → Display, built by the shell, which owns the engine and the screens it drives. */
+    displayPage: @Composable () -> Unit = {},
 ) {
     val scroll = rememberScrollState()
     Column(
@@ -117,6 +122,10 @@ internal fun SettingsPage(
     ) {
         when (section) {
             SettingsSection.MODE -> ModeSection(appMode = appMode, onModeTapped = onModeTapped)
+            SettingsSection.DISPLAY -> {
+                SectionTitle(SettingsSection.DISPLAY.title, tag = UiTags.SETTINGS_DISPLAY_SECTION)
+                displayPage()
+            }
             SettingsSection.SERVER -> ServerSection(
                 appSettings = appSettings,
                 activeUrl = activeUrl,
@@ -127,6 +136,10 @@ internal fun SettingsPage(
                 twoPane = twoPane,
             )
             SettingsSection.COMPUTER -> ComputerSection(appSettings = appSettings)
+            SettingsSection.TVS -> {
+                SectionTitle(SettingsSection.TVS.title, tag = UiTags.SETTINGS_TVS_SECTION)
+                TvPicker(source = desktopSource(appSettings))
+            }
             SettingsSection.DEVICE -> DeviceSection(draft = draft, edits = edits)
             SettingsSection.APPEARANCE -> AppearanceSection(themeMode = themeMode, onThemeMode = onThemeMode)
             SettingsSection.DIAGNOSTICS -> DiagnosticsSection(
@@ -138,6 +151,15 @@ internal fun SettingsPage(
         }
     }
 }
+
+/** The computer this phone is connected to, as a TV reaches it. */
+internal fun desktopSource(settings: AppSettings): TvSource = TvSource(
+    name = settings.host,
+    host = settings.host,
+    port = settings.port,
+    kind = SourceKind.DESKTOP,
+    apiKey = settings.apiKey,
+)
 
 @Composable
 private fun ModeSection(appMode: AppMode, onModeTapped: (AppMode) -> Unit) {

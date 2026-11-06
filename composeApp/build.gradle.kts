@@ -888,6 +888,7 @@ kotlin {
 
 
         androidMain.dependencies {
+            implementation(project(":signage-core"))
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)

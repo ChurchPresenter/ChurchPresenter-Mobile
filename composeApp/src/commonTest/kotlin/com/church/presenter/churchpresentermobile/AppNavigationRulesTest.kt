@@ -27,19 +27,41 @@ class AppNavigationRulesTest {
     // ── Settling the tab after a mode switch ─────────────────────────────
 
     @Test
+    fun `standalone opens on its first tab, not on songs`() {
+        // Opening on Songs, which is not standalone's first, left the header and
+        // strip on one tab with the Songs list under them.
+        assertEquals(AppTab.BIBLE, startTab(null, standaloneTabs))
+    }
+
+    @Test
+    fun `remote still opens on songs`() {
+        assertEquals(AppTab.SONGS, startTab(null, remoteTabs))
+    }
+
+    @Test
+    fun `a shortcut's tab is opened when this mode has it`() {
+        assertEquals(AppTab.LIBRARY, startTab(AppTab.LIBRARY, standaloneTabs))
+    }
+
+    @Test
+    fun `a shortcut's tab this mode lacks opens the first instead`() {
+        assertEquals(AppTab.BIBLE, startTab(AppTab.MEDIA, standaloneTabs))
+    }
+
+    @Test
     fun `a tab the strip still has is kept`() {
         assertEquals(AppTab.SONGS, settledTab(AppTab.SONGS, standaloneTabs))
     }
 
     @Test
     fun `a tab the strip has lost falls back to the first`() {
-        // MEDIA is remote-only; standalone opens on the live controller.
-        assertEquals(AppTab.PRESENT, settledTab(AppTab.MEDIA, standaloneTabs))
+        // MEDIA is remote-only.
+        assertEquals(AppTab.BIBLE, settledTab(AppTab.MEDIA, standaloneTabs))
     }
 
     @Test
     fun `a standalone-only tab falls back when going remote`() {
-        assertEquals(AppTab.SONGS, settledTab(AppTab.PRESENT, remoteTabs))
+        assertEquals(AppTab.SONGS, settledTab(AppTab.ANNOUNCEMENTS, remoteTabs))
     }
 
     @Test
@@ -49,7 +71,7 @@ class AppNavigationRulesTest {
 
     @Test
     fun `the presentation tab falls back when going standalone`() {
-        assertEquals(AppTab.PRESENT, settledTab(AppTab.PRESENTATION, standaloneTabs))
+        assertEquals(AppTab.BIBLE, settledTab(AppTab.PRESENTATION, standaloneTabs))
     }
 
     @Test
@@ -107,20 +129,15 @@ class AppNavigationRulesTest {
     }
 
     @Test
-    fun `notices stay open across a switch to standalone`() {
-        // A different screen with the same name, but the operator still has one.
-        assertEquals(
-            MoreDestination.ANNOUNCEMENTS,
-            settledMoreDestination(MoreDestination.ANNOUNCEMENTS, AppMode.STANDALONE),
-        )
+    fun `the remote composer closes on a switch to standalone`() {
+        // Standalone has its own Announcements tab, not this desktop-backed screen.
+        assertNull(settledMoreDestination(MoreDestination.ANNOUNCEMENTS, AppMode.STANDALONE))
     }
 
     @Test
-    fun `the web screen stays open across a switch to standalone`() {
-        assertEquals(
-            MoreDestination.WEB,
-            settledMoreDestination(MoreDestination.WEB, AppMode.STANDALONE),
-        )
+    fun `the web screen closes on a switch to standalone`() {
+        // Web is remote-only, so one left open would strand the operator.
+        assertNull(settledMoreDestination(MoreDestination.WEB, AppMode.STANDALONE))
     }
 
     @Test
@@ -244,8 +261,8 @@ class AppNavigationRulesTest {
     }
 
     @Test
-    fun `the live controller reports the standalone screen`() {
-        assertEquals(AnalyticsScreen.STANDALONE, tabScreenName(AppTab.PRESENT))
+    fun `the announcements tab reports the announcements screen`() {
+        assertEquals(AnalyticsScreen.ANNOUNCEMENTS, tabScreenName(AppTab.ANNOUNCEMENTS))
     }
 
     @Test

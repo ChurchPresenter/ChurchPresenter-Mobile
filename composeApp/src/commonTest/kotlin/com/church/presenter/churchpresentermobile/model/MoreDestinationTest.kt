@@ -63,19 +63,24 @@ class MoreDestinationTest {
     }
 
     @Test
-    fun announcementsSurviveIntoStandaloneAsADifferentScreen() {
-        // Same destination, two screens: remote adds to the desktop's schedule and
-        // has timer types with no local renderer; standalone gets Notices, which
-        // projects a notice written in the Library onto this device's own outputs.
-        assertTrue(MoreDestination.ANNOUNCEMENTS in standalone)
+    fun announcementsAreATabInStandaloneNotAMoreScreen() {
+        // The More screen is remote's composer, which adds to the desktop's schedule
+        // and has timer types with no local renderer.
+        assertFalse(MoreDestination.ANNOUNCEMENTS in standalone)
         assertTrue(MoreDestination.ANNOUNCEMENTS in remote)
     }
 
     @Test
-    fun photosAndWebSurviveIntoStandalone() {
-        // Both have local equivalents: pick from this device, present from here.
+    fun photosSurviveIntoStandalone() {
+        // A local equivalent: pick from this device, present from here.
         assertTrue(MoreDestination.PICTURES in standalone)
-        assertTrue(MoreDestination.WEB in standalone)
+    }
+
+    @Test
+    fun webIsRemoteOnly() {
+        // It hands a page to the desktop; standalone has no page screen of its own.
+        assertTrue(MoreDestination.WEB in remote)
+        assertFalse(MoreDestination.WEB in standalone)
     }
 
     @Test

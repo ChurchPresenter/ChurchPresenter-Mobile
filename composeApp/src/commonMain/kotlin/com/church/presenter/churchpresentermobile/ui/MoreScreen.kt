@@ -59,8 +59,6 @@ import churchpresentermobile.composeapp.generated.resources.more_announcements_s
 import churchpresentermobile.composeapp.generated.resources.more_announcements_title
 import churchpresentermobile.composeapp.generated.resources.more_contact_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_contact_title
-import churchpresentermobile.composeapp.generated.resources.more_notices_subtitle
-import churchpresentermobile.composeapp.generated.resources.more_notices_title
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.more_photos_subtitle
@@ -164,20 +162,8 @@ fun MoreScreen(
         // clocks and countdowns that only the remote screen has.
         MoreEntry(
             MoreDestination.ANNOUNCEMENTS,
-            stringResource(
-                if (mode == AppMode.STANDALONE) {
-                    Res.string.more_notices_title
-                } else {
-                    Res.string.more_announcements_title
-                }
-            ),
-            stringResource(
-                if (mode == AppMode.STANDALONE) {
-                    Res.string.more_notices_subtitle
-                } else {
-                    Res.string.more_announcements_subtitle
-                }
-            ),
+            stringResource(Res.string.more_announcements_title),
+            stringResource(Res.string.more_announcements_subtitle),
             Icons.Outlined.Campaign,
         ),
         MoreEntry(
@@ -348,16 +334,14 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, 
  * different screen per mode, and the header names the one actually open.
  */
 @Composable
-fun moreDestinationTitle(destination: MoreDestination?, mode: AppMode): String =
+fun moreDestinationTitle(destination: MoreDestination?): String =
     when (destination) {
         MoreDestination.CALENDAR -> stringResource(Res.string.more_calendar_title)
         MoreDestination.CANVAS -> stringResource(Res.string.more_canvas_title)
         MoreDestination.PICTURES -> stringResource(Res.string.more_photos_title)
         MoreDestination.QA -> stringResource(Res.string.tab_qa_admin)
         MoreDestination.DICTIONARY -> stringResource(Res.string.strongs_dictionary_title)
-        MoreDestination.ANNOUNCEMENTS ->
-            if (mode == AppMode.STANDALONE) stringResource(Res.string.more_notices_title)
-            else stringResource(Res.string.announcements_title)
+        MoreDestination.ANNOUNCEMENTS -> stringResource(Res.string.announcements_title)
         MoreDestination.WEB -> stringResource(Res.string.web_title)
         MoreDestination.REPORT -> stringResource(Res.string.more_report_title)
         MoreDestination.CONTACT -> stringResource(Res.string.contact_us_title)
@@ -417,7 +401,7 @@ fun MoreTwoPane(
             if (selected != null) {
                 // No gear here: the launcher's header beside it already carries
                 // one, and two gears on one screen open the same settings.
-                ScreenHeader(title = moreDestinationTitle(selected, mode))
+                ScreenHeader(title = moreDestinationTitle(selected))
                 HorizontalDivider(color = colors.borderSubtle)
                 Box(modifier = Modifier.weight(1f)) { tool() }
             } else {

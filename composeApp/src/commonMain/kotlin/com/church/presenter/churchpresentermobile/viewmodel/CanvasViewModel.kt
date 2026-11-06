@@ -39,7 +39,7 @@ import kotlin.coroutines.CoroutineContext
  * meanwhile still go, so what is approved is the page as it is now. Each frame after
  * that refreshes the page while the canvas is still what is showing; End Live takes
  * it down, or withdraws a request still waiting. If anything else takes the screen
- * — a song from the Present tab, or the operator's own choice — the canvas stops
+ * — a song from the Songs tab, or the operator's own choice — the canvas stops
  * being live by itself, so a later stroke cannot snatch the screen back.
  *
  * @param document What to open. A blank, untitled canvas unless one is given.

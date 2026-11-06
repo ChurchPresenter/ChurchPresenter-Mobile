@@ -15,12 +15,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.cd_cast
 import churchpresentermobile.composeapp.generated.resources.cd_select
+import churchpresentermobile.composeapp.generated.resources.cd_waiting_for_desktop
 import churchpresentermobile.composeapp.generated.resources.label_add_to_schedule
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -52,6 +56,10 @@ fun FabStack(
     onAddToSchedule: (() -> Unit)? = null,
     onCast: (() -> Unit)? = null,
     castBadgeCount: Int = 0,
+    /** A schedule request is waiting on the desktop: spin, and take no more taps. */
+    scheduleBusy: Boolean = false,
+    /** A Go Live (or clear) request is waiting on the desktop. */
+    castBusy: Boolean = false,
 ) {
     val colors = LocalAppColors.current
     Column(
@@ -79,6 +87,7 @@ fun FabStack(
                 iconColor = colors.amberStroke,
                 shadowColor = colors.amber.copy(alpha = if (colors.isDark) 0.4f else 0.45f),
                 onClick = it,
+                busy = scheduleBusy,
             )
         }
         onCast?.let {
@@ -91,6 +100,7 @@ fun FabStack(
                     iconColor = colors.onAccent,
                     shadowColor = colors.accent.copy(alpha = if (colors.isDark) 0.35f else 0.3f),
                     onClick = it,
+                    busy = castBusy,
                 )
                 if (castBadgeCount > 0) {
                     Box(
@@ -118,7 +128,13 @@ fun FabStack(
     }
 }
 
-/** 50×50 rounded-square FAB with a colored drop shadow — the redesign's FAB shape. */
+/**
+ * 50×50 rounded-square FAB with a colored drop shadow — the redesign's FAB shape.
+ *
+ * @param busy The request this button sent is still waiting for an answer: it
+ *   shows a spinner in place of its icon and takes no taps, so a press that
+ *   seems to do nothing is not pressed again.
+ */
 @Composable
 fun SquareFab(
     icon: ImageVector,
@@ -128,21 +144,32 @@ fun SquareFab(
     shadowColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    busy: Boolean = false,
 ) {
     val shape = RoundedCornerShape(AppDimens.radiusFab)
+    val waiting = stringResource(Res.string.cd_waiting_for_desktop)
     Box(
         modifier = modifier
             .size(AppDimens.fabSize)
             .shadow(elevation = 14.dp, shape = shape, spotColor = shadowColor, ambientColor = shadowColor)
             .clip(shape)
             .background(containerColor)
-            .clickable(onClick = onClick),
+            .clickable(enabled = !busy, onClick = onClick)
+            .semantics { if (busy) stateDescription = waiting },
         contentAlignment = Alignment.Center,
     ) {
+        if (busy) {
+            CircularProgressIndicator(
+                color = iconColor,
+                strokeWidth = 2.5.dp,
+                modifier = Modifier.size(22.dp),
+            )
+        }
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = iconColor,
+            // Kept, invisible, while busy: it is the button's only label.
+            tint = if (busy) Color.Transparent else iconColor,
             modifier = Modifier.size(22.dp),
         )
     }

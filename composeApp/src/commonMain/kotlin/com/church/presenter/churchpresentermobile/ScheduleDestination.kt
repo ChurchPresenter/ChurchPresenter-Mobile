@@ -1,6 +1,8 @@
 package com.church.presenter.churchpresentermobile
 
+import com.church.presenter.churchpresentermobile.model.LocalSetlistEntry
 import com.church.presenter.churchpresentermobile.model.ScheduleItem
+import com.church.presenter.churchpresentermobile.model.SetlistEntryType
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.MoreDestination
 
@@ -94,6 +96,20 @@ internal fun destinationFor(item: ScheduleItem): ScheduleDestination =
 
         else -> ScheduleDestination.NONE
     }
+
+/**
+ * Where a tap on a row of standalone's schedule drawer takes the operator.
+ *
+ * A song opens on its own page in Songs, where its verses go live with a tap. A
+ * passage opens on its own verses in the Bible tab, or on the tab if its title
+ * cannot be read. A notice opens Announcements, where it goes live.
+ */
+internal fun destinationFor(entry: LocalSetlistEntry): ScheduleDestination = when (entry.type) {
+    SetlistEntryType.SONG -> ScheduleDestination(tab = AppTab.SONGS, songTitle = entry.title)
+    SetlistEntryType.BIBLE -> bibleDestination(ScheduleItem(title = entry.title))
+        .takeIf { it.navigates } ?: ScheduleDestination(tab = AppTab.BIBLE)
+    SetlistEntryType.ANNOUNCEMENT -> ScheduleDestination(tab = AppTab.ANNOUNCEMENTS)
+}
 
 /**
  * A Bible row's destination, preferring structured fields over the title.

@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.present.SinkStatus
 import com.church.presenter.churchpresentermobile.present.WebAssets
 import com.church.presenter.churchpresentermobile.present.localIpAddress
+import com.church.presenter.churchpresentermobile.tv.PhoneAdvert
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -121,6 +122,8 @@ class WebPageSink(
             // Hold the CPU and Wi-Fi awake for as long as we are serving, or the
             // display drops out the moment the operator's phone locks.
             PresentationKeepAlive.start(url)
+            // Let ChurchPresenter on a TV find this phone without anyone typing its address.
+            PhoneAdvert.start(port)
             // Bring a display that connects later straight up to date.
             lastEnvelope?.let { instance.publish(json.encodeToString(it)) }
             clientWatcher = scope.launch {
@@ -141,6 +144,7 @@ class WebPageSink(
     override suspend fun detach() {
         onBaseUrl(null)
         PresentationKeepAlive.stop()
+        PhoneAdvert.stop()
         // Joined, not just cancelled: a collector still mid-update after this
         // returns would write over the reset below.
         clientWatcher?.cancelAndJoin()

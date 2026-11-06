@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.standalone
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -63,19 +64,25 @@ class LookSheetTest {
             var theme by remember { mutableStateOf(state.theme) }
             var size by remember { mutableStateOf(state.textSize) }
             var chords by remember { mutableStateOf(state.showChords) }
-            LookSheetContent(
-                theme = theme,
-                onThemeChange = { edit -> theme = edit(theme); state.theme = theme },
-                showChords = chords,
-                onShowChordsChange = { chords = it; state.showChords = it },
-                textSize = size,
-                onTextSizeChange = { size = it; state.textSize = it },
-                presets = presets,
-                savedThemes = savedThemes,
-                onApplyTheme = onApplyTheme,
-                onSaveTheme = onSaveTheme,
-                onDeleteTheme = onDeleteTheme,
-            )
+            Column {
+                LookPresets(
+                    presets = presets,
+                    savedThemes = savedThemes,
+                    current = theme,
+                    onPreset = onApplyTheme,
+                    onSaved = onApplyTheme,
+                    onDeleteSaved = onDeleteTheme,
+                )
+                LookSheetContent(
+                    theme = theme,
+                    onThemeChange = { edit -> theme = edit(theme); state.theme = theme },
+                    showChords = chords,
+                    onShowChordsChange = { chords = it; state.showChords = it },
+                    textSize = size,
+                    onTextSizeChange = { size = it; state.textSize = it },
+                    onSaveTheme = onSaveTheme,
+                )
+            }
         }
         return state
     }
@@ -423,12 +430,12 @@ class LookSheetTest {
     }
 
     @Test
-    fun wordsCanBeMovedToTheTop() = runComposeUiTest {
+    fun wordsCanBeMovedToTheMiddle() = runComposeUiTest {
         val state = showLook()
 
-        click(LookTags.verticalAlign(0))
+        click(LookTags.verticalAlign(1))
 
-        assertEquals(SlideVerticalAlign.TOP, state.theme.verticalAlign)
+        assertEquals(SlideVerticalAlign.MIDDLE, state.theme.verticalAlign)
     }
 
     @Test
@@ -441,10 +448,10 @@ class LookSheetTest {
     }
 
     @Test
-    fun theMiddleIsWhereWordsSitToBeginWith() = runComposeUiTest {
+    fun theTopIsWhereWordsSitToBeginWith() = runComposeUiTest {
         showLook()
 
-        tagged(LookTags.verticalAlign(1)).assertIsSelected()
+        tagged(LookTags.verticalAlign(0)).assertIsSelected()
     }
 
     // ── The church's name in the corner ──────────────────────────────────

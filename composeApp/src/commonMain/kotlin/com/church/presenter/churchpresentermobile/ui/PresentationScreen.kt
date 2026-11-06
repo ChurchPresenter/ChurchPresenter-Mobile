@@ -27,7 +27,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -46,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.church.presenter.churchpresentermobile.viewmodel.DesktopRequest
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -62,6 +62,7 @@ import churchpresentermobile.composeapp.generated.resources.toast_presentation_f
 import churchpresentermobile.composeapp.generated.resources.toast_upload_failed
 import churchpresentermobile.composeapp.generated.resources.toast_upload_file_too_large
 import churchpresentermobile.composeapp.generated.resources.toast_upload_reload_failed
+import churchpresentermobile.composeapp.generated.resources.toast_waiting_for_desktop
 import churchpresentermobile.composeapp.generated.resources.toast_upload_server_error
 import churchpresentermobile.composeapp.generated.resources.toast_upload_unsupported
 import churchpresentermobile.composeapp.generated.resources.upload_blocked_toast
@@ -137,6 +138,7 @@ fun PresentationScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val isProjecting by viewModel.isProjecting.collectAsState()
+    val pendingRequests by viewModel.pendingRequests.collectAsState()
     val scheduleAdded by viewModel.scheduleAdded.collectAsState()
     val isUploading by viewModel.isUploading.collectAsState()
     val uploadProgress by viewModel.uploadProgress.collectAsState()
@@ -293,6 +295,8 @@ fun PresentationScreen(
                 onError = { message -> viewModel.reportError(message) },
             ) { launchPicker ->
                 ContentActionButtons(
+                    projectBusy        = DesktopRequest.PROJECT in pendingRequests,
+                    scheduleBusy       = DesktopRequest.SCHEDULE in pendingRequests,
                     isProjecting       = isProjecting,
                     onToggleProjecting = {
                         if (isProjecting) viewModel.clearDisplay()
@@ -345,6 +349,8 @@ fun PresentationScreen(
             // Tapping it shows the "upload disabled" snackbar; the OS picker is
             // never registered and therefore can never be presented.
             ContentActionButtons(
+                projectBusy        = DesktopRequest.PROJECT in pendingRequests,
+                scheduleBusy       = DesktopRequest.SCHEDULE in pendingRequests,
                 isProjecting       = isProjecting,
                 onToggleProjecting = {
                     if (isProjecting) viewModel.clearDisplay()
@@ -379,10 +385,7 @@ fun PresentationScreen(
             )
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        ToastHost(snackbarHostState)
 
         // Non-dismissible upload overlay — shown until the upload completes
         if (isUploading) {
@@ -413,6 +416,7 @@ internal fun ToastEvent.presentationToastMessage(): String = when (this) {
     is ToastEvent.UploadServerError               -> stringResource(Res.string.toast_upload_server_error, msg)
     is ToastEvent.UploadFailed                    -> stringResource(Res.string.toast_upload_failed, reason)
     is ToastEvent.UploadReloadFailed              -> stringResource(Res.string.toast_upload_reload_failed, reason)
+    is ToastEvent.WaitingForDesktop               -> stringResource(Res.string.toast_waiting_for_desktop)
     else                                          -> ""
 }
 

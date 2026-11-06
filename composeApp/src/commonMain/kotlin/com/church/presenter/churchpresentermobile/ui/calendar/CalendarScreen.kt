@@ -40,6 +40,7 @@ import churchpresentermobile.composeapp.generated.resources.calendar_today
 import churchpresentermobile.composeapp.generated.resources.cd_back
 import churchpresentermobile.composeapp.generated.resources.cd_settings
 import com.church.presenter.churchpresentermobile.ui.GearButton
+import com.church.presenter.churchpresentermobile.ui.LocalHeaderAccessory
 import com.church.presenter.churchpresentermobile.ui.UiTags
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.calendar.longDate
@@ -282,6 +283,10 @@ internal fun DayHeader(
         // corner as it does on every other tab, rather than among the month's buttons.
         if (onSettings != null) {
             Spacer(Modifier.width(8.dp))
+            LocalHeaderAccessory.current?.let { accessory ->
+                accessory()
+                Spacer(Modifier.width(12.dp))
+            }
             GearButton(onClick = onSettings, modifier = Modifier.testTag(UiTags.HEADER_SETTINGS))
         }
     }

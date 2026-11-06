@@ -134,12 +134,13 @@ class PaneSelectionTest {
         // The `selected` parameter must not have quietly changed which tiles the
         // mode filter lets through.
         showScreen {
-            MoreScreen(mode = AppMode.STANDALONE, onSelect = {}, selected = MoreDestination.WEB)
+            MoreScreen(mode = AppMode.STANDALONE, onSelect = {}, selected = MoreDestination.PICTURES)
         }
 
         assertFalse(exists(UiTags.moreRow(MoreDestination.QA)))
         assertFalse(exists(UiTags.moreRow(MoreDestination.DICTIONARY)))
-        assertTrue(exists(UiTags.moreRow(MoreDestination.WEB)))
+        assertFalse(exists(UiTags.moreRow(MoreDestination.WEB)))
+        assertTrue(exists(UiTags.moreRow(MoreDestination.PICTURES)))
     }
 
     private val genesis = BibleBook(name = "Genesis", chapterTotal = 50)

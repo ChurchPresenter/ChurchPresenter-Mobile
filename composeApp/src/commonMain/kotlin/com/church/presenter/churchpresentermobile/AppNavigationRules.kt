@@ -17,6 +17,17 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
  */
 
 /**
+ * The tab the app opens on: one a shortcut asked for, if this mode has it, or
+ * else the mode's first.
+ *
+ * It was always Songs, which is first in remote but not in standalone — and
+ * opening on a page that is not the strip's first left the header and strip on
+ * one tab with another tab's content under them.
+ */
+internal fun startTab(requested: AppTab?, tabs: List<AppTab>): AppTab =
+    requested?.takeIf { it in tabs } ?: tabs.first()
+
+/**
  * The tab to show, given what was selected and what the strip now holds.
  *
  * `selectedTab` is remembered across a mode switch, so it can name a tab the
@@ -50,8 +61,8 @@ internal fun tabForPage(page: Int, tabs: List<AppTab>): AppTab =
 
 /** The name a tab reports to the "Pages and screens" report. */
 internal fun tabScreenName(tab: AppTab): String = when (tab) {
-    AppTab.PRESENT -> AnalyticsScreen.STANDALONE
     AppTab.LIBRARY -> AnalyticsScreen.LIBRARY
+    AppTab.ANNOUNCEMENTS -> AnalyticsScreen.ANNOUNCEMENTS
     AppTab.SONGS -> AnalyticsScreen.SONGS
     AppTab.BIBLE -> AnalyticsScreen.BIBLE_BOOKS
     AppTab.MEDIA -> AnalyticsScreen.MEDIA
@@ -128,10 +139,10 @@ internal fun tabDrawsOwnHeader(tab: AppTab, twoPane: Boolean): Boolean =
  * The tabs that lay themselves out in panes.
  *
  * Everything but [AppTab.PRESENTATION], which the tablet design does not cover —
- * it keeps the single bar and the one-screen layout until it does.
+ * it keeps the single bar and the one-screen layout until it does — and
+ * [AppTab.ANNOUNCEMENTS], a single list that the shell's one header serves.
  */
 private val TABS_WITH_PANE_HEADERS = setOf(
-    AppTab.PRESENT,
     AppTab.SONGS,
     AppTab.BIBLE,
     AppTab.MEDIA,

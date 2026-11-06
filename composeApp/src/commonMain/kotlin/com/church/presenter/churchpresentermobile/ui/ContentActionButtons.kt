@@ -44,6 +44,10 @@ fun ContentActionButtons(
     onClearDisplay: (() -> Unit)? = null,
     onToggleMultiSelect: (() -> Unit)? = null,
     extraLeadingContent: @Composable ColumnScope.() -> Unit = {},
+    /** A Go Live or clear request is waiting on the desktop; see [SquareFab]'s `busy`. */
+    projectBusy: Boolean = false,
+    /** An add-to-schedule request is waiting on the desktop. */
+    scheduleBusy: Boolean = false,
 ) {
     val colors = LocalAppColors.current
     Column(
@@ -64,6 +68,7 @@ fun ContentActionButtons(
                 iconColor = Color.White,
                 shadowColor = colors.danger.copy(alpha = 0.4f),
                 onClick = onClearDisplay,
+                busy = projectBusy,
             )
         }
 
@@ -87,6 +92,8 @@ fun ContentActionButtons(
             onAddToSchedule = onAddToSchedule,
             onCast = onToggleProjecting,
             castBadgeCount = castBadgeCount,
+            scheduleBusy = scheduleBusy,
+            castBusy = projectBusy,
         )
     }
 }

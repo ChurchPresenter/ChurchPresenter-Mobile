@@ -10,7 +10,6 @@ import com.church.presenter.churchpresentermobile.ui.MediaSendPaneWidth
 import com.church.presenter.churchpresentermobile.ui.MoreTilePaneWidth
 import com.church.presenter.churchpresentermobile.ui.NavRailMinWidth
 import com.church.presenter.churchpresentermobile.ui.NavRailWidth
-import com.church.presenter.churchpresentermobile.ui.PresentSidePaneWidth
 import com.church.presenter.churchpresentermobile.ui.TwoPaneMinWidth
 import com.church.presenter.churchpresentermobile.ui.TwoVerseColumnsMinWidth
 import com.church.presenter.churchpresentermobile.ui.usesNavRail
@@ -159,7 +158,6 @@ class AdaptiveLayoutTest {
             "more" to MoreTilePaneWidth,
             "library" to LibraryListPaneWidth,
             "media" to MediaSendPaneWidth,
-            "present" to PresentSidePaneWidth,
             "bible" to BibleBooksPaneWidth + BibleChaptersPaneWidth,
         ).forEach { (name, fixed) ->
             val flexible = remaining - fixed

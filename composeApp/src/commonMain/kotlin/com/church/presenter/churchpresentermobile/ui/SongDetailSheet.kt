@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.label_live
 import churchpresentermobile.composeapp.generated.resources.song_detail_no_lyrics
+import com.church.presenter.churchpresentermobile.viewmodel.DesktopRequest
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.model.SongVerse
@@ -82,7 +83,9 @@ fun SongDetailScreen(
     onClearDisplay: (() -> Unit)? = null,
     /** Draw the words as a chord chart. Off shows them cleaned of markup. */
     showChords: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Requests still waiting on the desktop; their buttons spin and take no taps. */
+    pendingRequests: Set<DesktopRequest> = emptySet(),
 ) {
     val colors = LocalAppColors.current
     Box(modifier = modifier.fillMaxSize()) {
@@ -170,6 +173,8 @@ fun SongDetailScreen(
             onAddToSchedule    = onAddToSchedule,
             onClearDisplay     = onClearDisplay,
             modifier           = Modifier.align(Alignment.BottomEnd),
+            projectBusy        = DesktopRequest.PROJECT in pendingRequests,
+            scheduleBusy       = DesktopRequest.SCHEDULE in pendingRequests,
         )
     }
 }
