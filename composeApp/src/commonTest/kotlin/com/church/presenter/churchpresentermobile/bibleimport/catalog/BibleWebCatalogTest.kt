@@ -40,6 +40,22 @@ class BibleWebCatalogTest {
     }
 
     @Test
+    fun `a translation listed twice is offered once, as the list's keys must be unique`() = runTest {
+        val repeated = """
+            |languageCode,translationId,languageNameInEnglish,languageName,Redistributable,downloadable,shortTitle,OTbooks,NTbooks
+            |gah,gah,Alekano,Alekano,True,True,Monoq Gotola Gosohaq,0,27
+            |ukr,ukrogi,Ukrainian,Українська,True,True,Біблія (Огієнко),39,27
+            |gah,gah,Alekano,Alekano,True,True,Monoq Gotola Gosohaq,0,27
+        """.trimMargin().encodeToByteArray()
+        val fetcher = FakeWebFetcher(all + (EBibleCatalog.CATALOG_URL to ok(repeated)))
+
+        val snapshot = BibleWebCatalog(fetcher, InMemoryFileStorage(), now = { 0L }).load()
+
+        val ebible = snapshot.bibles.filter { it.source == BibleSource.EBIBLE }
+        assertEquals(listOf("EBIBLE:gah", "EBIBLE:ukrogi"), ebible.map { it.key })
+    }
+
+    @Test
     fun `a young cache is used without touching the network`() = runTest {
         val storage = InMemoryFileStorage()
         var clock = 0L
