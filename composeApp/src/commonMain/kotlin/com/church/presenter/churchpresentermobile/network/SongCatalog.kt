@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 private const val TAG = "SongCatalog"
 
@@ -59,6 +62,8 @@ data class LoadedSong(val detail: SongDetail, val deck: SlideDeck)
  *
  * @param library The on-device library. Null means remote-only, which is the
  *   right default for previews and for tests that predate standalone.
+ * @param work Where a song is turned into slides. Not the main thread: the work grows with the
+ *   song, and a song that is really a whole file pasted in held the UI long enough for an ANR.
  */
 class SongCatalog(
     private val mode: StateFlow<AppMode>,
@@ -66,6 +71,7 @@ class SongCatalog(
     private val library: LibraryRepository? = null,
     /** The desktop's songbooks as last received, from the LAN or the relay, for planning away from church. */
     private val catalogStore: SongCatalogStore? = null,
+    private val work: CoroutineDispatcher = Dispatchers.Default,
 ) {
     /** True when songs are being served from this device rather than a desktop. */
     val isLocal: Boolean
@@ -161,13 +167,13 @@ class SongCatalog(
     suspend fun detail(song: Song): Result<LoadedSong> {
         val local = library.takeIf { isLocal }
             ?: return remote.getSongDetail(song.number, song.bookName, song.id, song.title)
-                .map { LoadedSong(it, SlideDeckBuilder.fromSong(song, it)) }
+                .map { withContext(work) { LoadedSong(it, SlideDeckBuilder.fromSong(song, it)) } }
 
         val match = resolve(local, song)
             ?: return Result.failure(NoSuchElementException("That song is no longer in your library"))
 
         return Result.success(
-            LoadedSong(LocalSongAdapter.toDetail(match), SlideDeckBuilder.fromLocalSong(match))
+            withContext(work) { LoadedSong(LocalSongAdapter.toDetail(match), SlideDeckBuilder.fromLocalSong(match)) }
         )
     }
 

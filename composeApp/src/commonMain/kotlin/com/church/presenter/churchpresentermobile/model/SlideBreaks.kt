@@ -27,7 +27,14 @@ object SlideBreaks {
     /** The desktop's grammar (ChordTransposer.SLIDE_BREAK_LINE): dashes in `[]` or `{}`, e.g. `[---]`. */
     private val BREAK_LINE = Regex("^[\\[{][\\s-]*-[\\s-]*[\\]}]$")
 
-    fun isBreak(line: String): Boolean = BREAK_LINE.matches(line.trim())
+    /**
+     * Every line of every song passes through here, so a line that cannot be a break — nearly
+     * all of them — is turned away on its first visible character, before any regex runs.
+     */
+    fun isBreak(line: String): Boolean {
+        val first = line.firstOrNull { !it.isWhitespace() } ?: return false
+        return (first == '[' || first == '{') && BREAK_LINE.matches(line.trim())
+    }
 
     /**
      * One slide: the text it shows, the index of the section it came from in the list given

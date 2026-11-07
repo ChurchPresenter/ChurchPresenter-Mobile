@@ -11,8 +11,11 @@ import com.church.presenter.churchpresentermobile.model.SectionType
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -220,6 +223,35 @@ class SongCatalogTest {
 
         assertTrue(result.isSuccess)
         assertEquals(emptyList(), result.getOrThrow())
+    }
+
+    /** Runs what it is given straight away, counting each time work is handed to it. */
+    private class CountingDispatcher : CoroutineDispatcher() {
+        var dispatched = 0
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            dispatched++
+            block.run()
+        }
+    }
+
+    @Test
+    fun theDeckIsBuiltOnTheWorkDispatcherInBothModes() = runTest {
+        // A huge song took long enough to split into slides that the main thread ANR'd.
+        val standaloneWork = CountingDispatcher()
+        val standalone = SongCatalog(
+            MutableStateFlow(AppMode.STANDALONE),
+            ForbiddenReader(),
+            libraryWith(localSong()),
+            work = standaloneWork,
+        )
+        standalone.detail(standalone.list().getOrThrow().single()).getOrThrow()
+
+        val remoteWork = CountingDispatcher()
+        val remote = SongCatalog(MutableStateFlow(AppMode.REMOTE), FakeReader(), work = remoteWork)
+        remote.detail(Song(number = "1", title = "Remote song")).getOrThrow()
+
+        assertTrue(standaloneWork.dispatched > 0, "the library song's deck was built on the caller's thread")
+        assertTrue(remoteWork.dispatched > 0, "the desktop song's deck was built on the caller's thread")
     }
 
     @Test
