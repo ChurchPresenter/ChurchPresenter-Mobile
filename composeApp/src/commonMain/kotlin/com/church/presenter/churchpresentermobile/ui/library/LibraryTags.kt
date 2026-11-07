@@ -33,6 +33,8 @@ internal object LibraryTags {
     const val DELETE_DISMISS = "library:delete:dismiss"
 
     // ── Editors ──────────────────────────────────────────────────────────
+    /** The song editor's list — named, because a long verse's field scrolls too. */
+    const val EDITOR_LIST = "editor:list"
     const val FIELD_TITLE = "editor:title"
     const val FIELD_NUMBER = "editor:number"
     const val FIELD_BOOK = "editor:book"
