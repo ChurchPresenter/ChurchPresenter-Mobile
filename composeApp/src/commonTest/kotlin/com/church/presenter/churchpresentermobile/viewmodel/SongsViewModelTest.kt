@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.viewmodel
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import com.church.presenter.churchpresentermobile.network.WsSender
 import kotlinx.coroutines.CompletableDeferred
@@ -101,7 +102,7 @@ class SongsViewModelTest {
             eventService = ServerEventService(settings),
             isDemoMode = false,
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
         try {
@@ -359,7 +360,7 @@ class SongsViewModelTest {
             eventService = ServerEventService(settings),
             isDemoMode = false,
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
     }
@@ -637,7 +638,7 @@ class SongsViewModelTest {
             eventService = ServerEventService(settings),
             isDemoMode = false,
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
         try {
@@ -842,7 +843,7 @@ class SongsViewModelTest {
             eventService = ServerEventService(settings),
             isDemoMode = false,
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
         try {
@@ -872,7 +873,7 @@ class SongsViewModelTest {
             eventService = ServerEventService(settings),
             isDemoMode = false,
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
         try {
@@ -1021,7 +1022,7 @@ class SongsViewModelTest {
             appSettings = settings,
             eventService = ServerEventService(settings),
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
         try {
@@ -1051,7 +1052,7 @@ class SongsViewModelTest {
             appSettings = settings,
             eventService = ServerEventService(settings),
             sender = ws,
-            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader),
+            catalog = SongCatalog(MutableStateFlow(AppMode.REMOTE), reader, work = Dispatchers.Main),
             serviceFactory = { SongService(it, ws, mockClient { respond("{}") }) },
         )
     }

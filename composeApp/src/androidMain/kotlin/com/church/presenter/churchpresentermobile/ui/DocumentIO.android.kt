@@ -6,7 +6,11 @@ import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
@@ -167,12 +171,26 @@ actual fun ImageFilePicker(
 @Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,
-    content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,
+    content: @Composable (share: (writer: TextDocumentWriter, suggestedName: String) -> Unit) -> Unit,
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    // Both presses would write the same file, and each would raise its own share sheet.
+    var writing by remember { mutableStateOf(false) }
 
-    content { text, suggestedName ->
-        shareFile(context, text.encodeToByteArray(), suggestedName, "application/json", onError)
+    content { writer, suggestedName ->
+        if (!writing) {
+            writing = true
+            scope.launch {
+                try {
+                    withContext(Dispatchers.IO) { writeExportFile(context, suggestedName, writer) }
+                        .mapCatching { startShare(context, it, suggestedName, "application/json") }
+                        .onFailure { onError(it.message ?: "Could not share that file") }
+                } finally {
+                    writing = false
+                }
+            }
+        }
     }
 }
 
@@ -199,18 +217,32 @@ private fun shareFile(
     onError: (String) -> Unit,
 ) {
     runCatching {
-        val outDir = File(context.cacheDir, "exports").apply { mkdirs() }
-        val file = File(outDir, suggestedName).apply { writeBytes(bytes) }
-
-        val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = mimeType
-            putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_TITLE, suggestedName)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(
-            Intent.createChooser(intent, suggestedName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
+        val file = exportFile(context, suggestedName).apply { writeBytes(bytes) }
+        startShare(context, file, suggestedName, mimeType)
     }.onFailure { onError(it.message ?: "Could not share that file") }
+}
+
+/** Streams [writer]'s pieces to the export file, so the document is never whole in memory. */
+private fun writeExportFile(context: Context, name: String, writer: TextDocumentWriter): Result<File> =
+    runCatching {
+        exportFile(context, name).also { file ->
+            file.bufferedWriter().use { out -> writer { out.write(it) } }
+        }
+    }
+
+/** Where an export is written: the app's cache, which the FileProvider below can share from. */
+private fun exportFile(context: Context, name: String): File =
+    File(File(context.cacheDir, "exports").apply { mkdirs() }, name)
+
+private fun startShare(context: Context, file: File, suggestedName: String, mimeType: String) {
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = mimeType
+        putExtra(Intent.EXTRA_STREAM, uri)
+        putExtra(Intent.EXTRA_TITLE, suggestedName)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    context.startActivity(
+        Intent.createChooser(intent, suggestedName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    )
 }

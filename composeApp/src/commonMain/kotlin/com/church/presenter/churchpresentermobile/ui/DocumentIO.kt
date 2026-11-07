@@ -53,19 +53,24 @@ expect fun ImageFilePicker(
     content: @Composable (launch: () -> Unit) -> Unit,
 )
 
+/** Produces a document a piece at a time, handing each piece to `emit`. */
+typealias TextDocumentWriter = (emit: (String) -> Unit) -> Unit
+
 /**
- * Saves [text] as a file the user can keep or send on.
+ * Saves a text document as a file the user can keep or send on.
  *
  * On Android and iOS this raises the system share sheet, which covers both
  * "save to Files" and "send to the other operator" without the app having to
  * care which they meant.
  *
- * @param suggestedName File name including extension, e.g. `Sunday.cpset`.
+ * `share` takes a [TextDocumentWriter] rather than the finished text because a whole library is
+ * too large to hold as one string. The writer runs off the main thread, so it must not touch UI.
+ * `suggestedName` is the file name including extension, e.g. `Sunday.cpset`.
  */
 @Composable
 expect fun TextDocumentExporter(
     onError: (String) -> Unit,
-    content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,
+    content: @Composable (share: (writer: TextDocumentWriter, suggestedName: String) -> Unit) -> Unit,
 )
 
 /**

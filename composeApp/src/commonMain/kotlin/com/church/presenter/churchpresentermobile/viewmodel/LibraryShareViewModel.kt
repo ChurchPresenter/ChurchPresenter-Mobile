@@ -47,15 +47,22 @@ class LibraryShareViewModel(
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Idle)
     val uiState: StateFlow<ShareUiState> = _uiState.asStateFlow()
 
-    /** Serialized library, ready to hand to the platform share sheet. */
-    fun exportText(): String = CpsetSerializer.write(
+    /**
+     * Writes the library to [emit] a piece at a time, for the platform to stream to a file. Safe to
+     * call off the main thread: it reads one immutable snapshot of the library.
+     */
+    fun writeExport(emit: (String) -> Unit) = CpsetSerializer.writeTo(
         CpsetSerializer.exportLibrary(
             library = repository.library.value,
             name = "ChurchPresenter library",
             exportedAt = now(),
             appVersion = appVersion,
-        )
+        ),
+        emit,
     )
+
+    /** The export as one string. For tests and small libraries; the share sheet uses [writeExport]. */
+    internal fun exportText(): String = buildString { writeExport { append(it) } }
 
     /** Suggested file name for an export. */
     fun exportFileName(): String = "ChurchPresenter-library.$CPSET_EXTENSION"

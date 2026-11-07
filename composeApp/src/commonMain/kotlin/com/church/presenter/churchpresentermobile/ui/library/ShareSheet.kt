@@ -152,7 +152,7 @@ internal fun ShareSheetContent(
                             isPrimary = true,
                             modifier = Modifier.testTag(LibraryTags.SHARE_EXPORT),
                         ) {
-                            share(viewModel.exportText(), viewModel.exportFileName())
+                            share(viewModel::writeExport, viewModel.exportFileName())
                         }
                     }
                     TextDocumentPicker(

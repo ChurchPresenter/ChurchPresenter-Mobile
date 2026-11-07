@@ -21,6 +21,7 @@ import com.church.presenter.churchpresentermobile.testutil.FakeWsSender
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceTimeBy
@@ -87,7 +88,12 @@ class SongsViewModelStandaloneTest {
                 sender = router,
                 presenter = engine,
                 service = ServiceOrder(repository),
-                catalog = SongCatalog(MutableStateFlow(AppMode.STANDALONE), ForbiddenReader(), repository),
+                catalog = SongCatalog(
+                    MutableStateFlow(AppMode.STANDALONE),
+                    ForbiddenReader(),
+                    repository,
+                    work = Dispatchers.Main,
+                ),
             )
         }
 
@@ -107,7 +113,12 @@ class SongsViewModelStandaloneTest {
             sender = sender,
             presenter = null,
             service = service,
-            catalog = SongCatalog(MutableStateFlow(AppMode.STANDALONE), ForbiddenReader(), repository),
+            catalog = SongCatalog(
+                MutableStateFlow(AppMode.STANDALONE),
+                ForbiddenReader(),
+                repository,
+                work = Dispatchers.Main,
+            ),
         )
     }
 
@@ -304,7 +315,12 @@ class SongsViewModelStandaloneTest {
             isDemoMode = false,
             sender = FakeWsSender(),
             presenter = null,
-            catalog = SongCatalog(mode, TimingOutReader(), library(localSong("a", "42", "Amazing Grace"))),
+            catalog = SongCatalog(
+                mode,
+                TimingOutReader(),
+                library(localSong("a", "42", "Amazing Grace")),
+                work = Dispatchers.Main,
+            ),
         )
         advanceUntilIdle()
         assertNotNull(vm.error.value, "remote with no desktop is expected to fail here")
@@ -394,6 +410,7 @@ class SongsViewModelStandaloneTest {
                 mode,
                 SlowlyTimingOutReader(),
                 library(localSong("a", "42", "Amazing Grace")),
+                work = Dispatchers.Main,
             ),
         )
 

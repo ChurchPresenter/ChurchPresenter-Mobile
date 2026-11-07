@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.library
 import com.church.presenter.churchpresentermobile.model.CPSET_VERSION
 import com.church.presenter.churchpresentermobile.model.ConflictResolution
 import com.church.presenter.churchpresentermobile.model.ContentOrigin
+import com.church.presenter.churchpresentermobile.model.CpsetAsset
 import com.church.presenter.churchpresentermobile.model.CpsetDocument
 import com.church.presenter.churchpresentermobile.model.CpsetError
 import com.church.presenter.churchpresentermobile.model.CpsetReadResult
@@ -14,6 +15,7 @@ import com.church.presenter.churchpresentermobile.model.LocalSong
 import com.church.presenter.churchpresentermobile.model.LocalSongSection
 import com.church.presenter.churchpresentermobile.model.SectionType
 import com.church.presenter.churchpresentermobile.model.SetlistEntryType
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -58,6 +60,53 @@ class CpsetSerializerTest {
 
         assertIs<CpsetReadResult.Success>(result)
         assertEquals(original, result.document)
+    }
+
+    private val everyField = CpsetDocument(
+        exportedAt = 1_700_000_000_000L,
+        appVersion = "1.0.18",
+        name = "Sunday \"morning\"",
+        songs = listOf(song("s1"), song("s2", number = "43", body = "Слава\nГосподу")),
+        announcements = listOf(LocalAnnouncement(id = "a1", title = "Welcome", body = "Hi")),
+        setlists = listOf(
+            LocalSetlist(
+                id = "set1",
+                name = "Sunday",
+                entries = listOf(LocalSetlistEntry(SetlistEntryType.SONG, "s1")),
+            )
+        ),
+        assets = listOf(CpsetAsset(id = "img", mime = "image/png", base64 = "AAAA")),
+    )
+
+    @Test
+    fun `the streamed pieces are exactly the document encoded in one go`() {
+        val expected = Json { encodeDefaults = true }.encodeToString(CpsetDocument.serializer(), everyField)
+
+        val streamed = buildString { CpsetSerializer.writeTo(everyField) { append(it) } }
+
+        assertEquals(expected, streamed)
+    }
+
+    @Test
+    fun `a streamed document survives a round trip, empty lists included`() {
+        val noLists = CpsetDocument(name = "Just a name")
+        val empty = buildString { CpsetSerializer.writeTo(noLists) { append(it) } }
+        assertEquals(noLists, Json.decodeFromString(CpsetDocument.serializer(), empty))
+
+        val result = CpsetSerializer.read(CpsetSerializer.write(everyField))
+        assertIs<CpsetReadResult.Success>(result)
+        assertEquals(everyField, result.document)
+    }
+
+    @Test
+    fun `no streamed piece holds more than one song, whatever the size of the library`() {
+        val lyrics = "x".repeat(10_000)
+        val document = CpsetDocument(songs = List(50) { song("s$it", number = "$it", body = lyrics) })
+        val pieces = buildList { CpsetSerializer.writeTo(document) { add(it) } }
+
+        val oneSong = Json.encodeToString(LocalSong.serializer(), document.songs.first()).length
+        assertTrue(pieces.size > document.songs.size)
+        assertTrue(pieces.all { it.length < oneSong * 2 }, "largest piece: ${pieces.maxOf { it.length }}")
     }
 
     @Test

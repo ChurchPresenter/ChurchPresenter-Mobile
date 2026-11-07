@@ -41,7 +41,7 @@ class SlideBreaksTest {
 
     @Test
     fun `a lyric that happens to contain brackets is not a break`() {
-        listOf("[G]Amazing grace", "[---] and more", "[]", "[ ]", "[Verse 1]").forEach {
+        listOf("[G]Amazing grace", "[---] and more", "[]", "[ ]", "[Verse 1]", "words [---]", "", "   ").forEach {
             assertFalse(SlideBreaks.isBreak(it), it)
         }
     }

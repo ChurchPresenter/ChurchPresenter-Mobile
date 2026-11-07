@@ -105,7 +105,9 @@ class BibleWebCatalog(
             BebliaCatalog.parse(body, names)
         }
         val snapshot = CatalogSnapshot(
-            bibles = ebibleRows + zefania.first + beblia.first,
+            // The archives are not ours to trust: a row listed twice would give the catalogue's
+            // LazyColumn the same key twice, which throws during layout and takes the app down.
+            bibles = (ebibleRows + zefania.first + beblia.first).distinctBy { it.key },
             sources = mapOf(
                 BibleSource.EBIBLE to ebible.second,
                 BibleSource.ZEFANIA to zefania.second,

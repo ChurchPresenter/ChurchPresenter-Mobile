@@ -131,7 +131,10 @@ fun SongEditorScreen(
         )
 
         LazyColumn(
-            modifier = Modifier.weight(1f).padding(horizontal = AppDimens.space16),
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = AppDimens.space16)
+                .testTag(LibraryTags.EDITOR_LIST),
             verticalArrangement = Arrangement.spacedBy(AppDimens.space12),
         ) {
             item {
@@ -290,6 +293,9 @@ private fun SectionCard(
             onValueChange = onTextChange,
             placeholder = { Text(stringResource(Res.string.editor_section_text_placeholder), fontSize = 13.sp) },
             minLines = 3,
+            // Past this the field scrolls inside itself. Grown to fit, a section that is really a
+            // whole file outgrows what Compose can measure, and opening the song crashes.
+            maxLines = SECTION_MAX_LINES,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag(LibraryTags.verse(index))
@@ -466,3 +472,6 @@ private fun SectionType.label(): String = when (this) {
 }
 
 private val SECTION_TYPES = SectionType.entries
+
+/** Taller than any real verse or chorus, so an ordinary section never has to scroll. */
+private const val SECTION_MAX_LINES = 12
