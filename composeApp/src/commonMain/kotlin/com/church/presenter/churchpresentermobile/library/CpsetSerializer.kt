@@ -4,15 +4,21 @@ import com.church.presenter.churchpresentermobile.model.CPSET_FORMAT
 import com.church.presenter.churchpresentermobile.model.CPSET_VERSION
 import com.church.presenter.churchpresentermobile.model.ConflictResolution
 import com.church.presenter.churchpresentermobile.model.ContentOrigin
+import com.church.presenter.churchpresentermobile.model.CpsetAsset
 import com.church.presenter.churchpresentermobile.model.CpsetDocument
 import com.church.presenter.churchpresentermobile.model.CpsetError
 import com.church.presenter.churchpresentermobile.model.CpsetReadResult
 import com.church.presenter.churchpresentermobile.model.ImportPreview
 import com.church.presenter.churchpresentermobile.model.LibraryData
 import com.church.presenter.churchpresentermobile.model.LocalAnnouncement
+import com.church.presenter.churchpresentermobile.model.LocalSetlist
 import com.church.presenter.churchpresentermobile.model.LocalSong
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 
 private const val TAG = "CpsetSerializer"
 
@@ -33,14 +39,49 @@ object CpsetSerializer {
         ignoreUnknownKeys = true
         isLenient = true
         encodeDefaults = true
-        prettyPrint = true
     }
 
     // ── Writing ──────────────────────────────────────────────────────────
 
-    /** Serializes [document] to the text written to a `.cpset` file. */
+    /** Serializes [document] to a single string. For small documents; a library goes to [writeTo]. */
     fun write(document: CpsetDocument): String =
-        json.encodeToString(CpsetDocument.serializer(), document)
+        buildString { writeTo(document) { append(it) } }
+
+    /**
+     * Serializes [document] one item at a time, handing each piece to [emit].
+     *
+     * A whole library does not fit in one string: a large one ran a phone out of memory while
+     * building it. Nothing here holds more than one song's text, so the cost of an export is
+     * however much the destination buffers. The pieces concatenate to exactly what encoding the
+     * document in one go would produce.
+     */
+    fun writeTo(document: CpsetDocument, emit: (String) -> Unit) {
+        val withoutLists = document.copy(
+            songs = emptyList(),
+            announcements = emptyList(),
+            setlists = emptyList(),
+            assets = emptyList(),
+        )
+        val scalars = json.encodeToJsonElement(CpsetDocument.serializer(), withoutLists)
+            .jsonObject
+            .filterValues { it !is JsonArray }
+        // Dropping the closing brace leaves the object open for the lists that follow.
+        emit(json.encodeToString(JsonObject.serializer(), JsonObject(scalars)).dropLast(1))
+        emitArray("songs", document.songs, LocalSong.serializer(), emit)
+        emitArray("announcements", document.announcements, LocalAnnouncement.serializer(), emit)
+        emitArray("setlists", document.setlists, LocalSetlist.serializer(), emit)
+        emitArray("assets", document.assets, CpsetAsset.serializer(), emit)
+        emit("}")
+    }
+
+    private fun <T> emitArray(name: String, items: List<T>, serializer: KSerializer<T>, emit: (String) -> Unit) {
+        emit(",\"$name\":[")
+        items.forEachIndexed { index, item ->
+            if (index > 0) emit(",")
+            emit(json.encodeToString(serializer, item))
+        }
+        emit("]")
+    }
 
     /** Builds a document containing the whole library. */
     fun exportLibrary(

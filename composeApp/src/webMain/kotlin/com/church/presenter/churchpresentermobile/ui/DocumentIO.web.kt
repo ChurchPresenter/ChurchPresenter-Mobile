@@ -35,7 +35,7 @@ actual fun ImageFilePicker(
 @Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,
-    content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,
+    content: @Composable (share: (writer: TextDocumentWriter, suggestedName: String) -> Unit) -> Unit,
 ) {
     content { _, _ -> onError("Exporting files is not available in the browser") }
 }

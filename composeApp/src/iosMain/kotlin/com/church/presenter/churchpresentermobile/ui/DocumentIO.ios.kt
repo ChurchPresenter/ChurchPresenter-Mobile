@@ -1,11 +1,19 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
 import platform.Foundation.NSString
 import platform.Foundation.NSTemporaryDirectory
@@ -22,6 +30,9 @@ import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIViewController
 import platform.UIKit.popoverPresentationController
 import platform.darwin.NSObject
+import platform.posix.fclose
+import platform.posix.fopen
+import platform.posix.fputs
 import platform.posix.memcpy
 
 private const val TAG = "DocumentIO"
@@ -176,18 +187,41 @@ actual fun ImageFilePicker(
 @Composable
 actual fun TextDocumentExporter(
     onError: (String) -> Unit,
-    content: @Composable (share: (text: String, suggestedName: String) -> Unit) -> Unit,
+    content: @Composable (share: (writer: TextDocumentWriter, suggestedName: String) -> Unit) -> Unit,
 ) {
-    content { text, suggestedName ->
-        val path = NSTemporaryDirectory() + suggestedName
-        val written = (text as NSString).writeToFile(
-            path = path,
-            atomically = true,
-            encoding = NSUTF8StringEncoding,
-            error = null,
-        )
-        shareWritten(written, path, onError)
+    val scope = rememberCoroutineScope()
+    // Both presses would write the same file, and each would raise its own share sheet.
+    var writing by remember { mutableStateOf(false) }
+
+    content { writer, suggestedName ->
+        if (!writing) {
+            writing = true
+            scope.launch {
+                try {
+                    val path = NSTemporaryDirectory() + suggestedName
+                    val written = withContext(Dispatchers.IO) {
+                        runCatching { writeStreamed(path, writer) }.getOrDefault(false)
+                    }
+                    shareWritten(written, path, onError)
+                } finally {
+                    writing = false
+                }
+            }
+        }
     }
+}
+
+/** Writes [writer]'s pieces straight to [path], UTF-8, so the document is never whole in memory. */
+@OptIn(ExperimentalForeignApi::class)
+private fun writeStreamed(path: String, writer: TextDocumentWriter): Boolean {
+    val file = fopen(path, "w") ?: return false
+    var ok = true
+    try {
+        writer { piece -> if (fputs(piece, file) < 0) ok = false }
+    } finally {
+        if (fclose(file) != 0) ok = false
+    }
+    return ok
 }
 
 /** The bytes go through NSData; the share sheet is the same one the text export uses. */
