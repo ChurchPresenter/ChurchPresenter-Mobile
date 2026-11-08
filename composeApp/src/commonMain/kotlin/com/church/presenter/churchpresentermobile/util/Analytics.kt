@@ -101,6 +101,17 @@ object AnalyticsScreen {
     const val CALENDAR           = "Calendar"
     const val CANVAS             = "Canvas"
     const val CONTACT            = "Contact"
+    const val SPLASH             = "Splash"
+    const val SONG_EDITOR        = "Song Editor"
+    const val ANNOUNCEMENT_EDITOR = "Announcement Editor"
+    const val RUN_OF_SHOW        = "Calendar – Run of Show"
+    const val BIBLES_INSTALLED   = "Bibles – Installed"
+    const val BIBLES_GET         = "Bibles – Get"
+    const val BIBLES_CONVERT     = "Bibles – Convert"
+
+    /** A Settings page: "Settings – Server", or plain [SETTINGS] for the menu. */
+    fun settingsSection(section: String?): String =
+        if (section == null) SETTINGS else "$SETTINGS – $section"
 }
 
 // ── Convenience param keys ────────────────────────────────────────────────────

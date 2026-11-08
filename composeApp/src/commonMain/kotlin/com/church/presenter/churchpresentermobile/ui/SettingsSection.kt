@@ -99,7 +99,14 @@ enum class SettingsSection(
         Res.string.settings_about_section,
         Res.string.settings_section_about_subtitle,
         Icons.Outlined.Info,
-    ),
+    );
+
+    /**
+     * The page's name in the analytics "Pages and screens" report — "Server", not the
+     * translated title, so one page stays one row whatever language the device is in.
+     */
+    val analyticsName: String
+        get() = name.lowercase().replaceFirstChar { it.uppercase() }
 }
 
 /**

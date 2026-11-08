@@ -330,11 +330,94 @@ class AppNavigationRulesTest {
     }
 
     @Test
-    fun `the contact form reports nothing`() {
-        // It is a form posting to a public endpoint, not a screen of the app's
-        // own content.
-        assertNull(moreScreenName(MoreDestination.CONTACT))
+    fun `the contact form and canvas report themselves`() {
+        assertEquals(AnalyticsScreen.CONTACT, moreScreenName(MoreDestination.CONTACT))
         assertEquals(AnalyticsScreen.CANVAS, moreScreenName(MoreDestination.CANVAS))
+    }
+
+    @Test
+    fun `a startup gate outranks everything behind it`() {
+        val where = ScreenLocation(
+            gate = StartupGate.STATUS,
+            overlay = AppOverlay.SCHEDULE_DRAWER,
+            tab = AppTab.SONGS,
+            inSongDetail = true,
+        )
+
+        assertEquals(AnalyticsScreen.STATUS, currentScreenName(where))
+    }
+
+    @Test
+    fun `every startup gate reports a name`() {
+        StartupGate.entries.forEach { gate ->
+            assertTrue(currentScreenName(ScreenLocation(gate = gate, tab = AppTab.SONGS))!!.isNotBlank())
+        }
+    }
+
+    @Test
+    fun `settings and the bibles manager leave the reporting to themselves`() {
+        assertNull(currentScreenName(ScreenLocation(overlay = AppOverlay.SETTINGS, tab = AppTab.SONGS)))
+        assertNull(currentScreenName(ScreenLocation(overlay = AppOverlay.BIBLES, tab = AppTab.BIBLE)))
+    }
+
+    @Test
+    fun `the open schedule drawer reports the schedule`() {
+        val where = ScreenLocation(overlay = AppOverlay.SCHEDULE_DRAWER, tab = AppTab.MEDIA)
+
+        assertEquals(AnalyticsScreen.SCHEDULE, currentScreenName(where))
+    }
+
+    @Test
+    fun `closing an overlay reports the screen beneath it again`() {
+        // The whole point of one derived name: the effect re-fires when it changes back.
+        val beneath = ScreenLocation(tab = AppTab.SONGS, inSongDetail = true)
+
+        assertEquals(AnalyticsScreen.CONTACT, currentScreenName(beneath.copy(overlay = AppOverlay.CONTACT)))
+        assertEquals(AnalyticsScreen.SONG_DETAIL, currentScreenName(beneath))
+    }
+
+    @Test
+    fun `a song detail reports itself, not the list`() {
+        assertEquals(
+            AnalyticsScreen.SONG_DETAIL,
+            currentScreenName(ScreenLocation(tab = AppTab.SONGS, inSongDetail = true)),
+        )
+        assertEquals(AnalyticsScreen.SONGS, currentScreenName(ScreenLocation(tab = AppTab.SONGS)))
+    }
+
+    @Test
+    fun `the bible reports how deep the operator is`() {
+        val where = ScreenLocation(tab = AppTab.BIBLE, bibleHasBook = true, bibleHasChapter = true)
+
+        assertEquals(AnalyticsScreen.BIBLE_VERSES, currentScreenName(where))
+    }
+
+    @Test
+    fun `the more launcher reports More and a destination reports itself`() {
+        assertEquals(AnalyticsScreen.MORE, currentScreenName(ScreenLocation(tab = AppTab.MORE)))
+        assertEquals(
+            AnalyticsScreen.DICTIONARY,
+            currentScreenName(ScreenLocation(tab = AppTab.MORE, moreDestination = MoreDestination.DICTIONARY)),
+        )
+    }
+
+    @Test
+    fun `the library editors report themselves`() {
+        assertEquals(
+            AnalyticsScreen.SONG_EDITOR,
+            currentScreenName(ScreenLocation(tab = AppTab.LIBRARY, libraryEditor = LibraryEditor.SONG)),
+        )
+        assertEquals(
+            AnalyticsScreen.ANNOUNCEMENT_EDITOR,
+            currentScreenName(ScreenLocation(tab = AppTab.LIBRARY, libraryEditor = LibraryEditor.ANNOUNCEMENT)),
+        )
+        assertEquals(AnalyticsScreen.LIBRARY, currentScreenName(ScreenLocation(tab = AppTab.LIBRARY)))
+    }
+
+    @Test
+    fun `a settings page is named after its section`() {
+        assertEquals(AnalyticsScreen.SETTINGS, AnalyticsScreen.settingsSection(null))
+        assertEquals("Settings – Server", AnalyticsScreen.settingsSection("Server"))
     }
 
     @Test
