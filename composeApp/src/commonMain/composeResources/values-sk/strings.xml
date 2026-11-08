@@ -763,6 +763,8 @@
     <string name="status_not_churchpresenter_body">Na tejto adrese je zariadenie, ale nebeží na ňom ChurchPresenter. Skontrolujte IP adresu a port.</string>
     <string name="more_contact_title">Kontaktujte nás</string>
     <string name="more_contact_subtitle">Pošlite požiadavku, nahláste problém alebo nás len pozdravte</string>
+    <string name="more_rate_title">Ohodnoťte aplikáciu</string>
+    <string name="more_rate_subtitle">Páči sa vám? Hodnotenie pomôže ďalším cirkvám ju nájsť</string>
     <string name="standalone_backdrop_pick">Vyberte fotku na pozadie</string>
     <string name="standalone_backdrop_no_photos">V tomto zariadení zatiaľ nie sú fotky. Pridajte ich v Viac → Fotky.</string>
     <string name="standalone_backdrop_needs_server">Najprv zapnite obrazovku v prehliadači — fotky sa poskytujú cez ňu.</string>

@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">May naabot na device sa address na ito, pero hindi ito nagpapatakbo ng ChurchPresenter. Suriin ang IP address at port.</string>
     <string name="more_contact_title">Makipag-ugnayan sa amin</string>
     <string name="more_contact_subtitle">Magpadala ng kahilingan, mag-ulat ng problema o bumati</string>
+    <string name="more_rate_title">I-rate ang app</string>
+    <string name="more_rate_subtitle">Nagustuhan mo ba? Nakakatulong ang rating para mahanap ito ng ibang simbahan</string>
     <string name="standalone_backdrop_pick">Pumili ng larawan para sa background</string>
     <string name="standalone_backdrop_no_photos">Wala pang larawan sa device na ito. Magdagdag sa Higit pa → Mga larawan.</string>
     <string name="standalone_backdrop_needs_server">I-on muna ang Browser screen — doon nagmumula ang mga larawan.</string>

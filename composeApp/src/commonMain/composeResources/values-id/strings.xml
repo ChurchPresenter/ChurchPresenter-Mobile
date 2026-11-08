@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Terhubung ke perangkat di alamat ini, tetapi perangkat itu tidak menjalankan ChurchPresenter. Periksa alamat IP dan port.</string>
     <string name="more_contact_title">Hubungi kami</string>
     <string name="more_contact_subtitle">Kirim permintaan, laporkan masalah, atau sekadar menyapa</string>
+    <string name="more_rate_title">Beri nilai aplikasi</string>
+    <string name="more_rate_subtitle">Suka? Penilaian membantu gereja lain menemukannya</string>
     <string name="standalone_backdrop_pick">Pilih foto untuk latar</string>
     <string name="standalone_backdrop_no_photos">Belum ada foto di perangkat ini. Tambahkan di Lainnya → Foto.</string>
     <string name="standalone_backdrop_needs_server">Nyalakan layar Browser terlebih dahulu — foto disajikan dari sana.</string>

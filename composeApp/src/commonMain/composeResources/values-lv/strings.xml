@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Šajā adresē atrasta ierīce, bet tajā nedarbojas ChurchPresenter. Pārbaudiet IP adresi un portu.</string>
     <string name="more_contact_title">Sazināties ar mums</string>
     <string name="more_contact_subtitle">Nosūtiet pieprasījumu, ziņojiet par problēmu vai vienkārši sveiciniet</string>
+    <string name="more_rate_title">Novērtējiet lietotni</string>
+    <string name="more_rate_subtitle">Patīk? Vērtējums palīdz citām draudzēm to atrast</string>
     <string name="standalone_backdrop_pick">Izvēlieties fona fotoattēlu</string>
     <string name="standalone_backdrop_no_photos">Šajā ierīcē vēl nav fotoattēlu. Pievienojiet tos sadaļā Vairāk → Fotoattēli.</string>
     <string name="standalone_backdrop_needs_server">Vispirms ieslēdziet pārlūka ekrānu — fotoattēli tiek pasniegti no tā.</string>

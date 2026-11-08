@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Kifaa kimefikiwa kwenye anwani hii, lakini hakiendeshi ChurchPresenter. Kagua anwani ya IP na mlango.</string>
     <string name="more_contact_title">Wasiliana nasi</string>
     <string name="more_contact_subtitle">Tuma ombi, ripoti tatizo au tusalimie</string>
+    <string name="more_rate_title">Kadiria programu</string>
+    <string name="more_rate_subtitle">Unaipenda? Ukadiriaji husaidia makanisa mengine kuipata</string>
     <string name="standalone_backdrop_pick">Chagua picha ya mandharinyuma</string>
     <string name="standalone_backdrop_no_photos">Bado hakuna picha kwenye kifaa hiki. Ongeza baadhi katika Zaidi → Picha.</string>
     <string name="standalone_backdrop_needs_server">Washa skrini ya Kivinjari kwanza — picha hutolewa kutoka hapo.</string>

@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Fant en enhet på denne adressen, men den kjører ikke ChurchPresenter. Sjekk IP-adressen og porten.</string>
     <string name="more_contact_title">Kontakt oss</string>
     <string name="more_contact_subtitle">Send en forespørsel, meld fra om et problem eller si hei</string>
+    <string name="more_rate_title">Vurder appen</string>
+    <string name="more_rate_subtitle">Liker du den? En vurdering hjelper andre menigheter å finne den</string>
     <string name="standalone_backdrop_pick">Velg et bilde som bakgrunn</string>
     <string name="standalone_backdrop_no_photos">Ingen bilder på denne enheten ennå. Legg til noen under Mer → Bilder.</string>
     <string name="standalone_backdrop_needs_server">Slå på nettleserskjermen først — bildene hentes derfra.</string>

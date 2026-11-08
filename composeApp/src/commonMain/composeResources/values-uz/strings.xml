@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Bu manzilda qurilma topildi, lekin unda ChurchPresenter ishlamayapti. IP manzil va portni tekshiring.</string>
     <string name="more_contact_title">Biz bilan bog'laning</string>
     <string name="more_contact_subtitle">So'rov yuboring, muammo haqida xabar bering yoki salom yo'llang</string>
+    <string name="more_rate_title">Ilovani baholang</string>
+    <string name="more_rate_subtitle">Yoqdimi? Bahoyingiz boshqa cherkovlarga uni topishga yordam beradi</string>
     <string name="standalone_backdrop_pick">Fon uchun surat tanlang</string>
     <string name="standalone_backdrop_no_photos">Bu qurilmada hali suratlar yo'q. Ularni Ko'proq → Suratlar bo'limida qo'shing.</string>
     <string name="standalone_backdrop_needs_server">Avval Brauzer ekranini yoqing — suratlar u orqali uzatiladi.</string>

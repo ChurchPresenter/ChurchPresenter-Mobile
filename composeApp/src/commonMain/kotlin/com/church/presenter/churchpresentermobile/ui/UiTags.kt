@@ -312,6 +312,9 @@ internal object UiTags {
      */
     fun moreRow(destination: MoreDestination) = "more:row:${destination.name.lowercase()}"
 
+    /** The "Rate the app" tile, which opens the store rather than a destination. */
+    const val MORE_RATE = "more:row:rate"
+
     /** The Incoming / Answered tabs, by position. */
     fun qaTab(index: Int) = "qa:tab:$index"
 

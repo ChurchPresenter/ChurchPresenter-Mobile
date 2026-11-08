@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Na ovoj adresi pronađen je uređaj, ali na njemu ne radi ChurchPresenter. Provjerite IP adresu i port.</string>
     <string name="more_contact_title">Kontaktirajte nas</string>
     <string name="more_contact_subtitle">Pošaljite zahtjev, prijavite problem ili se samo javite</string>
+    <string name="more_rate_title">Ocijenite aplikaciju</string>
+    <string name="more_rate_subtitle">Sviđa vam se? Ocjena pomaže drugim crkvama da je pronađu</string>
     <string name="standalone_backdrop_pick">Odaberite fotografiju za pozadinu</string>
     <string name="standalone_backdrop_no_photos">Na ovom uređaju još nema fotografija. Dodajte ih u Više → Fotografije.</string>
     <string name="standalone_backdrop_needs_server">Najprije uključite zaslon preglednika — fotografije se poslužuju s njega.</string>

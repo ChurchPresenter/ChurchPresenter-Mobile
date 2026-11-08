@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">En enhet svarade på den här adressen, men den kör inte ChurchPresenter. Kontrollera IP-adressen och porten.</string>
     <string name="more_contact_title">Kontakta oss</string>
     <string name="more_contact_subtitle">Skicka en önskan, rapportera ett problem eller säg hej</string>
+    <string name="more_rate_title">Betygsätt appen</string>
+    <string name="more_rate_subtitle">Gillar du den? Ett betyg hjälper andra församlingar att hitta den</string>
     <string name="standalone_backdrop_pick">Välj ett foto som bakgrund</string>
     <string name="standalone_backdrop_no_photos">Inga foton på den här enheten än. Lägg till några under Mer → Foton.</string>
     <string name="standalone_backdrop_needs_server">Slå på webbläsarskärmen först – fotona hämtas därifrån.</string>

@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">За цією адресою знайдено пристрій, але на ньому не запущено ChurchPresenter. Перевірте IP-адресу та порт.</string>
     <string name="more_contact_title">Зв'язатися з нами</string>
     <string name="more_contact_subtitle">Надішліть запит, повідомте про проблему або просто привітайтеся</string>
+    <string name="more_rate_title">Оцініть застосунок</string>
+    <string name="more_rate_subtitle">Подобається? Оцінка допоможе іншим церквам знайти його</string>
     <string name="standalone_backdrop_pick">Виберіть фото для тла</string>
     <string name="standalone_backdrop_no_photos">На цьому пристрої ще немає фото. Додайте їх у Ще → Зображення.</string>
     <string name="standalone_backdrop_needs_server">Спочатку увімкніть екран «Браузер» — фото передаються через нього.</string>

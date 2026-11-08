@@ -19,3 +19,5 @@ actual fun deviceName(): String = ""
 private external fun jsOpenUrl(url: String)
 
 actual fun openUrl(url: String) = jsOpenUrl(url)
+
+actual val storeReviewUrl: String? = null

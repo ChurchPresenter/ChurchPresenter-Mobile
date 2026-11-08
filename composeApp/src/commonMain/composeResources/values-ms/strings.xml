@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Terdapat peranti pada alamat ini, tetapi ia tidak menjalankan ChurchPresenter. Semak alamat IP dan port.</string>
     <string name="more_contact_title">Hubungi kami</string>
     <string name="more_contact_subtitle">Hantar permintaan, laporkan masalah atau sekadar bertanya khabar</string>
+    <string name="more_rate_title">Nilaikan aplikasi</string>
+    <string name="more_rate_subtitle">Suka? Penilaian membantu gereja lain menemuinya</string>
     <string name="standalone_backdrop_pick">Pilih foto untuk latar belakang</string>
     <string name="standalone_backdrop_no_photos">Belum ada foto pada peranti ini. Tambah beberapa di Lagi → Foto.</string>
     <string name="standalone_backdrop_needs_server">Hidupkan skrin Pelayar dahulu — foto disajikan daripadanya.</string>

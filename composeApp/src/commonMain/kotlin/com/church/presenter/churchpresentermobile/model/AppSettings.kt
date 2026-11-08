@@ -21,6 +21,8 @@ private const val KEY_SAVED_ANNOUNCEMENTS = "saved_announcements"
 private const val KEY_SAVED_BOOKMARKS = "saved_bookmarks"
 private const val KEY_FCM_TOKEN        = "fcm_token"
 private const val KEY_APP_OPEN_COUNT   = "app_open_count"
+private const val KEY_REVIEW_PROJECTIONS = "review_projection_count"
+private const val KEY_REVIEW_PROMPTS   = "review_prompts_shown"
 private const val KEY_SETUP_COMPLETE   = "setup_complete"
 private const val KEY_CONNECT_SETUP    = "connect_setup_done"
 private const val KEY_TELEMETRY_ENABLED = "telemetry_enabled"
@@ -228,11 +230,24 @@ class AppSettings(
     /**
      * Number of times the app has been opened. Incremented in MainActivity on
      * Android and AppDelegate on iOS. Used to decide when to show the in-app
-     * review prompt (3rd, 10th, then every 20th launch).
+     * review prompt on Android (3rd, 10th, then every 20th launch).
      */
     var appOpenCount: Int
         get() = storage.getInt(KEY_APP_OPEN_COUNT, 0)
         set(value) { storage.putInt(KEY_APP_OPEN_COUNT, value) }
+
+    /**
+     * Successful go-lives (a song or Bible passage put on screen) counted toward
+     * the next in-app review prompt. See [com.church.presenter.churchpresentermobile.util.ReviewPrompt].
+     */
+    var reviewProjectionCount: Int
+        get() = storage.getInt(KEY_REVIEW_PROJECTIONS, 0)
+        set(value) { storage.putInt(KEY_REVIEW_PROJECTIONS, value) }
+
+    /** How many times the in-app review prompt has been requested on this device. */
+    var reviewPromptsShown: Int
+        get() = storage.getInt(KEY_REVIEW_PROMPTS, 0)
+        set(value) { storage.putInt(KEY_REVIEW_PROMPTS, value) }
 
     /**
      * True once the user has dismissed the first-launch settings screen at least once

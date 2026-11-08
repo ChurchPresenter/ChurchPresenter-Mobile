@@ -763,6 +763,8 @@
     <string name="status_not_churchpresenter_body">Sellel aadressil vastas seade, kuid sellel ei tööta ChurchPresenter. Kontrolli IP-aadressi ja porti.</string>
     <string name="more_contact_title">Võta ühendust</string>
     <string name="more_contact_subtitle">Saada soov, teata probleemist või ütle tere</string>
+    <string name="more_rate_title">Hinda rakendust</string>
+    <string name="more_rate_subtitle">Meeldib? Hinnang aitab teistel kogudustel selle leida</string>
     <string name="standalone_backdrop_pick">Vali taustaks foto</string>
     <string name="standalone_backdrop_no_photos">Selles seadmes pole veel fotosid. Lisa neid menüüs Rohkem → Fotod.</string>
     <string name="standalone_backdrop_needs_server">Lülita esmalt sisse brauseri ekraan — fotosid jagatakse selle kaudu.</string>

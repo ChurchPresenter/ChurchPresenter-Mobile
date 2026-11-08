@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">इस पते पर एक डिवाइस मिला, लेकिन उस पर ChurchPresenter नहीं चल रहा है। IP पता और पोर्ट जाँचें।</string>
     <string name="more_contact_title">हमसे संपर्क करें</string>
     <string name="more_contact_subtitle">अनुरोध भेजें, समस्या बताएँ या नमस्ते कहें</string>
+    <string name="more_rate_title">ऐप को रेटिंग दें</string>
+    <string name="more_rate_subtitle">पसंद आया? आपकी रेटिंग दूसरी कलीसियाओं को इसे खोजने में मदद करती है</string>
     <string name="standalone_backdrop_pick">पृष्ठभूमि के लिए एक फ़ोटो चुनें</string>
     <string name="standalone_backdrop_no_photos">इस डिवाइस पर अभी कोई फ़ोटो नहीं है। और → तस्वीरें में कुछ जोड़ें।</string>
     <string name="standalone_backdrop_needs_server">पहले ब्राउज़र स्क्रीन चालू करें — फ़ोटो उसी से दी जाती हैं।</string>
