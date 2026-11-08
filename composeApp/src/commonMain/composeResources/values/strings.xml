@@ -399,6 +399,8 @@
     <string name="more_announcements_subtitle">Text, clocks &amp; countdown timers</string>
     <string name="more_contact_title">Contact us</string>
     <string name="more_contact_subtitle">Send a request, report a problem or say hello</string>
+    <string name="more_rate_title">Rate the app</string>
+    <string name="more_rate_subtitle">Enjoying it? A rating helps other churches find it</string>
     <string name="standalone_backdrop_pick">Pick a photo for the backdrop</string>
     <string name="standalone_backdrop_no_photos">No photos on this device yet. Add some in More → Photos.</string>
     <string name="standalone_backdrop_needs_server">Turn on the Browser screen first — photos are served from it.</string>

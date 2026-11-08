@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">このアドレスの端末には接続できましたが、ChurchPresenter が動作していません。IP アドレスとポートを確認してください。</string>
     <string name="more_contact_title">お問い合わせ</string>
     <string name="more_contact_subtitle">要望の送信、問題の報告、ご挨拶など</string>
+    <string name="more_rate_title">アプリを評価</string>
+    <string name="more_rate_subtitle">気に入りましたか？評価が他の教会の目に留まる助けになります</string>
     <string name="standalone_backdrop_pick">背景にする写真を選択</string>
     <string name="standalone_backdrop_no_photos">この端末にはまだ写真がありません。その他 → 写真 で追加してください。</string>
     <string name="standalone_backdrop_needs_server">先にブラウザー画面をオンにしてください — 写真はそこから配信されます。</string>

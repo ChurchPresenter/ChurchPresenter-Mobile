@@ -22,6 +22,7 @@ import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.Logger
+import com.church.presenter.churchpresentermobile.util.ReviewPrompt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -541,6 +542,7 @@ class BibleViewModel(
                 _projectedVerseIndex.value = _selectedVerseIndices.value.minOrNull()
                 _toastEvent.value          = ToastEvent.BibleLive
                 Analytics.logEvent(AnalyticsEvent.BIBLE_PROJECTED)
+                ReviewPrompt.recordProjection(appSettings)
             }.onFailure { e ->
                 Logger.e(TAG, "selectBibleVerse — FAILED: ${e.message}", e)
                 _toastEvent.value = ToastEvent.FailedToProjectBible(
@@ -573,6 +575,7 @@ class BibleViewModel(
         _projectedVerseIndex.value = firstSelected
         _toastEvent.value          = ToastEvent.BibleLive
         Analytics.logEvent(AnalyticsEvent.BIBLE_PROJECTED)
+        ReviewPrompt.recordProjection(appSettings)
         Logger.d(TAG, "projectLocally — projected verse index $firstSelected")
     }
 

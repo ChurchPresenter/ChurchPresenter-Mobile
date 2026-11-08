@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Tästä osoitteesta vastasi laite, mutta siinä ei ole käynnissä ChurchPresenteriä. Tarkista IP-osoite ja portti.</string>
     <string name="more_contact_title">Ota yhteyttä</string>
     <string name="more_contact_subtitle">Lähetä toive, ilmoita ongelmasta tai sano hei</string>
+    <string name="more_rate_title">Arvioi sovellus</string>
+    <string name="more_rate_subtitle">Pidätkö siitä? Arvio auttaa muita seurakuntia löytämään sen</string>
     <string name="standalone_backdrop_pick">Valitse taustakuva</string>
     <string name="standalone_backdrop_no_photos">Tässä laitteessa ei ole vielä kuvia. Lisää niitä kohdassa Lisää → Kuvat.</string>
     <string name="standalone_backdrop_needs_server">Ota ensin selainnäyttö käyttöön — kuvat jaetaan sen kautta.</string>

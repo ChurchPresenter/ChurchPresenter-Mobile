@@ -21,3 +21,5 @@ actual fun deviceName(): String = ""
 actual fun openUrl(url: String) {
     window.open(url, "_blank")
 }
+
+actual val storeReviewUrl: String? = null

@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Se encontró un dispositivo en esta dirección, pero no está ejecutando ChurchPresenter. Revise la dirección IP y el puerto.</string>
     <string name="more_contact_title">Contáctenos</string>
     <string name="more_contact_subtitle">Envíe una solicitud, informe de un problema o salúdenos</string>
+    <string name="more_rate_title">Valorar la app</string>
+    <string name="more_rate_subtitle">¿Le gusta? Una valoración ayuda a otras iglesias a encontrarla</string>
     <string name="standalone_backdrop_pick">Elija una foto para el fondo</string>
     <string name="standalone_backdrop_no_photos">Todavía no hay fotos en este dispositivo. Añada algunas en Más → Fotos.</string>
     <string name="standalone_backdrop_needs_server">Active primero la pantalla del navegador: las fotos se sirven desde ella.</string>

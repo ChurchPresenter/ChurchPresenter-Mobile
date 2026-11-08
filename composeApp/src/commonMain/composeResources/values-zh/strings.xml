@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">该地址上有设备，但它没有运行 ChurchPresenter。请检查 IP 地址和端口。</string>
     <string name="more_contact_title">联系我们</string>
     <string name="more_contact_subtitle">提交请求、报告问题或打个招呼</string>
+    <string name="more_rate_title">为应用评分</string>
+    <string name="more_rate_subtitle">喜欢吗？您的评分能帮助其他教会找到它</string>
     <string name="standalone_backdrop_pick">选择一张照片作为背景</string>
     <string name="standalone_backdrop_no_photos">此设备上还没有照片。请在“更多 → 照片”中添加。</string>
     <string name="standalone_backdrop_needs_server">请先开启“浏览器”屏幕——照片由它提供。</string>

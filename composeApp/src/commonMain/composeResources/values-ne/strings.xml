@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">यो ठेगानामा एउटा यन्त्र भेटियो, तर त्यसमा ChurchPresenter चलिरहेको छैन। IP ठेगाना र पोर्ट जाँच्नुहोस्।</string>
     <string name="more_contact_title">हामीलाई सम्पर्क गर्नुहोस्</string>
     <string name="more_contact_subtitle">अनुरोध पठाउनुहोस्, समस्या जनाउनुहोस् वा नमस्कार भन्नुहोस्</string>
+    <string name="more_rate_title">एपलाई मूल्याङ्कन गर्नुहोस्</string>
+    <string name="more_rate_subtitle">मन पर्‍यो? तपाईंको मूल्याङ्कनले अरू मण्डलीहरूलाई यो भेट्टाउन मद्दत गर्छ</string>
     <string name="standalone_backdrop_pick">पृष्ठभूमिका लागि तस्बिर छान्नुहोस्</string>
     <string name="standalone_backdrop_no_photos">यो यन्त्रमा अझै कुनै तस्बिर छैन। थप → तस्बिरहरूमा केही थप्नुहोस्।</string>
     <string name="standalone_backdrop_needs_server">पहिले ब्राउजर पर्दा खोल्नुहोस् — तस्बिरहरू त्यहीँबाट दिइन्छन्।</string>

@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Pod tym adresem jest urządzenie, ale nie działa na nim ChurchPresenter. Sprawdź adres IP i port.</string>
     <string name="more_contact_title">Kontakt</string>
     <string name="more_contact_subtitle">Wyślij prośbę, zgłoś problem lub po prostu się przywitaj</string>
+    <string name="more_rate_title">Oceń aplikację</string>
+    <string name="more_rate_subtitle">Podoba się? Ocena pomaga innym kościołom ją znaleźć</string>
     <string name="standalone_backdrop_pick">Wybierz zdjęcie na tło</string>
     <string name="standalone_backdrop_no_photos">Na tym urządzeniu nie ma jeszcze zdjęć. Dodaj je w Więcej → Zdjęcia.</string>
     <string name="standalone_backdrop_needs_server">Najpierw włącz ekran w przeglądarce — to on udostępnia zdjęcia.</string>

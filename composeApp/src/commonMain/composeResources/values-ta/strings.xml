@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">இந்த முகவரியில் ஒரு சாதனத்தை அடைந்தோம், ஆனால் அதில் ChurchPresenter இயங்கவில்லை. IP முகவரியையும் போர்ட்டையும் சரிபார்க்கவும்.</string>
     <string name="more_contact_title">எங்களைத் தொடர்பு கொள்ளுங்கள்</string>
     <string name="more_contact_subtitle">கோரிக்கை அனுப்பவும், சிக்கலைத் தெரிவிக்கவும் அல்லது வணக்கம் சொல்லவும்</string>
+    <string name="more_rate_title">செயலியை மதிப்பிடுங்கள்</string>
+    <string name="more_rate_subtitle">பிடித்திருக்கிறதா? உங்கள் மதிப்பீடு மற்ற சபைகள் இதைக் கண்டறிய உதவும்</string>
     <string name="standalone_backdrop_pick">பின்னணிக்கு ஒரு புகைப்படத்தைத் தேர்ந்தெடுக்கவும்</string>
     <string name="standalone_backdrop_no_photos">இந்தச் சாதனத்தில் இன்னும் புகைப்படங்கள் இல்லை. மேலும் → புகைப்படங்கள் என்பதில் சேர்க்கவும்.</string>
     <string name="standalone_backdrop_needs_server">முதலில் உலாவித் திரையை இயக்கவும் — புகைப்படங்கள் அதிலிருந்தே வழங்கப்படுகின்றன.</string>

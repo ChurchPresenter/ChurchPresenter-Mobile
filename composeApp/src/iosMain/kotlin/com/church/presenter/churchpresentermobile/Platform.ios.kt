@@ -26,5 +26,8 @@ actual fun deviceName(): String = UIDevice.currentDevice.name
 
 actual fun openUrl(url: String) {
     val nsUrl = NSURL.URLWithString(url) ?: return
-    UIApplication.sharedApplication.openURL(nsUrl)
+    // The one-argument openURL: is a silent no-op from iOS 18 on.
+    UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any>(), completionHandler = null)
 }
+
+actual val storeReviewUrl: String? = "https://apps.apple.com/app/id6761505183?action=write-review"

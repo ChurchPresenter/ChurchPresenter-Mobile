@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">พบอุปกรณ์ที่ที่อยู่นี้ แต่ไม่ได้รัน ChurchPresenter ตรวจสอบที่อยู่ IP และพอร์ต</string>
     <string name="more_contact_title">ติดต่อเรา</string>
     <string name="more_contact_subtitle">ส่งคำขอ แจ้งปัญหา หรือทักทาย</string>
+    <string name="more_rate_title">ให้คะแนนแอป</string>
+    <string name="more_rate_subtitle">ชอบไหม? คะแนนของคุณช่วยให้คริสตจักรอื่นค้นพบแอปนี้</string>
     <string name="standalone_backdrop_pick">เลือกรูปภาพสำหรับพื้นหลัง</string>
     <string name="standalone_backdrop_no_photos">ยังไม่มีรูปภาพในอุปกรณ์นี้ เพิ่มได้ที่ เพิ่มเติม → รูปภาพ</string>
     <string name="standalone_backdrop_needs_server">เปิดหน้าจอเบราว์เซอร์ก่อน — รูปภาพให้บริการจากหน้าจอนั้น</string>

@@ -22,6 +22,7 @@ import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
 import com.church.presenter.churchpresentermobile.util.Logger
+import com.church.presenter.churchpresentermobile.util.ReviewPrompt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -470,6 +471,7 @@ class SongsViewModel(
                 .onSuccess {
                     Logger.d(TAG, "projectSong — success")
                     Analytics.logEvent(AnalyticsEvent.SONG_PROJECTED)
+                    ReviewPrompt.recordProjection(appSettings)
                     _toastEvent.value = ToastEvent.SongLive
                 }
                 .onFailure { e ->
@@ -499,6 +501,7 @@ class SongsViewModel(
         _selectedVerseIndex.value?.let(presenter::showSlide)
         _isProjecting.value = true
         Analytics.logEvent(AnalyticsEvent.SONG_PROJECTED)
+        ReviewPrompt.recordProjection(appSettings)
         _toastEvent.value = ToastEvent.SongLive
         Logger.d(TAG, "projectLocally — projected ${deck.slides.size} slides")
     }

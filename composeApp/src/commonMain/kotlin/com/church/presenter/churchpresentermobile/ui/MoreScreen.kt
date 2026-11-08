@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -59,6 +60,8 @@ import churchpresentermobile.composeapp.generated.resources.more_announcements_s
 import churchpresentermobile.composeapp.generated.resources.more_announcements_title
 import churchpresentermobile.composeapp.generated.resources.more_contact_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_contact_title
+import churchpresentermobile.composeapp.generated.resources.more_rate_subtitle
+import churchpresentermobile.composeapp.generated.resources.more_rate_title
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_dictionary_title
 import churchpresentermobile.composeapp.generated.resources.more_photos_subtitle
@@ -71,6 +74,8 @@ import churchpresentermobile.composeapp.generated.resources.more_web_subtitle
 import churchpresentermobile.composeapp.generated.resources.more_web_title
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.MoreDestination
+import com.church.presenter.churchpresentermobile.openUrl
+import com.church.presenter.churchpresentermobile.storeReviewUrl
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import androidx.compose.material.icons.outlined.CalendarMonth
 import churchpresentermobile.composeapp.generated.resources.more_calendar_subtitle
@@ -82,12 +87,16 @@ import androidx.compose.ui.unit.em
 import org.jetbrains.compose.resources.stringResource
 
 private data class MoreEntry(
-    val destination: MoreDestination,
+    /** The tool this tile opens; null for a tile that is an action instead. */
+    val destination: MoreDestination?,
     val title: String,
     val subtitle: String,
     val icon: ImageVector,
     /** A small tag after the title — `New` on a tool that has just arrived. */
     val badge: String? = null,
+    /** Run instead of opening a destination — the store link, which leaves the app. */
+    val action: (() -> Unit)? = null,
+    val tag: String = destination?.let(UiTags::moreRow).orEmpty(),
 )
 
 /**
@@ -111,6 +120,9 @@ private data class MoreEntry(
  *   to a single session.
  * @param onBadgesShown Told which of [newBadges] were on screen, so they can be
  *   left off next session.
+ * @param rateUrl The store page the "Rate the app" tile opens; null hides the
+ *   tile. A parameter so tests, whose targets have no store, can show it.
+ * @param onRate Opens [rateUrl]. A parameter so a test can see the tap.
  */
 @Composable
 fun MoreScreen(
@@ -121,6 +133,8 @@ fun MoreScreen(
     tablet: Boolean = false,
     newBadges: Set<MoreDestination> = NewFeatures,
     onBadgesShown: (Set<MoreDestination>) -> Unit = {},
+    rateUrl: String? = storeReviewUrl,
+    onRate: (String) -> Unit = ::openUrl,
 ) {
     val available = MoreDestination.forMode(mode, tablet)
     val badgeFor = rememberNewBadges(newBadges, available, onBadgesShown)
@@ -185,8 +199,26 @@ fun MoreScreen(
             stringResource(Res.string.more_contact_subtitle),
             Icons.Outlined.MailOutline,
         ),
-    ).filter { it.destination in available }
+    ).filter { it.destination in available } + listOfNotNull(rateEntry(rateUrl, onRate))
     MoreGrid(entries = entries, selected = selected, onSelect = onSelect, modifier = modifier)
+}
+
+/**
+ * "Rate the app": opens the store's review page. Unlike the system prompt this
+ * always works and is never rate-limited, so it is there for the operator who
+ * wants to leave a rating whenever they like. Absent where there is no store.
+ */
+@Composable
+private fun rateEntry(url: String?, onRate: (String) -> Unit): MoreEntry? {
+    if (url == null) return null
+    return MoreEntry(
+        destination = null,
+        title = stringResource(Res.string.more_rate_title),
+        subtitle = stringResource(Res.string.more_rate_subtitle),
+        icon = Icons.Outlined.StarOutline,
+        action = { onRate(url) },
+        tag = UiTags.MORE_RATE,
+    )
 }
 
 /** [entries] as tiles, as many to a row as fit. */
@@ -217,8 +249,8 @@ private fun MoreGrid(
                     row.forEach { entry ->
                         MoreRow(
                             entry = entry,
-                            isSelected = entry.destination == selected,
-                            onClick = { onSelect(entry.destination) },
+                            isSelected = entry.destination != null && entry.destination == selected,
+                            onClick = { entry.action?.invoke() ?: entry.destination?.let(onSelect) },
                             modifier = Modifier.weight(1f).fillMaxHeight(),
                         )
                     }
@@ -255,7 +287,7 @@ private fun MoreRow(entry: MoreEntry, isSelected: Boolean, onClick: () -> Unit, 
     val shape = RoundedCornerShape(14.dp)
     Row(
         modifier = modifier
-            .testTag(UiTags.moreRow(entry.destination))
+            .testTag(entry.tag)
             .fillMaxWidth()
             .clip(shape)
             .background(if (isSelected) colors.accentTint else colors.surface)

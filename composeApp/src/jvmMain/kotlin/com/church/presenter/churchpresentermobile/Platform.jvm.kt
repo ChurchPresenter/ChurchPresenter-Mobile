@@ -16,3 +16,5 @@ actual fun generateUUID(): String = java.util.UUID.randomUUID().toString()
 actual fun deviceName(): String = ""
 
 actual fun openUrl(url: String) = Unit
+
+actual val storeReviewUrl: String? = null

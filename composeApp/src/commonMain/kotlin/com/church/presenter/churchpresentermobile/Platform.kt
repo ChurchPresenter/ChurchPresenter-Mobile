@@ -29,3 +29,10 @@ expect fun deviceName(): String
  */
 expect fun openUrl(url: String)
 
+/**
+ * Where this build is rated: the App Store's write-a-review page on iOS, the
+ * Play listing on Android. Null where there is no store (web, desktop), which
+ * hides the "Rate the app" tile.
+ */
+expect val storeReviewUrl: String?
+

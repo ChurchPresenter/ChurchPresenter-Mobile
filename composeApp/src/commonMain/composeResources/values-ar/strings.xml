@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">تم الوصول إلى جهاز على هذا العنوان، لكنه لا يشغّل ChurchPresenter. تحقّق من عنوان IP والمنفذ.</string>
     <string name="more_contact_title">اتصل بنا</string>
     <string name="more_contact_subtitle">أرسل طلبًا أو أبلغ عن مشكلة أو ألقِ التحية</string>
+    <string name="more_rate_title">قيّم التطبيق</string>
+    <string name="more_rate_subtitle">هل يعجبك؟ تقييمك يساعد كنائس أخرى على العثور عليه</string>
     <string name="standalone_backdrop_pick">اختر صورة للخلفية</string>
     <string name="standalone_backdrop_no_photos">لا توجد صور على هذا الجهاز بعد. أضف بعضها من المزيد ← الصور.</string>
     <string name="standalone_backdrop_needs_server">شغّل شاشة المتصفح أولًا — فالصور تُقدَّم منها.</string>

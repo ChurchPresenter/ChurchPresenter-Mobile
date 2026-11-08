@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Bu adreste bir cihaza ulaşıldı ancak üzerinde ChurchPresenter çalışmıyor. IP adresini ve bağlantı noktasını kontrol edin.</string>
     <string name="more_contact_title">Bize ulaşın</string>
     <string name="more_contact_subtitle">İstek gönderin, sorun bildirin ya da merhaba deyin</string>
+    <string name="more_rate_title">Uygulamayı değerlendirin</string>
+    <string name="more_rate_subtitle">Beğendiniz mi? Bir puan, diğer kiliselerin onu bulmasına yardımcı olur</string>
     <string name="standalone_backdrop_pick">Arka plan için bir fotoğraf seçin</string>
     <string name="standalone_backdrop_no_photos">Bu cihazda henüz fotoğraf yok. Daha fazla → Fotoğraflar bölümünden ekleyin.</string>
     <string name="standalone_backdrop_needs_server">Önce Tarayıcı ekranını açın — fotoğraflar oradan sunulur.</string>

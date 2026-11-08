@@ -2,7 +2,13 @@ package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.AppMode
@@ -11,6 +17,7 @@ import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -115,5 +122,55 @@ class MoreScreenTest {
             setContent { AppTheme(themeMode = theme) { MoreScreen(mode = AppMode.REMOTE, onSelect = {}) } }
             assertTrue(rows(this).fetchSemanticsNodes().isNotEmpty())
         }
+    }
+
+    @Test
+    fun theRateTileIsHiddenWhereThereIsNoStore() = runComposeUiTest {
+        setContent(themed { MoreScreen(mode = AppMode.REMOTE, onSelect = {}, rateUrl = null) })
+
+        onAllNodesWithTag(UiTags.MORE_RATE).assertCountEquals(0)
+    }
+
+    @Test
+    fun theRateTileIsShownInEveryModeWithAStore() = runComposeUiTest {
+        for (mode in listOf(AppMode.REMOTE, AppMode.STANDALONE)) {
+            setContent(themed { MoreScreen(mode = mode, onSelect = {}, rateUrl = STORE_URL) })
+            onNodeWithTag(UiTags.MORE_RATE).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun tappingTheRateTileOpensTheStoreAndNoDestination() = runComposeUiTest {
+        var opened: String? = null
+        var picked: MoreDestination? = null
+        setContent(
+            themed {
+                MoreScreen(
+                    mode = AppMode.REMOTE,
+                    onSelect = { picked = it },
+                    rateUrl = STORE_URL,
+                    onRate = { opened = it },
+                )
+            },
+        )
+
+        onNodeWithTag(UiTags.MORE_RATE).performSemanticsAction(SemanticsActions.OnClick)
+
+        assertEquals(STORE_URL, opened)
+        assertNull(picked)
+    }
+
+    @Test
+    fun theRateTileAddsExactlyOneRow() = runComposeUiTest {
+        setContent(themed { MoreScreen(mode = AppMode.REMOTE, onSelect = {}, rateUrl = STORE_URL) })
+
+        assertEquals(
+            MoreDestination.forMode(AppMode.REMOTE).size + 1,
+            rows(this).fetchSemanticsNodes().size,
+        )
+    }
+
+    private companion object {
+        const val STORE_URL = "https://apps.apple.com/app/id1?action=write-review"
     }
 }

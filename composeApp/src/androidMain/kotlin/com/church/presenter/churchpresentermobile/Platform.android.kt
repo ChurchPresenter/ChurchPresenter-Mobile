@@ -39,3 +39,6 @@ actual fun openUrl(url: String) {
     ctx.startActivity(intent)
 }
 
+actual val storeReviewUrl: String? =
+    "https://play.google.com/store/apps/details?id=com.church.presenter.churchpresentermobile"
+

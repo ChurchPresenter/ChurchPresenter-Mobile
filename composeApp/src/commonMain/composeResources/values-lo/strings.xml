@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">ພົບອຸປະກອນຢູ່ທີ່ຢູ່ນີ້ ແຕ່ມັນບໍ່ໄດ້ແລ່ນ ChurchPresenter. ກວດເບິ່ງທີ່ຢູ່ IP ແລະ ພອດ.</string>
     <string name="more_contact_title">ຕິດຕໍ່ພວກເຮົາ</string>
     <string name="more_contact_subtitle">ສົ່ງຄຳຂໍ, ລາຍງານບັນຫາ ຫຼື ທັກທາຍ</string>
+    <string name="more_rate_title">ໃຫ້ຄະແນນແອັບ</string>
+    <string name="more_rate_subtitle">ມັກບໍ? ຄະແນນຂອງທ່ານຊ່ວຍໃຫ້ໂບດອື່ນຊອກຫາມັນພົບ</string>
     <string name="standalone_backdrop_pick">ເລືອກຮູບສຳລັບພື້ນຫຼັງ</string>
     <string name="standalone_backdrop_no_photos">ຍັງບໍ່ມີຮູບໃນອຸປະກອນນີ້. ເພີ່ມໄດ້ທີ່ ເພີ່ມເຕີມ → ຮູບພາບ.</string>
     <string name="standalone_backdrop_needs_server">ເປີດຈໍ Browser ກ່ອນ — ຮູບພາບຖືກສົ່ງມາຈາກມັນ.</string>

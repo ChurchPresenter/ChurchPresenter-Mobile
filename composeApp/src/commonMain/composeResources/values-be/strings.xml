@@ -732,6 +732,8 @@
     <string name="status_not_churchpresenter_body">Па гэтым адрасе знойдзена прылада, але на ёй не працуе ChurchPresenter. Праверце IP-адрас і порт.</string>
     <string name="more_contact_title">Звязацца з намі</string>
     <string name="more_contact_subtitle">Адпраўце запыт, паведаміце пра праблему або проста прывітайцеся</string>
+    <string name="more_rate_title">Ацаніце праграму</string>
+    <string name="more_rate_subtitle">Падабаецца? Ацэнка дапаможа іншым цэрквам знайсці яе</string>
     <string name="standalone_backdrop_pick">Выберыце фота для фону</string>
     <string name="standalone_backdrop_no_photos">На гэтай прыладзе пакуль няма фота. Дадайце іх у Яшчэ → Фота.</string>
     <string name="standalone_backdrop_needs_server">Спачатку ўключыце экран у браўзеры — фота раздаюцца з яго.</string>

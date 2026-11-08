@@ -763,6 +763,8 @@
     <string name="status_not_churchpresenter_body">Er is een apparaat op dit adres gevonden, maar daarop draait geen ChurchPresenter. Controleer het IP-adres en de poort.</string>
     <string name="more_contact_title">Contact</string>
     <string name="more_contact_subtitle">Stuur een verzoek, meld een probleem of zeg gewoon hallo</string>
+    <string name="more_rate_title">Beoordeel de app</string>
+    <string name="more_rate_subtitle">Bevalt hij? Een beoordeling helpt andere kerken hem te vinden</string>
     <string name="standalone_backdrop_pick">Kies een foto als achtergrond</string>
     <string name="standalone_backdrop_no_photos">Nog geen foto's op dit apparaat. Voeg ze toe via Meer → Foto's.</string>
     <string name="standalone_backdrop_needs_server">Zet eerst het browserscherm aan — de foto's worden daarvandaan geladen.</string>

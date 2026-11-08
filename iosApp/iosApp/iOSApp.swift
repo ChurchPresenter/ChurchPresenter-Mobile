@@ -83,16 +83,17 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         // 1b. Bridge iOS Analytics to Kotlin
         IosAnalyticsBridge.shared.reporter = SwiftAnalyticsReporter()
 
-        // 2. Track launches and show the App Store review prompt at milestones.
-        //    No scene is connected yet at this point in the launch, so the
-        //    request itself waits for the first didBecomeActive (see below).
+        // 2. Track launches, and show the App Store review prompt once the
+        //    operator has actually used the app (ReviewPrompt in Kotlin counts
+        //    go-lives). No scene is connected yet at this point in the launch,
+        //    so the request itself waits for the first didBecomeActive (see below).
         let defaults = UserDefaults.standard
         let openCount = defaults.integer(forKey: AppConstants.appOpenCountKey) + 1
         defaults.set(openCount, forKey: AppConstants.appOpenCountKey)
         // Not in a development build: iOS always shows the prompt there, but its
         // Submit does nothing, so it only gets in the way of testing.
         #if !DEBUG
-        if AppDelegate.shouldRequestReview(openCount: openCount) {
+        if ReviewPrompt.shared.consumeDue() {
             requestReviewWhenActive()
         }
         #endif
@@ -262,12 +263,6 @@ class AppDelegate: NSObject, UIApplicationDelegate,
     }
 
     // MARK: - App Store review prompt
-
-    /// Same milestone rule as `AppReview.shouldRequest` on Android:
-    /// 3rd open, 10th open, then every 20th open after that.
-    static func shouldRequestReview(openCount: Int) -> Bool {
-        openCount == 3 || openCount == 10 || (openCount > 10 && openCount % 20 == 0)
-    }
 
     private var reviewObserver: NSObjectProtocol?
 
