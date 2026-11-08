@@ -10,6 +10,7 @@ import com.church.presenter.churchpresentermobile.viewmodel.CatalogRow
 import com.church.presenter.churchpresentermobile.viewmodel.CatalogView
 import com.church.presenter.churchpresentermobile.viewmodel.ConvertPhase
 import com.church.presenter.churchpresentermobile.viewmodel.PickedBible
+import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 
 /*
  * The plain state and callback bundles the Bible downloads screens are drawn from — gathered
@@ -19,6 +20,13 @@ import com.church.presenter.churchpresentermobile.viewmodel.PickedBible
 
 /** The three places the Bibles screen can open on — the tablet's left-hand navigation. */
 enum class BiblesPage { INSTALLED, GET, CONVERT }
+
+/** The name a Bibles manager page reports to the "Pages and screens" report. */
+internal fun biblesScreenName(page: BiblesPage): String = when (page) {
+    BiblesPage.INSTALLED -> AnalyticsScreen.BIBLES_INSTALLED
+    BiblesPage.GET -> AnalyticsScreen.BIBLES_GET
+    BiblesPage.CONVERT -> AnalyticsScreen.BIBLES_CONVERT
+}
 
 /** Everything the catalogue list draws, gathered so the phone screen and the tablet pane share it. */
 internal class CatalogUi(

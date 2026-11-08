@@ -146,7 +146,6 @@ import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Analytics
 import com.church.presenter.churchpresentermobile.util.AnalyticsEvent
 import com.church.presenter.churchpresentermobile.util.AnalyticsParam
-import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.network.ServerEventService
 import com.church.presenter.churchpresentermobile.network.BibleCatalog
 import com.church.presenter.churchpresentermobile.network.BibleService
@@ -552,10 +551,7 @@ fun App(
     var showContact by remember { mutableStateOf(false) }
 
     LaunchedEffect(showSettings) {
-        if (showSettings) Analytics.logScreenView(AnalyticsScreen.SETTINGS) else settingsSection = null
-    }
-    LaunchedEffect(showConnectSetup) {
-        if (showConnectSetup) Analytics.logScreenView(AnalyticsScreen.CONNECT_SETUP)
+        if (!showSettings) settingsSection = null
     }
 
     // Apply deep-linked settings and notify screens to reload.
@@ -747,22 +743,6 @@ fun App(
         // Breadcrumb only — doesn't count against Sentry's event quota, but gives
         // crash reports a trail of which tabs were visited leading up to the crash.
         CrashReporting.log("Tab selected: ${selectedTab.name.lowercase()}")
-        // Only log the tab-level screen when not inside a detail sub-screen
-        Analytics.logScreenView(tabScreenName(selectedTab))
-    }
-
-    // Song detail open/close → update screen name
-    LaunchedEffect(songDetailTitle) {
-        if (songDetailTitle != null) Analytics.logScreenView(AnalyticsScreen.SONG_DETAIL)
-        else if (selectedTab == AppTab.SONGS) Analytics.logScreenView(AnalyticsScreen.SONGS)
-    }
-
-    // Bible depth navigation → update screen name
-    LaunchedEffect(bibleBook, bibleChapter) {
-        if (selectedTab != AppTab.BIBLE) return@LaunchedEffect
-        Analytics.logScreenView(
-            bibleScreenName(hasBook = bibleBook != null, hasChapter = bibleChapter != null)
-        )
     }
 
     // Schedule drawer open → log event
@@ -785,10 +765,6 @@ fun App(
     // right-hand pane, which is not what the gesture means anywhere else.
     AppBackHandler(enabled = inMoreDetail && !twoPane) { moreDestination = null }
 
-    // Log More sub-screen views
-    LaunchedEffect(moreDestination) {
-        moreScreenName(moreDestination)?.let(Analytics::logScreenView)
-    }
 
     // Dedicated image HTTP client: same SSL bypass but no ContentNegotiation,
     // so Coil can read raw JPEG bytes without Ktor interfering.
@@ -808,8 +784,42 @@ fun App(
     var showModePicker by remember { mutableStateOf(false) }
     // Status screen state — shown once after splash; re-shown when settings are saved
     var showStatusScreen by remember { mutableStateOf(false) }
-    LaunchedEffect(showStatusScreen) {
-        if (showStatusScreen) Analytics.logScreenView(AnalyticsScreen.STATUS)
+
+    // ── "Pages and screens" ───────────────────────────────────────────────
+    // One name for whatever is on show, worked out from all of the navigation
+    // state at once, so closing an overlay re-reports the screen beneath it.
+    // Mirrors the order the gates and overlays are drawn in below.
+    val screenLocation = ScreenLocation(
+        gate = when {
+            showSplash -> StartupGate.SPLASH
+            showModePicker -> StartupGate.MODE_PICKER
+            showStatusScreen && appMode == AppMode.REMOTE -> StartupGate.STATUS
+            showConnectSetup && !appSettings.isConnectSetupDone && appMode == AppMode.REMOTE ->
+                StartupGate.CONNECT_SETUP
+            else -> null
+        },
+        overlay = when {
+            showContact -> AppOverlay.CONTACT
+            biblesPage != null -> AppOverlay.BIBLES
+            showSettings -> AppOverlay.SETTINGS
+            canvasOpen -> AppOverlay.CANVAS
+            drawerState.currentValue == DrawerValue.Open -> AppOverlay.SCHEDULE_DRAWER
+            else -> null
+        },
+        tab = selectedTab,
+        moreDestination = moreDestination,
+        inSongDetail = inSongDetail,
+        bibleHasBook = bibleBook != null,
+        bibleHasChapter = bibleChapter != null,
+        libraryEditor = when {
+            editingSongId != null || creatingSong -> LibraryEditor.SONG
+            editingAnnouncementId != null || creatingAnnouncement -> LibraryEditor.ANNOUNCEMENT
+            else -> null
+        },
+    )
+    val screenName = currentScreenName(screenLocation)
+    LaunchedEffect(screenName) {
+        screenName?.let(Analytics::logScreenView)
     }
 
     val statusViewModel: StatusViewModel =

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,8 @@ import churchpresentermobile.composeapp.generated.resources.calendar_today
 import churchpresentermobile.composeapp.generated.resources.cd_back
 import churchpresentermobile.composeapp.generated.resources.cd_settings
 import com.church.presenter.churchpresentermobile.ui.GearButton
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import com.church.presenter.churchpresentermobile.ui.LocalHeaderAccessory
 import com.church.presenter.churchpresentermobile.ui.UiTags
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
@@ -106,6 +109,7 @@ fun CalendarScreen(
     }
     val openService = openId?.let { document.serviceById(it) }
     var newServiceSheet by remember { mutableStateOf(false) }
+    ReportRunOfShow(showing = openService != null && !twoPane)
 
     val runActions: (PlannedService) -> RunOfShowActions = { service ->
         runOfShowActions(viewModel, service)
@@ -344,3 +348,21 @@ private fun runOfShowActions(
     },
     onDelete = { viewModel.services.delete(service.id) },
 )
+
+/**
+ * Reports the run of show to the analytics "Pages and screens" report while it
+ * replaces the month on a phone. App has already reported the calendar on the way
+ * in, so only the way back out of a service is reported again here.
+ */
+@Composable
+private fun ReportRunOfShow(showing: Boolean) {
+    var reported by remember { mutableStateOf(false) }
+    LaunchedEffect(showing) {
+        if (showing) {
+            Analytics.logScreenView(AnalyticsScreen.RUN_OF_SHOW)
+            reported = true
+        } else if (reported) {
+            Analytics.logScreenView(AnalyticsScreen.CALENDAR)
+        }
+    }
+}

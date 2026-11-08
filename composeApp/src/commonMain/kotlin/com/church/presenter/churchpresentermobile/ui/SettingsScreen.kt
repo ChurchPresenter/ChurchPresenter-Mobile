@@ -38,6 +38,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.church.presenter.churchpresentermobile.util.Analytics
+import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -270,6 +272,11 @@ private fun SettingsSheet(
         mutableStateOf(initialSection?.takeIf { it in sections } ?: if (twoPane) sections.first() else null)
     }
     val open = selected
+    // The sheet's pages are its own, so it reports them itself: App reports
+    // nothing while Settings is open (see currentScreenName).
+    LaunchedEffect(open) {
+        Analytics.logScreenView(AnalyticsScreen.settingsSection(open?.analyticsName))
+    }
     // System back on a phone's page returns to the menu; only past that does
     // it fall through to the dialog and close the sheet.
     AppBackHandler(enabled = !twoPane && open != null) { selected = null }

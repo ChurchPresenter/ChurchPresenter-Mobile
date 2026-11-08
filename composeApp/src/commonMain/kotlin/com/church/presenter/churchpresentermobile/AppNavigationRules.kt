@@ -72,10 +72,8 @@ internal fun tabScreenName(tab: AppTab): String = when (tab) {
 }
 
 /**
- * The name a More sub-screen reports, or null for one that reports nothing.
- *
- * Contact posts to a public endpoint rather than being a screen of the app's
- * own data, and the launcher grid itself is already covered by the More tab.
+ * The name a More sub-screen reports, or null for the launcher grid, which is
+ * already covered by the More tab.
  */
 internal fun moreScreenName(destination: MoreDestination?): String? = when (destination) {
     MoreDestination.CALENDAR -> AnalyticsScreen.CALENDAR
@@ -86,8 +84,68 @@ internal fun moreScreenName(destination: MoreDestination?): String? = when (dest
     MoreDestination.ANNOUNCEMENTS -> AnalyticsScreen.ANNOUNCEMENTS
     MoreDestination.WEB -> AnalyticsScreen.WEB
     MoreDestination.REPORT -> AnalyticsScreen.CCLI_REPORT
-    MoreDestination.CONTACT -> null
+    MoreDestination.CONTACT -> AnalyticsScreen.CONTACT
     null -> null
+}
+
+/** Which full-screen step of startup, if any, is covering the app. */
+internal enum class StartupGate { SPLASH, MODE_PICKER, STATUS, CONNECT_SETUP }
+
+/** Which overlay, if any, is drawn over the tabs — the topmost when several are. */
+internal enum class AppOverlay { CONTACT, BIBLES, SETTINGS, CANVAS, SCHEDULE_DRAWER }
+
+/** Which Library editor, if any, has replaced the Library list. */
+internal enum class LibraryEditor { SONG, ANNOUNCEMENT }
+
+/** Everything that decides which screen the operator is looking at. */
+internal data class ScreenLocation(
+    val gate: StartupGate? = null,
+    val overlay: AppOverlay? = null,
+    val tab: AppTab,
+    val moreDestination: MoreDestination? = null,
+    val inSongDetail: Boolean = false,
+    val bibleHasBook: Boolean = false,
+    val bibleHasChapter: Boolean = false,
+    val libraryEditor: LibraryEditor? = null,
+)
+
+/**
+ * The one name the "Pages and screens" report should show for [where], or null
+ * where the screen on show reports its own pages.
+ *
+ * Settings and the Bibles manager return null: each has pages of its own that
+ * only it knows about, and logs them itself. Everything else is decided here, so
+ * that leaving an overlay re-reports the screen underneath it — which scattered
+ * per-screen effects never did, leaving the time spent there credited to
+ * whichever overlay was opened last.
+ */
+internal fun currentScreenName(where: ScreenLocation): String? = when {
+    where.gate != null -> when (where.gate) {
+        StartupGate.SPLASH -> AnalyticsScreen.SPLASH
+        StartupGate.MODE_PICKER -> AnalyticsScreen.MODE_PICKER
+        StartupGate.STATUS -> AnalyticsScreen.STATUS
+        StartupGate.CONNECT_SETUP -> AnalyticsScreen.CONNECT_SETUP
+    }
+    where.overlay != null -> when (where.overlay) {
+        AppOverlay.CONTACT -> AnalyticsScreen.CONTACT
+        AppOverlay.BIBLES, AppOverlay.SETTINGS -> null
+        AppOverlay.CANVAS -> AnalyticsScreen.CANVAS
+        AppOverlay.SCHEDULE_DRAWER -> AnalyticsScreen.SCHEDULE
+    }
+    else -> tabContentScreenName(where)
+}
+
+/** The screen inside the tab strip: a tab, or the detail it has drilled into. */
+private fun tabContentScreenName(where: ScreenLocation): String = when (where.tab) {
+    AppTab.SONGS -> if (where.inSongDetail) AnalyticsScreen.SONG_DETAIL else AnalyticsScreen.SONGS
+    AppTab.BIBLE -> bibleScreenName(where.bibleHasBook, where.bibleHasChapter)
+    AppTab.MORE -> moreScreenName(where.moreDestination) ?: AnalyticsScreen.MORE
+    AppTab.LIBRARY -> when (where.libraryEditor) {
+        LibraryEditor.SONG -> AnalyticsScreen.SONG_EDITOR
+        LibraryEditor.ANNOUNCEMENT -> AnalyticsScreen.ANNOUNCEMENT_EDITOR
+        null -> AnalyticsScreen.LIBRARY
+    }
+    else -> tabScreenName(where.tab)
 }
 
 /** How deep into the Bible the operator is, in the report's terms. */

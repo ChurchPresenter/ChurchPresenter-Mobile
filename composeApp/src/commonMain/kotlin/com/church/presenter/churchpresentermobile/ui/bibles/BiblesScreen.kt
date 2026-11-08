@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import com.church.presenter.churchpresentermobile.util.Analytics
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import churchpresentermobile.composeapp.generated.resources.Res
@@ -74,6 +76,8 @@ fun BiblesScreen(
     val choiceVm: BibleChoiceViewModel = providedViewModels?.choice
         ?: viewModel(key = "bibles_choice") { BibleChoiceViewModel(repository) }
     var current by remember(page) { mutableStateOf(page) }
+    // App reports nothing while this is open (see currentScreenName): the pages are this screen's.
+    LaunchedEffect(current) { Analytics.logScreenView(biblesScreenName(current)) }
 
     AppBackHandler(enabled = true, onBack = onClose)
 

@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.contact_us_title
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
-import com.church.presenter.churchpresentermobile.util.Analytics
-import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -29,7 +26,6 @@ internal fun ContactOverlay(
     onClose: () -> Unit,
     form: @Composable (Modifier) -> Unit = { ContactScreen(modifier = it) },
 ) {
-    LaunchedEffect(Unit) { Analytics.logScreenView(AnalyticsScreen.CONTACT) }
     AppBackHandler(enabled = true, onBack = onClose)
     Column(
         modifier = Modifier
