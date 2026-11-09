@@ -90,8 +90,8 @@ class Sealing private constructor(private val key: AES.GCM.Key, private val inst
          */
         suspend fun fromEncodedKey(encoded: String, instanceId: String): Sealing? {
             val padded = encoded.padEnd((encoded.length + PAD_ROUND - 1) / PAD_ROUND * PAD_ROUND, '=')
-            val raw = runCatching { Base64.UrlSafe.decode(padded) }.getOrNull() ?: return null
-            if (raw.size != KEY_BYTES) return null
+            val raw = runCatching { Base64.UrlSafe.decode(padded) }.getOrNull()
+                ?.takeIf { it.size == KEY_BYTES } ?: return null
             val gcm = CryptographyProvider.Default.getOrNull(AES.GCM) ?: return null
             val key = gcm.keyDecoder().decodeFromByteArray(AES.Key.Format.RAW, raw)
             return Sealing(key, instanceId)
