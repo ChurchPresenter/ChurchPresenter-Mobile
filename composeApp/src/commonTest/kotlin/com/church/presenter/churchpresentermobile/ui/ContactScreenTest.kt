@@ -49,6 +49,17 @@ class ContactScreenTest {
     }
 
     @Test
+    fun anEnormousMessageStillShowsTheForm() = runComposeUiTest {
+        // A pasted log grown to fit outgrew what Compose can measure and crashed the form.
+        val vm = ContactViewModel()
+        vm.setMessage(List(12_000) { "line $it" }.joinToString("\n"))
+        showContact(vm)
+
+        assertTrue(exists(UiTags.CONTACT_MESSAGE))
+        assertTrue(exists(UiTags.CONTACT_SEND))
+    }
+
+    @Test
     fun typingANameIsKept() = runComposeUiTest {
         val vm = ContactViewModel()
         showContact(vm)
