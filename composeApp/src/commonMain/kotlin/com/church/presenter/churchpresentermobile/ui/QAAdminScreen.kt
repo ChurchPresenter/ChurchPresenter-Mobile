@@ -339,8 +339,8 @@ internal fun QuestionEditor(
                 Text(stringResource(Res.string.qa_admin_edit_hint), color = colors.muted, fontSize = 15.sp)
             }
             BasicTextField(
-                value = text,
-                onValueChange = { if (it.length <= 200) text = it },
+                value = text.layoutSafe(),
+                onValueChange = { if (it.length <= 200) text = it.layoutSafe() },
                 textStyle = TextStyle(color = colors.text, fontSize = 15.sp, lineHeight = (15 * 1.5).sp),
                 cursorBrush = SolidColor(colors.accent),
                 modifier = Modifier.fillMaxWidth().testTag(UiTags.QA_EDIT_TEXT),
@@ -444,8 +444,8 @@ internal fun AddQuestionDialog(
         text = {
             ScrollingDialogBody(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
+                    value = text.layoutSafe(),
+                    onValueChange = { text = it.layoutSafe() },
                     placeholder = { Text(stringResource(Res.string.qa_admin_add_question_hint)) },
                     modifier = Modifier.fillMaxWidth().testTag(UiTags.QA_ADD_TEXT),
                     singleLine = false,
@@ -455,8 +455,8 @@ internal fun AddQuestionDialog(
                 // remembered in Settings and this field stops appearing.
                 if (askForName) {
                     OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
+                        value = name.layoutSafe(),
+                        onValueChange = { name = it.layoutSafe() },
                         label = { Text(stringResource(Res.string.qa_admin_add_question_name)) },
                         placeholder = { Text(stringResource(Res.string.qa_admin_add_question_name_hint)) },
                         modifier = Modifier.fillMaxWidth().testTag(UiTags.QA_ADD_NAME),

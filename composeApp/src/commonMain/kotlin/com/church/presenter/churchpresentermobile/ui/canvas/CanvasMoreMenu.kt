@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.ui.verticalScrollbar
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Box
@@ -181,8 +182,8 @@ private fun RenameDialog(current: String, onSave: (String) -> Unit, onDismiss: (
         title = { Text(stringResource(Res.string.canvas_rename_title)) },
         text = {
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                value = name.layoutSafe(),
+                onValueChange = { name = it.layoutSafe() },
                 label = { Text(stringResource(Res.string.canvas_rename_label)) },
                 singleLine = true,
                 modifier = Modifier.testTag(CanvasTags.RENAME_FIELD),

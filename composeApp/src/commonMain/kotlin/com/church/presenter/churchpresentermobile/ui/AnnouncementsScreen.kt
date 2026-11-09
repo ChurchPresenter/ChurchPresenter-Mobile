@@ -760,8 +760,8 @@ private fun TextArea(
     ) {
         if (value.isEmpty()) Text(placeholder, color = colors.muted, fontSize = 15.sp)
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = value.layoutSafe(),
+            onValueChange = { onValueChange(it.layoutSafe()) },
             textStyle = TextStyle(color = colors.text, fontSize = 15.sp),
             cursorBrush = SolidColor(colors.accent),
             modifier = Modifier.fillMaxWidth(),

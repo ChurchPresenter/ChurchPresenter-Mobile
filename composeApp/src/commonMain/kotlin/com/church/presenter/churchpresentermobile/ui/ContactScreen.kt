@@ -117,23 +117,23 @@ fun ContactScreen(
         }
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { vm.setName(it) },
+            value = name.layoutSafe(),
+            onValueChange = { vm.setName(it.layoutSafe()) },
             label = { Text(stringResource(Res.string.contact_name_label)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth().testTag(UiTags.CONTACT_NAME),
         )
         OutlinedTextField(
-            value = email,
-            onValueChange = { vm.setEmail(it) },
+            value = email.layoutSafe(),
+            onValueChange = { vm.setEmail(it.layoutSafe()) },
             label = { Text(stringResource(Res.string.contact_email_label)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth().testTag(UiTags.CONTACT_EMAIL),
         )
         OutlinedTextField(
-            value = message,
-            onValueChange = { vm.setMessage(it) },
+            value = message.layoutSafe(),
+            onValueChange = { vm.setMessage(it.layoutSafe()) },
             label = { Text(stringResource(Res.string.contact_message_label)) },
             modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp).testTag(UiTags.CONTACT_MESSAGE),
         )

@@ -74,6 +74,7 @@ import churchpresentermobile.composeapp.generated.resources.section_verse
 import com.church.presenter.churchpresentermobile.library.LibraryRepository
 import com.church.presenter.churchpresentermobile.model.LibraryField
 import com.church.presenter.churchpresentermobile.model.SectionType
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.SCREEN_ASPECT_RATIO
 import com.church.presenter.churchpresentermobile.ui.ScrollingDialogBody
@@ -289,8 +290,8 @@ private fun SectionCard(
         )
 
         OutlinedTextField(
-            value = text,
-            onValueChange = onTextChange,
+            value = text.layoutSafe(),
+            onValueChange = { onTextChange(it.layoutSafe()) },
             placeholder = { Text(stringResource(Res.string.editor_section_text_placeholder), fontSize = 13.sp) },
             minLines = 3,
             // Past this the field scrolls inside itself. Grown to fit, a section that is really a
@@ -380,8 +381,8 @@ internal fun EditorField(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(label, color = colors.muted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
         OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = value.layoutSafe(),
+            onValueChange = { onValueChange(it.layoutSafe()) },
             isError = error != null,
             minLines = minLines,
             modifier = Modifier.fillMaxWidth(),
