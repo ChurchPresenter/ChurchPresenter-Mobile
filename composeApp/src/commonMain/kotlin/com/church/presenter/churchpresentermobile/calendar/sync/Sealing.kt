@@ -84,13 +84,16 @@ class Sealing private constructor(private val key: AES.GCM.Key, private val inst
     private fun aad(recordId: String): ByteArray = "$instanceId/$recordId".encodeToByteArray()
 
     companion object {
-        /** The key as the enrollment QR carries it: URL-safe base64, no padding, 32 bytes. */
+        /**
+         * The key as the enrollment QR carries it: URL-safe base64, no padding, 32 bytes.
+         * Null, never a throw, when the platform's provider has no AES-GCM — that once crashed iOS.
+         */
         suspend fun fromEncodedKey(encoded: String, instanceId: String): Sealing? {
             val padded = encoded.padEnd((encoded.length + PAD_ROUND - 1) / PAD_ROUND * PAD_ROUND, '=')
-            val raw = runCatching { Base64.UrlSafe.decode(padded) }.getOrNull() ?: return null
-            if (raw.size != KEY_BYTES) return null
-            val key = CryptographyProvider.Default.get(AES.GCM).keyDecoder()
-                .decodeFromByteArray(AES.Key.Format.RAW, raw)
+            val raw = runCatching { Base64.UrlSafe.decode(padded) }.getOrNull()
+                ?.takeIf { it.size == KEY_BYTES } ?: return null
+            val gcm = CryptographyProvider.Default.getOrNull(AES.GCM) ?: return null
+            val key = gcm.keyDecoder().decodeFromByteArray(AES.Key.Format.RAW, raw)
             return Sealing(key, instanceId)
         }
 

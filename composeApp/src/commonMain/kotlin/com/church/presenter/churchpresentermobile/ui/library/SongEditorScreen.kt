@@ -384,6 +384,11 @@ internal fun EditorField(
             onValueChange = onValueChange,
             isError = error != null,
             minLines = minLines,
+            // Capped for the reason the section fields are: a value that is really a whole
+            // file — an imported song whose copyright is its lyrics, a notice pasted from a
+            // document — grown to fit outgrows what Compose's Constraints can hold, and
+            // measuring the editor throws. Past the cap the field scrolls inside itself.
+            maxLines = SECTION_MAX_LINES.coerceAtLeast(minLines),
             modifier = Modifier.fillMaxWidth(),
         )
         error?.let { ProblemText(it, isError = true) }
@@ -473,5 +478,5 @@ private fun SectionType.label(): String = when (this) {
 
 private val SECTION_TYPES = SectionType.entries
 
-/** Taller than any real verse or chorus, so an ordinary section never has to scroll. */
+/** Taller than any real verse, chorus or notice, so an ordinary one never has to scroll. */
 private const val SECTION_MAX_LINES = 12

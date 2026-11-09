@@ -135,6 +135,9 @@ fun ContactScreen(
             value = message,
             onValueChange = { vm.setMessage(it) },
             label = { Text(stringResource(Res.string.contact_message_label)) },
+            // Scrolls inside itself past this: a pasted log grown to fit would outgrow what
+            // Compose can measure and crash the form (see EditorField).
+            maxLines = CONTACT_MESSAGE_MAX_LINES,
             modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp).testTag(UiTags.CONTACT_MESSAGE),
         )
 
@@ -179,3 +182,6 @@ private val typeLabels: List<Pair<ContactType, StringResource>> = listOf(
     ContactType.TESTIMONIAL to Res.string.contact_type_testimonial,
     ContactType.BUG to Res.string.contact_type_bug,
 )
+
+/** Room for any real message; a longer one scrolls within the field. */
+private const val CONTACT_MESSAGE_MAX_LINES = 12
