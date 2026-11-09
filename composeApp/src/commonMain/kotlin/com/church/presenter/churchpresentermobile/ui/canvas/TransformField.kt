@@ -40,6 +40,7 @@ import churchpresentermobile.composeapp.generated.resources.canvas_transform_rot
 import churchpresentermobile.composeapp.generated.resources.canvas_transform_width
 import churchpresentermobile.composeapp.generated.resources.canvas_transform_x
 import churchpresentermobile.composeapp.generated.resources.canvas_transform_y
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasToolOptions
@@ -187,8 +188,8 @@ private fun RowScope.NumberField(
     ) {
         Text(label, color = colors.muted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
         BasicTextField(
-            value = typed,
-            onValueChange = { typed = it },
+            value = typed.layoutSafe(),
+            onValueChange = { typed = it.layoutSafe() },
             enabled = enabled,
             singleLine = true,
             textStyle = TextStyle(

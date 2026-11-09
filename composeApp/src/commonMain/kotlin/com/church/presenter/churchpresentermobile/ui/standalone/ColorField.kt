@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.KeyboardOptions
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.HEX_RADIX
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -83,8 +84,9 @@ internal fun ColorField(
                 modifier = tag?.let { Modifier.testTag("$it:swatch") } ?: Modifier,
             )
             BasicTextField(
-                value = draft,
-                onValueChange = { typed ->
+                value = draft.layoutSafe(),
+                onValueChange = { raw ->
+                    val typed = raw.layoutSafe()
                     draft = typed
                     parseHexColorOrNull(typed)?.let { onValueChange(normaliseHex(typed)) }
                 },

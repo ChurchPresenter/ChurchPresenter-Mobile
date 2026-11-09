@@ -47,6 +47,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import churchpresentermobile.composeapp.generated.resources.Res
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleSource
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.CatalogRow
@@ -202,8 +203,8 @@ internal fun CatalogSearch(query: String, onQuery: (String) -> Unit, placeholder
                 maxLines = 1,
             )
             BasicTextField(
-                value = query,
-                onValueChange = onQuery,
+                value = query.layoutSafe(),
+                onValueChange = { onQuery(it.layoutSafe()) },
                 singleLine = true,
                 textStyle = TextStyle(color = colors.text, fontSize = 14.sp),
                 cursorBrush = SolidColor(colors.accent),

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.calendar_close
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -98,8 +99,8 @@ internal fun CompactField(
         ) {
             if (value.isEmpty()) Text(placeholder, color = colors.muted, fontSize = 14.sp, maxLines = 1)
             BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
+                value = value.layoutSafe(),
+                onValueChange = { onValueChange(it.layoutSafe()) },
                 singleLine = true,
                 textStyle = TextStyle(color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.Medium),
                 cursorBrush = SolidColor(colors.accent),
