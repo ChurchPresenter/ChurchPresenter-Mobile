@@ -223,8 +223,8 @@ internal fun UrlField(value: String, onValueChange: (String) -> Unit, modifier: 
                 )
             }
             BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
+                value = value.layoutSafe(),
+                onValueChange = { onValueChange(it.layoutSafe()) },
                 singleLine = true,
                 textStyle = TextStyle(color = colors.text, fontSize = 13.sp, fontFamily = FontFamily.Monospace),
                 cursorBrush = SolidColor(colors.accent),

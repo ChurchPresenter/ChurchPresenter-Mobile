@@ -38,6 +38,7 @@ import com.church.presenter.churchpresentermobile.model.CanvasFont
 import com.church.presenter.churchpresentermobile.model.CanvasTextAlign
 import com.church.presenter.churchpresentermobile.model.CanvasTextStyle
 import com.church.presenter.churchpresentermobile.model.TextOptions
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.viewmodel.CanvasIntent
 import org.jetbrains.compose.resources.stringResource
 
@@ -154,8 +155,8 @@ internal fun EditableText(
     val focus = remember { FocusRequester() }
     LaunchedEffect(id) { focus.requestFocus() }
     BasicTextField(
-        value = text,
-        onValueChange = { onIntent(CanvasIntent.EditText(id, it)) },
+        value = text.layoutSafe(),
+        onValueChange = { onIntent(CanvasIntent.EditText(id, it.layoutSafe())) },
         textStyle = style,
         cursorBrush = SolidColor(colors.accent),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

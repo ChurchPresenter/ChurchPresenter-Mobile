@@ -27,6 +27,7 @@ import churchpresentermobile.composeapp.generated.resources.tv_output_number
 import churchpresentermobile.composeapp.generated.resources.tv_outputs_checking
 import churchpresentermobile.composeapp.generated.resources.tv_outputs_none
 import churchpresentermobile.composeapp.generated.resources.tv_outputs_retry
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.network.createActionHttpClient
 import com.church.presenter.churchpresentermobile.tv.DesktopOutput
 import com.church.presenter.churchpresentermobile.tv.TvSource
@@ -104,8 +105,8 @@ private fun OutputList(
     }
     if (outputs.any { it.needsKey }) {
         OutlinedTextField(
-            value = key,
-            onValueChange = onKey,
+            value = key.layoutSafe(),
+            onValueChange = { onKey(it.layoutSafe()) },
             singleLine = true,
             label = { Text(stringResource(Res.string.tv_output_key)) },
             modifier = Modifier.width(380.dp).testTag(TvTags.OUTPUT_KEY),

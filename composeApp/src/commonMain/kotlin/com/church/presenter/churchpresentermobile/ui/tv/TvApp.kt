@@ -59,6 +59,7 @@ import churchpresentermobile.composeapp.generated.resources.tv_pick_title
 import churchpresentermobile.composeapp.generated.resources.tv_signage_body
 import churchpresentermobile.composeapp.generated.resources.tv_signage_soon
 import churchpresentermobile.composeapp.generated.resources.tv_signage_title
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.tv.DESKTOP_SERVICE_TYPE
 import com.church.presenter.churchpresentermobile.tv.FoundService
@@ -326,8 +327,8 @@ private fun AddressEntry(
             fontWeight = FontWeight.SemiBold,
         )
         OutlinedTextField(
-            value = text,
-            onValueChange = { text = it; invalid = false },
+            value = text.layoutSafe(),
+            onValueChange = { text = it.layoutSafe(); invalid = false },
             singleLine = true,
             placeholder = { Text(stringResource(Res.string.tv_address_hint)) },
             isError = invalid,

@@ -76,8 +76,8 @@ fun SearchField(
                 )
             }
             BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
+                value = value.layoutSafe(),
+                onValueChange = { onValueChange(it.layoutSafe()) },
                 singleLine = true,
                 textStyle = TextStyle(color = colors.text, fontSize = 14.sp),
                 cursorBrush = androidx.compose.ui.graphics.SolidColor(colors.accent),
@@ -220,8 +220,8 @@ fun SettingsField(
                     Text(placeholder, color = colors.dim, fontSize = 15.sp)
                 }
                 BasicTextField(
-                    value = value,
-                    onValueChange = onValueChange,
+                    value = value.layoutSafe(),
+                    onValueChange = { onValueChange(it.layoutSafe()) },
                     singleLine = true,
                     textStyle = TextStyle(
                         color = colors.text,

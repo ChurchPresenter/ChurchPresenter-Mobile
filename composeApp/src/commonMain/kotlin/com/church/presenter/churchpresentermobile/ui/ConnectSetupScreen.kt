@@ -256,7 +256,7 @@ fun ConnectSetupScreen(
                         Spacer(Modifier.height(8.dp))
                     }
                     OutlinedTextField(
-                        value = hostInput, onValueChange = { hostInput = it },
+                        value = hostInput.layoutSafe(), onValueChange = { hostInput = it.layoutSafe() },
                         modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_HOST),
                         label = { Text(stringResource(Res.string.settings_host_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_host_placeholder)) },
@@ -269,7 +269,7 @@ fun ConnectSetupScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = portInput, onValueChange = { portInput = it },
+                        value = portInput.layoutSafe(), onValueChange = { portInput = it.layoutSafe() },
                         modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_PORT),
                         label = { Text(stringResource(Res.string.settings_port_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_port_placeholder)) },
@@ -285,7 +285,7 @@ fun ConnectSetupScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = apiKeyInput, onValueChange = { apiKeyInput = it },
+                        value = apiKeyInput.layoutSafe(), onValueChange = { apiKeyInput = it.layoutSafe() },
                         modifier = Modifier.fillMaxWidth().testTag(UiTags.CONNECT_API_KEY),
                         label = { Text(stringResource(Res.string.settings_api_key_label)) },
                         placeholder = { Text(stringResource(Res.string.settings_api_key_placeholder)) },

@@ -80,6 +80,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import churchpresentermobile.composeapp.generated.resources.Res
+import com.church.presenter.churchpresentermobile.ui.layoutSafe
 import com.church.presenter.churchpresentermobile.bibleimport.BibleXmlFormat
 import com.church.presenter.churchpresentermobile.library.InstallDetails
 import com.church.presenter.churchpresentermobile.model.InstalledBible
@@ -379,8 +380,8 @@ private fun FormField(label: String, value: String, onValue: (String) -> Unit, t
             modifier = Modifier.padding(start = 4.dp, bottom = 7.dp),
         )
         BasicTextField(
-            value = value,
-            onValueChange = onValue,
+            value = value.layoutSafe(),
+            onValueChange = { onValue(it.layoutSafe()) },
             singleLine = true,
             textStyle = TextStyle(
                 color = colors.text,
