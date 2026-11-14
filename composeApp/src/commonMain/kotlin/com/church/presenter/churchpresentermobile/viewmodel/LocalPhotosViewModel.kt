@@ -70,7 +70,16 @@ class LocalPhotosViewModel(
     fun addPicked(picked: List<PickedPhoto>) {
         if (picked.isEmpty()) return
         viewModelScope.launch {
-            picked.forEach { library.add(it.fileName, it.bytes, imageWork) }
+            // One at a time: each original is read, shrunk and dropped before the
+            // next is read, so a large multi-select never holds them all at once.
+            picked.forEach { photo ->
+                val bytes = photo.readBytes()
+                if (bytes == null) {
+                    Logger.e(TAG, "addPicked — could not read ${photo.fileName}")
+                } else {
+                    library.add(photo.fileName, bytes, imageWork)
+                }
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.ImageBitmap
 import com.church.presenter.churchpresentermobile.model.ImageSource
@@ -12,6 +13,7 @@ import com.church.presenter.churchpresentermobile.ui.ImageFilePicker
 import com.church.presenter.churchpresentermobile.ui.PhotoPickerLauncher
 import com.church.presenter.churchpresentermobile.viewmodel.ImagePick
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.decodeToImageBitmap
 
@@ -59,7 +61,10 @@ internal fun PicturePickers(
     onUnreadable: () -> Unit,
 ) {
     val launchers = remember { PickerLaunchers() }
-    PhotoPickerLauncher(onPhotoPicked = { photos -> onPicked(photos.firstOrNull()?.bytes) }) { launch ->
+    val scope = rememberCoroutineScope()
+    PhotoPickerLauncher(
+        onPhotoPicked = { photos -> scope.launch { onPicked(photos.firstOrNull()?.readBytes()) } },
+    ) { launch ->
         launchers.photos = launch
     }
     ImageFilePicker(onPicked = { file -> onPicked(file?.bytes) }, onError = { onUnreadable() }) { launch ->
