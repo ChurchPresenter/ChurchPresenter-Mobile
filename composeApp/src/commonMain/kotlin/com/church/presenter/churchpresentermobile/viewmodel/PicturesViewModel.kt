@@ -297,7 +297,15 @@ class PicturesViewModel(
                 _uploadPhotoIndex.value = photoIndex + 1
                 // Progress at the start of this photo (discrete steps)
                 _uploadProgress.value = photoIndex.toFloat() / photos.size.toFloat()
-                picturesService.uploadPhoto(photo.bytes, photo.fileName)
+                // Read here, one photo at a time, so only one original is ever held.
+                val bytes = photo.readBytes()
+                if (bytes == null) {
+                    Logger.e(TAG, "uploadDevicePhotos — could not read ${photo.fileName}")
+                    _error.value = "Failed to upload ${photo.fileName}: the photo could not be read"
+                    _uploadProgress.value = (photoIndex + 1).toFloat() / photos.size.toFloat()
+                    continue
+                }
+                picturesService.uploadPhoto(bytes, photo.fileName)
                     .onSuccess { uploaded ->
                         Logger.d(
                             TAG,

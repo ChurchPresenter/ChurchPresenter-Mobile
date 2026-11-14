@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readBytes
+import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSItemProvider
-import platform.Foundation.NSOperationQueue
 import platform.PhotosUI.PHPickerConfiguration
 import platform.PhotosUI.PHPickerFilter
 import platform.PhotosUI.PHPickerResult
@@ -17,6 +17,7 @@ import platform.UIKit.UIImageJPEGRepresentation
 import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import platform.posix.time
+import kotlin.coroutines.resume
 
 /**
  * iOS actual — presents [PHPickerViewController] from the topmost view controller.
@@ -69,39 +70,33 @@ private class IosPhotoPickerDelegate(
             return
         }
 
-        // Process photos one at a time, dispatching back to the main queue between each
-        // to keep collection in-order and thread-safe without explicit locking.
-        collectNext(results, 0, mutableListOf())
+        // Only the names are fixed here; each photo is loaded and re-encoded when the
+        // caller reads it. Loading every original up front held them all in memory
+        // at once, and a large multi-select ran the app out of memory.
+        val stamp = time(null)
+        onPhotoPicked(
+            results.mapIndexed { index, result ->
+                val provider = result.itemProvider
+                PickedPhoto("device_photo_${stamp}_$index.jpg") { loadJpeg(provider) }
+            },
+        )
     }
+}
 
-    private fun collectNext(
-        results: List<PHPickerResult>,
-        index: Int,
-        accumulated: MutableList<PickedPhoto>,
-    ) {
-        if (index >= results.size) {
-            onPhotoPicked(accumulated)
-            return
+/**
+ * One photo as JPEG bytes, or null when it cannot be loaded. The provider's
+ * completion block runs on a background thread, so this never blocks the caller.
+ */
+@OptIn(ExperimentalForeignApi::class)
+private suspend fun loadJpeg(provider: NSItemProvider): ByteArray? = suspendCancellableCoroutine { done ->
+    provider.loadDataRepresentationForTypeIdentifier("public.image") { data, _ ->
+        val bytes = data?.let { nsData ->
+            // Decode to UIImage first — this normalises HEIC, PNG, BMP, WebP, etc.
+            // Then re-encode as JPEG (quality 0.85) so the uploaded bytes always
+            // match the ".jpg" file extension and the server can serve them directly.
+            val jpegData = UIImageJPEGRepresentation(UIImage(data = nsData), 0.85) ?: nsData
+            jpegData.bytes?.readBytes(jpegData.length.toInt())
         }
-
-        val itemProvider: NSItemProvider = results[index].itemProvider
-        // Request the raw image data. The completion block runs on a background thread.
-        itemProvider.loadDataRepresentationForTypeIdentifier("public.image") { data, _ ->
-            val photo = data?.let { nsData ->
-                // Decode to UIImage first — this normalises HEIC, PNG, BMP, WebP, etc.
-                // Then re-encode as JPEG (quality 0.85) so the uploaded bytes always
-                // match the ".jpg" file extension and the server can serve them directly.
-                val uiImage = UIImage(data = nsData)
-                // Re-encode as JPEG (handles HEIC, PNG, BMP, WebP → always .jpg bytes)
-                val jpegData = UIImageJPEGRepresentation(uiImage, 0.85) ?: nsData
-                val bytes = jpegData.bytes?.readBytes(jpegData.length.toInt()) ?: ByteArray(0)
-                PickedPhoto(bytes, "device_photo_${time(null)}_$index.jpg")
-            }
-            // Return to main thread before appending + recursing
-            NSOperationQueue.mainQueue.addOperationWithBlock {
-                if (photo != null) accumulated.add(photo)
-                collectNext(results, index + 1, accumulated)
-            }
-        }
+        done.resume(bytes)
     }
 }
