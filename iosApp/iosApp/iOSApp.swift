@@ -108,7 +108,9 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         let rcSettings = RemoteConfigSettings()
         rcSettings.minimumFetchInterval = 3600
         rc.configSettings = rcSettings
-        try? rc.setDefaults(from: [
+        // Every key Kotlin reads (RemoteConfigKeys), with RemoteConfigDefaults' values. The keys
+        // handed to Kotlin below are these, so a key added here can never be left out of them.
+        let defaults: [String: String] = [
             "maintenance_mode"            : "false",
             "min_app_version"             : "1",
             "announcement_banner"         : "",
@@ -116,8 +118,12 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             "feature_songs_enabled"       : "true",
             "feature_pictures_enabled"    : "true",
             "feature_presentation_enabled": "true",
+            "feature_tv_signage"          : "false",
             "is_demo_mode"                : "false",
-        ])
+            // Where the calendar relay's client key is fetched; without it no phone can sync.
+            "relay_config_url"            : "",
+        ]
+        try? rc.setDefaults(from: defaults)
         rc.fetchAndActivate { status, error in
             if let error = error {
                 print("RemoteConfig fetchAndActivate error: \(error)")
@@ -128,14 +134,8 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             // of whether the fetch succeeded — Firebase returns the last cached
             // (or default) values even on error, so Kotlin always gets something.
             // Dispatch to main thread so Kotlin Compose state updates safely.
-            let keys = [
-                "maintenance_mode", "min_app_version", "announcement_banner",
-                "feature_bible_enabled", "feature_songs_enabled",
-                "feature_pictures_enabled", "feature_presentation_enabled",
-                "is_demo_mode"
-            ]
             var values: [String: String] = [:]
-            for key in keys {
+            for key in defaults.keys {
                 values[key] = rc[key].stringValue ?? ""
             }
             DispatchQueue.main.async {
