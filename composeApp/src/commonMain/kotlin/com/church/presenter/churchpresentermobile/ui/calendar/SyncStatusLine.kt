@@ -90,7 +90,7 @@ internal fun syncLineFor(status: SyncStatus, nextAt: Instant?, now: Instant): Sy
     return when (status) {
         SyncStatus.NotEnrolled -> null
         SyncStatus.Syncing -> SyncLine(SyncLine.Kind.SYNCING, null, null)
-        SyncStatus.Unauthorized -> SyncLine(SyncLine.Kind.STOPPED, null, null)
+        SyncStatus.Unauthorized, SyncStatus.CodeExpired -> SyncLine(SyncLine.Kind.STOPPED, null, null)
         is SyncStatus.Failed -> SyncLine(SyncLine.Kind.FAILED, null, next)
         is SyncStatus.Synced -> {
             val at = runCatching { Instant.parse(status.at) }.getOrNull() ?: return null

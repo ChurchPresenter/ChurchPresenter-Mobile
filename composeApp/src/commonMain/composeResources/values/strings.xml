@@ -1037,6 +1037,11 @@
     <string name="calendar_sync_status_synced">Synced %1$s</string>
     <string name="calendar_sync_status_syncing">Syncing…</string>
     <string name="calendar_sync_status_failed">Could not reach the relay: %1$s</string>
+    <string name="calendar_sync_status_code_expired">This invite has expired or was already used. Ask for a new one on the church computer: Calendar → Settings → Defaults → Invite a phone.</string>
+    <string name="calendar_sync_failed_connection">Can't reach the sync service. Check this phone's internet connection.</string>
+    <string name="calendar_sync_failed_too_many">Too many attempts from this network. Wait a few minutes and try again.</string>
+    <string name="calendar_sync_failed_blocked">Syncing is paused for this network until tomorrow.</string>
+    <string name="calendar_sync_failed_service">The sync service isn't available right now. Try again later, or update the app.</string>
     <string name="calendar_sync_status_unauthorized">The church computer no longer accepts this phone. Enroll again to continue.</string>
     <string name="calendar_sync_line_failed">Sync failed</string>
     <string name="calendar_sync_line_stopped">Sync stopped</string>

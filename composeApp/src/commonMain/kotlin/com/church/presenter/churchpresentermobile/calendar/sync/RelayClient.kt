@@ -35,6 +35,15 @@ sealed class RelayFailure(message: String) : Exception(message) {
     /** The relay did not accept the client key; fetch a fresh one and try again. */
     class ClientKey : RelayFailure("relay refused the client key")
 
+    /** Too many requests from this network for now; it clears by itself within minutes. */
+    class TooMany : RelayFailure("relay is rate limiting this network")
+
+    /** This network is blocked for the day after too many wrong client keys. */
+    class Banned : RelayFailure("relay has blocked this network for today")
+
+    /** The relay is not taking requests at all: not configured, or down. */
+    class Unavailable : RelayFailure("relay is unavailable")
+
     class Rejected(status: Int, detail: String) : RelayFailure("relay rejected the request ($status): $detail")
 }
 
@@ -105,7 +114,14 @@ class RelayClient(
             } else {
                 throw RelayFailure.Unauthorized()
             }
-        HttpStatusCode.Forbidden -> throw RelayFailure.Unauthorized()
+        HttpStatusCode.Forbidden ->
+            if (response.bodyAsText().contains(BANNED_ERROR)) {
+                throw RelayFailure.Banned()
+            } else {
+                throw RelayFailure.Unauthorized()
+            }
+        HttpStatusCode.TooManyRequests -> throw RelayFailure.TooMany()
+        HttpStatusCode.ServiceUnavailable -> throw RelayFailure.Unavailable()
         HttpStatusCode.Conflict, HttpStatusCode.PreconditionFailed -> throw RelayFailure.Conflict()
         else ->
             if (response.status.isSuccess()) {
@@ -119,6 +135,7 @@ class RelayClient(
         const val MAX_ERROR_CHARS = 200
         const val CLIENT_KEY_HEADER = "X-Client-Key"
         const val CLIENT_KEY_ERROR = "\"client_key\""
+        const val BANNED_ERROR = "\"banned\""
     }
 }
 

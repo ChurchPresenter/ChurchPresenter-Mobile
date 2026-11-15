@@ -25,8 +25,9 @@ private data class RelayConfig(val clientKey: String = "")
  * once a day, and again when the relay stops accepting it. Comes from the website rather than
  * being built in, so a rotation needs no app update.
  *
- * Where it is fetched from is Remote Config's [RemoteConfigKeys.RELAY_CONFIG_URL], not this
- * source: until that has arrived, and on a platform with no Remote Config, there is no key.
+ * Where it is fetched from is Remote Config's [RemoteConfigKeys.RELAY_CONFIG_URL], or the address
+ * built in from the build's secrets ([RemoteConfigDefaults.RELAY_CONFIG_URL]) until Remote Config has
+ * said otherwise.
  */
 class ClientKeySource(
     private val settings: AppSettings,
