@@ -22,9 +22,30 @@ sealed class SyncStatus {
     data object NotEnrolled : SyncStatus()
     data object Syncing : SyncStatus()
     data class Synced(val at: String, val pulled: Int, val pushed: Int) : SyncStatus()
-    data class Failed(val message: String) : SyncStatus()
+    data class Failed(val message: String, val reason: SyncFailReason = SyncFailReason.OTHER) : SyncStatus()
     /** The relay no longer accepts this phone: revoked, or the desktop started over with a new key. */
     data object Unauthorized : SyncStatus()
+    /**
+     * The relay refused this phone before it ever synced: the invite it scanned expired before it was
+     * used, or another phone used it first. A new invite is the way on, not "enroll again".
+     */
+    data object CodeExpired : SyncStatus()
+}
+
+/** Why a round failed, as far as the person holding the phone can do something about it. */
+enum class SyncFailReason {
+    /** No network, or the relay could not be reached. */
+    CONNECTION,
+
+    /** Rate limited for now; it clears within minutes. */
+    TOO_MANY,
+
+    /** This network is blocked until tomorrow. */
+    BLOCKED,
+
+    /** The sync service refused the app's key or is down: wait, or update the app. */
+    SERVICE,
+    OTHER,
 }
 
 /**
@@ -95,18 +116,26 @@ class CalendarSyncEngine(
         when (e) {
             is RelayFailure.Unauthorized -> {
                 Logger.e(TAG, "the relay no longer accepts this phone: ${e.message}")
-                _status.value = SyncStatus.Unauthorized
+                // Never synced: the invite it was enrolled with, not a phone the church let go.
+                _status.value = if (state().lastSyncAt.isEmpty()) SyncStatus.CodeExpired else SyncStatus.Unauthorized
             }
             is RelayFailure -> {
                 Logger.e(TAG, "sync failed: ${e.message}")
-                _status.value = SyncStatus.Failed(e.message.orEmpty())
+                _status.value = SyncStatus.Failed(e.message.orEmpty(), reasonFor(e))
             }
             else -> {
                 Logger.e(TAG, "sync failed: ${e.message}", e)
-                _status.value = SyncStatus.Failed(e.message.orEmpty())
+                _status.value = SyncStatus.Failed(e.message.orEmpty(), SyncFailReason.CONNECTION)
             }
         }
         return false
+    }
+
+    private fun reasonFor(failure: RelayFailure): SyncFailReason = when (failure) {
+        is RelayFailure.TooMany -> SyncFailReason.TOO_MANY
+        is RelayFailure.Banned -> SyncFailReason.BLOCKED
+        is RelayFailure.ClientKey, is RelayFailure.Unavailable -> SyncFailReason.SERVICE
+        else -> SyncFailReason.OTHER
     }
 
     private suspend fun round(client: RelayClient, sealing: Sealing, current: CalendarSyncState) {

@@ -28,6 +28,8 @@ on:
 
 # Opt into Node.js 24 now — Node.js 20 actions are deprecated (forced June 2026).
 env:
+  # Built into the app (generateRelayConfig): where calendar sync fetches the relay's client key.
+  CALENDAR_RELAY_CONFIG_URL: ${{ secrets.CALENDAR_RELAY_CONFIG_URL }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:

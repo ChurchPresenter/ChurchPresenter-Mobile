@@ -341,10 +341,19 @@ class CalendarSyncEngineTest {
 
     @Test
     fun aRevokedPhoneStopsAndSaysSo() = runTest {
+        val engine = engine()
+        assertTrue(engine.sync())
+        relay.deviceToken = "someone-else"
+        assertFalse(engine.sync())
+        assertEquals(SyncStatus.Unauthorized, engine.status.value)
+    }
+
+    @Test
+    fun aPhoneRefusedBeforeItEverSyncedIsToldItsInviteExpired() = runTest {
         relay.deviceToken = "someone-else"
         val engine = engine()
         assertFalse(engine.sync())
-        assertEquals(SyncStatus.Unauthorized, engine.status.value)
+        assertEquals(SyncStatus.CodeExpired, engine.status.value)
     }
 
     @Test

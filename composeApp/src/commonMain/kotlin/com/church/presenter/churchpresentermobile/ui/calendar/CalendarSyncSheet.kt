@@ -35,6 +35,12 @@ import churchpresentermobile.composeapp.generated.resources.calendar_sync_status
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_status_synced
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_status_syncing
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_status_unauthorized
+import com.church.presenter.churchpresentermobile.calendar.sync.SyncFailReason
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_status_code_expired
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_failed_connection
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_failed_too_many
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_failed_blocked
+import churchpresentermobile.composeapp.generated.resources.calendar_sync_failed_service
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_title
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_waiting_body
 import churchpresentermobile.composeapp.generated.resources.calendar_sync_waiting_title
@@ -79,7 +85,7 @@ internal fun CalendarSyncSheetContent(
     SheetTitle(stringResource(Res.string.calendar_sync_title), onClose = onDismiss)
     Spacer(Modifier.height(12.dp))
     when {
-        status is SyncStatus.NotEnrolled || status is SyncStatus.Unauthorized ->
+        status is SyncStatus.NotEnrolled || status is SyncStatus.Unauthorized || status is SyncStatus.CodeExpired ->
             EnrollPanel(status, flow, canReachDesktop, actions)
         else -> EnrolledPanel(status, actions)
     }
@@ -91,9 +97,15 @@ private fun EnrollPanel(status: SyncStatus, flow: EnrollFlow, canReachDesktop: B
     val colors = LocalAppColors.current
     when (flow) {
         EnrollFlow.Idle, EnrollFlow.Denied, EnrollFlow.SyncOff, is EnrollFlow.Failed -> {
-            if (status is SyncStatus.Unauthorized) {
+            if (status is SyncStatus.Unauthorized || status is SyncStatus.CodeExpired) {
                 Text(
-                    stringResource(Res.string.calendar_sync_status_unauthorized),
+                    stringResource(
+                        if (status is SyncStatus.CodeExpired) {
+                            Res.string.calendar_sync_status_code_expired
+                        } else {
+                            Res.string.calendar_sync_status_unauthorized
+                        },
+                    ),
                     color = colors.danger,
                     fontSize = 13.sp,
                 )
@@ -190,7 +202,7 @@ private fun EnrolledPanel(status: SyncStatus, actions: SyncActions) {
             status.at.take(TIME_CHARS).replace('T', ' '),
         ) to colors.accent
         SyncStatus.Syncing -> stringResource(Res.string.calendar_sync_status_syncing) to colors.muted
-        is SyncStatus.Failed -> stringResource(Res.string.calendar_sync_status_failed, status.message) to colors.danger
+        is SyncStatus.Failed -> failureText(status) to colors.danger
         else -> "" to colors.muted
     }
     Text(line, color = color, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
@@ -211,3 +223,13 @@ private fun EnrolledPanel(status: SyncStatus, actions: SyncActions) {
 
 private const val CODE_GROUP = 3
 private const val TIME_CHARS = 16
+
+/** What a failed round means for the person holding the phone, by why it failed. */
+@Composable
+private fun failureText(status: SyncStatus.Failed): String = when (status.reason) {
+    SyncFailReason.CONNECTION -> stringResource(Res.string.calendar_sync_failed_connection)
+    SyncFailReason.TOO_MANY -> stringResource(Res.string.calendar_sync_failed_too_many)
+    SyncFailReason.BLOCKED -> stringResource(Res.string.calendar_sync_failed_blocked)
+    SyncFailReason.SERVICE -> stringResource(Res.string.calendar_sync_failed_service)
+    SyncFailReason.OTHER -> stringResource(Res.string.calendar_sync_status_failed, status.message)
+}

@@ -36,7 +36,10 @@ object RemoteConfigDefaults {
     /** Demo mode is off by default. */
     const val IS_DEMO_MODE                  = false
     /** Empty: without the console's value there is no key to fetch, and calendar sync says so. */
-    const val RELAY_CONFIG_URL              = ""
+    // The relay-config route, built in from the CALENDAR_RELAY_CONFIG_URL secret (generateRelayConfig),
+    // so a phone can link before Remote Config has ever arrived -- a fresh install, scanned at once --
+    // or on a platform that never delivers it. Remote Config can still point it elsewhere.
+    const val RELAY_CONFIG_URL              = BuildRelay.CALENDAR_RELAY_CONFIG_URL
 
     /** Minimum fetch interval for production builds (seconds). */
     const val FETCH_INTERVAL_PRODUCTION = 3600L

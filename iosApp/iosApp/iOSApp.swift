@@ -121,6 +121,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             "feature_tv_signage"          : "false",
             "is_demo_mode"                : "false",
             // Where the calendar relay's client key is fetched; without it no phone can sync.
+            // Empty: Kotlin then uses the build's own (RemoteConfigDefaults.RELAY_CONFIG_URL).
             "relay_config_url"            : "",
         ]
         try? rc.setDefaults(from: defaults)
