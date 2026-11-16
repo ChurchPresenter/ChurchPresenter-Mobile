@@ -110,7 +110,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         rc.configSettings = rcSettings
         // Every key Kotlin reads (RemoteConfigKeys), with RemoteConfigDefaults' values. The keys
         // handed to Kotlin below are these, so a key added here can never be left out of them.
-        let defaults: [String: String] = [
+        let rcDefaults: [String: String] = [
             "maintenance_mode"            : "false",
             "min_app_version"             : "1",
             "announcement_banner"         : "",
@@ -124,7 +124,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             // Empty: Kotlin then uses the build's own (RemoteConfigDefaults.RELAY_CONFIG_URL).
             "relay_config_url"            : "",
         ]
-        try? rc.setDefaults(from: defaults)
+        try? rc.setDefaults(from: rcDefaults)
         rc.fetchAndActivate { status, error in
             if let error = error {
                 print("RemoteConfig fetchAndActivate error: \(error)")
@@ -136,7 +136,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
             // (or default) values even on error, so Kotlin always gets something.
             // Dispatch to main thread so Kotlin Compose state updates safely.
             var values: [String: String] = [:]
-            for key in defaults.keys {
+            for key in rcDefaults.keys {
                 values[key] = rc[key].stringValue ?? ""
             }
             DispatchQueue.main.async {
