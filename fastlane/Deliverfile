@@ -12,5 +12,9 @@ skip_binary_upload(true)
 skip_screenshots(true)
 submit_for_review(false)
 
+# Precheck cannot read in-app purchases with an API key and fails the run after the upload is done;
+# it only matters for a submission, which this never makes.
+run_precheck_before_submit(false)
+
 # Skips the HTML preview prompt, which a CI run cannot answer.
 force(true)
