@@ -1,0 +1,5 @@
+• Přepracovaný samostatný režim s jednoduššími kartami a vzhledy zobrazení
+• V samostatném režimu lze do pořadu přidávat biblické verše
+• Snazší nastavení synchronizace kalendáře a srozumitelnější nápověda při potížích
+• Rychlejší načítání fotek
+• Vyšší stabilita u dlouhých písní a velkých knihoven

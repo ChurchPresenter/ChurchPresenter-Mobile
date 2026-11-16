@@ -1,4 +1,4 @@
-# App Store listing text for every localization, uploaded with `fastlane deliver`.
+# App Store listing text and What's New for every localization, uploaded with `fastlane deliver`.
 # Text only: the binary goes up through Store Release, screenshots by hand.
 #
 # Run by the "App Store Metadata" workflow (.github/workflows/ios-metadata.yml),

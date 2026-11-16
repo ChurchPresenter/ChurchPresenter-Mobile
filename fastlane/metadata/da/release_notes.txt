@@ -1,0 +1,5 @@
+• Nyt design i selvstændig tilstand med enklere faner og visningsstile
+• Bibelvers kan føjes til programmet i selvstændig tilstand
+• Nemmere opsætning af kalendersynk med tydeligere hjælp, når noget går galt
+• Billeder indlæses hurtigere
+• Bedre stabilitet med lange sange og store biblioteker

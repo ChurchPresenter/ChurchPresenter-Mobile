@@ -1,0 +1,5 @@
+• Redesigned standalone mode with simpler tabs and display looks
+• Bible verses can be added to the running order in standalone mode
+• Easier calendar sync setup, with clearer help when something goes wrong
+• Photos load faster
+• Stability fixes for long songs and large libraries

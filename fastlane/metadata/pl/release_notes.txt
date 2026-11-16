@@ -1,0 +1,5 @@
+• Odświeżony tryb samodzielny z prostszymi kartami i wyglądem wyświetlania
+• W trybie samodzielnym wersety Biblii można dodawać do porządku nabożeństwa
+• Łatwiejsza konfiguracja synchronizacji kalendarza i jaśniejsza pomoc w razie problemów
+• Zdjęcia wczytują się szybciej
+• Większa stabilność przy długich pieśniach i dużych bibliotekach

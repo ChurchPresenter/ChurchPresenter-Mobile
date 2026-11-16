@@ -1,0 +1,5 @@
+• Mode autonome repensé, avec des onglets et des styles d'affichage plus simples
+• Les versets bibliques peuvent être ajoutés au déroulé en mode autonome
+• Synchronisation du calendrier plus simple à configurer, avec une aide plus claire en cas de problème
+• Les photos se chargent plus vite
+• Meilleure stabilité avec les chants longs et les grandes bibliothèques

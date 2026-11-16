@@ -1,0 +1,5 @@
+• Omgjort fristående läge med enklare flikar och visningsstilar
+• Bibelverser kan läggas till i programmet i fristående läge
+• Enklare konfiguration av kalendersynk, med tydligare hjälp när något går fel
+• Bilder laddas snabbare
+• Bättre stabilitet med långa sånger och stora bibliotek

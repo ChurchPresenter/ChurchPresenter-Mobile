@@ -1,0 +1,5 @@
+• Modalità autonoma ridisegnata, con schede e stili di visualizzazione più semplici
+• In modalità autonoma i versetti biblici si possono aggiungere alla scaletta
+• Configurazione della sincronizzazione del calendario più semplice, con aiuto più chiaro in caso di problemi
+• Le foto si caricano più velocemente
+• Maggiore stabilità con canti lunghi e librerie grandi

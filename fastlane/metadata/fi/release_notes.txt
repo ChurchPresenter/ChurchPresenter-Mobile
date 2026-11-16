@@ -1,0 +1,5 @@
+• Uudistettu itsenäinen tila yksinkertaisemmilla välilehdillä ja näyttötyyleillä
+• Raamatunjakeita voi lisätä ohjelmaan itsenäisessä tilassa
+• Helpompi kalenterin synkronoinnin käyttöönotto ja selkeämmät ohjeet ongelmatilanteissa
+• Kuvat latautuvat nopeammin
+• Parempi vakaus pitkillä lauluilla ja suurilla kirjastoilla

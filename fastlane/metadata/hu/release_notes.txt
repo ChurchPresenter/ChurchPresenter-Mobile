@@ -1,0 +1,5 @@
+• Megújult önálló mód egyszerűbb lapokkal és megjelenítési stílusokkal
+• Önálló módban bibliai versek is felvehetők a sorrendbe
+• Egyszerűbb naptárszinkron-beállítás, érthetőbb segítség hiba esetén
+• Gyorsabban töltődnek be a fényképek
+• Nagyobb stabilitás hosszú énekeknél és nagy könyvtáraknál
