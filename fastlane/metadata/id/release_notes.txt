@@ -1,0 +1,5 @@
+• Mode mandiri didesain ulang dengan tab dan tampilan layar yang lebih sederhana
+• Ayat Alkitab dapat ditambahkan ke susunan acara dalam mode mandiri
+• Penyiapan sinkronisasi kalender lebih mudah, dengan bantuan lebih jelas saat ada masalah
+• Foto dimuat lebih cepat
+• Lebih stabil untuk lagu panjang dan pustaka besar

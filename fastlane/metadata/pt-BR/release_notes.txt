@@ -1,0 +1,5 @@
+• Modo independente redesenhado, com abas e estilos de exibição mais simples
+• No modo independente, versículos da Bíblia podem entrar na ordem do culto
+• Configuração mais fácil da sincronização de agenda, com ajuda mais clara quando algo dá errado
+• As fotos carregam mais rápido
+• Mais estabilidade com músicas longas e bibliotecas grandes

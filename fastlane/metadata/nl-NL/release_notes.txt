@@ -1,0 +1,5 @@
+• Vernieuwde zelfstandige modus met eenvoudigere tabbladen en weergavestijlen
+• Bijbelverzen kunnen in de zelfstandige modus aan de liturgie worden toegevoegd
+• Eenvoudiger instellen van agendasynchronisatie, met duidelijkere hulp als er iets misgaat
+• Foto's laden sneller
+• Stabieler bij lange liederen en grote bibliotheken

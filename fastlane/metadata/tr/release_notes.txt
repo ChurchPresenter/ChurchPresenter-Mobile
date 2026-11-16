@@ -1,0 +1,5 @@
+• Daha sade sekmeler ve görünüm stilleriyle yenilenen bağımsız mod
+• Bağımsız modda Kutsal Kitap ayetleri ayin sırasına eklenebilir
+• Takvim eşitleme kurulumu daha kolay, sorun olduğunda daha açık yardım
+• Fotoğraflar daha hızlı yükleniyor
+• Uzun ilahiler ve büyük kitaplıklarda daha fazla kararlılık

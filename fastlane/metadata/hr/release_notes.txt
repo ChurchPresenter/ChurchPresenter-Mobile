@@ -1,0 +1,5 @@
+• Redizajniran samostalni način s jednostavnijim karticama i izgledima prikaza
+• U samostalnom načinu biblijski se reci mogu dodati u redoslijed bogoslužja
+• Jednostavnije postavljanje sinkronizacije kalendara i jasnija pomoć kad nešto pođe po zlu
+• Fotografije se brže učitavaju
+• Veća stabilnost kod dugih pjesama i velikih knjižnica

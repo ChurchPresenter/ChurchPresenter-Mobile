@@ -1,0 +1,5 @@
+• Prepracovaný samostatný režim s jednoduchšími kartami a vzhľadmi zobrazenia
+• V samostatnom režime možno do programu pridávať biblické verše
+• Jednoduchšie nastavenie synchronizácie kalendára a zrozumiteľnejšia pomoc pri problémoch
+• Rýchlejšie načítanie fotiek
+• Vyššia stabilita pri dlhých piesňach a veľkých knižniciach

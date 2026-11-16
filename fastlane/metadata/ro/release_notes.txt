@@ -1,0 +1,5 @@
+• Mod independent reproiectat, cu file și stiluri de afișare mai simple
+• În modul independent, versetele biblice pot fi adăugate în ordinea serviciului
+• Configurare mai ușoară a sincronizării calendarului, cu ajutor mai clar când apare o problemă
+• Fotografiile se încarcă mai repede
+• Stabilitate mai bună pentru cântări lungi și biblioteci mari

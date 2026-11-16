@@ -1,0 +1,5 @@
+• Chế độ độc lập được thiết kế lại với các thẻ và kiểu hiển thị đơn giản hơn
+• Trong chế độ độc lập, có thể thêm câu Kinh Thánh vào chương trình
+• Thiết lập đồng bộ lịch dễ hơn, kèm hướng dẫn rõ ràng hơn khi có sự cố
+• Ảnh tải nhanh hơn
+• Ổn định hơn với bài hát dài và thư viện lớn

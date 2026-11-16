@@ -1,0 +1,5 @@
+• Überarbeiteter eigenständiger Modus mit einfacheren Tabs und Darstellungen
+• Bibelverse lassen sich im eigenständigen Modus in den Ablauf aufnehmen
+• Einfachere Einrichtung des Kalenderabgleichs mit klareren Hinweisen bei Problemen
+• Fotos laden schneller
+• Mehr Stabilität bei langen Liedern und großen Bibliotheken

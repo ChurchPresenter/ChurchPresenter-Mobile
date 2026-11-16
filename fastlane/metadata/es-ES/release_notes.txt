@@ -1,0 +1,5 @@
+• Modo independiente rediseñado, con pestañas y estilos de pantalla más sencillos
+• En el modo independiente se pueden añadir versículos al orden del culto
+• Configuración más fácil de la sincronización del calendario, con ayuda más clara si algo falla
+• Las fotos cargan más rápido
+• Mayor estabilidad con canciones largas y bibliotecas grandes

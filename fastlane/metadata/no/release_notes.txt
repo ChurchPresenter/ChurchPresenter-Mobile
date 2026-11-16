@@ -1,0 +1,5 @@
+• Nytt utseende på frittstående modus med enklere faner og visningsstiler
+• Bibelvers kan legges til i programmet i frittstående modus
+• Enklere oppsett av kalendersynkronisering, med tydeligere hjelp når noe går galt
+• Bilder lastes raskere
+• Bedre stabilitet med lange sanger og store biblioteker
