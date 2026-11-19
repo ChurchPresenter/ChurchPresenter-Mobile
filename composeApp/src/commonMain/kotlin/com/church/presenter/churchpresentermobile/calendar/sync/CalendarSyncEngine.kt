@@ -4,6 +4,8 @@ import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.calendar.nowIso
 import com.church.presenter.churchpresentermobile.model.PlannedService
 import com.church.presenter.churchpresentermobile.network.apiRunCatching
+import com.church.presenter.churchpresentermobile.network.isExpectedConnectivityError
+import com.church.presenter.churchpresentermobile.util.CrashReporting
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -121,14 +123,32 @@ class CalendarSyncEngine(
             }
             is RelayFailure -> {
                 Logger.e(TAG, "sync failed: ${e.message}")
+                if (e is RelayFailure.Rejected) report(e)
                 _status.value = SyncStatus.Failed(e.message.orEmpty(), reasonFor(e))
             }
             else -> {
                 Logger.e(TAG, "sync failed: ${e.message}", e)
+                if (!e.isExpectedConnectivityError()) CrashReporting.recordException(e)
                 _status.value = SyncStatus.Failed(e.message.orEmpty(), SyncFailReason.CONNECTION)
             }
         }
         return false
+    }
+
+    /**
+     * Sends a refusal the phone has no answer for -- a 5xx, an unexpected status, a reply that went
+     * backwards -- to crash reporting with everything known about the call. The refusals that are a
+     * state of their own (token, key, rate limit, conflict) are not reported; they are not faults.
+     */
+    private fun report(e: RelayFailure.Rejected) {
+        val call = e.call
+        val where = if (call == null) "in sync" else "${call.method} ${call.route} on ${call.host}"
+        val ray = call?.ray?.takeIf { it.isNotEmpty() }?.let { ", cf-ray $it" }.orEmpty()
+        CrashReporting.setCustomKey("relay_status", e.status.toString())
+        CrashReporting.setCustomKey("relay_route", call?.let { "${it.method} ${it.route}" } ?: "in sync")
+        CrashReporting.setCustomKey("relay_ray", call?.ray.orEmpty())
+        CrashReporting.log("relay rejected $where (${e.status})$ray")
+        CrashReporting.recordException(RelayRejectedReport("relay $where answered ${e.status}: ${e.detail}$ray", e))
     }
 
     private fun reasonFor(failure: RelayFailure): SyncFailReason = when (failure) {
@@ -270,3 +290,6 @@ class CalendarSyncEngine(
 
 /** `YYYY-MM-DD` at the front of an ISO instant. */
 private const val DATE_CHARS = 10
+
+/** What crash reporting is handed for a [RelayFailure.Rejected]: the call it came from, in the title. */
+class RelayRejectedReport(message: String, cause: RelayFailure.Rejected) : Exception(message, cause)
