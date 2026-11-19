@@ -44,8 +44,15 @@ sealed class RelayFailure(message: String) : Exception(message) {
     /** The relay is not taking requests at all: not configured, or down. */
     class Unavailable : RelayFailure("relay is unavailable")
 
-    class Rejected(status: Int, detail: String) : RelayFailure("relay rejected the request ($status): $detail")
+    class Rejected(val status: Int, val detail: String, val call: RelayCall? = null) :
+        RelayFailure("relay rejected the request ($status): $detail")
 }
+
+/**
+ * Which relay call failed, for the crash report: the route as a template -- no instance, record or
+ * device id -- and Cloudflare's ray id, which finds the same request in the relay's own logs.
+ */
+data class RelayCall(val method: String, val route: String, val host: String, val ray: String)
 
 /** This phone's half of the relay protocol. */
 class RelayClient(
@@ -63,7 +70,7 @@ class RelayClient(
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(PushTokenBody.serializer(), PushTokenBody(pushToken)))
         }
-        checked(response)
+        checked(response, "devices/me/push")
     }
 
     /** Tells the relay what this phone calls itself, sealed so only the desktop can read it. */
@@ -74,13 +81,13 @@ class RelayClient(
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(DeviceNameBody.serializer(), DeviceNameBody(nameBox)))
         }
-        checked(response)
+        checked(response, "devices/me/name")
     }
 
     suspend fun changes(since: Long): ChangesResponse {
         val key = clientKey()
         val response = client.get("$base/changes?since=$since") { auth(key) }
-        return json.decodeFromString(ChangesResponse.serializer(), checked(response).bodyAsText())
+        return json.decodeFromString(ChangesResponse.serializer(), checked(response, "changes").bodyAsText())
     }
 
     /** Writes one record; [ifRev] is the revision our copy came from, 0 for a service the relay has never seen. */
@@ -92,13 +99,13 @@ class RelayClient(
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(SealedRecord.serializer(), record))
         }
-        return json.decodeFromString(WriteResponse.serializer(), checked(response).bodyAsText()).rev
+        return json.decodeFromString(WriteResponse.serializer(), checked(response, "records/{id}").bodyAsText()).rev
     }
 
     suspend fun deleteRecord(id: String): Long {
         val key = clientKey()
         val response = client.delete("$base/records/$id") { auth(key) }
-        return json.decodeFromString(WriteResponse.serializer(), checked(response).bodyAsText()).rev
+        return json.decodeFromString(WriteResponse.serializer(), checked(response, "records/{id}").bodyAsText()).rev
     }
 
     private fun HttpRequestBuilder.auth(clientKey: String) {
@@ -107,7 +114,7 @@ class RelayClient(
         if (clientKey.isNotBlank()) header(CLIENT_KEY_HEADER, clientKey)
     }
 
-    private suspend fun checked(response: HttpResponse): HttpResponse = when (response.status) {
+    private suspend fun checked(response: HttpResponse, route: String): HttpResponse = when (response.status) {
         HttpStatusCode.Unauthorized ->
             if (response.bodyAsText().contains(CLIENT_KEY_ERROR)) {
                 throw RelayFailure.ClientKey()
@@ -127,12 +134,22 @@ class RelayClient(
             if (response.status.isSuccess()) {
                 response
             } else {
-                throw RelayFailure.Rejected(response.status.value, response.bodyAsText().take(MAX_ERROR_CHARS))
+                throw RelayFailure.Rejected(
+                    response.status.value,
+                    response.bodyAsText().take(MAX_ERROR_CHARS),
+                    RelayCall(
+                        method = response.call.request.method.value,
+                        route = "/i/{instance}/$route",
+                        host = response.call.request.url.host,
+                        ray = response.headers[CF_RAY_HEADER].orEmpty(),
+                    ),
+                )
             }
     }
 
     private companion object {
         const val MAX_ERROR_CHARS = 200
+        const val CF_RAY_HEADER = "cf-ray"
         const val CLIENT_KEY_HEADER = "X-Client-Key"
         const val CLIENT_KEY_ERROR = "\"client_key\""
         const val BANNED_ERROR = "\"banned\""
