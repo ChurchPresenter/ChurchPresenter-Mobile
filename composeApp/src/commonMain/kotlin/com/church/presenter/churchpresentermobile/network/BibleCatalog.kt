@@ -6,11 +6,16 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.InstalledBibleBook
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 private const val TAG = "BibleCatalog"
 
@@ -42,6 +47,8 @@ class BibleCatalog(
     private val mode: StateFlow<AppMode>,
     private val remote: BibleReader,
     private val bibles: LocalBibleRepository? = null,
+    /** Where a downloaded translation is read and parsed; a test on virtual time passes its own. */
+    private val work: CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
      * True when Bible text is being served from this device rather than a desktop: always in
@@ -120,12 +127,20 @@ class BibleCatalog(
     val activeBibleAbbreviation: String
         get() = if (isLocal) bibles?.index?.value?.active?.abbreviation.orEmpty() else ""
 
+    private val openLock = Mutex()
+
     /** Books straight out of the index, so drawing the list never parses a module. */
     private fun localBooks(): List<BibleBook> =
         bibles?.index?.value?.active?.books.orEmpty().map(::toBibleBook)
 
-    private fun localChapter(bookNumber: Int, chapter: Int): List<BibleVerse> =
-        bibles?.openActive()?.chapter(bookNumber, chapter).orEmpty()
+    /**
+     * Off the main thread: the first read of a translation loads and parses its whole module.
+     * One at a time, so two quick taps wait for that parse instead of starting a second one.
+     */
+    private suspend fun localChapter(bookNumber: Int, chapter: Int): List<BibleVerse> =
+        withContext(work) {
+            openLock.withLock { bibles?.openActive()?.chapter(bookNumber, chapter).orEmpty() }
+        }
 
     private fun toBibleBook(book: InstalledBibleBook): BibleBook = BibleBook(
         name = book.name,

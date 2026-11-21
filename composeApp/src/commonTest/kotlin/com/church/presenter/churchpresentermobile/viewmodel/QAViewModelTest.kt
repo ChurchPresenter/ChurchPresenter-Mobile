@@ -463,4 +463,15 @@ class QAViewModelTest {
             tearDown(vm)
         }
     }
+
+    @Test
+    fun aQuestionSentTwiceIsListedOnce() = runVmTestUnconfined {
+        val question = """{"id":"q1","text":"Why?","timestamp":1,"status":"PENDING"}"""
+        val vm = vm { path ->
+            if (path.endsWith("/status")) respond("""{"sessionActive":true}""", HttpStatusCode.OK)
+            else respond("[$question,$question]", HttpStatusCode.OK)
+        }
+        val admin = assertIs<QAUiState.Admin>(vm.settled())
+        assertEquals(listOf("q1"), admin.questions.map { it.id })
+    }
 }

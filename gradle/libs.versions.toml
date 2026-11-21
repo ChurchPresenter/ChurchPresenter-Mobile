@@ -1,5 +1,6 @@
 [versions]
 agp = "8.12.0"
+desugarJdkLibs = "2.1.5"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -39,6 +40,7 @@ sentry-android = "8.47.0"
 roborazzi = "1.73.0"
 
 [libraries]
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 roborazzi-composeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }

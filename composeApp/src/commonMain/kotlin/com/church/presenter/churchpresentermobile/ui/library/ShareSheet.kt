@@ -18,6 +18,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +60,9 @@ import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.ui.verticalScrollWithScrollbar
 import com.church.presenter.churchpresentermobile.viewmodel.LibraryShareViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.ShareUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -103,6 +110,23 @@ internal fun ShareSheetContent(
 ) {
     val colors = LocalAppColors.current
     val state by viewModel.uiState.collectAsState()
+    // Reading a picked file and applying an import parse and re-encode the whole library: off
+    // the main thread, or a large one holds the UI until it is done and Android reports an ANR.
+    // One at a time, so a second tap while one runs does nothing.
+    val scope = rememberCoroutineScope()
+    var working by remember { mutableStateOf(false) }
+    val offMain: (() -> Unit) -> Unit = { work ->
+        if (!working) {
+            working = true
+            scope.launch {
+                try {
+                    withContext(Dispatchers.Default) { work() }
+                } finally {
+                    working = false
+                }
+            }
+        }
+    }
 
     run {
         Column(
@@ -129,7 +153,7 @@ internal fun ShareSheetContent(
             when (val current = state) {
                 is ShareUiState.Previewing -> PreviewCard(
                     preview = current.preview,
-                    onResolve = viewModel::confirmImport,
+                    onResolve = { resolution -> offMain { viewModel.confirmImport(resolution) } },
                     onCancel = viewModel::dismiss,
                 )
 
@@ -157,7 +181,7 @@ internal fun ShareSheetContent(
                     }
                     TextDocumentPicker(
                         onPicked = { file ->
-                            file?.let { viewModel.onFilePicked(it.text, it.fileName) }
+                            file?.let { offMain { viewModel.onFilePicked(it.text, it.fileName) } }
                         },
                         onError = onMessage,
                     ) { launch ->

@@ -1150,11 +1150,15 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // minSdk is 24 and java.time only ships from API 26: kotlinx-datetime's time zones are
+        // java.time underneath, so without this every clock crashes on Android 7.
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     // Firebase BOM — constrains all firebase-* library versions for the Android target
     add("androidMainImplementation", platform(libs.firebase.bom))
 }

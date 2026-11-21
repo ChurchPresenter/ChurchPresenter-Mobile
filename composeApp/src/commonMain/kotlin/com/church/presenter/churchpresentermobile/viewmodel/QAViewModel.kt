@@ -81,7 +81,8 @@ class QAViewModel(
                 val status = statusResult.getOrNull()!!
                 _uiState.value = QAUiState.Admin(
                     sessionActive = status.sessionActive,
-                    questions = questionsResult.getOrNull()!!,
+                    // The admin list is keyed by id, and a repeated key crashes it.
+                    questions = questionsResult.getOrNull()!!.distinctBy { it.id },
                     displayedQuestionId = status.displayedQuestionId,
                     votingEnabled = status.votingEnabled
                 )

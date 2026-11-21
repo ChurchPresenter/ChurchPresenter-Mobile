@@ -104,6 +104,8 @@ object Sanitize {
 
     fun presets(presets: List<PresetSummary>): List<PresetSummary> = presets
         .filter { isId(it.id) }
+        // The picker keys its list by id, and a repeated key crashes it: one id, one preset.
+        .distinctBy { it.id }
         .take(PRESETS_MAX)
         .map { it.copy(
             name = text(it.name, TITLE_CHARS).ifEmpty { DEFAULT_PRESET },
