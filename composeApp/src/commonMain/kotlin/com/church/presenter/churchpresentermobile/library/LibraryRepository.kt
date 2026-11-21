@@ -65,7 +65,7 @@ class LibraryRepository(
 
     private fun parse(text: String?): LibraryData? {
         if (text.isNullOrBlank()) return null
-        return runCatching { json.decodeFromString<LibraryData>(text) }
+        return runCatching { json.decodeFromString<LibraryData>(text).withUniqueIds() }
             .onFailure { Logger.e(TAG, "could not parse library: ${it.message}") }
             .getOrNull()
     }
@@ -217,3 +217,10 @@ private inline fun <T> List<T>.replaceOrAdd(item: T, predicate: (T) -> Boolean):
     val index = indexOfFirst(predicate)
     return if (index < 0) this + item else toMutableList().also { it[index] = item }
 }
+
+/** One item per id: the library lists are keyed by id, and a file on disk cannot promise it. */
+private fun LibraryData.withUniqueIds(): LibraryData = copy(
+    songs = songs.distinctBy { it.id },
+    announcements = announcements.distinctBy { it.id },
+    setlists = setlists.distinctBy { it.id },
+)
