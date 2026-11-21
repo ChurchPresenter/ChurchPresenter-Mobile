@@ -18,6 +18,7 @@ import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.testutil.FakeOutputSink
 import com.church.presenter.churchpresentermobile.testutil.tearDown
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -90,7 +91,7 @@ class BibleViewModelStandaloneTest {
             isDemoMode = false,
             presenter = null,
             mode = mode,
-            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles),
+            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles, work = Dispatchers.Unconfined),
             service = order,
         )
         advanceUntilIdle()
@@ -144,7 +145,7 @@ class BibleViewModelStandaloneTest {
             isDemoMode = false,
             presenter = null,
             mode = mode,
-            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles),
+            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles, work = Dispatchers.Unconfined),
         )
         advanceUntilIdle()
         assertTrue(vm.books.value.isEmpty(), "nothing is installed yet")
@@ -171,7 +172,7 @@ class BibleViewModelStandaloneTest {
             isDemoMode = false,
             presenter = null,
             mode = mode,
-            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles),
+            catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles, work = Dispatchers.Unconfined),
         )
         advanceUntilIdle()
         assertNotNull(vm.error.value, "nothing installed and no computer: the banner is honest here")
@@ -207,7 +208,7 @@ class BibleViewModelStandaloneTest {
                 isDemoMode = false,
                 presenter = engine,
                 mode = mode,
-                catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles),
+                catalog = BibleCatalog(mode, SlowlyTimingOutReader(), bibles, work = Dispatchers.Unconfined),
             )
         }
     }

@@ -6,6 +6,7 @@ import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.BibleVerse
 import com.church.presenter.churchpresentermobile.model.InstalledBibleBook
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +47,8 @@ class BibleCatalog(
     private val mode: StateFlow<AppMode>,
     private val remote: BibleReader,
     private val bibles: LocalBibleRepository? = null,
+    /** Where a downloaded translation is read and parsed; a test on virtual time passes its own. */
+    private val work: CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
      * True when Bible text is being served from this device rather than a desktop: always in
@@ -135,7 +138,7 @@ class BibleCatalog(
      * One at a time, so two quick taps wait for that parse instead of starting a second one.
      */
     private suspend fun localChapter(bookNumber: Int, chapter: Int): List<BibleVerse> =
-        withContext(Dispatchers.Default) {
+        withContext(work) {
             openLock.withLock { bibles?.openActive()?.chapter(bookNumber, chapter).orEmpty() }
         }
 

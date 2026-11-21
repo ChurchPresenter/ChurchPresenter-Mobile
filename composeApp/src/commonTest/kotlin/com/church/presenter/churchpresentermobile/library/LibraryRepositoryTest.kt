@@ -328,4 +328,40 @@ class LibraryRepositoryTest {
 
         assertEquals(listOf(0, 1, 2), seen)
     }
+
+    @Test
+    fun `a file holding one id twice loads each item once`() {
+        val storage = InMemoryFileStorage()
+        val (writer, _) = repo(storage)
+        writer.upsertSong(song(id = "s1", title = "First"))
+        writer.upsertAnnouncement(LocalAnnouncement(id = "a1", title = "Notice"))
+        val saved = storage.read(LIBRARY_FILE)!!
+        val doubled = saved
+            .replace("\"songs\":[", "\"songs\":[" + songJson(saved) + ",")
+            .replace("\"announcements\":[", "\"announcements\":[" + announcementJson(saved) + ",")
+        storage.write(LIBRARY_FILE, doubled)
+
+        val (reader, _) = repo(storage)
+        val loaded = reader.load()
+
+        assertEquals(listOf("s1"), loaded.songs.map { it.id })
+        assertEquals(listOf("a1"), loaded.announcements.map { it.id })
+    }
+
+    private fun songJson(saved: String): String = firstObjectAfter(saved, "\"songs\":[")
+
+    private fun announcementJson(saved: String): String = firstObjectAfter(saved, "\"announcements\":[")
+
+    /** The first JSON object after [marker], braces counted so nested objects stay whole. */
+    private fun firstObjectAfter(text: String, marker: String): String {
+        val start = text.indexOf(marker) + marker.length
+        var depth = 0
+        for (i in start until text.length) {
+            when (text[i]) {
+                '{' -> depth++
+                '}' -> if (--depth == 0) return text.substring(start, i + 1)
+            }
+        }
+        error("no object after $marker")
+    }
 }

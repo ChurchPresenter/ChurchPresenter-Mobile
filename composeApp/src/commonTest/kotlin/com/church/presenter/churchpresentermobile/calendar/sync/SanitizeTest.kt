@@ -186,4 +186,12 @@ class SanitizeTest {
         assertEquals(200, clean[0].detail.length)
         assertTrue(clean.none { it.name == "Dropped" })
     }
+
+    @Test
+    fun presetsKeepOnePerId() {
+        val clean = Sanitize.presets(
+            listOf(PresetSummary("p1", "First"), PresetSummary("p2", "Other"), PresetSummary("p1", "Again")),
+        )
+        assertEquals(listOf("First", "Other"), clean.map { it.name })
+    }
 }
