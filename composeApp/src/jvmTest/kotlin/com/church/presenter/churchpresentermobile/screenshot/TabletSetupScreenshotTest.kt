@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
@@ -76,6 +77,17 @@ class TabletSetupScreenshotTest {
     fun modePickerCalendar() = tablet("mode-picker-tablet__calendar-selected") {
         // Three cards across, where the phone stacks them: the tablet picker has to stay readable
         // with a third signal path drawn beside the other two.
+        ModePickerScreen(onModeChosen = {}, twoPane = true, initialMode = AppMode.CALENDAR)
+    }
+
+    @Test
+    fun modePickerLandscapeIpad() = screenshot(
+        // A 1024×768 iPad held sideways: the picker shrinks to fit rather than scrolling, and the
+        // calendar card's "Morning service" stays clear of its check mark.
+        "mode-picker-tablet__landscape-ipad",
+        width = null,
+        surface = DpSize(1024.dp, 768.dp),
+    ) {
         ModePickerScreen(onModeChosen = {}, twoPane = true, initialMode = AppMode.CALENDAR)
     }
 

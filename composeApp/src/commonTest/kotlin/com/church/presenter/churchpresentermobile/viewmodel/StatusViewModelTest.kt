@@ -247,4 +247,59 @@ class StatusViewModelTest {
             tearDown(vm)
         }
     }
+
+    // ── Rechecking the address typed in Settings ─────────────────────────
+
+    private class Probes {
+        val saved = mutableListOf<String>()
+        val drafts = mutableListOf<Pair<String, String>>()
+    }
+
+    /** The saved address answers as a healthy desktop; a typed one is unreachable. */
+    private fun twoAddressVm(settings: AppSettings, probes: Probes) = StatusViewModel(
+        settings,
+        draftServiceFactory = { url, key ->
+            probes.drafts += url to key
+            StatusService(url, key, "d", mockClient { throw IllegalStateException("Connection refused") })
+        },
+    ) {
+        probes.saved += it.apiBaseUrl
+        val healthy = mockClient { respond("""{"appVersion":"1.0"}""", HttpStatusCode.OK) }
+        StatusService(it.apiBaseUrl, it.apiKey, "d", healthy)
+    }
+
+    @Test
+    fun recheckingATypedAddressProbesThatAddressNotTheSavedOne() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage()).apply { host = "192.168.1.10"; port = 8765 }
+        val probes = Probes()
+        val vm = twoAddressVm(settings, probes)
+        try {
+            assertIs<StatusUiState.Success>(vm.settled())
+
+            vm.recheckAt("http://10.0.0.99:8765/api", "key")
+
+            assertIs<StatusUiState.Error>(vm.settled())
+            assertEquals(listOf("http://10.0.0.99:8765/api" to "key"), probes.drafts)
+        } finally {
+            tearDown(vm)
+        }
+    }
+
+    @Test
+    fun recheckingTheSavedAddressUsesTheSavedConnection() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage()).apply { host = "192.168.1.10"; port = 8765 }
+        val probes = Probes()
+        val vm = twoAddressVm(settings, probes)
+        try {
+            vm.settled()
+
+            vm.recheckAt(settings.apiBaseUrl, settings.apiKey)
+
+            assertIs<StatusUiState.Success>(vm.settled())
+            assertTrue(probes.drafts.isEmpty(), "the saved address was probed as if it were a draft")
+            assertEquals(2, probes.saved.size)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }
