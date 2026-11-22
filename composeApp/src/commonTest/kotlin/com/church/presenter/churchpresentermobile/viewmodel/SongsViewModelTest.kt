@@ -508,11 +508,15 @@ class SongsViewModelTest {
         val vm = liveVm(ws)
         try {
             vm.openFirstSong()
+            // Opening a song tells the desktop which one, after the detail loads; that
+            // message must be out before the toggles, or it can land after the clear.
+            ws.awaitSent(WsMessageType.SELECT_SONG)
             vm.toggleProjecting()
             vm.isProjecting.first { it }
 
             vm.toggleProjecting()
             vm.isProjecting.first { !it }
+            ws.awaitSent(WsMessageType.CLEAR)
 
             assertEquals(WsMessageType.CLEAR, ws.lastType)
             assertNull(vm.selectedVerseIndex.value)

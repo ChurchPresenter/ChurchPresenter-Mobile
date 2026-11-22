@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.testutil
 
 import com.church.presenter.churchpresentermobile.network.WsSender
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
 /**
@@ -23,6 +24,11 @@ class FakeWsSender(private var result: Result<Unit> = Result.success(Unit)) : Ws
     val lastPayload: String get() = calls.last().second
 
     fun failWith(t: Throwable) { result = Result.failure(t) }
+
+    /** Suspends until a message of [type] has been sent — the wait, rather than assuming an order. */
+    suspend fun awaitSent(type: String) {
+        _calls.first { sent -> sent.any { it.first == type } }
+    }
 
     override suspend fun sendAction(type: String, payloadJson: String, fireAndForget: Boolean): Result<Unit> {
         _calls.update { it + Triple(type, payloadJson, fireAndForget) }
