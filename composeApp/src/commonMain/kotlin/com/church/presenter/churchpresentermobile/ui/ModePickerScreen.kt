@@ -1,72 +1,79 @@
 package com.church.presenter.churchpresentermobile.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import churchpresentermobile.composeapp.generated.resources.mode_diagram_tv
-import churchpresentermobile.composeapp.generated.resources.mode_diagram_cloud
-import churchpresentermobile.composeapp.generated.resources.mode_calendar_body
-import churchpresentermobile.composeapp.generated.resources.mode_calendar_title
-import churchpresentermobile.composeapp.generated.resources.mode_diagram_tablet
-import churchpresentermobile.composeapp.generated.resources.mode_diagram_screen
-import churchpresentermobile.composeapp.generated.resources.mode_diagram_computer
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.SettingsRemote
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
-import churchpresentermobile.composeapp.generated.resources.mode_continue
-import churchpresentermobile.composeapp.generated.resources.mode_picker_subtitle
-import churchpresentermobile.composeapp.generated.resources.mode_picker_title
+import churchpresentermobile.composeapp.generated.resources.app_title
+import churchpresentermobile.composeapp.generated.resources.mode_calendar_title
 import churchpresentermobile.composeapp.generated.resources.mode_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_remote_title
-import churchpresentermobile.composeapp.generated.resources.mode_standalone_body
 import churchpresentermobile.composeapp.generated.resources.mode_standalone_title
+import churchpresentermobile.composeapp.generated.resources.start_calendar_body
+import churchpresentermobile.composeapp.generated.resources.start_calendar_great_1
+import churchpresentermobile.composeapp.generated.resources.start_calendar_great_2
+import churchpresentermobile.composeapp.generated.resources.start_calendar_needs
+import churchpresentermobile.composeapp.generated.resources.start_calendar_short
+import churchpresentermobile.composeapp.generated.resources.start_remote_great_1
+import churchpresentermobile.composeapp.generated.resources.start_remote_great_2
+import churchpresentermobile.composeapp.generated.resources.start_remote_needs
+import churchpresentermobile.composeapp.generated.resources.start_remote_short
+import churchpresentermobile.composeapp.generated.resources.start_standalone_body
+import churchpresentermobile.composeapp.generated.resources.start_standalone_great_1
+import churchpresentermobile.composeapp.generated.resources.start_standalone_great_2
+import churchpresentermobile.composeapp.generated.resources.start_standalone_needs
+import churchpresentermobile.composeapp.generated.resources.start_standalone_short
+import churchpresentermobile.composeapp.generated.resources.start_subtitle
+import churchpresentermobile.composeapp.generated.resources.start_title
+import churchpresentermobile.composeapp.generated.resources.start_welcome_to
 import com.church.presenter.churchpresentermobile.model.AppMode
-import com.church.presenter.churchpresentermobile.ui.theme.AppDimens
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * First-launch choice between driving a desktop and presenting from the phone.
+ * First-launch choice of how the app is used: remote control, standalone or calendar.
  *
  * Shown only where standalone is actually possible — the web build skips
  * straight to the existing connect flow, so its users never see a choice the
@@ -79,359 +86,193 @@ fun ModePickerScreen(
     initialMode: AppMode = AppMode.REMOTE,
     twoPane: Boolean = false,
 ) {
-    val colors = LocalAppColors.current
     var selected by remember { mutableStateOf(initialMode) }
-
-    if (twoPane) {
-        TabletModePicker(
-            selected = selected,
-            onSelect = { selected = it },
-            onContinue = { onModeChosen(selected) },
-            modifier = modifier,
-        )
-        return
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .statusBarsPadding()
-            .padding(horizontal = AppDimens.space20),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(Res.string.mode_picker_title),
-            color = colors.text,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            text = stringResource(Res.string.mode_picker_subtitle),
-            color = colors.muted,
-            fontSize = 13.sp,
-            modifier = Modifier.padding(top = 6.dp, bottom = AppDimens.space24),
-        )
-
-        ModeCard(
-            title = stringResource(Res.string.mode_remote_title),
-            body = stringResource(Res.string.mode_remote_body),
-            icon = Icons.Filled.SettingsRemote,
-            selected = selected == AppMode.REMOTE,
-            onClick = { selected = AppMode.REMOTE },
-            modifier = Modifier.testTag(UiTags.modeCard(AppMode.REMOTE)),
-        )
-        Box(Modifier.size(AppDimens.space12))
-        ModeCard(
-            title = stringResource(Res.string.mode_standalone_title),
-            body = stringResource(Res.string.mode_standalone_body),
-            icon = Icons.Filled.Cast,
-            selected = selected == AppMode.STANDALONE,
-            onClick = { selected = AppMode.STANDALONE },
-            modifier = Modifier.testTag(UiTags.modeCard(AppMode.STANDALONE)),
-        )
-        Box(Modifier.size(AppDimens.space12))
-        ModeCard(
-            title = stringResource(Res.string.mode_calendar_title),
-            body = stringResource(Res.string.mode_calendar_body),
-            icon = Icons.Filled.CalendarMonth,
-            selected = selected == AppMode.CALENDAR,
-            onClick = { selected = AppMode.CALENDAR },
-            modifier = Modifier.testTag(UiTags.modeCard(AppMode.CALENDAR)),
-        )
-
+    val look = LocalAppColors.current
+    val tint by animateColorAsState(look.modeTint(selected))
+    Box(modifier = modifier.fillMaxSize().background(look.background)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = AppDimens.space24)
-                .clip(RoundedCornerShape(AppDimens.radiusButton))
-                .background(colors.accent)
-                .testTag(UiTags.MODE_CONTINUE)
-                .clickable { onModeChosen(selected) }
-                .padding(vertical = 14.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(Res.string.mode_continue),
-                color = colors.onAccent,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
+                .height(if (twoPane) 340.dp else 260.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(tint.copy(alpha = if (look.isDark) 0.22f else 0.14f), Color.Transparent),
+                    ),
+                ),
+        )
+        if (twoPane) {
+            TabletStart(selected = selected, tint = tint, onSelect = { selected = it }) { onModeChosen(selected) }
+        } else {
+            PhoneStart(selected = selected, tint = tint, onSelect = { selected = it }) { onModeChosen(selected) }
         }
     }
 }
 
+internal val startModes = listOf(AppMode.REMOTE, AppMode.STANDALONE, AppMode.CALENDAR)
+
+internal fun AppMode.icon(): ImageVector = when (this) {
+    AppMode.REMOTE -> Icons.Filled.SettingsRemote
+    AppMode.STANDALONE -> Icons.Filled.Cast
+    AppMode.CALENDAR -> Icons.Filled.CalendarMonth
+}
+
+internal fun AppMode.titleRes(): StringResource = when (this) {
+    AppMode.REMOTE -> Res.string.mode_remote_title
+    AppMode.STANDALONE -> Res.string.mode_standalone_title
+    AppMode.CALENDAR -> Res.string.mode_calendar_title
+}
+
+private fun AppMode.shortRes(): StringResource = when (this) {
+    AppMode.REMOTE -> Res.string.start_remote_short
+    AppMode.STANDALONE -> Res.string.start_standalone_short
+    AppMode.CALENDAR -> Res.string.start_calendar_short
+}
+
+internal fun AppMode.bodyRes(): StringResource = when (this) {
+    AppMode.REMOTE -> Res.string.mode_remote_body
+    AppMode.STANDALONE -> Res.string.start_standalone_body
+    AppMode.CALENDAR -> Res.string.start_calendar_body
+}
+
+internal fun AppMode.needsRes(): StringResource = when (this) {
+    AppMode.REMOTE -> Res.string.start_remote_needs
+    AppMode.STANDALONE -> Res.string.start_standalone_needs
+    AppMode.CALENDAR -> Res.string.start_calendar_needs
+}
+
+internal fun AppMode.greatFor(): List<StringResource> = when (this) {
+    AppMode.REMOTE -> listOf(Res.string.start_remote_great_1, Res.string.start_remote_great_2)
+    AppMode.STANDALONE -> listOf(Res.string.start_standalone_great_1, Res.string.start_standalone_great_2)
+    AppMode.CALENDAR -> listOf(Res.string.start_calendar_great_1, Res.string.start_calendar_great_2)
+}
+
 @Composable
-private fun ModeCard(
-    title: String,
-    body: String,
-    icon: ImageVector,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val colors = LocalAppColors.current
-    Row(
+private fun PhoneStart(selected: AppMode, tint: Color, onSelect: (AppMode) -> Unit, onContinue: () -> Unit) {
+    val look = LocalAppColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 30.dp),
+    ) {
+        val scroll = rememberScrollState()
+        Column(modifier = Modifier.weight(1f).verticalScrollbar(scroll).verticalScroll(scroll)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LogoTile(size = 44.dp, radius = 13.dp, crossHeight = 26.dp)
+                Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Eyebrow(stringResource(Res.string.start_welcome_to), look.muted)
+                    Text(
+                        stringResource(Res.string.app_title),
+                        color = look.text,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = (-0.01).em,
+                    )
+                }
+            }
+            Text(
+                text = stringResource(Res.string.start_title),
+                color = look.text,
+                fontSize = 30.sp,
+                lineHeight = 34.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = (-0.035).em,
+                modifier = Modifier.padding(top = 26.dp, end = 60.dp),
+            )
+            Text(
+                text = stringResource(Res.string.start_subtitle),
+                color = look.muted,
+                fontSize = 14.5.sp,
+                lineHeight = 21.sp,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            Column(
+                modifier = Modifier.padding(top = 22.dp, bottom = 16.dp).selectableGroup(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                startModes.forEach { mode ->
+                    PhoneModeCard(
+                        mode = mode,
+                        selected = mode == selected,
+                        onClick = { onSelect(mode) },
+                        modifier = Modifier.testTag(UiTags.modeCard(mode)),
+                    )
+                }
+            }
+        }
+        ContinueButton(mode = selected, tint = tint, onClick = onContinue, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun PhoneModeCard(mode: AppMode, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val look = LocalAppColors.current
+    val tint = look.modeTint(mode)
+    val shape = RoundedCornerShape(20.dp)
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppDimens.radiusCard))
-            .background(if (selected) colors.accentTint else colors.surface)
-            .border(
-                width = if (selected) 2.dp else 1.dp,
-                color = if (selected) colors.accent else colors.border,
-                shape = RoundedCornerShape(AppDimens.radiusCard),
-            )
-            .clickable(onClick = onClick)
-            .padding(AppDimens.space16),
-        horizontalArrangement = Arrangement.spacedBy(AppDimens.space14),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = if (selected) colors.accent else colors.muted,
-            modifier = Modifier.size(24.dp),
-        )
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(text = title, color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(text = body, color = colors.muted, fontSize = 12.sp, lineHeight = 17.sp)
-        }
-        if (selected) {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = null,
-                tint = colors.accent,
-                modifier = Modifier.size(20.dp),
-            )
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Tablet: the two modes side by side, each with a diagram of the signal path
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * The tablet's arrangement: the two modes as cards in a row, each drawn with
- * the path a slide takes in that mode, and Continue at the bottom right.
- */
-@Composable
-private fun TabletModePicker(
-    selected: AppMode,
-    onSelect: (AppMode) -> Unit,
-    onContinue: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val colors = LocalAppColors.current
-    val scroll = rememberScrollState()
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .statusBarsPadding()
-            .verticalScrollbar(scroll)
-            .verticalScroll(scroll)
-            .padding(horizontal = 70.dp, vertical = 40.dp),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(Res.string.mode_picker_title),
-            color = colors.text,
-            fontSize = 48.sp,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = (-0.04).em,
-        )
-        Text(
-            text = stringResource(Res.string.mode_picker_subtitle),
-            color = colors.muted,
-            fontSize = 19.sp,
-            modifier = Modifier.padding(top = 14.dp, bottom = 36.dp),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
-            horizontalArrangement = Arrangement.spacedBy(22.dp),
-        ) {
-            TabletModeCard(
-                title = stringResource(Res.string.mode_remote_title),
-                body = stringResource(Res.string.mode_remote_body),
-                icon = Icons.Filled.SettingsRemote,
-                selected = selected == AppMode.REMOTE,
-                onClick = { onSelect(AppMode.REMOTE) },
-                modifier = Modifier.weight(1f).fillMaxHeight().testTag(UiTags.modeCard(AppMode.REMOTE)),
-            ) { accent ->
-                DiagramBox(stringResource(Res.string.mode_diagram_tablet), accent, width = 54.dp, height = 88.dp)
-                DiagramArrow(accent)
-                DiagramBox(stringResource(Res.string.mode_diagram_computer), accent, width = 96.dp, height = 72.dp)
-                DiagramArrow(accent)
-                DiagramBox(stringResource(Res.string.mode_diagram_screen), accent, width = 120.dp, height = 72.dp)
-            }
-            TabletModeCard(
-                title = stringResource(Res.string.mode_standalone_title),
-                body = stringResource(Res.string.mode_standalone_body),
-                icon = Icons.Filled.Cast,
-                selected = selected == AppMode.STANDALONE,
-                onClick = { onSelect(AppMode.STANDALONE) },
-                modifier = Modifier.weight(1f).fillMaxHeight().testTag(UiTags.modeCard(AppMode.STANDALONE)),
-            ) { accent ->
-                DiagramBox(stringResource(Res.string.mode_diagram_tablet), accent, width = 54.dp, height = 88.dp)
-                DiagramArrow(accent)
-                DiagramBox(stringResource(Res.string.mode_diagram_tv), accent, width = 140.dp, height = 84.dp)
-            }
-            TabletModeCard(
-                title = stringResource(Res.string.mode_calendar_title),
-                body = stringResource(Res.string.mode_calendar_body),
-                icon = Icons.Filled.CalendarMonth,
-                selected = selected == AppMode.CALENDAR,
-                onClick = { onSelect(AppMode.CALENDAR) },
-                modifier = Modifier.weight(1f).fillMaxHeight().testTag(UiTags.modeCard(AppMode.CALENDAR)),
-            ) { accent ->
-                DiagramBox(stringResource(Res.string.mode_diagram_tablet), accent, width = 54.dp, height = 88.dp)
-                DiagramArrow(accent)
-                DiagramBox(stringResource(Res.string.mode_diagram_cloud), accent, width = 84.dp, height = 60.dp)
-                DiagramArrow(accent)
-                DiagramBox(stringResource(Res.string.mode_diagram_computer), accent, width = 96.dp, height = 72.dp)
-            }
-        }
-        Row(modifier = Modifier.fillMaxWidth().padding(top = 32.dp), horizontalArrangement = Arrangement.End) {
-            Box(
-                modifier = Modifier
-                    .height(64.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(colors.accent)
-                    .testTag(UiTags.MODE_CONTINUE)
-                    .clickable(onClick = onContinue)
-                    .padding(horizontal = 62.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(Res.string.mode_continue),
-                    color = colors.onAccent,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                )
-            }
-        }
-    }
-}
-
-/**
- * One mode as a tablet card: icon tile, title and body, a radio at the far
- * end, and under them the [diagram] of where a slide goes in this mode.
- *
- * @param diagram The boxes and arrows of the signal path, given whether they
- *   are drawn in the accent (the chosen mode) or muted.
- */
-@Composable
-private fun TabletModeCard(
-    title: String,
-    body: String,
-    icon: ImageVector,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    diagram: @Composable RowScope.(accent: Boolean) -> Unit,
-) {
-    val colors = LocalAppColors.current
-    val shape = RoundedCornerShape(22.dp)
-    Column(
-        modifier = modifier
+            .then(if (selected) Modifier.halo(tint.copy(alpha = 0.14f), 20.dp) else Modifier)
             .clip(shape)
-            .background(if (selected) colors.accentTint else colors.surface)
-            .border(
-                width = if (selected) 2.dp else 1.dp,
-                color = if (selected) colors.accent else colors.borderSubtle,
-                shape = shape,
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 30.dp, vertical = 28.dp),
+            .background(cardBrush(selected, tint))
+            .border(1.5.dp, if (selected) tint else look.border, shape)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(16.dp),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(18.dp), verticalAlignment = Alignment.Top) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(if (selected) colors.accentTint else colors.inputBg),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = if (selected) colors.accent else colors.muted,
-                    modifier = Modifier.size(30.dp),
-                )
-            }
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            IconTile(mode.icon(), tint, size = 46.dp, radius = 14.dp, iconSize = 24.dp)
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = title,
-                    color = colors.text,
-                    fontSize = 26.sp,
+                    stringResource(mode.titleRes()),
+                    color = look.text,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = (-0.03).em,
+                    letterSpacing = (-0.02).em,
                 )
-                Text(text = body, color = colors.muted, fontSize = 17.sp, lineHeight = 26.sp)
+                Text(
+                    stringResource(mode.shortRes()),
+                    color = look.muted,
+                    fontSize = 13.5.sp,
+                    lineHeight = 19.sp,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
-            if (selected) {
-                Icon(
-                    imageVector = Icons.Filled.CheckCircle,
-                    contentDescription = null,
-                    tint = colors.accent,
-                    modifier = Modifier.size(26.dp),
-                )
-            } else {
+            RadioMark(selected = selected, tint = tint)
+        }
+        AnimatedVisibility(visible = selected) {
+            Column(modifier = Modifier.padding(top = 14.dp)) {
+                val panelShape = RoundedCornerShape(14.dp)
                 Box(
                     modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, colors.border, CircleShape),
-                )
+                        .fillMaxWidth()
+                        .clip(panelShape)
+                        .background(look.inputBg)
+                        .border(1.dp, look.border, panelShape)
+                        .padding(horizontal = 14.dp, vertical = 16.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ModePicture(mode = mode, tint = tint, large = false)
+                }
+                Row(
+                    modifier = Modifier.padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Icon(
+                        Icons.Outlined.Info,
+                        contentDescription = null,
+                        tint = look.muted,
+                        modifier = Modifier.padding(top = 2.dp).size(14.dp),
+                    )
+                    Text(
+                        stringResource(mode.needsRes()),
+                        color = look.muted,
+                        fontSize = 12.5.sp,
+                        lineHeight = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
             }
         }
-        Spacer(Modifier.weight(1f))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(colors.scrim.copy(alpha = 0.22f))
-                .border(1.dp, colors.borderSubtle, RoundedCornerShape(16.dp))
-                .padding(24.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            diagram(selected)
-        }
     }
-}
-
-/** One device in a signal-path diagram: a labelled rounded box. */
-@Composable
-private fun DiagramBox(label: String, accent: Boolean, width: Dp, height: Dp) {
-    val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .size(width = width, height = height)
-            .clip(RoundedCornerShape(8.dp))
-            .background(if (accent) colors.accentTint else colors.inputBg)
-            .border(1.5.dp, if (accent) colors.accent else colors.borderSubtle, RoundedCornerShape(8.dp)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = label,
-            color = if (accent) colors.accent else colors.muted,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
-/** The arrow between two devices in a signal-path diagram. */
-@Composable
-private fun DiagramArrow(accent: Boolean) {
-    val colors = LocalAppColors.current
-    Icon(
-        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-        contentDescription = null,
-        tint = if (accent) colors.accent else colors.muted,
-        modifier = Modifier.size(24.dp),
-    )
 }

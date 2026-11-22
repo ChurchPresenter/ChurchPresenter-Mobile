@@ -6,54 +6,50 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import churchpresentermobile.composeapp.generated.resources.Res
+import churchpresentermobile.composeapp.generated.resources.mode_section_title
+import churchpresentermobile.composeapp.generated.resources.settings_connection_tap_to_fix
+import churchpresentermobile.composeapp.generated.resources.settings_done
 import churchpresentermobile.composeapp.generated.resources.settings_title
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * The tablet's list of sections beside the settings form.
- *
- * Its own pane: a title, one row per section with the open one tinted, and
- * the connection at its foot so the state of the desktop is visible whichever
- * page is open.
- *
- * @param status The desktop connection, or null in a mode that has no desktop.
- */
 @Composable
 internal fun SettingsSectionList(
     sections: List<SettingsSection>,
     current: SettingsSection,
+    appMode: AppMode,
     onSelect: (SettingsSection) -> Unit,
+    onDone: () -> Unit,
     status: StatusUiState?,
     address: String,
     modifier: Modifier = Modifier,
@@ -64,213 +60,276 @@ internal fun SettingsSectionList(
         modifier = modifier
             .fillMaxHeight()
             .background(colors.surface)
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .verticalScrollbar(scroll)
+            .verticalScroll(scroll)
+            .padding(horizontal = 16.dp, vertical = 20.dp),
     ) {
-        Text(
-            text = stringResource(Res.string.settings_title),
-            color = colors.text,
-            fontSize = 30.sp,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = (-0.035).em,
-            modifier = Modifier.padding(start = 26.dp, end = 26.dp, top = 26.dp, bottom = 20.dp),
+        MenuTitle(
+            size = 28,
+            onDone = onDone,
+            modifier = Modifier.padding(start = 8.dp, end = 4.dp, top = 4.dp, bottom = 18.dp),
         )
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScrollbar(scroll)
-                .verticalScroll(scroll)
-                .padding(horizontal = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            sections.forEach { section ->
-                PaneRow(
-                    section = section,
-                    isSelected = section == current,
-                    onClick = { onSelect(section) },
-                    modifier = Modifier.testTag(UiTags.settingsSection(section)),
-                )
+        MenuTop(sections, appMode, status, address, onSelect, modeSelected = current == SettingsSection.MODE)
+        groupsOf(sections).forEach { (group, rows) ->
+            Eyebrow(
+                stringResource(group.label),
+                colors.muted,
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 20.dp, bottom = 8.dp),
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                rows.forEach { section ->
+                    RailRow(
+                        section = section,
+                        tint = colors.groupTint(group, appMode),
+                        selected = section == current,
+                        onClick = { onSelect(section) },
+                        modifier = Modifier.testTag(UiTags.settingsSection(section)),
+                    )
+                }
             }
-        }
-        if (status != null) {
-            HorizontalDivider(color = colors.borderSubtle)
-            ConnectionLine(status = status, address = address, modifier = Modifier.padding(26.dp, 20.dp))
         }
     }
 }
 
-/** One row of the tablet's list: icon, title over subtitle, chevron. */
 @Composable
-private fun PaneRow(
+private fun RailRow(
     section: SettingsSection,
-    isSelected: Boolean,
+    tint: Color,
+    selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
+    val shape = RoundedCornerShape(12.dp)
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(if (isSelected) colors.accentTint else Color.Transparent)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 15.dp),
+            .clip(shape)
+            .background(if (selected) colors.surfaceStrong else Color.Transparent)
+            .border(1.dp, if (selected) colors.accent.copy(alpha = 0.45f) else Color.Transparent, shape)
+            .clickable(role = Role.Tab, onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(
-            imageVector = section.icon,
-            contentDescription = null,
-            tint = if (isSelected) colors.accent else colors.muted,
-            modifier = Modifier.size(22.dp),
-        )
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        IconTile(section.icon, tint, size = 34.dp, radius = 10.dp, iconSize = 18.dp)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(section.title), color = colors.text, fontSize = 15.sp, fontWeight = FontWeight.Bold)
             Text(
-                text = stringResource(section.title),
-                color = if (isSelected) colors.accent else colors.text,
-                fontSize = 18.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                letterSpacing = (-0.02).em,
+                stringResource(section.subtitle),
+                color = colors.muted,
+                fontSize = 12.5.sp,
+                modifier = Modifier.padding(top = 3.dp),
             )
-            Text(text = stringResource(section.subtitle), color = colors.muted, fontSize = 13.sp, lineHeight = 17.sp)
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = if (isSelected) colors.accent else colors.dim,
-            modifier = Modifier.size(18.dp),
-        )
     }
 }
 
-/**
- * The phone's settings menu: the connection, then the sections as one grouped
- * card. Tapping a row opens that section's page.
- *
- * @param status The desktop connection, or null in a mode that has no desktop.
- */
 @Composable
 internal fun SettingsMenu(
     sections: List<SettingsSection>,
+    appMode: AppMode,
     onSelect: (SettingsSection) -> Unit,
+    onDone: () -> Unit,
     status: StatusUiState?,
     address: String,
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalAppColors.current
     val scroll = rememberScrollState()
-    val shape = RoundedCornerShape(16.dp)
     Column(
         modifier = modifier
+            .statusBarsPadding()
             .verticalScrollbar(scroll)
             .verticalScroll(scroll)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(start = 18.dp, end = 18.dp, top = 4.dp, bottom = 30.dp),
     ) {
-        if (status != null) {
-            ConnectionLine(
-                status = status,
-                address = address,
-                compact = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(colors.accentTint)
-                    .border(1.dp, colors.accent.copy(alpha = 0.22f), RoundedCornerShape(14.dp))
-                    .padding(horizontal = 15.dp, vertical = 13.dp),
+        MenuTitle(size = 32, onDone = onDone, modifier = Modifier.padding(start = 2.dp, end = 2.dp, bottom = 18.dp))
+        MenuTop(sections, appMode, status, address, onSelect, modeSelected = false)
+        groupsOf(sections).forEach { (group, rows) ->
+            Eyebrow(
+                stringResource(group.label),
+                colors.muted,
+                modifier = Modifier.padding(start = 6.dp, end = 6.dp, top = 22.dp, bottom = 8.dp),
             )
-            Spacer(Modifier.height(16.dp))
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape)
-                .background(colors.surface)
-                .border(1.dp, colors.borderSubtle, shape),
-        ) {
-            sections.forEachIndexed { index, section ->
-                if (index > 0) HorizontalDivider(color = colors.borderSubtle)
-                MenuRow(
-                    section = section,
-                    onClick = { onSelect(section) },
-                    modifier = Modifier.testTag(UiTags.settingsSection(section)),
-                )
+            LookCard(padding = PaddingValues(0.dp)) {
+                rows.forEachIndexed { index, section ->
+                    if (index > 0) LookDivider()
+                    MenuRow(
+                        section = section,
+                        tint = colors.groupTint(group, appMode),
+                        onClick = { onSelect(section) },
+                        modifier = Modifier.testTag(UiTags.settingsSection(section)),
+                    )
+                }
             }
         }
     }
 }
 
-/** One row of the phone's menu: icon tile, title over subtitle, chevron. */
 @Composable
-private fun MenuRow(section: SettingsSection, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun MenuTitle(size: Int, onDone: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            stringResource(Res.string.settings_title),
+            color = colors.text,
+            fontSize = size.sp,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = (-0.035).em,
+        )
+        Text(
+            stringResource(Res.string.settings_done),
+            color = colors.accent,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .testTag(UiTags.SETTINGS_CANCEL)
+                .clickable(role = Role.Button, onClick = onDone)
+                .padding(horizontal = 4.dp, vertical = 6.dp),
+        )
+    }
+}
+
+@Composable
+private fun MenuTop(
+    sections: List<SettingsSection>,
+    appMode: AppMode,
+    status: StatusUiState?,
+    address: String,
+    onSelect: (SettingsSection) -> Unit,
+    modeSelected: Boolean,
+) {
+    if (SettingsSection.MODE in sections) {
+        ModeRow(
+            appMode = appMode,
+            selected = modeSelected,
+            onClick = { onSelect(SettingsSection.MODE) },
+            modifier = Modifier.testTag(UiTags.settingsSection(SettingsSection.MODE)),
+        )
+    }
+    if (status != null) {
+        Box(Modifier.padding(top = 10.dp)) {
+            ConnectionLine(status = status, address = address, onClick = { onSelect(SettingsSection.SERVER) })
+        }
+    }
+}
+
+@Composable
+private fun ModeRow(appMode: AppMode, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = LocalAppColors.current
+    val tint = colors.modeTint(appMode)
+    val shape = RoundedCornerShape(16.dp)
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 15.dp),
+            .then(if (selected) Modifier.halo(tint.copy(alpha = 0.14f), 16.dp, 3.dp) else Modifier)
+            .clip(shape)
+            .background(
+                Brush.verticalGradient(
+                    listOf(tint.copy(alpha = if (selected) 0.16f else 0.13f), tint.copy(alpha = 0.04f)),
+                ),
+            )
+            .border(if (selected) 1.5.dp else 1.dp, if (selected) tint else tint.copy(alpha = 0.45f), shape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(13.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .size(38.dp)
-                .clip(RoundedCornerShape(11.dp))
-                .background(colors.inputBg),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(section.icon, contentDescription = null, tint = colors.text, modifier = Modifier.size(20.dp))
-        }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        IconTile(appMode.icon(), tint, size = 42.dp, radius = 12.dp, iconSize = 22.dp)
+        Column(modifier = Modifier.weight(1f)) {
+            Eyebrow(stringResource(Res.string.mode_section_title), tint)
             Text(
-                text = stringResource(section.title),
+                stringResource(appMode.titleRes()),
                 color = colors.text,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = (-0.02).em,
+                modifier = Modifier.padding(top = 5.dp),
             )
-            Text(text = stringResource(section.subtitle), color = colors.muted, fontSize = 12.sp)
         }
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = colors.dim,
+            tint = colors.muted,
             modifier = Modifier.size(18.dp),
         )
     }
 }
 
-/** A colored dot, the connection in one word, and the address under it. */
+@Composable
+private fun MenuRow(section: SettingsSection, tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = LocalAppColors.current
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(13.dp),
+    ) {
+        IconTile(section.icon, tint, size = 32.dp, radius = 9.dp, iconSize = 17.dp)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(section.title), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                stringResource(section.subtitle),
+                color = colors.muted,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = colors.muted,
+            modifier = Modifier.size(16.dp),
+        )
+    }
+}
+
 @Composable
 internal fun ConnectionLine(
     status: StatusUiState,
     address: String,
     modifier: Modifier = Modifier,
-    compact: Boolean = false,
+    onClick: (() -> Unit)? = null,
 ) {
     val colors = LocalAppColors.current
     val summary = connectionSummary(status)
-    val tone = when (summary.tone) {
-        ConnectionTone.GOOD -> colors.accent
-        ConnectionTone.WARNING -> colors.warning
-        ConnectionTone.BAD -> colors.danger
-        ConnectionTone.PENDING -> colors.muted
-    }
+    val tone = colors.toneColor(summary.tone)
+    val shape = RoundedCornerShape(16.dp)
     Row(
-        modifier = modifier.testTag(UiTags.SETTINGS_CONNECTION),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(tone.copy(alpha = 0.1f))
+            .border(1.dp, tone.copy(alpha = 0.35f), shape)
+            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
+            .testTag(UiTags.SETTINGS_CONNECTION)
+            .padding(horizontal = 16.dp, vertical = 13.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Box(modifier = Modifier.size(if (compact) 9.dp else 10.dp).clip(CircleShape).background(tone))
-        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        StatusDot(tone)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(summary.label), color = tone, fontSize = 15.sp, fontWeight = FontWeight.Bold)
             Text(
-                text = stringResource(summary.label),
-                color = tone,
-                fontSize = if (compact) 13.sp else 15.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = address,
+                text = if (summary.tone == ConnectionTone.BAD) {
+                    stringResource(Res.string.settings_connection_tap_to_fix, address)
+                } else {
+                    address
+                },
                 color = colors.muted,
-                fontSize = if (compact) 11.sp else 13.sp,
+                fontSize = 12.5.sp,
+                fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily.Monospace,
+                modifier = Modifier.padding(top = 4.dp),
             )
         }
     }

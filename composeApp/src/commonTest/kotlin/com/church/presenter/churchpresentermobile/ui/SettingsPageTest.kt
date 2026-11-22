@@ -131,7 +131,7 @@ class SettingsPageTest {
     @Test
     fun checkingTheStatusReachesTheSheet() = runComposeUiTest {
         val recorder = Recorder()
-        showPage(SettingsSection.SERVER, recorder = recorder)
+        showPage(SettingsSection.SERVER, status = StatusUiState.Error("refused"), recorder = recorder)
 
         click(UiTags.SETTINGS_CHECK_STATUS)
 

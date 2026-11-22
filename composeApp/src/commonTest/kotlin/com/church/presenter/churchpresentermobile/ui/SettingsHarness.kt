@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.network.StatusService
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.testutil.mockClient
@@ -136,6 +137,7 @@ internal fun ComposeUiTest.showSettings(
     onContact: () -> Unit = {},
     section: SettingsSection? = SettingsSection.SERVER,
     twoPane: Boolean = false,
+    onThemeChange: (ThemeMode) -> Unit = {},
 ) = showScreen {
     SettingsScreen(
         appSettings = settings,
@@ -146,6 +148,7 @@ internal fun ComposeUiTest.showSettings(
         providedStatusViewModel = status,
         twoPane = twoPane,
         initialSection = section,
+        onThemeChange = onThemeChange,
     )
 }
 

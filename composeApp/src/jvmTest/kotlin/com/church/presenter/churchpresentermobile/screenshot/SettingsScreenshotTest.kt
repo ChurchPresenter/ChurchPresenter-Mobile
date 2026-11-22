@@ -1,133 +1,144 @@
 package com.church.presenter.churchpresentermobile.screenshot
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasTestTag
+import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppSettings
+import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.ui.DesktopAddressFields
-import com.church.presenter.churchpresentermobile.ui.NOT_CHURCH_PRESENTER
-import com.church.presenter.churchpresentermobile.ui.ServerStatusDialog
-import com.church.presenter.churchpresentermobile.ui.SettingsScreen
 import com.church.presenter.churchpresentermobile.ui.SettingsSection
-import com.church.presenter.churchpresentermobile.ui.UiTags
-import com.church.presenter.churchpresentermobile.ui.unreachableStatusVm
-import com.church.presenter.churchpresentermobile.ui.healthyDesktop
-import com.church.presenter.churchpresentermobile.ui.restrictedDesktop
-import com.church.presenter.churchpresentermobile.ui.statusVm
-import com.church.presenter.churchpresentermobile.viewmodel.SettingsViewModel
 import kotlin.test.Test
 
 /**
- * Settings, its status dialog, and the address fields they share.
- *
- * Settings is where a volunteer is sent when nothing works, so it is captured
- * both with a computer already saved and empty as it is on a fresh install.
+ * Settings on a phone: the menu in each mode, every page, and every state of the
+ * connection the Server page explains — plus the address fields the sync sheet shares.
  */
 @OptIn(ExperimentalTestApi::class)
 class SettingsScreenshotTest {
 
-    private fun settings(host: String = "", apiKey: String = ""): AppSettings =
-        AppSettings(InMemorySettingsStorage()).apply {
-            if (host.isNotEmpty()) this.host = host
-            if (apiKey.isNotEmpty()) this.apiKey = apiKey
-        }
-
-    // The sheet opens on a menu of sections; each section is its own page.
-
-    @Test
-    fun settingsMenuConfigured() = screenshot(
-        "settings__menu-configured",
+    private fun phone(name: String, content: @Composable () -> Unit) = screenshot(
+        name = name,
+        width = null,
         dialog = true,
-        until = { drew(UiTags.SETTINGS_CONNECTION) },
-    ) {
-        sheet(settings(host = "192.168.1.10", apiKey = "abc123"))
+        surface = PHONE_SURFACE,
+        content = content,
+    )
+
+    // ── Menu, one per mode ──────────────────────────────────────────────
+
+    @Test
+    fun menuRemote() = phone("settings__menu-remote") { SettingsShot(AppMode.REMOTE, null, twoPane = false) }
+
+    @Test
+    fun menuRemoteUnreachable() = phone("settings__menu-remote-unreachable") {
+        SettingsShot(AppMode.REMOTE, null, twoPane = false, desktop = Desktop.UNREACHABLE)
     }
 
     @Test
-    fun settingsMenuFresh() = screenshot("settings__menu-fresh-install", dialog = true) {
-        // No desktop saved yet: the connection line reports it cannot be reached.
-        sheet(settings(), reachable = false)
+    fun menuRemoteLimited() = phone("settings__menu-remote-limited") {
+        SettingsShot(AppMode.REMOTE, null, twoPane = false, desktop = Desktop.LIMITED)
     }
 
     @Test
-    fun settingsServerPage() = screenshot("settings__server", dialog = true) {
-        sheet(settings(host = "192.168.1.10", apiKey = "abc123"), page = SettingsSection.SERVER)
+    fun menuStandalone() = phone("settings__menu-standalone") {
+        SettingsShot(AppMode.STANDALONE, null, twoPane = false)
     }
 
     @Test
-    fun settingsDevicePage() = screenshot("settings__device", dialog = true) {
-        sheet(settings(host = "192.168.1.10"), page = SettingsSection.DEVICE)
+    fun menuCalendar() = phone("settings__menu-calendar") { SettingsShot(AppMode.CALENDAR, null, twoPane = false) }
+
+    // ── Mode ────────────────────────────────────────────────────────────
+
+    @Test
+    fun modeRemote() = phone("settings__mode-remote") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.MODE, twoPane = false)
     }
 
     @Test
-    fun settingsAppearancePage() = screenshot("settings__appearance", dialog = true) {
-        sheet(settings(host = "192.168.1.10"), page = SettingsSection.APPEARANCE)
+    fun modeStandalone() = phone("settings__mode-standalone") {
+        SettingsShot(AppMode.STANDALONE, SettingsSection.MODE, twoPane = false)
     }
 
     @Test
-    fun settingsDiagnosticsPage() = screenshot(
-        "settings__diagnostics",
-        dialog = true,
-        until = { drew(UiTags.SETTINGS_CONNECTION) },
-    ) {
-        sheet(settings(host = "192.168.1.10"), page = SettingsSection.DIAGNOSTICS)
+    fun modeCalendar() = phone("settings__mode-calendar") {
+        SettingsShot(AppMode.CALENDAR, SettingsSection.MODE, twoPane = false)
+    }
+
+    // ── Server, every connection state ──────────────────────────────────
+
+    @Test
+    fun serverConnected() = phone("settings__server-connected") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false)
     }
 
     @Test
-    fun settingsAboutPage() = screenshot("settings__about", dialog = true) {
-        sheet(settings(host = "192.168.1.10"), page = SettingsSection.ABOUT)
-    }
-
-    @Composable
-    private fun sheet(appSettings: AppSettings, page: SettingsSection? = null, reachable: Boolean = true) {
-        SettingsScreen(
-            appSettings = appSettings,
-            onDismiss = {},
-            onSaved = {},
-            onContact = {},
-            providedViewModel = SettingsViewModel(appSettings),
-            providedStatusViewModel = if (reachable) {
-                statusVm(appSettings, body = healthyDesktop)
-            } else {
-                unreachableStatusVm(appSettings)
-            },
-            initialSection = page,
-        )
-    }
-
-    private fun ComposeUiTest.drew(tag: String): Boolean =
-        onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().isNotEmpty()
-
-    @Test
-    fun statusDialogHealthy() = screenshot("server-status-dialog__healthy", dialog = true) {
-        val appSettings = settings(host = "192.168.1.10")
-        ServerStatusDialog(
-            statusViewModel = statusVm(appSettings, body = healthyDesktop),
-            onDismiss = {},
-        )
+    fun serverLongLibraryNames() = phone("settings__server-long-names") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false, desktop = Desktop.LONG_NAMES)
     }
 
     @Test
-    fun statusDialogRestricted() = screenshot("server-status-dialog__restricted", dialog = true) {
-        val appSettings = settings(host = "192.168.1.10")
-        ServerStatusDialog(
-            statusViewModel = statusVm(appSettings, body = restrictedDesktop),
-            onDismiss = {},
-        )
+    fun serverLimited() = phone("settings__server-limited") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false, desktop = Desktop.LIMITED)
     }
 
     @Test
-    fun statusDialogWrongServer() = screenshot("server-status-dialog__wrong-server", dialog = true) {
-        // Something answered on the port, but it is not ChurchPresenter — the
-        // dialog has to distinguish that from an unreachable computer.
-        val appSettings = settings(host = "192.168.1.10")
-        ServerStatusDialog(
-            statusViewModel = statusVm(appSettings, body = NOT_CHURCH_PRESENTER),
-            onDismiss = {},
-        )
+    fun serverChecking() = phone("settings__server-checking") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false, desktop = Desktop.CHECKING)
     }
+
+    @Test
+    fun serverUnreachable() = phone("settings__server-unreachable") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false, desktop = Desktop.UNREACHABLE)
+    }
+
+    @Test
+    fun serverRejected() = phone("settings__server-key-rejected") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false, desktop = Desktop.REJECTED)
+    }
+
+    @Test
+    fun serverWrong() = phone("settings__server-not-churchpresenter") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.SERVER, twoPane = false, desktop = Desktop.WRONG_SERVER)
+    }
+
+    // ── The other pages ─────────────────────────────────────────────────
+
+    @Test
+    fun device() = phone("settings__device") { SettingsShot(AppMode.REMOTE, SettingsSection.DEVICE, twoPane = false) }
+
+    @Test
+    fun appearance() = phone("settings__appearance") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.APPEARANCE, twoPane = false, theme = ThemeMode.SYSTEM)
+    }
+
+    @Test
+    fun diagnostics() = phone("settings__diagnostics") {
+        SettingsShot(AppMode.REMOTE, SettingsSection.DIAGNOSTICS, twoPane = false)
+    }
+
+    @Test
+    fun diagnosticsStandalone() = phone("settings__diagnostics-standalone") {
+        SettingsShot(AppMode.STANDALONE, SettingsSection.DIAGNOSTICS, twoPane = false)
+    }
+
+    @Test
+    fun about() = phone("settings__about") { SettingsShot(AppMode.REMOTE, SettingsSection.ABOUT, twoPane = false) }
+
+    @Test
+    fun computer() = phone("settings__computer") {
+        SettingsShot(AppMode.STANDALONE, SettingsSection.COMPUTER, twoPane = false)
+    }
+
+    @Test
+    fun display() = phone("settings__display") {
+        SettingsShot(AppMode.STANDALONE, SettingsSection.DISPLAY, twoPane = false)
+    }
+
+    // ── The address fields the sync sheet shares ────────────────────────
+
+    private fun settings(host: String = ""): AppSettings =
+        AppSettings(InMemorySettingsStorage()).apply { if (host.isNotEmpty()) this.host = host }
 
     @Test
     fun addressFields() = screenshot("desktop-address__with-hint") {

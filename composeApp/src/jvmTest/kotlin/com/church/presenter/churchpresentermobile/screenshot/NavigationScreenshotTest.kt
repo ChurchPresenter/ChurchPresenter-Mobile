@@ -42,17 +42,29 @@ class NavigationScreenshotTest {
     }
 
     @Test
-    fun modePickerRemote() = screenshot("mode-picker__remote-selected") {
+    fun modePickerRemote() = screenshot(
+        "mode-picker__remote-selected",
+        width = null,
+        surface = PHONE_SURFACE,
+    ) {
         ModePickerScreen(onModeChosen = {}, initialMode = AppMode.REMOTE)
     }
 
     @Test
-    fun modePickerStandalone() = screenshot("mode-picker__standalone-selected") {
+    fun modePickerStandalone() = screenshot(
+        "mode-picker__standalone-selected",
+        width = null,
+        surface = PHONE_SURFACE,
+    ) {
         ModePickerScreen(onModeChosen = {}, initialMode = AppMode.STANDALONE)
     }
 
     @Test
-    fun modePickerCalendar() = screenshot("mode-picker__calendar-selected") {
+    fun modePickerCalendar() = screenshot(
+        "mode-picker__calendar-selected",
+        width = null,
+        surface = PHONE_SURFACE,
+    ) {
         // The third card, for a phone that plans and never projects.
         ModePickerScreen(onModeChosen = {}, initialMode = AppMode.CALENDAR)
     }

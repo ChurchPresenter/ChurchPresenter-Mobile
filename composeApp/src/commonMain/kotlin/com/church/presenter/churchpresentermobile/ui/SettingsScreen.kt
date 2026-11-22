@@ -1,13 +1,17 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,9 +45,7 @@ import com.church.presenter.churchpresentermobile.util.AnalyticsScreen
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +64,6 @@ import churchpresentermobile.composeapp.generated.resources.mode_switch_to_calen
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_calendar_title
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_body
 import churchpresentermobile.composeapp.generated.resources.mode_switch_to_remote_title
-import churchpresentermobile.composeapp.generated.resources.settings_cancel
 import churchpresentermobile.composeapp.generated.resources.settings_check_status
 import churchpresentermobile.composeapp.generated.resources.settings_host_empty
 import churchpresentermobile.composeapp.generated.resources.settings_invalid_host
@@ -81,6 +80,7 @@ import churchpresentermobile.composeapp.generated.resources.status_unauthorized_
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.model.AppMode
+import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.model.AppModeHolder
 import com.church.presenter.churchpresentermobile.model.supportsStandalone
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
@@ -128,6 +128,8 @@ fun SettingsScreen(
      * that page drives, which this dialog has no business constructing.
      */
     displayPage: @Composable () -> Unit = {},
+    /** The theme picked on Appearance, applied at once rather than on Save. */
+    onThemeChange: (ThemeMode) -> Unit = {},
 ) {
     val viewModel: SettingsViewModel = providedViewModel
         ?: viewModel { SettingsViewModel(appSettings) }
@@ -144,7 +146,6 @@ fun SettingsScreen(
     val themeMode    by viewModel.themeMode.collectAsState()
     val telemetryEnabled by viewModel.telemetryEnabled.collectAsState()
 
-    var showStatusDialog by remember { mutableStateOf(false) }
     // Mode the user has tapped but not yet confirmed. Switching mode redirects
     // where everything projects, so it asks first.
     var pendingMode      by remember { mutableStateOf<AppMode?>(null) }
@@ -171,15 +172,6 @@ fun SettingsScreen(
         )
     }
 
-    if (showStatusDialog) {
-        ServerStatusDialog(
-            statusViewModel = statusViewModel,
-            onDismiss       = { showStatusDialog = false },
-            twoPane         = twoPane,
-            address         = activeUrl,
-        )
-    }
-
     val dismiss = { viewModel.cancel(); onDismiss() }
     val save = {
         viewModel.save(
@@ -193,7 +185,7 @@ fun SettingsScreen(
     // Standalone has no desktop, so it shows nothing rather than "unreachable".
     val hasDesktop = appMode == AppMode.REMOTE
     val statusState by statusViewModel.uiState.collectAsState()
-    val page: @Composable (SettingsSection) -> Unit = { section ->
+    val page: @Composable (SettingsSection, () -> Unit) -> Unit = { section, openServer ->
         SettingsPage(
             section = section,
             appSettings = appSettings,
@@ -213,12 +205,17 @@ fun SettingsScreen(
             telemetryEnabled = telemetryEnabled,
             status = statusState.takeIf { hasDesktop },
             onModeTapped = { pendingMode = it },
-            onThemeMode = viewModel::setThemeMode,
+            onThemeMode = { mode ->
+                viewModel.setThemeMode(mode)
+                appSettings.themeMode = mode
+                onThemeChange(mode)
+            },
             onTelemetry = viewModel::setTelemetryEnabled,
-            onCheckStatus = { statusViewModel.recheck(); showStatusDialog = true },
+            onCheckStatus = statusViewModel::recheck,
             onContact = onContact,
             twoPane = twoPane,
             displayPage = displayPage,
+            onOpenServer = openServer,
         )
     }
     SettingsSheet(
@@ -231,6 +228,7 @@ fun SettingsScreen(
         ),
         status = statusState.takeIf { hasDesktop },
         address = "${appSettings.host}:${appSettings.port}",
+        appMode = appMode,
         twoPane = twoPane,
         initialSection = initialSection,
         onDismiss = dismiss,
@@ -240,29 +238,27 @@ fun SettingsScreen(
 }
 
 /**
- * The full-screen dialog around the pages: the header, the menu, and the page
- * itself.
+ * The full-screen dialog around the pages: the menu, and the page itself.
  *
- * The sections are the same on both shapes; what differs is where the menu
- * goes. On a tablet it sits beside the page and the pane on the right shows
+ * On a tablet the menu sits beside the page and the pane on the right shows
  * the section chosen there. On a phone the menu *is* the sheet: tapping a
- * section pushes that section's page, under a header that names it and offers
- * the way back. Save acts on the whole draft, not on the page showing, so it
- * is in every page's header; Cancel is where the operator started.
+ * section pushes that section's page, under a header that names it and leads
+ * back. Save acts on the whole draft, so it is on every page that edits it.
  *
  * @param status The desktop connection, or null in a mode that has no desktop.
- * @param page The page for one section.
+ * @param page The page for one section, given the way to open the Server page.
  */
 @Composable
-private fun SettingsSheet(
+internal fun SettingsSheet(
     sections: List<SettingsSection>,
     status: StatusUiState?,
     address: String,
+    appMode: AppMode,
     twoPane: Boolean,
     initialSection: SettingsSection?,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
-    page: @Composable (SettingsSection) -> Unit,
+    page: @Composable (SettingsSection, () -> Unit) -> Unit,
 ) {
     val colors = LocalAppColors.current
     // The tablet always has a section open; the phone starts on the menu.
@@ -277,51 +273,52 @@ private fun SettingsSheet(
     LaunchedEffect(open) {
         Analytics.logScreenView(AnalyticsScreen.settingsSection(open?.analyticsName))
     }
-    // System back on a phone's page returns to the menu; only past that does
-    // it fall through to the dialog and close the sheet.
-    AppBackHandler(enabled = !twoPane && open != null) { selected = null }
+    val openServer = { if (SettingsSection.SERVER in sections) selected = SettingsSection.SERVER }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            dismissOnBackPress      = true,
+            // On a phone's page, back belongs to the handler below, which returns to the menu.
+            dismissOnBackPress      = twoPane || open == null,
             dismissOnClickOutside   = false,
         )
     ) {
+        // Inside the dialog, so it hears back before the dialog does.
+        AppBackHandler(enabled = !twoPane && open != null) { selected = null }
         Surface(modifier = Modifier.fillMaxSize(), color = colors.background) {
             Row(modifier = Modifier.fillMaxSize()) {
                 if (twoPane && open != null) {
                     SettingsSectionList(
                         sections = sections,
                         current = open,
+                        appMode = appMode,
                         onSelect = { selected = it },
+                        onDone = onDismiss,
                         status = status,
                         address = address,
                         modifier = Modifier.width(SettingsSectionPaneWidth),
                     )
-                    VerticalDivider(color = colors.borderSubtle)
+                    VerticalDivider(color = colors.border)
                 }
                 Column(modifier = Modifier.weight(1f).fillMaxSize()) {
-                    TabletFormScale(enabled = twoPane) {
+                    if (open != null) {
                         SettingsHeader(
-                            title = stringResource(open?.title ?: Res.string.settings_title),
-                            onCancel = onDismiss,
-                            // The menu has nothing to save: every edit lives on a page.
-                            onSave = if (open != null) onSave else null,
-                            onBack = if (!twoPane && open != null) ({ selected = null }) else null,
+                            title = stringResource(open.title),
+                            onSave = onSave,
+                            onBack = if (!twoPane) ({ selected = null }) else null,
+                            twoPane = twoPane,
                         )
-                        HorizontalDivider(color = colors.borderSubtle)
-                        if (open != null) {
-                            page(open)
-                        } else {
-                            SettingsMenu(
-                                sections = sections,
-                                onSelect = { selected = it },
-                                status = status,
-                                address = address,
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        }
+                        page(open, openServer)
+                    } else {
+                        SettingsMenu(
+                            sections = sections,
+                            appMode = appMode,
+                            onSelect = { selected = it },
+                            onDone = onDismiss,
+                            status = status,
+                            address = address,
+                            modifier = Modifier.fillMaxSize(),
+                        )
                     }
                 }
             }
@@ -330,98 +327,95 @@ private fun SettingsSheet(
 }
 
 /**
- * How much larger the settings pages are drawn on a tablet than on a phone.
- *
- * The design's tablet pages are the phone's with every measurement a third
- * larger — 12px labels for 9, 20px values for 15, 16dp of field padding for
- * 10 — not different pages. Scaling the density does exactly that to the
- * phone composables, unchanged, and keeps the two from drifting apart the way
- * a second set of sizes would. Only the pane's *contents* scale: its width is
- * set outside, in real dp, alongside every other pane width.
- */
-private const val TABLET_FORM_SCALE = 1.33f
-
-@Composable
-private fun TabletFormScale(enabled: Boolean, content: @Composable () -> Unit) {
-    if (!enabled) {
-        content()
-        return
-    }
-    val density = LocalDensity.current
-    CompositionLocalProvider(
-        LocalDensity provides Density(density.density * TABLET_FORM_SCALE, density.fontScale),
-        content = content,
-    )
-}
-
-/**
- * Modal header: Cancel / [title] / Save pill.
- *
- * @param onBack Given on a phone's section page, where the left-hand slot is
- *   the way back to the list rather than Cancel. Cancel is still one tap away
- *   — it is what the list's header offers — but the arrow is what the operator
- *   expects after tapping into a row.
+ * A page's header: on a phone the way back to the menu, the page's name and
+ * Save; on a tablet the name on the left and Save on the right.
  */
 @Composable
 private fun SettingsHeader(
     title: String,
-    onCancel: () -> Unit,
     onSave: (() -> Unit)?,
-    onBack: (() -> Unit)? = null,
+    onBack: (() -> Unit)?,
+    twoPane: Boolean,
 ) {
     val colors = LocalAppColors.current
+    val save: @Composable () -> Unit = {
+        if (onSave != null) {
+            Text(
+                text = stringResource(Res.string.settings_save),
+                color = colors.onAccent,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(colors.accent)
+                    .testTag(UiTags.SETTINGS_SAVE)
+                    .clickable(role = Role.Button, onClick = onSave)
+                    .padding(horizontal = if (twoPane) 20.dp else 16.dp, vertical = if (twoPane) 11.dp else 9.dp),
+            )
+        }
+    }
+    if (twoPane) {
+        Column(modifier = Modifier.statusBarsPadding()) {
+            Row(
+                modifier = Modifier.fillMaxWidth().height(68.dp).padding(horizontal = 40.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    title,
+                    color = colors.text,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = (-0.025).em,
+                    modifier = Modifier.weight(1f),
+                )
+                save()
+            }
+            HorizontalDivider(color = colors.border)
+        }
+        return
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 14.dp),
+            .height(52.dp)
+            .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (onBack != null) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(Res.string.cd_back),
-                tint = colors.text,
-                modifier = Modifier
-                    .size(24.dp)
-                    .testTag(UiTags.SETTINGS_BACK)
-                    .clickable(onClick = onBack),
-            )
-        } else {
-            Text(
-                text = stringResource(Res.string.settings_cancel),
-                color = colors.muted,
-                fontSize = 15.sp,
-                modifier = Modifier
-                    .testTag(UiTags.SETTINGS_CANCEL)
-                    .clickable(onClick = onCancel)
-            )
+        Row(modifier = Modifier.width(96.dp)) {
+            if (onBack != null) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .testTag(UiTags.SETTINGS_BACK)
+                        .clickable(role = Role.Button, onClick = onBack)
+                        .padding(vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = stringResource(Res.string.cd_back),
+                        tint = colors.accent,
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Text(
+                        stringResource(Res.string.settings_title),
+                        color = colors.accent,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            }
         }
         Text(
             text = title,
             color = colors.text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
-        if (onSave != null) {
-            Text(
-                text = stringResource(Res.string.settings_save),
-                color = colors.background,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.text)
-                    .testTag(UiTags.SETTINGS_SAVE)
-                    .clickable(onClick = onSave)
-                    .padding(horizontal = 16.dp, vertical = 7.dp)
-            )
-        } else {
-            // Keep the title centred: the same width the Save pill would take.
-            Spacer(Modifier.width(44.dp))
-        }
+        Row(modifier = Modifier.width(96.dp), horizontalArrangement = Arrangement.End) { save() }
     }
 }
 

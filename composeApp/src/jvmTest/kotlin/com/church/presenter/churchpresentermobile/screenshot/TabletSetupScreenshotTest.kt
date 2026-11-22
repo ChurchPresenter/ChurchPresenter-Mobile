@@ -25,8 +25,6 @@ import com.church.presenter.churchpresentermobile.ui.NOT_CHURCH_PRESENTER
 import com.church.presenter.churchpresentermobile.ui.NavRail
 import com.church.presenter.churchpresentermobile.ui.ScreenHeader
 import com.church.presenter.churchpresentermobile.ui.ServerStatusDialog
-import com.church.presenter.churchpresentermobile.ui.SettingsScreen
-import com.church.presenter.churchpresentermobile.ui.SettingsSection
 import com.church.presenter.churchpresentermobile.ui.SplashScreen
 import com.church.presenter.churchpresentermobile.ui.StatusScreen
 import com.church.presenter.churchpresentermobile.ui.UiTags
@@ -34,7 +32,6 @@ import com.church.presenter.churchpresentermobile.ui.healthyDesktop
 import com.church.presenter.churchpresentermobile.ui.restrictedDesktop
 import com.church.presenter.churchpresentermobile.ui.statusVm
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
-import com.church.presenter.churchpresentermobile.viewmodel.SettingsViewModel
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
 
@@ -115,46 +112,6 @@ class TabletSetupScreenshotTest {
             onContinue = {},
             onOpenSettings = {},
             twoPane = true,
-        )
-    }
-
-    // ── Settings: the list beside each page ──────────────────────────────
-
-    @Test
-    fun settingsServer() = tablet("settings-tablet__server", dialog = true) { settingsSheet(SettingsSection.SERVER) }
-
-    @Test
-    fun settingsDevice() = tablet("settings-tablet__device", dialog = true) { settingsSheet(SettingsSection.DEVICE) }
-
-    @Test
-    fun settingsAppearance() = tablet("settings-tablet__appearance", dialog = true) {
-        settingsSheet(SettingsSection.APPEARANCE)
-    }
-
-    @Test
-    fun settingsDiagnostics() = tablet(
-        "settings-tablet__diagnostics",
-        dialog = true,
-        until = { drew(UiTags.SETTINGS_CONNECTION) },
-    ) {
-        settingsSheet(SettingsSection.DIAGNOSTICS)
-    }
-
-    @Test
-    fun settingsAbout() = tablet("settings-tablet__about", dialog = true) { settingsSheet(SettingsSection.ABOUT) }
-
-    @Composable
-    private fun settingsSheet(section: SettingsSection) {
-        val appSettings = settings(host = "192.168.1.10", apiKey = "abc123")
-        SettingsScreen(
-            appSettings = appSettings,
-            onDismiss = {},
-            onSaved = {},
-            onContact = {},
-            providedViewModel = SettingsViewModel(appSettings),
-            providedStatusViewModel = statusVm(appSettings, body = healthyDesktop),
-            twoPane = true,
-            initialSection = section,
         )
     }
 

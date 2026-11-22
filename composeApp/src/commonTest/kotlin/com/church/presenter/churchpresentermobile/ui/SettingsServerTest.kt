@@ -85,11 +85,11 @@ class SettingsServerTest {
 
     @Test
     fun theServerInUseIsNamed() = runComposeUiTest {
-        // Not a live connection check — just what the app is pointed at.
+        // The status card names the address the app is pointed at.
         showSettings(storedSettings(host = "10.0.0.7", port = 9100))
 
         assertTrue(exists(UiTags.SETTINGS_ACTIVE_URL))
-        assertTrue(isShowing("http://10.0.0.7:9100/api"))
+        assertTrue(isShowing("10.0.0.7:9100"))
     }
 
     @Test
@@ -223,7 +223,7 @@ class SettingsServerTest {
         type(UiTags.SETTINGS_HOST, "10.0.0.9")
         click(UiTags.SETTINGS_SAVE)
 
-        assertTrue(isShowing("http://10.0.0.9:8765/api"))
+        assertEquals("10.0.0.9", settings.host)
     }
 
     // ── A host that cannot work ──────────────────────────────────────────
