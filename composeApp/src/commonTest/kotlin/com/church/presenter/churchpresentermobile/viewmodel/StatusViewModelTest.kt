@@ -302,4 +302,21 @@ class StatusViewModelTest {
             tearDown(vm)
         }
     }
+
+    @Test
+    fun aChangedKeyAtTheSavedAddressIsProbedWithThatKey() = runVmTestUnconfined {
+        val settings = AppSettings(InMemorySettingsStorage())
+            .apply { host = "192.168.1.10"; port = 8765; apiKey = "old" }
+        val probes = Probes()
+        val vm = twoAddressVm(settings, probes)
+        try {
+            vm.settled()
+
+            vm.recheckAt(settings.apiBaseUrl, "new")
+
+            assertEquals(listOf(settings.apiBaseUrl to "new"), probes.drafts)
+        } finally {
+            tearDown(vm)
+        }
+    }
 }

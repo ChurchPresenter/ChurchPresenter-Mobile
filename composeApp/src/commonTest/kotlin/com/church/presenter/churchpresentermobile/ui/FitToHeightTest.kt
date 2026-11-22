@@ -1,11 +1,16 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import com.church.presenter.churchpresentermobile.model.AppMode
@@ -61,5 +66,41 @@ class FitToHeightTest {
         val window = onRoot().fetchSemanticsNode().size
         assertTrue(bottom <= window.height, "Continue ends at ${bottom}px, below the ${window.height}px window")
         assertTrue(right <= window.width, "Continue ends at ${right}px, past the ${window.width}px window")
+    }
+
+    @Test
+    fun aWindowTooShortToShrinkIntoFallsBackToScrolling() = runComposeUiTest {
+        // Shrinking stops at FIT_MIN_SCALE so the type stays readable; below that the picker scrolls.
+        setContent {
+            AppTheme(themeMode = ThemeMode.DARK) {
+                Box(Modifier.size(width = 1024.dp, height = 300.dp)) {
+                    ModePickerScreen(onModeChosen = {}, twoPane = true)
+                }
+            }
+        }
+
+        val window = onRoot().fetchSemanticsNode().size
+        val before = onNodeWithTag(UiTags.MODE_CONTINUE).fetchSemanticsNode()
+        assertTrue(before.positionInRoot.y + before.size.height > window.height, "the picker fitted after all")
+
+        onNodeWithTag(UiTags.MODE_CONTINUE).performScrollTo()
+
+        val after = onNodeWithTag(UiTags.MODE_CONTINUE).fetchSemanticsNode()
+        assertTrue(after.positionInRoot.y + after.size.height <= window.height, "Continue cannot be scrolled to")
+    }
+
+    @Test
+    fun anUnboundedHeightLaysTheContentOutAtItsOwnSize() = runComposeUiTest {
+        var measured = 0
+        setContent {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                FitToHeight(Modifier.onSizeChanged { measured = it.height }) {
+                    Box(Modifier.size(width = 100.dp, height = 1_000.dp))
+                }
+            }
+        }
+
+        waitForIdle()
+        assertEquals(with(density) { 1_000.dp.roundToPx() }, measured)
     }
 }
