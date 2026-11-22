@@ -1425,6 +1425,7 @@ fun App(
                             moreDestination = MoreDestination.CONTACT
                         }
                     },
+                    onThemeChange = { themeMode = it },
                     onDismiss = {
                         appSettings.isSetupComplete = true
                         showSettings = false

@@ -136,7 +136,6 @@ internal fun settingsSections(
             hasDesktop -> add(SettingsSection.SERVER)
             usesComputer -> add(SettingsSection.COMPUTER)
         }
-        if (hasDesktop) add(SettingsSection.TVS)
         if (hasDesktop) add(SettingsSection.DEVICE)
         add(SettingsSection.APPEARANCE)
         add(SettingsSection.DIAGNOSTICS)

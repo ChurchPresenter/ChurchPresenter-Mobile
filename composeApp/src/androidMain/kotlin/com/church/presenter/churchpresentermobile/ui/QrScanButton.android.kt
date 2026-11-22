@@ -73,7 +73,11 @@ import java.util.concurrent.atomic.AtomicBoolean
  * nothing can be scanned and offers the app's system settings, as iOS does.
  */
 @Composable
-actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
+actual fun QrScanButton(
+    onScanned: (String) -> Unit,
+    modifier: Modifier,
+    button: (@Composable (onClick: () -> Unit) -> Unit)?,
+) {
     val context = LocalContext.current
     var showScanner by remember { mutableStateOf(false) }
     var showDenied by remember { mutableStateOf(false) }
@@ -82,19 +86,21 @@ actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
         if (granted) showScanner = true else showDenied = true
     }
 
-    OutlinedButton(
-        onClick = {
-            val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED
-            // Once refused for good, the system answers `false` at once without asking again,
-            // which lands on the explanation below.
-            if (granted) showScanner = true else requestCamera.launch(Manifest.permission.CAMERA)
-        },
-        modifier = modifier
-    ) {
-        Icon(imageVector = Icons.Filled.QrCodeScanner, contentDescription = null)
-        Spacer(Modifier.width(8.dp))
-        Text(stringResource(Res.string.qr_scan_button))
+    val launch: () -> Unit = {
+        val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+        // Once refused for good, the system answers `false` at once without asking again,
+        // which lands on the explanation below.
+        if (granted) showScanner = true else requestCamera.launch(Manifest.permission.CAMERA)
+    }
+    if (button != null) {
+        button(launch)
+    } else {
+        OutlinedButton(onClick = launch, modifier = modifier) {
+            Icon(imageVector = Icons.Filled.QrCodeScanner, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(Res.string.qr_scan_button))
+        }
     }
 
     if (showDenied) {

@@ -5,7 +5,11 @@ import androidx.compose.ui.Modifier
 
 /** JS/browser: camera QR scanning is not supported — render nothing. */
 @Composable
-actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) = Unit
+actual fun QrScanButton(
+    onScanned: (String) -> Unit,
+    modifier: Modifier,
+    button: (@Composable (onClick: () -> Unit) -> Unit)?,
+) = Unit
 
 @Composable
 actual fun hasCameraAvailable(): Boolean = false

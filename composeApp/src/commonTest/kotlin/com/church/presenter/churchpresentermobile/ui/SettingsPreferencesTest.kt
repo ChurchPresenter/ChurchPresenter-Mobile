@@ -18,10 +18,9 @@ import kotlin.test.assertTrue
  * getting in touch, and the debug-only developer section.
  *
  * Two of these behave differently from everything else on the sheet and that is
- * the point of testing them here. The theme applies as soon as it is picked, so
- * the operator can see it — but it is only *persisted* on Save. Telemetry is the
- * opposite: it is written through immediately, because nobody should have to tap
- * Save to stop being tracked.
+ * the point of testing them here. Both are written through the moment they are
+ * picked: the theme so the operator sees it at once, telemetry because nobody
+ * should have to tap Save to stop being tracked.
  */
 @OptIn(ExperimentalTestApi::class)
 class SettingsPreferencesTest {
@@ -106,14 +105,14 @@ class SettingsPreferencesTest {
     }
 
     @Test
-    fun aThemeIsNotPersistedUntilSaved() = runComposeUiTest {
+    fun aThemeIsPersistedAsSoonAsItIsPicked() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
         showSettings(settings, section = SettingsSection.APPEARANCE)
 
         click(UiTags.settingsTheme(2))
 
-        assertEquals(ThemeMode.SYSTEM, settings.themeMode)
+        assertEquals(ThemeMode.DARK, settings.themeMode)
     }
 
     @Test
@@ -129,7 +128,7 @@ class SettingsPreferencesTest {
     }
 
     @Test
-    fun cancellingForgetsTheTheme() = runComposeUiTest {
+    fun closingTheSheetKeepsThePickedTheme() = runComposeUiTest {
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
         val vm = SettingsViewModel(settings)
@@ -138,13 +137,13 @@ class SettingsPreferencesTest {
         click(UiTags.settingsTheme(2))
         cancelSheet()
 
-        assertEquals(ThemeMode.SYSTEM, vm.themeMode.value)
+        assertEquals(ThemeMode.DARK, settings.themeMode)
     }
 
     @Test
-    fun aBadHostBlocksTheThemeFromBeingSaved() = runComposeUiTest {
-        // Everything on the sheet saves together; a refused address means the
-        // whole save is refused, theme included.
+    fun aBadHostDoesNotUndoThePickedTheme() = runComposeUiTest {
+        // The theme is not part of the draft Save checks, so a refused address
+        // leaves it as picked.
         val settings = storedSettings()
         settings.themeMode = ThemeMode.SYSTEM
         showSettings(settings, section = SettingsSection.APPEARANCE)
@@ -154,7 +153,7 @@ class SettingsPreferencesTest {
         type(UiTags.SETTINGS_HOST, "")
         click(UiTags.SETTINGS_SAVE)
 
-        assertEquals(ThemeMode.SYSTEM, settings.themeMode)
+        assertEquals(ThemeMode.DARK, settings.themeMode)
     }
 
     // ── Privacy ──────────────────────────────────────────────────────────

@@ -90,31 +90,37 @@ import platform.darwin.dispatch_queue_create
  */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun QrScanButton(onScanned: (String) -> Unit, modifier: Modifier) {
+actual fun QrScanButton(
+    onScanned: (String) -> Unit,
+    modifier: Modifier,
+    button: (@Composable (onClick: () -> Unit) -> Unit)?,
+) {
     if (runningOnMac) return
     var showScanner by remember { mutableStateOf(false) }
     var showDenied by remember { mutableStateOf(false) }
     val currentOnScanned by rememberUpdatedState(onScanned)
 
-    OutlinedButton(
-        onClick = {
-            when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)) {
-                AVAuthorizationStatusAuthorized -> showScanner = true
-                // The completion runs on an arbitrary queue, not necessarily main.
-                AVAuthorizationStatusNotDetermined ->
-                    AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
-                        dispatch_async(dispatch_get_main_queue()) {
-                            if (granted) showScanner = true else showDenied = true
-                        }
+    val launch: () -> Unit = {
+        when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)) {
+            AVAuthorizationStatusAuthorized -> showScanner = true
+            // The completion runs on an arbitrary queue, not necessarily main.
+            AVAuthorizationStatusNotDetermined ->
+                AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
+                    dispatch_async(dispatch_get_main_queue()) {
+                        if (granted) showScanner = true else showDenied = true
                     }
-                else -> showDenied = true
-            }
-        },
-        modifier = modifier
-    ) {
-        Icon(imageVector = Icons.Filled.QrCodeScanner, contentDescription = null)
-        Spacer(Modifier.width(8.dp))
-        Text(stringResource(Res.string.qr_scan_button))
+                }
+            else -> showDenied = true
+        }
+    }
+    if (button != null) {
+        button(launch)
+    } else {
+        OutlinedButton(onClick = launch, modifier = modifier) {
+            Icon(imageVector = Icons.Filled.QrCodeScanner, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(Res.string.qr_scan_button))
+        }
     }
 
     if (showDenied) {
