@@ -122,8 +122,10 @@ internal fun SampleRunOfShow(large: Boolean) {
     val look = LocalAppColors.current
     val small: TextUnit = if (large) 12.sp else 11.sp
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(if (large) 6.dp else 5.dp)) {
+        // The tablet card draws its radio mark over the picture's top-right corner, exactly where
+        // this header ends — keep the header clear of it (24dp mark + gap).
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+            modifier = Modifier.fillMaxWidth().padding(end = if (large) 34.dp else 0.dp, bottom = 2.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {

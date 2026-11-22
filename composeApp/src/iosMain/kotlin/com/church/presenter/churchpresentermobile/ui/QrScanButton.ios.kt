@@ -27,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import churchpresentermobile.composeapp.generated.resources.Res
 import churchpresentermobile.composeapp.generated.resources.action_cancel
 import churchpresentermobile.composeapp.generated.resources.cd_close
@@ -78,9 +80,8 @@ import platform.darwin.dispatch_get_main_queue
 import platform.darwin.dispatch_queue_create
 
 /**
- * iOS implementation: shows a full-screen AVFoundation camera overlay inside
- * the current Compose hierarchy (works within a Dialog because Compose Dialogs
- * on iOS fill the whole screen).
+ * iOS implementation: shows a full-screen AVFoundation camera overlay in a
+ * Compose Dialog, so it covers the screen wherever the button sits.
  *
  * Camera permission is requested lazily on first tap. When it has been denied,
  * the tap explains why nothing can be scanned and offers the Settings app —
@@ -138,33 +139,41 @@ actual fun QrScanButton(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
+        // A full-screen Dialog, never inline: drawn in place, the overlay was confined to whatever
+        // row held the button — after the settings redesign, a small card — and the camera showed
+        // as a black box there with no usable preview.
+        Dialog(
+            onDismissRequest = { showScanner = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            UIKitView(
-                // Preview first, start second. Attaching the layer takes the session's
-                // configuration lock on the main thread; queued after a start, it waited
-                // out the whole of startRunning and hung the UI (CHURCH-PRESENTER-MOBILE-2A).
-                factory  = {
-                    CameraPreviewView(session).also { startSession(session, delegate) }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-
-            // Compose close button — positioned above any iOS status bar content
-            IconButton(
-                onClick = { showScanner = false },
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 52.dp, end = 16.dp)
+                    .fillMaxSize()
+                    .background(Color.Black)
             ) {
-                Icon(
-                    imageVector  = Icons.Filled.Close,
-                    contentDescription = stringResource(Res.string.cd_close),
-                    tint         = Color.White
+                UIKitView(
+                    // Preview first, start second. Attaching the layer takes the session's
+                    // configuration lock on the main thread; queued after a start, it waited
+                    // out the whole of startRunning and hung the UI (CHURCH-PRESENTER-MOBILE-2A).
+                    factory  = {
+                        CameraPreviewView(session).also { startSession(session, delegate) }
+                    },
+                    modifier = Modifier.fillMaxSize()
                 )
+
+                // Compose close button — positioned above any iOS status bar content
+                IconButton(
+                    onClick = { showScanner = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 52.dp, end = 16.dp)
+                ) {
+                    Icon(
+                        imageVector  = Icons.Filled.Close,
+                        contentDescription = stringResource(Res.string.cd_close),
+                        tint         = Color.White
+                    )
+                }
             }
         }
 
@@ -236,6 +245,9 @@ private fun startSession(session: AVCaptureSession, delegate: QrMetadataDelegate
         val input = AVCaptureDeviceInput.deviceInputWithDevice(device, null) ?: return@dispatch_async
 
         session.beginConfiguration()
+        // iPadOS cuts the camera off while another app shares the screen (Stage Manager, Split
+        // View) unless the session opts in — the preview stays black and nothing is detected.
+        if (session.multitaskingCameraAccessSupported) session.multitaskingCameraAccessEnabled = true
         if (session.canAddInput(input)) session.addInput(input)
         val metaOutput = AVCaptureMetadataOutput()
         if (session.canAddOutput(metaOutput)) {

@@ -175,7 +175,9 @@ fun SettingsScreen(
     val dismiss = { viewModel.cancel(); onDismiss() }
     val save = {
         viewModel.save(
-            onSuccess        = { onSaved(); onDismiss() },
+            // The status shown beside the form describes the address it was checked against;
+            // after a new one is saved, "Connected" would be a claim about the old server.
+            onSuccess        = { statusViewModel.recheck(); onSaved(); onDismiss() },
             emptyHostError   = emptyHostError,
             invalidPortError = invalidPortError,
             invalidHostError = invalidHostError,
