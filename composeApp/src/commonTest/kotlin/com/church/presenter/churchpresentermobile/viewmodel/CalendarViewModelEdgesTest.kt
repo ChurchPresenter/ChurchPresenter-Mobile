@@ -18,6 +18,7 @@ import com.church.presenter.churchpresentermobile.network.SongReader
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.testutil.runVmTest
 import com.church.presenter.churchpresentermobile.testutil.tearDown
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
@@ -57,7 +58,8 @@ class CalendarViewModelEdgesTest {
 
     private fun viewModel(bible: BibleReader? = null, songs: SongReader? = null) = CalendarViewModel(
         repository,
-        songCatalog = songs?.let { SongCatalog(remote, it) },
+        // The catalog loads on its own dispatcher; Main is the test's, so advanceUntilIdle reaches it.
+        songCatalog = songs?.let { SongCatalog(remote, it, work = Dispatchers.Main) },
         bibleCatalog = bible?.let { BibleCatalog(remote, it) },
         newId = { "id-${++counter}" },
     )
