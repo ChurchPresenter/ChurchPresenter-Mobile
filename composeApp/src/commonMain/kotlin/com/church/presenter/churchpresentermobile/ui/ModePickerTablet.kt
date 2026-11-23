@@ -52,16 +52,30 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TabletStart(selected: AppMode, tint: Color, onSelect: (AppMode) -> Unit, onContinue: () -> Unit) {
+    FitToHeight(modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) { overflows ->
+        val scroll = rememberScrollState()
+        TabletStartContent(
+            selected = selected,
+            tint = tint,
+            onSelect = onSelect,
+            onContinue = onContinue,
+            modifier = if (overflows) Modifier.verticalScrollbar(scroll).verticalScroll(scroll) else Modifier,
+        )
+    }
+}
+
+/** The picker at its designed size; [TabletStart] shrinks it to fit a landscape tablet's height. */
+@Composable
+private fun TabletStartContent(
+    selected: AppMode,
+    tint: Color,
+    onSelect: (AppMode) -> Unit,
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val look = LocalAppColors.current
-    val scroll = rememberScrollState()
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .verticalScrollbar(scroll)
-            .verticalScroll(scroll)
-            .padding(start = 64.dp, end = 64.dp, top = 44.dp, bottom = 48.dp),
+        modifier = modifier.padding(start = 64.dp, end = 64.dp, top = 44.dp, bottom = 48.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             LogoTile(size = 48.dp, radius = 14.dp, crossHeight = 28.dp)

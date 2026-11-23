@@ -175,7 +175,9 @@ fun SettingsScreen(
     val dismiss = { viewModel.cancel(); onDismiss() }
     val save = {
         viewModel.save(
-            onSuccess        = { onSaved(); onDismiss() },
+            // The status shown beside the form describes the address it was checked against;
+            // after a new one is saved, "Connected" would be a claim about the old server.
+            onSuccess        = { statusViewModel.recheck(); onSaved(); onDismiss() },
             emptyHostError   = emptyHostError,
             invalidPortError = invalidPortError,
             invalidHostError = invalidHostError,
@@ -211,7 +213,14 @@ fun SettingsScreen(
                 onThemeChange(mode)
             },
             onTelemetry = viewModel::setTelemetryEnabled,
-            onCheckStatus = statusViewModel::recheck,
+            // What the fields say, not what was saved: a wrong address typed in must not still read "Connected".
+            onCheckStatus = {
+                if (host.isBlank()) {
+                    statusViewModel.recheck()
+                } else {
+                    statusViewModel.recheckAt(draftBaseUrl, apiKey.trim())
+                }
+            },
             onContact = onContact,
             twoPane = twoPane,
             displayPage = displayPage,
@@ -227,7 +236,7 @@ fun SettingsScreen(
             hasDisplay = appMode == AppMode.STANDALONE,
         ),
         status = statusState.takeIf { hasDesktop },
-        address = "${appSettings.host}:${appSettings.port}",
+        address = ServerDraft(host, port, apiKey, customDeviceName, displayName).address(saved = appSettings),
         appMode = appMode,
         twoPane = twoPane,
         initialSection = initialSection,

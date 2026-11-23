@@ -99,6 +99,13 @@ internal data class ServerDraft(
     val portError: String? = null,
 )
 
+/**
+ * The address as typed, for the status card and the sidebar to name while it is being edited.
+ * A field left blank falls back to the saved value, so clearing one never shows a bare ":8765".
+ */
+internal fun ServerDraft.address(saved: AppSettings): String =
+    "${host.trim().ifBlank { saved.host }}:${port.trim().ifBlank { saved.port.toString() }}"
+
 /** What typing into each of [ServerDraft]'s fields does, and the reset beside them. */
 internal class ServerDraftEdits(
     val onHost: (String) -> Unit,
@@ -123,11 +130,13 @@ internal fun ServerSection(
     val colors = LocalAppColors.current
     var apiKeyVisible by remember { mutableStateOf(false) }
     val verdict = status?.let { serverVerdict(it) }
-    val address = "${appSettings.host}:${appSettings.port}"
+    val saved = "${appSettings.host}:${appSettings.port}"
+    val address = draft.address(saved = appSettings)
     if (verdict != null) {
         StatusCard(
             verdict = verdict,
-            address = (status as? StatusUiState.Success)?.status?.appVersion
+            // The version belongs to the server that was checked; once the fields name another, it would mislead.
+            address = (status as? StatusUiState.Success)?.status?.appVersion?.takeIf { address == saved }
                 ?.let { stringResource(Res.string.settings_server_address_version, address, it) }
                 ?: address,
             onRecheck = onCheckStatus,

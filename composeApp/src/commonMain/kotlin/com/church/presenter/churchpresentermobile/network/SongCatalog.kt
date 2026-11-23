@@ -124,11 +124,13 @@ class SongCatalog(
      * with the church computer off. The two name a song the same way (`songbook::number`), so
      * the desktop finds either in its own library when the plan comes back.
      */
-    suspend fun listForPlanning(): List<Song> {
-        if (isLocal) return list().getOrDefault(emptyList())
+    suspend fun listForPlanning(): List<Song> = withContext(work) {
+        // Off the main thread: the desktop's catalog is every songbook it has, decoded and then
+        // written to disk here, and the calendar's song list froze until it was done.
+        if (isLocal) return@withContext list().getOrDefault(emptyList())
         val fromDesktop = remote.getSongs().getOrNull()
         val fromCatalog = if (fromDesktop == null) catalogStore?.songs().orEmpty() else emptyList()
-        return when {
+        when {
             fromDesktop != null -> {
                 // The desktop is here: take its songbooks too, so the lengths -- and the list
                 // itself, next time the desktop is off -- are the current ones.
@@ -152,7 +154,7 @@ class SongCatalog(
     }
 
     /** How long each song usually runs on the desktop -- what the songbooks carry -- for planning a service. */
-    fun durations(): SongDurations = catalogStore?.durations() ?: SongDurations.NONE
+    suspend fun durations(): SongDurations = withContext(work) { catalogStore?.durations() ?: SongDurations.NONE }
 
     /**
      * Lyrics for [song], plus the deck to project.

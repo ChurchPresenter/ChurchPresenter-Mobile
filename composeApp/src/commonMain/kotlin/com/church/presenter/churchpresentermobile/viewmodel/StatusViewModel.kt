@@ -9,6 +9,7 @@ import com.church.presenter.churchpresentermobile.model.StatusProbeResult
 import com.church.presenter.churchpresentermobile.model.StatusWarning
 import com.church.presenter.churchpresentermobile.model.deriveWarnings
 import com.church.presenter.churchpresentermobile.network.StatusService
+import com.church.presenter.churchpresentermobile.network.createHttpClient
 import com.church.presenter.churchpresentermobile.network.recordNetworkError
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,11 @@ sealed class StatusUiState {
  */
 class StatusViewModel(
     private val appSettings: AppSettings,
+    /** Builds a probe of an address that is typed but not saved yet; see [recheckAt]. */
+    private val draftServiceFactory: (baseUrl: String, apiKey: String) -> StatusService = { url, key ->
+        StatusService(url, key, appSettings.deviceId, createHttpClient(), appSettings.reportedDeviceName)
+    },
+    // Last, so callers that hand it over as a trailing lambda keep doing so.
     private val serviceFactory: (AppSettings) -> StatusService = { StatusService(it) },
 ) : ViewModel() {
 
@@ -57,6 +63,21 @@ class StatusViewModel(
     fun recheck() {
         service.closeClient()
         service = serviceFactory(appSettings)
+        fetchStatus()
+    }
+
+    /**
+     * Checks the address in Settings' fields rather than the saved one, so Recheck answers for
+     * what the operator has typed — a wrong address reads as unreachable before it is saved.
+     * The saved address is used when [baseUrl] is the saved one already.
+     */
+    fun recheckAt(baseUrl: String, apiKey: String) {
+        if (baseUrl == appSettings.apiBaseUrl && apiKey == appSettings.apiKey) {
+            recheck()
+            return
+        }
+        service.closeClient()
+        service = draftServiceFactory(baseUrl, apiKey)
         fetchStatus()
     }
 

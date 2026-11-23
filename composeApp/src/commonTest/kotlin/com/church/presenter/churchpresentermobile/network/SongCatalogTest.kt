@@ -226,6 +226,30 @@ class SongCatalogTest {
     }
 
     /** Runs what it is given straight away, counting each time work is handed to it. */
+    @Test
+    fun planningLoadsTheSongsAndTheirLengthsOnTheWorkDispatcher() = runTest {
+        // The desktop's catalog is every songbook it has, decoded and written to disk: on the main
+        // thread it froze the calendar's song list until it was done.
+        val work = CountingDispatcher()
+        val remote = FakeReader(
+            songs = listOf(Song(number = "42", title = "Amazing Grace", bookName = "Hymnal")),
+            books = Result.success(listOf(hymnal)),
+        )
+        val catalog = SongCatalog(
+            MutableStateFlow(AppMode.REMOTE),
+            remote,
+            catalogStore = SongCatalogStore(InMemoryFileStorage()),
+            work = work,
+        )
+
+        catalog.listForPlanning()
+        val afterList = work.dispatched
+        catalog.durations()
+
+        assertTrue(afterList > 0, "the songs were loaded on the caller's thread")
+        assertTrue(work.dispatched > afterList, "the lengths were read on the caller's thread")
+    }
+
     private class CountingDispatcher : CoroutineDispatcher() {
         var dispatched = 0
         override fun dispatch(context: CoroutineContext, block: Runnable) {
