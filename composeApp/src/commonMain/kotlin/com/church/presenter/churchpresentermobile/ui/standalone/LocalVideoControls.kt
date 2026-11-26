@@ -61,7 +61,6 @@ import churchpresentermobile.composeapp.generated.resources.standalone_clear
 import churchpresentermobile.composeapp.generated.resources.standalone_live
 import com.church.presenter.churchpresentermobile.model.VideoEndAction
 import com.church.presenter.churchpresentermobile.model.VideoSound
-import com.church.presenter.churchpresentermobile.getPlatform
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.LocalVideoStatus
 import com.church.presenter.churchpresentermobile.viewmodel.VideoAction
@@ -197,6 +196,7 @@ internal fun VideoOptionsCard(
     enabled: Boolean,
     onEndAction: (VideoEndAction) -> Unit,
     onSound: (VideoSound) -> Unit,
+    phoneSoundAvailable: Boolean = true,
 ) {
     val colors = LocalAppColors.current
     val shape = RoundedCornerShape(14.dp)
@@ -221,7 +221,7 @@ internal fun VideoOptionsCard(
         HorizontalDivider(color = colors.borderSubtle)
         OptionRow(
             label = stringResource(Res.string.local_media_sound_on),
-            options = VideoSound.entries,
+            options = if (phoneSoundAvailable) VideoSound.entries else VideoSound.entries - VideoSound.PHONE,
             selected = sound,
             optionLabel = ::soundLabel,
             enabled = enabled,
@@ -230,9 +230,9 @@ internal fun VideoOptionsCard(
             onSelect = onSound,
         )
     }
-    // An iPhone has one audio route: with a TV on the HDMI adapter or AirPlay, the
-    // phone's sound goes there too. Android keeps it on the phone, so says nothing.
-    if (sound == VideoSound.PHONE && phoneSoundFollowsScreen) {
+    // An iPad or iPhone has one audio route: with a TV on AirPlay or a cable, the
+    // device's sound goes there too, so "This phone" is not offered — say why.
+    if (!phoneSoundAvailable) {
         Text(
             stringResource(Res.string.local_media_sound_phone_hint),
             color = colors.muted,
@@ -242,8 +242,6 @@ internal fun VideoOptionsCard(
     }
 }
 
-/** Whether this platform sends the phone's own sound to an attached or mirrored screen regardless. */
-private val phoneSoundFollowsScreen: Boolean = getPlatform().os == "ios"
 
 @Composable
 private fun <T> OptionRow(

@@ -208,6 +208,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
         options: UIScene.ConnectionOptions
     ) -> UISceneConfiguration {
         let config = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        print("D/ExternalDisplay: scene requested — role=\(connectingSceneSession.role.rawValue)")
         if connectingSceneSession.role == .windowExternalDisplayNonInteractive {
             config.delegateClass = ExternalDisplaySceneDelegate.self
         }
@@ -282,9 +283,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
                 self?.reviewObserver = nil
             }
             Task { @MainActor in
-                guard let scene = UIApplication.shared.connectedScenes
-                    .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-                else { return }
+                guard let scene = UIApplication.shared.appScene else { return }
                 AppStore.requestReview(in: scene)
             }
         }
@@ -313,8 +312,7 @@ class AppDelegate: NSObject, UIApplicationDelegate,
 
     private func showUpdateAlert(storeVersion: String, storeUrl: String) {
         guard
-            let scene = UIApplication.shared.connectedScenes
-                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+            let scene = UIApplication.shared.appScene,
             let rootVC = scene.windows.first?.rootViewController
         else { return }
 
@@ -365,6 +363,23 @@ class AppDelegate: NSObject, UIApplicationDelegate,
     }
 }
 
+// MARK: - Scenes
+
+extension UIApplication {
+    /// The iPad's or iPhone's own window scene — never the external display.
+    ///
+    /// With a TV attached over AirPlay or a cable, the presenter output is a second
+    /// active scene. "The first foreground scene" can be that one, which put the
+    /// Update alert on the projector in front of the congregation. Anything shown
+    /// to the operator must be presented here instead.
+    var appScene: UIWindowScene? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.session.role == .windowApplication }
+            .first { $0.activationState == .foregroundActive }
+    }
+}
+
 // MARK: - Crashlytics bridge
 
 /**
@@ -379,11 +394,16 @@ final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        guard let windowScene = scene as? UIWindowScene else { return }
+        guard let windowScene = scene as? UIWindowScene else {
+            print("D/ExternalDisplay: willConnect — not a window scene")
+            return
+        }
+        print("D/ExternalDisplay: willConnect — \(windowScene.screen.bounds.size)")
         ExternalDisplayScenes.shared.connect(scene: windowScene)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        print("D/ExternalDisplay: didDisconnect")
         guard let windowScene = scene as? UIWindowScene else { return }
         ExternalDisplayScenes.shared.disconnect(scene: windowScene)
     }

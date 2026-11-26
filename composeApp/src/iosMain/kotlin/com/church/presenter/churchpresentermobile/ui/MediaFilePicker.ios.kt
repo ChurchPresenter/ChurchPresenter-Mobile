@@ -105,8 +105,7 @@ private class IosMediaPickerDelegate(
                 }
                 return@addOperationWithBlock
             }
-            val size = (NSFileManager.defaultManager.attributesOfItemAtPath(path, error = null)
-                ?.get(NSFileSize) as? NSNumber)?.longLongValue ?: 0L
+            val size = fileSizeAt(path)
             if (size > maxBytes) {
                 val mb = size / BYTES_PER_MB
                 NSOperationQueue.mainQueue.addOperationWithBlock {
@@ -116,23 +115,7 @@ private class IosMediaPickerDelegate(
                 return@addOperationWithBlock
             }
 
-            val picked = PickedMediaFile(rawName, size) { channel, onProgress ->
-                val handle = NSFileHandle.fileHandleForReadingAtPath(path)
-                    ?: error("Could not open the selected file")
-                try {
-                    var sent = 0L
-                    var bytes = handle.readChunk()
-                    while (bytes != null) {
-                        channel.writeFully(bytes, 0, bytes.size)
-                        sent += bytes.size
-                        onProgress(sent)
-                        bytes = handle.readChunk()
-                    }
-                    channel.flush()
-                } finally {
-                    handle.closeFile()
-                }
-            }
+            val picked = streamingPickedFile(rawName, path, size)
             NSOperationQueue.mainQueue.addOperationWithBlock { onFilePicked(picked) }
         }
     }
@@ -142,6 +125,38 @@ private class IosMediaPickerDelegate(
         onFilePicked(null)
     }
 }
+
+/** Size in bytes of the file at [path], or 0 when it cannot be read. */
+@OptIn(ExperimentalForeignApi::class)
+internal fun fileSizeAt(path: String): Long =
+    (NSFileManager.defaultManager.attributesOfItemAtPath(path, error = null)?.get(NSFileSize) as? NSNumber)
+        ?.longLongValue ?: 0L
+
+/**
+ * A [PickedMediaFile] that reads [path] a chunk at a time when it is streamed, so a
+ * large video is never held whole. With [deleteAfter], the file is removed once it
+ * has been read — for a copy made only to outlive the picker's own temporary one.
+ */
+@OptIn(ExperimentalForeignApi::class)
+internal fun streamingPickedFile(name: String, path: String, size: Long, deleteAfter: Boolean = false) =
+    PickedMediaFile(name, size) { channel, onProgress ->
+        val handle = NSFileHandle.fileHandleForReadingAtPath(path)
+            ?: error("Could not open the selected file")
+        try {
+            var sent = 0L
+            var bytes = handle.readChunk()
+            while (bytes != null) {
+                channel.writeFully(bytes, 0, bytes.size)
+                sent += bytes.size
+                onProgress(sent)
+                bytes = handle.readChunk()
+            }
+            channel.flush()
+        } finally {
+            handle.closeFile()
+            if (deleteAfter) NSFileManager.defaultManager.removeItemAtPath(path, error = null)
+        }
+    }
 
 /** The next chunk of the file, or null at its end. */
 @OptIn(ExperimentalForeignApi::class)

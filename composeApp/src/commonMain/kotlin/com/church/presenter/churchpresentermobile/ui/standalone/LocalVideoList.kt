@@ -18,8 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.VideoLibrary
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -51,6 +55,8 @@ import churchpresentermobile.composeapp.generated.resources.local_media_delete_b
 import churchpresentermobile.composeapp.generated.resources.local_media_delete_title
 import churchpresentermobile.composeapp.generated.resources.local_media_empty_body
 import churchpresentermobile.composeapp.generated.resources.local_media_empty_title
+import churchpresentermobile.composeapp.generated.resources.local_media_from_files
+import churchpresentermobile.composeapp.generated.resources.local_media_from_photos
 import churchpresentermobile.composeapp.generated.resources.local_media_importing
 import churchpresentermobile.composeapp.generated.resources.local_media_loaded
 import churchpresentermobile.composeapp.generated.resources.local_media_loops
@@ -65,16 +71,14 @@ import com.church.presenter.churchpresentermobile.present.MAX_VIDEO_IMPORT_BYTES
 import com.church.presenter.churchpresentermobile.present.VIDEO_IMPORT_EXTENSIONS
 import com.church.presenter.churchpresentermobile.present.VideoLibrary
 import com.church.presenter.churchpresentermobile.ui.MediaFilePicker
+import com.church.presenter.churchpresentermobile.ui.PhotosVideoPicker
 import com.church.presenter.churchpresentermobile.ui.formatTime
+import com.church.presenter.churchpresentermobile.ui.photosLibraryIsSeparate
 import com.church.presenter.churchpresentermobile.ui.theme.LocalAppColors
 import com.church.presenter.churchpresentermobile.viewmodel.LocalMediaViewModel
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.min
-import kotlin.math.roundToLong
 
 private const val PERCENT = 100
-private const val KB = 1024.0
-private const val TENTHS = 10.0
 private const val SELECTED_FILL_ALPHA = 0.06f
 private const val SELECTED_BORDER_ALPHA = 0.45f
 private const val BADGE_ALPHA = 0.65f
@@ -179,6 +183,11 @@ internal fun ColumnScope.LocalVideoListPane(
     }
 }
 
+/**
+ * Add video. Where the platform keeps the camera roll out of the file picker's
+ * reach (iOS), a tap asks which: the photo library or Files. Elsewhere it opens
+ * the file picker straight away, which already lists the gallery.
+ */
 @Composable
 private fun AddVideoButton(
     importProgress: Float?,
@@ -186,38 +195,44 @@ private fun AddVideoButton(
     onPickError: (String) -> Unit,
 ) {
     val colors = LocalAppColors.current
-    val importing = importProgress != null
+    val onFile: (PickedMediaFile?) -> Unit = { file -> if (file != null) onPicked(file) }
     MediaFilePicker(
-        onFilePicked = { file -> if (file != null) onPicked(file) },
+        onFilePicked = onFile,
         onError = onPickError,
         maxBytes = MAX_VIDEO_IMPORT_BYTES,
         extensions = VIDEO_IMPORT_EXTENSIONS,
-    ) { launch ->
-        val shape = RoundedCornerShape(12.dp)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clip(shape)
-                .background(colors.surface)
-                .border(1.dp, colors.border, shape)
-                .testTag(VideoTags.ADD)
-                .clickable(enabled = !importing) { launch() },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = null, tint = colors.accent, modifier = Modifier.size(20.dp))
-            Spacer(Modifier.size(8.dp))
-            Text(
-                if (importing) {
-                    stringResource(Res.string.local_media_importing, ((importProgress ?: 0f) * PERCENT).toInt())
-                } else {
-                    stringResource(Res.string.local_media_add_video)
-                },
-                color = colors.text,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-            )
+    ) { openFiles ->
+        PhotosVideoPicker(
+            onFilePicked = onFile,
+            onError = onPickError,
+            maxBytes = MAX_VIDEO_IMPORT_BYTES,
+        ) { openPhotos ->
+            var choosing by remember { mutableStateOf(false) }
+            Box {
+                AddVideoRow(importProgress) {
+                    if (photosLibraryIsSeparate) choosing = true else openFiles()
+                }
+                DropdownMenu(expanded = choosing, onDismissRequest = { choosing = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.local_media_from_photos)) },
+                        leadingIcon = { Icon(Icons.Outlined.PhotoLibrary, contentDescription = null) },
+                        onClick = {
+                            choosing = false
+                            openPhotos()
+                        },
+                        modifier = Modifier.testTag(VideoTags.ADD_FROM_PHOTOS),
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.local_media_from_files)) },
+                        leadingIcon = { Icon(Icons.Outlined.Folder, contentDescription = null) },
+                        onClick = {
+                            choosing = false
+                            openFiles()
+                        },
+                        modifier = Modifier.testTag(VideoTags.ADD_FROM_FILES),
+                    )
+                }
+            }
         }
     }
     if (importProgress != null) {
@@ -227,6 +242,37 @@ private fun AddVideoButton(
             modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(3.dp)),
             color = colors.accent,
             trackColor = colors.inputBg,
+        )
+    }
+}
+
+@Composable
+private fun AddVideoRow(importProgress: Float?, onClick: () -> Unit) {
+    val colors = LocalAppColors.current
+    val shape = RoundedCornerShape(12.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clip(shape)
+            .background(colors.surface)
+            .border(1.dp, colors.border, shape)
+            .testTag(VideoTags.ADD)
+            .clickable(enabled = importProgress == null, onClick = onClick),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Filled.Add, contentDescription = null, tint = colors.accent, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.size(8.dp))
+        Text(
+            if (importProgress != null) {
+                stringResource(Res.string.local_media_importing, (importProgress * PERCENT).toInt())
+            } else {
+                stringResource(Res.string.local_media_add_video)
+            },
+            color = colors.text,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
         )
     }
 }
@@ -360,43 +406,4 @@ private fun DeleteVideoDialog(video: LocalVideo, onConfirm: () -> Unit, onDismis
             TextButton(onClick = onDismiss) { Text(stringResource(Res.string.action_cancel)) }
         },
     )
-}
-
-/** "MP4 · 1080p · 212 MB", with "· loops" when it is set to. */
-internal fun videoDetails(video: LocalVideo, looping: Boolean, loopsLabel: String): String =
-    listOfNotNull(
-        video.format.ifBlank { null },
-        resolutionLabel(video.width, video.height),
-        formatBytes(video.sizeBytes).takeIf { video.sizeBytes > 0L },
-        loopsLabel.takeIf { looping },
-    ).joinToString(" · ")
-
-/** "4K", "1080p", "720p" — named by the shorter side, so an upright phone clip reads as what it is. */
-internal fun resolutionLabel(width: Int, height: Int): String? {
-    val short = min(width, height)
-    return when {
-        short <= 0 -> null
-        short >= UHD_SHORT_SIDE -> "4K"
-        else -> "${short}p"
-    }
-}
-
-private const val UHD_SHORT_SIDE = 2160
-
-/** "212 MB", "1.2 GB" — one decimal only where it says something. */
-internal fun formatBytes(bytes: Long): String {
-    val units = listOf("B", "KB", "MB", "GB", "TB")
-    var value = bytes.toDouble()
-    var unit = 0
-    while (value >= KB && unit < units.lastIndex) {
-        value /= KB
-        unit++
-    }
-    val shown = if (unit >= 3 && value < TENTHS) {
-        val tenths = (value * TENTHS).roundToLong()
-        "${tenths / 10}.${tenths % 10}"
-    } else {
-        value.roundToLong().toString()
-    }
-    return "$shown ${units[unit]}"
 }

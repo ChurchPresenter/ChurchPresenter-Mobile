@@ -171,6 +171,7 @@ import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleWebCa
 import com.church.presenter.churchpresentermobile.library.createFileStore
 import com.church.presenter.churchpresentermobile.present.LocalVideoFiles
 import com.church.presenter.churchpresentermobile.present.VideoLibrary
+import com.church.presenter.churchpresentermobile.present.sink.EXTERNAL_DISPLAY_SINK_ID
 import com.church.presenter.churchpresentermobile.present.VideoTransport
 import com.church.presenter.churchpresentermobile.present.cueFor
 import com.church.presenter.churchpresentermobile.present.createVideoFiles
@@ -1173,6 +1174,10 @@ fun App(
                             library = videoLibrary,
                             transport = videoTransport,
                             engine = standaloneEngine,
+                            phoneSoundAvailable = !(
+                                getPlatform().os == "ios" &&
+                                    sinkStatuses.any { it.id == EXTERNAL_DISPLAY_SINK_ID && it.isAttached }
+                                ),
                             twoPane = twoPane,
                             onMenu = paneMenu,
                             onSettings = paneSettings,

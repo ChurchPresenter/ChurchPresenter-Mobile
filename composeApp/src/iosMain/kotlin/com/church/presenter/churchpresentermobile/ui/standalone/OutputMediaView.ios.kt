@@ -20,6 +20,8 @@ import com.church.presenter.churchpresentermobile.model.expectedPositionMs
 import com.church.presenter.churchpresentermobile.model.shouldSeek
 import platform.AVFoundation.AVPlayerActionAtItemEndPause
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
+import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
+import platform.AVFoundation.status
 import platform.AVFoundation.actionAtItemEnd
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.seekToTime
@@ -92,8 +94,8 @@ actual fun OutputVideoView(
     LaunchedEffect(cue?.seq) { if (cue?.playing == true) endedBlack = false }
     LaunchedEffect(control) {
         while (true) {
-            delay(VIDEO_DRIFT_CHECK_MS)
-            control.correctDrift()
+            delay(READY_POLL_MS)
+            control.tick()
         }
     }
     DisposableEffect(control) { onDispose { control.release() } }
@@ -135,6 +137,8 @@ private class CuePlayer {
     private var cue: VideoCue? = null
     private var cueReceivedAt = 0.0
     private var lastSeekAt = 0.0
+    private var lastDriftCheck = 0.0
+    private var syncedSinceLoad = false
     private var endObserver: Any? = null
 
     init {
@@ -152,6 +156,9 @@ private class CuePlayer {
             val item = AVPlayerItem(uRL = target)
             player.replaceCurrentItemWithPlayerItem(item)
             watchEnd(item)
+            // A seek before the clip has opened is silently dropped, so the first
+            // one waits for it — see tick().
+            syncedSinceLoad = false
         }
         val current = newCue
         if (current == null) {
@@ -166,7 +173,29 @@ private class CuePlayer {
     }
 
     /** Seeks back into step if playing has wandered from the cue. */
-    fun correctDrift() {
+    /**
+     * Called a few times a second. Until the clip has opened, does nothing; the
+     * moment it has, seeks it to where the cue says — un-blanking or going live
+     * mid-clip used to start the TV from 0:00, because the seek sent while the
+     * clip was still opening was dropped. After that, checks drift every
+     * [VIDEO_DRIFT_CHECK_MS].
+     */
+    fun tick() {
+        val current = cue ?: return
+        if (player.currentItem?.status != AVPlayerItemStatusReadyToPlay) return
+        if (!syncedSinceLoad) {
+            syncedSinceLoad = true
+            seekIfDrifted(current)
+            if (current.playing) player.play() else player.pause()
+            return
+        }
+        val now = NSProcessInfo.processInfo.systemUptime
+        if ((now - lastDriftCheck) * MS_PER_SECOND < VIDEO_DRIFT_CHECK_MS) return
+        lastDriftCheck = now
+        correctDrift()
+    }
+
+    private fun correctDrift() {
         val current = cue ?: return
         if (!current.playing || player.rate == 0f) return
         val sinceSeekMs = (NSProcessInfo.processInfo.systemUptime - lastSeekAt) * MS_PER_SECOND
@@ -216,5 +245,8 @@ private class CuePlayer {
     private companion object {
         const val MS_PER_SECOND = 1000.0
         const val SEEK_TIMESCALE = 600
+
+        /** How often the player is looked at — enough to catch the clip opening promptly. */
+        const val READY_POLL_MS = 250L
     }
 }

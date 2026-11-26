@@ -94,6 +94,12 @@ fun LocalMediaScreen(
     twoPane: Boolean = false,
     onMenu: (() -> Unit)? = null,
     onSettings: (() -> Unit)? = null,
+    /**
+     * False while the device cannot keep sound to itself — an iPad or iPhone with
+     * a TV on AirPlay or a cable, where iOS sends every sound the app makes to the
+     * TV. "This phone" is not offered then.
+     */
+    phoneSoundAvailable: Boolean = true,
     /** Supplied by tests only; the screen owns its own otherwise. */
     providedViewModel: LocalMediaViewModel? = null,
 ) {
@@ -109,7 +115,7 @@ fun LocalMediaScreen(
         }
     }
 
-    val player: @Composable ColumnScope.() -> Unit = { LocalPlayer(viewModel, library) }
+    val player: @Composable ColumnScope.() -> Unit = { LocalPlayer(viewModel, library, phoneSoundAvailable) }
     val list: @Composable ColumnScope.() -> Unit = { LocalVideoList(viewModel, library) }
 
     if (twoPane) {
@@ -139,7 +145,11 @@ fun LocalMediaScreen(
 
 /** Collects what the player half needs and hands it to [LocalPlayerPane] as plain values. */
 @Composable
-private fun ColumnScope.LocalPlayer(viewModel: LocalMediaViewModel, library: VideoLibrary) {
+private fun ColumnScope.LocalPlayer(
+    viewModel: LocalMediaViewModel,
+    library: VideoLibrary,
+    phoneSoundAvailable: Boolean,
+) {
     val state by viewModel.transportState.collectAsState()
     val status by viewModel.status.collectAsState()
     val positionMs by viewModel.positionMs.collectAsState()
@@ -156,6 +166,7 @@ private fun ColumnScope.LocalPlayer(viewModel: LocalMediaViewModel, library: Vid
         blank = blank,
         onAction = viewModel::onAction,
         cueNow = viewModel::currentCue,
+        phoneSoundAvailable = phoneSoundAvailable,
     )
 }
 
@@ -174,7 +185,13 @@ internal fun ColumnScope.LocalPlayerPane(
     blank: Boolean,
     onAction: (VideoAction) -> Unit,
     cueNow: () -> VideoCue? = { previewCue },
+    phoneSoundAvailable: Boolean = true,
 ) {
+    // Losing the option while it is chosen — a TV just connected over AirPlay —
+    // falls back to the hall screen, which is where iOS sends the sound anyway.
+    LaunchedEffect(phoneSoundAvailable, state.sound) {
+        if (!phoneSoundAvailable && state.sound == VideoSound.PHONE) onAction(VideoAction.SetSound(VideoSound.HALL))
+    }
     val loaded = state.isLoaded
     val duration = state.durationMs
     var scrubbing by remember { mutableStateOf(false) }
@@ -246,6 +263,7 @@ internal fun ColumnScope.LocalPlayerPane(
         enabled = loaded,
         onEndAction = { onAction(VideoAction.SetEndAction(it)) },
         onSound = { onAction(VideoAction.SetSound(it)) },
+        phoneSoundAvailable = phoneSoundAvailable,
     )
 }
 

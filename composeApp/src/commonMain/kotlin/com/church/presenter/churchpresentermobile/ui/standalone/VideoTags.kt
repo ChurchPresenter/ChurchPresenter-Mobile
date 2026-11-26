@@ -17,6 +17,8 @@ internal object VideoTags {
     const val SOUND = "localMedia:sound"
     const val SOUND_HINT = "localMedia:soundHint"
     const val ADD = "localMedia:add"
+    const val ADD_FROM_PHOTOS = "localMedia:add:photos"
+    const val ADD_FROM_FILES = "localMedia:add:files"
     const val EMPTY = "localMedia:empty"
     const val DELETE_CONFIRM = "localMedia:deleteConfirm"
 
