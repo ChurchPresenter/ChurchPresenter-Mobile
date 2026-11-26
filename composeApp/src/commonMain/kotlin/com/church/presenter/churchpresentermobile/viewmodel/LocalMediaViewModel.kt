@@ -185,10 +185,17 @@ class LocalMediaViewModel(
         engine.goLive()
     }
 
-    /** Takes the video off every screen and stops it. */
+    /**
+     * Takes the video off every screen and stops it. Clears whenever the engine
+     * holds this video — showing, blanked, or taken off-air with "On screen" —
+     * not only while it is live: off-air, Clear used to only pause, and the video
+     * stayed loaded behind the screen.
+     */
     private fun clear() {
         transport.pause()
-        if (onScreenNow()) engine.clear()
+        val url = transport.state.value.url ?: return
+        val holdsVideo = engine.currentSlide.value.mediaUrl == url || engine.deck.value.slideAt(0)?.mediaUrl == url
+        if (holdsVideo) engine.clear()
     }
 
     /** Copies a picked file in, and loads it into the player once it is there. */

@@ -75,7 +75,9 @@
   }
 
   function applyBackdrop(slide) {
-    var kind = slide.backdrop || 'GRADIENT';
+    // A video sits on black, never on the backdrop: Blank on a video cuts to
+    // black instead of revealing the lyric gradient (as the phone's own output does).
+    var kind = slide.kind === 'VIDEO' ? 'BLACK' : (slide.backdrop || 'GRADIENT');
     var url = ownPhoto(slide.backdropUrl);
     if (kind === 'IMAGE' && url) {
       var imageTheme = slide.theme || {};

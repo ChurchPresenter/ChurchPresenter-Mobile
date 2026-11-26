@@ -21,6 +21,7 @@ import com.church.presenter.churchpresentermobile.model.shouldSeek
 import platform.AVFoundation.AVPlayerActionAtItemEndPause
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
+import platform.AVFoundation.currentItem
 import platform.AVFoundation.status
 import platform.AVFoundation.actionAtItemEnd
 import platform.AVFoundation.currentTime
@@ -75,6 +76,9 @@ actual fun OutputWebView(url: String, modifier: Modifier) {
         onRelease = { webView -> webView.stopLoading() },
     )
 }
+
+/** How often the player is looked at — enough to catch the clip opening promptly. */
+private const val READY_POLL_MS = 250L
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -246,7 +250,5 @@ private class CuePlayer {
         const val MS_PER_SECOND = 1000.0
         const val SEEK_TIMESCALE = 600
 
-        /** How often the player is looked at — enough to catch the clip opening promptly. */
-        const val READY_POLL_MS = 250L
     }
 }

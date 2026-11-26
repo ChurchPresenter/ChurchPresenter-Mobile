@@ -100,7 +100,14 @@ fun StandaloneOutputScreen(
             label = "slideAlpha",
         )
 
-        Backdrop(slide)
+        // A video sits on black, never on the church's backdrop: letterboxing reads
+        // as part of the picture, and Blank on a video must cut to black rather than
+        // reveal the lyric gradient behind it.
+        if (slide.kind == SlideKind.VIDEO) {
+            Box(Modifier.fillMaxSize().background(Color.Black))
+        } else {
+            Backdrop(slide)
+        }
 
         // A page or a video *is* the slide, so it replaces the text layer rather
         // than sitting behind it — and stands down while blanked, like everything
