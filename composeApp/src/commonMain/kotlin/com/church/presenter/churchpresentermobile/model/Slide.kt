@@ -205,6 +205,8 @@ data class Slide(
     val songCredit: SongCredit? = null,
     val verseCredit: VerseCredit? = null,
     val paper: String? = null,
+    /** How a [SlideKind.VIDEO] slide should be playing. Null for every other kind. */
+    val video: VideoCue? = null,
 ) {
     /** True when the renderer should show nothing but the backdrop. */
     val isHidden: Boolean get() = isBlank || !isLive

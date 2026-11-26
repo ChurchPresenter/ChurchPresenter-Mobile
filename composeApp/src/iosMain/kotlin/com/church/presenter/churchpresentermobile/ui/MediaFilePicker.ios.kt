@@ -6,10 +6,15 @@ import com.church.presenter.churchpresentermobile.network.PickedMediaFile
 import io.ktor.utils.io.writeFully
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readBytes
-import platform.Foundation.NSData
+import platform.Foundation.NSFileHandle
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileSize
+import platform.Foundation.NSNumber
 import platform.Foundation.NSOperationQueue
 import platform.Foundation.NSURL
-import platform.Foundation.dataWithContentsOfURL
+import platform.Foundation.closeFile
+import platform.Foundation.fileHandleForReadingAtPath
+import platform.Foundation.readDataOfLength
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
@@ -20,9 +25,12 @@ import platform.posix.time
 
 private const val BYTES_PER_MB = 1024 * 1024
 
+/** Read per chunk while streaming a picked file — keeps progress smooth and memory flat. */
+private const val READ_CHUNK_BYTES = 256 * 1024
+
 /**
- * iOS actual — presents a document picker filtered to video and audio. iOS has no tight
- * per-app heap cap, so the file is read via NSData and streamed to the channel in chunks.
+ * iOS actual — presents a document picker filtered to [extensions]. The picker hands back a
+ * copy of the file, read and streamed to the channel in chunks so a large video is never held whole.
  */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -30,12 +38,13 @@ actual fun MediaFilePicker(
     onFilePicked: OnMediaPickedCallback,
     onError: (String) -> Unit,
     maxBytes: Long,
+    extensions: Set<String>,
     content: @Composable (launch: () -> Unit) -> Unit,
 ) {
-    val delegate = remember { IosMediaPickerDelegate(onFilePicked, onError, maxBytes) }
+    val delegate = remember(extensions) { IosMediaPickerDelegate(onFilePicked, onError, maxBytes, extensions) }
 
     content {
-        val utTypes: List<UTType> = MEDIA_FILE_EXTENSIONS.mapNotNull { ext ->
+        val utTypes: List<UTType> = extensions.mapNotNull { ext ->
             UTType.typeWithFilenameExtension(ext)
         }
         val picker = UIDocumentPickerViewController(
@@ -62,6 +71,7 @@ private class IosMediaPickerDelegate(
     private val onFilePicked: OnMediaPickedCallback,
     private val onError: (String) -> Unit,
     private val maxBytes: Long,
+    private val extensions: Set<String>,
 ) : NSObject(), UIDocumentPickerDelegateProtocol {
 
     override fun documentPicker(
@@ -77,7 +87,7 @@ private class IosMediaPickerDelegate(
         NSOperationQueue().addOperationWithBlock {
             val rawName = url.lastPathComponent ?: "media_${time(null)}.mp4"
             val ext = rawName.substringAfterLast('.', "").lowercase()
-            if (ext !in MEDIA_FILE_EXTENSIONS) {
+            if (ext !in extensions) {
                 NSOperationQueue.mainQueue.addOperationWithBlock {
                     onFilePicked(null)
                     onError("Unsupported file type: .$ext")
@@ -85,19 +95,20 @@ private class IosMediaPickerDelegate(
                 return@addOperationWithBlock
             }
 
-            url.startAccessingSecurityScopedResource()
-            val data: NSData? = NSData.dataWithContentsOfURL(url)
-            url.stopAccessingSecurityScopedResource()
-
-            val bytes = data?.let { it.bytes?.readBytes(it.length.toInt()) } ?: run {
+            // asCopy = true put the file in our own temporary folder, so it can be
+            // read in chunks rather than loaded whole: a 2 GB video copied into
+            // the standalone library must never be one allocation.
+            val path = url.path ?: run {
                 NSOperationQueue.mainQueue.addOperationWithBlock {
                     onFilePicked(null)
                     onError("Could not read the selected file")
                 }
                 return@addOperationWithBlock
             }
-            if (bytes.size.toLong() > maxBytes) {
-                val mb = bytes.size / BYTES_PER_MB
+            val size = (NSFileManager.defaultManager.attributesOfItemAtPath(path, error = null)
+                ?.get(NSFileSize) as? NSNumber)?.longLongValue ?: 0L
+            if (size > maxBytes) {
+                val mb = size / BYTES_PER_MB
                 NSOperationQueue.mainQueue.addOperationWithBlock {
                     onFilePicked(null)
                     onError("File is too large ($mb MB). Maximum is ${maxBytes / BYTES_PER_MB} MB.")
@@ -105,17 +116,22 @@ private class IosMediaPickerDelegate(
                 return@addOperationWithBlock
             }
 
-            val picked = PickedMediaFile(rawName, bytes.size.toLong()) { channel, onProgress ->
-                // Write in chunks so upload progress advances smoothly.
-                val chunk = 256 * 1024
-                var offset = 0
-                while (offset < bytes.size) {
-                    val end = minOf(offset + chunk, bytes.size)
-                    channel.writeFully(bytes, offset, end - offset)
-                    offset = end
-                    onProgress(offset.toLong())
+            val picked = PickedMediaFile(rawName, size) { channel, onProgress ->
+                val handle = NSFileHandle.fileHandleForReadingAtPath(path)
+                    ?: error("Could not open the selected file")
+                try {
+                    var sent = 0L
+                    var bytes = handle.readChunk()
+                    while (bytes != null) {
+                        channel.writeFully(bytes, 0, bytes.size)
+                        sent += bytes.size
+                        onProgress(sent)
+                        bytes = handle.readChunk()
+                    }
+                    channel.flush()
+                } finally {
+                    handle.closeFile()
                 }
-                channel.flush()
             }
             NSOperationQueue.mainQueue.addOperationWithBlock { onFilePicked(picked) }
         }
@@ -125,4 +141,12 @@ private class IosMediaPickerDelegate(
         controller.dismissViewControllerAnimated(true, completion = null)
         onFilePicked(null)
     }
+}
+
+/** The next chunk of the file, or null at its end. */
+@OptIn(ExperimentalForeignApi::class)
+private fun NSFileHandle.readChunk(): ByteArray? {
+    val chunk = readDataOfLength(READ_CHUNK_BYTES.toULong())
+    val count = chunk.length.toInt()
+    return if (count == 0) null else chunk.bytes?.readBytes(count)
 }

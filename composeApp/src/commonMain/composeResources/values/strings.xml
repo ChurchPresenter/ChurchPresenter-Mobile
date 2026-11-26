@@ -1541,4 +1541,35 @@
     <string name="settings_test_error_send">Send test</string>
     <string name="cd_show_key">Show key</string>
     <string name="cd_hide_key">Hide key</string>
+
+    <!-- Standalone Media tab: videos stored on this device -->
+    <string name="local_media_no_video">No video loaded</string>
+    <string name="local_media_status_empty">Pick a video below to load it</string>
+    <string name="local_media_status_ready">Ready · not on screen</string>
+    <string name="local_media_status_previewing">Previewing on phone only</string>
+    <string name="local_media_status_playing_live">Playing on hall screen</string>
+    <string name="local_media_status_paused_live">Paused on hall screen</string>
+    <string name="local_media_when_ends">When it ends</string>
+    <string name="local_media_end_black">Go to black</string>
+    <string name="local_media_end_hold">Hold last frame</string>
+    <string name="local_media_end_loop">Loop</string>
+    <string name="local_media_sound_on">Sound plays on</string>
+    <string name="local_media_sound_hall">Hall screen</string>
+    <string name="local_media_sound_phone">This phone</string>
+    <string name="local_media_sound_off">Muted</string>
+    <string name="local_media_sound_phone_hint">On iPhone, a TV connected by cable or AirPlay also plays this sound: iOS sends all of an app\'s sound to one place.</string>
+    <string name="local_media_on_screen">On screen</string>
+    <string name="local_media_videos">Videos</string>
+    <string name="local_media_videos_summary">%1$d · %2$s</string>
+    <string name="local_media_add_video">Add video</string>
+    <string name="local_media_importing">Adding video… %1$d%%</string>
+    <string name="local_media_empty_title">No videos yet</string>
+    <string name="local_media_empty_body">Add MP4, MOV or M4V files from this phone. They are copied into the app, so they play without a network.</string>
+    <string name="local_media_unsupported">Videos can\'t be stored on this device.</string>
+    <string name="local_media_loaded">Loaded</string>
+    <string name="local_media_loops">loops</string>
+    <string name="local_media_delete_title">Delete video?</string>
+    <string name="local_media_delete_body">“%1$s” will be removed from this phone.</string>
+    <string name="local_media_cd_loop">Loop</string>
+    <string name="local_media_cd_delete">Delete video</string>
 </resources>

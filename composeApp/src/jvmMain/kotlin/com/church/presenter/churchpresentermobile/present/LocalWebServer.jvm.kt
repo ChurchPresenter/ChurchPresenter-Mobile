@@ -9,7 +9,11 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * [supportsEmbeddedServer] is false on this target, so nothing constructs it.
  */
-actual class LocalWebServer actual constructor(assets: WebAssets, photos: PhotoSource) {
+actual class LocalWebServer actual constructor(
+    assets: WebAssets,
+    photos: PhotoSource,
+    videos: VideoSource,
+) {
 
     private val _clientCount = MutableStateFlow(0)
     actual val clientCount: StateFlow<Int> = _clientCount.asStateFlow()

@@ -70,7 +70,8 @@ class BottomTabBarTest {
         })
 
         assertTrue(AppTab.LIBRARY in tabs)
-        assertTrue(AppTab.MEDIA !in tabs, "media needs a desktop")
+        assertTrue(AppTab.MEDIA in tabs, "media plays videos stored on the phone")
+        assertTrue(AppTab.PRESENTATION !in tabs, "decks need a desktop")
     }
 
     @Test
@@ -90,9 +91,9 @@ class BottomTabBarTest {
     fun aTabNotInTheStripDoesNotBreakRendering() = runComposeUiTest {
         // Can happen for a frame while the mode is switching.
         val tabs = AppTab.forMode(AppMode.STANDALONE)
-        setContent(themed { BottomTabBar(selectedTab = AppTab.MEDIA, onTabSelected = {}, tabs = tabs) })
+        setContent(themed { BottomTabBar(selectedTab = AppTab.PRESENTATION, onTabSelected = {}, tabs = tabs) })
 
-        assertTrue(AppTab.MEDIA !in tabs)
+        assertTrue(AppTab.PRESENTATION !in tabs)
     }
 
     @Test

@@ -168,8 +168,15 @@ import com.church.presenter.churchpresentermobile.viewmodel.StatusUiState
 import com.church.presenter.churchpresentermobile.ui.StatusScreen
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleDownloads
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleWebCatalog
+import com.church.presenter.churchpresentermobile.library.createFileStore
+import com.church.presenter.churchpresentermobile.present.VideoLibrary
+import com.church.presenter.churchpresentermobile.present.VideoTransport
+import com.church.presenter.churchpresentermobile.present.cueFor
+import com.church.presenter.churchpresentermobile.present.createVideoFiles
+import com.church.presenter.churchpresentermobile.present.runVideoClock
 import com.church.presenter.churchpresentermobile.ui.bibles.BiblesPage
 import com.church.presenter.churchpresentermobile.ui.bibles.BiblesScreen
+import com.church.presenter.churchpresentermobile.ui.standalone.LocalMediaScreen
 import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -299,6 +306,25 @@ fun App(
     val standaloneEngine = remember(sinkRegistry) {
         StandaloneEngine(AppModeHolder.mode, sinkRegistry)
     }
+    // Videos copied onto this device for standalone, and the player that puts one on the
+    // hall screen. Both outlive the Media tab, so a clip keeps its time when the operator
+    // goes to the Bible mid-video. The engine asks the transport how a video slide should
+    // be playing at every emit; the transport tells the engine when that changes.
+    val videoLibrary = remember {
+        VideoLibrary(
+            files = createVideoFiles(),
+            store = createFileStore(),
+            newId = { generateUUID() },
+            now = { Clock.System.now().toEpochMilliseconds() },
+        ).also { it.load() }
+    }
+    val videoTransport = remember(standaloneEngine) {
+        VideoTransport(clock = { Clock.System.now().toEpochMilliseconds() }).also { transport ->
+            standaloneEngine.videoCue = transport::cueFor
+            transport.onChange = standaloneEngine::refreshVideo
+        }
+    }
+    LaunchedEffect(videoTransport) { runVideoClock(videoTransport, standaloneEngine::refreshVideo) }
     // Where the canvas goes live: this device's outputs in standalone, the desktop's in
     // remote (after the operator there allows it). One router, read per call, so a
     // canvas left open across a mode switch follows the app, as every other screen does.
@@ -349,7 +375,12 @@ fun App(
                     // operator's photos, so the browser screen and the in-process
                     // one fetch an image from the identical address.
                     photos = { id -> canvasOutput.source.photo(id) ?: photoLibrary.source.photo(id) },
-                    onBaseUrl = { photoLibrary.serveFrom(it) },
+                    onBaseUrl = {
+                        photoLibrary.serveFrom(it)
+                        videoLibrary.serveFrom(it)
+                    },
+                    // Videos stream from the same server, a range at a time.
+                    videos = videoLibrary.source,
                 )
             )
         }
@@ -841,7 +872,7 @@ fun App(
     // The Media tab gates its upload UI on the server's live "file uploads allowed" permission —
     // re-fetch on entry so a desktop-side toggle is reflected without restarting the app.
     LaunchedEffect(selectedTab) {
-        if (selectedTab == AppTab.MEDIA) statusViewModel.refreshQuietly()
+        if (selectedTab == AppTab.MEDIA && appMode == AppMode.REMOTE) statusViewModel.refreshQuietly()
     }
 
     // Preload the target screen's content when a schedule-drawer tap requests it.
@@ -1132,6 +1163,16 @@ fun App(
                             bibles = bibleRepository,
                             onOpenBibles = if (bibleDownloadsSupported) ({ biblesPage = it }) else null,
                             modifier = Modifier.fillMaxSize()
+                        )
+                        // Standalone plays videos stored on this phone; remote drives the desktop's player.
+                        AppTab.MEDIA if appMode == AppMode.STANDALONE -> LocalMediaScreen(
+                            library = videoLibrary,
+                            transport = videoTransport,
+                            engine = standaloneEngine,
+                            twoPane = twoPane,
+                            onMenu = paneMenu,
+                            onSettings = paneSettings,
+                            modifier = Modifier.fillMaxSize(),
                         )
                         AppTab.MEDIA -> MediaScreen(
                             viewModel = mediaViewModel,

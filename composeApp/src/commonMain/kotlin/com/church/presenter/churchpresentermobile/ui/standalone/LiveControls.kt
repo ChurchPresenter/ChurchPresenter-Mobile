@@ -87,7 +87,7 @@ internal fun SlidePreview(slide: Slide, total: Int, index: Int, modifier: Modifi
                 .clip(RoundedCornerShape(AppDimens.radiusChip))
                 .border(1.dp, colors.border, RoundedCornerShape(AppDimens.radiusChip)),
         ) {
-            StandaloneOutputScreen(slide)
+            StandaloneOutputScreen(slide, playsVideo = false)
         }
     }
 }

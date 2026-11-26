@@ -19,12 +19,17 @@ private val MEDIA_MIME_TYPES = arrayOf(
     "application/octet-stream",
 )
 
+private val VIDEO_MIME_TYPES = arrayOf("video/*", "application/octet-stream")
+
+private val AUDIO_EXTENSIONS = setOf("mp3", "wav", "flac", "aac", "ogg", "wma", "m4a", "aiff", "opus")
+
 /** Android actual — streams the picked file straight from its content URI (never buffered whole). */
 @Composable
 actual fun MediaFilePicker(
     onFilePicked: OnMediaPickedCallback,
     onError: (String) -> Unit,
     maxBytes: Long,
+    extensions: Set<String>,
     content: @Composable (launch: () -> Unit) -> Unit,
 ) {
     val context = LocalContext.current
@@ -54,7 +59,7 @@ actual fun MediaFilePicker(
             val sizeBytes = meta.second
 
             val ext = fileName.substringAfterLast('.', "").lowercase()
-            if (ext !in MEDIA_FILE_EXTENSIONS) {
+            if (ext !in extensions) {
                 onFilePicked(null); onError("Unsupported file type: .$ext"); return@launch
             }
             if (sizeBytes > maxBytes) {
@@ -85,6 +90,8 @@ actual fun MediaFilePicker(
     }
 
     content {
-        launcher.launch(MEDIA_MIME_TYPES)
+        // Only videos asked for: don't offer the audio a video library cannot hold.
+        val videoOnly = extensions.none { it in AUDIO_EXTENSIONS }
+        launcher.launch(if (videoOnly) VIDEO_MIME_TYPES else MEDIA_MIME_TYPES)
     }
 }

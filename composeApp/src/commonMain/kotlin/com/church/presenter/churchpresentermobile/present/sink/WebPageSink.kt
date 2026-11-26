@@ -7,6 +7,7 @@ import com.church.presenter.churchpresentermobile.present.PhotoSource
 import com.church.presenter.churchpresentermobile.present.PresentationKeepAlive
 import com.church.presenter.churchpresentermobile.present.SinkState
 import com.church.presenter.churchpresentermobile.present.SinkStatus
+import com.church.presenter.churchpresentermobile.present.VideoSource
 import com.church.presenter.churchpresentermobile.present.WebAssets
 import com.church.presenter.churchpresentermobile.present.localIpAddress
 import com.church.presenter.churchpresentermobile.tv.PhoneAdvert
@@ -50,6 +51,8 @@ const val WEB_PAGE_SINK_ID = "web_page"
  *   build agent's answer is not the one a test wants to depend on.
  * @param loadAssets The bundled display page. A seam over [WebAssets.load] for
  *   the same reason — the bundle is not readable off a device.
+ * @param videos The operator's stored videos, served a range at a time from the
+ *   same address, so a TV plays what the phone's own screen plays.
  * @param serverFactory Builds the embedded server. Seamed so the attach path can
  *   be exercised without one, not so a different server can be substituted — see
  *   [DisplayServer], which exists only because the platform server is an
@@ -62,7 +65,8 @@ class WebPageSink(
     private val onBaseUrl: (String?) -> Unit = {},
     private val address: () -> String? = { localIpAddress() },
     private val loadAssets: suspend () -> WebAssets = { WebAssets.load() },
-    private val serverFactory: (WebAssets, PhotoSource) -> DisplayServer = localWebServerFactory,
+    videos: VideoSource = VideoSource.NONE,
+    private val serverFactory: (WebAssets, PhotoSource) -> DisplayServer = localWebServerFactoryWith(videos),
 ) : OutputSink {
 
     override val id: String = WEB_PAGE_SINK_ID

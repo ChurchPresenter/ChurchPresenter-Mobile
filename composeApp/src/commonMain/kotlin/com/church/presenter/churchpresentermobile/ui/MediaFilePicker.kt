@@ -25,6 +25,8 @@ expect fun MediaFilePicker(
     onFilePicked: OnMediaPickedCallback,
     onError: (String) -> Unit = {},
     maxBytes: Long = MAX_MEDIA_UPLOAD_BYTES,
+    /** The file types offered; the standalone video library narrows this to video it can play. */
+    extensions: Set<String> = MEDIA_FILE_EXTENSIONS,
     content: @Composable (launch: () -> Unit) -> Unit,
 )
 

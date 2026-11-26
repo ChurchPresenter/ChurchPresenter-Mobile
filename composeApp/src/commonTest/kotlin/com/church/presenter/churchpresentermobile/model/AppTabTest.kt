@@ -20,11 +20,12 @@ class AppTabTest {
     }
 
     @Test
-    fun `standalone is bible, songs, library, announcements and more`() {
+    fun `standalone is bible, songs, media, library, announcements and more`() {
         // The live controls ride along every tab rather than having one, and the
-        // running order is the schedule drawer, as in remote.
+        // running order is the schedule drawer, as in remote. Media sits after
+        // Songs and Bible, where remote has it.
         assertEquals(
-            listOf(AppTab.BIBLE, AppTab.SONGS, AppTab.LIBRARY, AppTab.ANNOUNCEMENTS, AppTab.MORE),
+            listOf(AppTab.BIBLE, AppTab.SONGS, AppTab.MEDIA, AppTab.LIBRARY, AppTab.ANNOUNCEMENTS, AppTab.MORE),
             AppTab.forMode(AppMode.STANDALONE),
         )
     }
@@ -32,8 +33,13 @@ class AppTabTest {
     @Test
     fun `standalone drops the tabs that need a desktop`() {
         val tabs = AppTab.forMode(AppMode.STANDALONE)
-        assertFalse(AppTab.MEDIA in tabs, "media casting is a desktop transport")
         assertFalse(AppTab.PRESENTATION in tabs, "presentation decks live on the desktop")
+    }
+
+    @Test
+    fun `media is in both presenting modes`() {
+        assertTrue(AppTab.MEDIA in AppTab.forMode(AppMode.REMOTE))
+        assertTrue(AppTab.MEDIA in AppTab.forMode(AppMode.STANDALONE))
     }
 
     @Test

@@ -24,10 +24,12 @@ enum class AppTab {
          * The tabs shown in [mode], in strip order.
          *
          * Remote keeps exactly the tabs it has always had. Standalone drops the
-         * ones that only mean something with a desktop attached (Media casting
-         * and the desktop's presentation decks) and adds this device's Library and
-         * Announcements. There is no Present tab — the live controls ride along
-         * every tab in the live bar, and what the screens look like is set once,
+         * desktop's presentation decks, which only mean something with a desktop
+         * attached, and adds this device's Library and Announcements. Media is in
+         * both, in the same place after Songs and Bible: remote's drives the
+         * desktop's player, standalone's plays videos stored on this phone.
+         * There is no Present tab — the live controls ride along every tab in
+         * the live bar, and what the screens look like is set once,
          * in Settings. The running order is the schedule drawer, as in remote.
          * More survives in both, with different contents — see
          * [MoreDestination.forMode]. Calendar mode is the planner and nothing
@@ -37,7 +39,7 @@ enum class AppTab {
          */
         fun forMode(mode: AppMode): List<AppTab> = when (mode) {
             AppMode.REMOTE -> listOf(SONGS, BIBLE, MEDIA, PRESENTATION, MORE)
-            AppMode.STANDALONE -> listOf(BIBLE, SONGS, LIBRARY, ANNOUNCEMENTS, MORE)
+            AppMode.STANDALONE -> listOf(BIBLE, SONGS, MEDIA, LIBRARY, ANNOUNCEMENTS, MORE)
             AppMode.CALENDAR -> listOf(CALENDAR)
         }
     }

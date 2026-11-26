@@ -267,6 +267,29 @@ object SlideDeckBuilder {
     }
 
     /**
+     * A single-slide deck for a video stored on this device.
+     *
+     * Unlike [fromVideo] this accepts a `file:` address: it is never typed by
+     * anyone, only ever built by [com.church.presenter.churchpresentermobile.present.VideoLibrary]
+     * from its own storage, for a screen plugged into the phone while the network
+     * server is down. The browser page still refuses anything but http(s).
+     *
+     * @param sourceId The video's id, so the CCLI log and the list can name it.
+     */
+    fun fromLocalVideo(url: String, title: String, sourceId: String): SlideDeck {
+        val link = url.trim()
+        val scheme = SCHEME.find(link)?.value?.lowercase()
+        if (scheme !in LOCAL_VIDEO_SCHEMES) return SlideDeck(kind = SlideKind.VIDEO, title = title)
+        return SlideDeck(
+            kind = SlideKind.VIDEO,
+            title = title,
+            slides = listOf(Slide(kind = SlideKind.VIDEO, mediaUrl = link, sourceId = sourceId, index = 0, total = 1)),
+        )
+    }
+
+    private val LOCAL_VIDEO_SCHEMES = setOf("http:", "https:", "file:")
+
+    /**
      * Builds a deck of photographs, one per slide.
      *
      * The image is the slide: no body text, and the backdrop carries it, so the

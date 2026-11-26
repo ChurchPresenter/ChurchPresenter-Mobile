@@ -4,6 +4,7 @@ import com.church.presenter.churchpresentermobile.util.Logger
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpHeaders
+import io.ktor.http.content.OutgoingContent
 import io.ktor.server.application.install
 import io.ktor.server.application.serverConfig
 import io.ktor.server.cio.CIO
@@ -11,6 +12,7 @@ import io.ktor.server.cio.CIOApplicationEngine
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.response.respond
 import io.ktor.server.response.respondBytes
 import io.ktor.server.response.header
 import io.ktor.server.response.respondText
@@ -18,10 +20,13 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.webSocket
+import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.writeFully
 import io.ktor.websocket.Frame
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
@@ -30,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 
 private const val TAG = "LocalWebServer"
@@ -46,6 +52,7 @@ private const val TAG = "LocalWebServer"
 actual class LocalWebServer actual constructor(
     private val assets: WebAssets,
     private val photos: PhotoSource,
+    private val videos: VideoSource,
 ) {
 
     private val _clientCount = MutableStateFlow(0)
@@ -188,6 +195,35 @@ actual class LocalWebServer actual constructor(
                 }
             }
 
+            // Videos stream a range at a time: a TV's player asks for the part it is
+            // about to play, and AVPlayer will not play at all from a server that
+            // ignores the Range header. Nothing is ever read whole into memory.
+            get("/$VIDEO_ROUTE/{name}") {
+                val video = call.parameters["name"]?.let(videos::video)
+                if (video == null) {
+                    call.respondText(
+                        text = "Not found",
+                        contentType = ContentType.Text.Plain,
+                        status = HttpStatusCode.NotFound,
+                    )
+                    return@get
+                }
+                call.response.header(HttpHeaders.AcceptRanges, "bytes")
+                call.response.header(HttpHeaders.CacheControl, PHOTO_CACHE_CONTROL)
+                when (val range = parseByteRange(call.request.headers[HttpHeaders.Range], video.size)) {
+                    RangeRequest.Unsatisfiable -> {
+                        call.response.header(HttpHeaders.ContentRange, "bytes */${video.size}")
+                        call.respondText("", status = HttpStatusCode.RequestedRangeNotSatisfiable)
+                    }
+                    RangeRequest.Whole -> call.respond(VideoContent(video, 0L, video.size - 1, HttpStatusCode.OK))
+                    is RangeRequest.Part -> {
+                        val contentRange = "bytes ${range.start}-${range.end}/${video.size}"
+                        call.response.header(HttpHeaders.ContentRange, contentRange)
+                        call.respond(VideoContent(video, range.start, range.end, HttpStatusCode.PartialContent))
+                    }
+                }
+            }
+
             get("/{path...}") {
                 val requested = call.request.local.uri
                 val asset = assets.forPath(requested)
@@ -227,11 +263,40 @@ actual class LocalWebServer actual constructor(
 
     private var boundPort: Int = 0
 
+    /**
+     * Bytes [start]..[end] of [video], written a chunk at a time off the caller's
+     * thread — a 1 GB file must never be one allocation.
+     */
+    private class VideoContent(
+        private val video: ServedVideo,
+        private val start: Long,
+        private val end: Long,
+        override val status: HttpStatusCode,
+    ) : OutgoingContent.WriteChannelContent() {
+        override val contentType: ContentType = ContentType.parse(video.contentType)
+        override val contentLength: Long = end - start + 1
+
+        override suspend fun writeTo(channel: ByteWriteChannel) {
+            var position = start
+            while (position <= end) {
+                val length = minOf(VIDEO_CHUNK_BYTES.toLong(), end - position + 1).toInt()
+                val bytes = withContext(Dispatchers.Default) { video.read(position, length) }
+                if (bytes == null || bytes.isEmpty()) break
+                channel.writeFully(bytes)
+                position += bytes.size
+            }
+            channel.flush()
+        }
+    }
+
     private companion object {
         /** A year, and immutable: the id in the URL is unique to these bytes. */
         const val PHOTO_CACHE_CONTROL = "public, max-age=31536000, immutable"
 
         const val EPHEMERAL_PORT = 0
+
+        /** How much of a video is read per write — enough to keep a TV fed, small enough to never matter. */
+        const val VIDEO_CHUNK_BYTES = 256 * 1024
 
         /** Longest a single bind attempt may take before the next port is tried. */
         const val BIND_TIMEOUT_MS = 5_000L
