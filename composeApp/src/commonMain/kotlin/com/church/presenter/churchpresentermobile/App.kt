@@ -169,6 +169,7 @@ import com.church.presenter.churchpresentermobile.ui.StatusScreen
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleDownloads
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleWebCatalog
 import com.church.presenter.churchpresentermobile.library.createFileStore
+import com.church.presenter.churchpresentermobile.present.LocalVideoFiles
 import com.church.presenter.churchpresentermobile.present.VideoLibrary
 import com.church.presenter.churchpresentermobile.present.VideoTransport
 import com.church.presenter.churchpresentermobile.present.cueFor
@@ -316,7 +317,10 @@ fun App(
             store = createFileStore(),
             newId = { generateUUID() },
             now = { Clock.System.now().toEpochMilliseconds() },
-        ).also { it.load() }
+        ).also {
+            it.load()
+            LocalVideoFiles.resolve = it::localFileUrl
+        }
     }
     val videoTransport = remember(standaloneEngine) {
         VideoTransport(clock = { Clock.System.now().toEpochMilliseconds() }).also { transport ->

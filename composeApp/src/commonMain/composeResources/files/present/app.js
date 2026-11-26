@@ -137,6 +137,12 @@
   var SYNC_TOLERANCE_MS = 500;
   var END_TOLERANCE_MS = 300;
   var DRIFT_CHECK_MS = 2000;
+  // Between cues only a real drift is corrected, and never straight after a
+  // seek: a seek rebuffers, and correcting a half-second gap could leave the
+  // video further behind than before and seek again, every two seconds.
+  var DRIFT_TOLERANCE_MS = 1500;
+  var SEEK_SETTLE_MS = 5000;
+  var lastSeekAt = -SEEK_SETTLE_MS;
   var currentCue = null;
   var cueReceivedAt = 0;
   var videoEnded = false;
@@ -149,19 +155,24 @@
     return ms / 1000;
   }
 
-  function seekIfDrifted(cue) {
+  function seekIfDrifted(cue, tolerance) {
     var v = el.video;
     var target = expectedSeconds(cue);
     var gap = Math.abs(v.currentTime - target) * 1000;
     var duration = cue.durationMs || 0;
     if (cue.endAction === 'LOOP' && duration > 0) { gap = Math.min(gap, duration - gap); }
-    if (gap > SYNC_TOLERANCE_MS) {
-      try { v.currentTime = target; } catch (e) { /* not seekable until metadata — retried on loadedmetadata */ }
+    if (gap > (tolerance || SYNC_TOLERANCE_MS)) {
+      try {
+        v.currentTime = target;
+        lastSeekAt = performance.now();
+      } catch (e) { /* not seekable until metadata — retried on loadedmetadata */ }
     }
   }
 
   setInterval(function () {
-    if (currentCue && currentCue.playing && !el.video.paused) { seekIfDrifted(currentCue); }
+    if (!currentCue || !currentCue.playing || el.video.paused) { return; }
+    if (performance.now() - lastSeekAt < SEEK_SETTLE_MS) { return; }
+    seekIfDrifted(currentCue, DRIFT_TOLERANCE_MS);
   }, DRIFT_CHECK_MS);
 
   function playVideo() {

@@ -47,6 +47,7 @@ import churchpresentermobile.composeapp.generated.resources.local_media_cd_loop
 import com.church.presenter.churchpresentermobile.model.VideoCue
 import com.church.presenter.churchpresentermobile.model.VideoEndAction
 import com.church.presenter.churchpresentermobile.model.VideoSound
+import com.church.presenter.churchpresentermobile.present.LocalVideoFiles
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
 import com.church.presenter.churchpresentermobile.present.VideoLibrary
 import com.church.presenter.churchpresentermobile.present.VideoTransport
@@ -267,7 +268,7 @@ private fun BoxScope.VideoPreview(
     val started = state.playing || positionMs > 0L
     if (url != null && started) {
         OutputVideoView(
-            url = url,
+            url = LocalVideoFiles.playable(url),
             cue = cue,
             modifier = Modifier.fillMaxSize(),
             muted = state.sound != VideoSound.PHONE,

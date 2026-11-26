@@ -12,6 +12,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import com.church.presenter.churchpresentermobile.model.VideoCue
 import com.church.presenter.churchpresentermobile.model.VIDEO_DRIFT_CHECK_MS
+import com.church.presenter.churchpresentermobile.model.VIDEO_DRIFT_TOLERANCE_MS
+import com.church.presenter.churchpresentermobile.model.VIDEO_SEEK_SETTLE_MS
+import com.church.presenter.churchpresentermobile.model.VIDEO_SYNC_TOLERANCE_MS
 import com.church.presenter.churchpresentermobile.model.VideoEndAction
 import com.church.presenter.churchpresentermobile.model.expectedPositionMs
 import com.church.presenter.churchpresentermobile.model.shouldSeek
@@ -131,6 +134,7 @@ private class CuePlayer {
     private var url: String? = null
     private var cue: VideoCue? = null
     private var cueReceivedAt = 0.0
+    private var lastSeekAt = 0.0
     private var endObserver: Any? = null
 
     init {
@@ -165,19 +169,22 @@ private class CuePlayer {
     fun correctDrift() {
         val current = cue ?: return
         if (!current.playing || player.rate == 0f) return
-        seekIfDrifted(current)
+        val sinceSeekMs = (NSProcessInfo.processInfo.systemUptime - lastSeekAt) * MS_PER_SECOND
+        if (sinceSeekMs < VIDEO_SEEK_SETTLE_MS) return
+        seekIfDrifted(current, VIDEO_DRIFT_TOLERANCE_MS)
     }
 
     /**
      * AVPlayer opens a clip asynchronously, so the time since the cue arrived is
      * added on: the clip starts where the phone is, not where it was.
      */
-    private fun seekIfDrifted(current: VideoCue) {
+    private fun seekIfDrifted(current: VideoCue, toleranceMs: Long = VIDEO_SYNC_TOLERANCE_MS) {
         val elapsedMs = ((NSProcessInfo.processInfo.systemUptime - cueReceivedAt) * MS_PER_SECOND).toLong()
         val expected = expectedPositionMs(current, elapsedMs)
         val nowMs = (CMTimeGetSeconds(player.currentTime()) * MS_PER_SECOND).toLong()
-        if (shouldSeek(nowMs, expected, current)) {
+        if (shouldSeek(nowMs, expected, current, toleranceMs)) {
             player.seekToTime(CMTimeMakeWithSeconds(expected / MS_PER_SECOND, SEEK_TIMESCALE))
+            lastSeekAt = NSProcessInfo.processInfo.systemUptime
         }
     }
 

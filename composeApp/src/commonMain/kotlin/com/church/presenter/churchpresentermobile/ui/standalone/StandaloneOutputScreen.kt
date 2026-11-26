@@ -42,6 +42,7 @@ import com.church.presenter.churchpresentermobile.model.showsReference
 import com.church.presenter.churchpresentermobile.model.displayBody
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
+import com.church.presenter.churchpresentermobile.present.LocalVideoFiles
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.AUTO_FIT_FLOOR
 import com.church.presenter.churchpresentermobile.model.BODY_LINE_HEIGHT
@@ -108,7 +109,8 @@ fun StandaloneOutputScreen(
         if (mediaUrl != null) {
             when (slide.kind) {
                 SlideKind.WEB -> OutputWebView(mediaUrl, Modifier.fillMaxSize())
-                SlideKind.VIDEO if playsVideo -> OutputVideoView(mediaUrl, slide.video, Modifier.fillMaxSize())
+                SlideKind.VIDEO if playsVideo ->
+                    OutputVideoView(LocalVideoFiles.playable(mediaUrl), slide.video, Modifier.fillMaxSize())
                 SlideKind.VIDEO -> VideoStandIn()
                 SlideKind.CANVAS -> OutputCanvasFrame(
                     url = mediaUrl,

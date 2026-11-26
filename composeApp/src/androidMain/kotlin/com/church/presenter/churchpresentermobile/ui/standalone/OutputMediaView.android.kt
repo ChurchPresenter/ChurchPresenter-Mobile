@@ -29,6 +29,9 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.delay
 import com.church.presenter.churchpresentermobile.model.VideoCue
 import com.church.presenter.churchpresentermobile.model.VIDEO_DRIFT_CHECK_MS
+import com.church.presenter.churchpresentermobile.model.VIDEO_DRIFT_TOLERANCE_MS
+import com.church.presenter.churchpresentermobile.model.VIDEO_SEEK_SETTLE_MS
+import com.church.presenter.churchpresentermobile.model.VIDEO_SYNC_TOLERANCE_MS
 import com.church.presenter.churchpresentermobile.model.VideoEndAction
 import com.church.presenter.churchpresentermobile.model.expectedPositionMs
 import com.church.presenter.churchpresentermobile.model.shouldSeek
@@ -148,6 +151,7 @@ private class CuePlayer {
     private var url: String? = null
     private var cue: VideoCue? = null
     private var cueReceivedAt = 0L
+    private var lastSeekAt = 0L
     private var muted: Boolean = true
     private var soundOnDevice: Boolean = false
     var onEndedToBlack: () -> Unit = {}
@@ -189,7 +193,8 @@ private class CuePlayer {
         val target = view ?: return
         val current = cue ?: return
         if (player == null || !current.playing || !target.isPlaying) return
-        seekIfDrifted(target, current)
+        if (SystemClock.elapsedRealtime() - lastSeekAt < VIDEO_SEEK_SETTLE_MS) return
+        seekIfDrifted(target, current, VIDEO_DRIFT_TOLERANCE_MS)
     }
 
     private fun apply() {
@@ -213,9 +218,16 @@ private class CuePlayer {
         }
     }
 
-    private fun seekIfDrifted(target: VideoView, current: VideoCue) {
+    private fun seekIfDrifted(
+        target: VideoView,
+        current: VideoCue,
+        toleranceMs: Long = VIDEO_SYNC_TOLERANCE_MS,
+    ) {
         val expected = expectedPositionMs(current, SystemClock.elapsedRealtime() - cueReceivedAt)
-        if (shouldSeek(target.currentPosition.toLong(), expected, current)) target.seekTo(expected.toInt())
+        if (shouldSeek(target.currentPosition.toLong(), expected, current, toleranceMs)) {
+            target.seekTo(expected.toInt())
+            lastSeekAt = SystemClock.elapsedRealtime()
+        }
     }
 
     /**

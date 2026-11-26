@@ -205,6 +205,16 @@ class VideoLibrary(
         return "file://$path"
     }
 
+    /**
+     * The `file://` address of the video behind a served [url], when it is one of
+     * this library's — see [LocalVideoFiles].
+     */
+    fun localFileUrl(url: String): String? {
+        val name = url.substringAfter("/$VIDEO_ROUTE/", "").substringBefore('?')
+        if (name.isEmpty() || _videos.value.none { it.fileName == name }) return null
+        return files?.pathOf(name)?.let { "file://$it" }
+    }
+
     /** The thumbnail's local path, for the list. */
     fun thumbnailPath(video: LocalVideo): String? =
         video.thumbName?.let { name -> files?.pathOf(name) }

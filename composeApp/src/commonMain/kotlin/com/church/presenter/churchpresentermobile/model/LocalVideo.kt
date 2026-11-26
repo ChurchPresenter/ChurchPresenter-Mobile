@@ -100,6 +100,17 @@ const val VIDEO_SYNC_TOLERANCE_MS = 500L
 /** How often a playing player checks itself against the cue, between cues. */
 const val VIDEO_DRIFT_CHECK_MS = 2_000L
 
+/**
+ * How far a player may drift *between* cues before it corrects itself. Looser
+ * than [VIDEO_SYNC_TOLERANCE_MS]: a seek costs a rebuffer, and a player that
+ * seeks for a half-second gap can land further behind than it started and seek
+ * again — on a device that stalled every two seconds and dropped its sound.
+ */
+const val VIDEO_DRIFT_TOLERANCE_MS = 1_500L
+
+/** After a seek, how long a player is left to settle before it is checked again. */
+const val VIDEO_SEEK_SETTLE_MS = 5_000L
+
 /** How close to the end counts as "ended" — a player rarely reports the exact last millisecond. */
 const val VIDEO_END_TOLERANCE_MS = 300L
 
@@ -129,8 +140,13 @@ fun expectedPositionMs(cue: VideoCue, elapsedMs: Long): Long {
  * the browser page encodes the same rule in `app.js`. A looping clip measures
  * the short way round, so 29.9s and 0.1s of a 30s loop count as in step.
  */
-fun shouldSeek(currentMs: Long, targetMs: Long, cue: VideoCue): Boolean {
+fun shouldSeek(
+    currentMs: Long,
+    targetMs: Long,
+    cue: VideoCue,
+    toleranceMs: Long = VIDEO_SYNC_TOLERANCE_MS,
+): Boolean {
     val gap = abs(currentMs - targetMs)
     val loopGap = if (cue.endAction == VideoEndAction.LOOP && cue.durationMs > 0L) cue.durationMs - gap else gap
-    return min(gap, loopGap) > VIDEO_SYNC_TOLERANCE_MS
+    return min(gap, loopGap) > toleranceMs
 }
