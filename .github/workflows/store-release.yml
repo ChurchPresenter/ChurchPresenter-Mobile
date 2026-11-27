@@ -503,3 +503,60 @@ jobs:
       - name: Remove temporary keychain
         if: always()
         run: security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" || true
+
+  # ── Tag the commit the stores were given ──────────────────────────────
+  # Every store build gets a git tag named after its version (e.g. 1.0.42)
+  # on the exact commit it was built from, so "which code is in build 42?"
+  # is `git show 1.0.42`. The annotation records which platforms actually
+  # uploaded, the Play track and the run that produced it.
+  #
+  # Runs if at least one platform succeeded: a version a store has seen must
+  # be traceable even when the other platform failed. Re-running a failed job
+  # reuses the same run number (so the same version and commit) and the tag is
+  # rewritten with the updated platform list.
+  tag:
+    name: Tag release commit
+    needs: [version, android, ios]
+    if: ${{ always() && needs.version.result == 'success' && (needs.android.result == 'success' || needs.ios.result == 'success') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create and push the tag
+        env:
+          TAG: ${{ needs.version.outputs.name }}
+          BUILD: ${{ needs.version.outputs.build }}
+          ANDROID_RESULT: ${{ needs.android.result }}
+          IOS_RESULT: ${{ needs.ios.result }}
+          TRACK: ${{ inputs.track }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          PLATFORMS=()
+          [ "$ANDROID_RESULT" = "success" ] && PLATFORMS+=("Android (Google Play, track: ${TRACK})")
+          [ "$IOS_RESULT" = "success" ] && PLATFORMS+=("iOS (TestFlight)")
+
+          {
+            echo "Store release ${TAG} (build ${BUILD})"
+            echo ""
+            for p in "${PLATFORMS[@]}"; do echo "- ${p}"; done
+            echo ""
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Branch: ${GITHUB_REF_NAME}"
+            echo "Run:    ${RUN_URL}"
+            echo "By:     ${GITHUB_ACTOR}"
+          } > /tmp/tag-message.txt
+          cat /tmp/tag-message.txt
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a -f "$TAG" "$GITHUB_SHA" -F /tmp/tag-message.txt
+          git push --force origin "refs/tags/${TAG}"
+
+          {
+            echo "## 🏷️ Tagged \`${TAG}\`"
+            echo ""
+            echo "[\`${TAG}\`](${{ github.server_url }}/${{ github.repository }}/tree/${TAG}) → \`${GITHUB_SHA:0:7}\` on \`${GITHUB_REF_NAME}\` — $(printf '%s; ' "${PLATFORMS[@]}" | sed 's/; $//')"
+          } >> "$GITHUB_STEP_SUMMARY"
