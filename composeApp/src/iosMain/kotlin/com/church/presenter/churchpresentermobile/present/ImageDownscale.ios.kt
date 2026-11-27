@@ -1,6 +1,7 @@
 package com.church.presenter.churchpresentermobile.present
 
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.readBytes
@@ -23,13 +24,14 @@ private const val TAG = "ImageDownscale"
 /** Matches the quality the picker already re-encodes at, so nothing degrades twice over. */
 private const val JPEG_QUALITY = 0.85
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 actual fun downscaleImage(bytes: ByteArray, maxEdge: Int): ByteArray = runCatching {
     if (bytes.isEmpty()) return bytes
     val data = bytes.usePinned { pinned ->
         NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())
     }
-    val image = UIImage(data = data) ?: return bytes
+    // The factory, not the constructor: only it reports bytes that are not an image.
+    val image = UIImage.imageWithData(data) ?: return bytes
 
     val width: Double = image.size.useContents { this.width }
     val height: Double = image.size.useContents { this.height }

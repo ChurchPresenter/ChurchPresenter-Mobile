@@ -4,7 +4,7 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.library.LocalBibleRepository
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.network.ApiConstants
@@ -397,6 +397,6 @@ class BibleSyncSectionTest {
         click(LibraryTags.BIBLE_SYNC_DOWNLOAD)
 
         awaitThat { f.viewModel.installed.value.isNotEmpty() }
-        awaitThat { f.choice.activeId.value != null }
+        awaitThat { f.choice.activeId.value.isNotEmpty() }
     }
 }

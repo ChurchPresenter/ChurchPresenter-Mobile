@@ -2,7 +2,7 @@ package com.church.presenter.churchpresentermobile.ui.calendar
 
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.calendar.CalendarRepository
 import com.church.presenter.churchpresentermobile.calendar.storedDate
 import com.church.presenter.churchpresentermobile.calendar.today

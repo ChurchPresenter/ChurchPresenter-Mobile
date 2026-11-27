@@ -103,6 +103,8 @@ class PresentationLocksTest {
 
         started.start()
 
+        // SDK 0 here, so the pre-Android-10 branch: the mode that is deprecated later.
+        @Suppress("DEPRECATION")
         assertEquals(WifiManager.WIFI_MODE_FULL_HIGH_PERF, started.wifiLockMode.captured)
     }
 

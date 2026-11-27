@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.DeepLinkHandler
 import com.church.presenter.churchpresentermobile.viewmodel.SettingsViewModel
 import kotlin.test.Test

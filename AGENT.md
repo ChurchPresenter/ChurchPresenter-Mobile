@@ -27,7 +27,7 @@ This document tracks coding standards, common patterns, and debugging notes for 
 - ❌ **NEVER** use `Text` inside `IconButton` to simulate an icon
 - ✅ **ALWAYS** use `Icon(imageVector = Icons.*, contentDescription = "...")` with a real vector asset
 - ✅ **ALWAYS** use `Icons.Filled.*`, `Icons.AutoMirrored.Filled.*`, or `Icons.Outlined.*` from `androidx.compose.material.icons`
-- 📦 The `compose.materialIconsExtended` dependency is already in `commonMain` — all icons are available
+- 📦 The material icons extended dependency (`libs.compose.material.icons.extended.mp`) is already in `commonMain` — all icons are available
 
 **Example - WRONG**:
 ```kotlin

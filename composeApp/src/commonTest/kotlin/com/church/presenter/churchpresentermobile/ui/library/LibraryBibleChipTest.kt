@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.library
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.AppSettings
 import com.church.presenter.churchpresentermobile.testutil.InMemorySettingsStorage
 import com.church.presenter.churchpresentermobile.ui.awaitThat
@@ -156,7 +156,7 @@ class LibraryBibleChipTest {
         val bibles = biblesWith("King James Version")
         showLibrary(library(), bibles = bibles)
 
-        awaitThat { bibles.index.value.activeId != null }
+        awaitThat { bibles.index.value.activeId.isNotEmpty() }
     }
 
     @Test

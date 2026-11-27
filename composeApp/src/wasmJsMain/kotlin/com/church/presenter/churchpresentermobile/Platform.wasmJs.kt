@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package com.church.presenter.churchpresentermobile
 
 private class WasmPlatform : Platform {

@@ -16,12 +16,12 @@ actual object RemoteConfig {
             .build()
         rc.setConfigSettingsAsync(settings)
         if (defaults.isNotEmpty()) {
-            rc.setDefaultsAsync(defaults.mapValues { (_, v) -> v as Any })
+            rc.setDefaultsAsync(defaults)
         }
         Logger.d("RemoteConfig", "Initialised — fetchInterval=${fetchIntervalSeconds}s defaults=${defaults.keys}")
     }
 
-    actual fun fetchAndActivate(onComplete: (Boolean) -> Unit) {
+    actual fun fetchAndActivate(onComplete: (activated: Boolean) -> Unit) {
         rc.fetchAndActivate()
             .addOnSuccessListener { activated ->
                 Logger.d(TAG, "fetchAndActivate — activated=$activated")

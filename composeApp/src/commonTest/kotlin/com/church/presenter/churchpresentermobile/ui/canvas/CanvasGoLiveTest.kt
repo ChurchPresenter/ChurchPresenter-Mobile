@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.canvas
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.lifecycle.viewModelScope
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.SlideKind

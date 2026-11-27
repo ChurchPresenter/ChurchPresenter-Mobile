@@ -76,6 +76,10 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
+# The multiplatform icons and UI-test artifacts the deprecated `compose.materialIconsExtended` and
+# `compose.uiTest` accessors used to resolve to — pinned to exactly what they resolved to.
+compose-material-icons-extended-mp = { module = "org.jetbrains.compose.material:material-icons-extended", version = "1.7.3" }
+compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeMultiplatform" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

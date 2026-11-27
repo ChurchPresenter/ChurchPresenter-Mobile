@@ -3,7 +3,7 @@ package com.church.presenter.churchpresentermobile.ui.tv
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.performTextReplacement
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.tv.DesktopOutput
 import com.church.presenter.churchpresentermobile.tv.SourceKind
 import com.church.presenter.churchpresentermobile.tv.TvSource

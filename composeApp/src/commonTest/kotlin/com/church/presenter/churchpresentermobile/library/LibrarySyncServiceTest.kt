@@ -288,7 +288,7 @@ class LibrarySyncServiceTest {
         // Running with no total — the UI shows an indeterminate bar here rather
         // than "Copying 0 of 0…", which read as a hung app.
         assertTrue(seenWhileFetching!!.isPreparing)
-        assertTrue(seenWhileFetching!!.isRunning)
+        assertTrue(seenWhileFetching.isRunning)
     }
 
     @Test

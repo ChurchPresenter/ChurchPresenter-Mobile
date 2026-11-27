@@ -53,6 +53,9 @@ class AppUpdateTest {
     init {
         // Every scenario below is exercising what happens once Play Core is
         // asked — installer detection itself is covered separately below.
+        // The unit-test JVM reports SDK 0, so AppUpdate takes its pre-Android-11
+        // branch and asks the deprecated call — which is the one to stub.
+        @Suppress("DEPRECATION")
         every {
             activity.packageManager.getInstallerPackageName(activity.packageName)
         } returns "com.android.vending"
@@ -237,6 +240,9 @@ class AppUpdateTest {
         // can crash the app on a sideloaded APK or emulator before any Task
         // callback runs — before EXPECTED_NO_PLAY_ERRORS ever gets a chance to
         // see it. The only reliable fix is to never make the call.
+        // The unit-test JVM reports SDK 0, so AppUpdate takes its pre-Android-11
+        // branch and asks the deprecated call — which is the one to stub.
+        @Suppress("DEPRECATION")
         every {
             activity.packageManager.getInstallerPackageName(activity.packageName)
         } returns null

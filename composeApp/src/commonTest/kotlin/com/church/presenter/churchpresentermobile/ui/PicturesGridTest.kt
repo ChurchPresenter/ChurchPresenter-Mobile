@@ -3,7 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.network.WsMessageType
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test

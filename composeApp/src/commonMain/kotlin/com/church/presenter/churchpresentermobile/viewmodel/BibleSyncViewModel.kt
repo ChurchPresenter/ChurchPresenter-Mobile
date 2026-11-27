@@ -115,9 +115,12 @@ class BibleSyncViewModel(
         _outcome.value = null
         viewModelScope.launch {
             val result = service.sync(wanted)
-            _outcome.value = result
             _selection.value = emptySet()
             loadChoicesQuietly()
+            // Last: whoever reacts to "done" must find the ticks already updated.
+            // Published first, a reader could see the result and a translation still
+            // shown as not installed — the test on CI's slower runner did.
+            _outcome.value = result
         }
     }
 

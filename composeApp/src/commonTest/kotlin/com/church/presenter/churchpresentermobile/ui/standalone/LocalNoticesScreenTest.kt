@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.standalone
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.LocalAnnouncement
 import com.church.presenter.churchpresentermobile.ui.awaitThat
 import com.church.presenter.churchpresentermobile.ui.click

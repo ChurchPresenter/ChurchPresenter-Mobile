@@ -3,7 +3,7 @@ package com.church.presenter.churchpresentermobile.ui
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.BibleBook
 import com.church.presenter.churchpresentermobile.model.MoreDestination

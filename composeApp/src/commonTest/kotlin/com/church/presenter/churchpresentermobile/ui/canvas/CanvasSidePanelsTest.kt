@@ -3,7 +3,7 @@ package com.church.presenter.churchpresentermobile.ui.canvas
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.CanvasElement
 import com.church.presenter.churchpresentermobile.model.CanvasTool
 import com.church.presenter.churchpresentermobile.model.ImageSource

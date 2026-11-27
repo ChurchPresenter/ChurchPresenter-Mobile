@@ -15,7 +15,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.LocalVideo
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.model.VideoEndAction

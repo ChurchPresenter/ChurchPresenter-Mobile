@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui.standalone
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.model.SlideFont

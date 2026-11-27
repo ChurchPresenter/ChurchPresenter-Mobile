@@ -340,7 +340,7 @@ private fun SongCard(
             )
             if (!song.bookName.isNullOrBlank()) {
                 Text(
-                    text = song.bookName!!,
+                    text = song.bookName,
                     color = colors.muted,
                     fontSize = 12.sp,
                     maxLines = 1,

@@ -36,7 +36,7 @@ import platform.AVFoundation.rate
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.interop.UIKitView
+import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
 import platform.AVFoundation.AVPlayerItem

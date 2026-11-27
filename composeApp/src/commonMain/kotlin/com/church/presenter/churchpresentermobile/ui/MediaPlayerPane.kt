@@ -243,8 +243,8 @@ private fun MediaNowPlaying(
     val hasUrl = source == MediaSource.URL && composedUrl.isNotBlank()
 
     val title = when {
-        loaded -> playback?.title?.ifBlank { playingLabel } ?: playingLabel
-        hasUpload -> uploaded!!.title
+        loaded -> playback.title.ifBlank { playingLabel }
+        hasUpload -> uploaded.title
         hasUrl -> mediaTitleFrom(composedUrl)
         else -> stringResource(Res.string.media_no_media_loaded)
     }

@@ -1,5 +1,8 @@
 package com.church.presenter.churchpresentermobile.util
 
+import android.app.Activity
+import android.os.Build
+
 import android.os.RemoteException
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
@@ -61,7 +64,7 @@ object AppUpdate {
         // thread ("Failed to bind to the service"), which crashes the app before
         // any Task success/failure callback ever runs, so EXPECTED_NO_PLAY_ERRORS
         // above never gets a chance to see it. See CHURCH-PRESENTER-MOBILE-1D/1J.
-        val installer = activity.packageManager.getInstallerPackageName(activity.packageName)
+        val installer = installerOf(activity)
         if (installer != PLAY_STORE_PACKAGE) {
             Logger.d(TAG, "Skipping update check — not installed via Play Store (installer=$installer)")
             return
@@ -138,3 +141,15 @@ object AppUpdate {
     private const val MAX_CAUSE_DEPTH = 8
 }
 
+/**
+ * Which store installed this app, or null when unknown. Android 11 replaced the
+ * single call with an install-source record; the old one still answers below it.
+ */
+private fun installerOf(activity: Activity): String? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        runCatching { activity.packageManager.getInstallSourceInfo(activity.packageName).installingPackageName }
+            .getOrNull()
+    } else {
+        @Suppress("DEPRECATION")
+        activity.packageManager.getInstallerPackageName(activity.packageName)
+    }

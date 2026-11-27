@@ -257,7 +257,7 @@ class WebViewModelTest {
             val message = vm.message.first { it != null }
 
             assertNotNull(message)
-            assertTrue(message!!.isNotBlank())
+            assertTrue(message.isNotBlank())
         } finally {
             tearDown(vm)
         }

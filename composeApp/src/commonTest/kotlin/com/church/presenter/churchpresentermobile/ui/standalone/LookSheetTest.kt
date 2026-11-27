@@ -11,7 +11,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.NamedTheme
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.SlideMargin

@@ -6,7 +6,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.BorderStyle
 import com.church.presenter.churchpresentermobile.model.CanvasBounds
 import com.church.presenter.churchpresentermobile.model.CanvasElement

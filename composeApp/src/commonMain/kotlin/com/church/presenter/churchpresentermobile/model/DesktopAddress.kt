@@ -45,7 +45,7 @@ object DesktopAddress {
         }
 
         settings.host = cleanedHost
-        settings.port = portNumber!!
+        settings.port = portNumber
         settings.apiKey = apiKey.trim()
         _changeCount.value += 1
         return Outcome.Saved

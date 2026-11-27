@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.tv.LiveState
 import com.church.presenter.churchpresentermobile.tv.SourceKind

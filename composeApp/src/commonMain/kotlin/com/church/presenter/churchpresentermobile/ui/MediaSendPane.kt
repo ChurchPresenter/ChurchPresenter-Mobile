@@ -101,10 +101,10 @@ internal fun ColumnScope.MediaSendPane(
             stringResource(Res.string.media_target_uploaded, uploaded.title)
         source == MediaSource.URL && composedUrl.isNotBlank() ->
             stringResource(Res.string.media_target_url)
-        playback?.isLoaded == true && playback.source?.isNotBlank() == true ->
+        playback?.isLoaded == true && playback.source.isNotBlank() ->
             stringResource(
                 Res.string.media_target_loaded,
-                playback.title?.ifBlank { genericMediaLabel } ?: genericMediaLabel,
+                playback.title.ifBlank { genericMediaLabel },
             )
         else -> null
     }
