@@ -46,6 +46,22 @@ class VideoCueTest {
     }
 
     @Test
+    fun `only a stopped clip at its end with a known length is ended`() {
+        val ended = VideoCue(playing = false, positionMs = 59_900L, durationMs = 60_000L)
+        assertFalse(ended.copy(playing = true).endedToBlack, "still playing")
+        assertFalse(ended.copy(durationMs = 0L).endedToBlack, "length unknown")
+        assertFalse(ended.copy(positionMs = 30_000L).endedToBlack, "paused mid-clip")
+        assertEquals(0.5f, ended.copy(volume = 0.5f).effectiveVolume)
+        assertEquals(1f, ended.copy(volume = 3f).effectiveVolume)
+    }
+
+    @Test
+    fun `a clip of unknown length keeps counting`() {
+        assertEquals(15_000L, expectedPositionMs(playing.copy(durationMs = 0L), elapsedMs = 5_000L))
+        assertEquals(10_000L, expectedPositionMs(playing, elapsedMs = -50L), "a clock that went backwards adds nothing")
+    }
+
+    @Test
     fun `a finished clip set to black reads as ended`() {
         val ended = VideoCue(playing = false, positionMs = 59_900L, durationMs = 60_000L)
         assertTrue(ended.endedToBlack)

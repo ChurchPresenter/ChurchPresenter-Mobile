@@ -29,7 +29,13 @@ class VideoFilesAndroidTest {
         dir.deleteRecursively()
     }
 
-    private fun retrieverReturns(duration: String?, width: String?, height: String?, rotation: String?, frame: Bitmap?) {
+    private fun retrieverReturns(
+        duration: String?,
+        width: String?,
+        height: String?,
+        rotation: String?,
+        frame: Bitmap?,
+    ) {
         mockkConstructor(MediaMetadataRetriever::class)
         every { anyConstructed<MediaMetadataRetriever>().setDataSource(any<String>()) } just runs
         every { anyConstructed<MediaMetadataRetriever>().release() } just runs
@@ -102,6 +108,21 @@ class VideoFilesAndroidTest {
         probeVideoFile("/v.mp4", File(dir, "v.jpg").path)
 
         verify { frame.compress(Bitmap.CompressFormat.JPEG, any(), any()) }
+    }
+
+    @Test
+    fun `a probe that throws is a video with no details, not a failed import`() = runBlocking {
+        mockkConstructor(MediaMetadataRetriever::class)
+        every {
+            anyConstructed<MediaMetadataRetriever>().setDataSource(any<String>())
+        } throws IllegalArgumentException("bad")
+        every { anyConstructed<MediaMetadataRetriever>().release() } just runs
+        val root = Files.createTempDirectory("v").toFile()
+        File(root, "v.mp4").writeBytes(ByteArray(4))
+
+        assertNull(MobileVideoFiles(root.absolutePath).probe("v.mp4", "v.jpg"))
+        root.deleteRecursively()
+        Unit
     }
 
     @Test

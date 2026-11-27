@@ -195,6 +195,51 @@ class CuePlayerTest {
     }
 
     @Test
+    fun `a blank address loads nothing`() {
+        val p = cuePlayer()
+        p.update(view, "", VideoCue(playing = true), false, false)
+
+        verify(exactly = 0) { view.setVideoURI(any()) }
+    }
+
+    @Test
+    fun `a video from elsewhere already playing is not restarted`() {
+        playing = true
+        cuePlayer().open(cue = null)
+
+        verify(exactly = 0) { view.start() }
+    }
+
+    @Test
+    fun `a cue before the clip has opened waits for it`() {
+        val p = cuePlayer()
+        p.update(view, URL, VideoCue(playing = true), false, false)
+        p.correctDrift()
+
+        verify(exactly = 0) { view.start() }
+    }
+
+    @Test
+    fun `with no audio service the route is left alone`() {
+        every { context.getSystemService(Context.AUDIO_SERVICE) } returns null
+        cuePlayer().open(VideoCue(playing = true), soundOnDevice = true)
+
+        verify(exactly = 0) { player.setPreferredDevice(any()) }
+    }
+
+    @Test
+    fun `a looping clip is not dragged back across its seam`() {
+        val p = cuePlayer()
+        position = 29_000
+        p.open(VideoCue(playing = true, positionMs = 29_000L, durationMs = 30_000L, endAction = VideoEndAction.LOOP))
+        now += 8_000L // 37s in: 7s into the next pass
+        position = 6_500 // the player looped on its own and is half a second behind
+        p.correctDrift()
+
+        verify(exactly = 0) { view.seekTo(any<Int>()) }
+    }
+
+    @Test
     fun `before Android 9 the route is left to the system`() {
         cuePlayer(sdk = 26).open(VideoCue(playing = true), soundOnDevice = true)
 

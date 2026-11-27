@@ -14,10 +14,11 @@ import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.ThemeMode
 import com.church.presenter.churchpresentermobile.model.VideoEndAction
 import com.church.presenter.churchpresentermobile.model.VideoSound
-import com.church.presenter.churchpresentermobile.network.PickedMediaFile
+import com.church.presenter.churchpresentermobile.model.LocalVideo
 import com.church.presenter.churchpresentermobile.present.FakeVideoFiles
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
 import com.church.presenter.churchpresentermobile.present.StandaloneEngine
+import com.church.presenter.churchpresentermobile.present.VIDEO_INDEX_FILE
 import com.church.presenter.churchpresentermobile.present.VideoLibrary
 import com.church.presenter.churchpresentermobile.present.VideoTransport
 import com.church.presenter.churchpresentermobile.present.cueFor
@@ -25,7 +26,8 @@ import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.ui.theme.AppTheme
 import com.church.presenter.churchpresentermobile.viewmodel.LocalMediaViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -40,22 +42,29 @@ class LocalMediaScreenTest {
 
     private class Harness {
         val engine = StandaloneEngine(MutableStateFlow(AppMode.STANDALONE), SinkRegistry()) { }
-        var ids = 0
-        val library = VideoLibrary(FakeVideoFiles(), InMemoryFileStorage(), newId = { "v${++ids}" }, now = { 0L })
-            .also { it.serveFrom("http://192.168.1.20:8766") }
+        private val files = FakeVideoFiles()
+        private val store = InMemoryFileStorage()
+
+        // Seeded as a saved list plus its files, then loaded — the way the app opens
+        // its library at launch, and with nothing to suspend on (runBlocking is not
+        // available on every target this test compiles for).
+        val library: VideoLibrary = run {
+            val seeded = listOf(
+                LocalVideo(id = "v2", title = "Countdown", fileName = "v2.mp4", durationMs = 300_000L),
+                LocalVideo(id = "v1", title = "Welcome", fileName = "v1.mp4", durationMs = 180_000L),
+            )
+            seeded.forEach { files.files[it.fileName] = ByteArray(8) }
+            store.write(VIDEO_INDEX_FILE, Json.encodeToString(ListSerializer(LocalVideo.serializer()), seeded))
+            VideoLibrary(files, store, newId = { "new" }, now = { 0L }).also {
+                it.load()
+                it.serveFrom("http://192.168.1.20:8766")
+            }
+        }
         val transport = VideoTransport(clock = { 0L }).also {
             engine.videoCue = it::cueFor
             it.onChange = engine::refreshVideo
         }
         val viewModel = LocalMediaViewModel(library, transport, engine)
-
-        init {
-            runBlocking {
-                listOf("Welcome.mp4", "Countdown.mp4").forEach { name ->
-                    library.import(PickedMediaFile(name, 0L) { _, _ -> })
-                }
-            }
-        }
     }
 
     private fun ComposeUiTest.show(h: Harness, twoPane: Boolean = false) = setContent {

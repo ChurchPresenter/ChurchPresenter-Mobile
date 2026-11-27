@@ -65,7 +65,8 @@ class MobileVideoFilesTest {
         files.importFrom(picked(bytes), "v1.mp4") {}
 
         assertEquals(bytes.copyOfRange(500, 510).toList(), files.read("v1.mp4", 500L, 10)?.toList())
-        assertEquals(bytes.copyOfRange(995, 1_000).toList(), files.read("v1.mp4", 995L, 64)?.toList(), "short at the end")
+        val tail = files.read("v1.mp4", 995L, 64)?.toList()
+        assertEquals(bytes.copyOfRange(995, 1_000).toList(), tail, "short at the end")
         assertEquals(0, files.read("v1.mp4", 1_000L, 10)?.size, "nothing past the end")
         assertNull(files.read("missing.mp4", 0L, 10))
     }
@@ -78,6 +79,12 @@ class MobileVideoFilesTest {
         files.delete("v1.mp4")
 
         assertEquals(0L, files.size("v1.mp4"))
+    }
+
+    @Test
+    fun `a read the platform cannot make is reported as no data, not a crash`() = runBlocking {
+        files.importFrom(picked(ByteArray(10)), "v1.mp4") {}
+        assertNull(files.read("v1.mp4", -1L, 10), "a negative offset throws underneath")
     }
 
     @Test

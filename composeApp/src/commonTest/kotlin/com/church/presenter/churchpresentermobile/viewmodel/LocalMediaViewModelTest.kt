@@ -310,6 +310,39 @@ class LocalMediaViewModelTest {
     }
 
     @Test
+    fun `live after another video was put up shows this one`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            h.viewModel.import(picked("b.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            runCurrent()
+
+            assertEquals(h.transport.state.value.url, h.published.last().slide!!.mediaUrl)
+        }
+    }
+
+    @Test
+    fun `deleting a video while another is up leaves the screen alone`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            val shown = h.engine.currentSlide.value.mediaUrl
+            h.viewModel.import(picked("b.mp4"))
+            runCurrent()
+            // "b" is loaded but "a" is still on screen: deleting "b" must not clear "a".
+            h.viewModel.delete(h.library.videos.value.first { it.title == "b" })
+            runCurrent()
+
+            assertEquals(shown, h.engine.currentSlide.value.mediaUrl)
+            assertFalse(h.viewModel.transportState.value.isLoaded)
+        }
+    }
+
+    @Test
     fun `a failed import is reported, not swallowed`() = runVmTest {
         withHarness { h ->
             h.files.failImport = true

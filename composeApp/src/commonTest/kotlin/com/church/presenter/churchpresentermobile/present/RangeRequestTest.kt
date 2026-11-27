@@ -51,6 +51,24 @@ class RangeRequestTest {
     }
 
     @Test
+    fun `numbers too big to read fall back to the whole file`() {
+        assertEquals(RangeRequest.Whole, parseByteRange("bytes=99999999999999999999-", size))
+        assertEquals(RangeRequest.Whole, parseByteRange("bytes=0-99999999999999999999", size))
+        assertEquals(RangeRequest.Whole, parseByteRange("bytes=-99999999999999999999", size))
+        assertEquals(RangeRequest.Whole, parseByteRange("bytes=-", size))
+    }
+
+    @Test
+    fun `an empty file is always sent whole`() {
+        assertEquals(RangeRequest.Whole, parseByteRange("bytes=0-1", 0L))
+    }
+
+    @Test
+    fun `surrounding spaces are ignored`() {
+        assertEquals(RangeRequest.Part(0, 9), parseByteRange("  bytes=0-9  ", size))
+    }
+
+    @Test
     fun `the unit is case-insensitive`() {
         assertEquals(RangeRequest.Part(0, 9), parseByteRange("Bytes=0-9", size))
     }

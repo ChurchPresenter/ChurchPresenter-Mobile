@@ -243,6 +243,22 @@ class VideoLibraryTest {
     }
 
     @Test
+    fun `removing a video with no still removes just the file`() = runTest {
+        val lib = library(FakeVideoFiles(probe = null))
+        val video = lib.import(picked("a.mp4")).getOrThrow()
+        lib.remove(video.id)
+        assertTrue(lib.videos.value.isEmpty())
+    }
+
+    @Test
+    fun `an address with no file name after the route is not ours`() = runTest {
+        val lib = library()
+        lib.import(picked("a.mp4"))
+        assertNull(lib.localFileUrl("http://phone/video/"))
+        assertNull(lib.localFileUrl(""))
+    }
+
+    @Test
     fun `a title is the file's name without its extension`() {
         assertEquals("Welcome video", VideoLibrary.titleFrom("Welcome_video.mp4"))
         assertEquals(".mp4", VideoLibrary.titleFrom(".mp4"))
