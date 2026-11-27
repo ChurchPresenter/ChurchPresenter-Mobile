@@ -120,8 +120,11 @@ class PresentationForegroundService : Service() {
         }
 
         val wifi = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+        // Low-latency from Android 10: the high-performance mode is deprecated there and
+        // does nothing at all from Android 14, so both branches passing it — as this
+        // once did — left the presentation server's Wi-Fi unheld on newer phones.
         val lockMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            WifiManager.WIFI_MODE_FULL_HIGH_PERF
+            WifiManager.WIFI_MODE_FULL_LOW_LATENCY
         } else {
             @Suppress("DEPRECATION")
             WifiManager.WIFI_MODE_FULL_HIGH_PERF

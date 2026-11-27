@@ -23,6 +23,9 @@ import kotlin.test.assertTrue
 
 class CpsetSerializerTest {
 
+    private val encodeWithDefaults = Json { encodeDefaults = true }
+
+
     private fun song(
         id: String,
         number: String = "42",
@@ -80,7 +83,7 @@ class CpsetSerializerTest {
 
     @Test
     fun `the streamed pieces are exactly the document encoded in one go`() {
-        val expected = Json { encodeDefaults = true }.encodeToString(CpsetDocument.serializer(), everyField)
+        val expected = encodeWithDefaults.encodeToString(CpsetDocument.serializer(), everyField)
 
         val streamed = buildString { CpsetSerializer.writeTo(everyField) { append(it) } }
 

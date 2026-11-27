@@ -517,7 +517,7 @@ class ServerEventService(
             "presentation_updated" -> _presentationUpdated.tryEmit(Unit)
             "pictures_updated"     -> _picturesUpdated.tryEmit(Unit)
             "song_section_selected" -> {
-                val index = event.payload?.toIntOrNull()
+                val index = event.payload.toIntOrNull()
                 if (index != null) _songSectionSelected.tryEmit(index)
             }
             "questions_updated" -> _questionsUpdated.tryEmit(Unit)

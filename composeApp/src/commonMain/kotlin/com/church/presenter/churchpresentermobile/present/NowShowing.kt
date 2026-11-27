@@ -65,7 +65,10 @@ internal fun nowShowing(deckTitle: String, slide: Slide): NowShowing? {
         backgroundBottom = if (black) BLACK else slide.theme.gradientBottom,
         textColor = slide.theme.textColor,
         serif = slide.theme.font == SlideFont.SERIF,
-        slide = slide,
+        // Without the video's transport: it carries a fresh position on every
+        // resync, and the shade would otherwise be redrawn every few seconds for
+        // a picture that has not changed.
+        slide = slide.copy(video = null),
     )
 }
 

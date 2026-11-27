@@ -619,6 +619,7 @@ val viewModelBackedUiTests = listOf(
     // and waits for it. On the single-threaded wasm runtime that request cannot
     // complete inside the Compose test clock, so the wait can only expire.
     "com.church.presenter.churchpresentermobile.ui.AppShellTest",
+    "com.church.presenter.churchpresentermobile.ui.standalone.LocalMediaScreenTest",
     // Go Live encodes the canvas frame on a worker thread and waits for the engine
     // to show it — work the single-threaded wasm runtime cannot finish in the test clock.
     "com.church.presenter.churchpresentermobile.ui.canvas.CanvasGoLiveTest",
@@ -691,7 +692,7 @@ tasks.register<Test>("screenshotTest") {
 
     val jvmTestCompilation = kotlin.targets.getByName("jvm").compilations.getByName("test")
     testClassesDirs = jvmTestCompilation.output.classesDirs
-    classpath = jvmTestCompilation.output.allOutputs + jvmTestCompilation.runtimeDependencyFiles
+    classpath = jvmTestCompilation.output.allOutputs + (jvmTestCompilation.runtimeDependencyFiles ?: files())
 
     filter.includeTestsMatching(screenshotTestPackage)
 
@@ -748,7 +749,7 @@ tasks.register<Test>("marketingScreenshots") {
 
     val jvmTestCompilation = kotlin.targets.getByName("jvm").compilations.getByName("test")
     testClassesDirs = jvmTestCompilation.output.classesDirs
-    classpath = jvmTestCompilation.output.allOutputs + jvmTestCompilation.runtimeDependencyFiles
+    classpath = jvmTestCompilation.output.allOutputs + (jvmTestCompilation.runtimeDependencyFiles ?: files())
 
     filter.includeTestsMatching(marketingTestClass)
 
@@ -959,8 +960,7 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.materialIconsExtended)
+            implementation(libs.compose.material.icons.extended.mp)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
             implementation(libs.compose.ui)
@@ -982,8 +982,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+            implementation(libs.compose.ui.test)
         }
         // MockK, on the Android unit-test JVM only.
         //
@@ -1030,6 +1029,14 @@ kotlin {
         // test API by definition, so it is declared once here instead.
         jvmTest {
             languageSettings.optIn("androidx.compose.ui.test.ExperimentalTestApi")
+        }
+        // Every test source set drives coroutines through kotlinx-coroutines-test —
+        // runTest, StandardTestDispatcher, advanceUntilIdle, setMain — all of it marked
+        // experimental. Declared once here rather than repeated on hundreds of tests,
+        // where it was missing on enough of them to put 370 warnings in every CI log.
+        // "Test" anywhere: the Android unit-test compilation is androidUnitTestDebug.
+        matching { "Test" in it.name }.configureEach {
+            languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
         }
         jvmTest.dependencies {
             implementation(compose.desktop.currentOs)

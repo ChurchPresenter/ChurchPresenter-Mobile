@@ -75,7 +75,9 @@
   }
 
   function applyBackdrop(slide) {
-    var kind = slide.backdrop || 'GRADIENT';
+    // A video sits on black, never on the backdrop: Blank on a video cuts to
+    // black instead of revealing the lyric gradient (as the phone's own output does).
+    var kind = slide.kind === 'VIDEO' ? 'BLACK' : (slide.backdrop || 'GRADIENT');
     var url = ownPhoto(slide.backdropUrl);
     if (kind === 'IMAGE' && url) {
       var imageTheme = slide.theme || {};
@@ -116,6 +118,102 @@
     return null;
   }
 
+  // A video the phone itself serves is fetched by path, as a photo is, so a TV
+  // that reached this page by another address still finds it.
+  function ownVideo(url) {
+    if (typeof url !== 'string') { return null; }
+    try {
+      var parsed = new URL(url, window.location.href); // offline-ok: parsing, not fetching
+      if (parsed.pathname.indexOf('/video/') === 0) { return parsed.pathname; }
+    } catch (e) { /* not a URL we can reason about — send it on unchanged */ }
+    return url;
+  }
+
+  // ── Video transport ─────────────────────────────────────────────────────
+  // The phone is the clock. Each slide carries where the video was when it was
+  // sent and whether it is playing. This page adds the time since it arrived —
+  // measured on this page's own clock, so a TV whose clock disagrees with the
+  // phone's still lands right — and seeks only when it is more than half a
+  // second off (the same rule as the phone's own players, expectedPositionMs and
+  // shouldSeek in LocalVideo.kt), so a volume change never stutters the picture.
+  var SYNC_TOLERANCE_MS = 500;
+  var END_TOLERANCE_MS = 300;
+  var DRIFT_CHECK_MS = 2000;
+  // Between cues only a real drift is corrected, and never straight after a
+  // seek: a seek rebuffers, and correcting a half-second gap could leave the
+  // video further behind than before and seek again, every two seconds.
+  var DRIFT_TOLERANCE_MS = 1500;
+  var SEEK_SETTLE_MS = 5000;
+  var lastSeekAt = -SEEK_SETTLE_MS;
+  var currentCue = null;
+  var cueReceivedAt = 0;
+  var videoEnded = false;
+
+  function expectedSeconds(cue) {
+    var ms = cue.positionMs || 0;
+    if (cue.playing) { ms += performance.now() - cueReceivedAt; }
+    var duration = cue.durationMs || 0;
+    if (duration > 0) { ms = cue.endAction === 'LOOP' ? ms % duration : Math.min(ms, duration); }
+    return ms / 1000;
+  }
+
+  function seekIfDrifted(cue, tolerance) {
+    var v = el.video;
+    var target = expectedSeconds(cue);
+    var gap = Math.abs(v.currentTime - target) * 1000;
+    var duration = cue.durationMs || 0;
+    if (cue.endAction === 'LOOP' && duration > 0) { gap = Math.min(gap, duration - gap); }
+    if (gap > (tolerance || SYNC_TOLERANCE_MS)) {
+      try {
+        v.currentTime = target;
+        lastSeekAt = performance.now();
+      } catch (e) { /* not seekable until metadata — retried on loadedmetadata */ }
+    }
+  }
+
+  setInterval(function () {
+    if (!currentCue || !currentCue.playing || el.video.paused) { return; }
+    if (performance.now() - lastSeekAt < SEEK_SETTLE_MS) { return; }
+    seekIfDrifted(currentCue, DRIFT_TOLERANCE_MS);
+  }, DRIFT_CHECK_MS);
+
+  function playVideo() {
+    var attempt = el.video.play();
+    if (attempt && typeof attempt.catch === 'function') {
+      attempt.catch(function () {
+        // A browser that refuses sound without a tap still plays it silently,
+        // which beats a frozen first frame in front of the room.
+        if (!el.video.muted) { el.video.muted = true; el.video.play().catch(function () {}); }
+      });
+    }
+  }
+
+  function applyVideoCue(cue) {
+    var v = el.video;
+    if (!cue) {
+      // A video slide that did not come from the transport: muted, looping, playing.
+      v.muted = true;
+      v.loop = true;
+      playVideo();
+      return;
+    }
+    v.loop = cue.endAction === 'LOOP';
+    v.muted = cue.muted === true;
+    v.volume = Math.max(0, Math.min(1, typeof cue.volume === 'number' ? cue.volume : 1));
+    seekIfDrifted(cue);
+    if (cue.playing) { videoEnded = false; playVideo(); } else { v.pause(); }
+    var endedAtPhone = !cue.playing && cue.endAction === 'BLACK' && cue.durationMs > 0 &&
+      cue.positionMs >= cue.durationMs - END_TOLERANCE_MS;
+    var black = endedAtPhone || (videoEnded && cue.endAction === 'BLACK');
+    if (black) { v.classList.add('video-ended'); } else { v.classList.remove('video-ended'); }
+  }
+
+  el.video.addEventListener('loadedmetadata', function () { if (currentCue) { applyVideoCue(currentCue); } });
+  el.video.addEventListener('ended', function () {
+    videoEnded = true;
+    if (currentCue && currentCue.endAction === 'BLACK') { el.video.classList.add('video-ended'); }
+  });
+
   // A page or a video replaces the slide. Anything not currently showing is
   // torn down rather than hidden: a video left with its src set keeps
   // downloading, and an iframe keeps running scripts, behind whatever is on
@@ -133,30 +231,33 @@
       el.web.classList.add('hidden');
     }
 
-    if (kind === 'VIDEO' && url && !hidden) {
-      if (el.video.getAttribute('src') !== url) {
-        el.video.setAttribute('src', url);
-        // Muted, because a display that autoplays with sound is a display the
-        // browser blocks — and the hall's sound comes from the desk, not the TV.
-        el.video.muted = true;
-        el.video.autoplay = true;
-        var playing = el.video.play();
-        if (playing && typeof playing.catch === 'function') { playing.catch(function () {}); }
+    var videoUrl = kind === 'VIDEO' ? ownVideo(url) : null;
+    if (videoUrl && !hidden) {
+      var incoming = slide.video || null;
+      if (JSON.stringify(incoming) !== JSON.stringify(currentCue)) { cueReceivedAt = performance.now(); }
+      currentCue = incoming;
+      if (el.video.getAttribute('src') !== videoUrl) {
+        videoEnded = false;
+        el.video.setAttribute('src', videoUrl);
+        el.video.autoplay = !currentCue || currentCue.playing === true;
       }
+      applyVideoCue(currentCue);
       el.video.classList.remove('hidden');
     } else {
+      currentCue = null;
       if (el.video.getAttribute('src')) {
         el.video.pause();
         el.video.removeAttribute('src');
         el.video.load();
       }
       el.video.classList.add('hidden');
+      el.video.classList.remove('video-ended');
     }
 
     var canvasUrl = kind === 'CANVAS' ? ownPhoto(slide.mediaUrl) : null;
     applyCanvas(canvasUrl && !hidden ? canvasUrl : null, slide.paper);
 
-    return ((kind === 'WEB' || kind === 'VIDEO') && url != null) || canvasUrl != null;
+    return (kind === 'WEB' && url != null) || videoUrl != null || canvasUrl != null;
   }
 
   // A canvas page arrives as a fresh picture after every edit. Swapping the src

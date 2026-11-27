@@ -83,7 +83,7 @@ fun parseAddress(
     val portText = trimmed.substringAfter(':', missingDelimiterValue = "")
     val port = if (portText.isEmpty()) defaultPort else portText.toIntOrNull()
     val valid = host.isNotEmpty() && host.none { it.isWhitespace() } && port != null && port in 1..65_535
-    if (!valid || port == null) return null
+    if (!valid) return null
     val kind = if (port == ApiConstants.DESKTOP_PORT_DEFAULT) SourceKind.DESKTOP else SourceKind.PHONE
     return TvSource(name = host, host = host, port = port, kind = kind)
 }

@@ -1,158 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-        <key>CADisableMinimumFrameDurationOnPhone</key>
-        <true/>
-
-        <!--
-            All encryption is Apple's own: HTTPS/WSS through NSURLSession, and
-            the calendar relay's AES-256-GCM (Sealing.kt) through Apple's system
-            crypto via cryptography-provider-cryptokit (CryptoKit), with
-            cryptography-provider-apple (CommonCrypto) for what CryptoKit lacks. No algorithm is bundled or
-            implemented in the app. Declaring it here stops App Store Connect
-            holding every build for export compliance; revisit if that changes.
-        -->
-        <key>ITSAppUsesNonExemptEncryption</key>
-        <false/>
-
-        <!--
-            Disable automatic ViewController-class screen tracking so only our
-            manual logScreenView() calls appear in Firebase "Pages and screens".
-        -->
-        <key>FirebaseAutomaticScreenReportingEnabled</key>
-        <false/>
-
-        <!--
-            Allow plain HTTP (http://) connections to the Church Presenter desktop,
-            wherever it is reachable (e.g. 192.168.x.x:8765). The server no longer
-            uses HTTPS — no SSL certificates required.
-
-            NSAllowsArbitraryLoads alone, deliberately: alongside NSAllowsLocalNetworking
-            iOS ignores it and allows plain HTTP only to private LAN ranges and .local
-            names, so a desktop reached over a VPN such as Tailscale (100.64.0.0/10)
-            was refused with NSURLErrorDomain -1022 (CHURCH-PRESENTER-MOBILE-H).
-        -->
-        <key>NSAppTransportSecurity</key>
-        <dict>
-            <key>NSAllowsArbitraryLoads</key>
-            <true/>
-        </dict>
-
-        <!-- Required for receiving remote (push) notifications in the background -->
-        <key>UIBackgroundModes</key>
-        <array>
-            <string>remote-notification</string>
-        </array>
-
-        <!--
-            Disable Firebase method swizzling so that our AppDelegate
-            (wired in via @UIApplicationDelegateAdaptor) can manually
-            forward APNs tokens and handle notifications itself.
-        -->
-        <key>FirebaseAppDelegateProxyEnabled</key>
-        <false/>
-
-        <!-- Camera permission — required for the in-app QR code scanner -->
-        <key>NSCameraUsageDescription</key>
-        <string>Scan a QR code to connect to your Church Presenter server instantly.</string>
-
-        <!-- Photo library permission — required to pick device photos for projection -->
-        <key>NSPhotoLibraryUsageDescription</key>
-        <string>Choose a photo from your library to project on the Church Presenter display.</string>
-
-        <!-- Static home-screen quick actions (long-press app icon) -->
-        <key>UIApplicationShortcutItems</key>
-        <array>
-            <dict>
-                <key>UIApplicationShortcutItemType</key>
-                <string>com.church.presenter.churchpresentermobile.songs</string>
-                <key>UIApplicationShortcutItemTitle</key>
-                <string>Songs</string>
-                <key>UIApplicationShortcutItemSubtitle</key>
-                <string>Browse and select songs</string>
-                <key>UIApplicationShortcutItemIconSymbolName</key>
-                <string>music.note</string>
-            </dict>
-            <dict>
-                <key>UIApplicationShortcutItemType</key>
-                <string>com.church.presenter.churchpresentermobile.bible</string>
-                <key>UIApplicationShortcutItemTitle</key>
-                <string>Bible</string>
-                <key>UIApplicationShortcutItemSubtitle</key>
-                <string>Browse Bible passages</string>
-                <key>UIApplicationShortcutItemIconSymbolName</key>
-                <string>book</string>
-            </dict>
-        </array>
-
-        <!-- Register the churchpresenter:// custom URL scheme for QR / deep-link connect -->
-        <key>CFBundleURLTypes</key>
-        <array>
-            <dict>
-                <key>CFBundleURLName</key>
-                <string>com.church.presenter.churchpresentermobile</string>
-                <key>CFBundleURLSchemes</key>
-                <array>
-                    <string>churchpresenter</string>
-                </array>
-            </dict>
-        </array>
-        <!--
-            Declares the .cpset library/set format so a file arriving by email,
-            AirDrop or Files opens in this app. Conforms to public.json, which
-            is what it actually is — a plain JSON document.
-        -->
-        <key>UTExportedTypeDeclarations</key>
-        <array>
-            <dict>
-                <key>UTTypeIdentifier</key>
-                <string>org.churchpresenter.cpset</string>
-                <key>UTTypeDescription</key>
-                <string>ChurchPresenter Set</string>
-                <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.json</string>
-                    <string>public.data</string>
-                </array>
-                <key>UTTypeTagSpecification</key>
-                <dict>
-                    <key>public.filename-extension</key>
-                    <array>
-                        <string>cpset</string>
-                    </array>
-                </dict>
-            </dict>
-        </array>
-
-        <!-- File types this app will open. -->
-        <key>CFBundleDocumentTypes</key>
-        <array>
-            <dict>
-                <key>CFBundleTypeName</key>
-                <string>ChurchPresenter Set</string>
-                <key>LSHandlerRank</key>
-                <string>Owner</string>
-                <key>LSItemContentTypes</key>
-                <array>
-                    <string>org.churchpresenter.cpset</string>
-                </array>
-            </dict>
-            <dict>
-                <key>CFBundleTypeName</key>
-                <string>Song file</string>
-                <!-- Alternate, not Owner: plain text belongs to other apps too. -->
-                <key>LSHandlerRank</key>
-                <string>Alternate</string>
-                <key>LSItemContentTypes</key>
-                <array>
-                    <string>public.plain-text</string>
-                </array>
-            </dict>
-        </array>
-
-        <!-- Lets the app be a destination for "Open in…" from Files. -->
-        <key>LSSupportsOpeningDocumentsInPlace</key>
-        <false/>
-    </dict>
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>ChurchPresenter Set</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.churchpresenter.cpset</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Song file</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.church.presenter.churchpresentermobile</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>churchpresenter</string>
+			</array>
+		</dict>
+	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Scan a QR code to connect to your Church Presenter server instantly.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose a photo from your library to project on the Church Presenter display.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>External Display</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).ExternalDisplaySceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>music.note</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Browse and select songs</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Songs</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.church.presenter.churchpresentermobile.songs</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>book</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Browse Bible passages</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Bible</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.church.presenter.churchpresentermobile.bible</string>
+		</dict>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>ChurchPresenter Set</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.churchpresenter.cpset</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>cpset</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+</dict>
 </plist>

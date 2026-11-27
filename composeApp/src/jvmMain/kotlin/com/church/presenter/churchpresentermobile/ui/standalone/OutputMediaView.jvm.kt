@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.church.presenter.churchpresentermobile.model.VideoCue
 
 @Composable
 actual fun OutputWebView(url: String, modifier: Modifier) {
@@ -13,6 +14,6 @@ actual fun OutputWebView(url: String, modifier: Modifier) {
 }
 
 @Composable
-actual fun OutputVideoView(url: String, modifier: Modifier) {
+actual fun OutputVideoView(url: String, cue: VideoCue?, modifier: Modifier, muted: Boolean, soundOnDevice: Boolean) {
     Box(modifier.fillMaxSize().background(Color.Black))
 }

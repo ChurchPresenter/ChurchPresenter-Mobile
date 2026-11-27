@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,6 +68,7 @@ import com.church.presenter.churchpresentermobile.viewmodel.UploadedMedia
 import com.church.presenter.churchpresentermobile.viewmodel.mediaKindFrom
 import com.church.presenter.churchpresentermobile.viewmodel.mediaTitleFrom
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.roundToInt
 
 /** The artwork box's shape. Metadata only — the video itself never comes here. */
 private const val ARTWORK_ASPECT = 16f / 9f
@@ -75,6 +79,11 @@ private const val GLYPH_ALPHA_IDLE = 0.4f
 
 /** A transport glyph, as a fraction of the button it sits in. */
 private const val GLYPH_TO_BUTTON = 0.42f
+
+/** How strongly an active toggle's circle is tinted. */
+private const val ACTIVE_FILL_ALPHA = 0.14f
+
+private const val PERCENT_SCALE = 100f
 
 /**
  * Everything that acts on media the desktop has already loaded: the artwork,
@@ -142,35 +151,55 @@ internal fun ColumnScope.MediaPlayerPane(
     MediaVolume(volume = playback?.volume ?: 1f, enabled = loaded, onVolume = onVolume)
 }
 
-/** Now-playing artwork — metadata only, never the video. */
+/**
+ * The 16:9 box at the top of the player.
+ *
+ * Remote mode has no picture to show — the desktop plays the video — so it gets
+ * the play glyph. Standalone passes [content]: the phone's own preview of the clip.
+ * The frame turns red with [isLive], matching the ON SCREEN pill, so the one thing
+ * the room can see is unmistakable at a glance.
+ */
 @Composable
-private fun MediaArtwork(loaded: Boolean, isLive: Boolean) {
+internal fun MediaArtwork(
+    loaded: Boolean,
+    isLive: Boolean,
+    modifier: Modifier = Modifier,
+    content: (@Composable BoxScope.() -> Unit)? = null,
+) {
     val colors = LocalAppColors.current
     val shape = RoundedCornerShape(16.dp)
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(ARTWORK_ASPECT)
             .clip(shape)
             .background(Color.Black)
-            .border(1.dp, colors.border, shape),
+            .border(
+                width = if (isLive && content != null) 2.dp else 1.dp,
+                color = if (isLive && content != null) colors.danger else colors.border,
+                shape = shape,
+            ),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            Icons.Filled.PlayCircle,
-            contentDescription = null,
-            tint = colors.accent.copy(
-                alpha = if (loaded) GLYPH_ALPHA_LOADED else GLYPH_ALPHA_IDLE,
-            ),
-            modifier = Modifier.size(60.dp),
-        )
+        if (content != null) {
+            content()
+        } else {
+            Icon(
+                Icons.Filled.PlayCircle,
+                contentDescription = null,
+                tint = colors.accent.copy(
+                    alpha = if (loaded) GLYPH_ALPHA_LOADED else GLYPH_ALPHA_IDLE,
+                ),
+                modifier = Modifier.size(60.dp),
+            )
+        }
         if (isLive) OnScreenPill(Modifier.align(Alignment.TopStart))
     }
 }
 
 /** The red "on screen" badge — the one thing here that says the room can see it. */
 @Composable
-private fun OnScreenPill(modifier: Modifier = Modifier) {
+internal fun OnScreenPill(modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Row(
         modifier = modifier
@@ -214,8 +243,8 @@ private fun MediaNowPlaying(
     val hasUrl = source == MediaSource.URL && composedUrl.isNotBlank()
 
     val title = when {
-        loaded -> playback?.title?.ifBlank { playingLabel } ?: playingLabel
-        hasUpload -> uploaded!!.title
+        loaded -> playback.title.ifBlank { playingLabel }
+        hasUpload -> uploaded.title
         hasUrl -> mediaTitleFrom(composedUrl)
         else -> stringResource(Res.string.media_no_media_loaded)
     }
@@ -253,7 +282,7 @@ private fun MediaNowPlaying(
  * drag the thumb back out from under the finger.
  */
 @Composable
-private fun MediaSeekBar(
+internal fun MediaSeekBar(
     progress: Float,
     positionMs: Long,
     durationMs: Long,
@@ -302,6 +331,39 @@ private fun MediaTransport(
     onPlayPause: () -> Unit,
     onForward10: () -> Unit,
     onMute: () -> Unit,
+) {
+    MediaTransportRow(
+        loaded = loaded,
+        isPlaying = isPlaying,
+        onStop = onStop,
+        onBack10 = onBack10,
+        onPlayPause = onPlayPause,
+        onForward10 = onForward10,
+    ) {
+        CircleControl(
+            if (muted) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
+            stringResource(Res.string.media_cd_mute),
+            46.dp,
+            enabled = loaded,
+            modifier = Modifier.testTag(UiTags.MEDIA_MUTE),
+            onClick = onMute,
+        )
+    }
+}
+
+/**
+ * Stop, back ten, play/pause, forward ten — and one more control at the end:
+ * mute for the desktop's player, loop for the phone's own.
+ */
+@Composable
+internal fun MediaTransportRow(
+    loaded: Boolean,
+    isPlaying: Boolean,
+    onStop: () -> Unit,
+    onBack10: () -> Unit,
+    onPlayPause: () -> Unit,
+    onForward10: () -> Unit,
+    trailing: @Composable () -> Unit,
 ) {
     val colors = LocalAppColors.current
     Row(
@@ -352,19 +414,22 @@ private fun MediaTransport(
             modifier = Modifier.testTag(UiTags.MEDIA_FORWARD_10),
             onClick = onForward10,
         )
-        CircleControl(
-            if (muted) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
-            stringResource(Res.string.media_cd_mute),
-            46.dp,
-            enabled = loaded,
-            modifier = Modifier.testTag(UiTags.MEDIA_MUTE),
-            onClick = onMute,
-        )
+        trailing()
     }
 }
 
+/**
+ * The volume slider. [showPercent] adds the number at the end, for the phone's
+ * own player, where the operator is setting what the room hears rather than
+ * nudging a desktop's mixer.
+ */
 @Composable
-private fun MediaVolume(volume: Float, enabled: Boolean, onVolume: (Float) -> Unit) {
+internal fun MediaVolume(
+    volume: Float,
+    enabled: Boolean,
+    onVolume: (Float) -> Unit,
+    showPercent: Boolean = false,
+) {
     val colors = LocalAppColors.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -383,6 +448,16 @@ private fun MediaVolume(volume: Float, enabled: Boolean, onVolume: (Float) -> Un
             modifier = Modifier.weight(1f).testTag(UiTags.MEDIA_VOLUME),
             colors = mediaSliderColors(),
         )
+        if (showPercent) {
+            Text(
+                "${(volume * PERCENT_SCALE).roundToInt()}%",
+                color = colors.muted,
+                fontSize = 12.sp,
+                fontFamily = FontFamily.Monospace,
+                textAlign = TextAlign.End,
+                modifier = Modifier.width(40.dp),
+            )
+        }
     }
 }
 
@@ -400,14 +475,18 @@ private fun mediaSliderColors(): SliderColors {
     )
 }
 
-/** A round icon button, dimmed and inert when there is nothing loaded to act on. */
+/**
+ * A round icon button, dimmed and inert when there is nothing loaded to act on.
+ * [active] marks a toggle that is on — loop, here — in the accent colour.
+ */
 @Composable
-private fun CircleControl(
+internal fun CircleControl(
     icon: ImageVector,
     label: String,
     diameter: Dp,
     enabled: Boolean,
     modifier: Modifier = Modifier,
+    active: Boolean = false,
     onClick: () -> Unit,
 ) {
     val colors = LocalAppColors.current
@@ -415,15 +494,19 @@ private fun CircleControl(
         modifier = modifier
             .size(diameter)
             .clip(CircleShape)
-            .background(colors.surface)
-            .border(1.dp, colors.border, CircleShape)
+            .background(if (active) colors.accent.copy(alpha = ACTIVE_FILL_ALPHA) else colors.surface)
+            .border(1.dp, if (active) colors.accent else colors.border, CircleShape)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             icon,
             contentDescription = label,
-            tint = if (enabled) colors.secondary else colors.dim,
+            tint = when {
+                !enabled -> colors.dim
+                active -> colors.accent
+                else -> colors.secondary
+            },
             modifier = Modifier.size(diameter * GLYPH_TO_BUTTON),
         )
     }

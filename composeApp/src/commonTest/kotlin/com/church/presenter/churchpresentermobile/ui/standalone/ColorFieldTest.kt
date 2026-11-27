@@ -2,7 +2,7 @@ package com.church.presenter.churchpresentermobile.ui.standalone
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.ui.click
 import com.church.presenter.churchpresentermobile.ui.exists
 import com.church.presenter.churchpresentermobile.ui.showScreen

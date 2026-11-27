@@ -2,7 +2,7 @@ package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.network.ContactReporter
 import com.church.presenter.churchpresentermobile.viewmodel.ContactType
 import com.church.presenter.churchpresentermobile.viewmodel.ContactViewModel

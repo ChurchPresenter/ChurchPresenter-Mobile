@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BebliaCatalog
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleDownloads
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleWebCatalog

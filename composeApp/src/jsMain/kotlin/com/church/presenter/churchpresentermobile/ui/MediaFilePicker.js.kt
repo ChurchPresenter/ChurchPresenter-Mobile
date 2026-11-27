@@ -8,6 +8,7 @@ actual fun MediaFilePicker(
     onFilePicked: OnMediaPickedCallback,
     onError: (String) -> Unit,
     maxBytes: Long,
+    extensions: Set<String>,
     content: @Composable (launch: () -> Unit) -> Unit,
 ) {
     content { /* no-op on web */ }

@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CallSplit
+import androidx.compose.material.icons.automirrored.filled.CallSplit
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -312,7 +312,7 @@ private fun SectionCard(
             )
             if (canSplit) {
                 IconAction(
-                    icon = Icons.Filled.CallSplit,
+                    icon = Icons.AutoMirrored.Filled.CallSplit,
                     description = stringResource(Res.string.editor_split_section),
                     onClick = onSplit,
                     modifier = Modifier.testTag(LibraryTags.verseSplit(index)),

@@ -18,7 +18,11 @@ import kotlinx.coroutines.flow.StateFlow
  * The web target has an actual that reports "unsupported" — a browser tab
  * cannot listen on a socket.
  */
-expect class LocalWebServer(assets: WebAssets, photos: PhotoSource) {
+expect class LocalWebServer(
+    assets: WebAssets,
+    photos: PhotoSource,
+    videos: VideoSource = VideoSource.NONE,
+) {
 
     /** How many display pages are currently connected. */
     val clientCount: StateFlow<Int>

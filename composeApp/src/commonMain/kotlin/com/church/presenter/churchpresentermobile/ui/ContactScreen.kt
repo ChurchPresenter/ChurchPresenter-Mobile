@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.outlined.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -145,13 +145,13 @@ fun ContactScreen(
             OutlineActionButton(
                 label = if (status is SendStatus.Sending) stringResource(Res.string.contact_sending)
                         else stringResource(Res.string.contact_send),
-                icon = Icons.Filled.Send,
+                icon = Icons.AutoMirrored.Filled.Send,
                 onClick = { vm.send(errorText, networkText, rateLimitedText) },
                 modifier = Modifier.weight(1f).testTag(UiTags.CONTACT_SEND),
             )
             OutlineActionButton(
                 label = stringResource(Res.string.contact_open_browser),
-                icon = Icons.Outlined.OpenInNew,
+                icon = Icons.AutoMirrored.Outlined.OpenInNew,
                 onClick = { openUrl(ContactReporter.WEB_CONTACT_URL) },
                 modifier = Modifier.weight(1f).testTag(UiTags.CONTACT_OPEN_BROWSER),
             )

@@ -8,7 +8,7 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performScrollToNode
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.bibleimport.BibleXmlFormat
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleSource
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.CatalogBible

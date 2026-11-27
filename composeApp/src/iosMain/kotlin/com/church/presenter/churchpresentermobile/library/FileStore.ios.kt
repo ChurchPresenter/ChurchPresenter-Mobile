@@ -1,10 +1,12 @@
 package com.church.presenter.churchpresentermobile.library
 
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
+import platform.Foundation.create
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.NSUserDomainMask
@@ -20,7 +22,7 @@ private const val DIRECTORY = "library"
  * Excluded from iCloud backup: the library can be large, is reproducible from
  * an export, and silently consuming a user's iCloud quota is a poor trade.
  */
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class IosFileStore : FileStore {
 
     private val manager = NSFileManager.defaultManager
@@ -52,7 +54,7 @@ class IosFileStore : FileStore {
             val path = pathFor(name) ?: return
             // atomically = true is a write-then-rename, so a process killed
             // mid-write leaves the previous good file intact.
-            (text as NSString).writeToFile(
+            NSString.create(string = text).writeToFile(
                 path = path,
                 atomically = true,
                 encoding = NSUTF8StringEncoding,

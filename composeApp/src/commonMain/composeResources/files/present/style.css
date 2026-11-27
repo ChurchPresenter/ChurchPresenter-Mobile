@@ -218,6 +218,11 @@ html, body {
   object-fit: contain;
 }
 
+/* A finished video set to "go to black" fades out rather than cutting, and
+   holds its place so Play can bring it straight back. */
+#video { transition: opacity 0.5s ease; }
+#video.video-ended { opacity: 0; }
+
 /* ── Where the words sit ─────────────────────────────────────────────── */
 
 .content.h-left   { align-items: flex-start; text-align: left; }

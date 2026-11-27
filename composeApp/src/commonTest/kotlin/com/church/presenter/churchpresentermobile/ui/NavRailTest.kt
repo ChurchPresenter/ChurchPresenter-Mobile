@@ -1,7 +1,7 @@
 package com.church.presenter.churchpresentermobile.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
 import kotlin.test.Test
@@ -41,8 +41,8 @@ class NavRailTest {
 
         assertTrue(exists(UiTags.tab(AppTab.LIBRARY)))
         assertTrue(exists(UiTags.tab(AppTab.ANNOUNCEMENTS)))
-        // Media casting and the desktop's decks mean nothing with no desktop.
-        assertFalse(exists(UiTags.tab(AppTab.MEDIA)), "Media has no place in standalone")
+        // Media plays the phone's own videos; the desktop's decks mean nothing with no desktop.
+        assertTrue(exists(UiTags.tab(AppTab.MEDIA)), "Media plays videos stored on the phone")
         assertFalse(exists(UiTags.tab(AppTab.PRESENTATION)), "decks have no place in standalone")
     }
 

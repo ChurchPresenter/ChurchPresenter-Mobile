@@ -3,7 +3,6 @@ package com.church.presenter.churchpresentermobile.model
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
 /**
  * Tests [ToastEvent] — the app's vocabulary of user-facing messages.
@@ -117,7 +116,9 @@ class ToastEventTest {
     }
 
     @Test
-    fun everyVariantIsAToastEvent() {
-        assertTrue(all.all { it is ToastEvent })
+    fun everyVariantIsListedOnce() {
+        // "Is it a ToastEvent" is decided by the compiler; what can drift is this
+        // list, which the tests above rely on to cover every kind exactly once.
+        assertEquals(all.size, all.map { it::class }.distinct().size)
     }
 }

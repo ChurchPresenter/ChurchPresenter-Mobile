@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.asStateFlow
  * false on web and nothing ever constructs this. It exists only so the shared
  * standalone code compiles for every target.
  */
-actual class LocalWebServer actual constructor(assets: WebAssets, photos: PhotoSource) {
+actual class LocalWebServer actual constructor(
+    assets: WebAssets,
+    photos: PhotoSource,
+    videos: VideoSource,
+) {
 
     private val _clientCount = MutableStateFlow(0)
     actual val clientCount: StateFlow<Int> = _clientCount.asStateFlow()

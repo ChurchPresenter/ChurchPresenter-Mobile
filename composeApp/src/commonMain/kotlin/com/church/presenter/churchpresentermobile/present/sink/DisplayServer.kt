@@ -2,6 +2,7 @@ package com.church.presenter.churchpresentermobile.present.sink
 
 import com.church.presenter.churchpresentermobile.present.LocalWebServer
 import com.church.presenter.churchpresentermobile.present.PhotoSource
+import com.church.presenter.churchpresentermobile.present.VideoSource
 import com.church.presenter.churchpresentermobile.present.WebAssets
 import kotlinx.coroutines.flow.StateFlow
 
@@ -36,7 +37,11 @@ interface DisplayServer {
 
 /** Builds the platform's real server, as [WebPageSink] does when nothing is injected. */
 internal val localWebServerFactory: (WebAssets, PhotoSource) -> DisplayServer =
-    { assets, photos -> LocalWebServerDisplay(LocalWebServer(assets, photos)) }
+    localWebServerFactoryWith(VideoSource.NONE)
+
+/** The real server, also serving [videos]. */
+internal fun localWebServerFactoryWith(videos: VideoSource): (WebAssets, PhotoSource) -> DisplayServer =
+    { assets, photos -> LocalWebServerDisplay(LocalWebServer(assets, photos, videos)) }
 
 /** Adapts the platform's [LocalWebServer] to [DisplayServer]. */
 private class LocalWebServerDisplay(private val delegate: LocalWebServer) : DisplayServer {

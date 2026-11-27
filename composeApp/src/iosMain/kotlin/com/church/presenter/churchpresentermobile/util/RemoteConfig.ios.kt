@@ -35,7 +35,7 @@ actual object RemoteConfig {
      * Stores the callback until Swift delivers the fetched values via [applyValues].
      * If Swift already delivered values before this was called, fires immediately.
      */
-    actual fun fetchAndActivate(onComplete: (Boolean) -> Unit) {
+    actual fun fetchAndActivate(onComplete: (activated: Boolean) -> Unit) {
         if (valuesApplied) {
             onComplete(true)
         } else {

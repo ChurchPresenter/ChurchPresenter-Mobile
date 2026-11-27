@@ -14,6 +14,9 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +42,7 @@ import com.church.presenter.churchpresentermobile.model.showsReference
 import com.church.presenter.churchpresentermobile.model.displayBody
 import com.church.presenter.churchpresentermobile.model.SlideVerticalAlign
 import com.church.presenter.churchpresentermobile.model.SlideKind
+import com.church.presenter.churchpresentermobile.present.LocalVideoFiles
 import com.church.presenter.churchpresentermobile.model.SlideFont
 import com.church.presenter.churchpresentermobile.model.AUTO_FIT_FLOOR
 import com.church.presenter.churchpresentermobile.model.BODY_LINE_HEIGHT
@@ -66,12 +70,17 @@ import com.church.presenter.churchpresentermobile.ui.SCREEN_ASPECT_RATIO
  * the browser page, so a wider window does not run the words off the bottom.
  *
  * @param showClock False for a thumbnail that is not a real output: a preset's.
+ * @param playsVideo False for a preview of what a screen shows — the live bar's
+ *   thumbnail, the live view. A video there would be another decoder running the
+ *   same clip, and with the sound on the hall screen, a second copy of it coming
+ *   out of the phone; a preview shows that a video is up instead.
  */
 @Composable
 fun StandaloneOutputScreen(
     slide: Slide,
     modifier: Modifier = Modifier,
     showClock: Boolean = true,
+    playsVideo: Boolean = true,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val boxWidth = maxWidth
@@ -100,7 +109,9 @@ fun StandaloneOutputScreen(
         if (mediaUrl != null) {
             when (slide.kind) {
                 SlideKind.WEB -> OutputWebView(mediaUrl, Modifier.fillMaxSize())
-                SlideKind.VIDEO -> OutputVideoView(mediaUrl, Modifier.fillMaxSize())
+                SlideKind.VIDEO if playsVideo ->
+                    OutputVideoView(LocalVideoFiles.playable(mediaUrl), slide.video, Modifier.fillMaxSize())
+                SlideKind.VIDEO -> VideoStandIn()
                 SlideKind.CANVAS -> OutputCanvasFrame(
                     url = mediaUrl,
                     paper = slide.paper?.let { parseHexColor(it, DefaultCanvasPaper) } ?: DefaultCanvasPaper,
@@ -236,7 +247,11 @@ private fun ColumnScope.SlideWords(slide: Slide, bodySize: TextUnit, textColor: 
 /** The layer behind the text: a gradient wash, a photo, or plain black. */
 @Composable
 private fun Backdrop(slide: Slide) {
-    when (slide.backdrop) {
+    // A video sits on black, never on the church's backdrop: letterboxing reads as
+    // part of the picture, and Blank on a video must cut to black rather than reveal
+    // the lyric gradient behind it.
+    val backdrop = if (slide.kind == SlideKind.VIDEO) SlideBackdrop.BLACK else slide.backdrop
+    when (backdrop) {
         SlideBackdrop.BLACK -> Box(Modifier.fillMaxSize().background(Color.Black))
 
         SlideBackdrop.GRADIENT -> Box(
@@ -387,3 +402,19 @@ private val IMAGE_SCRIM = Color(0x99000000)
 
 /** The kinds whose media *is* the slide, so nothing of the text layer is drawn over it. */
 private val MEDIA_KINDS = setOf(SlideKind.WEB, SlideKind.VIDEO, SlideKind.CANVAS)
+
+/** What a preview shows for a video slide: black, as a screen between frames is, and a film mark. */
+@Composable
+private fun VideoStandIn() {
+    Box(Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
+        Icon(
+            Icons.Filled.Movie,
+            contentDescription = null,
+            tint = Color.White.copy(alpha = VIDEO_STAND_IN_ALPHA),
+            modifier = Modifier.fillMaxSize(VIDEO_STAND_IN_FRACTION),
+        )
+    }
+}
+
+private const val VIDEO_STAND_IN_ALPHA = 0.6f
+private const val VIDEO_STAND_IN_FRACTION = 0.3f

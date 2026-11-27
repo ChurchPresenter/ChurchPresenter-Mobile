@@ -330,7 +330,7 @@ private fun Thumbnail(slide: Slide, width: Dp, modifier: Modifier = Modifier) {
             .clip(RoundedCornerShape(6.dp))
             .border(1.dp, colors.border, RoundedCornerShape(6.dp)),
     ) {
-        StandaloneOutputScreen(slide)
+        StandaloneOutputScreen(slide, playsVideo = false)
     }
 }
 

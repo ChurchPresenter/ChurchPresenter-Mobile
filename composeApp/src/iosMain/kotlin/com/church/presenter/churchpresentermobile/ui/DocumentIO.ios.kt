@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.church.presenter.churchpresentermobile.util.Logger
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -225,7 +226,7 @@ private fun writeStreamed(path: String, writer: TextDocumentWriter): Boolean {
 }
 
 /** The bytes go through NSData; the share sheet is the same one the text export uses. */
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 @Composable
 actual fun BinaryDocumentExporter(
     onError: (String) -> Unit,

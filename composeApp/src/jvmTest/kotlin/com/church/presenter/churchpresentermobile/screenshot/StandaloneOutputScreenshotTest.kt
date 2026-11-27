@@ -3,6 +3,7 @@ package com.church.presenter.churchpresentermobile.screenshot
 import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideDeckBuilder
 import com.church.presenter.churchpresentermobile.model.SlideKind
+import com.church.presenter.churchpresentermobile.model.VideoCue
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.Song
 import com.church.presenter.churchpresentermobile.model.SongDetail
@@ -46,6 +47,24 @@ class StandaloneOutputScreenshotTest {
     )
 
     // ── What the room sees ───────────────────────────────────────────────
+
+    @Test
+    fun videoBlanked() = screenshot(
+        // A video slide blanked: black, not the lyric gradient the theme would paint.
+        "output__video-blanked",
+        width = Screenshots.TABLET_WIDTH,
+        content = {
+            StandaloneOutputScreen(
+                slide = Slide(
+                    kind = SlideKind.VIDEO,
+                    mediaUrl = "http://192.168.1.20:8766/video/v1.mp4",
+                    isBlank = true,
+                    theme = theme,
+                    video = VideoCue(playing = true, positionMs = 42_000L, durationMs = 180_000L),
+                ),
+            )
+        },
+    )
 
     @Test
     fun songSlide() = screenshot(

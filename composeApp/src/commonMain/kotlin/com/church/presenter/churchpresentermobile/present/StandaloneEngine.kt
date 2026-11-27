@@ -5,9 +5,11 @@ import com.church.presenter.churchpresentermobile.model.Slide
 import com.church.presenter.churchpresentermobile.model.SlideBackdrop
 import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
+import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.SlideMessageType
 import com.church.presenter.churchpresentermobile.model.SlideTextSize
 import com.church.presenter.churchpresentermobile.model.SlideTheme
+import com.church.presenter.churchpresentermobile.model.VideoCue
 import com.church.presenter.churchpresentermobile.network.WsMessageType
 import com.church.presenter.churchpresentermobile.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,6 +73,32 @@ class StandaloneEngine(
     val currentSlide: StateFlow<Slide> = _currentSlide.asStateFlow()
 
     private val isActive: Boolean get() = mode.value == AppMode.STANDALONE
+
+    /**
+     * Where a [SlideKind.VIDEO] slide gets its playback instruction — play, pause,
+     * position, loop. Read at every emit rather than stored, so a screen unblanked or
+     * put live minutes later lands where the video actually is now, not where it was
+     * when the button was last pressed. The shell points it at the [VideoTransport],
+     * which answers only for the video it has loaded — any other video slide plays
+     * as it always has.
+     */
+    var videoCue: (Slide) -> VideoCue? = { null }
+
+    /**
+     * Re-sends the video that is on screen with the transport's latest cue.
+     *
+     * Does nothing unless the loaded deck is a video *and* that same video is what
+     * the screen shows: a transport tap while the operator is browsing a song must
+     * never put the song up.
+     */
+    fun refreshVideo() {
+        if (!isActive) return
+        val loaded = _deck.value.slideAt(_index.value) ?: return
+        val onScreen = _currentSlide.value
+        if (loaded.kind != SlideKind.VIDEO || onScreen.kind != SlideKind.VIDEO) return
+        if (onScreen.mediaUrl != loaded.mediaUrl) return
+        emit()
+    }
 
     /**
      * Loads a deck and projects its first slide immediately.
@@ -205,6 +233,7 @@ class StandaloneEngine(
             theme = _theme.value,
             index = _index.value,
             total = _deck.value.slides.size,
+            video = if (base.kind == SlideKind.VIDEO) videoCue(base) else null,
         )
         _currentSlide.value = slide
         val envelope = SlideEnvelope(type = type, rev = ++revision, slide = slide)

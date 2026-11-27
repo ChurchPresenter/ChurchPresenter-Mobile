@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -235,6 +236,9 @@ internal fun UrlField(value: String, onValueChange: (String) -> Unit, modifier: 
     }
 }
 
+/** Height of the strip the shell's top-right gear and mode badge occupy, as a [ScreenHeader] would. */
+private val ShellControlsClearance = 48.dp
+
 /**
  * The tablet's arrangement for the Media tab: the player on the left, and
  * everything that loads or sends media on the right.
@@ -288,6 +292,10 @@ internal fun MediaTwoPane(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 14.dp),
             ) {
+                // The shell floats the window's gear and mode badge over the top-right
+                // corner, which is this pane's top. Leave a header's worth of room so
+                // the first control — Add video, the source picker — is not under them.
+                Spacer(Modifier.statusBarsPadding().height(ShellControlsClearance))
                 send()
                 Spacer(Modifier.height(24.dp))
             }

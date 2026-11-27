@@ -24,7 +24,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.IosShare
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -608,7 +608,7 @@ private fun BibleChip(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Icon(
-                imageVector = Icons.Filled.MenuBook,
+                imageVector = Icons.AutoMirrored.Filled.MenuBook,
                 contentDescription = null,
                 tint = colors.muted,
                 modifier = Modifier.size(14.dp),
@@ -835,8 +835,11 @@ internal data class SyncAge(val bucket: Bucket, val count: Long) {
  * tab has to open either way; a wrong chip is not worth a crash.
  */
 internal fun readSyncState(storedJson: String): LibrarySyncState = runCatching {
-    Json { ignoreUnknownKeys = true }.decodeFromString<LibrarySyncState>(storedJson)
+    syncStateJson.decodeFromString<LibrarySyncState>(storedJson)
 }.getOrDefault(LibrarySyncState.NEVER)
+
+/** Built once: a Json instance per call is slow, and this runs on every Library open. */
+private val syncStateJson = Json { ignoreUnknownKeys = true }
 
 /**
  * Which bucket [state]'s last sync falls into as of [nowMs], and the number to

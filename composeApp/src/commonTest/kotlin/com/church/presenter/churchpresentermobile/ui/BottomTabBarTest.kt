@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.model.AppMode
 import com.church.presenter.churchpresentermobile.model.AppTab
 import com.church.presenter.churchpresentermobile.model.ThemeMode
@@ -70,7 +70,8 @@ class BottomTabBarTest {
         })
 
         assertTrue(AppTab.LIBRARY in tabs)
-        assertTrue(AppTab.MEDIA !in tabs, "media needs a desktop")
+        assertTrue(AppTab.MEDIA in tabs, "media plays videos stored on the phone")
+        assertTrue(AppTab.PRESENTATION !in tabs, "decks need a desktop")
     }
 
     @Test
@@ -90,9 +91,9 @@ class BottomTabBarTest {
     fun aTabNotInTheStripDoesNotBreakRendering() = runComposeUiTest {
         // Can happen for a frame while the mode is switching.
         val tabs = AppTab.forMode(AppMode.STANDALONE)
-        setContent(themed { BottomTabBar(selectedTab = AppTab.MEDIA, onTabSelected = {}, tabs = tabs) })
+        setContent(themed { BottomTabBar(selectedTab = AppTab.PRESENTATION, onTabSelected = {}, tabs = tabs) })
 
-        assertTrue(AppTab.MEDIA !in tabs)
+        assertTrue(AppTab.PRESENTATION !in tabs)
     }
 
     @Test

@@ -45,7 +45,7 @@ class AppNavigationRulesTest {
 
     @Test
     fun `a shortcut's tab this mode lacks opens the first instead`() {
-        assertEquals(AppTab.BIBLE, startTab(AppTab.MEDIA, standaloneTabs))
+        assertEquals(AppTab.BIBLE, startTab(AppTab.PRESENTATION, standaloneTabs))
     }
 
     @Test
@@ -55,8 +55,8 @@ class AppNavigationRulesTest {
 
     @Test
     fun `a tab the strip has lost falls back to the first`() {
-        // MEDIA is remote-only.
-        assertEquals(AppTab.BIBLE, settledTab(AppTab.MEDIA, standaloneTabs))
+        // PRESENTATION is remote-only.
+        assertEquals(AppTab.BIBLE, settledTab(AppTab.PRESENTATION, standaloneTabs))
     }
 
     @Test
@@ -207,7 +207,7 @@ class AppNavigationRulesTest {
 
     @Test
     fun `a tab the strip has lost falls back to the first page`() {
-        assertEquals(0, pageForTab(AppTab.MEDIA, standaloneTabs))
+        assertEquals(0, pageForTab(AppTab.PRESENTATION, standaloneTabs))
     }
 
     @Test

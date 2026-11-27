@@ -62,7 +62,7 @@ class DesktopAddressViewModel(
         val parsed = value.trim().toIntOrNull()
         val valid = parsed != null && parsed in 1..65535
         _portError.value = value.isNotBlank() && !valid
-        if (valid) settings.port = parsed!!
+        if (valid) settings.port = parsed
     }
 
     fun setApiKey(value: String) {

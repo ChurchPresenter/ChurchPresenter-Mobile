@@ -3,7 +3,7 @@ package com.church.presenter.churchpresentermobile.ui.bibles
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.church.presenter.churchpresentermobile.bibleimport.BibleXmlFormat
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.BibleSource
 import com.church.presenter.churchpresentermobile.bibleimport.catalog.CatalogBible
