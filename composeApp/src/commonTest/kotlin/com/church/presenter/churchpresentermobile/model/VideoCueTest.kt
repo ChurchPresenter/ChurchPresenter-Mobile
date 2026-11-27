@@ -30,6 +30,15 @@ class VideoCueTest {
     }
 
     @Test
+    fun `drift between cues is held to a looser tolerance than a cue`() {
+        // A seek costs a rebuffer: correcting every half-second gap made a player
+        // stall, fall behind and seek again, every two seconds.
+        assertTrue(shouldSeek(10_800L, 10_000L, playing))
+        assertFalse(shouldSeek(10_800L, 10_000L, playing, toleranceMs = VIDEO_DRIFT_TOLERANCE_MS))
+        assertTrue(shouldSeek(11_600L, 10_000L, playing, toleranceMs = VIDEO_DRIFT_TOLERANCE_MS))
+    }
+
+    @Test
     fun `a loop measures the short way round its seam`() {
         val loop = playing.copy(durationMs = 30_000L, endAction = VideoEndAction.LOOP)
         assertFalse(shouldSeek(29_900L, 100L, loop))

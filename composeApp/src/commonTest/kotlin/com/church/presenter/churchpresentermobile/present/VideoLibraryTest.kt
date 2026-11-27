@@ -1,5 +1,6 @@
 package com.church.presenter.churchpresentermobile.present
 
+import com.church.presenter.churchpresentermobile.model.LocalVideo
 import com.church.presenter.churchpresentermobile.network.PickedMediaFile
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import io.ktor.utils.io.writeFully
@@ -165,6 +166,95 @@ class VideoLibraryTest {
         assertFalse(lib.isSupported)
         assertTrue(lib.import(picked("a.mp4")).isFailure)
         assertNull(lib.source.video("id1.mp4"))
+    }
+
+    @Test
+    fun `the phone's own players find the file behind a served address`() = runTest {
+        val lib = library()
+        val video = lib.import(picked("a.mp4")).getOrThrow()
+        assertEquals("file:///data/videos/id1.mp4", lib.localFileUrl("http://10.0.0.2:8766/video/id1.mp4"))
+        assertEquals("file:///data/videos/id1.mp4", lib.localFileUrl("http://10.0.0.2:8766/video/id1.mp4?v=2"))
+        assertNull(lib.localFileUrl("http://10.0.0.2:8766/video/other.mp4"), "not one of ours")
+        assertNull(lib.localFileUrl("https://example.com/clip.mp4"))
+        assertEquals(video.fileName, "id1.mp4")
+    }
+
+    @Test
+    fun `an address with no local copy plays as it came`() {
+        val previous = LocalVideoFiles.resolve
+        try {
+            LocalVideoFiles.resolve = { url -> if (url.endsWith("mine.mp4")) "file:///v/mine.mp4" else null }
+            assertEquals("file:///v/mine.mp4", LocalVideoFiles.playable("http://phone/video/mine.mp4"))
+            assertEquals("http://phone/video/theirs.mp4", LocalVideoFiles.playable("http://phone/video/theirs.mp4"))
+        } finally {
+            LocalVideoFiles.resolve = previous
+        }
+    }
+
+    @Test
+    fun `a corrupt saved list opens empty rather than crashing`() {
+        store.write(VIDEO_INDEX_FILE, "{not json")
+        val lib = library().also { it.load() }
+        assertTrue(lib.videos.value.isEmpty())
+    }
+
+    @Test
+    fun `an empty file is refused and leaves nothing behind`() = runTest {
+        val empty = object : VideoFiles by files {
+            override suspend fun importFrom(file: PickedMediaFile, name: String, onProgress: (Long) -> Unit) = 0L
+        }
+        val lib = library(empty)
+        assertTrue(lib.import(picked("a.mp4")).isFailure)
+        assertTrue(lib.videos.value.isEmpty())
+    }
+
+    @Test
+    fun `renaming or removing an unknown video changes nothing`() = runTest {
+        val lib = library()
+        val video = lib.import(picked("a.mp4")).getOrThrow()
+        lib.rename("nope", "Other")
+        lib.remove("nope")
+        assertEquals(listOf(video), lib.videos.value)
+    }
+
+    @Test
+    fun `with nowhere to keep videos there is no address and no still`() {
+        val lib = library(backing = null)
+        val video = LocalVideo("x", "x", "x.mp4", thumbName = "x.jpg")
+        assertNull(lib.playbackUrl(video))
+        assertNull(lib.thumbnailPath(video))
+        assertNull(lib.localFileUrl("http://phone/video/x.mp4"))
+    }
+
+    @Test
+    fun `a still is found for the list, and a video without one has none`() = runTest {
+        val lib = library()
+        val video = lib.import(picked("a.mp4")).getOrThrow()
+        assertEquals("/data/videos/id1.jpg", lib.thumbnailPath(video))
+        assertNull(lib.thumbnailPath(video.copy(thumbName = null)))
+    }
+
+    @Test
+    fun `a listed video whose file vanished is not served`() = runTest {
+        val lib = library()
+        val video = lib.import(picked("a.mp4")).getOrThrow()
+        files.delete(video.fileName)
+        assertNull(lib.source.video(video.fileName))
+    }
+
+    @Test
+    fun `a title is the file's name without its extension`() {
+        assertEquals("Welcome video", VideoLibrary.titleFrom("Welcome_video.mp4"))
+        assertEquals(".mp4", VideoLibrary.titleFrom(".mp4"))
+        assertEquals("1.2 GB", VideoLibrary.titleFrom("1.2 GB.mov"))
+    }
+
+    @Test
+    fun `the total size adds up every video`() = runTest {
+        val lib = library()
+        lib.import(picked("a.mp4", size = 10))
+        lib.import(picked("b.mp4", size = 20))
+        assertEquals(lib.videos.value.sumOf { it.sizeBytes }, lib.totalBytes)
     }
 
     @Test

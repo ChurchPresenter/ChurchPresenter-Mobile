@@ -11,11 +11,11 @@ import com.church.presenter.churchpresentermobile.present.VideoFiles
 import com.church.presenter.churchpresentermobile.present.VideoLibrary
 import com.church.presenter.churchpresentermobile.present.VideoProbe
 import com.church.presenter.churchpresentermobile.present.VideoTransport
+import com.church.presenter.churchpresentermobile.present.cueFor
 import com.church.presenter.churchpresentermobile.testutil.InMemoryFileStorage
 import com.church.presenter.churchpresentermobile.ui.standalone.LocalMediaScreen
 import com.church.presenter.churchpresentermobile.viewmodel.LocalMediaViewModel
 import com.church.presenter.churchpresentermobile.viewmodel.VideoAction
-import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -31,7 +31,7 @@ import kotlin.test.Test
  */
 class LocalMediaScreenshotTest {
 
-    private class Fixture(seeded: List<Pair<String, VideoProbe>>) {
+    private class Fixture(seeded: List<Clip>) {
         var now = 0L
         val engine = StandaloneEngine(MutableStateFlow(AppMode.STANDALONE), SinkRegistry()) { }
         var ids = 0
@@ -40,35 +40,59 @@ class LocalMediaScreenshotTest {
         val viewModel: LocalMediaViewModel
 
         init {
-            engine.videoCue = { null }
+            engine.videoCue = transport::cueFor
             transport.onChange = engine::refreshVideo
             var index = 0
-            val files = object : VideoFiles by FakeVideoFiles() {
+            val fake = FakeVideoFiles()
+            val files = object : VideoFiles by fake {
+                // The bytes stay tiny; the size the list shows is the clip's real one.
+                override suspend fun importFrom(
+                    file: PickedMediaFile,
+                    name: String,
+                    onProgress: (Long) -> Unit,
+                ): Long {
+                    fake.importFrom(PickedMediaFile(file.fileName, 0L) { _, _ -> }, name, onProgress)
+                    return file.sizeBytes
+                }
+
                 override suspend fun probe(name: String, thumbName: String): VideoProbe? =
-                    seeded.getOrNull(index++)?.second
+                    seeded.getOrNull(index++)?.probe
             }
             library = VideoLibrary(files, InMemoryFileStorage(), newId = { "v${++ids}" }, now = { 0L })
             library.serveFrom("http://192.168.1.20:8766")
             // Imported oldest first, so the list reads newest first as it does in the app.
             runBlocking {
-                seeded.forEach { (name, _) ->
-                    library.import(PickedMediaFile(name, 64L) { channel, _ -> channel.writeFully(ByteArray(64)) })
+                seeded.forEach { clip ->
+                    library.import(PickedMediaFile(clip.name, clip.bytes) { _, _ -> })
                 }
             }
             viewModel = LocalMediaViewModel(library, transport, engine)
         }
 
-        fun content(twoPane: Boolean = false): @Composable () -> Unit = {
-            LocalMediaScreen(library, transport, engine, twoPane = twoPane, providedViewModel = viewModel)
+        fun content(twoPane: Boolean = false, phoneSoundAvailable: Boolean = true): @Composable () -> Unit = {
+            LocalMediaScreen(
+                library,
+                transport,
+                engine,
+                twoPane = twoPane,
+                phoneSoundAvailable = phoneSoundAvailable,
+                providedViewModel = viewModel,
+            )
         }
     }
 
+    private class Clip(val name: String, val probe: VideoProbe, val bytes: Long)
+
     private val clips = listOf(
-        "Worship loop - violet.mp4" to VideoProbe(30_000L, 1920, 1080),
-        "Missions report - Kenya.mov" to VideoProbe(134_000L, 3840, 2160),
-        "Countdown - 5 min.mp4" to VideoProbe(300_000L, 1920, 1080),
-        "Welcome video.mp4" to VideoProbe(180_000L, 1920, 1080),
+        Clip("Worship loop - violet.mp4", VideoProbe(30_000L, 1920, 1080), 38L * MB),
+        Clip("Missions report - Kenya.mov", VideoProbe(134_000L, 3840, 2160), 840L * MB),
+        Clip("Countdown - 5 min.mp4", VideoProbe(300_000L, 1920, 1080), 96L * MB),
+        Clip("Welcome video.mp4", VideoProbe(180_000L, 1920, 1080), 212L * MB),
     )
+
+    private companion object {
+        const val MB = 1024L * 1024L
+    }
 
     @Test
     fun empty() = screenshot("local-media__empty", content = Fixture(emptyList()).content())
@@ -89,6 +113,15 @@ class LocalMediaScreenshotTest {
         f.viewModel.onAction(VideoAction.SeekTo(12_000L))
         f.viewModel.onAction(VideoAction.ToggleLive)
         screenshot("local-media__live-looping", content = f.content())
+    }
+
+    @Test
+    fun soundFollowsTheTv() {
+        // An iPad with a TV on AirPlay: "This phone" is withdrawn and the note says why.
+        val f = Fixture(clips)
+        f.viewModel.select(f.library.videos.value.first())
+        f.viewModel.onAction(VideoAction.ToggleLive)
+        screenshot("local-media__sound-follows-tv", content = f.content(phoneSoundAvailable = false))
     }
 
     @Test

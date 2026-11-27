@@ -144,8 +144,15 @@ actual fun OutputVideoView(
  * `onPrepared` — a cue that arrives while the clip is still opening is not lost,
  * and the time spent opening it is added on, so the clip starts where the phone
  * is rather than where it was when the cue was sent.
+ *
+ * `internal`, with the clock and SDK level injected, so the decisions — volume,
+ * looping, when to seek and to where, which speaker — can be tested against a
+ * mocked VideoView without an emulator.
  */
-private class CuePlayer {
+internal class CuePlayer(
+    private val clock: () -> Long = { SystemClock.elapsedRealtime() },
+    private val sdk: Int = Build.VERSION.SDK_INT,
+) {
     private var view: VideoView? = null
     private var player: MediaPlayer? = null
     private var url: String? = null
@@ -174,7 +181,7 @@ private class CuePlayer {
     }
 
     fun update(target: VideoView, newUrl: String, newCue: VideoCue?, newMuted: Boolean, newSoundOnDevice: Boolean) {
-        if (newCue != cue) cueReceivedAt = SystemClock.elapsedRealtime()
+        if (newCue != cue) cueReceivedAt = clock()
         cue = newCue
         muted = newMuted
         soundOnDevice = newSoundOnDevice
@@ -193,7 +200,7 @@ private class CuePlayer {
         val target = view ?: return
         val current = cue ?: return
         if (player == null || !current.playing || !target.isPlaying) return
-        if (SystemClock.elapsedRealtime() - lastSeekAt < VIDEO_SEEK_SETTLE_MS) return
+        if (clock() - lastSeekAt < VIDEO_SEEK_SETTLE_MS) return
         seekIfDrifted(target, current, VIDEO_DRIFT_TOLERANCE_MS)
     }
 
@@ -223,10 +230,10 @@ private class CuePlayer {
         current: VideoCue,
         toleranceMs: Long = VIDEO_SYNC_TOLERANCE_MS,
     ) {
-        val expected = expectedPositionMs(current, SystemClock.elapsedRealtime() - cueReceivedAt)
+        val expected = expectedPositionMs(current, clock() - cueReceivedAt)
         if (shouldSeek(target.currentPosition.toLong(), expected, current, toleranceMs)) {
             target.seekTo(expected.toInt())
-            lastSeekAt = SystemClock.elapsedRealtime()
+            lastSeekAt = clock()
         }
     }
 
@@ -236,7 +243,7 @@ private class CuePlayer {
      * Cast screen attached, every app's audio goes to the TV.
      */
     private fun routeSound(target: VideoView, active: MediaPlayer) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
+        if (sdk < Build.VERSION_CODES.P) return
         val audio = target.context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
         val device = if (soundOnDevice) phoneOutput(audio.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) else null
         runCatching { active.setPreferredDevice(device) }
@@ -244,7 +251,7 @@ private class CuePlayer {
 }
 
 /** Headphones if any are plugged in or paired, otherwise the phone's speaker. */
-private fun phoneOutput(devices: Array<AudioDeviceInfo>): AudioDeviceInfo? =
+internal fun phoneOutput(devices: Array<AudioDeviceInfo>): AudioDeviceInfo? =
     devices.firstOrNull { it.type in HEADPHONE_TYPES }
         ?: devices.firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
 

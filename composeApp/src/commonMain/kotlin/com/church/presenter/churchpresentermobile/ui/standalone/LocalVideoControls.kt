@@ -294,6 +294,7 @@ private fun <T> OptionRow(
                             onSelect(option)
                             expanded = false
                         },
+                        modifier = Modifier.testTag(VideoTags.option(tag, option.toString())),
                     )
                 }
             }

@@ -320,6 +320,7 @@ private fun BoxScope.PlayOverlay(onPlay: () -> Unit) {
             .size(56.dp)
             .clip(CircleShape)
             .background(colors.accent.copy(alpha = PLAY_OVERLAY_ALPHA))
+            .testTag(VideoTags.PLAY_OVERLAY)
             .clickable(onClick = onPlay),
         contentAlignment = Alignment.Center,
     ) {

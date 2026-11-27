@@ -5,7 +5,9 @@ import com.church.presenter.churchpresentermobile.model.SlideDeck
 import com.church.presenter.churchpresentermobile.model.SlideEnvelope
 import com.church.presenter.churchpresentermobile.model.SlideKind
 import com.church.presenter.churchpresentermobile.model.Slide
+import com.church.presenter.churchpresentermobile.model.LocalVideo
 import com.church.presenter.churchpresentermobile.model.VideoEndAction
+import com.church.presenter.churchpresentermobile.model.VideoSound
 import com.church.presenter.churchpresentermobile.network.PickedMediaFile
 import com.church.presenter.churchpresentermobile.present.FakeVideoFiles
 import com.church.presenter.churchpresentermobile.present.SinkRegistry
@@ -153,6 +155,51 @@ class LocalMediaViewModelTest {
     }
 
     @Test
+    fun `clear takes the video down even after it was taken off-air`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            // "On screen" tapped: the screen goes off-air with the video still loaded.
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            h.viewModel.onAction(VideoAction.Clear)
+            runCurrent()
+
+            assertTrue(h.engine.deck.value.isEmpty, "the video must not stay loaded behind the screen")
+        }
+    }
+
+    @Test
+    fun `clear leaves a song alone when the video was never put up`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            val song = Slide(kind = SlideKind.SONG, body = "x")
+            h.engine.setDeck(SlideDeck(kind = SlideKind.SONG, slides = listOf(song)))
+
+            h.viewModel.onAction(VideoAction.Clear)
+            runCurrent()
+
+            assertEquals(SlideKind.SONG, h.engine.currentSlide.value.kind)
+        }
+    }
+
+    @Test
+    fun `a player built now gets the position as of now`() = runVmTest {
+        withHarness { h ->
+            assertNull(h.viewModel.currentCue())
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.TogglePlay)
+            h.now += 30_000L
+            // The flow still holds the cue from when Play was pressed; a preview
+            // built from it a minute later started that far behind.
+            assertEquals(0L, h.viewModel.previewCue.value?.positionMs)
+            assertEquals(30_000L, h.viewModel.currentCue()?.positionMs)
+        }
+    }
+
+    @Test
     fun `deleting the video on screen clears the screen and empties the player`() = runVmTest {
         withHarness { h ->
             h.viewModel.import(picked("a.mp4"))
@@ -166,6 +213,99 @@ class LocalMediaViewModelTest {
             assertTrue(h.library.videos.value.isEmpty())
             assertFalse(h.viewModel.transportState.value.isLoaded)
             assertTrue(h.engine.deck.value.isEmpty)
+        }
+    }
+
+    @Test
+    fun `the transport buttons reach the transport`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.SeekTo(50_000L))
+            h.viewModel.onAction(VideoAction.Back10)
+            assertEquals(40_000L, h.transport.positionMs())
+            h.viewModel.onAction(VideoAction.Forward10)
+            assertEquals(50_000L, h.transport.positionMs())
+            h.viewModel.onAction(VideoAction.TogglePlay)
+            h.viewModel.onAction(VideoAction.Stop)
+            assertEquals(0L, h.transport.positionMs())
+            assertFalse(h.transport.state.value.playing)
+            h.viewModel.onAction(VideoAction.SetSound(VideoSound.OFF))
+            h.viewModel.onAction(VideoAction.SetEndAction(VideoEndAction.HOLD))
+            assertEquals(VideoEndAction.HOLD, h.transport.state.value.endAction)
+        }
+    }
+
+    @Test
+    fun `blank reaches the screen`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            h.viewModel.onAction(VideoAction.ToggleBlank)
+            assertTrue(h.engine.isBlank.value)
+            // Live from blank brings it back rather than taking it off-air.
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            assertFalse(h.engine.isBlank.value)
+            assertTrue(h.engine.isLive.value)
+        }
+    }
+
+    @Test
+    fun `live and clear do nothing with no video loaded`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.onAction(VideoAction.ToggleLive)
+            h.viewModel.onAction(VideoAction.Clear)
+            assertTrue(h.published.isEmpty())
+        }
+    }
+
+    @Test
+    fun `selecting the loaded video again does not reload it`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            val seq = h.transport.state.value.seq
+            h.viewModel.select(h.library.videos.value.single())
+            assertEquals(seq, h.transport.state.value.seq)
+        }
+    }
+
+    @Test
+    fun `a video with nowhere to play from is reported`() = runVmTest {
+        withHarness { h ->
+            val stranded = VideoLibrary(null, InMemoryFileStorage(), newId = { "x" }, now = { 0L })
+            val vm = LocalMediaViewModel(stranded, h.transport, h.engine)
+            try {
+                assertFalse(vm.isSupported)
+                vm.select(LocalVideo("x", "x", "x.mp4"))
+                assertNotNull(vm.message.value)
+            } finally {
+                tearDown(vm)
+            }
+        }
+    }
+
+    @Test
+    fun `a second import while one is copying is ignored`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            h.viewModel.import(picked("b.mp4"))
+            runCurrent()
+            assertEquals(listOf("a"), h.library.videos.value.map { it.title })
+        }
+    }
+
+    @Test
+    fun `deleting a video that is not loaded leaves the player alone`() = runVmTest {
+        withHarness { h ->
+            h.viewModel.import(picked("a.mp4"))
+            runCurrent()
+            h.viewModel.import(picked("b.mp4"))
+            runCurrent()
+            val other = h.library.videos.value.first { it.title == "a" }
+            h.viewModel.delete(other)
+            assertEquals("b", h.viewModel.transportState.value.video?.title)
         }
     }
 

@@ -619,6 +619,7 @@ val viewModelBackedUiTests = listOf(
     // and waits for it. On the single-threaded wasm runtime that request cannot
     // complete inside the Compose test clock, so the wait can only expire.
     "com.church.presenter.churchpresentermobile.ui.AppShellTest",
+    "com.church.presenter.churchpresentermobile.ui.standalone.LocalMediaScreenTest",
     // Go Live encodes the canvas frame on a worker thread and waits for the engine
     // to show it — work the single-threaded wasm runtime cannot finish in the test clock.
     "com.church.presenter.churchpresentermobile.ui.canvas.CanvasGoLiveTest",

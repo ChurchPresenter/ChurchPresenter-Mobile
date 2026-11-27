@@ -327,14 +327,17 @@ private fun VideoRow(
                 color = colors.text,
                 fontSize = 14.5.sp,
                 fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
+                // Two lines: the tablet's list pane is narrow, and "Countdown - 5 …"
+                // does not tell one countdown from another.
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 videoDetails(video, looping, stringResource(Res.string.local_media_loops)),
                 color = colors.muted,
                 fontSize = 12.sp,
-                maxLines = 1,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
             if (loaded) {
                 Text(
@@ -403,7 +406,9 @@ private fun DeleteVideoDialog(video: LocalVideo, onConfirm: () -> Unit, onDismis
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.action_cancel)) }
+            TextButton(onClick = onDismiss, modifier = Modifier.testTag(VideoTags.DELETE_CANCEL)) {
+                Text(stringResource(Res.string.action_cancel))
+            }
         },
     )
 }

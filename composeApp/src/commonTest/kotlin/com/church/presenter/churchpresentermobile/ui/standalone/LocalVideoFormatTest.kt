@@ -9,10 +9,10 @@ class LocalVideoFormatTest {
 
     @Test
     fun `sizes read the way a phone's storage screen reads them`() {
-        assertEquals("0 B", formatBytes(0))
-        assertEquals("212 MB", formatBytes(212L * 1024 * 1024))
-        assertEquals("1.2 GB", formatBytes(1_288_490_189L))
-        assertEquals("12 GB", formatBytes(12L * 1024 * 1024 * 1024))
+        assertEquals("0\u00A0B", formatBytes(0))
+        assertEquals("212\u00A0MB", formatBytes(212L * 1024 * 1024))
+        assertEquals("1.2\u00A0GB", formatBytes(1_288_490_189L))
+        assertEquals("12\u00A0GB", formatBytes(12L * 1024 * 1024 * 1024))
     }
 
     @Test
@@ -33,8 +33,8 @@ class LocalVideoFormatTest {
             width = 1920,
             height = 1080,
         )
-        assertEquals("MP4 · 1080p · 38 MB", videoDetails(video, looping = false, loopsLabel = "loops"))
-        assertEquals("MP4 · 1080p · 38 MB · loops", videoDetails(video, looping = true, loopsLabel = "loops"))
+        assertEquals("MP4 · 1080p · 38\u00A0MB", videoDetails(video, looping = false, loopsLabel = "loops"))
+        assertEquals("MP4 · 1080p · 38\u00A0MB · loops", videoDetails(video, looping = true, loopsLabel = "loops"))
         assertEquals("MOV", videoDetails(LocalVideo(id = "b", title = "t", fileName = "b.mov"), false, "loops"))
     }
 }

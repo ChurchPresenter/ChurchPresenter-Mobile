@@ -43,5 +43,6 @@ internal fun formatBytes(bytes: Long): String {
     } else {
         value.roundToLong().toString()
     }
-    return "$shown ${units[unit]}"
+    // A non-breaking space: "212" and "MB" on separate lines read as two facts.
+    return "$shown\u00A0${units[unit]}"
 }

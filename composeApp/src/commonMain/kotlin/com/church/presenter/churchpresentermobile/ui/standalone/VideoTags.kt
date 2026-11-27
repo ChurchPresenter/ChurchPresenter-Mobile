@@ -7,6 +7,7 @@ package com.church.presenter.churchpresentermobile.ui.standalone
 internal object VideoTags {
     const val PREVIEW = "localMedia:preview"
     const val TIME = "localMedia:time"
+    const val PLAY_OVERLAY = "localMedia:playOverlay"
     const val TITLE = "localMedia:title"
     const val STATUS = "localMedia:status"
     const val LOOP = "localMedia:loop"
@@ -21,9 +22,13 @@ internal object VideoTags {
     const val ADD_FROM_FILES = "localMedia:add:files"
     const val EMPTY = "localMedia:empty"
     const val DELETE_CONFIRM = "localMedia:deleteConfirm"
+    const val DELETE_CANCEL = "localMedia:deleteCancel"
 
     /** One stored video's row, by its id. */
     fun row(id: String) = "localMedia:video:$id"
 
     fun delete(id: String) = "localMedia:video:$id:delete"
+
+    /** One choice in an options-card dropdown, e.g. `option(SOUND, "HALL")`. */
+    fun option(row: String, value: String) = "$row:option:$value"
 }

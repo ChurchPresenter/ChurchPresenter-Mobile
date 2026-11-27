@@ -26,8 +26,11 @@ actual fun createVideoFiles(): VideoFiles? = videoStorageDirectory()?.let(::Mobi
  * same way. Reading a range does not: kotlinx-io can only skip forward by
  * reading, so a TV seeking to the last minute of a 1 GB file would read the
  * first 990 MB to get there. Each platform seeks natively instead.
+ *
+ * `internal` rather than private so its copy, range and cleanup paths can be
+ * tested against a real temporary folder.
  */
-private class MobileVideoFiles(private val root: String) : VideoFiles {
+internal class MobileVideoFiles(private val root: String) : VideoFiles {
 
     private fun path(name: String) = Path(root, name)
 
